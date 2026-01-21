@@ -30,12 +30,6 @@ inline constexpr char kArticlesForYouEnabled[] = "suggestions.articles_enabled";
 // Boolean which indicates if the omnibox should be at the bottom of the screen.
 inline constexpr char kBottomOmnibox[] = "ios.bottom_omnibox";
 
-// Boolean which indicates if the default value of `kBottomOmnibox` is bottom.
-// This saves the default value of the bottom omnibox setting to present the
-// omnibox consistently.
-inline constexpr char kBottomOmniboxByDefault[] =
-    "ios.bottom_omnibox_by_default";
-
 // Boolean that is true when Browser Lockdown Mode is enabled.
 inline constexpr char kBrowserLockdownModeEnabled[] =
     "ios.browser_lockdown_mode_enabled";

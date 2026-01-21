@@ -5,14 +5,8 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/field_trial_params.h"
-#import "base/metrics/histogram_functions.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
-#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "components/segmentation_platform/public/result.h"
-#import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -23,7 +17,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_metrics.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_omnibox_consumer.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -93,8 +86,6 @@
       [_bottomOmniboxEnabled setObserver:self];
       // Initialize to the correct value.
       [self booleanDidChange:_bottomOmniboxEnabled];
-      [self updateOmniboxDefaultPosition];
-      [self logOmniboxPosition];
     }
   }
   return self;
@@ -266,92 +257,6 @@
   self.omniboxPosition = [self omniboxPositionInCurrentState];
   self.steadyStateOmniboxPosition =
       [self steadyStateOmniboxPositionInCurrentState];
-}
-
-#pragma mark Default omnibox position
-
-/// Records user is a safari switcher at startup.
-/// Used to set the default omnibox position to bottom for `IsNewUser`
-/// that are not in FRE. If bottom omnibox is already default
-/// `bottomOmniboxIsDefault`, still log the status as bottom as the user was
-/// classified as safari switcher in a previous session.
-- (void)recordSafariSwitcherMetrics:(BOOL)bottomOmniboxIsDefault {
-  if (!omnibox::IsNewUser()) {
-    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
-                                  OmniboxDeviceSwitcherResult::kNotNewUser);
-    return;
-  }
-
-  if (bottomOmniboxIsDefault) {
-    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
-                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
-    return;
-  }
-
-  segmentation_platform::ClassificationResult result =
-      self.deviceSwitcherResultDispatcher->GetCachedClassificationResult();
-  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
-    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
-                                  OmniboxDeviceSwitcherResult::kUnavailable);
-    return;
-  }
-
-  if (omnibox::IsSafariSwitcher(result)) {
-    base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
-                                  OmniboxDeviceSwitcherResult::kBottomOmnibox);
-    return;
-  }
-  base::UmaHistogramEnumeration(kOmniboxDeviceSwitcherResultAtStartup,
-                                OmniboxDeviceSwitcherResult::kTopOmnibox);
-}
-
-/// Updates the default setting for bottom omnibox.
-- (void)updateOmniboxDefaultPosition {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
-
-  // This only needs to be executed once and deviceSwitcherResult are not
-  // available in incognito.
-  if (!self.deviceSwitcherResultDispatcher ||
-      localState->GetUserPrefValue(omnibox::kIsOmniboxInBottomPosition)) {
-    return;
-  }
-
-  BOOL bottomOmniboxEnabledByDefault = NO;
-  if (localState->GetUserPrefValue(prefs::kBottomOmniboxByDefault)) {
-    bottomOmniboxEnabledByDefault =
-        localState->GetBoolean(prefs::kBottomOmniboxByDefault);
-  }
-
-  [self recordSafariSwitcherMetrics:bottomOmniboxEnabledByDefault];
-
-  // Make sure that users who have already seen the bottom omnibox by default
-  // keep it.
-  if (bottomOmniboxEnabledByDefault) {
-    localState->SetBoolean(prefs::kBottomOmniboxByDefault, YES);
-  }
-
-  localState->SetDefaultPrefValue(omnibox::kIsOmniboxInBottomPosition,
-                                  base::Value(bottomOmniboxEnabledByDefault));
-}
-
-/// Logs preferred omnibox position.
-- (void)logOmniboxPosition {
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    PrefService* localState = GetApplicationContext()->GetLocalState();
-    const BOOL isBottomOmnibox =
-        localState->GetBoolean(omnibox::kIsOmniboxInBottomPosition);
-    OmniboxPositionType positionType = isBottomOmnibox
-                                           ? OmniboxPositionType::kBottom
-                                           : OmniboxPositionType::kTop;
-    base::UmaHistogramEnumeration(kOmniboxSteadyStatePositionAtStartup,
-                                  positionType);
-
-    if (localState->GetUserPrefValue(omnibox::kIsOmniboxInBottomPosition)) {
-      base::UmaHistogramEnumeration(
-          kOmniboxSteadyStatePositionAtStartupSelected, positionType);
-    }
-  });
 }
 
 @end

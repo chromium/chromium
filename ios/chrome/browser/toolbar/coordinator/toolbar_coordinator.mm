@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator_parity.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -176,19 +175,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     self.popupPresenterDelegate = self.drsViewController;
   }
 
-  segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
-      nullptr;
-  if (!browser->GetProfile()->IsOffTheRecord()) {
-    deviceSwitcherResult =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browser->GetProfile());
-  }
   self.legacyToolbarMediator = [[LegacyToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
                isIncognito:browser->GetProfile()->IsOffTheRecord()];
   self.legacyToolbarMediator.delegate = self;
-  self.legacyToolbarMediator.deviceSwitcherResultDispatcher =
-      deviceSwitcherResult;
 
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
@@ -267,7 +257,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.legacyToolbarMediator disconnect];
   self.legacyToolbarMediator.omniboxConsumer = nil;
   self.legacyToolbarMediator.delegate = nil;
-  self.legacyToolbarMediator.deviceSwitcherResultDispatcher = nullptr;
   self.legacyToolbarMediator = nil;
 
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];

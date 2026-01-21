@@ -1771,17 +1771,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->
 
-<enum name="OmniboxDeviceSwitcherResult">
-  <int value="1" label="Unavailable"/>
-  <int value="2" label="Top omnibox by default"/>
-  <int value="3" label="Bottom omnibox by default"/>
-  <int value="4" label="Not a new user (user is new for 30 days after FRE)"/>
-</enum>
+<!-- LINT.IfChange(OmniboxPositionType) -->
 
 <enum name="OmniboxPositionType">
   <int value="0" label="Top"/>
   <int value="1" label="Bottom"/>
 </enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.mm:OmniboxPositionType) -->
 
 <enum name="PageLoadedSnapshotResult">
   <int value="0" label="Snapshot not attempted, page load failed">

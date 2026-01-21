@@ -255,6 +255,8 @@ inline constexpr char kFingerprintingProtectionEnabled[] =
 // Deprecated 01/2026.
 inline constexpr char kMagicStackSafetyCheckNotificationsShown[] =
     "ios.home_customization.magic_stack.safety_check.notifications_shown";
+inline constexpr char kBottomOmniboxByDefault[] =
+    "ios.bottom_omnibox_by_default";
 
 // Migrates a integer pref from source to target PrefService.
 void MigrateIntegerPref(std::string_view pref_name,
@@ -540,9 +542,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
   registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
 
-  // Bottom omnibox preferences.
-  registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
-
   // Preferences related to the Docking Promo feature (used only if
   // `kIOSDockingPromoForEligibleUsersOnly` is enabled).
   registry->RegisterBooleanPref(prefs::kIosDockingPromoEligibilityMet, false);
@@ -647,6 +646,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Deprecated 01/2026.
   registry->RegisterListPref(kMagicStackSafetyCheckNotificationsShown);
+  registry->RegisterListPref(kBottomOmniboxByDefault);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1157,6 +1157,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
                     prefs);
   // Added 01/2026.
   prefs->ClearPref(kMagicStackSafetyCheckNotificationsShown);
+  prefs->ClearPref(kBottomOmniboxByDefault);
 }
 
 // This method should be periodically pruned of year+ old migrations.

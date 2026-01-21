@@ -9,14 +9,6 @@
 
 namespace omnibox {
 
-/// Whether the user is considered a new omnibox user.
-bool IsNewUser();
-
-/// Returns whether the user is a Safari Switcher.
-/// Safari switcher will have the Omnibox at the bottom by default.
-bool IsSafariSwitcher(
-    const segmentation_platform::ClassificationResult& result);
-
 /// Whether the focused omnibox should maintain the same top / bottom position
 /// as the one in steady state.
 bool ShouldFocusedOmniboxFollowSteadyStatePosition();

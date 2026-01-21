@@ -11,10 +11,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 
-namespace segmentation_platform {
-class DeviceSwitcherResultDispatcher;
-}  // namespace segmentation_platform
-
 @protocol ToolbarOmniboxConsumer;
 class WebStateList;
 
@@ -42,10 +38,6 @@ class WebStateList;
 @property(nonatomic, weak) id<ToolbarMediatorDelegate> delegate;
 /// The omnibox consumer for this object.
 @property(nonatomic, weak) id<ToolbarOmniboxConsumer> omniboxConsumer;
-
-@property(nonatomic, assign)
-    segmentation_platform::DeviceSwitcherResultDispatcher*
-        deviceSwitcherResultDispatcher;
 
 /// Preferred toolbar to contain the omnibox.
 @property(nonatomic, readonly) ToolbarType preferredOmniboxPosition;
