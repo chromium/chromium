@@ -25,6 +25,10 @@
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/custom_handlers/protocol_handler_navigation_throttle.h"
+#endif
+
 namespace {
 
 static constexpr const char kExtensionPath[] =
@@ -46,6 +50,9 @@ custom_handlers::ProtocolHandler CreateExtensionProtocolHandler(
 
 }  // namespace
 
+using ProtocolHandlerConfirmCallback = custom_handlers::
+    ProtocolHandlerNavigationThrottle::ProtocolHandlerConfirmCallback;
+
 namespace extensions {
 
 class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
@@ -53,6 +60,14 @@ class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
   ProtocolHandlersManagerBrowserTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionProtocolHandlers);
+#if !BUILDFLAG(IS_ANDROID)
+    custom_handlers::ProtocolHandlerNavigationThrottle::
+        GetDialogLaunchCallbackForTesting() =
+            base::BindRepeating([](ProtocolHandlerConfirmCallback callback) {
+              std::move(callback).Run(/*permission_granted=*/true,
+                                      /*remember=*/true);
+            });
+#endif
   }
   ProtocolHandlersManagerBrowserTest(
       const ProtocolHandlersManagerBrowserTest&) = delete;

@@ -36,19 +36,34 @@ using content::BrowserThread;
 
 namespace custom_handlers {
 
-base::Value::Dict GetProtocolHandlerValue(const std::string& protocol,
-                                          const std::string& url) {
+base::Value::Dict GetProtocolHandlerValue(
+    const std::string& protocol,
+    const std::string& url,
+    bool is_confirmed = true,
+    std::optional<std::string> app_id = std::nullopt,
+    std::optional<std::string> extension_id = std::nullopt) {
   base::Value::Dict value;
   value.Set("protocol", protocol);
   value.Set("url", url);
+  value.Set("is_confirmed", is_confirmed);
+  if (app_id.has_value()) {
+    value.Set("app_id", *app_id);
+  }
+  if (extension_id.has_value()) {
+    value.Set("extension_id", *extension_id);
+  }
   return value;
 }
 
 base::Value::Dict GetProtocolHandlerValueWithDefault(
     const std::string& protocol,
     const std::string& url,
-    bool is_default) {
-  base::Value::Dict value = GetProtocolHandlerValue(protocol, url);
+    bool is_default,
+    bool is_confirmed = true,
+    std::optional<std::string> app_id = std::nullopt,
+    std::optional<std::string> extension_id = std::nullopt) {
+  base::Value::Dict value = GetProtocolHandlerValue(protocol, url, is_confirmed,
+                                                    app_id, extension_id);
   value.Set("default", is_default);
   return value;
 }
@@ -305,7 +320,7 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
   ProtocolHandler handler("news", GURL("https://example.com"), "app_id",
-                          std::nullopt, now,
+                          std::nullopt, now, true,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated = ProtocolHandler::CreateProtocolHandler(value);
@@ -1204,6 +1219,62 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
   EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
       "ext+foo", https_handler_url,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, OnlyExtensionHandlersUnconfirmed) {
+  registry()->OnAcceptRegisterProtocolHandler(
+      CreateProtocolHandler("web+play", GURL("https://test/%s")));
+  EXPECT_TRUE(registry()->IsProtocolHandlerConfirmed("web+play"));
+
+  const std::string kIdFoo("fooId");
+  registry()->OnAcceptRegisterProtocolHandler(
+      CreateWebAppProtocolHandler("web+mail", GURL("https://test/%s"), kIdFoo));
+  EXPECT_TRUE(registry()->IsProtocolHandlerConfirmed("web+mail"));
+
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  registry()->OnAcceptRegisterProtocolHandler(CreateExtensionProtocolHandler(
+      "web+news", GURL("https://test/%s"), kIdBar));
+  EXPECT_FALSE(registry()->IsProtocolHandlerConfirmed("web+news"));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, ConfirmHandler) {
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  registry()->OnAcceptRegisterProtocolHandler(CreateExtensionProtocolHandler(
+      "web+news", GURL("https://test/%s"), kIdBar));
+  EXPECT_FALSE(registry()->IsProtocolHandlerConfirmed("web+news"));
+
+  registry()->ConfirmProtocolHandler("web+news", false /*save*/);
+  EXPECT_TRUE(registry()->IsProtocolHandlerConfirmed("web+news"));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, RestoreUnconfirmedHandlerFromPref) {
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  base::Value::List handlers_registered_by_pref;
+
+  handlers_registered_by_pref.Append(GetProtocolHandlerValueWithDefault(
+      "news", URL_p1u1, true, false, std::nullopt, kIdBar));
+
+  GetPrefs()->SetList(custom_handlers::prefs::kRegisteredProtocolHandlers,
+                      std::move(handlers_registered_by_pref));
+  registry()->InitProtocolSettings();
+
+  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  EXPECT_FALSE(registry()->IsProtocolHandlerConfirmed("news"));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, ConfirmHandlerAndSave) {
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  registry()->OnAcceptRegisterProtocolHandler(CreateExtensionProtocolHandler(
+      "web+news", GURL("https://test/%s"), kIdBar));
+  EXPECT_FALSE(registry()->IsProtocolHandlerConfirmed("web+news"));
+
+  registry()->ConfirmProtocolHandler("web+news", true /*save*/);
+  EXPECT_TRUE(registry()->IsProtocolHandlerConfirmed("web+news"));
+
+  // Restore the registry from prefs.
+  delegate()->Reset();
+  RecreateRegistry(true);
+  EXPECT_TRUE(registry()->IsProtocolHandlerConfirmed("web+news"));
 }
 
 namespace {

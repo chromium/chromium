@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -303,12 +304,13 @@ ProtocolHandlerRegistry::GetExtensionProtocolHandlers(
 }
 
 void ProtocolHandlerRegistry::ClearUserDefinedHandlers(base::Time begin,
-                                                       base::Time end) {
+                                                       base::Time end,
+                                                       bool save) {
   for (const ProtocolHandler& handler : GetUserDefinedHandlers(begin, end))
-    RemoveHandler(handler);
+    RemoveHandler(handler, save);
 
   for (const ProtocolHandler& handler : GetUserIgnoredHandlers(begin, end))
-    RemoveIgnoredHandler(handler);
+    RemoveIgnoredHandler(handler, save);
 }
 
 ProtocolHandlerRegistry::ProtocolHandlerList
@@ -396,13 +398,16 @@ bool ProtocolHandlerRegistry::HasIgnoredEquivalent(
 }
 
 void ProtocolHandlerRegistry::RemoveIgnoredHandler(
-    const ProtocolHandler& handler) {
+    const ProtocolHandler& handler,
+    bool save) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool should_notify = false;
   if (HandlerExists(handler, ignored_protocol_handlers_) &&
       HandlerExists(handler, user_ignored_protocol_handlers_)) {
     EraseHandler(handler, &user_ignored_protocol_handlers_);
-    Save();
+    if (save) {
+      Save();
+    }
     if (!HandlerExists(handler, policy_ignored_protocol_handlers_)) {
       EraseHandler(handler, &ignored_protocol_handlers_);
       should_notify = true;
@@ -417,7 +422,35 @@ bool ProtocolHandlerRegistry::IsHandledProtocol(std::string_view scheme) const {
   return enabled_ && !GetHandlerFor(scheme).IsEmpty();
 }
 
-void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
+void ProtocolHandlerRegistry::ConfirmProtocolHandler(std::string_view scheme,
+                                                     bool save) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ProtocolHandler handler = GetHandlerFor(scheme);
+  CHECK(handler.IsValid());
+  if (handler.is_confirmed()) {
+    return;
+  }
+  RemoveHandler(handler);
+  handler.Confirm();
+  RegisterProtocolHandler(handler, USER);
+  SetDefault(handler);
+  if (save) {
+    Save();
+  }
+  NotifyChanged();
+}
+
+bool ProtocolHandlerRegistry::IsProtocolHandlerConfirmed(
+    std::string_view scheme) const {
+  DCHECK(IsHandledProtocol(scheme));
+
+  ProtocolHandler handler = GetHandlerFor(scheme);
+  DCHECK(handler.is_confirmed() || handler.IsExtensionHandler());
+  return handler.is_confirmed();
+}
+
+void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler,
+                                            bool save) {
   if (IsIgnored(handler)) {
     RemoveIgnoredHandler(handler);
     return;
@@ -446,7 +479,9 @@ void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
   if (erase_success && !IsHandledProtocol(handler.protocol())) {
     delegate_->DeregisterExternalHandler(handler.protocol());
   }
-  Save();
+  if (save) {
+    Save();
+  }
   if (erase_success)
     NotifyChanged();
 }
@@ -523,6 +558,12 @@ void ProtocolHandlerRegistry::AddObserver(Observer* observer) {
 
 void ProtocolHandlerRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ProtocolHandlerRegistry::SetDelegateForTesting(  // IN-TEST
+    std::unique_ptr<Delegate> delegate) {             // IN-TEST
+  CHECK_IS_TEST();                                    // IN-TEST
+  delegate_ = std::move(delegate);                    // IN-TEST
 }
 
 void ProtocolHandlerRegistry::PromoteHandler(const ProtocolHandler& handler) {

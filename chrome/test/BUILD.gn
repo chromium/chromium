@@ -5294,6 +5294,9 @@ if (!is_android) {
 
         deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
+      if (!is_android) {
+        sources += [ "../browser/custom_handlers/chrome_protocol_handler_navigation_throttle_browsertests.cc" ]
+      }
       if (is_chromeos) {
         sources += [
           "../browser/ui/views/frame/system_web_app_frame_view_browsertest.cc",
