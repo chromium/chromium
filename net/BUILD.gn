@@ -2723,20 +2723,28 @@ if (is_ios) {
   }
 }
 
+# TODO(crbug.com/477528387): Consider enabling net_fuzztests for cronet builds.
 if (!is_cronet_build) {
   test("net_fuzztests") {
     sources = [
       "cert/qwac_fuzztest.cc",
       "cert/x509_certificate_fuzztest.cc",
       "http/http_cookie_indices_fuzztest.cc",
+      "http/http_security_headers_hsts_fuzzer.cc",
     ]
 
     fuzztests = [
       "CookieIndicesFuzzTest.FuzzParseFromHeader",
+      "HttpSecurityHeadersHstsFuzzer.TestParseHSTSHeader",
       "QwacFuzzTest.FuzzParseQcStatements",
       "QwacFuzzTest.FuzzParseQcTypeInfo",
       "QwacFuzzTest.FuzzParseTwoQwacCertBinding",
       "X509CertificateFuzzTest.FuzzCreateFromDERCertChain",
+    ]
+
+    data = [
+      "data/fuzzer_data/",
+      "data/fuzzer_dictionaries/",
     ]
 
     deps = [
@@ -4216,16 +4224,6 @@ fuzzer_test("net_auth_challenge_tokenizer_fuzzer") {
     "//base",
     "//net",
   ]
-}
-
-fuzzer_test("net_http_security_headers_hsts_fuzzer") {
-  sources = [ "http/http_security_headers_hsts_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-  ]
-  dict = "data/fuzzer_dictionaries/net_http_security_headers_fuzzer.dict"
-  seed_corpus = "data/fuzzer_data/http_security_headers/"
 }
 
 fuzzer_test("net_http_transport_security_state_static_fuzzer") {
