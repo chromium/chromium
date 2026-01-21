@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -315,6 +316,36 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
       autofill::GetDeleteEntityTypeStringForI18n(entity_type);
   api_type.supports_wallet_storage = supports_wallet_storage;
   return api_type;
+}
+
+api::autofill_private::AttributeType AttributeTypeToPrivateApiAttributeType(
+    autofill::AttributeType attribute_type) {
+  api::autofill_private::AttributeType api_attr;
+  api_attr.type_name = std::to_underlying(attribute_type.name());
+  api_attr.type_name_as_string =
+      base::UTF16ToUTF8(attribute_type.GetNameForI18n());
+  api_attr.data_type = AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
+      attribute_type.data_type());
+  return api_attr;
+}
+
+std::vector<api::autofill_private::AttributeType> GetRequiredAttributesForType(
+    autofill::EntityType entity_type) {
+  return base::ToVector(entity_type.import_constraints(), [](autofill::DenseSet<
+                                                              AttributeType>
+                                                                 group) {
+    // It was decided to keep the schema expressive to allow future complex
+    // constraints, rather than restricting it to match current UI
+    // capabilities. Consequently, this code enforces the current UI limitation
+    // (simple disjunctions only) via runtime checks.
+    // Ex. "[[a]]", "[[a], [b]]", "[[a], [b], [c]]" etc are supported in UI.
+    // More details here: crrev.com/c/7245980
+    CHECK_EQ(group.size(), 1u)
+        << "Unsupported format: Complex constraint groups not supported by UI";
+
+    // Flatten the constraints: {{A}, {B}} -> [A, B]
+    return AttributeTypeToPrivateApiAttributeType(*group.begin());
+  });
 }
 
 }  // namespace extensions::autofill_ai_util

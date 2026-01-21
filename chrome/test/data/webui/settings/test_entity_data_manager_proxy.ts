@@ -15,6 +15,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     EntityDataManagerProxy {
   private entityInstancesWithLabels_: EntityInstanceWithLabels[] = [];
   private attributeTypes_: AttributeType[] = [];
+  private requiredAttributeTypes_: AttributeType[] = [];
   private entityInstance_: EntityInstance|null = null;
   private entityTypes_: EntityType[] = [];
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
@@ -31,6 +32,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'addOrUpdateEntityInstance',
       'authenticateUserBeforeViewingEntityData',
       'getAllAttributeTypesForEntityTypeName',
+      'getRequiredAttributeTypesForEntityTypeName',
       'getEntityInstanceByGuid',
       'getOptInStatus',
       'getWalletablePassDetectionOptInStatus',
@@ -64,6 +66,11 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   setGetAllAttributeTypesForEntityTypeNameResponse(
       attributeTypes: AttributeType[]): void {
     this.attributeTypes_ = attributeTypes;
+  }
+
+  setGetRequiredAttributeTypesForEntityTypeNameResponse(
+      types: chrome.autofillPrivate.AttributeType[]) {
+    this.requiredAttributeTypes_ = types;
   }
 
   setGetOptInStatusResponse(optInStatus: boolean): void {
@@ -113,6 +120,13 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       Promise<AttributeType[]> {
     this.methodCalled('getAllAttributeTypesForEntityTypeName', entityTypeName);
     return Promise.resolve(structuredClone(this.attributeTypes_));
+  }
+
+  getRequiredAttributeTypesForEntityTypeName(entityTypeName: number):
+      Promise<chrome.autofillPrivate.AttributeType[]> {
+    this.methodCalled(
+        'getRequiredAttributeTypesForEntityTypeName', entityTypeName);
+    return Promise.resolve(this.requiredAttributeTypes_);
   }
 
   addEntityInstancesChangedListener(listener: EntityInstancesChangedListener):

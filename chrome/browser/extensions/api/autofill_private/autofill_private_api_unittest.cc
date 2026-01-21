@@ -374,6 +374,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, MAYBE_EntityInstances) {
   //  Test that retrieving general entity type information works.
   ASSERT_TRUE(RunAutofillSubtest("getWritableEntityTypes"));
   ASSERT_TRUE(RunAutofillSubtest("getAllAttributeTypesForEntityTypeName"));
+  ASSERT_TRUE(RunAutofillSubtest("getRequiredAttributeTypesForEntityTypeName"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, TypedEntityInstances) {

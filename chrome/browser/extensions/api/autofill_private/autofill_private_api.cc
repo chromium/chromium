@@ -1125,22 +1125,35 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
   }
 
   EntityType entity_type(entity_type_name.value());
-  std::vector<autofill_private::AttributeType> result = base::ToVector(
-      entity_type.attributes(),
-      [](const autofill::AttributeType& attribute_type) {
-        autofill_private::AttributeType private_api_attribute_type;
-        private_api_attribute_type.type_name =
-            std::to_underlying(attribute_type.name());
-        private_api_attribute_type.type_name_as_string =
-            base::UTF16ToUTF8(attribute_type.GetNameForI18n());
-        private_api_attribute_type.data_type = autofill_ai_util::
-            AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
-                attribute_type.data_type());
-        return private_api_attribute_type;
-      });
+  std::vector<autofill_private::AttributeType> result =
+      base::ToVector(entity_type.attributes(),
+                     autofill_ai_util::AttributeTypeToPrivateApiAttributeType);
   return RespondNow(ArgumentList(
       autofill_private::GetAllAttributeTypesForEntityTypeName::Results::Create(
           result)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetRequiredAttributeTypesForEntityTypeNameFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetRequiredAttributeTypesForEntityTypeNameFunction::Run() {
+  const auto params = api::autofill_private::
+      GetRequiredAttributeTypesForEntityTypeName::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::optional<autofill::EntityTypeName> entity_type_name =
+      autofill::ToSafeEntityTypeName(params->entity_type_name);
+
+  if (!entity_type_name.has_value()) {
+    return RespondNow(Error(kErrorAutofillAiTypeNameOutOfBounds));
+  }
+
+  autofill::EntityType entity_type(entity_type_name.value());
+  return RespondNow(ArgumentList(
+      api::autofill_private::GetRequiredAttributeTypesForEntityTypeName::
+          Results::Create(
+              autofill_ai_util::GetRequiredAttributesForType(entity_type))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

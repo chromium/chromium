@@ -49,6 +49,14 @@ export interface EntityDataManagerProxy {
       Promise<AttributeType[]>;
 
   /**
+   * Returns a list of all attribute types that are required to save an entity
+   * instance. The list represents a disjunction: presenting any one attribute
+   * is sufficient.
+   */
+  getRequiredAttributeTypesForEntityTypeName(entityTypeName: number):
+      Promise<AttributeType[]>;
+
+  /**
    * Adds a listener to changes in the entity instances.
    */
   addEntityInstancesChangedListener(listener: EntityInstancesChangedListener):
@@ -119,6 +127,12 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
 
   getAllAttributeTypesForEntityTypeName(entityTypeName: number) {
     return chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
+        entityTypeName);
+  }
+
+  getRequiredAttributeTypesForEntityTypeName(entityTypeName: number):
+      Promise<AttributeType[]> {
+    return chrome.autofillPrivate.getRequiredAttributeTypesForEntityTypeName(
         entityTypeName);
   }
 

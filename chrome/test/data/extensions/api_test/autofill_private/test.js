@@ -1454,6 +1454,21 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  async function getAllAttributeTypesForEntityTypeName() {
+    const attributeTypesList =
+        await chrome.autofillPrivate.getRequiredAttributeTypesForEntityTypeName(
+            /*entityTypeName=*/ 1);
+    const expectedAttributeTypesList = [
+      {
+        typeName: 7,
+        typeNameAsString: 'Number',
+        dataType: AttributeTypeDataType.STRING,
+      },
+    ];
+    chrome.test.assertEq(expectedAttributeTypesList, attributeTypesList);
+    chrome.test.succeed();
+  },
+
   async function getEmptyPayOverTimeIssuerList() {
     const payOverTimeIssuerList =
         await chrome.autofillPrivate.getPayOverTimeIssuerList();

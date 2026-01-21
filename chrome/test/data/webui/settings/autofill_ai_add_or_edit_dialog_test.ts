@@ -166,8 +166,11 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           dialog.dialogTitle = testEntityInstance.type.editEntityTypeString;
         }
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+        ]);
         await flushTasks();
 
         // Verify that the dialog title is correct.
@@ -217,7 +220,11 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   test('AddOrEditEntityInstanceValidationError', async function() {
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
     await flushTasks();
 
     // The validation error should not be visible yet and the save button
@@ -265,6 +272,75 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // anymore and the save button should be enabled.
     assertFalse(isVisible(validationError));
     assertFalse(saveButton.disabled);
+  });
+
+  test('RequiredFieldsValidation', async function() {
+    const requiredAttributes = [testAttributeTypes[0]!];
+
+    entityDataManager.setGetRequiredAttributeTypesForEntityTypeNameResponse(
+        requiredAttributes);
+
+    // Initialize empty dialog to ensure that none of the fields are filled.
+    dialog.entityInstance = {
+      type: testEntityInstance.type,
+      attributeInstances: [],
+      guid: '',
+      nickname: '',
+    };
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
+    await flushTasks();
+
+    const saveButton =
+        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    const validationError =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error');
+    const inputs = dialog.shadowRoot!.querySelectorAll<CrInputElement>(
+        '#attribute-instance-field');
+
+    // Helper to simulate input.
+    const simulateInput = async (inputIndex: number, value: string) => {
+      const input = inputs[inputIndex]!;
+      input.value = value;
+      input.dispatchEvent(new CustomEvent('value-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {value: value},
+      }));
+      input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+      await flushTasks();
+    };
+
+    // Empty Form.
+    saveButton!.click();
+    await flushTasks();
+
+    // Both required fields are empty.
+    assertTrue(
+        saveButton!.disabled,
+        'Should be disabled when required fields are empty');
+    assertTrue(isVisible(validationError));
+
+    // Fill non-required field.
+    await simulateInput(1, 'Corolla');
+
+    // Still invalid.
+    assertTrue(
+        saveButton!.disabled,
+        'Should stay disabled if only non-required field is filled');
+    assertTrue(isVisible(validationError));
+
+    // Fill the required field.
+    await simulateInput(0, 'Toyota');
+
+    // Valid!
+    assertFalse(saveButton!.disabled, 'Should be enabled');
+    assertFalse(isVisible(validationError));
   });
 });
 
@@ -400,8 +476,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         }
         dialog.entityInstance = structuredClone(testEntityInstance);
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+        ]);
         await flushTasks();
 
         // Retrieve the country selector.
@@ -486,8 +565,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         }
         dialog.entityInstance = structuredClone(testEntityInstance);
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+        ]);
         await flushTasks();
 
         // Retrieve the date selectors.
@@ -552,7 +634,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     testEntityInstance.attributeInstances.push(testDateAttributeInstance);
     dialog.entityInstance = structuredClone(testEntityInstance);
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
     await flushTasks();
 
     // Retrieve the year selector.
@@ -578,7 +664,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     testEntityInstance.attributeInstances.push(testCountryAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
     await flushTasks();
 
     // The validation error should not be visible yet and the save button
@@ -622,7 +712,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     testEntityInstance.attributeInstances.push(testDateAttributeInstance);
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+    ]);
     await flushTasks();
 
     // The invalid label and validation errors should not be visible yet, and
@@ -832,8 +926,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         dialog.entityInstance = testEntityInstance;
         document.documentElement.lang = params.locale;
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+        ]);
         await flushTasks();
 
         const allSelectorOptions =

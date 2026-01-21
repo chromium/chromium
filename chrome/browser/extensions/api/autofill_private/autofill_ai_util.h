@@ -52,6 +52,18 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
     autofill::EntityType entity_type,
     bool supports_wallet_storage);
 
+// Returns the import constraints for `entity_type` as a list of API attribute
+// types. The returned list represents a disjunction of requirements (OR logic),
+// where satisfying any one attribute satisfies the import requirement.
+// Note: This enforces that the underlying schema uses singleton groups (e.g.,
+// {{A}, {B}}); complex conjunctions will trigger a runtime error.
+std::vector<api::autofill_private::AttributeType> GetRequiredAttributesForType(
+    autofill::EntityType entity_type);
+
+// Converts a core autofill::AttributeType to the Private API AttributeType.
+api::autofill_private::AttributeType AttributeTypeToPrivateApiAttributeType(
+    autofill::AttributeType attribute_type);
+
 }  // namespace extensions::autofill_ai_util
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_AI_UTIL_H_

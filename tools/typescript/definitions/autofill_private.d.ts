@@ -330,6 +330,8 @@ declare global {
       export function getWritableEntityTypes(): Promise<EntityType[]>;
       export function getAllAttributeTypesForEntityTypeName(
           entityTypeName: number): Promise<AttributeType[]>;
+      export function getRequiredAttributeTypesForEntityTypeName(
+          entityTypeName: number): Promise<AttributeType[]>;
       export function getAutofillAiOptInStatus(): Promise<boolean>;
       export function setAutofillAiOptInStatus(optedIn: boolean):
           Promise<boolean>;
