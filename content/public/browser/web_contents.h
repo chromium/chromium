@@ -1254,6 +1254,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Set the renderer's page scale to the given factor.
   virtual void SetPageScale(float page_scale_factor) = 0;
 
+  // Controls whether the WebContents should consume and discard gesture events
+  // that trigger page zooming (Pinch and Double-Tap) in the browser process.
+  virtual void SetIgnoreZoomGestures(bool ignore) = 0;
+
   // Gets the preferred size of the contents.
   virtual gfx::Size GetPreferredSize() = 0;
 

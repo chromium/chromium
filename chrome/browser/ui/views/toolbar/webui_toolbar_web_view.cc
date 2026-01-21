@@ -28,8 +28,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,30 +48,6 @@ constexpr char kHistogramToolbarRenderProcessGone[] =
 constexpr char kHistogramToolbarRenderProcessGoneExceedingRecoveryLimit[] =
     "InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit";
 
-class ZoomBlockingWebView : public views::WebView {
-  METADATA_HEADER(ZoomBlockingWebView, views::WebView)
-
- public:
-  explicit ZoomBlockingWebView(content::BrowserContext* browser_context)
-      : views::WebView(browser_context) {}
-  ~ZoomBlockingWebView() override = default;
-
-  // Content::WebContentsDelegate:
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override {
-    // Block pinch-to-zoom and double-tap-to-zoom.
-    // TODO(crbug.com/475836809) Disable this for all webviews.
-    if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-        (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)) {
-      return true;
-    }
-    return views::WebView::PreHandleGestureEvent(source, event);
-  }
-};
-
-BEGIN_METADATA(ZoomBlockingWebView)
-END_METADATA
-
 }  // namespace
 
 WebUIToolbarWebView::WebUIToolbarWebView(
@@ -82,7 +56,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     : browser_(browser), controller_(controller), reload_control_(this) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto web_view = std::make_unique<ZoomBlockingWebView>(browser->GetProfile());
+  auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
   auto* web_contents =
       web_view->GetWebContents(GURL(chrome::kChromeUIWebUIToolbarURL));
   // PLM has to be initialized before loading the URL.
@@ -91,6 +65,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   web_view->SetPreferredSize(gfx::Size(size, size));
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
+  web_contents->SetIgnoreZoomGestures(true);
   web_view->SetID(VIEW_ID_RELOAD_BUTTON);
 
   // We must save the pointer to the WebView so we can load the URL after the

@@ -4566,6 +4566,16 @@ bool WebContentsImpl::PreHandleGestureEvent(
     const blink::WebGestureEvent& event) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::PreHandleGestureEvent");
+  if (ignore_zoom_gestures_) {
+    if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
+        (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)) {
+      return true;
+    }
+  }
+
+  // TODO(crbug.com/475836809)
+  // Remove this delegate method. It exposes Blink types to the embedder. Since
+  // zoom blocking is now handled natively, we should audit remaining consumers.
   return delegate_ && delegate_->PreHandleGestureEvent(this, event);
 }
 
@@ -6943,6 +6953,10 @@ void WebContentsImpl::SetPageScale(float scale_factor) {
                         "scale_factor", scale_factor);
   GetPrimaryMainFrame()->GetAssociatedLocalMainFrame()->SetScaleFactor(
       scale_factor);
+}
+
+void WebContentsImpl::SetIgnoreZoomGestures(bool ignore) {
+  ignore_zoom_gestures_ = ignore;
 }
 
 gfx::Size WebContentsImpl::GetPreferredSize() {
