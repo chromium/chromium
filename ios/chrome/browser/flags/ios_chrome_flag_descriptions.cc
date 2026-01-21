@@ -301,6 +301,12 @@ const char kComposeboxAIMNudgeDescription[] =
     "Enables the AIM nudge button in the composebox, tapping on the button "
     "enables AIM. This is conditionned by AIM availability.";
 
+const char kComposeboxAdditionalAdvancedToolsName[] =
+    "Enable additional advanced tools in composebox";
+extern const char kComposeboxAdditionalAdvancedToolsDescription[] =
+    "When enabled, the additional tools in the input plate are shown, such as "
+    "canvas and the model picker";
+
 const char kComposeboxAttachmentsTypedStateName[] =
     "Enable contextual suggestions for typed state";
 const char kComposeboxAttachmentsTypedStateDescription[] =
