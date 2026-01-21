@@ -86,15 +86,6 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill.">
     Chrome understands forms better and can autofill them faster for you
   </message>
-  <!-- TODO(crbug.com/432641385): Delete this string if UX decided we will not need it in the Autofill settings page.-->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION_FEATURE_ON" desc="The sublabel of the enhanced autofill row on chrome://settings/ai when the enhanced autofill feature is on.
-">
-Chrome understands forms better and can autofill them faster for you. This setting is on.
-  </message>
-  <!-- TODO(crbug.com/432641385): Delete this string if UX decided we will not need it in the Autofill settings page.-->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION_FEATURE_OFF" desc="The sublabel of the enhanced autofill row on chrome://settings/ai when the enhanced autofill feature is off.">
-Chrome understands forms better and can autofill them faster for you. This setting is off.
-  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
     Chrome understands forms better and can autofill them faster for you
   </message>
