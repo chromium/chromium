@@ -8273,6 +8273,11 @@
       "expiry_milestone": 150
   },
   {
+    "name": "saas-usage-reporting",
+    "owners": [ "janzarzycki@google.com", "igorruvinov@chromium.org" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "safe-browsing-local-lists-use-sbv5",
     "owners": [
       "thefrog@chromium.org",
