@@ -56,8 +56,12 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   // Timestamp of latest Geoposition this client received.
   base::Time last_updated_timestamp_;
 
-  // Notifier to ask for IP-geolocation updates.
-  const raw_ptr<PublicIpAddressLocationNotifier, DanglingUntriaged> notifier_;
+  // `notifier_` is a non-owning raw_ptr. The
+  // `PublicIpAddressGeolocationProvider` owns both `this` instance (via a
+  // `UniqueReceiverSet`) and the `notifier_` pointee. Due to declaration order
+  // in `PublicIpAddressGeolocationProvider`, the `notifier_` pointee is
+  // guaranteed to outlive `this` instance.
+  const raw_ptr<PublicIpAddressLocationNotifier> notifier_;
 
   const mojom::GeolocationClientId client_id_;
 
