@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/constants.h"
 
@@ -124,13 +123,12 @@ void TestRasterInterface::ShallowFlushCHROMIUM() {
     test_support_->CallAllSyncPointCallbacks();
 }
 
-void TestRasterInterface::set_supports_gpu_memory_buffer_format(
-    gfx::BufferFormat format,
-    bool support) {
+void TestRasterInterface::set_supports_mappable_format(SharedImageFormat format,
+                                                       bool support) {
   if (support) {
-    caps_.mappable_formats.insert(GetSharedImageFormat(format));
+    caps_.mappable_formats.insert(format);
   } else {
-    caps_.mappable_formats.erase(GetSharedImageFormat(format));
+    caps_.mappable_formats.erase(format);
   }
 }
 

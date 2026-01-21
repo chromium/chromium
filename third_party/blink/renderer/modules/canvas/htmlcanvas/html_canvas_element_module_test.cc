@@ -156,13 +156,13 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
 
   auto context_provider = viz::TestContextProvider::CreateRaster();
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-  constexpr auto buffer_format = gfx::BufferFormat::BGRA_8888;
+  constexpr auto format = viz::SinglePlaneFormat::kBGRA_8888;
 #elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
-  constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
+  constexpr auto format = viz::SinglePlaneFormat::kRGBA_8888;
 #endif
 
-  context_provider->UnboundTestRasterInterface()
-      ->set_supports_gpu_memory_buffer_format(buffer_format, true);
+  context_provider->UnboundTestRasterInterface()->set_supports_mappable_format(
+      format, true);
   InitializeSharedGpuContextRaster(context_provider.get());
 
   // To intercept SubmitCompositorFrame messages sent by a canvas's

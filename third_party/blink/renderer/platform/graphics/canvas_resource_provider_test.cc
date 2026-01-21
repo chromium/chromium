@@ -95,12 +95,12 @@ class CanvasResourceProviderTest : public Test {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto* test_raster = test_context_provider_->UnboundTestRasterInterface();
     test_raster->set_max_texture_size(kMaxTextureSize);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::RGBA_8888, true);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::BGRA_8888, true);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::RGBA_F16, true);
+    test_raster->set_supports_mappable_format(
+        viz::SinglePlaneFormat::kRGBA_8888, true);
+    test_raster->set_supports_mappable_format(
+        viz::SinglePlaneFormat::kBGRA_8888, true);
+    test_raster->set_supports_mappable_format(viz::SinglePlaneFormat::kRGBA_F16,
+                                              true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
