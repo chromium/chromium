@@ -142,7 +142,12 @@
     align-items: flex-start;
     display: flex;
     flex-direction: row;
+    padding-right: 56px;
     padding-top: var(--cr-section-vertical-padding);
+  }
+
+  #safeBrowsingRadioGroup controlled-radio-button::part(disc) {
+    margin-top: 1px;
   }
 
   #safeBrowsingRadioGroup controlled-radio-button::part(labelWrapper) {
