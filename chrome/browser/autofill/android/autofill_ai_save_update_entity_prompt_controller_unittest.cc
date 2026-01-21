@@ -151,7 +151,9 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON),
       prompt_controller().GetNegativeButtonText());
 
-  EXPECT_THAT(prompt_controller().GetSourceNotice(), testing::IsEmpty());
+  EXPECT_THAT(prompt_controller().GetSourceNotice(),
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE));
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
@@ -169,7 +171,9 @@ TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON),
       prompt_controller().GetNegativeButtonText());
 
-  EXPECT_THAT(prompt_controller().GetSourceNotice(), testing::IsEmpty());
+  EXPECT_THAT(prompt_controller().GetSourceNotice(),
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE));
 }
 
 TEST_F(AutofillAiSaveUpdateEntityPromptControllerTest,

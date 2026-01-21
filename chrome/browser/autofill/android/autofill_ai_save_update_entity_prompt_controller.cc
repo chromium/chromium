@@ -94,7 +94,8 @@ std::u16string AutofillAiSaveUpdateEntityPromptController::GetSourceNotice()
     const {
   if (entity_instance_.record_type() !=
       EntityInstance::RecordType::kServerWallet) {
-    return std::u16string();
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE);
   }
 
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
