@@ -707,27 +707,8 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindOnce(
-      ^(std::unique_ptr<lens::ContextualInputData> data,
-        const base::UnguessableToken& serverToken) {
-        [weakSelf onTabContextAdded:serverToken
-                      forIdentifier:identifier
-                          inputData:std::move(data)];
-      },
-      std::move(inputData));
+  auto serverToken = _contextualSearchSession->CreateContextToken();
 
-  _contextualSearchSession->AddTabContext(webStateID.identifier(),
-                                          std::move(callback));
-}
-
-// Invoked when a tab has been successfully added to the
-// session. Uploads the tab context to the server.
-- (void)onTabContextAdded:(base::UnguessableToken)serverToken
-            forIdentifier:(base::UnguessableToken)identifier
-                inputData:
-                    (std::unique_ptr<lens::ContextualInputData>)inputData {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   if (item) {
     item.serverToken = serverToken;
@@ -1062,14 +1043,13 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   mojo_base::BigBuffer buffer(base::apple::NSDataToSpan(data));
-  __weak __typeof(self) weakSelf = self;
-  auto callback = base::BindOnce(^(const base::UnguessableToken& serverToken) {
-    [weakSelf onFileContextAdded:serverToken forIdentifier:identifier];
-  });
 
-  _contextualSearchSession->AddFileContext(kPortableNetworkGraphicMimeType,
-                                           std::move(buffer), options,
-                                           std::move(callback));
+  auto serverToken = _contextualSearchSession->CreateContextToken();
+  // Register the file context with the UI as soon as the token is created so
+  // that it can listen to all file upload events.
+  [self onFileContextAdded:serverToken forIdentifier:identifier];
+  _contextualSearchSession->StartFileContextUploadFlow(
+      serverToken, kPortableNetworkGraphicMimeType, std::move(buffer), options);
 }
 
 // Uploads the `image` for the item with the given `identifier`.
@@ -1142,14 +1122,13 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (_contextualSearchSession) {
     mojo_base::BigBuffer buffer(base::apple::NSDataToSpan(data));
-    __weak __typeof(self) weakSelf = self;
-    auto callback =
-        base::BindOnce(^(const base::UnguessableToken& serverToken) {
-          [weakSelf onFileContextAdded:serverToken forIdentifier:identifier];
-        });
-    _contextualSearchSession->AddFileContext(
-        kAdobePortableDocumentFormatMimeType, std::move(buffer), std::nullopt,
-        std::move(callback));
+    auto serverToken = _contextualSearchSession->CreateContextToken();
+    // Register the file context with the UI as soon as the token is created so
+    // that it can listen to all file upload events.
+    [self onFileContextAdded:serverToken forIdentifier:identifier];
+    _contextualSearchSession->StartFileContextUploadFlow(
+        serverToken, kAdobePortableDocumentFormatMimeType, std::move(buffer),
+        /*image_options=*/std::nullopt);
   }
 
   // Concurrently, generate a preview for the UI.

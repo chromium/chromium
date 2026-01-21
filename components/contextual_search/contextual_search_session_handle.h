@@ -34,8 +34,6 @@ using SessionId = base::UnguessableToken;
 class ContextualSearchService;
 using AddFileContextCallback =
     base::OnceCallback<void(const ::base::UnguessableToken&)>;
-using AddTabContextCallback =
-    base::OnceCallback<void(const ::base::UnguessableToken&)>;
 
 // RAII handle for managing the lifetime of a ComposeboxQueryController.
 class ContextualSearchSessionHandle {
@@ -83,24 +81,23 @@ class ContextualSearchSessionHandle {
   virtual std::optional<lens::proto::LensOverlaySuggestInputs>
   GetSuggestInputs() const;
 
-  // Adds a file to the context controller and starts the file upload flow.
-  virtual void AddFileContext(
+  // Generates a token and adds it to the list of uploaded context tokens. A
+  // followup call to 'StartFileContextUploadFlow` or
+  // `StartTabContextUploadFlow`, using the returned token, is required to start
+  // the upload with the contextual input data.
+  virtual base::UnguessableToken CreateContextToken();
+
+  // Adds a file to the context controller and starts the file upload flow. The
+  // file token must have been previously returned by `CreateContextToken`.
+  virtual void StartFileContextUploadFlow(
+      const base::UnguessableToken& file_token,
       std::string file_mime_type,
       mojo_base::BigBuffer file_bytes,
-      std::optional<lens::ImageEncodingOptions> image_options,
-      AddFileContextCallback callback);
-
-  // Adds a tab context to the context controller, generating a token and adding
-  // it to the list of uploaded context tokens. A followup call to
-  // `StartTabContextUploadFlow`, using the token returned in the callback,
-  // is required to start the upload with the
-  // contextual input data.
-  // TODO(crbug.com/461869881): Pass more metadata than just the tab id for
-  //  being able to return the list of attached tabs.
-  virtual void AddTabContext(int32_t tab_id, AddTabContextCallback callback);
+      std::optional<lens::ImageEncodingOptions> image_options);
 
   // Starts the tab context upload flow for the given file token using the
-  // tab context stored in the contextual input data.
+  // tab context stored in the contextual input data. The file token must have
+  // been previously returned by `CreateContextToken`.
   virtual void StartTabContextUploadFlow(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,

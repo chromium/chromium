@@ -321,12 +321,10 @@ void ContextualTasksComposeboxHandler::OnContextRetrieved(
       continue;
     }
 
-    // TODO(crbug.com/466470730): Replace usages of tab session id with tab
-    // handle.
     int32_t tab_id = tab->GetHandle().raw_value();
     controller->GetPageContext(base::BindOnce(
         &ContextualTasksComposeboxHandler::OnTabContextualizationFetched,
-        weak_factory_.GetWeakPtr(), query,
+        weak_factory_.GetWeakPtr(),
         // Create a copy of the context for each tab, so that the context can
         // be moved into the callback. This is fine because all member
         // variables are held by value, and all complex objects have explicit
@@ -337,7 +335,6 @@ void ContextualTasksComposeboxHandler::OnContextRetrieved(
 }
 
 void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
-    std::string query,
     std::unique_ptr<contextual_tasks::ContextualTaskContext> context,
     base::RepeatingClosure barrier_closure,
     std::optional<base::Uuid> original_task_id,
@@ -372,16 +369,15 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
 
   UploadTabContextWithData(
       tab_id, maybe_context_id, std::move(page_content_data),
-      base::BindOnce(&ContextualTasksComposeboxHandler::OnTabContextReuploaded,
-                     weak_factory_.GetWeakPtr(), query, barrier_closure,
+      base::BindOnce(&ContextualTasksComposeboxHandler::OnTabContextReuploadStarted,
+                     weak_factory_.GetWeakPtr(), barrier_closure,
                      original_task_id));
 }
 
-void ContextualTasksComposeboxHandler::OnTabContextReuploaded(
-    std::string query,
+void ContextualTasksComposeboxHandler::OnTabContextReuploadStarted(
     base::RepeatingClosure barrier_closure,
     std::optional<base::Uuid> original_task_id,
-    bool success) {
+    bool upload_started) {
   if (web_ui_controller_->GetTaskId() != original_task_id) {
     barrier_closure.Run();
     return;
@@ -750,22 +746,14 @@ void ContextualTasksComposeboxHandler::AddFileContext(
     mojo_base::BigBuffer file_bytes,
     AddFileContextCallback callback) {
   if (auto* session_handle = GetContextualSessionHandle()) {
+    auto token = session_handle->CreateContextToken();
     std::string mime_type = file_info->mime_type;
-    session_handle->AddFileContext(
-        mime_type, std::move(file_bytes), CreateImageEncodingOptions(),
-        base::BindOnce(&ContextualTasksComposeboxHandler::OnFileAddedToSession,
-                       weak_factory_.GetWeakPtr(), std::move(file_info),
-                       std::move(callback)));
-  }
-}
-
-void ContextualTasksComposeboxHandler::OnFileAddedToSession(
-    searchbox::mojom::SelectedFileInfoPtr file_info,
-    AddFileContextCallback callback,
-    const base::UnguessableToken& token) {
   ContextualSearchboxHandler::page_->AddFileContext(token,
                                                     std::move(file_info));
   std::move(callback).Run(token);
+    session_handle->StartFileContextUploadFlow(
+        token, mime_type, std::move(file_bytes), CreateImageEncodingOptions());
+  }
 }
 
 void ContextualTasksComposeboxHandler::FileSelectionCanceled() {

@@ -18,11 +18,11 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
   ~MockContextualSearchSessionHandle() override;
 
   MOCK_METHOD(void,
-              AddFileContext,
-              (std::string file_mime_type,
+              StartFileContextUploadFlow,
+              (const base::UnguessableToken& file_token,
+               std::string file_mime_type,
                mojo_base::BigBuffer file_bytes,
-               std::optional<lens::ImageEncodingOptions> image_options,
-               AddFileContextCallback callback),
+               std::optional<lens::ImageEncodingOptions> image_options),
               (override));
   MOCK_METHOD(void, NotifySessionStarted, (), (override));
   MOCK_METHOD(std::optional<lens::proto::LensOverlaySuggestInputs>,
@@ -37,10 +37,7 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
               GetController,
               (),
               (const, override));
-  MOCK_METHOD(void,
-              AddTabContext,
-              (int32_t tab_id, AddTabContextCallback callback),
-              (override));
+  MOCK_METHOD(base::UnguessableToken, CreateContextToken, (), (override));
   MOCK_METHOD(void,
               StartTabContextUploadFlow,
               (const base::UnguessableToken& file_token,

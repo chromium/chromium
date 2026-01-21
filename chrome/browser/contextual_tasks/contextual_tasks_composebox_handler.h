@@ -106,10 +106,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   virtual contextual_tasks::ContextualTasksService* GetContextualTasksService();
 
  private:
-  void OnFileAddedToSession(searchbox::mojom::SelectedFileInfoPtr file_info,
-                            AddFileContextCallback callback,
-                            const base::UnguessableToken& token);
-
   // Called when the context is retrieved from the context service, for
   // determining which tabs need to be re-uploaded before query submission via
   // CreateAndSendQueryMessage.
@@ -119,12 +115,11 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       std::optional<base::Uuid> original_task_id,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
 
-  // Called when a tab context has been re-uploaded, to continue query
-  // submission.
-  void OnTabContextReuploaded(std::string query,
-                              base::RepeatingClosure barrier_closure,
-                              std::optional<base::Uuid> original_task_id,
-                              bool success);
+  // Called when a tab context reupload has started or canceled, to continue
+  // query submission.
+  void OnTabContextReuploadStarted(base::RepeatingClosure barrier_closure,
+                                   std::optional<base::Uuid> original_task_id,
+                                   bool upload_started);
 
   // Called when all tabs have been re-uploaded, to continue query
   // submission.
@@ -147,7 +142,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Called when a tab contextualization has been fetched, to re-upload the
   // tab context.
   void OnTabContextualizationFetched(
-      std::string query,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context,
       base::RepeatingClosure barrier_closure,
       std::optional<base::Uuid> original_task_id,

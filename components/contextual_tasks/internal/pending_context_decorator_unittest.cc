@@ -73,14 +73,7 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
   session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add a tab context to the session, which will produce a token.
-  base::UnguessableToken token;
-  session_handle->AddTabContext(
-      123, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &token));
+  base::UnguessableToken token = session_handle->CreateContextToken();
 
   // Move the token to the submitted state.
   session_handle->CreateClientToAimRequest(
@@ -88,14 +81,7 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
                            CreateClientToAimRequestInfo>());
 
   // Add a second tab context that will remain in the uploaded state.
-  base::UnguessableToken token2;
-  session_handle->AddTabContext(
-      456, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &token2));
+  base::UnguessableToken token2 = session_handle->CreateContextToken();
 
   // Mock the controller to return valid file info for the token.
   contextual_search::FileInfo file_info;
@@ -219,32 +205,12 @@ TEST_F(PendingContextDecoratorTest, DecorateWithIncompleteData) {
 
   // Add three tokens: one valid, one with no URL, and one that will have a
   // null FileInfo.
-  base::UnguessableToken valid_token;
-  session_handle->AddTabContext(
-      123, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &valid_token));
+  base::UnguessableToken valid_token = session_handle->CreateContextToken();
 
-  base::UnguessableToken no_url_token;
-  session_handle->AddTabContext(
-      124, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &no_url_token));
+  base::UnguessableToken no_url_token = session_handle->CreateContextToken();
 
-  base::UnguessableToken null_file_info_token;
-  session_handle->AddTabContext(
-      125, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &null_file_info_token));
+  base::UnguessableToken null_file_info_token =
+      session_handle->CreateContextToken();
 
   // Mock the controller to return appropriate data for each token.
   contextual_search::FileInfo valid_file_info;
