@@ -8,7 +8,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.chromium.base.PackageUtils;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -64,9 +63,7 @@ public class GmsCoreUtils {
     }
 
     public static void setGmsCoreVersionForTesting(int version) {
-        int previousVersion = sGmsCorePackageVersion;
         sGmsCorePackageVersion = version;
-        ResettersForTesting.register(() -> sGmsCorePackageVersion = previousVersion);
     }
 
     /**

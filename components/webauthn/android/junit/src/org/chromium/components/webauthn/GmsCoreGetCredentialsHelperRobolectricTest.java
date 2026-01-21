@@ -53,7 +53,6 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Before
     public void setUp() {
-        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         MockitoAnnotations.initMocks(this);
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelperMock);
         mHelper = GmsCoreGetCredentialsHelper.getInstance();
@@ -129,6 +128,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Test
     public void testGetCredentials_featureEnabled_cacheSuccess() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -161,6 +161,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Test
     public void testGetCredentials_featureEnabledGoogleDomain_invokesFido2() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -196,6 +197,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Test
     public void testGetCredentials_paymentRequest_invokesFido2() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -229,6 +231,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Test
     public void testGetCredentials_getMatchingCredentialIds_invokesFido2() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -261,6 +264,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
 
     @Test
     public void testGetCredentials_checkForMatchingCredentials_invokesFido2() {
+        GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
