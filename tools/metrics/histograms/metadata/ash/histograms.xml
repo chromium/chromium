@@ -990,7 +990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Bar.Activate" units="count"
-    expires_after="2026-05-24">
+    expires_after="2026-07-05">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1018,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.ActivatedRanking" units="rank"
-    expires_after="2026-03-01">
+    expires_after="2026-07-05">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1028,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Birch.Chip.Activate{When}" enum="BirchItemType"
-    expires_after="2026-03-01">
+    expires_after="2026-07-05">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1049,7 +1049,7 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when the user is shown a chip of a given type.</summary>
 </histogram>
 
-<histogram name="Ash.Birch.ChipCount" units="count" expires_after="2026-05-24">
+<histogram name="Ash.Birch.ChipCount" units="count" expires_after="2026-07-05">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
