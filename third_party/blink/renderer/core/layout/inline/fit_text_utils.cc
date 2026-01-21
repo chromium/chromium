@@ -321,12 +321,17 @@ float LineFitter::MeasureScale() {
     return 1.0f;
   }
   const FitText& fit_text = node_.Style().TextFit();
+  const FitTextTarget target = fit_text.Target();
   bool apply_text_grow = fit_text.Type() == FitTextType::kGrow &&
-                         fit_text.Target() != FitTextTarget::kConsistent;
+                         target != FitTextTarget::kConsistent;
   bool apply_text_shrink = fit_text.Type() == FitTextType::kShrink &&
-                           fit_text.Target() != FitTextTarget::kConsistent;
+                           target != FitTextTarget::kConsistent;
   if ((diff > LayoutUnit() && !apply_text_grow) ||
       (diff < LayoutUnit() && !apply_text_shrink)) {
+    return 1.0f;
+  }
+
+  if (target == FitTextTarget::kPerLine && line_info_.IsLastLine()) {
     return 1.0f;
   }
 
