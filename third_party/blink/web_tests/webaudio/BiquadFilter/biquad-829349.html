@@ -7,46 +7,41 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
     <script>
-      let audit = Audit.createTaskRunner();
-
       // Sample rate used in testing crbug.com/829349.  Use the same rate to
       // make sure the coefficients have the same values.  (The actual
       // coefficients depend on the sample rate, so keep it the same for
       // consistency with the repro case.)
-      let sampleRate = 44100;
+      const sampleRate = 44100;
 
-      audit.define('Peaking filter tailtime', (task, should) => {
+      promise_test(async () => {
         // Short length
-        let context =
+        const context =
             new OfflineAudioContext({length: 1024, sampleRate: sampleRate});
-        let src = new OscillatorNode(context);
+        const src = new OscillatorNode(context);
 
         // This particular filter is one of the filters used in the repro case
         // from crbug.com/829349.  In a debug build, this causes a DCHECK crash
         // because a value as NaN.  Just use this filter and verify that it
         // works and doesn't crash in a debug build.
-        let f = new BiquadFilterNode(
+        const f = new BiquadFilterNode(
             context,
             {type: 'peaking', frequency: 15000, Q: 0.2, gain: -5, detune: 0});
 
         src.connect(f).connect(context.destination);
 
         src.start();
-        context.startRendering()
-            .then(audioBuffer => {
-              // Just verify that the output is not all zeroes.  The actual test
-              // is that we don't have a DCHECK failure in a debug build.
-              should(audioBuffer.getChannelData(0), 'Filter output')
-                  .notBeConstantValueOf(0);
-            })
-            .then(() => task.done());
-      });
+        const audioBuffer = await context.startRendering();
 
-      audit.run();
+        // Just verify that the output is not all zeroes.  The actual test
+        // is that we don't have a DCHECK failure in a debug build.
+        const data = audioBuffer.getChannelData(0);
+        assert_not_constant_value(
+            data, 0,
+            'Filter output should not be all zeroes');
+      }, 'Peaking filter tailtime');
     </script>
   </body>
 </html>

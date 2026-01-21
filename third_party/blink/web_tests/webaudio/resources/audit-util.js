@@ -391,3 +391,15 @@ function loadFileFromUrl(fileUrl) {
     xhr.send();
   });
 }
+
+/**
+ * Asserts that an array is not a constant array
+ * (i.e., not all values are equal to the given constant)
+ * @param {!Array<number>} array The array to be checked.
+ * @param {number} constantValue The constant value to compare against.
+ * @param {string} message Description used for assertion failures.
+ */
+function assert_not_constant_value(array, constantValue, message) {
+  const notAllSame = array.some(value => value !== constantValue);
+  assert_true(notAllSame, message);
+}
