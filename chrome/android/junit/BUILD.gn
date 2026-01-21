@@ -440,6 +440,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsUnitTest.java",
       "src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroidUnitTest.java",
       "src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorUnitTest.java",
+      "src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTaskUnitTest.java",
       "src/org/chromium/chrome/browser/app/tab_activity_glue/TabReparentingControllerTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabModelOrchestratorUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",

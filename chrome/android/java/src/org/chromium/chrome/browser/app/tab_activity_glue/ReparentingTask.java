@@ -65,8 +65,7 @@ public class ReparentingTask implements UserData {
 
     /**
      * @param tab {@link Tab} object.
-     * @return {@link ReparentingTask} object for a given {@link Tab}. Creates one
-     *         if not present.
+     * @return {@link ReparentingTask} object for a given {@link Tab}. Creates one if not present.
      */
     public static ReparentingTask from(Tab tab) {
         ReparentingTask reparentingTask = get(tab);
@@ -234,6 +233,10 @@ public class ReparentingTask implements UserData {
                     }
                 },
                 null);
+    }
+
+    public Tab getTabForTesting() {
+        return mTab;
     }
 
     @NativeMethods
