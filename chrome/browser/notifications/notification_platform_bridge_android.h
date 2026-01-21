@@ -17,6 +17,7 @@
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -196,5 +197,20 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
   base::WeakPtrFactory<NotificationPlatformBridgeAndroid> weak_factory_{this};
 };
+
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaActionInfo(
+    JNIEnv* env,
+    const message_center::ButtonInfo& button);
+
+namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<message_center::ButtonInfo>(
+    JNIEnv* env,
+    const message_center::ButtonInfo& input) {
+  return ConvertToJavaActionInfo(env, input);
+}
+
+}  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_ANDROID_H_

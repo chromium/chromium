@@ -732,7 +732,7 @@ public class NotificationPlatformBridge {
             final long timestamp,
             final boolean renotify,
             final boolean silent,
-            final ActionInfo[] actions,
+            @JniType("std::vector<message_center::ButtonInfo>") final ActionInfo[] actions,
             final boolean isSuspicious,
             final boolean skipUAButtons) {
         final boolean vibrateEnabled =

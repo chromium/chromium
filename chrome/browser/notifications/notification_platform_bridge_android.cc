@@ -90,33 +90,6 @@ NotificationActionType GetNotificationActionType(
                             : NotificationActionType::BUTTON;
 }
 
-ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
-    const std::vector<message_center::ButtonInfo>& buttons) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jclass> clazz = base::android::GetClass(
-      env, "org/chromium/chrome/browser/notifications/ActionInfo");
-  jobjectArray actions = env->NewObjectArray(buttons.size(), clazz.obj(),
-                                             nullptr /* initialElement */);
-  base::android::CheckException(env);
-
-  for (size_t i = 0; i < buttons.size(); ++i) {
-    const auto& button = buttons[i];
-    std::u16string title = button.title;
-    int type = GetNotificationActionType(button);
-    std::u16string placeholder;
-    if (button.placeholder) {
-      placeholder = *button.placeholder;
-    }
-    ScopedJavaLocalRef<jobject> icon =
-        JNI_NotificationPlatformBridge_ConvertToJavaBitmap(env, button.icon);
-    ScopedJavaLocalRef<jobject> action_info = Java_ActionInfo_createActionInfo(
-        AttachCurrentThread(), title, icon, type, placeholder);
-    env->SetObjectArrayElement(actions, i, action_info.obj());
-  }
-
-  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, actions);
-}
-
 constexpr int32_t NotificationTypeToJava(
     NotificationHandler::Type notification_type) {
   return static_cast<int32_t>(notification_type);
@@ -417,9 +390,6 @@ void NotificationPlatformBridgeAndroid::Display(
 
   SkBitmap badge_bitmap = notification.small_image().AsBitmap();
 
-  ScopedJavaLocalRef<jobjectArray> actions =
-      ConvertToJavaActionInfos(notification.buttons());
-
   int32_t j_notification_type = NotificationTypeToJava(notification_type);
 
   Java_NotificationPlatformBridge_displayNotification(
@@ -429,7 +399,7 @@ void NotificationPlatformBridgeAndroid::Display(
       image_bitmap, *notification_icon_bitmap, badge_bitmap,
       notification.vibration_pattern(),
       notification.timestamp().InMillisecondsSinceUnixEpoch(),
-      notification.renotify(), notification.silent(), actions,
+      notification.renotify(), notification.silent(), notification.buttons(),
       should_use_test_is_suspicious_value_
           ? test_is_suspicious_value_
           : (persistent_notification_metadata
@@ -587,6 +557,20 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     ~RegeneratedNotificationInfo() = default;
+
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaActionInfo(
+    JNIEnv* env,
+    const message_center::ButtonInfo& button) {
+  std::u16string title = button.title;
+  int type = GetNotificationActionType(button);
+  std::u16string placeholder;
+  if (button.placeholder) {
+    placeholder = *button.placeholder;
+  }
+  ScopedJavaLocalRef<jobject> icon =
+      JNI_NotificationPlatformBridge_ConvertToJavaBitmap(env, button.icon);
+  return Java_ActionInfo_createActionInfo(env, title, icon, type, placeholder);
+}
 
 DEFINE_JNI(ActionInfo)
 DEFINE_JNI(NotificationPlatformBridge)
