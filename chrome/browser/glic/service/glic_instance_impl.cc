@@ -567,6 +567,8 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
+
+
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
   sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
@@ -1049,8 +1051,7 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
   for (auto const& [key, entry] : embedders_) {
     if (tabs::TabInterface* const* tab =
             std::get_if<tabs::TabInterface*>(&key)) {
-      if (entry.embedder && entry.embedder->IsShowing() &&
-          (*tab)->IsActivated()) {
+      if (entry.embedder && entry.embedder->IsShowing()) {
         Show(ShowOptions::ForSidePanel(**tab));
         return;
       }
@@ -1312,17 +1313,6 @@ bool GlicInstanceImpl::HasFocus() {
     return rwhv->HasFocus();
   }
   return false;
-}
-
-tabs::TabInterface* GlicInstanceImpl::GetActiveEmbedderTabForTesting() {
-  if (!active_embedder_key_.has_value()) {
-    return nullptr;
-  }
-  if (tabs::TabInterface* const* tab =
-          std::get_if<tabs::TabInterface*>(&active_embedder_key_.value())) {
-    return *tab;
-  }
-  return nullptr;
 }
 
 std::string GlicInstanceImpl::DescribeForTesting() {

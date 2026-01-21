@@ -92,7 +92,6 @@ void GlicSidePanelCoordinatorImpl::Show(bool suppress_animations) {
       // side panel when it becomes the active tab. eg. This flow can be
       // encountered when a background tab is bound via daisy chaining.
       side_panel_registry_->SetActiveEntry(entry_.get());
-      SetState(State::kBackgrounded);
     }
     return;
   }
@@ -108,7 +107,7 @@ void GlicSidePanelCoordinatorImpl::Close(const CloseOptions& options) {
   if (!window_side_panel_coordinator || !entry_) {
     return;
   }
-  if (state_ == State::kShown) {
+  if (IsShowing()) {
     window_side_panel_coordinator->Close(
         entry_->type(), SidePanelEntryHideReason::kSidePanelClosed,
         options.suppress_animations);

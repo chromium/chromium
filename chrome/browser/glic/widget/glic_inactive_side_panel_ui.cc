@@ -91,8 +91,7 @@ bool GlicInactiveSidePanelUi::IsShowing() const {
   if (!glic_side_panel_coordinator) {
     return false;
   }
-  return glic_side_panel_coordinator->state() !=
-         GlicSidePanelCoordinator::State::kClosed;
+  return glic_side_panel_coordinator->IsShowing();
 }
 
 void GlicInactiveSidePanelUi::Show(const ShowOptions& options) {

@@ -252,7 +252,6 @@ class GlicInstanceImpl : public GlicInstance,
 #if !BUILDFLAG(IS_ANDROID)
   views::View* GetActiveEmbedderGlicViewForTesting();
 #endif
-  tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
 
   // ActorTaskDelegate:
