@@ -125,7 +125,7 @@ export class Ink2Manager extends EventTarget {
   // user is editing. Null if the user is not editing an annotation or is
   // creating a new annotation using |attributes_|.
   private existingAnnotationAttributes_: TextAttributes|null = null;
-  private pageNumber_: number = -1;
+  private pageIndex_: number = -1;
   private pluginController_: PluginController = PluginController.getInstance();
   private textResolver_: PromiseResolver<void>|null = null;
   private viewport_: Viewport|null = null;
@@ -226,11 +226,11 @@ export class Ink2Manager extends EventTarget {
           newBoxWidth, pageDimensions.x + pageDimensions.width - location.x);
     }
 
-    this.pageNumber_ = page;
+    this.pageIndex_ = page;
     const annotation = existing ? existing : {
       text: '',
       id: this.nextAnnotationId_,
-      pageNumber: page,
+      pageIndex: page,
       textAttributes: structuredClone(this.attributes_),
       textBoxRect: {
         height: newBoxHeight,
@@ -271,8 +271,8 @@ export class Ink2Manager extends EventTarget {
   viewportChanged() {
     assert(this.viewport_, 'Must call setViewport() before viewportChanged()');
     const zoom = this.viewport_.getZoom();
-    const page = this.pageNumber_ !== -1 ? this.pageNumber_ :
-                                           this.viewport_.getMostVisiblePage();
+    const page = this.pageIndex_ !== -1 ? this.pageIndex_ :
+                                          this.viewport_.getMostVisiblePage();
     const pageDimensions = this.viewport_.getPageScreenRect(page);
     const rotations = this.viewport_.getClockwiseRotations();
     if (rotations === this.viewportParams_.clockwiseRotations &&
@@ -336,10 +336,10 @@ export class Ink2Manager extends EventTarget {
     this.textResolver_ = new PromiseResolver();
     this.pluginController_.getAllTextAnnotations().then(message => {
       message.annotations.forEach(annotation => {
-        let pageMap = this.annotations_.get(annotation.pageNumber);
+        let pageMap = this.annotations_.get(annotation.pageIndex);
         if (!pageMap) {
           pageMap = new Map();
-          this.annotations_.set(annotation.pageNumber, pageMap);
+          this.annotations_.set(annotation.pageIndex, pageMap);
         }
         pageMap.set(annotation.id, annotation);
         if (annotation.id > this.nextAnnotationId_) {
@@ -432,10 +432,10 @@ export class Ink2Manager extends EventTarget {
     this.fireAttributesChanged_();
   }
 
-  private pageToScreenCoordinates_(pageNumber: number, pageRect: TextBoxRect):
+  private pageToScreenCoordinates_(pageIndex: number, pageRect: TextBoxRect):
       TextBoxRect {
     assert(this.viewport_);
-    const pageDimensions = this.viewport_.getPageScreenRect(pageNumber);
+    const pageDimensions = this.viewport_.getPageScreenRect(pageIndex);
     const zoom = this.viewport_.getZoom();
 
     // Apply zoom.
@@ -460,11 +460,11 @@ export class Ink2Manager extends EventTarget {
     };
   }
 
-  private screenToPageCoordinates_(pageNumber: number, screenRect: TextBoxRect):
+  private screenToPageCoordinates_(pageIndex: number, screenRect: TextBoxRect):
       TextBoxRect {
     assert(this.viewport_);
     const zoom = this.viewport_.getZoom();
-    const pageDimensions = this.viewport_.getPageScreenRect(pageNumber);
+    const pageDimensions = this.viewport_.getPageScreenRect(pageIndex);
 
     // Undo offset
     const noOffset = {
@@ -500,14 +500,14 @@ export class Ink2Manager extends EventTarget {
    */
   commitTextAnnotation(annotation: TextAnnotation, edited: boolean) {
     annotation.textBoxRect = this.screenToPageCoordinates_(
-        annotation.pageNumber, annotation.textBoxRect);
+        annotation.pageIndex, annotation.textBoxRect);
 
-    let pageAnnotations = this.annotations_.get(annotation.pageNumber);
+    let pageAnnotations = this.annotations_.get(annotation.pageIndex);
     if (!pageAnnotations) {
       // Adding a new annotation, on a page that doesn't have any existing ones.
       // Create and add the new map.
       pageAnnotations = new Map();
-      this.annotations_.set(annotation.pageNumber, pageAnnotations);
+      this.annotations_.set(annotation.pageIndex, pageAnnotations);
     }
 
     if (pageAnnotations.has(annotation.id) && annotation.text === '') {

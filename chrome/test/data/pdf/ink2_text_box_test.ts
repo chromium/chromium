@@ -32,7 +32,7 @@ function getDefaultAnnotation(): TextAnnotation {
     textBoxRect: {height: 100, locationX: 400, locationY: 300, width: 100},
     textOrientation: 0,
     id: 0,
-    pageNumber: 0,
+    pageIndex: 0,
   };
 }
 
@@ -614,7 +614,7 @@ chrome.test.runTests([
             textBoxRect: {height, locationX: x, locationY: y, width},
             textOrientation: orientation,
             id: 0,
-            pageNumber: 0,
+            pageIndex: 0,
           },
           pageDimensions: orientation % 2 === 0 ? {x: 15, y: 3} : {x: 5, y: 3},
         },
