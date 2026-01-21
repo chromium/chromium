@@ -548,9 +548,6 @@ class IdentityManager : public KeyedService,
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_email) const;
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
-      JNIEnv* env) const;
-
   // Refreshes all accounts with refresh tokens if they are stale. See
   // RefreshAccountInfoIfStale(const CoreAccountId&).
   void RefreshAccountInfoIfStale(JNIEnv* env);

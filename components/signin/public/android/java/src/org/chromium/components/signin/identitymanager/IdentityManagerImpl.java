@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -176,6 +177,7 @@ public class IdentityManagerImpl implements IdentityManager {
         @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(
                 long nativeIdentityManager, String email);
 
+        @JniType("std::vector<CoreAccountInfo>")
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
 
         void refreshAccountInfoIfStale(long nativeIdentityManager);
