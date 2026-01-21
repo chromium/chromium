@@ -97,8 +97,12 @@ void LensComposeboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match) {
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  std::map<std::string, std::string> additional_query_params =
+      lens::GetParametersMapWithoutQuery(destination_url);
+
   /* TODO(crbug.com/465154864): Add `aep` param value in lens AIM queries. */
-  lens_composebox_controller_->IssueComposeboxQuery(query_text);
+  lens_composebox_controller_->IssueComposeboxQuery(query_text,
+                                                    additional_query_params);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
@@ -142,7 +146,9 @@ void LensComposeboxHandler::SubmitQuery(const std::string& query_text,
                                         bool ctrl_key,
                                         bool meta_key,
                                         bool shift_key) {
-  lens_composebox_controller_->IssueComposeboxQuery(query_text);
+  lens_composebox_controller_->IssueComposeboxQuery(
+      query_text,
+      /*additional_query_params=*/{});
 }
 
 void LensComposeboxHandler::FocusChanged(bool focused) {

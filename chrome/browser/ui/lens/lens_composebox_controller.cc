@@ -89,7 +89,8 @@ void LensComposeboxController::BindComposebox(
 }
 
 void LensComposeboxController::IssueComposeboxQuery(
-    const std::string& query_text) {
+    const std::string& query_text,
+    const std::map<std::string, std::string>& additional_query_params) {
   if (!lens::IsAimM3Enabled(profile_)) {
     return;
   }
@@ -103,12 +104,13 @@ void LensComposeboxController::IssueComposeboxQuery(
       !remote_ui_capabilities_.contains(lens::FeatureCapability::DEFAULT)) {
     // Store the query and issue it again once the handshake completes.
     pending_query_text_ = query_text;
+    pending_additional_query_params_ = additional_query_params;
     return;
   }
 
   // TODO(crbug.com/436318377): Reupload page content if needed.
   lens::ClientToAimMessage submit_query_message =
-      BuildSubmitQueryMessage(query_text);
+      BuildSubmitQueryMessage(query_text, additional_query_params);
 
   // Convert Proto to bytes to send over the API channel.
   const size_t size = submit_query_message.ByteSizeLong();
@@ -157,6 +159,7 @@ void LensComposeboxController::OnFocusChanged(bool focused) {
 void LensComposeboxController::CloseUI() {
   ResetAimHandshake();
   pending_query_text_.reset();
+  pending_additional_query_params_.clear();
   composebox_handler_.reset();
   suggest_inputs_.Clear();
   vsc_image_data_.reset();
@@ -192,8 +195,10 @@ void LensComposeboxController::OnAimMessage(
     // If there was a pending query, issue it now that the handshake is
     // complete.
     if (pending_query_text_.has_value()) {
-      IssueComposeboxQuery(pending_query_text_.value());
+      IssueComposeboxQuery(pending_query_text_.value(),
+                           pending_additional_query_params_);
       pending_query_text_.reset();
+      pending_additional_query_params_.clear();
     }
   }
 }
@@ -288,7 +293,8 @@ LensComposeboxController::GetLensSuggestInputs() const {
 }
 
 lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
-    const std::string& query_text) {
+    const std::string& query_text,
+    const std::map<std::string, std::string>& additional_query_params) {
   lens::ClientToAimMessage client_to_aim_message;
   lens::SubmitQuery* submit_query_message =
       client_to_aim_message.mutable_submit_query();
@@ -297,6 +303,9 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
   submit_query_message->mutable_payload()->set_query_text(query_text);
   submit_query_message->mutable_payload()->set_query_text_source(
       lens::QueryPayload::QUERY_TEXT_SOURCE_KEYBOARD_INPUT);
+  submit_query_message->mutable_payload()
+      ->mutable_additional_cgi_params()
+      ->insert(additional_query_params.begin(), additional_query_params.end());
 
   // Populate the Lens related data from the active query flow.
   lens::LensImageQueryData* lens_image_query_data =
