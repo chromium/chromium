@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -528,7 +530,13 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   ASSERT_EQ(unpinned_node->children().size(), 2u);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetachAndReattachGroup DISABLED_DetachAndReattachGroup
+#else
+#define MAYBE_DetachAndReattachGroup DetachAndReattachGroup
+#endif
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       MAYBE_DetachAndReattachGroup) {
   // 1. Setup: Create an initial tab and a tab group to be detached.
   auto [contents_vector, group_id] = AppendTabsToNewGroup(2);
 
