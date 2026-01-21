@@ -62,7 +62,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   using StateChangedCallback =
       base::RepeatingCallback<void(VerticalTabStripStateController*)>;
-  base::CallbackListSubscription RegisterOnStateChanged(
+  base::CallbackListSubscription RegisterOnCollapseChanged(
+      StateChangedCallback callback);
+  base::CallbackListSubscription RegisterOnModeChanged(
       StateChangedCallback callback);
 
   static constexpr char kCollapsedKey[] = "vertical_tab_strip_collapsed";
@@ -70,7 +72,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       "vertical_tab_strip_uncollapsed_width";
 
  private:
-  void NotifyStateChanged();
+  void NotifyCollapseChanged();
+  void NotifyModeChanged();
 
   // Updates the SessionService with the current state (collapsed status and
   // uncollapsed width) for the associated session ID.
@@ -96,7 +99,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   VerticalTabStripState state_;
 
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
-      on_state_changed_callback_list_;
+      on_collapse_changed_callback_list_;
+  base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
+      on_mode_changed_callback_list_;
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
   ui::ScopedUnownedUserData<VerticalTabStripStateController>

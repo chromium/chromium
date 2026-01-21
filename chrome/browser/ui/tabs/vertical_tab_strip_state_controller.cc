@@ -47,7 +47,7 @@ VerticalTabStripStateController::VerticalTabStripStateController(
 
   pref_change_registrar_.Add(
       prefs::kVerticalTabsEnabled,
-      base::BindRepeating(&VerticalTabStripStateController::NotifyStateChanged,
+      base::BindRepeating(&VerticalTabStripStateController::NotifyModeChanged,
                           base::Unretained(this)));
 
   if (restored_state_collapsed.has_value()) {
@@ -106,7 +106,7 @@ bool VerticalTabStripStateController::IsCollapsed() const {
 void VerticalTabStripStateController::SetCollapsed(bool collapsed) {
   if (state_.collapsed != collapsed) {
     state_.collapsed = collapsed;
-    NotifyStateChanged();
+    NotifyCollapseChanged();
   }
 }
 
@@ -117,7 +117,7 @@ int VerticalTabStripStateController::GetUncollapsedWidth() const {
 void VerticalTabStripStateController::SetUncollapsedWidth(int width) {
   if (state_.uncollapsed_width != width) {
     state_.uncollapsed_width = width;
-    NotifyStateChanged();
+    NotifyCollapseChanged();
   }
 }
 
@@ -126,20 +126,30 @@ void VerticalTabStripStateController::SetState(
   if (state_.collapsed != state.collapsed ||
       state_.uncollapsed_width != state.uncollapsed_width) {
     state_ = state;
-    NotifyStateChanged();
+    NotifyCollapseChanged();
   }
 }
 
 base::CallbackListSubscription
-VerticalTabStripStateController::RegisterOnStateChanged(
+VerticalTabStripStateController::RegisterOnCollapseChanged(
     StateChangedCallback callback) {
-  return on_state_changed_callback_list_.Add(std::move(callback));
+  return on_collapse_changed_callback_list_.Add(std::move(callback));
 }
 
-void VerticalTabStripStateController::NotifyStateChanged() {
+base::CallbackListSubscription
+VerticalTabStripStateController::RegisterOnModeChanged(
+    StateChangedCallback callback) {
+  return on_mode_changed_callback_list_.Add(std::move(callback));
+}
+
+void VerticalTabStripStateController::NotifyCollapseChanged() {
   UpdateSessionService();
   UpdateCollapseActionItem();
-  on_state_changed_callback_list_.Notify(this);
+  on_collapse_changed_callback_list_.Notify(this);
+}
+
+void VerticalTabStripStateController::NotifyModeChanged() {
+  on_mode_changed_callback_list_.Notify(this);
 }
 
 void VerticalTabStripStateController::UpdateSessionService() {

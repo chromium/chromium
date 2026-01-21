@@ -952,7 +952,7 @@ class BrowserView : public BrowserWindow,
   // affected.
   void RevealTabStripIfNeeded();
 
-  void OnVerticalTabStripStateChanged(
+  void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
 
   void OnProjectsPanelStateChanged(ProjectsPanelStateController* controller);

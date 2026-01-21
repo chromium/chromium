@@ -42,7 +42,7 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
                                views::MinimumFlexSizeRule::kPreferred);
 
   collapsed_state_changed_subscription_ =
-      state_controller->RegisterOnStateChanged(base::BindRepeating(
+      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
           &VerticalTabStripBottomContainer::OnCollapsedStateChanged,
           base::Unretained(this)));
 

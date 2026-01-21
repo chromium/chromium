@@ -95,7 +95,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
                              0));
   OnCollapsedStateChanged(state_controller_);
   collapsed_state_changed_subscription_ =
-      state_controller_->RegisterOnStateChanged(base::BindRepeating(
+      state_controller_->RegisterOnCollapseChanged(base::BindRepeating(
           &VerticalTabStripRegionView::OnCollapsedStateChanged,
           base::Unretained(this)));
 
