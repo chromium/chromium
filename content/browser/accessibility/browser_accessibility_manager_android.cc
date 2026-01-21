@@ -366,8 +366,8 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED: {
       // When a change is made within a live region, this event is fired on the
       // root node of that live region. For atomic live regions, we should begin
-      // at the root node and notify Android of every single node within this
-      // atomic live region's subtree.
+      // at the root node and notify Android of every single node within the
+      // subtree of this atomic live region root.
       if (base::FeatureList::IsEnabled(
               features::kAccessibilityAtomicLiveRegions) &&
           node->data().IsAtomicLiveRegionRoot()) {
