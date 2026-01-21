@@ -4361,7 +4361,6 @@ crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-mover-
 crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-mover-3.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-munderover-1e.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/scripts/stretchy-munderover-2g.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/table-width-3.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-nonce.sub.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-attribute-disallow.https.html [ Timeout ]
