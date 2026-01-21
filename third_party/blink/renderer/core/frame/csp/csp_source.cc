@@ -53,7 +53,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
       // host-part = "*"
       return true;
     }
-    if (host.ToString().EndsWith(StrCat({".", source.host}))) {
+    if (host.ends_with(StrCat({".", source.host}))) {
       // host-part = "*." 1*host-char *( "." 1*host-char )
       return true;
     }

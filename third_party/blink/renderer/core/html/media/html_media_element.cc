@@ -389,10 +389,11 @@ bool HTMLMediaElement::IsHLSURL(const KURL& url) {
   if (url.IsNull() || url.IsEmpty())
     return false;
 
-  if (!url.IsLocalFile() && !url.ProtocolIs("http") && !url.ProtocolIs("https"))
+  if (!url.IsLocalFile() && !url.ProtocolIsInHTTPFamily()) {
     return false;
+  }
 
-  return url.GetPath().ToString().EndsWith(".m3u8");
+  return url.GetPath().ends_with(".m3u8");
 }
 
 // static
