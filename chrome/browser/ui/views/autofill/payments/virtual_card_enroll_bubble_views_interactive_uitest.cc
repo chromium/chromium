@@ -267,6 +267,7 @@ struct VirtualCardEnrollBubbleViewsInteractiveUiTestParams {
   VirtualCardEnrollmentSource enrollment_source;
   bool show_bubbles_based_on_priorities;
   bool is_page_action_migration_enabled;
+  bool is_wallet_branding_enabled;
 };
 
 class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
@@ -295,6 +296,12 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
       disabled_features.emplace_back(::features::kPageActionsMigration);
     }
 
+    if (GetParam().is_wallet_branding_enabled) {
+      enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
+    } else {
+      disabled_features.emplace_back(features::kAutofillEnableWalletBranding);
+    }
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -315,12 +322,14 @@ INSTANTIATE_TEST_SUITE_P(
                             VirtualCardEnrollmentSource::kDownstream,
                             VirtualCardEnrollmentSource::kSettingsPage),
             testing::Bool(),
+            testing::Bool(),
             testing::Bool()),
-        [](std::tuple<VirtualCardEnrollmentSource, bool, bool> t) {
+        [](std::tuple<VirtualCardEnrollmentSource, bool, bool, bool> t) {
           return VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
               .enrollment_source = std::get<0>(t),
               .show_bubbles_based_on_priorities = std::get<1>(t),
               .is_page_action_migration_enabled = std::get<2>(t),
+              .is_wallet_branding_enabled = std::get<3>(t),
           };
         }),
     [](const ::testing::TestParamInfo<
@@ -350,6 +359,10 @@ INSTANTIATE_TEST_SUITE_P(
                                  ? "_NewPageAction"
                                  : "_OldPageAction");
 
+      test_name.emplace_back(info.param.is_wallet_branding_enabled
+                                 ? "_WalletBrandingEnabled"
+                                 : "_WalletBrandingDisabled");
+
       return base::StrCat(test_name);
     });
 
@@ -364,6 +377,27 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_TRUE(GetBubbleViews());
   EXPECT_TRUE(IsIconVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    ShowingLogoIsDependentOnBranding) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source =
+      GetParam().enrollment_source;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  EXPECT_TRUE(GetBubbleViews());
+  if (GetParam().is_wallet_branding_enabled) {
+    EXPECT_EQ(GetBubbleViews()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  } else {
+    EXPECT_NE(GetBubbleViews()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(

@@ -118,9 +118,17 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
   header_view->AddChildView(std::move(image));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
+    auto title_view = std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title_view->SetMultiLine(true);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
+  } else {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  }
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
