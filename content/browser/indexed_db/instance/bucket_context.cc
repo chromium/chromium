@@ -83,6 +83,10 @@
 namespace content::indexed_db {
 namespace {
 
+// This flag enables the SQLite backing store for in-memory contexts.
+BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Time after the last connection to a database is closed and when we destroy
 // the backing store.
 const int64_t kBackingStoreGracePeriodSeconds = 2;
@@ -175,11 +179,14 @@ DatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
-}  // namespace
+bool ShouldUseSqlite(bool in_memory) {
+  return g_should_use_sqlite_for_testing.value_or(
+      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
+      (in_memory &&
+       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
+}
 
-// This flag enables the SQLite backing store for in-memory contexts.
-BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 BucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
@@ -211,10 +218,7 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
-  should_use_sqlite_ = g_should_use_sqlite_for_testing.value_or(
-      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
-      (in_memory() &&
-       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
+  should_use_sqlite_ = content::indexed_db::ShouldUseSqlite(in_memory());
 }
 
 BucketContext::~BucketContext() {
@@ -227,6 +231,19 @@ BucketContext::~BucketContext() {
   if (delegate_.on_destroyed) {
     std::move(delegate_.on_destroyed).Run();
   }
+}
+
+// static
+uint64_t BucketContext::ReadUsageFromDisk(
+    const storage::BucketLocator& bucket_locator,
+    const base::FilePath& data_path) {
+  CHECK(!data_path.empty());
+  return content::indexed_db::ShouldUseSqlite(/*in_memory=*/false)
+             ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
+                   data_path.Append(GetSqliteDbDirectory(bucket_locator)))
+             : level_db::BackingStore::ReadSizeFromDisk(
+                   data_path.Append(GetLevelDBFileName(bucket_locator)),
+                   data_path.Append(GetBlobStoreFileName(bucket_locator)));
 }
 
 void BucketContext::ForceClose(bool doom, const std::string& message) {
@@ -307,8 +324,10 @@ BucketContext::StopMetadataRecording() {
   return std::move(metadata_recording_buffer_);
 }
 
-int64_t BucketContext::GetInMemorySize() {
-  return backing_store_ ? backing_store_->GetInMemorySize() : 0;
+uint64_t BucketContext::GetUsage(bool write_in_progress) {
+  return backing_store_ ? backing_store_->EstimateSize(write_in_progress)
+         : in_memory()  ? 0
+                        : ReadUsageFromDisk(bucket_locator(), data_path_);
 }
 
 void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
@@ -674,9 +693,7 @@ storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(
     storage::mojom::IdbBucketMetadataPtr info) {
   // TODO(jsbell): Sort by name?
   std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
-  if (backing_store_ && in_memory()) {
-    info->size = GetInMemorySize();
-  }
+  info->size = GetUsage(/*write_in_progress=*/false);
   for (const auto& [name, db] : databases_) {
     info->connection_count += db->ConnectionCount();
     database_list.push_back(db->GetIdbInternalsMetadata());

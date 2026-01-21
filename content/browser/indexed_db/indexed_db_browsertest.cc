@@ -948,11 +948,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, EmptyBlob) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
-  if (using_sqlite_) {
-    // TODO(crbug.com/433318798): Enable this test after reclaiming disk space
-    // on data deletion.
-    GTEST_SKIP();
-  }
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 

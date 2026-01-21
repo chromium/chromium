@@ -1013,13 +1013,10 @@ int64_t DatabaseConnection::GetCommittedVersion() const {
   return metadata_snapshot_ ? metadata_snapshot_->version : metadata_.version;
 }
 
-uint64_t DatabaseConnection::GetInMemorySize() const {
-  CHECK(in_memory());
-  // TODO(crbug.com/419203257): For consistency, consider using this logic while
-  // reporting usage of on-disk databases too.
-  //
+uint64_t DatabaseConnection::GetSize() const {
   // The maximum page count is ~2^32: https://www.sqlite.org/limits.html.
   uint32_t page_count = 0;
+  uint32_t freelist_count = 0;
   // The maximum page size is 65536 bytes.
   uint16_t page_size = 0;
   {
@@ -1031,6 +1028,17 @@ uint64_t DatabaseConnection::GetInMemorySize() const {
     page_count = static_cast<uint32_t>(statement.ColumnInt(0));
   }
   {
+    sql::Statement statement(
+        db_->GetReadonlyStatement("PRAGMA freelist_count"));
+    if (!statement.Step()) {
+      // The rate of failure for this PRAGMA is not expected to be different
+      // from `page_count`, so count failures under the same event type.
+      LogEvent(SpecificEvent::kPragmaPageCountFailed);
+      return 0;
+    }
+    freelist_count = static_cast<uint32_t>(statement.ColumnInt(0));
+  }
+  {
     sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_size"));
     if (!statement.Step()) {
       LogEvent(SpecificEvent::kPragmaPageSizeFailed);
@@ -1038,7 +1046,7 @@ uint64_t DatabaseConnection::GetInMemorySize() const {
     }
     page_size = static_cast<uint16_t>(statement.ColumnInt(0));
   }
-  return static_cast<uint64_t>(page_count) * page_size;
+  return static_cast<uint64_t>(page_count - freelist_count) * page_size;
 }
 
 std::unique_ptr<BackingStoreDatabaseImpl>

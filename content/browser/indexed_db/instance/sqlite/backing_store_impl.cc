@@ -25,6 +25,19 @@ BackingStoreImpl::BackingStoreImpl(
 
 BackingStoreImpl::~BackingStoreImpl() = default;
 
+// static
+uint64_t BackingStoreImpl::SumSizesOfDatabaseFiles(
+    const base::FilePath& directory,
+    base::FunctionRef<bool(const base::FilePath&)> filter) {
+  uint64_t total_size = 0;
+  EnumerateDatabasesInDirectory(directory, [&](const base::FilePath& path) {
+    if (filter(path)) {
+      total_size += base::GetFileSize(path).value_or(0);
+    }
+  });
+  return total_size;
+}
+
 bool BackingStoreImpl::CanOpportunisticallyClose() const {
   // There's not much of a point in deleting `this` since it doesn't use many
   // resources (just a tiny amount of memory). But for now, match the logic of
@@ -50,11 +63,23 @@ void BackingStoreImpl::StartPreCloseTasks(base::OnceClosure on_done) {
 
 void BackingStoreImpl::StopPreCloseTasks() {}
 
-int64_t BackingStoreImpl::GetInMemorySize() const {
+uint64_t BackingStoreImpl::EstimateSize(bool /*write_in_progress*/) const {
   uint64_t total_size = 0;
-  for (const auto& [_, connection] : open_connections_) {
-    total_size += connection->GetInMemorySize();
+  std::set<base::FilePath> already_open_file_names;
+  for (const auto& [name, db] : open_connections_) {
+    already_open_file_names.insert(DatabaseNameToFileName(name));
+    // When the database is open, querying its size directly provides a more
+    // "real time" estimate.
+    total_size += db->GetSize();
   }
+
+  if (!in_memory()) {
+    total_size +=
+        SumSizesOfDatabaseFiles(directory_, [&](const base::FilePath& path) {
+          return !already_open_file_names.contains(path.BaseName());
+        });
+  }
+
   return total_size;
 }
 

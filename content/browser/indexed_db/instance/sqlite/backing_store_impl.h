@@ -10,13 +10,12 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/common/content_export.h"
 
-namespace content::indexed_db {
-
-namespace sqlite {
+namespace content::indexed_db::sqlite {
 
 class DatabaseConnection;
 
@@ -31,13 +30,22 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   BackingStoreImpl& operator=(const BackingStoreImpl&) = delete;
   ~BackingStoreImpl() override;
 
+  // Sums the sizes of all files in `directory` that appear to be SQLite
+  // databases and optionally pass through `filter`. Note that free pages in the
+  // database do count towards this size, unlike the more real-time estimate
+  // provided by `DatabaseConnection::GetSize()`.
+  static uint64_t SumSizesOfDatabaseFiles(
+      const base::FilePath& directory,
+      base::FunctionRef<bool(const base::FilePath&)> filter =
+          [](const base::FilePath&) { return true; });
+
   // BackingStore:
   bool CanOpportunisticallyClose() const override;
   void TearDown(base::WaitableEvent* signal_on_destruction) override;
   void InvalidateBlobReferences() override;
   void StartPreCloseTasks(base::OnceClosure on_done) override;
   void StopPreCloseTasks() override;
-  int64_t GetInMemorySize() const override;
+  uint64_t EstimateSize(bool write_in_progress) const override;
   StatusOr<bool> DatabaseExists(std::u16string_view name) override;
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
   GetDatabaseNamesAndVersions() override;
@@ -72,7 +80,6 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
       open_connections_;
 };
 
-}  // namespace sqlite
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::sqlite
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_IMPL_H_

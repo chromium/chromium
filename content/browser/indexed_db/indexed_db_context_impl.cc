@@ -613,11 +613,6 @@ void IndexedDBContextImpl::ContinueGetAllBucketsDetails(
         storage::mojom::IdbBucketMetadata::New();
     info->bucket_locator = bucket_locator;
     info->name = bucket_info.name;
-    if (!in_memory()) {
-      // Size for in-memory DBs will be filled in
-      // `BucketContext::FillInMetadata()`.
-      info->size = static_cast<double>(GetBucketDiskUsage(bucket_locator));
-    }
     info->last_modified = GetBucketLastModified(bucket_locator);
 
     if (!in_memory()) {
@@ -729,17 +724,18 @@ void IndexedDBContextImpl::FlushBucketSequenceForTesting(
 
 void IndexedDBContextImpl::GetUsageForTesting(
     GetUsageForTestingCallback callback) {
-  if (in_memory()) {
-      DCHECK_EQ(1U, bucket_contexts_.size());
-      GetInMemorySize(bucket_contexts_.begin()->first, std::move(callback));
-      return;
+  auto barrier = base::BarrierCallback<int64_t>(
+      bucket_set_.size(),
+      base::BindOnce([](const std::vector<int64_t>& usages) {
+        int64_t total_usage = 0;
+        for (int64_t usage : usages) {
+          total_usage += usage;
+        }
+        return total_usage;
+      }).Then(std::move(callback)));
+  for (const BucketLocator& bucket_locator : bucket_set_) {
+    GetBucketUsage(bucket_locator, barrier);
   }
-
-  int64_t total_size = 0;
-  for (const BucketLocator& bucket : bucket_set_) {
-    total_size += GetBucketDiskUsage(bucket);
-  }
-  std::move(callback).Run(total_size);
 }
 
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
@@ -781,29 +777,6 @@ IndexedDBContextImpl::GetBucketContextForTesting(
   }
   auto it = bucket_contexts_.find(*bucket_id);
   return it == bucket_contexts_.end() ? nullptr : &it->second;
-}
-
-int64_t IndexedDBContextImpl::GetBucketDiskUsage(
-    const BucketLocator& bucket_locator) {
-  DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(!in_memory());
-  if (!LookUpBucket(bucket_locator.id)) {
-    return 0;
-  }
-
-  bool write_in_progress = false;
-  const auto iter = bucket_size_map_.find(bucket_locator);
-  if (iter != bucket_size_map_.end()) {
-    if (iter->second >= 0) {
-      return iter->second;
-    }
-    write_in_progress = true;
-  }
-
-  const int64_t value = ReadUsageFromDisk(bucket_locator, write_in_progress);
-  CHECK_GE(value, 0);
-  bucket_size_map_[bucket_locator] = value;
-  return value;
 }
 
 base::Time IndexedDBContextImpl::GetBucketLastModified(
@@ -967,35 +940,6 @@ void IndexedDBContextImpl::Shutdown(
                                     std::move(context))));
 }
 
-int64_t IndexedDBContextImpl::ReadUsageFromDisk(
-    const BucketLocator& bucket_locator,
-    bool write_in_progress) const {
-  DCHECK(!in_memory());
-
-#if BUILDFLAG(IS_WIN)
-  // Touch all files in the database paths to update directory entry
-  // metadata. See note for `bucket_size_map_` about why this is necessary.
-  if (write_in_progress) {
-    const base::FilePath& data_path = GetDataPath(bucket_locator);
-    for (const base::FilePath& path :
-         {GetLevelDBPath(data_path, bucket_locator),
-          GetSqlitePath(data_path, bucket_locator)}) {
-      base::FileEnumerator(path, /*recursive=*/false,
-                           base::FileEnumerator::FILES)
-          .ForEach([](const base::FilePath& file_path) {
-            base::File file(file_path, base::File::FLAG_OPEN |
-                                           base::File::FLAG_WIN_SHARE_DELETE);
-          });
-    }
-  }
-#endif
-
-  int64_t total_size = 0;
-  for (const base::FilePath& path : GetStoragePaths(bucket_locator))
-    total_size += base::ComputeDirectorySize(path);
-  return total_size;
-}
-
 void IndexedDBContextImpl::NotifyOfBucketModification(
     const BucketLocator& bucket_locator) {
   // This method is called very frequently, for example after every transaction
@@ -1152,18 +1096,6 @@ IndexedDBContextImpl::FindBucketsWithIndexedDBDirs() const {
   return bucket_ids;
 }
 
-void IndexedDBContextImpl::GetInMemorySize(
-    storage::BucketId bucket_id,
-    base::OnceCallback<void(int64_t)> on_got_size) const {
-    auto iter = bucket_contexts_.find(bucket_id);
-    if (iter == bucket_contexts_.end()) {
-      std::move(on_got_size).Run(0);
-    } else {
-      iter->second.AsyncCall(&BucketContext::GetInMemorySize)
-          .Then(std::move(on_got_size));
-    }
-}
-
 std::vector<storage::BucketId>
 IndexedDBContextImpl::GetOpenBucketIdsForTesting() const {
   std::vector<storage::BucketId> output;
@@ -1187,10 +1119,15 @@ void IndexedDBContextImpl::FillInBucketMetadata(
     storage::mojom::IdbBucketMetadataPtr info,
     base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result) {
   if (!BucketContextExists(info->bucket_locator.id)) {
+    info->size = in_memory() ? 0
+                             : BucketContext::ReadUsageFromDisk(
+                                   info->bucket_locator,
+                                   GetDataPath(info->bucket_locator));
     std::move(result).Run(std::move(info));
     return;
   }
 
+  // Size will be filled in by `BucketContext::FillInMetadata()`.
   bucket_contexts_.find(info->bucket_locator.id)
       ->second.AsyncCall(&BucketContext::FillInMetadata)
       .WithArgs(std::move(info))
@@ -1285,12 +1222,43 @@ void IndexedDBContextImpl::EnsureBucketContext(
   bucket_set_.insert(bucket_locator);
 }
 
-void IndexedDBContextImpl::GetBucketUsage(const BucketLocator& bucket,
+void IndexedDBContextImpl::GetBucketUsage(const BucketLocator& bucket_locator,
                                           GetBucketUsageCallback callback) {
-  if (in_memory()) {
-    GetInMemorySize(bucket.id, std::move(callback));
+  if (!LookUpBucket(bucket_locator.id)) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  bool write_in_progress = false;
+  if (const auto iter = bucket_size_map_.find(bucket_locator);
+      iter != bucket_size_map_.end()) {
+    if (iter->second >= 0) {
+      std::move(callback).Run(iter->second);
+      return;
+    }
+    write_in_progress = true;
+  }
+
+  auto cache_usage = base::BindOnce(
+      [](base::WeakPtr<IndexedDBContextImpl> context,
+         const BucketLocator& bucket_locator, uint64_t usage) {
+        if (context) {
+          context->bucket_size_map_[bucket_locator] = usage;
+        }
+        return usage;
+      },
+      weak_factory_.GetWeakPtr(), bucket_locator);
+  if (const auto iter = bucket_contexts_.find(bucket_locator.id);
+      iter != bucket_contexts_.end()) {
+    iter->second.AsyncCall(&BucketContext::GetUsage)
+        .WithArgs(write_in_progress)
+        .Then(std::move(cache_usage).Then(std::move(callback)));
   } else {
-    std::move(callback).Run(GetBucketDiskUsage(bucket));
+    const uint64_t usage =
+        in_memory() ? 0
+                    : BucketContext::ReadUsageFromDisk(
+                          bucket_locator, GetDataPath(bucket_locator));
+    std::move(cache_usage).Then(std::move(callback)).Run(usage);
   }
 }
 
@@ -1309,7 +1277,8 @@ void IndexedDBContextImpl::PerformStorageCleanup(
   std::move(callback).Run();
 }
 
-bool IndexedDBContextImpl::BucketContextExists(storage::BucketId bucket_id) {
+bool IndexedDBContextImpl::BucketContextExists(
+    storage::BucketId bucket_id) const {
   return bucket_contexts_.find(bucket_id) != bucket_contexts_.end();
 }
 

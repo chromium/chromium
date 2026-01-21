@@ -91,8 +91,9 @@ class CONTENT_EXPORT DatabaseConnection {
   // corresponding to active blobs, but no object stores, records, etc.
   bool IsZygotic() const;
 
-  // Get the size of the database opened in-memory.
-  uint64_t GetInMemorySize() const;
+  // Get the size of the database, calculated as the number of pages in use
+  // (i.e., excluding free pages) multiplied by the page size.
+  uint64_t GetSize() const;
 
   std::unique_ptr<BackingStoreDatabaseImpl> CreateDatabaseWrapper();
 

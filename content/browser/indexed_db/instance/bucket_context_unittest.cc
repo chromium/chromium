@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/instance/fake_transaction.h"
+#include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,10 +50,13 @@ class BucketContextTest : public testing::Test {
         storage::BucketInitParams::ForDefaultBucket(
             blink::StorageKey::CreateFromStringForTesting(
                 "https://example.com")));
+    mojo::PendingRemote<storage::mojom::BlobStorageContext>
+        blob_storage_context;
+    mock_blob_storage_context_.Clone(
+        blob_storage_context.InitWithNewPipeAndPassReceiver());
     bucket_context_ = std::make_unique<BucketContext>(
         bucket_info, base::FilePath(), BucketContext::Delegate(),
-        quota_manager_proxy_,
-        /*blob_storage_context=*/mojo::NullRemote(),
+        quota_manager_proxy_, std::move(blob_storage_context),
         /*file_system_access_context=*/mojo::NullRemote());
   }
 
@@ -68,6 +72,7 @@ class BucketContextTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
+  MockBlobStorageContext mock_blob_storage_context_;
   std::unique_ptr<BucketContext> bucket_context_;
 };
 

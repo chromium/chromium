@@ -484,7 +484,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   StatusOr<bool> DatabaseExists(std::u16string_view database_name) override;
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
   GetDatabaseNamesAndVersions() override;
-  int64_t GetInMemorySize() const override;
+  uint64_t EstimateSize(bool write_in_progress) const override;
 
   // LevelDBCleanupScheduler::Delegate:
   void OnCleanupStarted() override;
@@ -535,6 +535,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 PartitionedLockManager* lock_manager,
                 bool is_first_attempt,
                 bool create_if_missing);
+
+  static uint64_t ReadSizeFromDisk(const base::FilePath& database_path,
+                                   const base::FilePath& blob_path);
 
   // LINT.IfChange(InSessionCleanupVerificationEvent)
   enum class InSessionCleanupVerificationEvent {

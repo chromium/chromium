@@ -145,6 +145,13 @@ class CONTENT_EXPORT BucketContext
 
   ~BucketContext() override;
 
+  // Calculate the usage of the bucket by directly examining the disk. Should be
+  // used in lieu of `GetUsage()` only when there is no live `BucketContext` for
+  // the given bucket.
+  static uint64_t ReadUsageFromDisk(
+      const storage::BucketLocator& bucket_locator,
+      const base::FilePath& data_path);
+
   // All `BucketContext` instances created during the lifetime of the returned
   // object will use SQLite iff `use_sqlite` is true.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
@@ -172,7 +179,10 @@ class CONTENT_EXPORT BucketContext
   void StartMetadataRecording();
   std::vector<storage::mojom::IdbBucketMetadataPtr> StopMetadataRecording();
 
-  int64_t GetInMemorySize();
+  // Returns the current usage of the bucket, in bytes. `write_in_progress` is
+  // true iff the last readwrite transaction did not flush changes to disk
+  // (i.e., had relaxed durability).
+  uint64_t GetUsage(bool write_in_progress);
 
   bool IsClosing() const {
     return closing_stage_ != ClosingState::kNotClosing;

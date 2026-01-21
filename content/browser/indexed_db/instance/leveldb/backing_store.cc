@@ -23,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -1655,6 +1656,13 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
   return return_values;
 }
 
+// static
+uint64_t BackingStore::ReadSizeFromDisk(const base::FilePath& database_path,
+                                        const base::FilePath& blob_path) {
+  return base::ComputeDirectorySize(database_path) +
+         base::ComputeDirectorySize(blob_path);
+}
+
 Status BackingStore::GetCompleteMetadata(
     std::vector<std::unique_ptr<IndexedDBDatabaseMetadata>>* output) {
   ASSIGN_OR_RETURN(std::vector<std::u16string> names, GetDatabaseNames());
@@ -2266,26 +2274,51 @@ StatusOr<IndexedDBValue> BackingStore::Transaction::GetRecord(
   return record;
 }
 
-int64_t BackingStore::GetInMemorySize() const {
-  CHECK(in_memory());
-
-  int64_t blob_size = 0;
-  for (const auto& kvp : in_memory_external_object_map_) {
-    for (const IndexedDBExternalObject& object :
-         kvp.second->external_objects()) {
-      if (object.object_type() == IndexedDBExternalObject::ObjectType::kBlob) {
-        blob_size += object.size();
+uint64_t BackingStore::EstimateSize(bool write_in_progress) const {
+  if (in_memory()) {
+    uint64_t blob_size = 0;
+    for (const auto& kvp : in_memory_external_object_map_) {
+      for (const IndexedDBExternalObject& object :
+           kvp.second->external_objects()) {
+        if (object.object_type() ==
+            IndexedDBExternalObject::ObjectType::kBlob) {
+          blob_size += object.size();
+        }
       }
     }
+
+    int64_t level_db_size = 0;
+    Status s = GetDBSizeFromEnv(db_->env(), "/", &level_db_size);
+    if (!s.ok()) {
+      LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+    }
+    CHECK_GE(level_db_size, 0);
+    return blob_size + level_db_size;
   }
 
-  int64_t level_db_size = 0;
-  Status s = GetDBSizeFromEnv(db_->env(), "/", &level_db_size);
-  if (!s.ok()) {
-    LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, `base::FileEnumerator` (and therefore
+  // `base::ComputeDirectorySize()`) will not report up-to-date sizes when a
+  // file is currently being written. When transactions are not set to
+  // "flush"/"sync" (terminology varies based on context), LevelDB will keep
+  // open its file handles. Therefore, on Windows, `ComputeDirectorySize()` may
+  // not take into account recent writes, leading to situations where
+  // `navigator.storage.estimate()` will not report updates when interleaved
+  // with relaxed durability IDB transactions. The workaround for this is to
+  // open and close new file handles for all the files in the LevelDB data
+  // directory before calculating usage, as this updates the file system
+  // directory entry's metadata. See crbug.com/1489517 and
+  // https://devblogs.microsoft.com/oldnewthing/20111226-00/?p=8813
+  if (write_in_progress) {
+    base::FileEnumerator(database_path_, /*recursive=*/false,
+                         base::FileEnumerator::FILES)
+        .ForEach([](const base::FilePath& file_path) {
+          base::File file(file_path, base::File::FLAG_OPEN |
+                                         base::File::FLAG_WIN_SHARE_DELETE);
+        });
   }
-
-  return blob_size + level_db_size;
+#endif
+  return ReadSizeFromDisk(database_path_, blob_path_);
 }
 
 StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
