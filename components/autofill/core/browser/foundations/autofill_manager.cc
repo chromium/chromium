@@ -513,18 +513,6 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
               form.global_id(), field_id)));
 }
 
-std::vector<raw_ref<const FormStructure>>
-AutofillManager::FindCachedFormsBySignature(
-    FormSignature form_signature) const {
-  std::vector<raw_ref<const FormStructure>> form_structures;
-  for (const auto& [form_id, form_structure] : form_structures_) {
-    if (form_structure->form_signature() == form_signature) {
-      form_structures.emplace_back(*form_structure);
-    }
-  }
-  return form_structures;
-}
-
 const FormStructure* AutofillManager::FindCachedFormById(
     const FormGlobalId& form_id) const {
   auto it = form_structures_.find(form_id);

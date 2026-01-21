@@ -322,11 +322,6 @@ class AutofillManager
   // Runs in linear time.
   const FormStructure* FindCachedFormById(const FieldGlobalId& field_id) const;
 
-  // Returns all FormStructures with the given `form_signature` and
-  // Runs in linear time.
-  std::vector<raw_ref<const FormStructure>> FindCachedFormsBySignature(
-      FormSignature form_signature) const;
-
   // Calls `fun` for each cached FormStructure.
   void ForEachCachedForm(
       base::FunctionRef<void(const FormStructure&)> fun) const;
