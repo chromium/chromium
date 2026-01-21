@@ -2191,7 +2191,7 @@ bool ParseHexColor(CSSParserTokenStream& stream,
         color = String::Format("%d", static_cast<int>(token.NumericValue()));
       } else {  // e.g. 0001FF
         color = StrCat({String::Number(static_cast<int>(token.NumericValue())),
-                        token.Value().ToString()});
+                        token.Value()});
       }
       while (color.length() < 6) {
         color = StrCat({"0", color});

@@ -27,7 +27,7 @@ LinkCondition* LinkConditionParser::Parse(CSSParserTokenStream& stream,
   }
 
   CSSParserToken token = stream.ConsumeIncludingWhitespace();
-  if (token.GetType() != kIdentToken || token.Value().ToString() != "with") {
+  if (token.GetType() != kIdentToken || token.Value() != "with") {
     return nullptr;
   }
 

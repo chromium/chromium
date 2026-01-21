@@ -1057,7 +1057,7 @@ BuildObjectForResourceRequest(const ResourceRequest& request,
           .setReferrerPolicy(GetReferrerPolicy(request.GetReferrerPolicy()))
           .build();
   if (url.HasFragmentIdentifier()) {
-    result->setUrlFragment(StrCat({"#", url.FragmentIdentifier().ToString()}));
+    result->setUrlFragment(StrCat({"#", url.FragmentIdentifier()}));
   }
   if (!data_string.empty()) {
     result->setPostData(data_string);
