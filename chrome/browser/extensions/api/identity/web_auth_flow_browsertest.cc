@@ -17,14 +17,10 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -35,6 +31,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/sessions/session_restore.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
+#endif
 
 namespace extensions {
 
@@ -456,6 +459,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }
 
+// TODO(crbug.com/434156398): Add support and testing for the infobar on
+// desktop Android.
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab \
+  DISABLED_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab
+#else
+#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab \
+  InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab
+#endif
 // This test is in two parts:
 // - First create a WebAuthFlow in interactive mode that will create a new tab
 // with the auth_url.
@@ -464,8 +476,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
 //
 // These two tests are combined into one in order not to re-test the tab
 // creation twice.
-IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
-                       InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
+IN_PROC_BROWSER_TEST_F(
+    WebAuthFlowBrowserTest,
+    MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -504,9 +517,18 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   tabs->GetActiveTab()->Close();
 }
 
+// TODO(crbug.com/434156398): Add support and testing for the infobar on
+// desktop Android.
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow \
+  DISABLED_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow
+#else
+#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow \
+  InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
-    InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow) {
+    MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -563,6 +585,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(auth_info_bar);
 }
 
+// TODO(crbug.com/434156398): Find the Android equivalent of KeepAliveRegistry
+// and enable these tests on all platforms.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
     InteractiveNoBrowser_WebAuthCreatesBrowserWithPopupWindow) {
@@ -641,6 +666,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
                 ->GetLastCommittedURL(),
             auth_url);
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, SilentNewTabNotCreated) {
   Profile* profile = GetProfile();
@@ -665,8 +691,18 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, SilentNewTabNotCreated) {
   EXPECT_EQ(tabs->GetTabCount(), initial_tab_count);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
-                       InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
+// TODO(crbug.com/434156398): Add support and testing for the infobar on
+// desktop Android.
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#define MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault \
+  DISABLED_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault
+#else
+#define MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault \
+  InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAuthFlowBrowserTest,
+    MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -707,6 +743,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   // New popup window is a browser, browser count should increment by 1.
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count + 1);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Retrieve the browser used in the WebAuthFlow, the popup window.
   BrowserWindowInterface* popup_window_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
@@ -723,6 +760,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   //---------------------------------------------------------------------
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
   popup_window_browser->GetWindow()->Close();
+#else
+  // TODO(crbug.com/434156398): Remove this skip and support the entire test on
+  // desktop Android.
+  GTEST_SKIP();
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -762,6 +804,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   // New popup window is a browser, browser count should increment by 1.
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count + 1);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Retrieve the browser used in the WebAuthFlow, the popup window.
   BrowserWindowInterface* popup_window_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
@@ -775,6 +818,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   // window title bar, which we don't want to assert exactly here.
   EXPECT_GE(bounds.width(), test_bounds.width());
   EXPECT_GE(bounds.height(), test_bounds.height());
+#else
+  // TODO(crbug.com/434156398): Remove this skip and support the entire test on
+  // desktop Android.
+  GTEST_SKIP();
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
@@ -796,6 +844,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 
   // Authentication flow should have created a popup window.
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count + 1);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* popup =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
@@ -805,11 +854,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   static_cast<ProfileObserver*>(web_auth_flow())
       ->OnProfileWillBeDestroyed(GetProfile());
   ui_test_utils::WaitForBrowserToClose(popup);
-
   // Verify that WebAuthFlow closed the WebContents.
   EXPECT_TRUE(web_auth_flow());
   EXPECT_FALSE(web_auth_flow()->web_contents());
   EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count);
+#else
+  // TODO(crbug.com/434156398): Remove this skip and support the entire test on
+  // desktop Android.
+  GTEST_SKIP();
+#endif
 }
 
 }  //  namespace extensions
