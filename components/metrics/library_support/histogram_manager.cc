@@ -30,10 +30,7 @@ void HistogramManager::RecordDelta(const base::HistogramBase& histogram,
                        uma_proto_.add_histogram_event());
 }
 
-// TODO(lukasza): https://crbug.com/881903: NO_THREAD_SAFETY_ANALYSIS below can
-// be removed once base::Lock::Try is annotated with EXCLUSIVE_TRYLOCK_FUNCTION.
-bool HistogramManager::GetDeltas(std::vector<uint8_t>* data)
-    NO_THREAD_SAFETY_ANALYSIS {
+bool HistogramManager::GetDeltas(std::vector<uint8_t>* data) {
   if (get_deltas_lock_.Try()) {
     base::AutoLock lock(get_deltas_lock_, base::AutoLock::AlreadyAcquired());
     // Clear the protobuf between calls.
