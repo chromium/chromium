@@ -6,6 +6,10 @@
 
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/sqlite_vfs/client.h"
+#include "components/sqlite_vfs/file_type.h"
+#include "components/sqlite_vfs/lock_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -23,15 +27,25 @@ class SandboxedFileTest : public testing::Test {
         base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
   }
 
-  std::unique_ptr<SandboxedFile> CreateEmptyFile(const std::string& file_name) {
+  std::unique_ptr<SandboxedFile> CreateEmptyFile(std::string_view file_name) {
     base::WritableSharedMemoryMapping mapped_shared_lock = shared_region_.Map();
 
     base::FilePath path = temporary_directory_.GetPath().AppendASCII(file_name);
     base::File file(path, base::File::FLAG_CREATE_ALWAYS |
                               base::File::FLAG_READ | base::File::FLAG_WRITE);
     return std::make_unique<SandboxedFile>(
-        std::move(file), SandboxedFile::AccessRights::kReadWrite,
-        std::move(mapped_shared_lock));
+        Client::kTest, FileType::kMainDb, std::move(file),
+        SandboxedFile::AccessRights::kReadWrite, std::move(mapped_shared_lock));
+  }
+
+  std::unique_ptr<SandboxedFile> CreateEmptySingleConnectionFile(
+      std::string_view file_name) {
+    base::FilePath path = temporary_directory_.GetPath().AppendASCII(file_name);
+    base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                              base::File::FLAG_READ | base::File::FLAG_WRITE);
+    return std::make_unique<SandboxedFile>(
+        Client::kTest, FileType::kMainDb, std::move(file),
+        SandboxedFile::AccessRights::kReadWrite);
   }
 
   // A helper that takes ownership of a `SandboxedFile` and opens it for its
@@ -40,8 +54,7 @@ class SandboxedFileTest : public testing::Test {
    public:
     explicit OpenedFile(std::unique_ptr<SandboxedFile> file)
         : file_(std::move(file)) {
-      file_->OnFileOpened(
-          file_->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+      file_->OnFileOpened(file_->TakeUnderlyingFile(FileType::kMainDb));
     }
     ~OpenedFile() { file_->Close(); }
     SandboxedFile* operator->() { return file_.get(); }
@@ -51,13 +64,17 @@ class SandboxedFileTest : public testing::Test {
   };
 
   OpenedFile CreateAndOpenEmptyFile(std::string_view file_name) {
-    return OpenedFile(CreateEmptyFile(std::string(file_name)));
+    return OpenedFile(CreateEmptyFile(file_name));
+  }
+
+  OpenedFile CreateAndOpenEmptySingleConnectionFile(
+      std::string_view file_name) {
+    return OpenedFile(CreateEmptySingleConnectionFile(file_name));
   }
 
   // Simulate an OpenFile from the VFS delegate.
   void OpenFile(SandboxedFile* file) {
-    file->OnFileOpened(
-        file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+    file->OnFileOpened(file->TakeUnderlyingFile(FileType::kMainDb));
   }
 
   int ReadToBuffer(SandboxedFile* file, size_t offset) {
@@ -90,8 +107,7 @@ TEST_F(SandboxedFileTest, OpenClose) {
 
   OpenFile(file.get());
   EXPECT_TRUE(file->IsValid());
-  EXPECT_FALSE(
-      file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb).IsValid());
+  EXPECT_FALSE(file->TakeUnderlyingFile(FileType::kMainDb).IsValid());
 
   file->Close();
   EXPECT_FALSE(file->IsValid());
@@ -463,6 +479,25 @@ TEST_F(SandboxedFileTest, GetFile) {
   // the opened file.
   EXPECT_EQ(file->GetFile().GetPlatformFile(),
             file->UnderlyingFileForTesting().GetPlatformFile());
+}
+
+TEST_F(SandboxedFileTest, SingleConnectionFile) {
+  base::HistogramTester histogram_tester;
+
+  auto opened_file = CreateAndOpenEmptySingleConnectionFile("single");
+
+  histogram_tester.ExpectTotalCount("SandboxedVfs.LockResult.Test", 1);
+}
+
+TEST_F(SandboxedFileTest, Abandon) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("abandon");
+  LockState lock_state = file->Abandon();
+
+  ASSERT_EQ(lock_state, LockState::kNotHeld);
+  histogram_tester.ExpectUniqueSample("SandboxedVfs.LockStateOnAbandon.Test",
+                                      static_cast<int>(lock_state), 1);
 }
 
 }  // namespace

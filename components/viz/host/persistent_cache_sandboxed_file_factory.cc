@@ -18,6 +18,7 @@
 #include "components/base32/base32.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/pending_backend.h"
 
 namespace viz {
@@ -141,6 +142,7 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
   base::FilePath cache_dir =
       GetPersistentCacheDirectory(cache_root_dir_, cache_id, product);
   persistent_cache::BackendStorage cache_storage(
+      persistent_cache::Client::kShaderCache,
       persistent_cache::BackendType::kSqlite, cache_dir);
   auto backend = cache_storage.MakePendingBackend(
       base::FilePath(FILE_PATH_LITERAL("cache")), /*single_connection=*/true,

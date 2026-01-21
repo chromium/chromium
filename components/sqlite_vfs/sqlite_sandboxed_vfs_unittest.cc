@@ -14,6 +14,8 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/types/expected_macros.h"
+#include "components/sqlite_vfs/client.h"
+#include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "components/sqlite_vfs/vfs_utils.h"
@@ -38,12 +40,13 @@ class SqliteSandboxedVfsTest : public testing::Test {
   std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     std::optional<SqliteVfsFileSet> file_set;
     if (auto pending_file_set = MakePendingFileSet(
-            temp_dir_.GetPath(), base::FilePath(kTestBaseName),
+            Client::kTest, temp_dir_.GetPath(), base::FilePath(kTestBaseName),
             /*single_connection=*/false, /*journal_mode_wal=*/false);
         !pending_file_set.has_value()) {
       ADD_FAILURE() << "Failed creating pending file set";
     } else {
-      file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
+      file_set =
+          SqliteVfsFileSet::Bind(Client::kTest, *std::move(pending_file_set));
       EXPECT_NE(file_set, std::nullopt) << "Failed binding to pending file set";
     }
     return file_set;
@@ -59,7 +62,8 @@ class SqliteSandboxedVfsTest : public testing::Test {
         !pending_file_set.has_value()) {
       ADD_FAILURE() << "Failed sharing file set";
     } else {
-      read_only_file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
+      read_only_file_set =
+          SqliteVfsFileSet::Bind(Client::kTest, *std::move(pending_file_set));
       EXPECT_NE(read_only_file_set, std::nullopt)
           << "Failed binding to pending file set";
     }
@@ -169,7 +173,7 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFile) {
       vfs_file_set.GetDbVirtualFilePath();
   SandboxedFile* file_to_delete = vfs_file_set.GetSandboxedDbFile();
   file_to_delete->OnFileOpened(
-      file_to_delete->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+      file_to_delete->TakeUnderlyingFile(FileType::kMainDb));
   EXPECT_TRUE(file_to_delete->IsValid());
 
   // Write something to the file.
@@ -216,7 +220,7 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFileFails) {
         vfs_file_set.GetDbVirtualFilePath();
     SandboxedFile* file_to_delete = vfs_file_set.GetSandboxedDbFile();
     file_to_delete->OnFileOpened(
-        file_to_delete->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+        file_to_delete->TakeUnderlyingFile(FileType::kMainDb));
     EXPECT_TRUE(file_to_delete->IsValid());
     const std::string_view content = "hello";
     EXPECT_EQ(file_to_delete->Write(content.data(), content.size(), 0),
@@ -234,8 +238,8 @@ TEST_F(SqliteSandboxedVfsTest, DeleteFileFails) {
               SQLITE_IOERR_DELETE);
   }
   // The exact error reported differs by platform, so accept any value.
-  histogram_tester.ExpectTotalCount(
-      "PersistentCache.Sqlite.DbFile.SetLengthResult", 1);
+  histogram_tester.ExpectTotalCount("SandboxedVfs.DbFile.SetLengthResult.Test",
+                                    1);
 }
 
 TEST_F(SqliteSandboxedVfsTest, OpenFile) {

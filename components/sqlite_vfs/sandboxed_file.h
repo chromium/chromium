@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
-
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/memory/shared_memory_safety_checker.h"
@@ -17,6 +15,9 @@
 #include "sql/sandboxed_vfs_file.h"
 
 namespace sqlite_vfs {
+
+enum class Client;
+enum class FileType;
 
 // The lock shared state is encoded over 32-bits:
 //   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
@@ -48,18 +49,9 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
  public:
   enum class AccessRights { kReadWrite, kReadOnly };
 
-  enum class FileType {
-    kMainDb,        // A main .db file.
-    kTempDb,        // A temporary or in-memory database.
-    kTransientDb,   // A database for an ephemeral table.
-    kMainJournal,   // A main rollback journal.
-    kTempJournal,   // A rollback journal for a temporary database.
-    kSubjournal,    // A statement journal file.
-    kSuperJournal,  // A super-journal file.
-    kWal,           // A WAL-mode journal.
-  };
-
-  SandboxedFile(base::File file,
+  SandboxedFile(Client client,
+                FileType file_type,
+                base::File file,
                 AccessRights access_rights,
                 base::WritableSharedMemoryMapping mapped_shared_lock =
                     base::WritableSharedMemoryMapping());
@@ -93,6 +85,8 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   bool IsValid() const { return opened_file_.IsValid(); }
 
   AccessRights access_rights() const { return access_rights_; }
+  Client client() const { return client_; }
+  FileType file_type() const { return file_type_; }
 
   // Returns a reference to the instance's file regardless of whether it is
   // open (`IsValid()` returns true) or closed (otherwise). The reference is
@@ -146,6 +140,11 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   bool AcquireSingleConnectionlock();
   void ReleaseSingleConnectionlock();
 
+  const Client client_;
+
+  // The type of database file this represents.
+  const FileType file_type_;
+
   base::File underlying_file_;
   base::File opened_file_;
   const AccessRights access_rights_;
@@ -158,10 +157,6 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   // algorithm is implemented. Otherwise, this file is opened in exclusive mode
   // so no shared lock is required.
   base::WritableSharedMemoryMapping mapped_shared_lock_;
-
-  // The type of database file this represents. Holds a value only while the
-  // file is open.
-  std::optional<FileType> file_type_;
 };
 
 }  // namespace sqlite_vfs

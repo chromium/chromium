@@ -45,6 +45,7 @@ component("persistent_cache") {
       "sqlite/backend_storage_delegate.h",
       "sqlite/sqlite_backend_impl.cc",
       "sqlite/sqlite_backend_impl.h",
+      "sqlite/vfs_util.h",
     ]
 
     deps += [

@@ -51,13 +51,19 @@ void DeleteDirectoryContents(const base::FilePath& directory) {
 
 }  // namespace
 
-BackendStorage::BackendStorage(BackendType backend_type,
+BackendStorage::BackendStorage(Client client,
+                               BackendType backend_type,
                                base::FilePath directory)
-    : BackendStorage(MakeDelegateOfType(backend_type), std::move(directory)) {}
+    : BackendStorage(client,
+                     MakeDelegateOfType(backend_type),
+                     std::move(directory)) {}
 
-BackendStorage::BackendStorage(std::unique_ptr<Delegate> delegate,
+BackendStorage::BackendStorage(Client client,
+                               std::unique_ptr<Delegate> delegate,
                                base::FilePath directory)
-    : delegate_(std::move(delegate)), directory_(std::move(directory)) {
+    : client_(client),
+      delegate_(std::move(delegate)),
+      directory_(std::move(directory)) {
   CHECK(!directory_.empty());
   is_valid_ = delegate_ && base::CreateDirectory(directory_);
 }
@@ -68,21 +74,19 @@ std::optional<PendingBackend> BackendStorage::MakePendingBackend(
     const base::FilePath& base_name,
     bool single_connection,
     bool journal_mode_wal) {
-  return is_valid_
-             ? delegate_->MakePendingBackend(
-                   directory_, base_name, single_connection, journal_mode_wal)
-             : std::nullopt;
+  return is_valid_ ? delegate_->MakePendingBackend(client_, directory_,
+                                                   base_name, single_connection,
+                                                   journal_mode_wal)
+                   : std::nullopt;
 }
 
 std::unique_ptr<Backend> BackendStorage::MakeBackend(
     const base::FilePath& base_name,
     bool single_connection,
-    bool journal_mode_wal,
-    Client client) {
-  return is_valid_
-             ? delegate_->MakeBackend(directory_, base_name, single_connection,
-                                      journal_mode_wal, client)
-             : nullptr;
+    bool journal_mode_wal) {
+  return is_valid_ ? delegate_->MakeBackend(client_, directory_, base_name,
+                                            single_connection, journal_mode_wal)
+                   : nullptr;
 }
 
 std::optional<PendingBackend> BackendStorage::ShareReadOnlyConnection(
@@ -119,7 +123,7 @@ void BackendStorage::DeleteAllFiles() {
 
 void BackendStorage::DeleteFiles(const base::FilePath& base_name) {
   if (is_valid_) {
-    delegate_->DeleteFiles(directory_, base_name);
+    delegate_->DeleteFiles(client_, directory_, base_name);
   }
 }
 
@@ -167,7 +171,7 @@ BackendStorage::BringDownTotalFootprintOfFiles(int64_t target_footprint) {
 
   for (const auto& [base_name, last_modified_time] : base_names) {
     deleted_size = base::ClampAdd(
-        deleted_size, delegate_->DeleteFiles(directory_, base_name));
+        deleted_size, delegate_->DeleteFiles(client_, directory_, base_name));
     if (deleted_size >= size_of_necessary_deletes) {
       break;
     }

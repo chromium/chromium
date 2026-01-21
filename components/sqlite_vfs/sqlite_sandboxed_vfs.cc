@@ -17,6 +17,8 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
+#include "components/sqlite_vfs/file_type.h"
+#include "components/sqlite_vfs/metrics_util.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
 #include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs.h"
@@ -30,7 +32,7 @@ namespace {
 std::once_flag g_register_vfs_once_flag;
 SqliteSandboxedVfsDelegate* g_instance = nullptr;
 
-SandboxedFile::FileType GetFileType(int sqlite_requested_type) {
+FileType GetFileType(int sqlite_requested_type) {
   static constexpr int kTypeMask =
       SQLITE_OPEN_MAIN_DB | SQLITE_OPEN_TEMP_DB | SQLITE_OPEN_TRANSIENT_DB |
       SQLITE_OPEN_MAIN_JOURNAL | SQLITE_OPEN_TEMP_JOURNAL |
@@ -38,21 +40,21 @@ SandboxedFile::FileType GetFileType(int sqlite_requested_type) {
 
   switch (sqlite_requested_type & kTypeMask) {
     case SQLITE_OPEN_MAIN_DB:
-      return SandboxedFile::FileType::kMainDb;
+      return FileType::kMainDb;
     case SQLITE_OPEN_TEMP_DB:
-      return SandboxedFile::FileType::kTempDb;
+      return FileType::kTempDb;
     case SQLITE_OPEN_TRANSIENT_DB:
-      return SandboxedFile::FileType::kTransientDb;
+      return FileType::kTransientDb;
     case SQLITE_OPEN_MAIN_JOURNAL:
-      return SandboxedFile::FileType::kMainJournal;
+      return FileType::kMainJournal;
     case SQLITE_OPEN_TEMP_JOURNAL:
-      return SandboxedFile::FileType::kTempJournal;
+      return FileType::kTempJournal;
     case SQLITE_OPEN_SUBJOURNAL:
-      return SandboxedFile::FileType::kSubjournal;
+      return FileType::kSubjournal;
     case SQLITE_OPEN_SUPER_JOURNAL:
-      return SandboxedFile::FileType::kSuperJournal;
+      return FileType::kSuperJournal;
     case SQLITE_OPEN_WAL:
-      return SandboxedFile::FileType::kWal;
+      return FileType::kWal;
   }
   NOTREACHED();
 }
@@ -111,9 +113,8 @@ base::File SqliteSandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
 
   // Only the main database and its rollback journal and/or write-ahead log are
   // supported.
-  CHECK(file_type == SandboxedFile::FileType::kMainDb ||
-        file_type == SandboxedFile::FileType::kMainJournal ||
-        file_type == SandboxedFile::FileType::kWal);
+  CHECK(file_type == FileType::kMainDb || file_type == FileType::kMainJournal ||
+        file_type == FileType::kWal);
 
   // If `file_name` is found in the mapping return the associated file.
   return it->second->TakeUnderlyingFile(file_type);
@@ -130,14 +131,9 @@ int SqliteSandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
     auto& file = it->second->GetFile();
     const auto file_error = file.SetLength(0) ? base::File::FILE_OK
                                               : base::File::GetLastFileError();
-    // TODO(crbug.com/377475540): Rename the histogram name to distinguish
-    // between clients (e.g., PersistentCache, HttpCache) when this code is used
-    // by others.
     base::UmaHistogramExactLinear(
-        base::StrCat(
-            {"PersistentCache.Sqlite.",
-             SqliteVfsFileSet::GetVirtualFileHistogramVariant(file_path),
-             ".SetLengthResult"}),
+        GetHistogramName(it->second->client(), "SetLengthResult",
+                         it->second->file_type()),
         -file_error, -base::File::FILE_ERROR_MAX);
     return file_error == base::File::FILE_OK ? SQLITE_OK : SQLITE_IOERR_DELETE;
   }

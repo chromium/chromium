@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "components/sqlite_vfs/constants.h"
+#include "components/sqlite_vfs/file_type.h"
+#include "components/sqlite_vfs/metrics_util.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
 #include "components/sqlite_vfs/sqlite_database_vfs_file_set.h"
@@ -67,6 +69,7 @@ base::File DuplicateFile(const base::File& source_file,
 }  // namespace
 
 std::optional<PendingFileSet> MakePendingFileSet(
+    Client client,
     const base::FilePath& directory,
     const base::FilePath& base_name,
     bool single_connection,
@@ -94,12 +97,9 @@ std::optional<PendingFileSet> MakePendingFileSet(
   auto db_file_path =
       directory.Append(base_name).AddExtension(kDbFileExtension);
   pending_file_set.db_file = base::File(db_file_path, create_flags);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramExactLinear("PersistentCache.Sqlite.DbFile.CreateResult",
-                                -pending_file_set.db_file.error_details(),
-                                -base::File::FILE_ERROR_MAX);
+  base::UmaHistogramExactLinear(
+      GetHistogramName(client, "CreateResult", FileType::kMainDb),
+      -pending_file_set.db_file.error_details(), -base::File::FILE_ERROR_MAX);
   if (!pending_file_set.db_file.IsValid()) {
     return std::nullopt;
   }
@@ -107,11 +107,8 @@ std::optional<PendingFileSet> MakePendingFileSet(
   auto journal_file_path =
       directory.Append(base_name).AddExtension(kJournalFileExtension);
   pending_file_set.journal_file = base::File(journal_file_path, create_flags);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
   base::UmaHistogramExactLinear(
-      "PersistentCache.Sqlite.JournalFile.CreateResult",
+      GetHistogramName(client, "CreateResult", FileType::kMainJournal),
       -pending_file_set.journal_file.error_details(),
       -base::File::FILE_ERROR_MAX);
   if (!pending_file_set.journal_file.IsValid()) {
@@ -122,11 +119,8 @@ std::optional<PendingFileSet> MakePendingFileSet(
     auto wal_file_path =
         directory.Append(base_name).AddExtension(kWalJournalFileExtension);
     pending_file_set.wal_file = base::File(wal_file_path, create_flags);
-    // TODO(crbug.com/377475540): Rename the histogram name to distinguish
-    // between clients (e.g., PersistentCache, HttpCache) when this code is used
-    // by others.
     base::UmaHistogramExactLinear(
-        "PersistentCache.Sqlite.WalJournalFile.CreateResult",
+        GetHistogramName(client, "CreateResult", FileType::kWal),
         -pending_file_set.wal_file.error_details(),
         -base::File::FILE_ERROR_MAX);
     if (!pending_file_set.wal_file.IsValid()) {
@@ -194,44 +188,41 @@ base::FilePath GetBaseName(const base::FilePath& file) {
              : base::FilePath();
 }
 
-int64_t DeleteFiles(const base::FilePath& directory,
+int64_t DeleteFiles(Client client,
+                    const base::FilePath& directory,
                     const base::FilePath& base_name) {
   auto file_path = directory.Append(base_name).AddExtension(kDbFileExtension);
   int64_t bytes_recovered = base::GetFileSize(file_path).value_or(0);
-  bool delete_success = base::DeleteFile(file_path);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramBoolean(
-      "PersistentCache.ParamsManager.DbFile.DeleteSuccess", delete_success);
-  if (!delete_success) {
+  base::File::Error delete_result = base::DeleteFile(file_path)
+                                        ? base::File::FILE_OK
+                                        : base::File::GetLastFileError();
+  base::UmaHistogramExactLinear(
+      GetHistogramName(client, "DeleteResult", FileType::kMainDb),
+      -delete_result, -base::File::FILE_ERROR_MAX);
+  if (delete_result != base::File::FILE_OK) {
     return 0;
   }
 
   file_path = directory.Append(base_name).AddExtension(kJournalFileExtension);
   auto file_size = base::GetFileSize(file_path).value_or(0);
-  delete_success = base::DeleteFile(file_path);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramBoolean(
-      "PersistentCache.ParamsManager.JournalFile.DeleteSuccess",
-      delete_success);
-  if (delete_success) {
+  delete_result = base::DeleteFile(file_path) ? base::File::FILE_OK
+                                              : base::File::GetLastFileError();
+  base::UmaHistogramExactLinear(
+      GetHistogramName(client, "DeleteResult", FileType::kMainJournal),
+      -delete_result, -base::File::FILE_ERROR_MAX);
+  if (delete_result == base::File::FILE_OK) {
     bytes_recovered = base::ClampAdd(bytes_recovered, file_size);
   }
 
   file_path =
       directory.Append(base_name).AddExtension(kWalJournalFileExtension);
   file_size = base::GetFileSize(file_path).value_or(0);
-  delete_success = base::DeleteFile(file_path);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramBoolean(
-      "PersistentCache.ParamsManager.WalJournalFile.DeleteSuccess",
-      delete_success);
-  if (delete_success) {
+  delete_result = base::DeleteFile(file_path) ? base::File::FILE_OK
+                                              : base::File::GetLastFileError();
+  base::UmaHistogramExactLinear(
+      GetHistogramName(client, "DeleteResult", FileType::kWal), -delete_result,
+      -base::File::FILE_ERROR_MAX);
+  if (delete_result == base::File::FILE_OK) {
     bytes_recovered = base::ClampAdd(bytes_recovered, file_size);
   }
 

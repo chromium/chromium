@@ -14,7 +14,9 @@
 #include "base/test/gmock_expected_support.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/constants.h"
+#include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
 #include "components/sqlite_vfs/vfs_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,13 +63,14 @@ class SqliteVfsFileSetTest
 
   std::optional<SqliteVfsFileSet> CreateFilesAndBuildVfsFileSet() {
     std::optional<SqliteVfsFileSet> file_set;
-    if (auto pending_file_set =
-            MakePendingFileSet(temp_dir_.GetPath(), base::FilePath(kBaseName),
-                               is_single_connection(), journal_mode_wal());
+    if (auto pending_file_set = MakePendingFileSet(
+            Client::kTest, temp_dir_.GetPath(), base::FilePath(kBaseName),
+            is_single_connection(), journal_mode_wal());
         !pending_file_set.has_value()) {
       ADD_FAILURE() << "Failed creating pending file_set";
     } else {
-      file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
+      file_set =
+          SqliteVfsFileSet::Bind(Client::kTest, *std::move(pending_file_set));
       EXPECT_NE(file_set, std::nullopt) << "Failed creating pending file_set";
     }
     return file_set;
@@ -138,7 +141,7 @@ MULTIPROCESS_TEST_MAIN(CanOpenConnectionInChild) {
   bool journal_mode_wal = cmd_line.HasSwitch(kJournalModeWal);
 
   auto pending_file_set = MakePendingFileSet(
-      directory, base_name, single_connection, journal_mode_wal);
+      Client::kTest, directory, base_name, single_connection, journal_mode_wal);
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, the files cannot even be opened a second time if the parent
@@ -152,11 +155,12 @@ MULTIPROCESS_TEST_MAIN(CanOpenConnectionInChild) {
   CHECK(pending_file_set.has_value());
 #endif
 
-  auto file_set = SqliteVfsFileSet::Bind(*std::move(pending_file_set));
+  auto file_set =
+      SqliteVfsFileSet::Bind(Client::kTest, *std::move(pending_file_set));
   CHECK(file_set.has_value());
 
   SandboxedFile* db_file = file_set->GetSandboxedDbFile();
-  if (auto file = db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb);
+  if (auto file = db_file->TakeUnderlyingFile(FileType::kMainDb);
       file.IsValid()) {
     // Take care to complete the SandboxedVfs open protocol and close the file
     // if it was opened.
@@ -176,8 +180,7 @@ TEST_P(SqliteVfsFileSetTest, MultipleConnections) {
   // Open the file, thereby locking it for exclusive access if it was created
   // for only a single connection.
   SandboxedFile* db_file = file_set.GetSandboxedDbFile();
-  db_file->OnFileOpened(
-      db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+  db_file->OnFileOpened(db_file->TakeUnderlyingFile(FileType::kMainDb));
 
   // Attempt to open the file in another process.
   base::CommandLine child_command_line =

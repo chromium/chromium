@@ -16,6 +16,7 @@ class FilePath;
 
 namespace sqlite_vfs {
 
+enum class Client;
 class SqliteVfsFileSet;
 
 // Creates a new pending file set for a database at the location described by
@@ -27,6 +28,7 @@ class SqliteVfsFileSet;
 // file set's files could not be opened or created).
 COMPONENT_EXPORT(SQLITE_VFS)
 std::optional<PendingFileSet> MakePendingFileSet(
+    Client client,
     const base::FilePath& directory,
     const base::FilePath& base_name,
     bool single_connection,
@@ -60,7 +62,8 @@ base::FilePath GetBaseName(const base::FilePath& file);
 // Deletes all files associated with the database at `directory`/`base_name`.
 // Returns the number of bytes freed.
 COMPONENT_EXPORT(SQLITE_VFS)
-int64_t DeleteFiles(const base::FilePath& directory,
+int64_t DeleteFiles(Client client,
+                    const base::FilePath& directory,
                     const base::FilePath& base_name);
 
 }  // namespace sqlite_vfs

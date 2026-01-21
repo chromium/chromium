@@ -17,6 +17,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
 #include "sql/database.h"
@@ -35,6 +36,7 @@ namespace sqlite_vfs {
 
 // static
 std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
+    Client client,
     PendingFileSet pending_file_set) {
   // Write-ahead logging requires single connection.
   CHECK(!pending_file_set.wal_file.IsValid() ||
@@ -55,14 +57,16 @@ std::optional<SqliteVfsFileSet> SqliteVfsFileSet::Bind(
                                  : SandboxedFile::AccessRights::kReadOnly;
 
   auto db_file = std::make_unique<SandboxedFile>(
-      std::move(pending_file_set.db_file), access_rights,
-      std::move(mapped_shared_lock));
+      client, FileType::kMainDb, std::move(pending_file_set.db_file),
+      access_rights, std::move(mapped_shared_lock));
   auto journal_file = std::make_unique<SandboxedFile>(
-      std::move(pending_file_set.journal_file), access_rights);
+      client, FileType::kMainJournal, std::move(pending_file_set.journal_file),
+      access_rights);
   std::unique_ptr<SandboxedFile> wal_file;
   if (pending_file_set.wal_file.IsValid()) {
     wal_file = std::make_unique<SandboxedFile>(
-        std::move(pending_file_set.wal_file), access_rights);
+        client, FileType::kWal, std::move(pending_file_set.wal_file),
+        access_rights);
   }
   return SqliteVfsFileSet(std::move(db_file), std::move(journal_file),
                           std::move(wal_file),

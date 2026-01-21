@@ -23,7 +23,9 @@
 #include "components/persistent_cache/backend_type.h"
 #include "components/persistent_cache/client.h"
 #include "components/persistent_cache/metrics_util.h"
+#include "components/persistent_cache/sqlite/vfs_util.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/sqlite_vfs/client.h"
 #include "components/sqlite_vfs/lock_state.h"
 #include "components/sqlite_vfs/pending_file_set.h"
 #include "components/sqlite_vfs/sandboxed_file.h"
@@ -59,7 +61,7 @@ std::unique_ptr<Backend> SqliteBackendImpl::Bind(PendingBackend pending_backend,
           : sqlite_vfs::SandboxedFile::AccessRights::kReadOnly;
 
   auto file_set = sqlite_vfs::SqliteVfsFileSet::Bind(
-      std::move(pending_backend.pending_file_set));
+      VfsClientFromClient(client), std::move(pending_backend.pending_file_set));
   if (!file_set.has_value()) {
     return nullptr;
   }

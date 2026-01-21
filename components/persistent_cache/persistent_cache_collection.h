@@ -158,8 +158,6 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // Must outlive `persistent_caches_`.
   BackendStorage backend_storage_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const Client client_;
-
   // Desired maximum disk footprint for the cache collection in bytes.
   const int64_t target_footprint_;
   const size_t lru_capacity_;

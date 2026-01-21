@@ -366,10 +366,10 @@ TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
   // and remember the cache base name.
   base::FilePath saved_base_name;
   EXPECT_CALL(*mock_delegate,
-              MakeBackend(temp_dir_.GetPath(), _, false, false, Client::kTest))
-      .WillOnce([&](const base::FilePath& directory,
+              MakeBackend(Client::kTest, temp_dir_.GetPath(), _, false, false))
+      .WillOnce([&](Client client, const base::FilePath& directory,
                     const base::FilePath& base_name, bool single_connection,
-                    bool journal_mode_wal, Client client) {
+                    bool journal_mode_wal) {
         saved_base_name = base_name;
         return (std::move(backend));
       });
@@ -378,7 +378,7 @@ TEST_F(PersistentCacheCollectionTest, EvictWhileLockedDeletesFiles) {
   // after abandonment.
   EXPECT_CALL(
       *mock_delegate,
-      DeleteFiles(temp_dir_.GetPath(),
+      DeleteFiles(Client::kTest, temp_dir_.GetPath(),
                   ResultOf(
                       [&saved_base_name](const base::FilePath& base_name) {
                         return base_name == saved_base_name;

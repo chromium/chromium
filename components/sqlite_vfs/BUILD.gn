@@ -16,7 +16,9 @@ component("sqlite_vfs") {
   # Cross-process file locks are not available on Fuchsia.
   if (!is_fuchsia) {
     public = [
+      "client.h",
       "constants.h",
+      "file_type.h",
       "lock_state.h",
       "sandboxed_file.h",
       "sqlite_database_vfs_file_set.h",
@@ -27,6 +29,8 @@ component("sqlite_vfs") {
     sources = [
       "constants.h",
       "lock_state.h",
+      "metrics_util.cc",
+      "metrics_util.h",
       "sandboxed_file.cc",
       "sandboxed_file.h",
       "sqlite_database_vfs_file_set.cc",

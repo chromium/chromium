@@ -17,6 +17,7 @@
 
 namespace sqlite_vfs {
 
+enum class Client;
 struct PendingFileSet;
 
 // Contains `SanboxedFile` representations of the files necessary to the use of
@@ -28,7 +29,8 @@ class COMPONENT_EXPORT(SQLITE_VFS) SqliteVfsFileSet {
   // Returns a `SqliteVfsFileSet` holding the state from a `PendingFileSet`.
   // Returns no value in case of error (e.g., the shared lock could not be
   // mapped into the process's address space).
-  static std::optional<SqliteVfsFileSet> Bind(PendingFileSet pending_file_set);
+  static std::optional<SqliteVfsFileSet> Bind(Client client,
+                                              PendingFileSet pending_file_set);
 
   SqliteVfsFileSet(SqliteVfsFileSet& other) = delete;
   SqliteVfsFileSet& operator=(const SqliteVfsFileSet& other) = delete;

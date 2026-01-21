@@ -5,8 +5,8 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of HangWatcher histograms
-along with a detailed description for each histogram.
+This file is used to generate a comprehensive list of PersistentCache and
+SandboxedVfs histograms along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
@@ -41,6 +41,16 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadOnly" summary="read only"/>
   <variant name="ReadWrite" summary="read/write"/>
 </variants>
+
+<!-- LINT.IfChange(VfsClient) -->
+
+<variants name="VfsClient">
+  <variant name="CodeCache"/>
+  <variant name="ShaderCache"/>
+  <variant name="Test"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/sqlite_vfs/client.h:VfsClient) -->
 
 <histogram name="PersistentCache.BackendInitialize.{Mode}.{Client}"
     units="microseconds" expires_after="2026-06-09">
@@ -89,52 +99,46 @@ chromium-metrics-reviews@google.com.
   <token key="Client" variants="Client"/>
 </histogram>
 
-<histogram name="PersistentCache.ParamsManager.{FileType}.DeleteSuccess"
-    enum="Boolean" expires_after="2026-06-09">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether BackendParams manager succeeded in deleting a {FileType}.
-
-    Logged every time there is an attempt to delete a {FileType}.
-  </summary>
-  <token key="FileType" variants="FileType"/>
-</histogram>
-
-<histogram name="PersistentCache.SandboxedFile.LockStateOnAbandon"
-    enum="LockState" expires_after="2026-11-04">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The state of the shared atomic lock at the moment a file is abandoned. The
-    lock being held on abandonment either causes loss of entries or copying
-    overhead. This is not expected to be a common case and this metric should be
-    monitored as such. Logged each time a file is abandoned.
-  </summary>
-</histogram>
-
-<histogram name="PersistentCache.Sqlite.LockResult" enum="PlatformFileError"
+<histogram name="SandboxedVfs.LockResult.{VfsClient}" enum="PlatformFileError"
     expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the result of locking a PersistentCache's primary database file when
-    opened for use by only a single connection.
+    Reports the result of locking a sandboxed SQLite file set's primary database
+    file when opened for use by only a single connection for the {VfsClient}.
   </summary>
+  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
-<histogram name="PersistentCache.Sqlite.{FileType}.{Operation}"
+<histogram name="SandboxedVfs.LockStateOnAbandon.{VfsClient}" enum="LockState"
+    expires_after="2026-11-04">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The state of the shared atomic lock at the moment a sandboxed SQLite file
+    set is abandoned for the {VfsClient}. The lock being held on abandonment
+    either causes loss of entries or copying overhead. This is not expected to
+    be a common case and this metric should be monitored as such. Logged each
+    time a file is abandoned.
+  </summary>
+  <token key="VfsClient" variants="VfsClient"/>
+</histogram>
+
+<histogram name="SandboxedVfs.{FileType}.{Operation}.{VfsClient}"
     enum="PlatformFileError" expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the result of {Operation} a PersistentCache's {FileType}.
+    Reports the result of {Operation} a sandboxed SQLite file set's {FileType}
+    for the {VfsClient}.
   </summary>
   <token key="FileType" variants="FileType"/>
   <token key="Operation">
     <variant name="CreateResult" summary="creating or opening"/>
-    <variant name="SetLengthResult" summary="deleting"/>
+    <variant name="DeleteResult" summary="deleting"/>
+    <variant name="SetLengthResult" summary="truncating"/>
   </token>
+  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
 </histograms>

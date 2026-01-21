@@ -29,6 +29,8 @@
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/test_utils.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/sqlite_vfs/client.h"
+#include "components/sqlite_vfs/file_type.h"
 #include "components/sqlite_vfs/vfs_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -115,7 +117,7 @@ class PersistentCacheTest : public testing::Test,
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_storage_.emplace(GetParam(), temp_dir_.GetPath());
+    backend_storage_.emplace(Client::kTest, GetParam(), temp_dir_.GetPath());
   }
 
   // Returns the cache base name for a new cache and the new cache itself.
@@ -574,11 +576,12 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
   // Lock the db file in shared mode.
   ASSERT_OK_AND_ASSIGN(auto reader_vfs_file_set,
                        sqlite_vfs::SqliteVfsFileSet::Bind(
+                           sqlite_vfs::Client::kTest,
                            std::move(pending_reader.pending_file_set)));
   sqlite_vfs::SandboxedFile* reader_db_file =
       reader_vfs_file_set.GetSandboxedDbFile();
-  reader_db_file->OnFileOpened(reader_db_file->TakeUnderlyingFile(
-      sqlite_vfs::SandboxedFile::FileType::kMainDb));
+  reader_db_file->OnFileOpened(
+      reader_db_file->TakeUnderlyingFile(sqlite_vfs::FileType::kMainDb));
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
 
   // Held lock causes transient error.

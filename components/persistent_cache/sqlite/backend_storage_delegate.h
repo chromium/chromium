@@ -16,15 +16,16 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
  public:
   // BackendStorage::Delegate:
   std::optional<PendingBackend> MakePendingBackend(
+      Client client,
       const base::FilePath& directory,
       const base::FilePath& base_name,
       bool single_connection,
       bool journal_mode_wal) override;
-  std::unique_ptr<Backend> MakeBackend(const base::FilePath& directory,
+  std::unique_ptr<Backend> MakeBackend(Client client,
+                                       const base::FilePath& directory,
                                        const base::FilePath& base_name,
                                        bool single_connection,
-                                       bool journal_mode_wal,
-                                       Client client) override;
+                                       bool journal_mode_wal) override;
   std::optional<PendingBackend> ShareReadOnlyConnection(
       const base::FilePath& directory,
       const base::FilePath& base_name,
@@ -40,7 +41,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorageDelegate
 
   // Deletes all SQLite files for `base_name` in `directory` (e.g., the .db and
   // .journal files).
-  int64_t DeleteFiles(const base::FilePath& directory,
+  int64_t DeleteFiles(Client client,
+                      const base::FilePath& directory,
                       const base::FilePath& base_name) override;
 };
 

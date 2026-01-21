@@ -62,7 +62,8 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_storage_.emplace(BackendType::kSqlite, temp_dir_.GetPath());
+    backend_storage_.emplace(Client::kTest, BackendType::kSqlite,
+                             temp_dir_.GetPath());
   }
 
   // Returns a new cache configured according to the test's parameter.

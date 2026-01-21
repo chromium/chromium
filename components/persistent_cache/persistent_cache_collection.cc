@@ -30,8 +30,7 @@ PersistentCacheCollection::PersistentCacheCollection(
     int64_t target_footprint,
     Client client,
     size_t lru_capacity)
-    : backend_storage_(BackendType::kSqlite, std::move(top_directory)),
-      client_(client),
+    : backend_storage_(client, BackendType::kSqlite, std::move(top_directory)),
       target_footprint_(target_footprint),
       lru_capacity_(lru_capacity),
       persistent_caches_(PersistentCacheLRUMap::NO_AUTO_EVICT) {
@@ -44,8 +43,9 @@ PersistentCacheCollection::PersistentCacheCollection(
     std::unique_ptr<BackendStorage::Delegate> storage_delegate,
     Client client,
     size_t lru_capacity)
-    : backend_storage_(std::move(storage_delegate), std::move(top_directory)),
-      client_(client),
+    : backend_storage_(client,
+                       std::move(storage_delegate),
+                       std::move(top_directory)),
       target_footprint_(target_footprint),
       lru_capacity_(lru_capacity),
       persistent_caches_(PersistentCacheLRUMap::NO_AUTO_EVICT) {
@@ -232,7 +232,7 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
 
   auto backend =
       backend_storage_.MakeBackend(base_name, /*single_connection=*/false,
-                                   /*journal_mode_wal=*/false, client_);
+                                   /*journal_mode_wal=*/false);
   if (!backend) {
     // Failed to open/create the backend's files or bind to them.
     return nullptr;
@@ -240,7 +240,8 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
 
   // Create the cache
   auto inserted_it = persistent_caches_.Put(
-      cache_id, std::make_unique<PersistentCache>(client_, std::move(backend)));
+      cache_id, std::make_unique<PersistentCache>(backend_storage_.client(),
+                                                  std::move(backend)));
   return inserted_it->second.get();
 }
 

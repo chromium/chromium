@@ -4,13 +4,17 @@
 
 #include "components/sqlite_vfs/sandboxed_file.h"
 
+#include <optional>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/files/platform_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "components/sqlite_vfs/file_type.h"
+#include "components/sqlite_vfs/metrics_util.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -30,23 +34,27 @@ constexpr uint32_t kAbandonedBit = 0x80000000;
 }  // namespace
 
 SandboxedFile::SandboxedFile(
+    Client client,
+    FileType file_type,
     base::File file,
     AccessRights access_rights,
     base::WritableSharedMemoryMapping mapped_shared_lock)
-    : underlying_file_(std::move(file)),
+    : client_(client),
+      file_type_(file_type),
+      underlying_file_(std::move(file)),
       access_rights_(access_rights),
       mapped_shared_lock_(std::move(mapped_shared_lock)) {}
 
 SandboxedFile::~SandboxedFile() = default;
 
 base::File SandboxedFile::TakeUnderlyingFile(FileType file_type) {
+  CHECK_EQ(file_type, file_type_);
   // Lock the file via filesystem APIs if this is the main database file and its
   // creator wishes this to be the only connection allowed.
   if (file_type == FileType::kMainDb && is_single_connection() &&
       !AcquireSingleConnectionlock()) {
     return {};
   }
-  file_type_ = file_type;
   return std::move(underlying_file_);
 }
 
@@ -73,7 +81,6 @@ int SandboxedFile::Close() {
   if (file_type_ == FileType::kMainDb && is_single_connection()) {
     ReleaseSingleConnectionlock();
   }
-  file_type_ = std::nullopt;
   return SQLITE_OK;
 }
 
@@ -94,11 +101,8 @@ LockState SandboxedFile::Abandon() {
           ? LockState::kWriting
           : (((previous_state & kSharedMask) != 0) ? LockState::kReading
                                                    : LockState::kNotHeld);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramEnumeration(
-      "PersistentCache.SandboxedFile.LockStateOnAbandon", state);
+  base::UmaHistogramEnumeration(GetHistogramName(client_, "LockStateOnAbandon"),
+                                state);
   return state;
 }
 
@@ -247,7 +251,7 @@ int SandboxedFile::FileSize(sqlite3_int64* result_size) {
 //   see:
 //     https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/src/src/pager.c;l=5260;drc=65d0312c96cd23958372fac8940314c782a6b03c
 int SandboxedFile::Lock(int mode) {
-  CHECK(*file_type_ == FileType::kMainDb);
+  CHECK_EQ(file_type_, FileType::kMainDb);
   // Ensures valid lock states are used (see: sqlite3OsLock(...) assertions).
   CHECK(mode == SQLITE_LOCK_SHARED || mode == SQLITE_LOCK_RESERVED ||
         mode == SQLITE_LOCK_EXCLUSIVE);
@@ -389,7 +393,7 @@ int SandboxedFile::Lock(int mode) {
 // the state never went to EXCLUSIVE. This can happen when a connection gives up
 // on trying to get an EXCLUSIVE lock.
 int SandboxedFile::Unlock(int mode) {
-  CHECK(*file_type_ == FileType::kMainDb);
+  CHECK_EQ(file_type_, FileType::kMainDb);
 
   // Ensures valid lock states are used (see: sqlite3OsUnlock(...) assertions).
   CHECK(mode == SQLITE_LOCK_NONE || mode == SQLITE_LOCK_SHARED);
@@ -427,7 +431,7 @@ int SandboxedFile::Unlock(int mode) {
 }
 
 int SandboxedFile::CheckReservedLock(int* has_reserved_lock) {
-  CHECK(*file_type_ == FileType::kMainDb);
+  CHECK_EQ(file_type_, FileType::kMainDb);
   if (is_single_connection()) {
     *has_reserved_lock = sqlite_lock_mode_ >= SQLITE_LOCK_RESERVED;
   } else {
@@ -495,10 +499,7 @@ SharedAtomicLock& SandboxedFile::GetSharedAtomicLock() {
 bool SandboxedFile::AcquireSingleConnectionlock() {
   CHECK(underlying_file_.IsValid());
   const auto error = underlying_file_.Lock(base::File::LockMode::kExclusive);
-  // TODO(crbug.com/377475540): Rename the histogram name to distinguish between
-  // clients (e.g., PersistentCache, HttpCache) when this code is used by
-  // others.
-  base::UmaHistogramExactLinear("PersistentCache.Sqlite.LockResult", -error,
+  base::UmaHistogramExactLinear(GetHistogramName(client_, "LockResult"), -error,
                                 -base::File::FILE_ERROR_MAX);
   return error == base::File::FILE_OK;
 }
