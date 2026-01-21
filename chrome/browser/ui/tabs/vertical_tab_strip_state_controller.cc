@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
@@ -163,8 +164,10 @@ void VerticalTabStripStateController::UpdateSessionService() {
 }
 
 void VerticalTabStripStateController::UpdateCollapseActionItem() {
-  const gfx::VectorIcon& icon =
-      IsCollapsed() ? views::kMenuCloseIcon : views::kMenuOpenIcon;
+  const gfx::VectorIcon& icon = (IsCollapsed() == base::i18n::IsRTL())
+                                    ? views::kMenuOpenIcon
+                                    : views::kMenuCloseIcon;
+
   const auto& text =
       IsCollapsed() ? IDS_EXPAND_VERTICAL_TABS : IDS_COLLAPSE_VERTICAL_TABS;
 
