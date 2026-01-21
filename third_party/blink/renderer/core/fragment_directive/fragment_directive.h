@@ -61,7 +61,7 @@ class CORE_EXPORT FragmentDirective : public ScriptWrappable {
       const V8UnionRangeOrSelection*);
 
  private:
-  void ParseDirectives(const String& fragment_directive);
+  void ParseDirectives(const StringView& fragment_directive);
 
   HeapVector<Member<Directive>> directives_;
   Member<Document> owner_document_;

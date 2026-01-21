@@ -11,21 +11,24 @@ namespace blink {
 namespace {
 // TODO(crbug/1253707) Reject the directive string if it uses anything not
 // allowed by the spec
-bool ParseCssSelectorDirective(const String& directive_string, String& value) {
-  if (!directive_string.StartsWith(
+bool ParseCssSelectorDirective(const StringView& directive_string,
+                               String& value) {
+  if (!directive_string.starts_with(
           shared_highlighting::kSelectorDirectiveParameterName) ||
-      !directive_string.EndsWith(shared_highlighting::kSelectorDirectiveSuffix))
+      !directive_string.ends_with(
+          shared_highlighting::kSelectorDirectiveSuffix)) {
     return false;
+  }
 
   // Get rid of "selector(" and ")" and split the rest by ",".
   Vector<StringView> parts =
-      StringView(
-          directive_string,
-          shared_highlighting::kSelectorDirectiveParameterNameLength,
+      directive_string
+          .substr(
+              shared_highlighting::kSelectorDirectiveParameterNameLength,
 
-          directive_string.length() -
-              shared_highlighting::kSelectorDirectiveParameterNameLength -
-              shared_highlighting::kSelectorDirectiveSuffixLength)
+              directive_string.length() -
+                  shared_highlighting::kSelectorDirectiveParameterNameLength -
+                  shared_highlighting::kSelectorDirectiveSuffixLength)
           .Split(',');
 
   bool parsed_value = false;
@@ -56,7 +59,7 @@ bool ParseCssSelectorDirective(const String& directive_string, String& value) {
 }  // namespace
 
 CssSelectorDirective* CssSelectorDirective::TryParse(
-    const String& directive_string) {
+    const StringView& directive_string) {
   String value;
   if (ParseCssSelectorDirective(directive_string, value)) {
     return MakeGarbageCollected<CssSelectorDirective>(value);

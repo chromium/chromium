@@ -236,6 +236,14 @@ bool StringView::starts_with(const StringView& other) const {
   return other.length() <= length() && substr(0, other.length()) == other;
 }
 
+bool StringView::ends_with(const StringView& other) const {
+  if (other.empty()) {
+    return true;
+  }
+  return other.length() <= length() &&
+         substr(length() - other.length(), other.length()) == other;
+}
+
 String StringView::ToString() const {
   if (IsNull())
     return String();

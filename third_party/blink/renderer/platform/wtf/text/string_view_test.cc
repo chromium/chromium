@@ -720,6 +720,19 @@ TEST(StringViewTest, StartsWith) {
   EXPECT_FALSE(StringView("foobar").starts_with(u"bar"));
 }
 
+TEST(StringViewTest, EndsWith) {
+  EXPECT_TRUE(StringView().ends_with(""));
+  EXPECT_TRUE(StringView().ends_with(StringView()));
+  EXPECT_TRUE(StringView("").ends_with(""));
+  EXPECT_TRUE(StringView("").ends_with(StringView()));
+  EXPECT_TRUE(StringView("foo").ends_with("foo"));
+  EXPECT_FALSE(StringView("foo").ends_with("barfoo"));
+  EXPECT_TRUE(StringView("foobar").ends_with("bar"));
+  EXPECT_TRUE(StringView(u"foo").ends_with("foo"));
+  EXPECT_TRUE(StringView("foobar").ends_with(u"bar"));
+  EXPECT_FALSE(StringView("foobar").ends_with(u"foo"));
+}
+
 TEST(StringViewTest, Substr) {
   StringView view8("abc");
   EXPECT_EQ(u"abc", view8.substr(0));

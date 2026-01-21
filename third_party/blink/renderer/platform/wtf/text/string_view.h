@@ -283,6 +283,8 @@ class WTF_EXPORT StringView {
 
   // Returns `true` if `this` string starts with `other`.
   bool starts_with(const StringView& other) const;
+  // Returns `true` if `this` string ends with `other`.
+  bool ends_with(const StringView& other) const;
 
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
