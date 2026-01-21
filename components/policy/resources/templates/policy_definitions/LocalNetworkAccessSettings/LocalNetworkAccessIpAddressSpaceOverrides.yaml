@@ -1,0 +1,50 @@
+owners:
+- cthomp@chromium.org
+- hchao@chromium.org
+- chrome-swan@google.com
+
+caption: Override IP address space mappings
+
+desc: |-
+  This can be used to treat certain internal address ranges as "public" and thus not subject to <ph name="LOCAL_NETWORK_ACCES">Local Network Access</ph> checks. Conversely, this can be used to treat certain public address ranges that might be used internally as "local" so that they are protected by <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> checks.
+
+  IP address space overrides have two forms:
+
+  [cidr]=[public|local|loopback]
+
+  where [cidr] is a IP address range in CIDR notation (see section 3.1 of https://tools.ietf.org/html/rfc4632 for IPv4 and section 2.3 of https://tools.ietf.org/html/rfc4291 for IPv6). IPv6 addresses must be specified in URL-safe (bracketed) format. CIDR overrides apply to all ports.
+
+  or
+
+  [ip-address]:[port]=[public|local|loopback]
+
+  For more information on <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>, see https://wicg.github.io/local-network-access/ and https://developer.chrome.com/blog/local-network-access.
+
+  This policy does not support dynamic refresh.
+
+  Overrides from the command-line switch --ip-address-space-overrides take precedence over overrides set by this policy.
+
+example_value:
+- '100.64.0.0/10=public'
+- '[2001:db8::]/32=local'
+- '192.168.0.1:8000=public'
+- '[2001:DB8::8:800:200C:417A]:8080=local'
+
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+- android:146-
+
+features:
+  dynamic_refresh: false
+  per_profile: false
+
+type: list
+
+schema:
+  items:
+    type: string
+  type: array
+
+tags:
+- system-security

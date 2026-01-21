@@ -3,5 +3,6 @@ LocalNetworkAccessSettings:
   policies:
   - LocalNetworkAccessAllowedForUrls
   - LocalNetworkAccessBlockedForUrls
+  - LocalNetworkAccessIpAddressSpaceOverrides
   - LocalNetworkAccessRestrictionsEnabled
   - LocalNetworkAccessRestrictionsTemporaryOptOut

@@ -64,6 +64,10 @@ class UnexportableKeyObsoleteProfileGarbageCollector;
 }  // namespace unexportable_keys
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+namespace local_network_access {
+class IPAddressSpaceOverridesPrefsObserver;
+}  // namespace local_network_access
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -236,6 +240,9 @@ class GlobalFeatures {
 
   std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
       application_advanced_protection_status_detector_;
+
+  std::unique_ptr<local_network_access::IPAddressSpaceOverridesPrefsObserver>
+      ip_address_space_overrides_prefs_observer_;
 
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
 

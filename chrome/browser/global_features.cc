@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/local_network_access/ip_address_space_overrides_prefs_observer.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
@@ -130,6 +131,10 @@ void GlobalFeatures::PostBrowserProcessInit() {
         g_browser_process->profile_manager());
   }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+  ip_address_space_overrides_prefs_observer_ = std::make_unique<
+      local_network_access::IPAddressSpaceOverridesPrefsObserver>(
+      g_browser_process->local_state());
 }
 
 void GlobalFeatures::PreBrowserProcessInitCore() {

@@ -1865,6 +1865,7 @@ static_library("browser") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/local_network_access",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",
     "//chrome/browser/media:audio_process_ml_model_forwarder",

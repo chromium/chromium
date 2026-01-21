@@ -4298,6 +4298,12 @@ inline constexpr char kClearWindowNameForNewBrowsingContextGroup[] =
 inline constexpr char kManagedLocalNetworkAccessRestrictionsTemporaryOptOut[] =
     "managed_local_network_access_restrictions_temporary_opt_out";
 
+// List of IP Address space overrides, in the same format as the
+// --ip-address-space-overrides command line flag. See
+// services/network/public/cpp/network_switches.cc for the format.
+inline constexpr char kManagedLocalNetworkAccessIpAddressSpaceOverrides[] =
+    "managed_local_network_access_ip_address_space_overrides";
+
 // Boolean that specifies whether SpeculationRules prefetch can be sent to
 // ServiceWorker-controlled URLs.
 inline constexpr char kPrefetchWithServiceWorkerEnabled[] =

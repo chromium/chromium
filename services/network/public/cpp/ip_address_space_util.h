@@ -12,6 +12,10 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
@@ -20,8 +24,6 @@ class GURL;
 
 namespace net {
 
-class IPAddress;
-class IPEndPoint;
 struct TransportInfo;
 
 }  // namespace net
@@ -176,6 +178,87 @@ std::optional<net::IPAddress> COMPONENT_EXPORT(NETWORK_CPP)
 // This function will apply IP address space overrides.
 std::optional<mojom::IPAddressSpace> COMPONENT_EXPORT(NETWORK_CPP)
     GetAddressSpaceFromUrl(const GURL& url);
+
+class COMPONENT_EXPORT(NETWORK_CPP) IPAddressSpaceOverrides {
+ public:
+  static IPAddressSpaceOverrides& GetInstance();
+
+  ~IPAddressSpaceOverrides() = delete;
+  IPAddressSpaceOverrides(const IPAddressSpaceOverrides&) = delete;
+  IPAddressSpaceOverrides& operator=(const IPAddressSpaceOverrides&) = delete;
+
+  struct CIDR {
+    net::IPAddress ip_address;
+    size_t mask_bits;
+  };
+
+  // Represents a single command-line-specified override. Exactly one of
+  // endpoint or cidr should be specified.
+  struct AddressSpaceOverride {
+    AddressSpaceOverride();
+    ~AddressSpaceOverride();
+    AddressSpaceOverride(const AddressSpaceOverride&);
+    AddressSpaceOverride& operator=(const AddressSpaceOverride& other);
+    AddressSpaceOverride(AddressSpaceOverride&&);
+    AddressSpaceOverride& operator=(AddressSpaceOverride&& other);
+
+    // The IP endpoint to override the address space for, if present.
+    std::optional<net::IPEndPoint> endpoint;
+    // The CIDR range to override the address space for, if present.
+    std::optional<CIDR> cidr;
+
+    // The IP address space to which `endpoint` should be mapped.
+    mojom::IPAddressSpace space;
+  };
+
+  // Checks to see if there is an IP Address Space override for the given
+  // endpoint, and if so, returns it. Returns std::nullopt if there is no
+  // override. Overrides are checked in-order (with command-line overrides
+  // being checked first), first override that matches wins.
+  //
+  // This method is safe to be called from any thread.
+  std::optional<mojom::IPAddressSpace> HasOverride(
+      const net::IPEndPoint& endpoint);
+
+  // Returns the current overrides, combining 1) the
+  // --ip-address-space-overrides command-line parameter, 2) the
+  // argument passed to SetAuxiliaryOverrides (which is generally the value
+  // taken from the enterprise policy).
+  //
+  // This method is safe to be called from any thread.
+  std::vector<std::string> GetCurrentOverrides();
+
+  // Allows setting overrides from an additional source (e.g. from an enterprise
+  // policy).
+  //
+  // Overrides will be parsed, and any overrides that fail validation will be
+  // appended to the optional |rejected_overrides| output parameter.
+  //
+  // This method is safe to be called from any thread.
+  void SetAuxiliaryOverrides(const std::string& auxiliary_overrides,
+                             std::vector<std::string>* rejected_overrides);
+
+  // Empties the overrides list.
+  //
+  // This function is safe to be called from any thread.
+  void ResetForTesting();
+
+ private:
+  friend class base::NoDestructor<IPAddressSpaceOverrides>;
+  IPAddressSpaceOverrides();
+
+  void ParseCmdlineIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  base::Lock lock_;
+
+  bool has_cmdline_been_parsed_ GUARDED_BY(lock_) = false;
+  std::vector<std::string> cmdline_overrides_ GUARDED_BY(lock_);
+  std::vector<AddressSpaceOverride> parsed_cmdline_overrides_ GUARDED_BY(lock_);
+
+  std::vector<std::string> auxiliary_overrides_ GUARDED_BY(lock_);
+  std::vector<AddressSpaceOverride> parsed_auxiliary_overrides_
+      GUARDED_BY(lock_);
+};
 
 }  // namespace network
 

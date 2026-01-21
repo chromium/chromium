@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -62,7 +63,7 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   return TransportInfoToIPAddressSpace(DirectTransport(endpoint));
 }
 
-// Helper for tests that do not care about command-line overrides.
+// Helper for tests that do not care about overrides.
 IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
   return IPEndPointToIPAddressSpace(IPEndPoint(address, 80));
 }
@@ -349,11 +350,20 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceNullIP) {
             IPAddressSpace::kLocal);
 }
 
-// Verifies that the `ip-address-space-overrides` switch can be present and
-// empty, in which case it is ignored.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideEmpty) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides, "");
+class IPAddressSpaceOverridesTest : public testing::Test {
+ public:
+  void SetUp() override {
+    network::IPAddressSpaceOverrides::GetInstance().ResetForTesting();
+  }
+};
+
+// Verifies that overrides can be present and empty, in which case it is
+// ignored.
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideEmpty) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // Check a single address, to make sure things do not crash.
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress::IPv6Localhost()),
@@ -361,10 +371,11 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideEmpty) {
 }
 
 // Verifies that a single IPv4 endpoints can be overridden.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideSingle) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:80=public");
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideSingle) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "127.0.0.1:80=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // Wrong IP address.
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(127, 0, 0, 0), 80)),
@@ -380,10 +391,11 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideSingle) {
 }
 
 // Verifies that multiple IPv4 endpoints can be overridden.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideMultiple) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideMultiple) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(10, 2, 3, 4), 80)),
             IPAddressSpace::kPublic);
@@ -393,10 +405,12 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideMultiple) {
 }
 
 // Verifies that a port of 0 will apply to all ports
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideWildcardPort) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:0=public,[2001::]:0=loopback");
+TEST_F(IPAddressSpaceOverridesTest,
+       IPEndPointToAddressSpaceOverrideWildcardPort) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:0=public,[2001::]:0=loopback", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(10, 2, 3, 4), 80)),
             IPAddressSpace::kPublic);
 
@@ -413,10 +427,12 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideWildcardPort) {
 }
 
 // Verifies that private and local are both the kLocal address space
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceLocalPrivateSame) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:80=private,8.8.8.8:8888=local");
+TEST_F(IPAddressSpaceOverridesTest,
+       IPEndPointToAddressSpaceOverrideLocalPrivateSame) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:80=private,8.8.8.8:8888=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(10, 2, 3, 4), 80)),
             IPAddressSpace::kLocal);
@@ -425,34 +441,44 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceLocalPrivateSame) {
             IPAddressSpace::kLocal);
 }
 
-// Verifies that invalid entries in the command-line switch comma-separated list
+// Verifies that invalid entries in the override comma-separated list
 // are simply ignored, and that subsequent entries are still applied.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideInvalid) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 ","                      // Empty.
-                                 "1.2.3.4:80foo=public,"  // Invalid port.
-                                 "1.2.3.4:65536=local,"   // Port out of range.
-                                 "1:80=public,"           // Invalid address.
-                                 "1.2.3.4:80=potato,"  // Invalid address space.
-                                 "1.2.3.4:=public,"    // Missing port.
-                                 "1.2.3.4=public,"     // Missing colon, port.
-                                 "1.2.3.4:80=,"        // Missing address space.
-                                 "1.2.3.4:80,"  // Missing equal, address space.
-                                 "1.2.3.4:80=local");
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideInvalid) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      ","                      // Empty.
+      "1.2.3.4:80foo=public,"  // Invalid port.
+      "1.2.3.4:65536=local,"   // Port out of range.
+      "1.2.3.4:80=potato,"     // Invalid address space.
+      "1.2.3.4:=public,"       // Missing port.
+      "1.2.3.4=public,"        // Missing colon, port.
+      "1.2.3.4:80=,"           // Missing address space.
+      "1.2.3.4:80,"            // Missing equal, address space.
+      "1:80=public,"           // Surprisingly, "1:80" parses as "0.0.0.1:80"
+      "1.2.3.4:80=local",
+      &rejected_patterns);
+  EXPECT_THAT(rejected_patterns,
+              testing::UnorderedElementsAre(
+                  "1.2.3.4:80foo=public",  // Invalid port.
+                  "1.2.3.4:65536=local",   // Port out of range.
+                  "1.2.3.4:80=potato",     // Invalid address space.
+                  "1.2.3.4:=public",       // Missing port.
+                  "1.2.3.4=public",        // Missing colon, port.
+                  "1.2.3.4:80=",           // Missing address space.
+                  "1.2.3.4:80"));          // Missing equal, address space.
 
   // Valid override applies, despite preceding garbage.
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(1, 2, 3, 4), 80)),
             IPAddressSpace::kLocal);
 }
 
-// Verifies that command-line overrides that overlap with previously-given
-// overrides are ignored. In other words, the first matching override is
-// applied.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideOverlap) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "8.8.8.8:80=loopback,8.8.8.8:80=local");
+// Verifies that overrides that overlap with previously-given overrides are
+// ignored. In other words, the first matching override is applied.
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideOverlap) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "8.8.8.8:80=loopback,8.8.8.8:80=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // The first matching override applies.
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(8, 8, 8, 8), 80)),
@@ -460,23 +486,26 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideOverlap) {
 }
 
 // Verifies that invalid IP addresses are not subject to overrides.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideInvalidAddress) {
+TEST_F(IPAddressSpaceOverridesTest,
+       IPEndPointToAddressSpaceOverrideInvalidAddress) {
   // 0.0.0.0:80 should not really match the invalid IP address, but it is still
   // the most likely to match.
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "0.0.0.0:80=loopback");
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "0.0.0.0:80=loopback", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // Check that the override *does not apply* to an invalid IP address.
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(IPAddress(), 80)),
             IPAddressSpace::kUnknown);
 }
 
-// Verifies that command-line overrides can specify IPv6 addresses.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideV6) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "[2001::]:2001=loopback,[2020::1]:1234=local");
+// Verifies that overrides can specify IPv6 addresses.
+TEST_F(IPAddressSpaceOverridesTest, IPEndPointToAddressSpaceOverrideV6) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "[2001::]:2001=loopback,[2020::1]:1234=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // First override.
 
@@ -519,10 +548,12 @@ TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIsUnknown) {
             IPAddressSpace::kUnknown);
 }
 
-TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIgnoresOverrides) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:80=public");
+TEST_F(IPAddressSpaceOverridesTest,
+       TransportInfoToIPAddressSpaceProxiedIgnoresOverrides) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "127.0.0.1:80=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(TransportInfoToIPAddressSpace(
                 ProxiedTransport(IPEndPoint(IPAddress(127, 0, 0, 1), 80))),
@@ -537,11 +568,12 @@ TEST(IPAddressSpaceTest,
             IPAddressSpace::kUnknown);
 }
 
-TEST(IPAddressSpaceTest,
-     TransportInfoToIPAddressSpaceCachedFromProxyIgnoresOverrides) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:80=public");
+TEST_F(IPAddressSpaceOverridesTest,
+       TransportInfoToIPAddressSpaceCachedFromProxyIgnoresOverrides) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "127.0.0.1:80=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(TransportInfoToIPAddressSpace(
                 MakeTransport(TransportType::kCachedFromProxy,
@@ -551,10 +583,12 @@ TEST(IPAddressSpaceTest,
 
 // Verifies that IPv4-mapped IPv6 addresses are not overridden as though they
 // were the mapped IPv4 address instead.
-TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideIPv4MappedIPv6) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "127.0.0.1:80=public");
+TEST_F(IPAddressSpaceOverridesTest,
+       IPEndPointToAddressSpaceOverrideIPv4MappedIPv6) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "127.0.0.1:80=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(IPEndPointToIPAddressSpace(IPEndPoint(
                 net::ConvertIPv4ToIPv4MappedIPv6(IPAddress(127, 0, 0, 1)), 80)),
@@ -562,10 +596,11 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideIPv4MappedIPv6) {
 }
 
 // Basic CIDR override test.
-TEST(IPAddressSpaceTest, CIDROverride) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "10.0.0.1/8=loopback");
+TEST_F(IPAddressSpaceOverridesTest, CIDROverride) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.0.0.1/8=loopback", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
   // 10.*.*.* address matches
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 2001)),
@@ -586,10 +621,11 @@ TEST(IPAddressSpaceTest, CIDROverride) {
 }
 
 // Check that the 0.0.0.0/0 CIDR will override every IPv4 address.
-TEST(IPAddressSpaceTest, CIDROverrideAll) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "0.0.0.0/0=public");
+TEST_F(IPAddressSpaceOverridesTest, CIDROverrideAll) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "0.0.0.0/0=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("10.64.2.4"), 2001)),
       IPAddressSpace::kPublic);
@@ -607,10 +643,11 @@ TEST(IPAddressSpaceTest, CIDROverrideAll) {
       IPAddressSpace::kPublic);
 }
 
-TEST(IPAddressSpaceTest, CIDROverrideV6) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "[2001::]/16=loopback,[2020::1]/16=local");
+TEST_F(IPAddressSpaceOverridesTest, CIDROverrideV6) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "[2001::]/16=loopback,[2020::1]/16=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   // First override.
   EXPECT_EQ(
@@ -635,10 +672,11 @@ TEST(IPAddressSpaceTest, CIDROverrideV6) {
 }
 
 // Check that the [::]/0 CIDR will override every IPv6 address.
-TEST(IPAddressSpaceTest, CIDRV6OverrideAll) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "[::]/0=public");
+TEST_F(IPAddressSpaceOverridesTest, CIDRV6OverrideAll) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "[::]/0=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("fc00::4"), 2001)),
       IPAddressSpace::kPublic);
@@ -656,10 +694,11 @@ TEST(IPAddressSpaceTest, CIDRV6OverrideAll) {
 
 // Verifies that IPv4-mapped IPv6 addresses are not overridden as though they
 // were the mapped IPv4 address instead.
-TEST(IPAddressSpaceTest, CIDROverrideIPv4MappedIPv6) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
-                                 "10.0.0.16/8=public");
+TEST_F(IPAddressSpaceOverridesTest, CIDROverrideIPv4MappedIPv6) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.0.0.16/8=public", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(
@@ -828,10 +867,11 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
             CalculateClientAddressSpace(GURL("http://foo.test"), params));
 }
 
-TEST(IPAddressSpaceTest, CalculateClientAddressSpaceOverride) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+TEST_F(IPAddressSpaceOverridesTest, CalculateClientAddressSpaceOverride) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   auto parsed_headers = ParsedHeaders::New();
   auto remote_endpoint = IPEndPoint(IPAddress(10, 2, 3, 4), 80);
@@ -872,10 +912,11 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceIPAddress) {
       CalculateResourceAddressSpace(GURL("http://foo.test"), IPEndPoint()));
 }
 
-TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+TEST_F(IPAddressSpaceOverridesTest, CalculateResourceAddressSpaceOverride) {
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(
       IPAddressSpace::kPublic,
@@ -896,7 +937,7 @@ TEST(IPAddressSpaceTest, ParsePrivateIpFromURL) {
             ParsePrivateIpFromUrl(GURL("http://10.168.1.10")));
 }
 
-TEST(IPAddressSpaceTest, GetAddressSpaceFromUrl) {
+TEST_F(IPAddressSpaceOverridesTest, GetAddressSpaceFromUrl) {
   EXPECT_EQ(std::nullopt, GetAddressSpaceFromUrl(GURL("http://foo.test")));
   EXPECT_EQ(IPAddressSpace::kPublic,
             GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
@@ -929,9 +970,10 @@ TEST(IPAddressSpaceTest, GetAddressSpaceFromUrl) {
   EXPECT_EQ(IPAddressSpace::kLocal,
             GetAddressSpaceFromUrl(GURL("http://menu.local:8000")));
 
-  auto& command_line = *base::CommandLine::ForCurrentProcess();
-  command_line.AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
-                                 "10.2.3.4:80=public,8.8.8.8:8888=local");
+  std::vector<std::string> rejected_patterns;
+  network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
+      "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
+  EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(IPAddressSpace::kPublic,
             GetAddressSpaceFromUrl(GURL("http://10.2.3.4:80")));

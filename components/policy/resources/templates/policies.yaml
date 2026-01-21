@@ -1421,6 +1421,7 @@ policies:
   1420: GeminiActOnWebAllowedForURLs
   1421: GeminiActOnWebBlockedForURLs
   1422: WebAppInstallByUserEnabled
+  1423: LocalNetworkAccessIpAddressSpaceOverrides
 
 atomic_groups:
   1: Homepage

@@ -1626,6 +1626,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSilentPrintingEnabled, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  registry->RegisterListPref(
+      prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides);
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }
