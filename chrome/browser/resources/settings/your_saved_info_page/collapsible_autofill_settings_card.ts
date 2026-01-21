@@ -205,6 +205,12 @@ export class CollapsibleCardElement extends SettingsViewMixin
     }
   }
 
+  private onChangeAuthenticationRequirementClicked_(e: Event) {
+    e.preventDefault();
+
+    this.entityDataManager_.toggleAutofillAiReauthRequirement();
+  }
+
   /**
    * Whether an info bullet regarding logging is shown. Enhanced Autofill only
    * shows logging behaviour information for enterprise clients who have either

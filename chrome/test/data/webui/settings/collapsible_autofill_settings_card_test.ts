@@ -473,7 +473,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     assertTrue(isVisible(toggle));
   });
 
-  test('AutofillAiReauthToggleUpdatesPref', async function() {
+  test('AutofillAiReauthToggleCallsUpdatePrefMethod', async function() {
     loadTimeData.overrideValues(
         {autofillAiReauthOnViewingSensitiveDataEnabled: true});
     const card = await createCollapsibleAutofillSettingsCard();
@@ -490,8 +490,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
     toggle.click();
     await flushTasks();
-    assertTrue(toggle.checked);
-    assertTrue(card.get(`${authenticationPref}.value`));
+    await entityDataManager.whenCalled('toggleAutofillAiReauthRequirement');
   });
 
   test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {

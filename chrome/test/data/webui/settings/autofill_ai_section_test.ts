@@ -483,7 +483,7 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(isVisible(toggle));
   });
 
-  test('AutofillAiReauthToggleUpdatesPref', async function() {
+  test('AutofillAiReauthToggleCallsUpdatePrefMethod', async function() {
     loadTimeData.overrideValues(
         {autofillAiReauthOnViewingSensitiveDataEnabled: true});
     await createSection();
@@ -503,8 +503,7 @@ suite('AutofillAiSectionUiTest', function() {
 
     toggle.click();
     await flushTasks();
-    assertTrue(toggle.checked);
-    assertTrue(section.get(`${authenticationPref}.value`));
+    await entityDataManager.whenCalled('toggleAutofillAiReauthRequirement');
   });
 
   test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {

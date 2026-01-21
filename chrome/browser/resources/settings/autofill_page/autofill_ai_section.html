@@ -76,7 +76,9 @@
       pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
       no-extension-indicator
       label="$i18n{autofillAiAuthenticationToggleTitle}"
-      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}">
+      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"
+      no-toggle-on-host-click
+      on-click="onChangeAuthenticationRequirementClicked_">
   </settings-toggle-button>
 </template>
 
