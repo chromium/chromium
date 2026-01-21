@@ -631,7 +631,8 @@ class SettingsGlicSubPageWebActuationToggleTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicWebActuationSetting, {}},
          {features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"}}}},
+          {{features::kGlicActorPolicyControlExemption.name, "true"},
+           {features::kGlicActorEligibleTiers.name, "100,200"}}}},
         /*disabled_features=*/{});
   }
 
