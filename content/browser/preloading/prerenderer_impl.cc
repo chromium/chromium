@@ -54,7 +54,6 @@ struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationEagerness eagerness;
   blink::mojom::SpeculationAction action;
   bool is_target_blank;
-  FrameTreeNodeId prerender_frame_tree_node_id;
   PrerenderHostId prerender_host_id;
   GURL url;
 
@@ -86,7 +85,7 @@ bool PrerendererImpl::PrerenderInfo::PrerenderInfoComparator(
 }
 
 // `prerender_host_id` is not provided by `SpeculationCandidatePtr`, so
-// FrameTreeNodeId() is assigned instead. The value should be updated once it is
+// PrerenderHostId() is assigned instead. The value should be updated once it is
 // available.
 PrerendererImpl::PrerenderInfo::PrerenderInfo(
     const blink::mojom::SpeculationCandidatePtr& candidate)
@@ -477,9 +476,6 @@ bool PrerendererImpl::MaybePrerender(
     }
   }();
 
-  prerender_info.prerender_frame_tree_node_id =
-      PrerenderHost::GetFrameTreeNodeIdForId(prerender_info.prerender_host_id);
-
   // An existing prerender may be canceled to start a new prerender, and
   // `started_prerenders_` may be modified through this cancellation. Therefore,
   // it is needed to re-calculate the right place here on `started_prerenders_`
@@ -503,7 +499,7 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
       started_prerenders_.begin(), started_prerenders_.end(), url,
       std::less<>(), &PrerenderInfo::url);
   for (auto it = begin; it != end; ++it) {
-    if (it->prerender_frame_tree_node_id.is_null()) {
+    if (it->prerender_host_id.is_null()) {
       return false;
     }
   }
