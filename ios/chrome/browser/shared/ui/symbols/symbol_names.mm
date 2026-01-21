@@ -16,6 +16,7 @@ NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePaySymbol = @"google_pay";
+NSString* const kGoogleWalletSymbol = @"google_wallet";
 NSString* const kGooglePhotosSymbol = @"google_photos";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kPageInsightsSymbol = @"page_insights";
