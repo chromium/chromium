@@ -424,8 +424,6 @@ export class AppElement extends AppElementBase {
       GlifAnimationState.INELIGIBLE;
   protected accessor undoAutoRemovalCallback_: (() => void)|null = null;
   protected accessor undoAutoRemovalMessage_: string|null = null;
-  protected enableModalComposebox_: boolean =
-      loadTimeData.getBoolean('enableModalComposebox');
   protected ephemeralContextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('enableEphemeralContextMenuDescription') ?? false;
   protected showContextMenuDescription_: boolean =
@@ -767,7 +765,7 @@ export class AppElement extends AppElementBase {
     }
 
     if (changedPrivateProperties.has('showComposebox_') &&
-        this.showComposebox_ && this.enableModalComposebox_) {
+        this.showComposebox_) {
       const composeboxDialog =
           this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
       assert(composeboxDialog);
@@ -919,12 +917,10 @@ export class AppElement extends AppElementBase {
   }
 
   protected closeComposebox_(e: CustomEvent) {
-    if (this.enableModalComposebox_) {
-      const composeboxDialog =
-          this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
-      assert(composeboxDialog);
-      composeboxDialog.close();
-    }
+    const composeboxDialog =
+        this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
+    assert(composeboxDialog);
+    composeboxDialog.close();
 
     const composeboxText = e.detail.composeboxText;
 
