@@ -60,7 +60,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -471,9 +470,7 @@ public class StatusBarColorControllerTest {
         // Simulate transition completion by resetting the transition overlay state in
         // StatusBarColorController.
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        statusBarColorController.setTabStripColorOverlay(
-                                ScrimProperties.INVALID_COLOR, 0f));
+                () -> statusBarColorController.setTabStripColorOverlay(Color.TRANSPARENT, 0f));
         assertEquals(
                 "Status bar color on tablet should match the default tab strip background when the"
                         + " tab strip is visible.",

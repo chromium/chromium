@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build.VERSION_CODES;
@@ -98,7 +99,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.Tracker;
@@ -847,8 +847,7 @@ public class StripLayoutHelperManagerTest {
                 .setTabStripColorOverlay(mToolbarPrimaryColor, expectedOpacity);
         // Invocation after the transition finished.
         inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
-        inOrder.verify(mStatusBarColorController)
-                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
     }
 
     // TODO(crbug.com/450954710): This test fails on SDK 36.
@@ -1057,15 +1056,13 @@ public class StripLayoutHelperManagerTest {
         InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
         // Invocations before the transition started.
         inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
-        inOrder.verify(mStatusBarColorController)
-                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
         // Invocations during the transition.
         inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(false);
         inOrder.verify(mStatusBarColorController)
                 .setTabStripColorOverlay(scrimColor, expectedOpacity);
         // Invocation after the transition finished.
-        inOrder.verify(mStatusBarColorController)
-                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
     }
 
     @Test
