@@ -214,6 +214,12 @@ GpuFeatureStatus GetWebGPUOnVulkanViaGLInterop(
     return kGpuFeatureStatusDisabled;
   }
 
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+  if (features::IsForceEnableWebGpuInterop()) {
+    return kGpuFeatureStatusEnabled;
+  }
+#endif
+
   if (blocklisted_features.count(
           GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP)) {
     return kGpuFeatureStatusDisabled;

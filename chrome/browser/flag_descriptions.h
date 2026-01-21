@@ -4560,6 +4560,10 @@ inline constexpr char kEnableVulkanName[] = "Vulkan";
 inline constexpr char kEnableVulkanDescription[] =
     "Use vulkan as the graphics backend.";
 
+inline constexpr char kWebGpuInteropName[] = "Force enable WebGPU interop";
+inline constexpr char kkWebGpuInteropDescription[] =
+    "Force enable the WebGPU on vulan via GL compositing interop.";
+
 inline constexpr char kDefaultAngleVulkanName[] = "Default ANGLE Vulkan";
 inline constexpr char kDefaultAngleVulkanDescription[] =
     "Use the Vulkan backend for ANGLE by default.";

@@ -216,6 +216,13 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
                         base::FeatureList::IsEnabled(::features::kTreesInViz)
                             ? gpu::kGpuFeatureStatusEnabled
                             : gpu::kGpuFeatureStatusDisabled);
+
+#if BUILDFLAG(IS_LINUX)
+  features.emplace_back(
+      "webgpu_on_vk_via_gl_interop",
+      SafeGetFeatureStatus(gpu_feature_info,
+                           gpu::GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP));
+#endif
   return features;
 }
 

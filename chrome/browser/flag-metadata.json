@@ -4794,6 +4794,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "force-enable-webgpu-interop",
+    "owners": ["petermcneeley@google.com" , "vasilyt@chromium.org"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "force-high-performance-gpu",
     "owners": [ "petermcneeley@google.com", "fbeaufort@google.com"],
     "expiry_milestone": 165

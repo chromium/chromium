@@ -174,6 +174,11 @@ BASE_FEATURE(kVulkan,
 #endif
 );
 
+// Force enable WebGPU interop when enabled. When disabled the webgpu interop
+// mechanism will default to auto detection in 'GetWebGPUOnVulkanViaGLInterop'
+// function.
+BASE_FEATURE(kForceEnableWebGpuInterop, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableDrDc,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -434,6 +439,12 @@ const base::FeatureParam<int> kGPUBlockListTestGroupId{&kGPUBlockListTestGroup,
 BASE_FEATURE(kGPUDriverBugListTestGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGPUDriverBugListTestGroupId{
     &kGPUDriverBugListTestGroup, "test_group", 0};
+
+#if BUILDFLAG(IS_LINUX)
+bool IsForceEnableWebGpuInterop() {
+  return base::FeatureList::IsEnabled(kForceEnableWebGpuInterop);
+}
+#endif
 
 bool IsUsingVulkan() {
 #if BUILDFLAG(IS_ANDROID)

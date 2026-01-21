@@ -14582,6 +14582,7 @@ from previous Chrome versions.
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
+  <int value="106041115" label="ForceEnableWebGpuInterop:enabled"/>
   <int value="106174755" label="FeedSportsCard:enabled"/>
   <int value="106235373" label="LauncherSystemInfoAnswerCards:enabled"/>
   <int value="106596969" label="HideIncognitoMediaMetadata:disabled"/>
@@ -18478,6 +18479,7 @@ from previous Chrome versions.
       label="CellularBypassESimInstallationConnectivityCheck:enabled"/>
   <int value="1445634746"
       label="AutofillThirdPartyModeContentProvider:enabled"/>
+  <int value="1445768096" label="ForceEnableWebGpuInterop:disabled"/>
   <int value="1446349255" label="ArcEnableUsap:disabled"/>
   <int value="1446904662" label="CCTResizableWindowAboveNavbar:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>

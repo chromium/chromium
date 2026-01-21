@@ -54,6 +54,7 @@ GPU_CONFIG_EXPORT bool IsShaderDiskCacheEnabled(
     const base::CommandLine* command_line);
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kVulkan);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kForceEnableWebGpuInterop);
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphite);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphitePrecompilation);
@@ -135,6 +136,7 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kGPUDriverBugListTestGroupId;
 
 GPU_CONFIG_EXPORT bool IsUsingVulkan();
+GPU_CONFIG_EXPORT bool IsForceEnableWebGpuInterop();
 GPU_CONFIG_EXPORT bool IsDrDcEnabled(
     const gpu::GpuFeatureInfo& gpu_feature_info);
 GPU_CONFIG_EXPORT bool ShouldEnableDrDc();
