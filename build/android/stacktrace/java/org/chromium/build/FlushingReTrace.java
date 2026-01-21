@@ -21,9 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A wrapper around ReTrace that:
- *  1. Hardcodes a more useful line regular expression
- *  2. Disables output buffering
+ * A wrapper around ReTrace that: 1. Hardcodes a more useful line regular expression 2. Disables
+ * output buffering
  */
 @NullMarked
 public class FlushingReTrace {
@@ -81,6 +80,14 @@ public class FlushingReTrace {
                     + "(?:.* isTestClass for %c)|"
                     // E.g.: Caused by: java.lang.RuntimeException: Intentional Java Crash
                     + "(?:Caused by: %c:.*)|"
+                    // LeakCanary output looks like:
+                    // ├─ etg instance
+                    // │    Leaking: NO (fs7↓ aQ2 not leaking)
+                    // │    ↓ rQ.createView
+                    + "(?:.*├─ %c .*)|"
+                    + "(?:.*\\(%c↓ .*)|"
+                    + "(?:.*↓ (?:static )?%c\\.%f.*)|"
+
                     // Quoted values and lines that end with a class / class+method:
                     // E.g.: The class: Foo
                     // E.g.: INSTRUMENTATION_STATUS: class=Foo
