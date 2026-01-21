@@ -3217,6 +3217,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </token>
 </histogram>
 
+<histogram
+    name="Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache.ResourceResponseReceived"
+    enum="Boolean" expires_after="2026-06-07">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether the resource response is available when the prefetch
+    response is taken from the memory cache. This histogram helps understand the
+    critical path of loading if a prefetch is triggered. The result determines
+    if the navigation itself or the prefetch is in the critical path.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge"
     units="ms" expires_after="2026-06-07">
   <owner>lingqi@chromium.org</owner>

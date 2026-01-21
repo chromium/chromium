@@ -614,6 +614,14 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
   scoped_refptr<StreamingSearchPrefetchURLLoader> loader =
       iter->second->TakeSearchPrefetchURLLoader();
 
+  // Record if the response has been received when the navigation accesses
+  // the prefetch URL loader. The result determines if the navigation itself or
+  // the prefetch is in the critical path.
+  base::UmaHistogramBoolean(
+      "Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache."
+      "ResourceResponseReceived",
+      loader->HasResourceResponse());
+
   iter->second->MarkPrefetchAsServed();
 
   if (navigation_url != iter->second->prefetch_url()) {

@@ -1292,6 +1292,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
       SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache."
+      "ResourceResponseReceived",
+      true, 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
@@ -2187,6 +2191,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchServedBeforeHeaders) {
+  base::HistogramTester histogram_tester;
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferHeader);
   std::string search_terms = kOmniboxSuggestPrefetchQuery;
@@ -2209,6 +2214,12 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache."
+      "ResourceResponseReceived",
+      false, 1);
+
   DispatchDelayedResponseTask();
 
   content::WaitForLoadStop(GetWebContents());
