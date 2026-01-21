@@ -24,6 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -619,6 +620,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     }
 
     public static void setSkipShowCheckForTesting(boolean skip) {
+        boolean previousSkip = sSkipShowCheckForTesting;
         sSkipShowCheckForTesting = skip;
+        ResettersForTesting.register(() -> sSkipShowCheckForTesting = previousSkip);
     }
 }
