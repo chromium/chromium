@@ -96,7 +96,7 @@ TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
       LegalMessageLines());
 
   EXPECT_TRUE(ui_info.is_server_save);
-  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_WALLET);
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_PAY);
   EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_value),
             u"FR76 3000 6000 0112 3456 7890 189");
   EXPECT_EQ(
