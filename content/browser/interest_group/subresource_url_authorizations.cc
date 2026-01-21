@@ -43,10 +43,6 @@ void SubresourceUrlAuthorizations::AuthorizeSubresourceUrls(
     // which is per frame, so as long as the page doesn't alter the <script
     // type="webbundle"> for the subresource, the bundle_url should be the same.
     //
-    // TODO(crbug.com/40876285): Once we have shared-ownership handles to bundle
-    // subresources, allow sites to alter their <script> tags after calling
-    // runAdAuction().
-    //
     // TODO(crbug.com/40223695): If the tokens match, but the bundle URLs don't,
     // report a bad mojo message from the renderer.
     ++it->second.count;
