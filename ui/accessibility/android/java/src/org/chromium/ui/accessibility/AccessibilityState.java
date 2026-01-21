@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -36,6 +37,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -62,12 +64,6 @@ import java.util.WeakHashMap;
 @NullMarked
 public class AccessibilityState {
     private static final String TAG = "A11yState";
-
-    /**
-     * The default text cursor blink interval in milliseconds. This value is used as a fallback on
-     * versions of Android where the setting is not user-configurable.
-     */
-    public static int DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS = 500;
 
     public static final int EVENT_TYPE_MASK_ALL = ~0;
     public static final int EVENT_TYPE_MASK_NONE = 0;
@@ -255,14 +251,12 @@ public class AccessibilityState {
     private static @Nullable List<AccessibilityServiceInfo> sServiceInfoListForTesting;
     private static @Nullable String sEnabledServiceStringForTesting;
 
-    // A flag indicating whether the "extra state" values `sDisplayInversionEnabled`,
-    // `sHighContrastEnabled`, `sTextCursorBlinkInterval`, and `sAnimatorDurationScale` have been
-    // read yet from the system settings into these variables.
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
     private static int sFontWeightAdjustment;
-    private static int sTextCursorBlinkInterval = DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+    private static int sTextCursorBlinkInterval =
+            AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     private static float sAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
@@ -541,16 +535,16 @@ public class AccessibilityState {
                         Settings.Global.ANIMATOR_DURATION_SCALE,
                         1f);
 
-        // Read the system text cursor blink interval, with the default setting if not available.
-        // It would be preferable to use the `ViewConfiguration.getTextCursorBlinkIntervalMillis()`
-        // API, but its current non-static form requires access to a UI `Context` that is not
-        // available from `AccessibilityState`.
-        sTextCursorBlinkInterval =
-                Settings.Secure.getInt(
-                        context.getContentResolver(),
-                        /* Settings.Secure.ACCESSIBILITY_TEXT_CURSOR_BLINK_INTERVAL_MS */
-                        "accessibility_text_cursor_blink_interval_ms",
-                        DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS);
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate != null && context instanceof Activity) {
+            ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
+            sTextCursorBlinkInterval =
+                    aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(viewConfiguration);
+        } else {
+            sTextCursorBlinkInterval =
+                    AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        }
 
         int highTextContrastEnabled =
                 Settings.Secure.getInt(
@@ -1016,15 +1010,13 @@ public class AccessibilityState {
         // This method is called as a deferred task during browser init. If no services are enabled,
         // this will ensure the state is populated for any client queries later. If a service is
         // enabled during startup, the current state may be queried before this method is called,
-        // in which case another state update is not needed. In either case, the state should be
-        // propagated to all listeners once during browser init.
+        // in which case another update is not needed.
         if (!sInitialized) {
             updateAccessibilityServices();
         }
         if (!sExtraStateInitialized) {
             updateExtraState();
         }
-        notifyExtraStateListeners();
 
         // We want to be notified whenever an Activity or Application state changes.
         ApplicationStatus.registerStateListenerForAllActivities(sActivityStateListener);
@@ -1083,7 +1075,7 @@ public class AccessibilityState {
         sHighContrastEnabled = false;
         sAnimatorDurationScale = 1f;
         sAccessibilityManager = null;
-        sTextCursorBlinkInterval = DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        sTextCursorBlinkInterval = AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     }
 
     private static void processServicesChange() {
@@ -1093,11 +1085,6 @@ public class AccessibilityState {
 
     private static void processExtraStateChange() {
         updateExtraState();
-        notifyExtraStateListeners();
-    }
-
-    /** Inform native listeners of changes to the extra state. */
-    private static void notifyExtraStateListeners() {
         AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
