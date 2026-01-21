@@ -140,6 +140,14 @@ class CC_EXPORT PropertyTree {
   explicit PropertyTree(PropertyTrees* property_trees);
   std::vector<T> nodes_;
 
+  // This map allow mapping directly from a compositor element id to the
+  // respective property node. This will eventually allow simplifying logic in
+  // various places that today has to map from element id to layer id, and then
+  // from layer id to the respective property node. Completing that work is
+  // pending the launch of BlinkGenPropertyTrees and reworking UI compositor
+  // logic to produce cc property trees and these maps.
+  base::flat_map<ElementId, int> element_id_to_node_index_;
+
  private:
   void SetPropertyTrees(PropertyTrees* property_trees) {
     property_trees_ = property_trees;
@@ -149,13 +157,6 @@ class CC_EXPORT PropertyTree {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
   RAW_PTR_EXCLUSION PropertyTrees* property_trees_;
-  // This map allow mapping directly from a compositor element id to the
-  // respective property node. This will eventually allow simplifying logic in
-  // various places that today has to map from element id to layer id, and then
-  // from layer id to the respective property node. Completing that work is
-  // pending the launch of BlinkGenPropertyTrees and reworking UI compositor
-  // logic to produce cc property trees and these maps.
-  base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
 struct AnchorPositionScrollData;
@@ -189,6 +190,12 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   // Updates the parent, target, and screen space transforms and snapping for
   // all nodes.
   void UpdateAllTransforms(const ViewportPropertyIds& viewport_property_ids);
+
+  // Copies the transform tree from `other` but preserves the existing nodes
+  // vector. This is useful for incremental updates where nodes are updated
+  // in-place.
+  void CopyFromPreservingNodes(const TransformTree& other);
+
   // UpdateAllTransforms() may update the transform tree in multiple passes.
   // This struct stores data collected and used across the passes.
   struct UpdateTransformsData {

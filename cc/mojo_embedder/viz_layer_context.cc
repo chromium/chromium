@@ -53,65 +53,11 @@ namespace cc::mojo_embedder {
 
 namespace {
 
-void ComputePropertyTreeNodeUpdate(
-    const TransformNode* old_node,
+void AddTransformNodeUpdate(
     const TransformNode& new_node,
     std::vector<viz::mojom::TransformNodePtr>& container) {
   // TODO(https://crbug.com/40902503): This is a subset of the properties we
   // need to sync.
-  if (old_node && old_node->id == new_node.id &&
-      old_node->parent_id == new_node.parent_id &&
-      old_node->parent_frame_id == new_node.parent_frame_id &&
-      old_node->element_id == new_node.element_id &&
-      old_node->local == new_node.local &&
-      old_node->origin == new_node.origin &&
-      old_node->post_translation == new_node.post_translation &&
-      old_node->to_parent == new_node.to_parent &&
-      old_node->sticky_position_constraint_id ==
-          new_node.sticky_position_constraint_id &&
-      old_node->anchor_position_scroll_data_id ==
-          new_node.anchor_position_scroll_data_id &&
-      old_node->sorting_context_id == new_node.sorting_context_id &&
-      old_node->scroll_offset() == new_node.scroll_offset() &&
-      old_node->snap_amount == new_node.snap_amount &&
-      old_node->has_potential_animation == new_node.has_potential_animation &&
-      old_node->is_currently_animating == new_node.is_currently_animating &&
-      old_node->flattens_inherited_transform ==
-          new_node.flattens_inherited_transform &&
-      old_node->scrolls == new_node.scrolls &&
-      old_node->should_undo_overscroll == new_node.should_undo_overscroll &&
-      old_node->should_be_snapped == new_node.should_be_snapped &&
-      old_node->moved_by_outer_viewport_bounds_delta_y ==
-          new_node.moved_by_outer_viewport_bounds_delta_y &&
-      old_node->in_subtree_of_page_scale_layer ==
-          new_node.in_subtree_of_page_scale_layer &&
-      old_node->delegates_to_parent_for_backface ==
-          new_node.delegates_to_parent_for_backface &&
-      old_node->will_change_transform == new_node.will_change_transform &&
-      old_node->maximum_animation_scale == new_node.maximum_animation_scale &&
-      old_node->node_and_ancestors_are_animated_or_invertible ==
-          new_node.node_and_ancestors_are_animated_or_invertible &&
-      old_node->is_invertible == new_node.is_invertible &&
-      old_node->ancestors_are_invertible == new_node.ancestors_are_invertible &&
-      old_node->node_and_ancestors_are_flat ==
-          new_node.node_and_ancestors_are_flat &&
-      old_node->node_or_ancestors_will_change_transform ==
-          new_node.node_or_ancestors_will_change_transform &&
-      old_node->moved_by_safe_area_bottom ==
-          new_node.moved_by_safe_area_bottom &&
-      old_node->damage_reasons() == new_node.damage_reasons() &&
-      old_node->needs_local_transform_update ==
-          new_node.needs_local_transform_update &&
-      old_node->to_screen_is_potentially_animated ==
-          new_node.to_screen_is_potentially_animated &&
-
-      // Since |transform_changed| is transient, we only need to check for it's
-      // current state instead of comparing to old one.
-      !new_node.transform_changed() &&
-      old_node->visible_frame_element_id == new_node.visible_frame_element_id) {
-    return;
-  }
-
   auto wire = viz::mojom::TransformNode::New();
   wire->id = new_node.id;
   wire->parent_id = new_node.parent_id;
@@ -355,6 +301,41 @@ void ComputePropertyTreeUpdate(const TreeType& old_tree,
   for (size_t i = 0; i < new_tree.size(); ++i) {
     const NodeType* old_node = old_tree.size() > i ? old_tree.Node(i) : nullptr;
     ComputePropertyTreeNodeUpdate(old_node, *new_tree.Node(i), updates);
+  }
+}
+
+void ComputeTransformTreeUpdate(
+    TransformTree& old_tree,
+    const TransformTree& new_tree,
+    std::vector<viz::mojom::TransformNodePtr>& updates,
+    uint32_t& new_num_nodes) {
+  new_num_nodes = base::checked_cast<uint32_t>(new_tree.size());
+
+  const auto& new_nodes = new_tree.nodes();
+  auto& old_nodes = old_tree.nodes();
+
+  for (size_t i = 0; i < new_nodes.size(); ++i) {
+    bool changed = false;
+    auto& new_node = new_nodes[i];
+    if (i >= old_nodes.size()) {
+      changed = true;
+      old_nodes.push_back(new_node);
+    } else {
+      // Since |transform_changed| is transient, we need to check for its
+      // current state instead of comparing to the old one.
+      if (new_node.transform_changed() || new_node != old_nodes[i]) {
+        changed = true;
+        old_nodes[i] = new_node;
+      }
+    }
+
+    if (changed) {
+      AddTransformNodeUpdate(new_node, updates);
+    }
+  }
+
+  if (old_nodes.size() > new_nodes.size()) {
+    old_nodes.resize(new_nodes.size());
   }
 }
 
@@ -1501,9 +1482,10 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
       last_committed_property_trees_.clear();
     }
     PropertyTrees& old_trees = last_committed_property_trees_;
-    ComputePropertyTreeUpdate(
-        old_trees.transform_tree(), property_trees.transform_tree(),
+    ComputeTransformTreeUpdate(
+        old_trees.transform_tree_mutable(), property_trees.transform_tree(),
         update->transform_nodes, update->num_transform_nodes);
+
     ComputePropertyTreeUpdate(old_trees.clip_tree(), property_trees.clip_tree(),
                               update->clip_nodes, update->num_clip_nodes);
     ComputeEffectTreeUpdate(old_trees.effect_tree(),
@@ -1518,15 +1500,18 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     update->scroll_tree_update = ComputeScrollTreePropertiesUpdate(
         old_trees.scroll_tree(), property_trees.scroll_tree());
 
-    last_committed_property_trees_ = property_trees;
+    old_trees.transform_tree_mutable().CopyFromPreservingNodes(
+        property_trees.transform_tree());
+    old_trees.clip_tree_mutable() = property_trees.clip_tree();
+    old_trees.effect_tree_mutable() = property_trees.effect_tree();
+    old_trees.scroll_tree_mutable() = property_trees.scroll_tree();
 
     // Some deltas are normally not copied when adopting a new pending tree.
     // See details in ScrollTree::operator=(const ScrollTree& from).
     // However, we want to remember the last updates committed to viz.
-    last_committed_property_trees_.scroll_tree_mutable()
-        .synced_scroll_offset_map() =
+    old_trees.scroll_tree_mutable().synced_scroll_offset_map() =
         property_trees.scroll_tree().synced_scroll_offset_map();
-    last_committed_property_trees_.scroll_tree_mutable().elastic_overscroll() =
+    old_trees.scroll_tree_mutable().elastic_overscroll() =
         property_trees.scroll_tree().elastic_overscroll();
   }
 

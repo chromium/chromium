@@ -248,6 +248,22 @@ void TransformTree::UpdateAllTransforms(
   set_needs_update(false);
 }
 
+void TransformTree::CopyFromPreservingNodes(const TransformTree& other) {
+  PropertyTree<TransformNode>::set_needs_update(other.needs_update());
+  element_id_to_node_index_ = other.element_id_to_node_index_;
+
+  page_scale_factor_ = other.page_scale_factor_;
+  device_scale_factor_ = other.device_scale_factor_;
+  device_transform_scale_factor_ = other.device_transform_scale_factor_;
+  nodes_affected_by_outer_viewport_bounds_delta_ =
+      other.nodes_affected_by_outer_viewport_bounds_delta_;
+  nodes_affected_by_safe_area_inset_bottom_ =
+      other.nodes_affected_by_safe_area_inset_bottom_;
+  sticky_position_data_ = other.sticky_position_data_;
+  anchor_position_scroll_data_ = other.anchor_position_scroll_data_;
+  drawn_elastic_overscroll_ = other.drawn_elastic_overscroll_;
+}
+
 TransformTree::UpdateTransformsData::UpdateTransformsData() = default;
 TransformTree::UpdateTransformsData::~UpdateTransformsData() = default;
 
