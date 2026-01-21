@@ -8,9 +8,13 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_ui.h"
 
-TopChromeWebUIController::TopChromeWebUIController(content::WebUI* contents,
-                                                   bool enable_chrome_send)
-    : MojoWebUIController(contents, enable_chrome_send) {}
+TopChromeWebUIController::TopChromeWebUIController(
+    content::WebUI* contents,
+    bool enable_chrome_send,
+    bool enable_chrome_histograms)
+    : MojoWebUIController(contents,
+                          enable_chrome_send,
+                          enable_chrome_histograms) {}
 
 void TopChromeWebUIController::WebUIPrimaryPageChanged(content::Page& page) {
   MojoWebUIController::WebUIPrimaryPageChanged(page);
