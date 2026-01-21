@@ -31,7 +31,6 @@ source_set("content") {
     "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
     "//components/services/paint_preview_compositor/public/mojom",
-    "//components/tabs:public",
     "//components/viz/common",
   ]
 

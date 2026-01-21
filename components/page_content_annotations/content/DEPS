@@ -9,7 +9,6 @@ include_rules = [
     "+components/pdf/browser",
     "+components/pdf/common",
     "+components/services/paint_preview_compositor",
-    "+components/tabs",
     "+components/viz/common/frame_sinks",
     "+content/public/browser",
     "+mojo/public/cpp/base",
