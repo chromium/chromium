@@ -288,27 +288,25 @@ std::u16string GetFillValueForEntity(
 bool ShouldReauthBeforeFilling(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields,
-    const std::string& app_locale,
+    std::string_view app_locale,
     const PrefService& prefs) {
-  return std::ranges::any_of(
-      fields, [&](const AutofillFieldWithAttributeType& f) {
-        return ShouldFieldBeObfuscated(entity, f, app_locale, prefs);
-      });
-}
+  if (!prefs::IsAutofillAiReauthBeforeFillingEnabled(&prefs)) {
+    return false;
+  }
 
-bool ShouldFieldBeObfuscated(const EntityInstance& entity,
-                             const AutofillFieldWithAttributeType& f,
-                             const std::string& app_locale,
-                             const PrefService& prefs) {
-  base::optional_ref<const AttributeInstance> attribute =
-      entity.attribute(f.type);
-  return prefs::IsAutofillAiReauthBeforeFillingEnabled(&prefs) &&
-         entity.type() == f.type.entity_type() && attribute &&
-         attribute->type().is_obfuscated() &&
-         !attribute
-              ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
-                        app_locale, f.field->format_string())
-              .empty() &&
+  const bool will_fill_sensitive_field =
+      std::ranges::any_of(fields, [&](const AutofillFieldWithAttributeType& f) {
+        base::optional_ref<const AttributeInstance> attribute =
+            entity.attribute(f.type);
+        return entity.type() == f.type.entity_type() && attribute &&
+               attribute->type().is_obfuscated() &&
+               !attribute
+                    ->GetInfo(f.field->Type().GetAutofillAiType(entity.type()),
+                              app_locale, f.field->format_string())
+                    .empty();
+      });
+
+  return will_fill_sensitive_field &&
          base::FeatureList::IsEnabled(features::kAutofillAiReauthRequired);
 }
 

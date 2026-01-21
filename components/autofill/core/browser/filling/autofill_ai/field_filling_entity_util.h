@@ -47,18 +47,12 @@ std::u16string GetFillValueForEntity(
     const std::string& app_locale,
     AddressNormalizer* address_normalizer);
 
-// Returns whether the suggestion's main text should be obfuscated.
-bool ShouldFieldBeObfuscated(const EntityInstance& entity,
-                             const AutofillFieldWithAttributeType& f,
-                             const std::string& app_locale,
-                             const PrefService& prefs);
-
 // Returns whether the user should re-auth before filling a form with Autofill
 // AI data.
 bool ShouldReauthBeforeFilling(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields,
-    const std::string& app_locale,
+    std::string_view app_locale,
     const PrefService& prefs);
 }  // namespace autofill
 
