@@ -84,6 +84,12 @@ int JudgeSection(size_t image_size, const typename TRAITS::Elf_Shdr* section) {
     return SECTION_IS_USELESS;
 
   if (section->sh_type == elf::SHT_NOBITS) {
+    // Special case for .bss sections with |sh_offset == 0| (seen in .odex),
+    // which tends to cause address translation conflicts.
+    if (section->sh_offset == 0) {
+      return SECTION_IS_USELESS;
+    }
+
     // Special case for .tbss sections: These should be ignored because they may
     // have offset-RVA map that don't match other sections.
     if (section->sh_flags & elf::SHF_TLS)
