@@ -429,6 +429,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Fre.TotalTime.Accepted.Onboarding" units="ms"
+    expires_after="2026-08-03">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Records the time elapsed from when the Trust-First Onboarding flow (side
+    panel) is first shown until the user accepts it (starts chat).
+  </summary>
+</histogram>
+
 <histogram name="Glic.Fre.TotalTime.Dismissed" units="ms"
     expires_after="2026-08-03">
   <owner>birnie@google.com</owner>
@@ -436,6 +446,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time elapsed from when the FRE is first opened until it is
     dismissed by the user (e.g. closing the tab).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Fre.TotalTime.Dismissed.Onboarding" units="ms"
+    expires_after="2026-08-03">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Records the time elapsed from when the Trust-First Onboarding flow (side
+    panel) is first shown until it is dismissed by the user (e.g. closing the
+    side panel).
   </summary>
 </histogram>
 

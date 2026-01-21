@@ -1567,7 +1567,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void SetOnboardingCompleted() override {
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+    glic_service_->metrics()->OnTrustFirstOnboardingAccept();
     pref_service_->SetInteger(prefs::kGlicCompletedFre,
                               static_cast<int>(prefs::FreStatus::kCompleted));
 

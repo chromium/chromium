@@ -980,5 +980,79 @@ TEST_F(GlicMetricsTest, OnRecordUseCounter) {
   histogram_tester().ExpectTotalCount("Glic.Api.UseCounter", 3);
 }
 
+class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
+ public:
+  void SetUp() override {
+    GlicMetricsTest::SetUp();
+    // Revert FRE status to NotStarted to simulate new user for this experiment.
+    profile()->GetPrefs()->SetInteger(
+        prefs::kGlicCompletedFre,
+        static_cast<int>(prefs::FreStatus::kNotStarted));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kGlicTrustFirstOnboarding};
+};
+
+TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndDismissed) {
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 1);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown.Onboarding"),
+            1);
+
+  // Closing without accept triggers "Dismissed".
+  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  EXPECT_EQ(
+      user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 1);
+  histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Dismissed.Onboarding",
+                                      1);
+}
+
+TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 1);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown.Onboarding"),
+            1);
+
+  metrics()->OnTrustFirstOnboardingAccept();
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Accept"), 1);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Accept.Onboarding"),
+            1);
+  histogram_tester().ExpectTotalCount("Glic.Fre.TotalTime.Accepted.Onboarding",
+                                      1);
+
+  // Closing after accept should NOT trigger "Dismissed".
+  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  EXPECT_EQ(
+      user_action_tester().GetActionCount("Glic.Fre.Dismissed.Onboarding"), 0);
+}
+
+TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 0);
+
+  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  EXPECT_EQ(
+      user_action_tester().GetActionCount("Glic.Fre.Onboarding.Dismissed"), 0);
+}
+
+TEST_F(GlicMetricsTrustFirstOnboardingTest, FreToFirstQueryTimeRecorded) {
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
+  metrics()->OnTrustFirstOnboardingAccept();
+
+  task_environment().FastForwardBy(base::Seconds(1));
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  histogram_tester().ExpectUniqueSample("Glic.FreToFirstQueryTime", 1000, 1);
+}
+
 }  // namespace
 }  // namespace glic

@@ -319,6 +319,37 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
 
 GlicMetrics::~GlicMetrics() = default;
 
+void GlicMetrics::OnTrustFirstOnboardingShown() {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
+  onboarding_shown_time_ = base::TimeTicks::Now();
+}
+
+void GlicMetrics::OnTrustFirstOnboardingAccept() {
+  OnFreAccepted();
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept.Onboarding"));
+
+  if (!onboarding_shown_time_.is_null()) {
+    base::UmaHistogramLongTimes(
+        "Glic.Fre.TotalTime.Accepted.Onboarding",
+        base::TimeTicks::Now() - onboarding_shown_time_);
+    onboarding_shown_time_ = base::TimeTicks();
+  }
+}
+
+void GlicMetrics::OnTrustFirstOnboardingDismissed() {
+  if (onboarding_shown_time_.is_null() ||
+      enabling_->HasConsentedForProfile(profile_)) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed.Onboarding"));
+
+  base::UmaHistogramLongTimes("Glic.Fre.TotalTime.Dismissed.Onboarding",
+                              base::TimeTicks::Now() - onboarding_shown_time_);
+  onboarding_shown_time_ = base::TimeTicks();
+}
+
 void GlicMetrics::OnFreAccepted() {
   // Store the current time in a instance variable.
   fre_accepted_time_ = base::TimeTicks::Now();
@@ -537,6 +568,11 @@ void GlicMetrics::OnRecordUseCounter(uint16_t counter) {
 
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+      !enabling_->HasConsentedForProfile(profile_)) {
+    OnTrustFirstOnboardingShown();
+  }
+
   base::UmaHistogramEnumeration(
       "Glic.Session.Open.BrowserActiveState",
       browser_activity_observer_->GetBrowserActiveState());
@@ -692,6 +728,14 @@ void GlicMetrics::OnGlicWindowClose(Browser* last_active_browser,
     base::UmaHistogramCounts100("Glic.ScrollTo.SessionCount",
                                 scroll_attempt_count_);
     scroll_attempt_count_ = 0;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    if (!onboarding_shown_time_.is_null() &&
+        !enabling_->HasConsentedForProfile(profile_)) {
+      OnTrustFirstOnboardingDismissed();
+    }
+    onboarding_shown_time_ = base::TimeTicks();
   }
 
   glic_window_size_timer_.Stop();

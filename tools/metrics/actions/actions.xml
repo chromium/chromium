@@ -14016,6 +14016,15 @@ should be able to be added at any place in this file.
   <description>Logged if the FRE is accepted.</description>
 </action>
 
+<action name="Glic.Fre.Accept.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is accepted. Only recorded for the
+    Trust First Onboarding flow.
+  </description>
+</action>
+
 <action name="Glic.Fre.CheckAuthBeforeShowSync" not_user_triggered="true">
   <owner>birnie@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
@@ -14074,6 +14083,15 @@ should be able to be added at any place in this file.
   <description>
     User closed the disabled by admin panel in the FRE by clicking the
     confirmation button.
+  </description>
+</action>
+
+<action name="Glic.Fre.Dismissed.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is dismissed before completion.
+    Only recorded for the Trust First Onboarding flow.
   </description>
 </action>
 
@@ -14165,6 +14183,15 @@ should be able to be added at any place in this file.
   <description>
     Logged if the glic FRE is shown. Logged as soon as the widget is visible.
     This occurs before the UI is fully loaded.
+  </description>
+</action>
+
+<action name="Glic.Fre.Shown.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is shown. Only recorded for the
+    Trust First Onboarding flow.
   </description>
 </action>
 

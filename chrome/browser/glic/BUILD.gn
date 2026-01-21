@@ -395,6 +395,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "glic_browsertest.cc",
+    "glic_metrics_browsertest.cc",
     "glic_net_log_browsertest.cc",
     "glic_policy_browsertest.cc",
     "glic_profile_manager_browsertest.cc",
@@ -409,6 +410,7 @@ source_set("browser_tests") {
   deps = [
     ":glic",
     ":impl",
+    "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
