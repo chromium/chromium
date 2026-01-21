@@ -25974,8 +25974,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ThrottleMainFrameTo60Hz",
-                        "UrgentMainFrameForInput"
+                        "ThrottleMainFrameTo60Hz"
                     ]
                 }
             ]
