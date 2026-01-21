@@ -209,6 +209,7 @@ cq_build_perf_builder(
         category = "build perf|android",
         short_name = "siso",
     ),
+    siso_profile_mode = "local",
 )
 
 cq_build_perf_builder(
@@ -270,6 +271,7 @@ cq_build_perf_builder(
         category = "build perf|linux",
         short_name = "siso",
     ),
+    siso_profile_mode = "local",
 )
 
 cq_build_perf_builder(
@@ -330,6 +332,8 @@ cq_build_perf_builder(
         category = "build perf|windows",
         short_name = "siso",
     ),
+    # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
+    siso_profile_mode = "cloud",
 )
 
 ci_build_perf_builder(
@@ -365,6 +369,8 @@ ci_build_perf_builder(
     # TODO(333491525): enable no-fallback once OOM fallback mitigated.
     siso_experiments = [],
     siso_limits = "fastlocal=0",
+    # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
+    siso_profile_mode = "cloud",
 )
 
 cq_build_perf_builder(
@@ -427,6 +433,7 @@ cq_build_perf_builder(
         category = "build perf|cros",
         short_name = "siso",
     ),
+    siso_profile_mode = "local",
 )
 
 cq_build_perf_builder(
@@ -495,6 +502,7 @@ cq_build_perf_builder(
         short_name = "siso",
     ),
     siso_configs = ["builder"],
+    siso_profile_mode = "local",
 )
 
 cq_build_perf_builder(
@@ -566,6 +574,7 @@ cq_build_perf_builder(
         short_name = "siso",
     ),
     siso_configs = ["builder"],
+    siso_profile_mode = "local",
     xcode = xcode.xcode_default,
 )
 
@@ -632,6 +641,7 @@ This builder measures build performance for Android developer builds, by simulat
         short_name = "dev",
     ),
     reclient_jobs = 5120,
+    siso_profile_mode = "local",
     siso_remote_jobs = 5120,
 )
 
@@ -666,6 +676,7 @@ This builder measures build performance for Linux developer builds, by simulatin
         short_name = "dev",
     ),
     reclient_jobs = 5120,
+    siso_profile_mode = "local",
     siso_remote_jobs = 5120,
 )
 
@@ -700,6 +711,8 @@ This builder measures build performance for Windows developer builds, by simulat
         short_name = "dev",
     ),
     reclient_jobs = 1000,
+    # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
+    siso_profile_mode = "cloud",
     siso_remote_jobs = 5120,  # Siso doesn't set remote limit for Window builds.
 )
 
@@ -736,6 +749,7 @@ This builder measures build performance for Mac developer builds, by simulating 
     ),
     reclient_jobs = 640,
     siso_configs = [],
+    siso_profile_mode = "local",
     siso_remote_jobs = 5120,  # Siso doesn't set remote limit for Mac builds.
 )
 
@@ -775,6 +789,7 @@ This builder measures build performance for iOS developer builds, by simulating 
     ),
     reclient_jobs = 640,
     siso_configs = [],
+    siso_profile_mode = "local",
     siso_remote_jobs = 5120,  # Siso doesn't set remote limit for iOS builds.
     xcode = xcode.xcode_default,
 )
@@ -815,6 +830,7 @@ ci.builder(
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
     siso_fail_if_reapi_used = True,
+    siso_profile_mode = "local",
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
