@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vp8_vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
@@ -17,6 +12,7 @@
 #include <bit>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -117,8 +113,9 @@ libvpx::VP8RateControlRtcConfig CreateRateControlConfig(
   int bitrate_sum = 0;
   for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
     bitrate_sum += bitrate_allocation.GetBitrateBps(0u, tid) / 1000;
-    rc_cfg.layer_target_bitrate[tid] = bitrate_sum;
-    rc_cfg.ts_rate_decimator[tid] = 1u << (num_temporal_layers - tid - 1);
+    UNSAFE_TODO(rc_cfg.layer_target_bitrate[tid]) = bitrate_sum;
+    UNSAFE_TODO(rc_cfg.ts_rate_decimator[tid]) =
+        1u << (num_temporal_layers - tid - 1);
   }
 
   rc_cfg.frame_drop_thresh = encode_params.drop_frame_thresh;
@@ -219,8 +216,8 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
         };
 
     std::tie(metadata, buffer_flags) =
-        kFrameConfigs[num_layers - kMinSupportedVP8TemporalLayers]
-                     [frame_num % kTemporalLayerCycle];
+        UNSAFE_TODO(kFrameConfigs[num_layers - kMinSupportedVP8TemporalLayers]
+                                 [frame_num % kTemporalLayerCycle]);
   }
 
   frame_hdr.frame_type =
@@ -661,9 +658,12 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
                 "Invalid loop filter array sizes");
 
   for (size_t i = 0; i < std::size(pic_param.loop_filter_level); ++i) {
-    pic_param.loop_filter_level[i] = frame_header->loopfilter_hdr.level;
-    pic_param.ref_lf_delta[i] = frame_header->loopfilter_hdr.ref_frame_delta[i];
-    pic_param.mode_lf_delta[i] = frame_header->loopfilter_hdr.mb_mode_delta[i];
+    UNSAFE_TODO(pic_param.loop_filter_level[i]) =
+        frame_header->loopfilter_hdr.level;
+    UNSAFE_TODO(pic_param.ref_lf_delta[i]) =
+        UNSAFE_TODO(frame_header->loopfilter_hdr.ref_frame_delta[i]);
+    UNSAFE_TODO(pic_param.mode_lf_delta[i]) =
+        UNSAFE_TODO(frame_header->loopfilter_hdr.mb_mode_delta[i]);
   }
 
   pic_param.sharpness_level = frame_header->loopfilter_hdr.sharpness_level;

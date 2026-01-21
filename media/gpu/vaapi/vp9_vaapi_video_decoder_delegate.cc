@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.h"
 
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -120,10 +116,10 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   for (size_t i = 0; i < std::size(pic_param.reference_frames); ++i) {
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
-      pic_param.reference_frames[i] =
+      UNSAFE_TODO(pic_param.reference_frames[i]) =
           ref_pic->AsVaapiVP9Picture()->va_surface_id();
     } else {
-      pic_param.reference_frames[i] = VA_INVALID_SURFACE;
+      UNSAFE_TODO(pic_param.reference_frames[i]) = VA_INVALID_SURFACE;
     }
   }
 
@@ -182,7 +178,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
           std::extent<decltype(slice_param.seg_param)>(),
       "seg_param array of incorrect size");
   for (size_t i = 0; i < std::size(slice_param.seg_param); ++i) {
-    VASegmentParameterVP9& seg_param = slice_param.seg_param[i];
+    VASegmentParameterVP9& seg_param = UNSAFE_TODO(slice_param.seg_param[i]);
 #define SEG_TO_SP_SF(a, b) seg_param.segment_flags.fields.a = b
     SEG_TO_SP_SF(
         segment_reference_enabled,
@@ -193,7 +189,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
                  seg.FeatureEnabled(i, Vp9SegmentationParams::SEG_LVL_SKIP));
 #undef SEG_TO_SP_SF
 
-    SafeArrayMemcpy(seg_param.filter_level, lf.lvl[i]);
+    SafeArrayMemcpy(seg_param.filter_level, UNSAFE_TODO(lf.lvl[i]));
 
     seg_param.luma_dc_quant_scale = seg.y_dequant[i][0];
     seg_param.luma_ac_quant_scale = seg.y_dequant[i][1];

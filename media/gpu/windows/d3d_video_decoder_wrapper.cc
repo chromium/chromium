@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 
 #include <dxva.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_log.h"
 
@@ -105,7 +101,7 @@ bool D3DVideoDecoderWrapper::AppendBitstreamAndSliceDataWithStartCode(
 
     const uint8_t* byte_ptr = reinterpret_cast<const uint8_t*>(&slice_info);
     slice_info_bytes_.insert(slice_info_bytes_.end(), byte_ptr,
-                             byte_ptr + sizeof(slice_info));
+                             UNSAFE_TODO(byte_ptr + sizeof(slice_info)));
   }
 
   return true;

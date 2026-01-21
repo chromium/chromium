@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This has to be included first.
 // See http://code.google.com/p/googletest/issues/detail?id=371
 #include <drm_fourcc.h>
@@ -23,6 +18,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
@@ -913,25 +909,27 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
   EXPECT_EQ(va_descriptor.num_layers, 2u);
   for (uint32_t i = 0; i < va_descriptor.num_layers; ++i) {
-    EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u);
+    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u));
     const uint32_t expected_object_index =
         (va_descriptor.num_objects == 1) ? 0 : i;
-    EXPECT_EQ(va_descriptor.layers[i].object_index[0], expected_object_index);
+    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].object_index[0],
+                          expected_object_index));
 
     DVLOG(2) << "plane " << i
-             << ", pitch: " << va_descriptor.layers[i].pitch[0];
+             << ", pitch: " << UNSAFE_TODO(va_descriptor.layers[i]).pitch[0];
     // Luma and chroma planes have different |pitch| expectations.
     // TODO(mcasas): consider bitdepth for pitch lower thresholds.
     if (i == 0) {
-      EXPECT_GE(
+      UNSAFE_TODO(EXPECT_GE(
           va_descriptor.layers[i].pitch[0],
-          base::checked_cast<uint32_t>(scoped_va_surface->size().width()));
+          base::checked_cast<uint32_t>(scoped_va_surface->size().width())));
     } else {
       const auto expected_rounded_up_pitch =
           base::bits::AlignUpDeprecatedDoNotUse(
               scoped_va_surface->size().width(), 2);
-      EXPECT_GE(va_descriptor.layers[i].pitch[0],
-                base::checked_cast<uint32_t>(expected_rounded_up_pitch));
+      UNSAFE_TODO(
+          EXPECT_GE(va_descriptor.layers[i].pitch[0],
+                    base::checked_cast<uint32_t>(expected_rounded_up_pitch)));
     }
   }
 
@@ -986,8 +984,8 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   ASSERT_EQ(va_descriptor.num_layers,
             base::checked_cast<uint32_t>(bo_num_planes));
   for (int i = 0; i < bo_num_planes; ++i) {
-    EXPECT_EQ(va_descriptor.layers[i].pitch[0],
-              gbm_bo_get_stride_for_plane(bo, i));
+    UNSAFE_TODO(EXPECT_EQ(va_descriptor.layers[i].pitch[0],
+                          gbm_bo_get_stride_for_plane(bo, i)));
   }
 
   // TODO(mcasas): consider comparing |va_descriptor.objects[0].size| with |bo|s

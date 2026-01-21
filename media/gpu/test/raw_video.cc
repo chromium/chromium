@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/raw_video.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -205,7 +201,7 @@ class RawVideo::VP9Decoder {
                        base::WaitableEvent* done) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
     if (size_t cached_index = target_index % kNumCachedFrames;
-        cached_frame_indices_[cached_index] == target_index) {
+        UNSAFE_TODO(cached_frame_indices_[cached_index]) == target_index) {
       *decoded_frame_buffer = cached_frames_[cached_index];
       done->Signal();
       return;
@@ -233,7 +229,7 @@ class RawVideo::VP9Decoder {
       auto buffer = CreateBufferFromFrame(*last_decoded_frame_);
       last_decoded_frame_.reset();
       const size_t cached_index = i % kNumCachedFrames;
-      cached_frame_indices_[cached_index] = i;
+      UNSAFE_TODO(cached_frame_indices_[cached_index]) = i;
       cached_frames_[cached_index] = std::move(buffer);
       if (i == target_index) {
         *decoded_frame_buffer = cached_frames_[cached_index];
@@ -272,7 +268,7 @@ class RawVideo::VP9Decoder {
         // works with a succinct buffer size.
         const uint8_t* src = i420_frame.data(plane);
         libyuv::CopyPlane(src, stride, dst_plane, row_bytes, row_bytes, rows);
-        dst_plane += (rows * row_bytes);
+        UNSAFE_TODO(dst_plane += (rows * row_bytes));
       }
     }
     return buffer;
@@ -307,8 +303,8 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
     LOG(ERROR) << "Failed to read file: " << vp9_webm_data_file_path;
     return nullptr;
   }
-  base::span<const uint8_t> vp9_webm_data(vp9_webm_data_mmap_file.data(),
-                                          vp9_webm_data_mmap_file.length());
+  auto vp9_webm_data = UNSAFE_TODO(base::span<const uint8_t>(
+      vp9_webm_data_mmap_file.data(), vp9_webm_data_mmap_file.length()));
 
   InitializeMediaLibrary();
 
@@ -347,9 +343,10 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
         (*vp9_stream_index)) {
       LOG_ASSERT(vp9_data_size + packet->size <= vp9_data_mmap_file->length())
           << "The vp9 data size must be less than webm file size";
-      std::memcpy(vp9_data + vp9_data_size, packet->data, packet->size);
-      vp9_data_chunks[num_packets] = base::span<const uint8_t>(
-          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet->size));
+      UNSAFE_TODO(
+          std::memcpy(vp9_data + vp9_data_size, packet->data, packet->size));
+      vp9_data_chunks[num_packets] = UNSAFE_TODO(base::span<const uint8_t>(
+          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet->size)));
       vp9_data_size += packet->size;
 
       Vp9FrameHeader header;
@@ -565,8 +562,8 @@ std::unique_ptr<RawVideo> RawVideo::Create(
         CreateMemoryMappedFile(video_frame_size * metadata.num_frames);
     for (size_t i = 0; i < metadata.num_frames; ++i) {
       auto buffer = vp9_decoder->DecodeFrame(i);
-      memcpy(memory_mapped_file->data() + i * video_frame_size, buffer.data(),
-             buffer.size());
+      UNSAFE_TODO(memcpy(memory_mapped_file->data() + i * video_frame_size,
+                         buffer.data(), buffer.size()));
     }
   } else {
     memory_mapped_file =
@@ -601,16 +598,16 @@ std::unique_ptr<RawVideo> RawVideo::CreateNV12Video() const {
   for (size_t i = 0; i < NumFrames(); ++i) {
     const FrameData i420_frame = GetFrame(i);
     uint8_t* const nv12_frame =
-        new_memory_mapped_file->data() + i * video_frame_size_;
-    int ret =
-        libyuv::I420ToNV12(i420_frame.plane_addrs[0], i420_frame.strides[0],
-                           i420_frame.plane_addrs[1], i420_frame.strides[1],
-                           i420_frame.plane_addrs[2], i420_frame.strides[2],
-                           nv12_frame + nv12_layout->planes()[0].offset,
-                           nv12_layout->planes()[0].stride,
-                           nv12_frame + nv12_layout->planes()[1].offset,
-                           nv12_layout->planes()[1].stride,
-                           Resolution().width(), Resolution().height());
+        UNSAFE_TODO(new_memory_mapped_file->data() + i * video_frame_size_);
+    int ret = libyuv::I420ToNV12(
+        i420_frame.plane_addrs[0], i420_frame.strides[0],
+        i420_frame.plane_addrs[1], i420_frame.strides[1],
+        i420_frame.plane_addrs[2], i420_frame.strides[2],
+        UNSAFE_TODO(nv12_frame + nv12_layout->planes()[0].offset),
+        nv12_layout->planes()[0].stride,
+        UNSAFE_TODO(nv12_frame + nv12_layout->planes()[1].offset),
+        nv12_layout->planes()[1].stride, Resolution().width(),
+        Resolution().height());
     LOG_ASSERT(ret == 0) << "Failed converting from I420 to NV12";
   }
   return base::WrapUnique(new RawVideo(std::move(new_memory_mapped_file),
@@ -657,12 +654,12 @@ std::unique_ptr<RawVideo> RawVideo::CreateExpandedVideo(
       CreateMemoryMappedFile(new_video_frame_size * NumFrames());
   CHECK(new_memory_mapped_file);
   for (size_t i = 0; i < NumFrames(); i++) {
-    uint8_t* const dst_frame =
-        new_memory_mapped_file->data() + (i * new_video_frame_size);
+    uint8_t* const dst_frame = UNSAFE_TODO(new_memory_mapped_file->data() +
+                                           (i * new_video_frame_size));
     uint8_t* const dst_y_plane_visible_data =
-        dst_frame + dst_planes[0].offset + dst_y_visible_offset;
+        UNSAFE_TODO(dst_frame + dst_planes[0].offset + dst_y_visible_offset);
     uint8_t* const dst_uv_plane_visible_data =
-        dst_frame + dst_planes[1].offset + dst_uv_visible_offset;
+        UNSAFE_TODO(dst_frame + dst_planes[1].offset + dst_uv_visible_offset);
     FrameData src_frame = GetFrame(i);
     libyuv::NV12Copy(src_frame.plane_addrs[0], src_frame.strides[0],
                      src_frame.plane_addrs[1], src_frame.strides[1],
@@ -686,7 +683,8 @@ RawVideo::FrameData RawVideo::GetFrame(size_t frame_index) const {
     buffer = vp9_decoder_->DecodeFrame(frame_index);
     frame_addr = buffer.data();
   } else {
-    frame_addr = memory_mapped_file_->data() + video_frame_size_ * frame_index;
+    frame_addr = UNSAFE_TODO(memory_mapped_file_->data() +
+                             video_frame_size_ * frame_index);
   }
 
   const auto& plane_layouts = FrameLayout().planes();
@@ -694,7 +692,7 @@ RawVideo::FrameData RawVideo::GetFrame(size_t frame_index) const {
   std::vector<const uint8_t*> plane_addrs(num_planes);
   std::vector<size_t> strides(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
-    plane_addrs[i] = frame_addr + plane_layouts[i].offset;
+    plane_addrs[i] = UNSAFE_TODO(frame_addr + plane_layouts[i].offset);
     strides[i] = plane_layouts[i].stride;
   }
   return RawVideo::FrameData(plane_addrs, strides, std::move(buffer));

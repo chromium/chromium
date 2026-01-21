@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/h264_vaapi_video_encoder_delegate.h"
 
 #include <va/va.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -93,8 +89,8 @@ VAEncMiscParam& AllocateMiscParameterBuffer(
   constexpr size_t buffer_size =
       sizeof(VAEncMiscParameterBuffer) + sizeof(VAEncMiscParam);
   misc_buffer.resize(buffer_size);
-  auto* va_buffer =
-      reinterpret_cast<VAEncMiscParameterBuffer*>(misc_buffer.data());
+  auto* va_buffer = UNSAFE_TODO(
+      reinterpret_cast<VAEncMiscParameterBuffer*>(misc_buffer.data()));
   va_buffer->type = misc_param_type;
   return *reinterpret_cast<VAEncMiscParam*>(va_buffer->data);
 }
@@ -193,8 +189,8 @@ void UpdatePictureForTemporalLayerEncoding(
           }};
 
   // Fill |pic.metadata_for_encoding| and |pic.ref|.
-  std::tie(pic.metadata_for_encoding.emplace(), pic.ref) =
-      kFrameMetadata[num_layers - 2][num_encoded_frames % kTemporalLayerCycle];
+  std::tie(pic.metadata_for_encoding.emplace(), pic.ref) = UNSAFE_TODO(
+      kFrameMetadata[num_layers - 2])[num_encoded_frames % kTemporalLayerCycle];
 
   UpdatePrevRefFrameNumAndSetFrameNum(pic, prev_ref_frame_num);
 
@@ -765,7 +761,7 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
 void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  memset(&current_sps_, 0, sizeof(H264SPS));
+  UNSAFE_TODO(memset(&current_sps_, 0, sizeof(H264SPS)));
 
   // Spec A.2 and A.3.
   switch (profile_) {
@@ -884,7 +880,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
 void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  memset(&current_pps_, 0, sizeof(H264PPS));
+  UNSAFE_TODO(memset(&current_pps_, 0, sizeof(H264PPS)));
 
   current_pps_.seq_parameter_set_id = current_sps_.seq_parameter_set_id;
   DCHECK_EQ(current_pps_.pic_parameter_set_id, 0);
@@ -1136,9 +1132,9 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     va_pic_h264.BottomFieldOrderCnt = ref_pic.bottom_field_order_cnt;
     // Initialize the current entry on slice and picture reference lists to
     // |ref_pic| and advance list pointers.
-    pic_param.ReferenceFrames[i] = va_pic_h264;
+    UNSAFE_TODO(pic_param.ReferenceFrames[i]) = va_pic_h264;
     if (!ref_frame_index || *ref_frame_index == i)
-      slice_param.RefPicList0[j++] = va_pic_h264;
+      UNSAFE_TODO(slice_param.RefPicList0[j++]) = va_pic_h264;
   }
 
   if (qp.has_value()) {

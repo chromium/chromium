@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/mf_video_processor_accelerator.h"
 
 #include <d3d11.h>
 #include <mfapi.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
@@ -242,7 +238,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12) {
       dxgi_buffer->GetResource(IID_PPV_ARGS(&output_texture)));
   ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
     EXPECT_NEAR(image[0], kLumaGreen, 1);
-    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+    EXPECT_NEAR(UNSAFE_TODO(image[2]), kLumaMagenta, 1);
   });
 }
 
@@ -292,11 +288,11 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBResize) {
   ValidateResult(output_texture.Get(), kWidth / 2, kHeight / 2,
                  [](BYTE* image) {
                    EXPECT_EQ(image[0], 0);
-                   EXPECT_EQ(image[1], 255);
-                   EXPECT_EQ(image[2], 0);
-                   EXPECT_EQ(image[4], 255);
-                   EXPECT_EQ(image[5], 0);
-                   EXPECT_EQ(image[6], 255);
+                   EXPECT_EQ(UNSAFE_TODO(image[1]), 255);
+                   EXPECT_EQ(UNSAFE_TODO(image[2]), 0);
+                   EXPECT_EQ(UNSAFE_TODO(image[4]), 255);
+                   EXPECT_EQ(UNSAFE_TODO(image[5]), 0);
+                   EXPECT_EQ(UNSAFE_TODO(image[6]), 255);
                  });
 }
 
@@ -357,7 +353,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12Resize) {
                    // RGBToNV12 -- have a low tolerance and will catch if the
                    // wrong nominal range is used.
                    EXPECT_NEAR(image[0], kLumaGreen, 16);
-                   EXPECT_NE(image[1], kLumaGreen);
+                   EXPECT_NE(UNSAFE_TODO(image[1]), kLumaGreen);
                  });
 }
 
@@ -426,7 +422,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12SizeChange) {
   ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
     // This test is affected by the same tolerance issues as RGBToNV12Resize.
     EXPECT_NEAR(image[0], kLumaGreen, 16);
-    EXPECT_NEAR(image[1], kLumaMagenta, 16);
+    EXPECT_NEAR(UNSAFE_TODO(image[1]), kLumaMagenta, 16);
   });
 }
 
@@ -475,7 +471,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, VideoPixelFormatChange) {
       dxgi_buffer->GetResource(IID_PPV_ARGS(&output_texture)));
   ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
     EXPECT_NEAR(image[0], kLumaGreen, 1);
-    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+    EXPECT_NEAR(UNSAFE_TODO(image[2]), kLumaMagenta, 1);
   });
 
   std::vector<BYTE> imageYuy2 = CreateYUY2Checkerboard(kWidth, kHeight);
@@ -499,7 +495,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, VideoPixelFormatChange) {
       dxgi_buffer1->GetResource(IID_PPV_ARGS(&output_texture1)));
   ValidateResult(output_texture1.Get(), kWidth, kHeight, [](BYTE* image) {
     EXPECT_NEAR(image[0], kLumaGreen, 10);
-    EXPECT_NEAR(image[2], kLumaMagenta, 10);
+    EXPECT_NEAR(UNSAFE_TODO(image[2]), kLumaMagenta, 10);
   });
 }
 
@@ -534,7 +530,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, RGBToNV12CPU) {
   ASSERT_HRESULT_SUCCEEDED(sample->GetBufferByIndex(0, &media_buffer));
   ValidateResult(media_buffer.Get(), kWidth * kHeight * 3 / 2, [](BYTE* image) {
     EXPECT_NEAR(image[0], kLumaGreen, 1);
-    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+    EXPECT_NEAR(UNSAFE_TODO(image[2]), kLumaMagenta, 1);
   });
 }
 
@@ -585,7 +581,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, UpdateOutputSize) {
       dxgi_buffer->GetResource(IID_PPV_ARGS(&output_texture)));
   ValidateResult(output_texture.Get(), kWidth, kHeight, [](BYTE* image) {
     EXPECT_NEAR(image[0], kLumaGreen, 1);
-    EXPECT_NEAR(image[2], kLumaMagenta, 1);
+    EXPECT_NEAR(UNSAFE_TODO(image[2]), kLumaMagenta, 1);
   });
 
   ASSERT_HRESULT_SUCCEEDED(
@@ -604,7 +600,7 @@ TEST_F(MFVideoProcessorAcceleratorTest, UpdateOutputSize) {
   ValidateResult(output_texture1.Get(), kUpdatedWidth, kUpdatedHeight,
                  [](BYTE* image) {
                    EXPECT_NEAR(image[0], kLumaGreen, 1);
-                   EXPECT_NEAR(image[5], kLumaMagenta, 1);
+                   EXPECT_NEAR(UNSAFE_TODO(image[5]), kLumaMagenta, 1);
                  });
 }
 

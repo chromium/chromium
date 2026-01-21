@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 
 #include <d3d9.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
@@ -261,7 +257,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       return;
     }
 
-    data_ = base::span<uint8_t>(buffer, size);
+    data_ = UNSAFE_TODO(base::span<uint8_t>(buffer, size));
   }
 
   ~ScopedD3D11DecoderBuffer() override { Commit(); }

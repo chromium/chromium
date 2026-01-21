@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_test_helpers.h"
 
 #include <array>
@@ -142,8 +137,8 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
                            uint64_t timestamp,
                            const uint8_t* data) {
   std::array<char, kIvfFrameHeaderSize> ivf_frame_header = {};
-  memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size));
-  memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size)));
+  UNSAFE_TODO(memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp)));
   if (!output_file_.WriteAtCurrentPosAndCheck(
           base::as_byte_span(ivf_frame_header))) {
     return false;
@@ -329,14 +324,16 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperH265::GetNextBuffer() {
       }
       CHECK_EQ(result, H265Parser::kOk);
     }
-    CHECK_LE(nalu.data.data(),
-             reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
-    CHECK_LE(nalu.data.data() + nalu.data.size(),
-             reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
+    UNSAFE_TODO(
+        CHECK_LE(nalu.data.data(),
+                 reinterpret_cast<uint8_t*>(data_.data()) + data_.size()));
+    UNSAFE_TODO(
+        CHECK_LE(nalu.data.data() + nalu.data.size(),
+                 reinterpret_cast<uint8_t*>(data_.data()) + data_.size()));
 
     struct NALUMetadata nalu_metadata;
-    nalu_metadata.start_pointer =
-        reinterpret_cast<uint8_t*>(data_.data()) + next_pos_to_parse_;
+    nalu_metadata.start_pointer = UNSAFE_TODO(
+        reinterpret_cast<uint8_t*>(data_.data()) + next_pos_to_parse_);
     nalu_metadata.start_index = next_pos_to_parse_;
     nalu_metadata.header_size = nalu.data.data() - nalu_metadata.start_pointer;
     nalu_metadata.size_with_header =
@@ -473,9 +470,10 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
       LOG(ERROR) << "data is too small";
       return nullptr;
     }
-    auto ivf_header = GetIvfFileHeader(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(&data_[0]), kIvfFileHeaderSize));
-    if (strncmp(ivf_header.signature, "DKIF", kNALUHeaderSize) != 0) {
+    auto ivf_header = GetIvfFileHeader(UNSAFE_TODO(base::span<const uint8_t>(
+        reinterpret_cast<const uint8_t*>(&data_[0]), kIvfFileHeaderSize)));
+    if (UNSAFE_TODO(strncmp(ivf_header.signature, "DKIF", kNALUHeaderSize)) !=
+        0) {
       LOG(ERROR) << "Unexpected data encountered while parsing IVF header";
       return nullptr;
     }
@@ -553,8 +551,8 @@ std::optional<IvfFrameHeader> EncodedDataHelperIVF::GetNextIvfFrameHeader()
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
     return std::nullopt;
   }
-  return GetIvfFrameHeader(base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize));
+  return GetIvfFrameHeader(UNSAFE_TODO(base::span<const uint8_t>(
+      reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize)));
 }
 
 std::optional<IvfFrame> EncodedDataHelperIVF::ReadNextIvfFrame() {
@@ -805,7 +803,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     uint8_t* buffer = mapping.GetMemoryAs<uint8_t>();
     for (size_t i = 0; i < src_layout.planes().size(); i++) {
       auto dst_plane_layout = dst_layout.planes()[i];
-      uint8_t* dst_ptr = &buffer[dst_plane_layout.offset];
+      uint8_t* dst_ptr = UNSAFE_TODO(&buffer[dst_plane_layout.offset]);
       libyuv::CopyPlane(
           src_frame.plane_addrs[i], src_frame.strides[i], dst_ptr,
           dst_plane_layout.stride,

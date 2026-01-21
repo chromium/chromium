@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 
 #include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
@@ -136,7 +132,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  slice_nalu_data_.push_back(base::span(data, size));
+  slice_nalu_data_.push_back(UNSAFE_TODO(base::span(data, size)));
   return Status::kOk;
 }
 

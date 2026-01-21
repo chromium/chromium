@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 #include <dlfcn.h>
@@ -30,6 +25,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
 #include "base/environment.h"
@@ -418,7 +414,7 @@ bool UseGlobalVaapiLock(media::VAImplementation implementation_type) {
 
 bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
                                      VADRMPRIMESurfaceDescriptor& descriptor) {
-  memset(&descriptor, 0, sizeof(VADRMPRIMESurfaceDescriptor));
+  UNSAFE_TODO(memset(&descriptor, 0, sizeof(VADRMPRIMESurfaceDescriptor)));
 
   auto shared_image_format = pixmap.GetSharedImageFormat();
   const uint32_t va_fourcc = SharedImageFormatToVAFourCC(shared_image_format);
@@ -475,20 +471,22 @@ bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
       return false;
     }
 
-    descriptor.objects[i].fd = dma_buf_fd;
-    descriptor.objects[i].size = base::checked_cast<uint32_t>(data_size);
-    descriptor.objects[i].drm_format_modifier =
+    UNSAFE_TODO(descriptor.objects[i]).fd = dma_buf_fd;
+    UNSAFE_TODO(descriptor.objects[i]).size =
+        base::checked_cast<uint32_t>(data_size);
+    UNSAFE_TODO(descriptor.objects[i]).drm_format_modifier =
         pixmap.GetBufferFormatModifier();
 
-    descriptor.layers[0].object_index[i] = base::checked_cast<uint32_t>(i);
+    UNSAFE_TODO(descriptor.layers[0].object_index[i]) =
+        base::checked_cast<uint32_t>(i);
     if (!base::IsValueInRangeForNumericType<uint32_t>(
             pixmap.GetDmaBufOffset(i))) {
       LOG(ERROR) << "The offset for plane " << i << " is out-of-range";
       return false;
     }
-    descriptor.layers[0].offset[i] =
+    UNSAFE_TODO(descriptor.layers[0].offset[i]) =
         base::checked_cast<uint32_t>(pixmap.GetDmaBufOffset(i));
-    descriptor.layers[0].pitch[i] = pixmap.GetDmaBufPitch(i);
+    UNSAFE_TODO(descriptor.layers[0].pitch[i]) = pixmap.GetDmaBufPitch(i);
   }
 
   return true;
@@ -504,8 +502,8 @@ bool FillVASurfaceAttribExternalBuffers(
     VASurfaceAttribExternalBuffersAndFD& va_attrib_extbuf_and_fd) {
   VASurfaceAttribExternalBuffers& va_attrib_extbuf =
       va_attrib_extbuf_and_fd.va_attrib_extbuf;
-  memset(&va_attrib_extbuf_and_fd, 0,
-         sizeof(VASurfaceAttribExternalBuffersAndFD));
+  UNSAFE_TODO(memset(&va_attrib_extbuf_and_fd, 0,
+                     sizeof(VASurfaceAttribExternalBuffersAndFD)));
 
   auto shared_image_format = pixmap.GetSharedImageFormat();
   const uint32_t va_fourcc = SharedImageFormatToVAFourCC(shared_image_format);
@@ -527,11 +525,12 @@ bool FillVASurfaceAttribExternalBuffers(
     return false;
   }
   for (size_t i = 0; i < num_planes; ++i) {
-    va_attrib_extbuf.pitches[i] = pixmap.GetDmaBufPitch(i);
-    va_attrib_extbuf.offsets[i] =
+    UNSAFE_TODO(va_attrib_extbuf.pitches[i]) = pixmap.GetDmaBufPitch(i);
+    UNSAFE_TODO(va_attrib_extbuf.offsets[i]) =
         base::checked_cast<uint32_t>(pixmap.GetDmaBufOffset(i));
-    DVLOG(4) << "plane " << i << ": pitch: " << va_attrib_extbuf.pitches[i]
-             << " offset: " << va_attrib_extbuf.offsets[i];
+    DVLOG(4) << "plane " << i
+             << ": pitch: " << UNSAFE_TODO(va_attrib_extbuf.pitches[i])
+             << " offset: " << UNSAFE_TODO(va_attrib_extbuf.offsets[i]);
   }
   va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
 
@@ -711,8 +710,9 @@ void FillNV12Padding(const VAImage& image,
   CHECK_GE(base::strict_cast<int>(image.height), visible_size.height());
 
   for (uint32_t plane = 0; plane < image.num_planes; plane++) {
-    uint8_t* plane_data = data + image.offsets[plane];
-    const int stride = base::checked_cast<int>(image.pitches[plane]);
+    uint8_t* plane_data = UNSAFE_TODO(data + image.offsets[plane]);
+    const int stride =
+        base::checked_cast<int>(UNSAFE_TODO(image.pitches[plane]));
     const int visible_width_in_bytes =
         plane == 0 ? visible_size.width()
                    : 2 * ((visible_size.width() + 1) / 2);
@@ -723,7 +723,7 @@ void FillNV12Padding(const VAImage& image,
 
     // Fill 0 to the right non-visible area.
     CHECK_GE(stride, visible_width_in_bytes);
-    libyuv::SetPlane(/*dst_y=*/plane_data + visible_width_in_bytes,
+    libyuv::SetPlane(/*dst_y=*/UNSAFE_TODO(plane_data + visible_width_in_bytes),
                      /*dst_stride_y=*/stride,
                      /*width=*/stride - visible_width_in_bytes,
                      /*height=*/base::checked_cast<int>(visible_height),
@@ -1102,14 +1102,15 @@ const VASupportedProfiles::ProfileInfo* VASupportedProfiles::IsProfileSupported(
     VAProfile va_profile,
     VAEntrypoint va_entrypoint) const {
   auto iter = std::ranges::find_if(
-      supported_profiles_[mode],
+      UNSAFE_TODO(supported_profiles_[mode]),
       [va_profile, va_entrypoint](const ProfileInfo& profile) {
         return profile.va_profile == va_profile &&
                (va_entrypoint == kVAEntrypointInvalid ||
                 profile.va_entrypoint == va_entrypoint);
       });
-  if (iter != supported_profiles_[mode].end())
+  if (iter != UNSAFE_TODO(supported_profiles_[mode]).end()) {
     return &*iter;
+  }
   return nullptr;
 }
 
@@ -1190,7 +1191,8 @@ void VASupportedProfiles::FillSupportedProfileInfos(
         supported_profile_infos.push_back(profile_info);
       }
     }
-    supported_profiles_[static_cast<int>(mode)] = supported_profile_infos;
+    UNSAFE_TODO(supported_profiles_[static_cast<int>(mode)]) =
+        supported_profile_infos;
   }
 }
 
@@ -2081,7 +2083,7 @@ std::map<VAProfile, std::vector<VAEntrypoint>>
 VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(CodecMode mode) {
   std::map<VAProfile, std::vector<VAEntrypoint>> configurations;
   for (const auto& supported_profile :
-       VASupportedProfiles::Get().supported_profiles_[mode]) {
+       UNSAFE_TODO(VASupportedProfiles::Get().supported_profiles_[mode])) {
     configurations[supported_profile.va_profile].push_back(
         supported_profile.va_entrypoint);
   }
@@ -2520,7 +2522,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
   va_attrib_extbuf.offsets[1] = size.GetCheckedArea().ValueOrDie<uint32_t>();
   va_attrib_extbuf.offsets[2] =
       (size.GetCheckedArea() * 2).ValueOrDie<uint32_t>();
-  std::fill(va_attrib_extbuf.pitches, va_attrib_extbuf.pitches + 3,
+  std::fill(va_attrib_extbuf.pitches, UNSAFE_TODO(va_attrib_extbuf.pitches + 3),
             base::checked_cast<uint32_t>(size.width()));
   va_attrib_extbuf.pixel_format = VA_FOURCC_RGBP;
 
@@ -2615,7 +2617,7 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   handle.modifier = descriptor.objects[0].drm_format_modifier;
   std::vector<base::ScopedFD> fds;
   for (size_t index = 0; index < descriptor.num_objects; ++index) {
-    const auto& object = descriptor.objects[index];
+    const auto& object = UNSAFE_TODO(descriptor.objects[index]);
     // The modifier should not change for different planes.
     CHECK_EQ(handle.modifier, object.drm_format_modifier);
 
@@ -2630,7 +2632,7 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   }
 
   for (uint32_t index = 0; index < descriptor.num_layers; ++index) {
-    const auto& layer = descriptor.layers[index];
+    const auto& layer = UNSAFE_TODO(descriptor.layers[index]);
     // According to va/va_drmcommon.h, if VA_EXPORT_SURFACE_SEPARATE_LAYERS is
     // specified, each layer should contain one plane.
     DCHECK_EQ(1u, layer.num_planes);
@@ -2644,8 +2646,8 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
     // |descriptor.objects| for subsequent plane usage.
     auto plane_fd = fds[object_index].is_valid()
                         ? std::move(fds[object_index])
-                        : base::ScopedFD(HANDLE_EINTR(
-                              dup(descriptor.objects[object_index].fd)));
+                        : base::ScopedFD(UNSAFE_TODO(HANDLE_EINTR(
+                              dup(descriptor.objects[object_index].fd))));
     PCHECK(plane_fd.is_valid());
 
     constexpr uint64_t kZeroSizeToPreventMapping = 0u;
@@ -2866,15 +2868,16 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     }
 
     if (frame.format() == PIXEL_FORMAT_I420) {
-      ret = libyuv::I420ToNV12(frame.data(VideoFrame::Plane::kY),
-                               frame.stride(VideoFrame::Plane::kY),
-                               frame.data(VideoFrame::Plane::kU),
-                               frame.stride(VideoFrame::Plane::kU),
-                               frame.data(VideoFrame::Plane::kV),
-                               frame.stride(VideoFrame::Plane::kV),
-                               image_ptr + image.offsets[0], image.pitches[0],
-                               image_ptr + image.offsets[1], image.pitches[1],
-                               visible_size.width(), visible_size.height());
+      ret = libyuv::I420ToNV12(
+          frame.data(VideoFrame::Plane::kY),
+          frame.stride(VideoFrame::Plane::kY),
+          frame.data(VideoFrame::Plane::kU),
+          frame.stride(VideoFrame::Plane::kU),
+          frame.data(VideoFrame::Plane::kV),
+          frame.stride(VideoFrame::Plane::kV),
+          UNSAFE_TODO(image_ptr + image.offsets[0]), image.pitches[0],
+          UNSAFE_TODO(image_ptr + image.offsets[1]), image.pitches[1],
+          visible_size.width(), visible_size.height());
     } else {
       LOG(ERROR) << "Unsupported pixel format: "
                  << VideoPixelFormatToString(frame.format());
@@ -2995,9 +2998,10 @@ bool VaapiWrapper::DownloadFromVABuffer(
                    << ", the buffer segment size: " << buffer_segment->size;
         break;
       }
-      memcpy(target_ptr, buffer_segment->buf, buffer_segment->size);
+      UNSAFE_TODO(
+          memcpy(target_ptr, buffer_segment->buf, buffer_segment->size));
 
-      target_ptr += buffer_segment->size;
+      UNSAFE_TODO(target_ptr += buffer_segment->size);
       target_size -= buffer_segment->size;
       *coded_data_size += buffer_segment->size;
       buffer_segment =
@@ -3102,7 +3106,7 @@ bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
     auto* pipeline_param =
         reinterpret_cast<VAProcPipelineParameterBuffer*>(mapping->data());
 
-    memset(pipeline_param, 0, sizeof *pipeline_param);
+    UNSAFE_TODO(memset(pipeline_param, 0, sizeof *pipeline_param));
     if (!src_rect)
       src_rect.emplace(gfx::Rect(va_surface_src_size));
     if (!dest_rect)
@@ -3372,7 +3376,7 @@ bool VaapiWrapper::CreateSurfaces(
 
   va_surfaces->resize(num_surfaces);
   VASurfaceAttrib attribute;
-  memset(&attribute, 0, sizeof(attribute));
+  UNSAFE_TODO(memset(&attribute, 0, sizeof(attribute)));
   attribute.type = VASurfaceAttribUsageHint;
   attribute.flags = VA_SURFACE_ATTRIB_SETTABLE;
   attribute.value.type = VAGenericValueTypeInteger;
@@ -3418,7 +3422,7 @@ VaapiWrapper::CreateScopedVASurfaces(
 
   VASurfaceAttrib attribs[2];
   unsigned int num_attribs = 1;
-  memset(attribs, 0, sizeof(attribs));
+  UNSAFE_TODO(memset(attribs, 0, sizeof(attribs)));
   attribs[0].type = VASurfaceAttribUsageHint;
   attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
   attribs[0].value.type = VAGenericValueTypeInteger;
@@ -3575,7 +3579,7 @@ bool VaapiWrapper::MapAndCopy_Locked(VABufferID va_buffer_id,
     return false;
   }
 
-  return memcpy(mapping->data(), va_buffer.data, va_buffer.size);
+  return UNSAFE_TODO(memcpy(mapping->data(), va_buffer.data, va_buffer.size));
 }
 
 void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {
@@ -3603,7 +3607,7 @@ void VaapiWrapper::MaybeSetLowQualityEncoding_Locked() {
   std::vector<char> temp(temp_size);
 
   auto* const va_buffer =
-      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
+      UNSAFE_TODO(reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data()));
   va_buffer->type = VAEncMiscParameterTypeQualityLevel;
   auto* const enc_quality =
       reinterpret_cast<VAEncMiscParameterBufferQualityLevel*>(va_buffer->data);

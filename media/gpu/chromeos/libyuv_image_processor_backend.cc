@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 
 #include <sys/mman.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -331,14 +327,16 @@ void LibYUVImageProcessorBackend::ProcessFrame(
                          plane, crop_intermediate_frame_->format(),
                          crop_intermediate_frame_->visible_rect().height());
                row++) {
-            memcpy(dst_row_ptr, src_row_ptr,
-                   VideoFrame::Columns(
-                       plane, crop_intermediate_frame_->format(),
-                       crop_intermediate_frame_->visible_rect().width()) *
-                       VideoFrame::BytesPerElement(
-                           crop_intermediate_frame_->format(), plane));
-            src_row_ptr += crop_intermediate_frame_->row_bytes(plane);
-            dst_row_ptr += mapped_frame->row_bytes(plane);
+            UNSAFE_TODO(
+                memcpy(dst_row_ptr, src_row_ptr,
+                       VideoFrame::Columns(
+                           plane, crop_intermediate_frame_->format(),
+                           crop_intermediate_frame_->visible_rect().width()) *
+                           VideoFrame::BytesPerElement(
+                               crop_intermediate_frame_->format(), plane)));
+            UNSAFE_TODO(src_row_ptr +=
+                        crop_intermediate_frame_->row_bytes(plane));
+            UNSAFE_TODO(dst_row_ptr += mapped_frame->row_bytes(plane));
           }
         }
       }
