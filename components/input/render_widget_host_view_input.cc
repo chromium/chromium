@@ -329,8 +329,8 @@ bool RenderWidgetHostViewInput::TransformPointToTargetCoordSpace(
 
   float device_scale_factor = original_view->GetDeviceScaleFactor();
   CHECK_GT(device_scale_factor, 0.0f);
-  // TODO(crbug.com/41460959): Optimize so that |point_in_pixels| doesn't need
-  // to be in the coordinate space of the root surface in HitTestQuery.
+  // HitTestQuery requires |point_in_pixels| to be in the coordinate space of
+  // the root surface. See crbug.com/41460959 for context.
   gfx::Transform transform_root_to_original;
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
