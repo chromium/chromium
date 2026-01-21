@@ -56,10 +56,10 @@ static int64_t JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
     const base::android::JavaRef<jobject>& j_surface_control,
-    jfloat device_scale,
+    float device_scale,
     int32_t width,
     int32_t height,
-    jfloat corner_radius,
+    float corner_radius,
     float zoom,
     int top_shadow_height,
     int bottom_shadow_height,
@@ -194,9 +194,7 @@ MagnifierSurfaceControl::~MagnifierSurfaceControl() {
           surface_handle_));
 }
 
-void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
-                                                jfloat x,
-                                                jfloat y) {
+void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env, float x, float y) {
   if (readback_origin_x_ == x && readback_origin_y_ == y) {
     return;
   }

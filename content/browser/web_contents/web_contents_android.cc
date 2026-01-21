@@ -688,7 +688,7 @@ int32_t WebContentsAndroid::GetThemeColor(JNIEnv* env) {
   return web_contents_->GetThemeColor().value_or(SK_ColorTRANSPARENT);
 }
 
-jfloat WebContentsAndroid::GetLoadProgress(JNIEnv* env) {
+float WebContentsAndroid::GetLoadProgress(JNIEnv* env) {
   return web_contents_->GetLoadProgress();
 }
 

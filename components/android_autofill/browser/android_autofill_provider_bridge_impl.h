@@ -68,10 +68,10 @@ class AndroidAutofillProviderBridgeImpl : public AndroidAutofillProviderBridge {
   // a datalist popup.
   void SetAnchorViewRect(JNIEnv* env,
                          const base::android::JavaRef<jobject>& anchor_view,
-                         jfloat x,
-                         jfloat y,
-                         jfloat width,
-                         jfloat height);
+                         float x,
+                         float y,
+                         float width,
+                         float height);
 
   // Informs the `Delegate` of the outcome of an attempt to show a bottom sheet.
   // `is_shown` indicates whether the bottom sheet was shown and

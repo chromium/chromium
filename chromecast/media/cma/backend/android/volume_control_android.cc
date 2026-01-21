@@ -130,7 +130,7 @@ void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
 
 void VolumeControlAndroid::OnVolumeChange(JNIEnv* env,
                                           int32_t type,
-                                          jfloat level) {
+                                          float level) {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&VolumeControlAndroid::ReportVolumeChangeOnThread,

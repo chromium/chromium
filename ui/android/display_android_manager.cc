@@ -215,15 +215,15 @@ void DisplayAndroidManager::UpdateDisplay(
         jWorkArea,   // {left, top, right, bottom} in dip
     int32_t width,   // in physical pixels
     int32_t height,  // in physical pixels
-    jfloat dipScale,
-    jfloat pixelsPerInchX,
-    jfloat pixelsPerInchY,
+    float dipScale,
+    float pixelsPerInchX,
+    float pixelsPerInchY,
     int32_t rotationDegrees,
     int32_t bitsPerPixel,
     int32_t bitsPerComponent,
     bool isWideColorGamut,
     bool isHdr,
-    jfloat hdrMaxLuminanceRatio,
+    float hdrMaxLuminanceRatio,
     bool isInternal) {
   std::vector<int> bounds_array, work_area_array;
   base::android::JavaIntArrayToIntVector(env, jBounds, &bounds_array);

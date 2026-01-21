@@ -93,7 +93,7 @@ static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  jbyte* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
+  int8_t* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
   if (!seed->ParseFromArray(src_bytes,
                             env->GetArrayLength(seed_as_bytes.obj()))) {
     LOG(ERROR) << "Failed to parse seed file.";

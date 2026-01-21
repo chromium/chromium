@@ -16,7 +16,7 @@ JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_MurmurHash16(
   return variations::internal::VariationsMurmurHash::Hash16(seed, data);
 }
 
-static jdouble
+static double
 JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_GetEntropyForTrial(
     JNIEnv* env,
     int32_t randomization_seed,

@@ -32,8 +32,8 @@ using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero::tests {
 
-jdouble CPPClass::InnerClass::MethodOtherP0(JNIEnv* env,
-                                            const JavaRef<jobject>& caller) {
+double CPPClass::InnerClass::MethodOtherP0(JNIEnv* env,
+                                           const JavaRef<jobject>& caller) {
   return 0.0;
 }
 
@@ -97,12 +97,12 @@ static void JNI_SampleForTests_ClassUnderSamePackageTest(
     JNIEnv*,
     const JavaRef<jobject>&) {}
 
-static jdouble JNI_SampleForTests_GetDoubleFunction(JNIEnv*,
-                                                    const JavaRef<jobject>&) {
+static double JNI_SampleForTests_GetDoubleFunction(JNIEnv*,
+                                                   const JavaRef<jobject>&) {
   return 0;
 }
 
-static jfloat JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
+static float JNI_SampleForTests_GetFloatFunction(JNIEnv*) {
   return 0;
 }
 
@@ -209,15 +209,15 @@ static std::vector<int> JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     std::vector<int>& ints,
     int64_t zlong,
     const JavaRef<jlongArray>& longs,
-    jshort zshort,
+    int16_t zshort,
     const JavaRef<jshortArray>& shorts,
     int zchar,
     const JavaRef<jcharArray>& chars,
-    jbyte zbyte,
+    int8_t zbyte,
     const JavaRef<jbyteArray>& bytes,
-    jdouble zdouble,
+    double zdouble,
     const JavaRef<jdoubleArray>& doubles,
-    jfloat zfloat,
+    float zfloat,
     const JavaRef<jfloatArray>& floats,
     bool zbool,
     const JavaRef<jbooleanArray>& bools) {

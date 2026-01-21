@@ -36,8 +36,8 @@ class StaticTabSceneLayer : public SceneLayer {
                       int32_t id,
                       bool can_use_live_layer,
                       int32_t default_background_color,
-                      jfloat x,
-                      jfloat y,
+                      float x,
+                      float y,
                       const base::android::JavaRef<jobject>& joffset_tag);
 
   void SetTabContentManager(

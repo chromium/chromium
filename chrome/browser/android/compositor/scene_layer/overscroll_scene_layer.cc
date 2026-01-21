@@ -30,8 +30,8 @@ std::unique_ptr<ui::EdgeEffect> OverscrollSceneLayer::CreateEdgeEffect() {
 }
 
 void OverscrollSceneLayer::Prepare(JNIEnv* env,
-                                   jfloat start_x,
-                                   jfloat start_y,
+                                   float start_x,
+                                   float start_y,
                                    int32_t width,
                                    int32_t height) {
   start_pos_ = gfx::Vector2dF(start_x, start_y);
@@ -51,8 +51,8 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
 
 bool OverscrollSceneLayer::Update(JNIEnv* env,
                                   const JavaRef<jobject>& jresource_manager,
-                                  jfloat accumulated_overscroll_x,
-                                  jfloat delta_x) {
+                                  float accumulated_overscroll_x,
+                                  float delta_x) {
   if (!resource_manager_) {
     if (jresource_manager.is_null()) {
       return false;

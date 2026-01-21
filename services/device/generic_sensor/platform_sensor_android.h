@@ -38,11 +38,11 @@ class PlatformSensorAndroid : public PlatformSensor {
   void NotifyPlatformSensorError(JNIEnv*);
 
   void UpdatePlatformSensorReading(JNIEnv*,
-                                   jdouble timestamp,
-                                   jdouble value1,
-                                   jdouble value2,
-                                   jdouble value3,
-                                   jdouble value4);
+                                   double timestamp,
+                                   double value1,
+                                   double value2,
+                                   double value3,
+                                   double value4);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObjectForTesting() {
     return j_object_;

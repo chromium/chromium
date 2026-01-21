@@ -158,7 +158,7 @@ int64_t PartnerBookmarksReader::AddPartnerBookmark(
         const favicon_base::IconType icon_type =
             touchicon ? favicon_base::IconType::kTouchIcon
                       : favicon_base::IconType::kFavicon;
-        jbyte* icon_bytes = env->GetByteArrayElements(icon, nullptr);
+        int8_t* icon_bytes = env->GetByteArrayElements(icon, nullptr);
         if (icon_bytes) {
           const int icon_len = env->GetArrayLength(icon);
           // SAFETY: Pointer and length come from JNI; assume those are

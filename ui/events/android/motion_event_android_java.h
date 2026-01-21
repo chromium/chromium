@@ -47,10 +47,10 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
  private:
   // Forcing the caller to provide all cached values upon construction
   // eliminates the need to perform a JNI call to retrieve values individually.
-  MotionEventAndroidJava(jfloat pix_to_dip,
-                         jfloat ticks_x,
-                         jfloat ticks_y,
-                         jfloat tick_multiplier,
+  MotionEventAndroidJava(float pix_to_dip,
+                         float ticks_x,
+                         float ticks_y,
+                         float tick_multiplier,
                          base::TimeTicks oldest_event_time,
                          base::TimeTicks latest_event_time,
                          base::TimeTicks down_time_ms,
@@ -62,8 +62,8 @@ class EVENTS_EXPORT MotionEventAndroidJava : public MotionEventAndroid {
                          int32_t android_gesture_classification,
                          int32_t android_button_state,
                          int32_t meta_state,
-                         jfloat raw_offset_x_pixels,
-                         jfloat raw_offset_y_pixels,
+                         float raw_offset_x_pixels,
+                         float raw_offset_y_pixels,
                          bool for_touch_handle,
                          const Pointer* const pointer0,
                          const Pointer* const pointer1,

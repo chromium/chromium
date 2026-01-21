@@ -49,8 +49,8 @@ class ContentUiEventHandler {
                       int32_t android_tool_type);
   void SendScrollEvent(JNIEnv* env,
                        int64_t time_ms,
-                       jfloat delta_x,
-                       jfloat delta_y);
+                       float delta_x,
+                       float delta_y);
   void CancelFling(JNIEnv* env, int64_t time_ms);
 
  private:

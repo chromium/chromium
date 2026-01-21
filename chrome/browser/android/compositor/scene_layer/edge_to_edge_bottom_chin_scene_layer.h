@@ -37,7 +37,7 @@ class EdgeToEdgeBottomChinSceneLayer : public SceneLayer {
       int32_t container_height,
       int32_t color_argb,
       int32_t divider_color,
-      jfloat y_offset,
+      float y_offset,
       bool hasConstraint,
       const base::android::JavaRef<jobject>& joffset_tag);
 

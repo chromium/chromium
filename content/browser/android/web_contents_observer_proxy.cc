@@ -127,7 +127,7 @@ void WebContentsObserverProxy::DidStopLoading() {
 
 void WebContentsObserverProxy::LoadProgressChanged(double progress) {
   Java_WebContentsObserverProxy_loadProgressChanged(
-      AttachCurrentThread(), java_observer_, static_cast<jfloat>(progress));
+      AttachCurrentThread(), java_observer_, static_cast<float>(progress));
 }
 
 void WebContentsObserverProxy::DidFailLoad(RenderFrameHost* render_frame_host,

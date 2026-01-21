@@ -134,19 +134,18 @@ void InstalledWebappGeolocationBridge::ReportCurrentPosition() {
   std::move(position_callback_).Run(std::move(current_position_));
 }
 
-void InstalledWebappGeolocationBridge::OnNewLocationAvailable(
-    JNIEnv* env,
-    jdouble latitude,
-    jdouble longitude,
-    jdouble time_stamp,
-    bool has_altitude,
-    jdouble altitude,
-    bool has_accuracy,
-    jdouble accuracy,
-    bool has_heading,
-    jdouble heading,
-    bool has_speed,
-    jdouble speed) {
+void InstalledWebappGeolocationBridge::OnNewLocationAvailable(JNIEnv* env,
+                                                              double latitude,
+                                                              double longitude,
+                                                              double time_stamp,
+                                                              bool has_altitude,
+                                                              double altitude,
+                                                              bool has_accuracy,
+                                                              double accuracy,
+                                                              bool has_heading,
+                                                              double heading,
+                                                              bool has_speed,
+                                                              double speed) {
   auto position = device::mojom::Geoposition::New();
   position->latitude = latitude;
   position->longitude = longitude;

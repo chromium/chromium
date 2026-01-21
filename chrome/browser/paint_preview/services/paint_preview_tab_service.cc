@@ -222,15 +222,14 @@ void PaintPreviewTabService::CaptureTabAndroid(
     int32_t j_tab_id,
     const base::android::JavaRef<jobject>& j_web_contents,
     bool j_accessibility_enabled,
-    jfloat j_page_scale_factor,
+    float j_page_scale_factor,
     int32_t j_x,
     int32_t j_y,
     const base::android::JavaRef<jobject>& j_callback) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   CaptureTab(static_cast<int>(j_tab_id), web_contents, j_accessibility_enabled,
-             static_cast<float>(j_page_scale_factor), static_cast<int>(j_x),
-             static_cast<int>(j_y),
+             j_page_scale_factor, static_cast<int>(j_x), static_cast<int>(j_y),
              base::BindOnce(
                  &JavaBooleanCallbackAdapter,
                  base::BindOnce(

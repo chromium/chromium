@@ -179,8 +179,8 @@ void ContentUiEventHandler::SendMouseEvent(
 
 void ContentUiEventHandler::SendScrollEvent(JNIEnv* env,
                                             int64_t time_ms,
-                                            jfloat delta_x,
-                                            jfloat delta_y) {
+                                            float delta_x,
+                                            float delta_y) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;

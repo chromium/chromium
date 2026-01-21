@@ -257,11 +257,11 @@ void ImeAdapterAndroid::UpdateFrameInfo(
   const bool has_insertion_marker =
       selection_start.type() != gfx::SelectionBound::EMPTY;
   const bool is_insertion_marker_visible = selection_start.visible();
-  const jfloat insertion_marker_horizontal =
+  const float insertion_marker_horizontal =
       has_insertion_marker ? selection_start.edge_start().x() : 0.0f;
-  const jfloat insertion_marker_top =
+  const float insertion_marker_top =
       has_insertion_marker ? selection_start.edge_start().y() : 0.0f;
-  const jfloat insertion_marker_bottom =
+  const float insertion_marker_bottom =
       has_insertion_marker ? selection_start.edge_end().y() : 0.0f;
 
   Java_ImeAdapterImpl_updateFrameInfo(

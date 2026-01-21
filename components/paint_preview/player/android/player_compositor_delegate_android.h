@@ -46,7 +46,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       std::optional<base::UnguessableToken>& frame_guid,
       const base::android::JavaRef<jobject>& j_bitmap_callback,
       const base::android::JavaRef<jobject>& j_error_callback,
-      jfloat j_scale_factor,
+      float j_scale_factor,
       int32_t j_clip_x,
       int32_t j_clip_y,
       int32_t j_clip_width,

@@ -44,7 +44,7 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
                           int bottom_shadow_width_reduction);
   ~MagnifierSurfaceControl() override;
 
-  void SetReadbackOrigin(JNIEnv* env, jfloat x, jfloat y);
+  void SetReadbackOrigin(JNIEnv* env, float x, float y);
   void ChildLocalSurfaceIdChanged(JNIEnv* env);
 
   // viz::mojom::DisplayClient implementation:

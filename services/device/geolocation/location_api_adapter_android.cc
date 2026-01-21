@@ -20,17 +20,17 @@ using base::android::JavaRef;
 using device::LocationApiAdapterAndroid;
 
 static void JNI_LocationProviderAdapter_NewLocationAvailable(JNIEnv* env,
-                                                             jdouble latitude,
-                                                             jdouble longitude,
-                                                             jdouble time_stamp,
+                                                             double latitude,
+                                                             double longitude,
+                                                             double time_stamp,
                                                              bool has_altitude,
-                                                             jdouble altitude,
+                                                             double altitude,
                                                              bool has_accuracy,
-                                                             jdouble accuracy,
+                                                             double accuracy,
                                                              bool has_heading,
-                                                             jdouble heading,
+                                                             double heading,
                                                              bool has_speed,
-                                                             jdouble speed,
+                                                             double speed,
                                                              bool is_precise) {
   LocationApiAdapterAndroid::OnNewLocationAvailable(
       latitude, longitude, time_stamp, has_altitude, altitude, has_accuracy,

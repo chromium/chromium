@@ -44,43 +44,43 @@ int32_t JniHdrMetadata::Range(JNIEnv* env) {
   return static_cast<int>(color_space_->range);
 }
 
-jfloat JniHdrMetadata::PrimaryRChromaticityX(JNIEnv* env) {
+float JniHdrMetadata::PrimaryRChromaticityX(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fRX;
 }
 
-jfloat JniHdrMetadata::PrimaryRChromaticityY(JNIEnv* env) {
+float JniHdrMetadata::PrimaryRChromaticityY(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fRY;
 }
 
-jfloat JniHdrMetadata::PrimaryGChromaticityX(JNIEnv* env) {
+float JniHdrMetadata::PrimaryGChromaticityX(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fGX;
 }
 
-jfloat JniHdrMetadata::PrimaryGChromaticityY(JNIEnv* env) {
+float JniHdrMetadata::PrimaryGChromaticityY(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fGY;
 }
 
-jfloat JniHdrMetadata::PrimaryBChromaticityX(JNIEnv* env) {
+float JniHdrMetadata::PrimaryBChromaticityX(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fBX;
 }
 
-jfloat JniHdrMetadata::PrimaryBChromaticityY(JNIEnv* env) {
+float JniHdrMetadata::PrimaryBChromaticityY(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fBY;
 }
 
-jfloat JniHdrMetadata::WhitePointChromaticityX(JNIEnv* env) {
+float JniHdrMetadata::WhitePointChromaticityX(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fWX;
 }
 
-jfloat JniHdrMetadata::WhitePointChromaticityY(JNIEnv* env) {
+float JniHdrMetadata::WhitePointChromaticityY(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).primaries.fWY;
 }
 
-jfloat JniHdrMetadata::MaxColorVolumeLuminance(JNIEnv* env) {
+float JniHdrMetadata::MaxColorVolumeLuminance(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).luminance_max;
 }
 
-jfloat JniHdrMetadata::MinColorVolumeLuminance(JNIEnv* env) {
+float JniHdrMetadata::MinColorVolumeLuminance(JNIEnv* env) {
   return hdr_metadata_->smpte_st_2086.value_or(kDefault2086).luminance_min;
 }
 

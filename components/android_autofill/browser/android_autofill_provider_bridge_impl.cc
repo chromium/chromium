@@ -250,10 +250,10 @@ void AndroidAutofillProviderBridgeImpl::OnAcceptDataListSuggestion(
 void AndroidAutofillProviderBridgeImpl::SetAnchorViewRect(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& anchor_view,
-    jfloat x,
-    jfloat y,
-    jfloat width,
-    jfloat height) {
+    float x,
+    float y,
+    float width,
+    float height) {
   delegate_->SetAnchorViewRect(ScopedJavaLocalRef<jobject>(env, anchor_view),
                                gfx::RectF(x, y, width, height));
 }

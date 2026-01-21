@@ -74,13 +74,13 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
   void CaptureThumbnail(JNIEnv* env,
                         const base::android::JavaRef<jobject>& tab,
-                        jfloat thumbnail_scale,
+                        float thumbnail_scale,
                         bool return_bitmap,
                         const base::android::JavaRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
                           const base::android::JavaRef<jobject>& tab,
                           const base::android::JavaRef<jobject>& bitmap,
-                          jfloat thumbnail_scale);
+                          float thumbnail_scale);
   void InvalidateIfChanged(JNIEnv* env,
                            int32_t tab_id,
                            const base::android::JavaRef<jobject>& jurl);

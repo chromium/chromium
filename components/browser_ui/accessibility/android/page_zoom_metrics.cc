@@ -26,7 +26,7 @@ namespace browser_ui {
 static void JNI_PageZoomMetrics_LogZoomLevelUKM(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jdouble new_zoom_level) {
+    double new_zoom_level) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   DCHECK(web_contents);

@@ -238,7 +238,7 @@ void OnscreenContentProviderAndroid::DidUpdateSensitivityScore(
 
   Java_OnscreenContentProvider_didUpdateSensitivityScore(
       env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()),
-      static_cast<jfloat>(sensitivity_score));
+      static_cast<float>(sensitivity_score));
 }
 
 void OnscreenContentProviderAndroid::DidUpdateLanguageDetails(
@@ -253,7 +253,7 @@ void OnscreenContentProviderAndroid::DidUpdateLanguageDetails(
   Java_OnscreenContentProvider_didUpdateLanguageDetails(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, url.spec()),
       base::android::ConvertUTF8ToJavaString(env, detected_language),
-      static_cast<jfloat>(language_confidence));
+      static_cast<float>(language_confidence));
 }
 
 void OnscreenContentProviderAndroid::ClearContentCaptureMetadata() {

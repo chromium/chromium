@@ -35,7 +35,7 @@ FontSizePrefsAndroid::FontSizePrefsAndroid(
 FontSizePrefsAndroid::~FontSizePrefsAndroid() = default;
 
 void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
-                                              jfloat font_scale_factor) {
+                                              float font_scale_factor) {
   pref_service_->SetDouble(prefs::kWebKitFontScaleFactor,
                            static_cast<double>(font_scale_factor));
 }

@@ -31,16 +31,16 @@ class JniHdrMetadata {
   int32_t ColorTransfer(JNIEnv* env);
   int32_t Range(JNIEnv* env);
 
-  jfloat PrimaryRChromaticityX(JNIEnv* env);
-  jfloat PrimaryRChromaticityY(JNIEnv* env);
-  jfloat PrimaryGChromaticityX(JNIEnv* env);
-  jfloat PrimaryGChromaticityY(JNIEnv* env);
-  jfloat PrimaryBChromaticityX(JNIEnv* env);
-  jfloat PrimaryBChromaticityY(JNIEnv* env);
-  jfloat WhitePointChromaticityX(JNIEnv* env);
-  jfloat WhitePointChromaticityY(JNIEnv* env);
-  jfloat MaxColorVolumeLuminance(JNIEnv* env);
-  jfloat MinColorVolumeLuminance(JNIEnv* env);
+  float PrimaryRChromaticityX(JNIEnv* env);
+  float PrimaryRChromaticityY(JNIEnv* env);
+  float PrimaryGChromaticityX(JNIEnv* env);
+  float PrimaryGChromaticityY(JNIEnv* env);
+  float PrimaryBChromaticityX(JNIEnv* env);
+  float PrimaryBChromaticityY(JNIEnv* env);
+  float WhitePointChromaticityX(JNIEnv* env);
+  float WhitePointChromaticityY(JNIEnv* env);
+  float MaxColorVolumeLuminance(JNIEnv* env);
+  float MinColorVolumeLuminance(JNIEnv* env);
   int32_t MaxContentLuminance(JNIEnv* env);
   int32_t MaxFrameAverageLuminance(JNIEnv* env);
 

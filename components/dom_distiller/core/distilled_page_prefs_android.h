@@ -30,9 +30,9 @@ class DistilledPagePrefsAndroid {
   void SetUserPrefTheme(JNIEnv* env, int32_t theme);
   void SetDefaultTheme(JNIEnv* env, int32_t theme);
   int32_t GetTheme(JNIEnv* env);
-  void SetUserPrefFontScaling(JNIEnv* env, jfloat scaling);
-  void SetDefaultFontScaling(JNIEnv* env, jfloat scaling);
-  jfloat GetFontScaling(JNIEnv* env);
+  void SetUserPrefFontScaling(JNIEnv* env, float scaling);
+  void SetDefaultFontScaling(JNIEnv* env, float scaling);
+  float GetFontScaling(JNIEnv* env);
 
   void AddObserver(JNIEnv* env, int64_t obs);
   void RemoveObserver(JNIEnv* env, int64_t obs);

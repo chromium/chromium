@@ -67,7 +67,7 @@ mojom::ReportingMode PlatformSensorAndroid::GetReportingMode() {
 
 PlatformSensorConfiguration PlatformSensorAndroid::GetDefaultConfiguration() {
   JNIEnv* env = AttachCurrentThread();
-  jdouble frequency =
+  double frequency =
       Java_PlatformSensor_getDefaultConfiguration(env, j_object_);
   return PlatformSensorConfiguration(frequency);
 }
@@ -116,11 +116,11 @@ void PlatformSensorAndroid::NotifyPlatformSensorError(JNIEnv*) {
 }
 
 void PlatformSensorAndroid::UpdatePlatformSensorReading(JNIEnv*,
-                                                        jdouble timestamp,
-                                                        jdouble value1,
-                                                        jdouble value2,
-                                                        jdouble value3,
-                                                        jdouble value4) {
+                                                        double timestamp,
+                                                        double value1,
+                                                        double value2,
+                                                        double value3,
+                                                        double value4) {
   SensorReading reading;
   reading.raw.timestamp = timestamp;
   reading.raw.values[0] = value1;

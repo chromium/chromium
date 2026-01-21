@@ -61,7 +61,7 @@ void ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded(int x_px,
 void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(
     JNIEnv* env,
     const JavaRef<jobject>& j_base_web_contents,
-    jfloat device_scale_factor) {
+    float device_scale_factor) {
   DCHECK(j_base_web_contents);
   content::WebContents* base_web_contents =
       content::WebContents::FromJavaWebContents(j_base_web_contents);

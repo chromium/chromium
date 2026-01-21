@@ -37,9 +37,9 @@ class TopToolbarSceneLayer : public SceneLayer {
       int32_t toolbar_background_color,
       int32_t url_bar_resource_id,
       int32_t url_bar_color,
-      jfloat x_offset,
-      jfloat y_offset,
-      jfloat legacy_content_offset,
+      float x_offset,
+      float y_offset,
+      float legacy_content_offset,
       bool show_shadow,
       bool visible,
       bool anonymize,
@@ -60,7 +60,7 @@ class TopToolbarSceneLayer : public SceneLayer {
                          int32_t progress_bar_static_background_x,
                          int32_t progress_bar_static_background_width,
                          int32_t progress_bar_static_background_color,
-                         jfloat corner_radius,
+                         float corner_radius,
                          bool progress_bar_visual_update_available,
                          bool visible);
 

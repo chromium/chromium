@@ -58,10 +58,9 @@ void FindInPageBridge::RequestFindMatchRects(JNIEnv* env,
       ->RequestFindMatchRects(current_version);
 }
 
-void FindInPageBridge::ActivateNearestFindResult(
-    JNIEnv* env,
-    jfloat x,
-    jfloat y) {
+void FindInPageBridge::ActivateNearestFindResult(JNIEnv* env,
+                                                 float x,
+                                                 float y) {
   find_in_page::FindTabHelper::FromWebContents(web_contents_)
       ->ActivateNearestFindResult(x, y);
 }

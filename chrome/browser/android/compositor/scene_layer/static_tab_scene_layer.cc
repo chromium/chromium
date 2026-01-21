@@ -65,8 +65,8 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
                                          int32_t id,
                                          bool can_use_live_layer,
                                          int32_t default_background_color,
-                                         jfloat x,
-                                         jfloat y,
+                                         float x,
+                                         float y,
                                          const JavaRef<jobject>& joffset_tag) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";

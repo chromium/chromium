@@ -85,13 +85,13 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(integer_value);
+      result.b = static_cast<int8_t>(integer_value);
       break;
     case JavaType::TypeChar:
-      result.c = static_cast<jchar>(integer_value);
+      result.c = static_cast<uint16_t>(integer_value);
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(integer_value);
+      result.s = static_cast<int16_t>(integer_value);
       break;
     case JavaType::TypeInt:
       result.i = static_cast<int32_t>(integer_value);
@@ -145,7 +145,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeByte:
-      result.b = static_cast<jbyte>(RoundDoubleToInt(double_value));
+      result.b = static_cast<int8_t>(RoundDoubleToInt(double_value));
       break;
     case JavaType::TypeChar:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert double to 0.
@@ -154,7 +154,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
       result.c = 0;
       break;
     case JavaType::TypeShort:
-      result.s = static_cast<jshort>(RoundDoubleToInt(double_value));
+      result.s = static_cast<int16_t>(RoundDoubleToInt(double_value));
       break;
     case JavaType::TypeInt:
       result.i = RoundDoubleToInt(double_value);
@@ -163,7 +163,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
       result.j = RoundDoubleToLong(double_value);
       break;
     case JavaType::TypeFloat:
-      result.f = static_cast<jfloat>(double_value);
+      result.f = static_cast<float>(double_value);
       break;
     case JavaType::TypeDouble:
       result.d = double_value;

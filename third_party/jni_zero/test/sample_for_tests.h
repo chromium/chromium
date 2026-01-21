@@ -43,8 +43,7 @@ class CPPClass {
 
   class InnerClass {
    public:
-    jdouble MethodOtherP0(JNIEnv* env,
-                          const jni_zero::JavaRef<jobject>& caller);
+    double MethodOtherP0(JNIEnv* env, const jni_zero::JavaRef<jobject>& caller);
   };
 
   void Destroy(JNIEnv* env,

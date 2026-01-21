@@ -58,10 +58,10 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
                                   int64_t oldest_event_time_ns,
                                   int64_t latest_event_time_ns,
                                   int32_t android_action,
-                                  jfloat touch_major_0,
-                                  jfloat touch_major_1,
-                                  jfloat touch_minor_0,
-                                  jfloat touch_minor_1,
+                                  float touch_major_0,
+                                  float touch_major_1,
+                                  float touch_minor_0,
+                                  float touch_minor_1,
                                   int32_t android_gesture_classification,
                                   bool for_touch_handle,
                                   bool is_latest_event_resampled) {
@@ -84,8 +84,8 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
         if (oldest_event_time_ns != latest_event_time_ns) {
           forwarder->set_oldest_time_ns(oldest_event_time_ns);
         }
-        jfloat pos_x_0 = source->GetXPix(0);
-        jfloat pos_y_0 = source->GetYPix(0);
+        float pos_x_0 = source->GetXPix(0);
+        float pos_y_0 = source->GetYPix(0);
         forwarder->set_x_pixel(pos_x_0);
         forwarder->set_y_pixel(pos_y_0);
         // Only record if there was movement for Action::Move (we'll update the
@@ -106,8 +106,8 @@ bool EventForwarder::OnTouchEvent(JNIEnv* env,
                 perfetto::protos::pbzero::EventForwarder::AMotionEventAction>(
                 android_action));
       });
-  jfloat pos_x_0 = source->GetXPix(0);
-  jfloat pos_y_0 = source->GetYPix(0);
+  float pos_x_0 = source->GetXPix(0);
+  float pos_y_0 = source->GetYPix(0);
   last_x_pos_ = pos_x_0;
   last_y_pos_ = pos_y_0;
 
@@ -215,10 +215,10 @@ void EventForwarder::OnMouseEvent(
 
 void EventForwarder::OnDragEvent(JNIEnv* env,
                                  int32_t action,
-                                 jfloat x,
-                                 jfloat y,
-                                 jfloat screen_x,
-                                 jfloat screen_y,
+                                 float x,
+                                 float y,
+                                 float screen_x,
+                                 float screen_y,
                                  const JavaRef<jobjectArray>& j_mimeTypes,
                                  const JavaRef<jstring>& j_content,
                                  const JavaRef<jobjectArray>& j_filenames,
@@ -239,7 +239,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
 bool EventForwarder::OnGestureEvent(JNIEnv* env,
                                     int32_t type,
                                     int64_t time_ms,
-                                    jfloat scale) {
+                                    float scale) {
   float dip_scale = view_->GetDipScale();
   auto size = view_->GetSizeDIPs();
   float x = size.width() / 2;
@@ -299,12 +299,12 @@ bool EventForwarder::OnGenericMotionEvent(JNIEnv* env,
 void EventForwarder::OnMouseWheelEvent(JNIEnv* env,
                                        const JavaRef<jobject>& motion_event,
                                        int64_t time_ns,
-                                       jfloat x,
-                                       jfloat y,
-                                       jfloat raw_x,
-                                       jfloat raw_y,
-                                       jfloat delta_x,
-                                       jfloat delta_y) {
+                                       float x,
+                                       float y,
+                                       float raw_x,
+                                       float raw_y,
+                                       float delta_x,
+                                       float delta_y) {
   ui::MotionEventAndroid::Pointer pointer(
       /*id=*/0, x, y, /*touch_major_pixels=*/0.0f, /*touch_minor_pixels=*/0.0f,
       /*pressure=*/0,
@@ -341,15 +341,11 @@ bool EventForwarder::DispatchKeyEvent(JNIEnv* env,
   return view_->DispatchKeyEvent(key_event);
 }
 
-void EventForwarder::ScrollBy(JNIEnv* env,
-                              jfloat delta_x,
-                              jfloat delta_y) {
+void EventForwarder::ScrollBy(JNIEnv* env, float delta_x, float delta_y) {
   view_->ScrollBy(delta_x, delta_y);
 }
 
-void EventForwarder::ScrollTo(JNIEnv* env,
-                              jfloat x,
-                              jfloat y) {
+void EventForwarder::ScrollTo(JNIEnv* env, float x, float y) {
   view_->ScrollTo(x, y);
 }
 
@@ -367,8 +363,8 @@ void EventForwarder::DoubleTap(JNIEnv* env,
 
 void EventForwarder::StartFling(JNIEnv* env,
                                 int64_t time_ms,
-                                jfloat velocity_x,
-                                jfloat velocity_y,
+                                float velocity_x,
+                                float velocity_y,
                                 bool synthetic_scroll,
                                 bool prevent_boosting,
                                 bool is_touchpad_event) {

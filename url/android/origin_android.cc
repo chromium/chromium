@@ -59,7 +59,7 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_Origin_CreateFromGURL(
 static void JNI_Origin_AssignNativeOrigin(JNIEnv* env,
                                           std::string& scheme,
                                           std::string& host,
-                                          jshort port,
+                                          int16_t port,
                                           bool is_opaque,
                                           int64_t token_high_bits,
                                           int64_t token_low_bits,

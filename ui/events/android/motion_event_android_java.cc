@@ -29,10 +29,10 @@ using base::android::ScopedJavaLocalRef;
 namespace ui {
 
 MotionEventAndroidJava::MotionEventAndroidJava(
-    jfloat pix_to_dip,
-    jfloat ticks_x,
-    jfloat ticks_y,
-    jfloat tick_multiplier,
+    float pix_to_dip,
+    float ticks_x,
+    float ticks_y,
+    float tick_multiplier,
     base::TimeTicks oldest_event_time,
     base::TimeTicks latest_event_time,
     base::TimeTicks down_time_ms,
@@ -44,8 +44,8 @@ MotionEventAndroidJava::MotionEventAndroidJava(
     int32_t android_gesture_classification,
     int32_t android_button_state,
     int32_t meta_state,
-    jfloat raw_offset_x_pixels,
-    jfloat raw_offset_y_pixels,
+    float raw_offset_x_pixels,
+    float raw_offset_y_pixels,
     bool for_touch_handle,
     const Pointer* const pointer0,
     const Pointer* const pointer1,

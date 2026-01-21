@@ -33,7 +33,7 @@ class FindInPageBridge {
 
   void RequestFindMatchRects(JNIEnv* env, int32_t current_version);
 
-  void ActivateNearestFindResult(JNIEnv* env, jfloat x, jfloat y);
+  void ActivateNearestFindResult(JNIEnv* env, float x, float y);
 
   void ActivateFindInPageResultForAccessibility(JNIEnv* env);
 

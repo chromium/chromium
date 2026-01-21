@@ -22,7 +22,7 @@ void ViewStructureBuilder_populateViewStructureNode(
     JniIntWrapper sel_end,
     JniIntWrapper color,
     JniIntWrapper bgcolor,
-    jfloat size,
+    float size,
     bool bold,
     bool italic,
     bool underline,

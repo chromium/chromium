@@ -51,24 +51,24 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
 
   struct Pointer {
     Pointer(int32_t id,
-            jfloat pos_x_pixels,
-            jfloat pos_y_pixels,
-            jfloat touch_major_pixels,
-            jfloat touch_minor_pixels,
-            jfloat pressure,
-            jfloat orientation_rad,
-            jfloat tilt_rad,
+            float pos_x_pixels,
+            float pos_y_pixels,
+            float touch_major_pixels,
+            float touch_minor_pixels,
+            float pressure,
+            float orientation_rad,
+            float tilt_rad,
             int32_t tool_type);
     int32_t id;
-    jfloat pos_x_pixels;
-    jfloat pos_y_pixels;
-    jfloat touch_major_pixels;
-    jfloat touch_minor_pixels;
-    jfloat pressure;
-    jfloat orientation_rad;
+    float pos_x_pixels;
+    float pos_y_pixels;
+    float touch_major_pixels;
+    float touch_minor_pixels;
+    float pressure;
+    float orientation_rad;
     // Unlike the tilt angles in motion_event.h, this field matches the
     // MotionEvent spec because we get this values from Java.
-    jfloat tilt_rad;
+    float tilt_rad;
     int32_t tool_type;
   };
 

@@ -29,8 +29,8 @@ class ToolbarSwipeSceneLayer : public SceneLayer {
                    bool left_tab,
                    bool can_use_live_layer,
                    int32_t default_background_color,
-                   jfloat x,
-                   jfloat y);
+                   float x,
+                   float y);
 
   void SetTabContentManager(
       JNIEnv* env,

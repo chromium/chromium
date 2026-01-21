@@ -59,7 +59,7 @@ void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     int32_t container_height,
     int32_t color_argb,
     int32_t divider_color,
-    jfloat y_offset,
+    float y_offset,
     bool has_constraint,
     const base::android::JavaRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));

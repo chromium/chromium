@@ -142,7 +142,7 @@ class AwContents : public FindHelper::Listener,
                               const base::android::JavaRef<jbyteArray>& state);
   void FocusFirstNode(JNIEnv* env);
   void SetBackgroundColor(JNIEnv* env, int32_t color);
-  void ZoomBy(JNIEnv* env, jfloat delta);
+  void ZoomBy(JNIEnv* env, float delta);
   void OnComputeScroll(JNIEnv* env, int64_t animation_time_millis);
   bool OnDraw(JNIEnv* env,
               const base::android::JavaRef<jobject>& canvas,
@@ -154,7 +154,7 @@ class AwContents : public FindHelper::Listener,
               int32_t visible_right,
               int32_t visible_bottom,
               bool force_auxiliary_bitmap_rendering);
-  jfloat GetVelocityInPixelsPerSecond(JNIEnv* env);
+  float GetVelocityInPixelsPerSecond(JNIEnv* env);
   bool NeedToDrawBackgroundColor(JNIEnv* env);
   int64_t CapturePicture(JNIEnv* env, int width, int height);
   void EnableOnNewPicture(JNIEnv* env, bool enabled);
@@ -313,7 +313,7 @@ class AwContents : public FindHelper::Listener,
                     int32_t target_x,
                     int32_t target_y,
                     int64_t duration_ms);
-  void SetDipScale(JNIEnv* env, jfloat dip_scale);
+  void SetDipScale(JNIEnv* env, float dip_scale);
   base::android::ScopedJavaLocalRef<jstring> GetScheme(JNIEnv* env);
   void OnInputEvent(JNIEnv* env);
 

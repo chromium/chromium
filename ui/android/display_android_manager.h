@@ -52,15 +52,15 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                      const base::android::JavaRef<jintArray>& jWorkArea,
                      int32_t width,
                      int32_t height,
-                     jfloat dipScale,
-                     jfloat pixelsPerInchX,
-                     jfloat pixelsPerInchY,
+                     float dipScale,
+                     float pixelsPerInchX,
+                     float pixelsPerInchY,
                      int32_t rotationDegrees,
                      int32_t bitsPerPixel,
                      int32_t bitsPerComponent,
                      bool isWideColorGamut,
                      bool isHdr,
-                     jfloat hdrMaxLuminanceRatio,
+                     float hdrMaxLuminanceRatio,
                      bool isInternal);
   void RemoveDisplay(JNIEnv* env, int32_t sdkDisplayId);
   void SetPrimaryDisplayId(JNIEnv* env, int32_t sdkDisplayId);
@@ -92,7 +92,7 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                               int bits_per_component,
                               bool is_wide_color_gamut,
                               bool is_hdr,
-                              jfloat hdr_max_luminance_ratio);
+                              float hdr_max_luminance_ratio);
 
   const bool use_display_wide_color_gamut_;
   int primary_display_id_ = 0;

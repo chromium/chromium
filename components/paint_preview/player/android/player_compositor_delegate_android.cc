@@ -204,7 +204,7 @@ int32_t PlayerCompositorDelegateAndroid::RequestBitmap(
     std::optional<base::UnguessableToken>& frame_guid,
     const JavaRef<jobject>& j_bitmap_callback,
     const JavaRef<jobject>& j_error_callback,
-    jfloat j_scale_factor,
+    float j_scale_factor,
     int32_t j_clip_x,
     int32_t j_clip_y,
     int32_t j_clip_width,

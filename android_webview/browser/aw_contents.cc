@@ -1100,7 +1100,7 @@ bool AwContents::OnDraw(JNIEnv* env,
   return browser_view_renderer_.OnDrawSoftware(canvas_holder->GetCanvas());
 }
 
-jfloat AwContents::GetVelocityInPixelsPerSecond(JNIEnv* env) {
+float AwContents::GetVelocityInPixelsPerSecond(JNIEnv* env) {
   return browser_view_renderer_.GetVelocityInPixelsPerSecond();
 }
 
@@ -1135,7 +1135,7 @@ void AwContents::SetBackgroundColor(JNIEnv* env, int32_t color) {
   web_contents_->SetPageBaseBackgroundColor(color);
 }
 
-void AwContents::ZoomBy(JNIEnv* env, jfloat delta) {
+void AwContents::ZoomBy(JNIEnv* env, float delta) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ZoomBy(delta);
 }
@@ -1210,7 +1210,7 @@ ui::TouchHandleDrawable* AwContents::CreateDrawable() {
       Java_AwContents_onCreateTouchHandle(env, obj));
 }
 
-void AwContents::SetDipScale(JNIEnv* env, jfloat dip_scale) {
+void AwContents::SetDipScale(JNIEnv* env, float dip_scale) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SetDipScaleInternal(dip_scale);
 }

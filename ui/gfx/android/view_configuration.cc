@@ -139,11 +139,11 @@ ViewConfigurationData& GetViewConfigurationData() {
 
 static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
     JNIEnv* env,
-    jfloat maximum_fling_velocity,
-    jfloat minimum_fling_velocity,
-    jfloat touch_slop,
-    jfloat double_tap_slop,
-    jfloat min_scaling_span,
+    float maximum_fling_velocity,
+    float minimum_fling_velocity,
+    float touch_slop,
+    float double_tap_slop,
+    float min_scaling_span,
     int32_t text_cursor_blink_interval) {
   GetViewConfigurationData().SynchronizedUpdate(
       maximum_fling_velocity, minimum_fling_velocity, touch_slop,

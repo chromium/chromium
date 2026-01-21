@@ -295,8 +295,8 @@ void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(JNIEnv* env,
       /*url_for_rappor=*/GURL()));
 }
 
-jdouble MostVisitedSitesBridge::GetSuggestionScore(JNIEnv* env,
-                                                   const GURL& url) {
+double MostVisitedSitesBridge::GetSuggestionScore(JNIEnv* env,
+                                                  const GURL& url) {
   return most_visited_->GetSuggestionScore(url);
 }
 

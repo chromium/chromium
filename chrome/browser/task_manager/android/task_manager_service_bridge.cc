@@ -60,7 +60,7 @@ static int64_t JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
   return usage ? usage->InBytes() : -1;
 }
 
-static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
+static double JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
     JNIEnv* env,
     TaskId task_id) {
   return TaskManagerInterface::GetTaskManager()->GetPlatformIndependentCPUUsage(

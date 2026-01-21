@@ -304,7 +304,7 @@ static void JNI_CronetUrlRequestContext_AddQuicHint(
 
 // Add a public key pin to URLRequestContextConfig.
 // |jhost| is the host to apply the pin to.
-// |jhashes| is an array of jbyte[32] representing SHA256 key hashes.
+// |jhashes| is an array of int8_t[32] representing SHA256 key hashes.
 // |jinclude_subdomains| indicates if pin should be applied to subdomains.
 // |jexpiration_time| is the time that the pin expires, in milliseconds since
 // Jan. 1, 1970, midnight GMT.
@@ -332,7 +332,7 @@ static void JNI_CronetUrlRequestContext_AddPkp(
       LOG(ERROR) << "Unable to add public key hash value.";
       continue;
     }
-    jbyte* bytes = env->GetByteArrayElements(bytes_array.obj(), nullptr);
+    int8_t* bytes = env->GetByteArrayElements(bytes_array.obj(), nullptr);
     net::HashValue hash(*reinterpret_cast<net::SHA256HashValue*>(bytes));
     pkp->pin_hashes.push_back(hash);
     env->ReleaseByteArrayElements(bytes_array.obj(), bytes, JNI_ABORT);

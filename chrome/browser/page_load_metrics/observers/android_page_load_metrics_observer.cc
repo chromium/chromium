@@ -269,10 +269,10 @@ void AndroidPageLoadMetricsObserver::ReportBufferedMetrics(
   }
   Java_PageLoadMetrics_onLayoutShiftScore(
       env, java_web_contents, static_cast<int64_t>(navigation_id_),
-      static_cast<jfloat>(GetDelegate()
-                              .GetMainFrameRenderData()
-                              .layout_shift_score_before_input_or_scroll),
-      static_cast<jfloat>(GetDelegate().GetPageRenderData().layout_shift_score),
+      static_cast<float>(GetDelegate()
+                             .GetMainFrameRenderData()
+                             .layout_shift_score_before_input_or_scroll),
+      static_cast<float>(GetDelegate().GetPageRenderData().layout_shift_score),
       static_cast<bool>(IsPrerendering()));
 }
 

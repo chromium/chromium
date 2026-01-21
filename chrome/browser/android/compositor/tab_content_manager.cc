@@ -255,7 +255,7 @@ void TabContentManager::CleanupTrackers() {
 void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
     const JavaRef<jobject>& tab,
-    jfloat thumbnail_scale,
+    float thumbnail_scale,
     bool return_bitmap,
     const base::android::JavaRef<jobject>& j_callback) {
   // Ensure capture only happens on UI thread.
@@ -294,7 +294,7 @@ void TabContentManager::CaptureThumbnail(
 void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
                                            const JavaRef<jobject>& tab,
                                            const JavaRef<jobject>& bitmap,
-                                           jfloat thumbnail_scale) {
+                                           float thumbnail_scale) {
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, tab);
   DCHECK(tab_android);
   int tab_id = tab_android->GetAndroidId();

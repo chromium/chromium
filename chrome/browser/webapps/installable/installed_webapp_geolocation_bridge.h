@@ -43,17 +43,17 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
 
   // Called by JNI on its thread looper.
   void OnNewLocationAvailable(JNIEnv* env,
-                              jdouble latitude,
-                              jdouble longitude,
-                              jdouble time_stamp,
+                              double latitude,
+                              double longitude,
+                              double time_stamp,
                               bool has_altitude,
-                              jdouble altitude,
+                              double altitude,
                               bool has_accuracy,
-                              jdouble accuracy,
+                              double accuracy,
                               bool has_heading,
-                              jdouble heading,
+                              double heading,
                               bool has_speed,
-                              jdouble speed);
+                              double speed);
   void OnNewErrorAvailable(JNIEnv* env, std::string& message);
 
   const GURL& url() { return url_; }

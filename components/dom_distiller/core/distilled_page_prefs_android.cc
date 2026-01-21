@@ -47,16 +47,16 @@ int32_t DistilledPagePrefsAndroid::GetTheme(JNIEnv* env) {
 }
 
 void DistilledPagePrefsAndroid::SetUserPrefFontScaling(JNIEnv* env,
-                                                       jfloat scaling) {
-  distilled_page_prefs_->SetUserPrefFontScaling(static_cast<float>(scaling));
+                                                       float scaling) {
+  distilled_page_prefs_->SetUserPrefFontScaling(scaling);
 }
 
 void DistilledPagePrefsAndroid::SetDefaultFontScaling(JNIEnv* env,
-                                                      jfloat scaling) {
-  distilled_page_prefs_->SetDefaultFontScaling(static_cast<float>(scaling));
+                                                      float scaling) {
+  distilled_page_prefs_->SetDefaultFontScaling(scaling);
 }
 
-jfloat DistilledPagePrefsAndroid::GetFontScaling(JNIEnv* env) {
+float DistilledPagePrefsAndroid::GetFontScaling(JNIEnv* env) {
   return distilled_page_prefs_->GetFontScaling();
 }
 

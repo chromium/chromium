@@ -90,7 +90,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService,
                          int32_t j_tab_id,
                          const base::android::JavaRef<jobject>& j_web_contents,
                          bool j_accessibility_enabled,
-                         jfloat j_page_scale_factor,
+                         float j_page_scale_factor,
                          int32_t j_x,
                          int32_t j_y,
                          const base::android::JavaRef<jobject>& j_callback);

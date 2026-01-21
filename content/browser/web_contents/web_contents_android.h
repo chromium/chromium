@@ -147,7 +147,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   // No theme color is represented by SK_ColorTRANSPARENT.
   int32_t GetThemeColor(JNIEnv* env);
 
-  jfloat GetLoadProgress(JNIEnv* env);
+  float GetLoadProgress(JNIEnv* env);
 
   void RequestSmartClipExtract(JNIEnv* env,
                                const base::android::JavaRef<jobject>& callback,

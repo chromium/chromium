@@ -30,8 +30,8 @@ void ToolbarSwipeSceneLayer::UpdateLayer(JNIEnv* env,
                                          bool left_tab,
                                          bool can_use_live_layer,
                                          int32_t default_background_color,
-                                         jfloat x,
-                                         jfloat y) {
+                                         float x,
+                                         float y) {
   background_color_ = default_background_color;
   ContentLayer* content_layer =
       left_tab ? left_content_layer_.get() : right_content_layer_.get();

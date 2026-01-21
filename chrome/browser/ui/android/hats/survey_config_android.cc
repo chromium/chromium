@@ -49,7 +49,7 @@ void SurveyConfigHolder::InitJavaHolder(Profile* profile) {
         base::android::ToJavaArrayOfStrings(
             env, survey_config.product_specific_string_data_fields);
     bool juser_prompted = survey_config.user_prompted;
-    jdouble jprobability = survey_config.probability;
+    double jprobability = survey_config.probability;
     std::optional<base::TimeDelta> cooldown_period_override =
         survey_config.GetCooldownPeriodOverride(profile);
     int32_t jcooldown_period_override = cooldown_period_override.has_value()

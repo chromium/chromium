@@ -228,9 +228,9 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
 void WindowAndroid::OnAdaptiveRefreshRateInfoChanged(
     JNIEnv* env,
     bool supports_adaptive_refresh_rate,
-    jfloat suggested_frame_rate_high,
-    const std::vector<jfloat> frame_per_second,
-    const std::vector<jfloat> dp_per_second) {
+    float suggested_frame_rate_high,
+    const std::vector<float> frame_per_second,
+    const std::vector<float> dp_per_second) {
   adaptive_refresh_rate_info_.supports_adaptive_refresh_rate =
       supports_adaptive_refresh_rate;
   adaptive_refresh_rate_info_.suggested_frame_rate_high =
@@ -425,7 +425,7 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 static int64_t JNI_WindowAndroid_Init(JNIEnv* env,
                                       const JavaRef<jobject>& obj,
                                       int32_t sdk_display_id,
-                                      jfloat scroll_factor,
+                                      float scroll_factor,
                                       bool window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(
       env, obj, sdk_display_id, scroll_factor, window_is_wide_color_gamut);
