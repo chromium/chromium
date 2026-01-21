@@ -64,12 +64,7 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
  public:
   explicit FakeGPUImageDecodeTestGLES2Interface(
       TransferCacheTestHelper* transfer_cache_helper)
-      : extension_string_(
-            "GL_EXT_texture_format_BGRA8888 GL_OES_rgb8_rgba8 "
-            "GL_OES_texture_npot GL_EXT_texture_rg "
-            "GL_OES_texture_half_float GL_OES_texture_half_float_linear "
-            "GL_EXT_texture_norm16"),
-        transfer_cache_helper_(transfer_cache_helper) {}
+      : transfer_cache_helper_(transfer_cache_helper) {}
 
   ~FakeGPUImageDecodeTestGLES2Interface() override {
     // All textures / framebuffers / renderbuffers should be cleaned up.
@@ -116,21 +111,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   }
 
   // viz::TestGLES2Interface:
-  const GLubyte* GetString(GLenum name) override {
-    switch (name) {
-      case GL_EXTENSIONS:
-        return reinterpret_cast<const GLubyte*>(extension_string_.c_str());
-      case GL_VERSION:
-        return reinterpret_cast<const GLubyte*>("4.0 Null GL");
-      case GL_SHADING_LANGUAGE_VERSION:
-        return reinterpret_cast<const GLubyte*>("4.20.8 Null GLSL");
-      case GL_VENDOR:
-        return reinterpret_cast<const GLubyte*>("Null Vendor");
-      case GL_RENDERER:
-        return reinterpret_cast<const GLubyte*>("The Null (Non-)Renderer");
-    }
-    return nullptr;
-  }
   void GetIntegerv(GLenum name, GLint* params) override {
     switch (name) {
       case GL_MAX_TEXTURE_IMAGE_UNITS:
@@ -152,7 +132,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
   }
 
  private:
-  const std::string extension_string_;
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   size_t mapped_entry_size_ = 0;
   std::unique_ptr<uint8_t, base::AlignedFreeDeleter> mapped_entry_;
