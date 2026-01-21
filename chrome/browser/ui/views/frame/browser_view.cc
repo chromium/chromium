@@ -982,7 +982,7 @@ BrowserView::BrowserView(Browser* browser)
 
   if (tabs::IsProjectsPanelFeatureEnabled()) {
     auto projects_panel_container = std::make_unique<ProjectsPanelView>(
-        browser_->GetActions()->root_action_item());
+        browser_->GetActions()->root_action_item(), browser_->profile());
 
     projects_panel_container_ =
         AddChildView(std::move(projects_panel_container));

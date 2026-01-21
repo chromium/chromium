@@ -6,29 +6,41 @@
 
 #include <memory>
 
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 constexpr int kProjectPanelWidth = 240;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
+// The padding around a list header.
+constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
 }  // namespace
 
-ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item)
+ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
+                                     Profile* profile)
     : root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -45,11 +57,39 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item)
   // view must also paint to a layer to ensure it overlays those components.
   SetPaintToLayer();
 
+  panel_controller_ = std::make_unique<ProjectsPanelController>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
+
   controls_view_ = AddChildView(std::make_unique<ProjectsPanelControlsView>(
       root_action_item_.get(), action_view_controller_.get()));
 
   tab_groups_view_ = AddChildView(std::make_unique<ProjectsPanelTabGroupsView>(
       root_action_item_.get(), action_view_controller_.get()));
+
+  auto* threads_list_title = AddChildView(std::make_unique<views::Label>());
+  threads_list_title->SetText(
+      l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
+  threads_list_title->SetTextStyle(views::style::TextStyle::STYLE_BODY_3_BOLD);
+  threads_list_title->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  threads_list_title->SetProperty(views::kMarginsKey, kListHeaderPadding);
+
+  threads_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
+  // TODO(crbug.com/475300882): Fetch thread data from the controller once
+  // available.
+  threads_scroll_view_->SetContents(
+      std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
+  threads_scroll_view_->SetUseContentsPreferredSize(true);
+  threads_scroll_view_->SetBackgroundColor(std::nullopt);
+  threads_scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  threads_scroll_view_->SetOverflowGradientMask(
+      views::ScrollView::GradientDirection::kVertical);
+  threads_scroll_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   SetVisible(false);
   SetPreferredSize(gfx::Size(kProjectPanelWidth, 0));
@@ -72,6 +112,7 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
     ProjectsPanelStateController* state_controller) {
   TooltipTextChanged();
   SetVisible(state_controller->IsProjectsPanelVisible());
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(ProjectsPanelView)
