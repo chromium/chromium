@@ -16083,27 +16083,6 @@
             ]
         }
     ],
-    "MahiEnabled": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "MahiEnabled",
-                    "enable_features": [
-                        "MediaAppPdfMahi"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "MediaAppPdfMahi"
-                    ]
-                }
-            ]
-        }
-    ],
     "MainIdleBypassSchedulerExperiment": [
         {
             "platforms": [
