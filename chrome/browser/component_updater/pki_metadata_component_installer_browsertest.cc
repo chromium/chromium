@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
 
   int64_t crs_version = net::CompiledChromeRootStoreVersion();
 
-  net::MtcLogBuilder mtc_log(kMtcLogId);
+  net::MtcLogBuilder mtc_log(kMtcLogId, kMtcLogBaseId);
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
   // builders.
   std::unique_ptr<net::CertBuilder> mtc_leaf =
@@ -1575,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   // Second log builder, but with the same log id, will be used to generate a
   // MTC leaf cert with the same subject/index/issuer, but with a different
   // proof.
-  net::MtcLogBuilder different_mtc_log(kMtcLogId);
+  net::MtcLogBuilder different_mtc_log(kMtcLogId, kMtcLogBaseId);
   different_mtc_log.AddUnusedEntries(21, {0x02});
   uint64_t different_mtc_log_index = different_mtc_log.AddEntry(*mtc_leaf);
   different_mtc_log.AddUnusedEntries(7, {0x02});
@@ -1717,25 +1717,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     chrome_root_store::MtcMetadata mtc_metadata_proto;
     mtc_metadata_proto.set_update_time_seconds(
         SecondsSinceEpoch(base::Time::Now()));
-    chrome_root_store::MtcAnchorData* mtc_anchor_metadata =
-        mtc_metadata_proto.add_mtc_anchor_data();
-
-    mtc_anchor_metadata->set_log_id(base::as_string_view(kMtcLogId));
-
-    auto landmark_range = mtc_log.GetActiveLandmarkRange();
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()->set_base_id(
-        base::as_string_view(kMtcLogBaseId));
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_min_active_landmark_inclusive(landmark_range.first);
-    mtc_anchor_metadata->mutable_trusted_landmark_ids_range()
-        ->set_last_landmark_inclusive(landmark_range.second);
-
-    for (const auto& subtree_hash : mtc_log.GetLandmarkSubtreeHashes()) {
-      auto* subtree = mtc_anchor_metadata->add_trusted_subtrees();
-      subtree->set_start_inclusive(subtree_hash.range.start);
-      subtree->set_end_exclusive(subtree_hash.range.end);
-      subtree->set_hash(base::as_string_view(subtree_hash.hash));
-    }
+    mtc_log.FillMtcMetadataAnchorProto(
+        mtc_metadata_proto.add_mtc_anchor_data());
 
     InstallMtcMetadataUpdate(std::move(mtc_metadata_proto));
 

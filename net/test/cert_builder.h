@@ -562,7 +562,6 @@ class MtcLogBuilder {
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // Helper to fill a MtcAnchorData protobuf object with the information from
   // this log.
-  // TODO(crbug.com/469624806): convert more tests to use this.
   void FillMtcMetadataAnchorProto(
       chrome_root_store::MtcAnchorData* mtc_anchor_data) const;
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
