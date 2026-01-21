@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
@@ -91,6 +92,18 @@ RealboxHandler::RealboxHandler(
       ->SetSuggestInputsCallback(base::BindRepeating(
           &RealboxHandler::GetSuggestInputs, base::Unretained(this)));
   autocomplete_controller_observation_.Observe(autocomplete_controller());
+}
+
+std::string RealboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) const {
+  // The default icon for contextual suggestions is the subdirectory arrow right
+  // icon. For the Lens composebox and realbox, we want to stay consistent with
+  // the search loupe instead.
+  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    return searchbox_internal::kSearchIconResourceName;
+  }
+
+  return SearchboxHandler::AutocompleteIconToResourceName(icon);
 }
 
 RealboxHandler::~RealboxHandler() = default;
