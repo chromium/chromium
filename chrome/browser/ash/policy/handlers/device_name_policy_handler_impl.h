@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -28,8 +27,7 @@ class BrowserPolicyConnectorAsh;
 // This class observes the device setting |DeviceHostname|, and calls
 // NetworkStateHandler::SetHostname() appropriately based on the value of that
 // setting.
-class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
-                                    public ash::NetworkStateHandlerObserver {
+class DeviceNamePolicyHandlerImpl : public ash::NetworkStateHandlerObserver {
  public:
   // Types of policies for device name functionality.
   enum class DeviceNamePolicy {
@@ -56,8 +54,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
 
   ~DeviceNamePolicyHandlerImpl() override;
 
-  // DeviceNamePolicyHandler:
-  std::optional<std::string> GetHostnameChosenByAdministrator() const override;
+  std::optional<std::string> GetHostnameChosenByAdministrator() const;
 
   // For unit tests:
   DeviceNamePolicy GetDeviceNamePolicyForTesting() const {

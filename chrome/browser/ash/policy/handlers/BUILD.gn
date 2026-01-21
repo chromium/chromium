@@ -24,8 +24,6 @@ static_library("handlers") {
     "device_dlc_predownload_list_policy_handler.h",
     "device_dock_mac_address_source_handler.cc",
     "device_dock_mac_address_source_handler.h",
-    "device_name_policy_handler.cc",
-    "device_name_policy_handler.h",
     "device_name_policy_handler_impl.cc",
     "device_name_policy_handler_impl.h",
     "device_name_policy_handler_name_generator.cc",

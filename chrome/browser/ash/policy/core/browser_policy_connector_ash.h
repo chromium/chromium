@@ -61,7 +61,7 @@ class DeviceCloudPolicyInitializer;
 class DeviceDlcPredownloadListPolicyHandler;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
-class DeviceNamePolicyHandler;
+class DeviceNamePolicyHandlerImpl;
 class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceScheduledRebootHandler;
 class DeviceScheduledUpdateChecker;
@@ -192,7 +192,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return system_proxy_handler_.get();
   }
 
-  DeviceNamePolicyHandler* GetDeviceNamePolicyHandler() const {
+  DeviceNamePolicyHandlerImpl* GetDeviceNamePolicyHandler() const {
     return device_name_policy_handler_.get();
   }
 
@@ -288,7 +288,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       device_fm_registration_token_uploaders_;
 
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
-  std::unique_ptr<DeviceNamePolicyHandler> device_name_policy_handler_;
+  std::unique_ptr<DeviceNamePolicyHandlerImpl> device_name_policy_handler_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
   std::unique_ptr<MinimumVersionPolicyHandlerDelegateImpl>
       minimum_version_policy_handler_delegate_;
