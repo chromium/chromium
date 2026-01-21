@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -1076,9 +1077,13 @@ ServerPredictions::ServerPredictions(
              std::deque<FieldSuggestion>>& field_signature_map,
     const FormData& form)
     : may_run_autofill_ai_model_(may_run_autofill_ai_model) {
-  predictions_ = base::ToVector(form.fields(), [&](const FormFieldData& field) {
-    return GetFieldSuggestion(form, field, field_signature_map);
-  });
+  predictions_ =
+      base::MakeFlatMap<FieldGlobalId, std::optional<FieldSuggestion>>(
+          form.fields(), {}, [&](const FormFieldData& field) {
+            return std::make_pair(
+                field.global_id(),
+                GetFieldSuggestion(form, field, field_signature_map));
+          });
 }
 
 ServerPredictions::ServerPredictions(const ServerPredictions&) = default;
@@ -1099,28 +1104,32 @@ void ServerPredictions::ApplyTo(FormStructure& form) const {
   // signature how many fields with the same signature have been observed.
   std::map<FieldSignature, size_t> field_rank_map;
 
-  CHECK_EQ(form.fields().size(), predictions_.size());
-  for (auto [field, field_suggestion] :
-       base::zip(form.fields(), predictions_)) {
-    if (!field_suggestion) {
+  for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+    const std::optional<FieldSuggestion>* field_suggestion_ptr =
+        base::FindOrNull(predictions_, field->global_id());
+    if (!field_suggestion_ptr || !field_suggestion_ptr->has_value()) {
+      // TODO(crbug.com/477542478): Clear the server predictions of fields that
+      // were queried but for which the server had no suggestions, and only skip
+      // fields that were not queried at all.
       continue;
     }
+    const FieldSuggestion& field_suggestion = field_suggestion_ptr->value();
     std::vector<FieldPrediction> server_predictions(
-        field_suggestion->predictions().begin(),
-        field_suggestion->predictions().end());
+        field_suggestion.predictions().begin(),
+        field_suggestion.predictions().end());
     MaybeMergeServerPredictions(server_predictions);
     field->set_server_predictions(std::move(server_predictions));
-    if (field_suggestion->has_password_requirements()) {
-      field->SetPasswordRequirements(field_suggestion->password_requirements());
+    if (field_suggestion.has_password_requirements()) {
+      field->SetPasswordRequirements(field_suggestion.password_requirements());
     }
-    if (field_suggestion->has_format_string()) {
+    if (field_suggestion.has_format_string()) {
       std::u16string format_string_value =
-          base::UTF8ToUTF16(field_suggestion->format_string().format_string());
+          base::UTF8ToUTF16(field_suggestion.format_string().format_string());
       if (AutofillFormatString::IsValid(
-              format_string_value, field_suggestion->format_string().type())) {
+              format_string_value, field_suggestion.format_string().type())) {
         field->set_format_string_unless_overruled(
             AutofillFormatString(format_string_value,
-                                 field_suggestion->format_string().type()),
+                                 field_suggestion.format_string().type()),
             AutofillFormatStringSource::kServer);
       }
     }
