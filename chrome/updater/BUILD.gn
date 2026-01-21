@@ -640,6 +640,7 @@ if (is_win || is_mac || is_linux) {
       defines = [ "SECURITY_WIN32" ]
 
       libs = [
+        "ntdll.lib",
         "secur32.lib",
         "taskschd.lib",
         "wtsapi32.lib",

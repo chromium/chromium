@@ -80,6 +80,9 @@
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
+// Linked from ntdll.lib.
+extern "C" LONG WINAPI RtlGetVersion(OSVERSIONINFOEX*);
+
 namespace updater {
 
 namespace {
@@ -834,17 +837,9 @@ std::optional<OSVERSIONINFOEX> GetOSVersion() {
   // `::RtlGetVersion` is being used here instead of `::GetVersionEx`, because
   // the latter function can return the incorrect version if it is shimmed using
   // an app compat shim.
-  using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
-  static const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
-      ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
-  if (!rtl_get_version) {
-    return std::nullopt;
-  }
+  OSVERSIONINFOEX os_out = {.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX)};
 
-  OSVERSIONINFOEX os_out = {};
-  os_out.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-  rtl_get_version(&os_out);
+  ::RtlGetVersion(&os_out);
   if (!os_out.dwMajorVersion) {
     return std::nullopt;
   }
@@ -1615,19 +1610,12 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
     return base::unexpected(HRESULTFromLastError());
   }
 
-  static const auto nt_query_information_process =
-      reinterpret_cast<decltype(&::NtQueryInformationProcess)>(::GetProcAddress(
-          ::GetModuleHandle(L"ntdll.dll"), "NtQueryInformationProcess"));
-  if (!nt_query_information_process) {
-    return base::unexpected(HRESULTFromLastError());
-  }
-
   // Get the PEB address.
   // https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb
   PROCESS_BASIC_INFORMATION info = {};
-  if (!NT_SUCCESS(nt_query_information_process(process_handle.Get(),
-                                               ProcessBasicInformation, &info,
-                                               sizeof(info), nullptr))) {
+  if (!NT_SUCCESS(::NtQueryInformationProcess(process_handle.Get(),
+                                              ProcessBasicInformation, &info,
+                                              sizeof(info), nullptr))) {
     return base::unexpected(E_FAIL);
   }
   BYTE* peb = reinterpret_cast<BYTE*>(info.PebBaseAddress);
