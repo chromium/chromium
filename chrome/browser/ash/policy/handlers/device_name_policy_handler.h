@@ -15,19 +15,6 @@ namespace policy {
 // observers when the policy type and/or hostname changes.
 class DeviceNamePolicyHandler {
  public:
-  // Types of policies for device name functionality.
-  enum class DeviceNamePolicy {
-    // No device name policy in place.
-    kNoPolicy,
-
-    // Policy in place allowing administrator to specify a template
-    // used to generate and format the hostname.
-    kPolicyHostnameChosenByAdmin,
-
-    // Policy in place which prohibits users from configuring device name.
-    kPolicyHostnameNotConfigurable,
-  };
-
   virtual ~DeviceNamePolicyHandler();
 
   // Provides hostname if requested by administrator.

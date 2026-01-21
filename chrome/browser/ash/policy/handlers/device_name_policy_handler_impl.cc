@@ -25,15 +25,15 @@ namespace {
 
 // By default, device name policy should be kPolicyHostnameNotConfigurable for
 // managed devices and kNoPolicy for unmanaged devices.
-DeviceNamePolicyHandler::DeviceNamePolicy ComputeInitialPolicy() {
+DeviceNamePolicyHandlerImpl::DeviceNamePolicy ComputeInitialPolicy() {
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     // We assume that the device name is not configurable unless/until we know
     // about any policies that are set.
-    return DeviceNamePolicyHandler::DeviceNamePolicy::
+    return DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable;
   }
 
-  return DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy;
+  return DeviceNamePolicyHandlerImpl::DeviceNamePolicy::kNoPolicy;
 }
 
 }  // namespace
@@ -122,7 +122,7 @@ void DeviceNamePolicyHandlerImpl::
   SetDeviceNamePolicy(policy, new_hostname);
 }
 
-DeviceNamePolicyHandler::DeviceNamePolicy
+DeviceNamePolicyHandlerImpl::DeviceNamePolicy
 DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
   if (cros_settings_->GetString(ash::kDeviceHostnameTemplate,
                                 hostname_template_out)) {

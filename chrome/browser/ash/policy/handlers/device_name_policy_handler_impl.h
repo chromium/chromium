@@ -31,6 +31,19 @@ class BrowserPolicyConnectorAsh;
 class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
                                     public ash::NetworkStateHandlerObserver {
  public:
+  // Types of policies for device name functionality.
+  enum class DeviceNamePolicy {
+    // No device name policy in place.
+    kNoPolicy,
+
+    // Policy in place allowing administrator to specify a template
+    // used to generate and format the hostname.
+    kPolicyHostnameChosenByAdmin,
+
+    // Policy in place which prohibits users from configuring device name.
+    kPolicyHostnameNotConfigurable,
+  };
+
   // `browser_policy_connector_ash` and `cros_settings` must be non-null and
   // must outlive `this`.
   DeviceNamePolicyHandlerImpl(
@@ -71,8 +84,7 @@ class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
   // Returns the device name policy to be used. If kPolicyHostnameChosenByAdmin
   // is returned, |hostname_template_out| is set to the template chosen by the
   // administrator; otherwise, |hostname_template_out| is left unchanged.
-  DeviceNamePolicyHandler::DeviceNamePolicy ComputePolicy(
-      std::string* hostname_template_out);
+  DeviceNamePolicy ComputePolicy(std::string* hostname_template_out);
 
   // Generates the hostname according to the template chosen by the
   // administrator.
