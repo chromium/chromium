@@ -6219,6 +6219,7 @@ class ColorTransformPixelTest
     this->dst_color_space_ = GetColorSpace(std::get<2>(GetParam()));
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
+    this->display_color_spaces_.SetHDRMaxLuminanceRelative(64.f);
     if (this->dst_color_space_.IsWide()) {
       this->display_color_spaces_.SetOutputFormats(
           SinglePlaneFormat::kRGBA_F16, SinglePlaneFormat::kRGBA_F16);
@@ -6260,7 +6261,6 @@ class ColorTransformPixelTest
     }
 
     gfx::ColorTransform::Options options;
-    options.tone_map_pq_and_hlg_to_dst = true;
     gfx::ColorTransform::RuntimeOptions runtime_options;
     runtime_options.dst_sdr_max_luminance_nits =
         this->display_color_spaces_.GetSDRMaxLuminanceNits();

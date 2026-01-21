@@ -496,71 +496,6 @@ class ColorTransformHLG_RefOOTF : public ColorTransformStep {
   }
 };
 
-// Scale the color such that the luminance `input_max_value` maps to
-// `output_max_value`.
-class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
- public:
-  explicit ColorTransformToneMapInRec2020Linear(const gfx::ColorSpace& src)
-      : use_ref_max_luminance_(src.GetTransferID() ==
-                               ColorSpace::TransferID::HLG) {}
-
-  // ColorTransformStep implementation:
-  void Transform(ColorTransform::TriStim* color,
-                 size_t num,
-                 const ColorTransform::RuntimeOptions& options) const override {
-    float a = 0.f;
-    float b = 0.f;
-    ComputeToneMapConstants(options, a, b);
-
-    for (size_t i = 0; i < num; i++) {
-      float maximum =
-          std::max({UNSAFE_TODO(color[i]).x(), UNSAFE_TODO(color[i]).y(),
-                    UNSAFE_TODO(color[i]).z()});
-      if (maximum > 0.f) {
-        UNSAFE_TODO(color[i]).Scale((1.f + a * maximum) / (1.f + b * maximum));
-      }
-    }
-  }
-
- private:
-  float ComputeSrcMaxLumRelative(
-      const ColorTransform::RuntimeOptions& options) const {
-    float src_max_lum_nits = kHLGRefMaxLumNits;
-    if (!use_ref_max_luminance_) {
-      const auto hdr_metadata =
-          gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
-              options.src_hdr_metadata);
-      src_max_lum_nits = (hdr_metadata.cta_861_3 &&
-                          hdr_metadata.cta_861_3->max_content_light_level > 0)
-                             ? hdr_metadata.cta_861_3->max_content_light_level
-                             : hdr_metadata.smpte_st_2086->luminance_max;
-    }
-    float sdr_white_nits = ColorSpace::kDefaultSDRWhiteLevel;
-    if (options.src_hdr_metadata.ndwl) {
-      sdr_white_nits = options.src_hdr_metadata.ndwl->nits;
-    }
-    return src_max_lum_nits / sdr_white_nits;
-  }
-  // Computes the constants used by the tone mapping algorithm described in
-  // https://colab.research.google.com/drive/1hI10nq6L6ru_UFvz7-f7xQaQp0qarz_K
-  void ComputeToneMapConstants(
-      const gfx::ColorTransform::RuntimeOptions& options,
-      float& a,
-      float& b) const {
-    const float src_max_lum_relative = ComputeSrcMaxLumRelative(options);
-    if (src_max_lum_relative > options.dst_max_luminance_relative) {
-      a = options.dst_max_luminance_relative /
-          (src_max_lum_relative * src_max_lum_relative);
-      b = 1.f / options.dst_max_luminance_relative;
-    } else {
-      a = 0;
-      b = 0;
-    }
-  }
-
-  const bool use_ref_max_luminance_;
-};
-
 // Converts from nits-relative (where 1.0 is `unity_nits` nits) to SDR-relative
 // (where 1.0 is SDR white). If `use_src_sdr_white` is true then use 203 nits
 // for SDR white, otherwise use `RuntimeOptions::dst_sdr_max_luminance_nits`
@@ -695,13 +630,6 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
           kHLGRefMaxLumNits, /*use_src_sdr_white=*/true));
 
-      // If tone mapping is requested, tone map down to the available
-      // headroom.
-      if (options.tone_map_pq_and_hlg_to_dst) {
-        steps_.push_back(
-            std::make_unique<ColorTransformToneMapInRec2020Linear>(src));
-      }
-
       // Convert back to XYZ.
       steps_.push_back(std::make_unique<ColorTransformMatrix>(
           rec2020_linear.GetPrimaryMatrix()));
@@ -712,20 +640,6 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       // SDR-relative space (where 1.0 is SDR white).
       steps_.push_back(std::make_unique<ColorTransformSrcNitsToSdrRelative>(
           kPQRefMaxLumNits, /*use_src_sdr_white=*/true));
-
-      if (options.tone_map_pq_and_hlg_to_dst) {
-        // Convert from XYZ to Rec2020 primaries.
-        steps_.push_back(std::make_unique<ColorTransformMatrix>(
-            Invert(rec2020_linear.GetPrimaryMatrix())));
-
-        // Tone map down to the available headroom.
-        steps_.push_back(
-            std::make_unique<ColorTransformToneMapInRec2020Linear>(src));
-
-        // Convert back to XYZ.
-        steps_.push_back(std::make_unique<ColorTransformMatrix>(
-            rec2020_linear.GetPrimaryMatrix()));
-      }
       break;
     }
     default:

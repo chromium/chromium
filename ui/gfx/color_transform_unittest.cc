@@ -604,68 +604,6 @@ TEST(ColorSpaceTest, ScrgbLinear80Nits) {
     xform->Transform(&val, 1, runtime_options);
     EXPECT_NEAR(val.x(), kSdrWhite / 80.f, kMathEpsilon);
   }
-
-  // PQ's maximum maps to the maximum value when tonemapped.
-  {
-    constexpr float kSdrWhite = 150.f;
-    constexpr float kDstMaxLumRel = 2.f;
-
-    ColorSpace src_pq = ColorSpace::CreateHDR10();
-
-    ColorTransform::Options options;
-    ColorTransform::RuntimeOptions runtime_options;
-    options.tone_map_pq_and_hlg_to_dst = true;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-    runtime_options.src_hdr_metadata =
-        HDRMetadata(HdrMetadataCta861_3(10000.f, 100.f));
-
-    std::unique_ptr<ColorTransform> xform(
-        ColorTransform::NewColorTransform(src_pq, dst, options));
-
-    ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), kDstMaxLumRel * kSdrWhite / 80.f, kMathEpsilon);
-  }
-}
-
-TEST(ColorSpaceTest, HLGTonemapSdrRelative) {
-  ColorSpace dst(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR);
-  ColorSpace src_hlg(ColorSpace::PrimaryID::BT2020,
-                     ColorSpace::TransferID::HLG);
-  ColorTransform::Options options;
-  options.tone_map_pq_and_hlg_to_dst = true;
-
-  std::unique_ptr<ColorTransform> xform(
-      ColorTransform::NewColorTransform(src_hlg, dst, options));
-
-  // If the headroom is low enough that HLG will exceed it, then we will map to
-  // the headroom.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 100.f;
-    constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-
-    ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), kDstMaxLumRel, kMathLargeEpsilon);
-  }
-
-  // We will max out at the reference maximum if it is below the headroom.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 250.f;
-    constexpr float kDstMaxLumRel = 6.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-
-    ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), 1000.f / ColorSpace::kDefaultSDRWhiteLevel,
-                kMathLargeEpsilon);
-  }
 }
 
 TEST(ColorSpaceTest, HLGNoTonemapSdrRelative) {
@@ -673,7 +611,6 @@ TEST(ColorSpaceTest, HLGNoTonemapSdrRelative) {
   ColorSpace src_hlg(ColorSpace::PrimaryID::BT2020,
                      ColorSpace::TransferID::HLG);
   ColorTransform::Options options;
-  options.tone_map_pq_and_hlg_to_dst = false;
 
   std::unique_ptr<ColorTransform> xform(
       ColorTransform::NewColorTransform(src_hlg, dst, options));
@@ -694,79 +631,6 @@ TEST(ColorSpaceTest, HLGNoTonemapSdrRelative) {
   // HLG 100% will match 1000 nits.
   {
     ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), 1000.f / ColorSpace::kDefaultSDRWhiteLevel,
-                kMathLargeEpsilon);
-  }
-}
-
-TEST(ColorSpaceTest, PQTonemapSdrRelative) {
-  ColorSpace dst(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR);
-  ColorSpace src_hlg(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::PQ);
-  ColorTransform::Options options;
-  options.tone_map_pq_and_hlg_to_dst = true;
-
-  std::unique_ptr<ColorTransform> xform(
-      ColorTransform::NewColorTransform(src_hlg, dst, options));
-
-  constexpr float kPQ1000Nits = 0.751827096247041f;
-
-  // If the headroom is low enough that the maximum PQ value will exceed it,
-  // then we will map to the headroom.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 100.f;
-    constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-    runtime_options.src_hdr_metadata =
-        HDRMetadata(HdrMetadataCta861_3(10000.f, 100.f));
-
-    ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), kDstMaxLumRel, kMathLargeEpsilon);
-  }
-
-  // Ensure that the maximum value specified in metadata is mapped to the
-  // headroom.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 100.f;
-    constexpr float kDstMaxLumRel = 2.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-
-    ColorTransform::TriStim val(kPQ1000Nits, kPQ1000Nits, kPQ1000Nits);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), 2.f, kMathLargeEpsilon);
-  }
-
-  // If we do not reach the headroom, then no tonemapping is applied.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 90.f;
-    constexpr float kDstMaxLumRel = 51.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-
-    ColorTransform::TriStim val(1.f, 1.f, 1.f);
-    xform->Transform(&val, 1, runtime_options);
-    EXPECT_NEAR(val.x(), 10000.f / ColorSpace::kDefaultSDRWhiteLevel,
-                kMathLargeEpsilon);
-  }
-
-  // If we do not reach the headroom (because of metadata), then no tonemapping
-  // is applied.
-  {
-    ColorTransform::RuntimeOptions runtime_options;
-    constexpr float kSdrWhite = 100.f;
-    constexpr float kDstMaxLumRel = 6.f;
-    runtime_options.dst_sdr_max_luminance_nits = kSdrWhite;
-    runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
-    runtime_options.src_hdr_metadata =
-        HDRMetadata(HdrMetadataCta861_3(1000.f, 100.f));
-
-    ColorTransform::TriStim val(kPQ1000Nits, kPQ1000Nits, kPQ1000Nits);
     xform->Transform(&val, 1, runtime_options);
     EXPECT_NEAR(val.x(), 1000.f / ColorSpace::kDefaultSDRWhiteLevel,
                 kMathLargeEpsilon);
