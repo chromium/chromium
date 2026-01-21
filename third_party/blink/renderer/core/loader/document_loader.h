@@ -641,9 +641,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // conversion.
   std::unique_ptr<PolicyContainer> policy_container_;
 
-  // The permissions policy to be applied to the window at initialization time.
-  const std::optional<network::ParsedPermissionsPolicy>
-      initial_permissions_policy_;
+  // The permissions policy to be applied to the window at initialization time,
+  // after merging it with headers.
+  const std::optional<Vector<IsolatedAppPermissionPolicyEntry>>
+      isolated_app_policy_;
 
   // These fields are copied from WebNavigationParams, see there for definition.
   DocumentToken token_;

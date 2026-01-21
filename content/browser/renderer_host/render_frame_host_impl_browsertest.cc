@@ -114,6 +114,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -6223,6 +6224,16 @@ class IsolatedApplicationContentBrowserClient
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
     return url.GetHost() == isolated_application_host_;
+  }
+
+  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
+  GetPermissionsPolicyForIsolatedWebApp(
+      BrowserContext* browser_context,
+      const url::Origin& iwa_origin) override {
+    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policy;
+    policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "cross-origin-isolated", std::vector<std::string>{"*"}));
+    return policy;
   }
 
  private:

@@ -144,6 +144,8 @@ class ScopedUrlHandler {
     return std::nullopt;
   }
 
+  void Clear() { request_.reset(); }
+
  private:
   bool Intercept(content::URLLoaderInterceptor::RequestParams* params) {
     request_ = params->url_request;
@@ -202,7 +204,7 @@ class IsolatedWebAppURLLoaderFactoryTestBase : public WebAppTest {
     CHECK(new_storage_partition != nullptr);
   }
 
-  const ScopedUrlHandler& url_handler() {
+  ScopedUrlHandler& url_handler() {
     CHECK(url_handler_);
     return *url_handler_;
   }
@@ -769,6 +771,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
                                               *IwaVersion::Create("1.0.0"))
                            .Build()));
   NavigateAndCommit(kDevAppStartUrl);
+  // Clear the interception of the manifest fetch triggered by navigation.
+  url_handler().Clear();
 
   CreateFactoryForFrame(url::Origin::Create(kDevAppStartUrl));
 

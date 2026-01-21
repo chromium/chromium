@@ -12,16 +12,19 @@
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 class LocalFrame;
 class ResourceResponse;
+struct IsolatedAppPermissionPolicyEntry;
 
 class CORE_EXPORT SecurityContextInit {
   STACK_ALLOCATED();
@@ -47,7 +50,7 @@ class CORE_EXPORT SecurityContextInit {
       LocalFrame& frame,
       const ResourceResponse& response,
       const FramePolicy& frame_policy,
-      const std::optional<network::ParsedPermissionsPolicy>&
+      const base::optional_ref<const Vector<IsolatedAppPermissionPolicyEntry>>
           isolated_app_policy,
       const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
           fenced_frame_properties,
@@ -61,6 +64,9 @@ class CORE_EXPORT SecurityContextInit {
   }
 
  private:
+  network::ParsedPermissionsPolicy ParseIsolatedAppPermissionsPolicy(
+      const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy);
+
   ExecutionContext* execution_context_ = nullptr;
   network::ParsedPermissionsPolicy permissions_policy_header_;
 };

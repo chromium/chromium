@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span_reader.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -56,6 +57,7 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -277,6 +279,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -12403,6 +12406,15 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
   AssertBrowserContextShutdownHasntStarted();
 
+  if (IsOutermostMainFrame() && GetSiteInstance()
+                                    ->GetWebExposedIsolationInfo()
+                                    .is_isolated_application()) {
+    commit_params->isolated_app_policy =
+        GetContentClient()->browser()->GetPermissionsPolicyForIsolatedWebApp(
+            GetBrowserContext(),
+            url::Origin::Create(navigation_request->GetURL()));
+  }
+
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
@@ -12843,16 +12855,6 @@ void RenderFrameHostImpl::CommitNavigation(
     blink::mojom::PolicyContainerPtr policy_container =
         navigation_request->CreatePolicyContainerForBlink();
 
-    auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
-
-    std::optional<network::ParsedPermissionsPolicy> manifest_policy;
-    if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
-      if (auto isolated_web_app_permissions_policy =
-              delegate_->GetPermissionsPolicyForIsolatedWebApp(this)) {
-        manifest_policy = std::move(isolated_web_app_permissions_policy);
-      }
-    }
-
     if (common_params->url.SchemeIsHTTPOrHTTPS() && IsOutermostMainFrame() &&
         (!navigation_request->IsRestore() ||
          blink::features::kBoostRenderProcessForLoadingPrioritizeRestore
@@ -12880,9 +12882,9 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(container_info),
         std::move(subresource_proxying_loader_factory_for_renderer),
         std::move(keep_alive_loader_factory),
-        std::move(fetch_later_loader_factory), manifest_policy,
-        std::move(policy_container), *document_token,
-        devtools_navigation_token);
+        std::move(fetch_later_loader_factory),
+        /*permissions_policy=*/std::nullopt, std::move(policy_container),
+        *document_token, devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
         .LogCommitNavigationSent();
@@ -14141,9 +14143,20 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
     // behavior, which uses a fully permissive policy as its base permissions
     // policy and accepts rules specifying which permissions policy features
     // should be blocked, aka a blocklist.
+    //
+    // Interpretation of the permission policies and merging is done in the
+    // renderer. However, as it is untrusted, we perform a sanity check whether
+    // it did not add any new policies which would mean it's been compromised.
+    if (!VerifyIsolatedWebAppPermissionsPolicyIsSubsetOfManifest(
+            header_policy)) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::BadMessageReason::
+                            RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES);
+      return;
+    }
+
     permissions_policy_ = network::PermissionsPolicy::CreateFromParsedPolicy(
-        header_policy, delegate_->GetPermissionsPolicyForIsolatedWebApp(this),
-        last_committed_origin_);
+        header_policy, /*base_policy=*/std::nullopt, last_committed_origin_);
     return;
   }
 
@@ -14155,6 +14168,45 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
 
   permissions_policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, header_policy, container_policy, last_committed_origin_);
+}
+
+bool RenderFrameHostImpl::
+    VerifyIsolatedWebAppPermissionsPolicyIsSubsetOfManifest(
+        const network::ParsedPermissionsPolicy& header_policy) {
+  if (header_policy.empty()) {
+    return true;
+  }
+
+  ASSIGN_OR_RETURN(
+      const auto isolated_app_policy,
+      GetContentClient()->browser()->GetPermissionsPolicyForIsolatedWebApp(
+          GetBrowserContext(),
+          GetSiteInstance()->GetWebExposedIsolationInfo().origin()),
+      [] {
+        // The only way this could happen is if the renderer has
+        // been compromised and added new permission policies that
+        // were not in the manifest.
+        return false;
+      });
+
+  const auto features_in_manifest = base::MakeFlatSet<std::string>(
+      isolated_app_policy, std::less(),
+      [](const auto& entry) { return entry->feature; });
+  const auto& permission_policy_to_feature_map =
+      blink::GetPermissionsPolicyFeatureToNameMap();
+  for (const auto& feature_in_headers : header_policy) {
+    const auto* name_mapping = base::FindOrNull(
+        permission_policy_to_feature_map, feature_in_headers.feature);
+    // Okay state: returned feature is valid (in the mapping) and is
+    // mentioned in the manifest.
+    if (name_mapping && features_in_manifest.contains(*name_mapping)) {
+      continue;
+    }
+    // Bad state: renderer added new permission policies, which means that
+    // it's most likely compromised.
+    return false;
+  }
+  return true;
 }
 
 void RenderFrameHostImpl::CreateAudioInputStreamFactory(

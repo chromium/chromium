@@ -498,6 +498,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="330" label="RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE"/>
   <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
   <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
+  <int value="333" label="RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

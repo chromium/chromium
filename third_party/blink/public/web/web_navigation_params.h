@@ -494,7 +494,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // take precedence over any permissions policy constructed in blink. This is
   // useful for isolated applications, which use a different base permissions
   // policy than blink, which uses a fully permissive policy as its base.
-  std::optional<network::ParsedPermissionsPolicy> permissions_policy_override;
+  // The raw string values are parsed from the JSON manifest, but individual
+  // entries themselves are not parsed and validated (in particular, this might
+  // contain malformed/invalid entries).
+  std::optional<std::vector<IsolatedAppPermissionPolicyEntry>>
+      isolated_app_policy;
 
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for

@@ -186,8 +186,9 @@ void IwaPermissionsPolicyCache::ObtainManifestAndCache(
   // If the IWA is not trusted, we skip caching the manifest. The main
   // navigation will handle the trust failure and show an appropriate error
   // page. Fetching the manifest here would result in an opaque network
-  // error.
-  if (!IsolatedWebAppTrustChecker::IsTrusted(
+  // error. Trust check is skipped in case of dev proxy mode.
+  if (!iwa_origin.web_bundle_id().is_for_proxy_mode() &&
+      !IsolatedWebAppTrustChecker::IsTrusted(
            *provider_->profile(), iwa_origin.web_bundle_id(),
            iwa->isolation_data()->location().dev_mode())
            .has_value()) {

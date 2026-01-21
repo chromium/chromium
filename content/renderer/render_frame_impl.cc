@@ -2717,8 +2717,17 @@ void RenderFrameImpl::CommitNavigation(
       .total_lifecycle_events_processing_time_on_commit =
       total_lifecycle_events_processing_time_on_commit;
 
-  if (frame_->IsOutermostMainFrame() && permissions_policy) {
-    navigation_params->permissions_policy_override = permissions_policy;
+  if (frame_->IsOutermostMainFrame() &&
+      commit_params->isolated_app_policy.has_value()) {
+    navigation_params->isolated_app_policy = base::ToVector(
+        commit_params->isolated_app_policy.value(), [](const auto& ptr) {
+          return blink::IsolatedAppPermissionPolicyEntry{
+              .feature = WebString::FromUTF8(ptr->feature),
+              .allowed_origins =
+                  base::ToVector(ptr->allowed_origins, [](const auto& origin) {
+                    return WebString::FromUTF8(origin);
+                  })};
+        });
   }
 
   if (IsForInitialWebUI() && base::FeatureList::IsEnabled(

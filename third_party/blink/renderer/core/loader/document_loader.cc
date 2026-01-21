@@ -345,8 +345,8 @@ struct SameSizeAsDocumentLoader
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
-  std::optional<network::ParsedPermissionsPolicy>
-      isolated_app_permissions_policy;
+  const std::optional<Vector<IsolatedAppPermissionPolicyEntry>>
+      isolated_app_policy;
   DocumentToken token;
   KURL url;
   KURL original_url;
@@ -532,7 +532,7 @@ DocumentLoader::DocumentLoader(
     std::unique_ptr<ExtraData> extra_data)
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
-      initial_permissions_policy_(params_->permissions_policy_override),
+      isolated_app_policy_(params_->isolated_app_policy),
       token_(params_->document_token),
       url_(params_->url),
       original_url_(params_->url),
@@ -2910,9 +2910,9 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    security_init.ApplyPermissionsPolicy(
-        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
-        FencedFrameProperties(), url_);
+    security_init.ApplyPermissionsPolicy(*frame_.Get(), response_,
+                                         frame_policy_, isolated_app_policy_,
+                                         FencedFrameProperties(), url_);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide

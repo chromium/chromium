@@ -362,6 +362,16 @@ struct OldPageInfo {
   blink.mojom.PageLifecycleState new_lifecycle_state_for_old_page;
 };
 
+// There are other structures for passing permissions policies via Mojo.
+// The difference is that this one passes yet-unparsed mapping of policies
+// to allowlists, just converted from JSON format. This can contain invalid
+// entries and malformed data. It will be parsed and then merged with
+// allowlists from the headers in renderer.
+struct IsolatedAppPermissionPolicyEntry {
+  string feature;
+  array<string> allowed_origins;
+};
+
 // Used by commit IPC messages. Holds the parameters needed by the renderer to
 // commit a navigation besides those in CommonNavigationParams.
 struct CommitNavigationParams {
@@ -695,6 +705,10 @@ struct CommitNavigationParams {
   // optimizations and code path for initial WebUI should apply for general
   // topchrome WebUI as well.
   bool is_initial_webui = false;
+
+  // The permissions policy to use for the document. This is used for Isolated
+  // Web Apps to pass the policy from the manifest to the renderer.
+  array<IsolatedAppPermissionPolicyEntry>? isolated_app_policy;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

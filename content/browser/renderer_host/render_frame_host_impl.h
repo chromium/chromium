@@ -3958,6 +3958,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ResetPermissionsPolicy(
       const network::ParsedPermissionsPolicy& header_policy);
 
+  // Verifies that the `header_policy` sent by the renderer for an Isolated Web
+  // App is valid, i.e. it does not contain any policies that are not present in
+  // the manifest.
+  // A return value of true means that the policy is valid.
+  bool VerifyIsolatedWebAppPermissionsPolicyIsSubsetOfManifest(
+      const network::ParsedPermissionsPolicy& header_policy);
+
   // Runs |callback| for all the local roots immediately under this frame, i.e.
   // local roots which are under this frame and their first ancestor which is a
   // local root is either this frame or this frame's local root. For instance,

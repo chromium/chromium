@@ -204,12 +204,6 @@ bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
 }
 
-std::optional<network::ParsedPermissionsPolicy>
-RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
-    RenderFrameHostImpl* source) {
-  return network::ParsedPermissionsPolicy();
-}
-
 bool RenderFrameHostDelegate::IsPopup() const {
   return false;
 }

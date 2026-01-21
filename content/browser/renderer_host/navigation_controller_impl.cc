@@ -4498,11 +4498,11 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*commit_target_frame_token=*/std::nullopt,
   /*is_initial_webui=*/
 #if !BUILDFLAG(IS_ANDROID)
-          GetContentClient()->browser()->IsInitialWebUIURL(common_params->url)
+          GetContentClient()->browser()->IsInitialWebUIURL(common_params->url),
 #else
-          false
+          false,
 #endif
-      );
+          /*permissions_policy_override=*/std::nullopt);
 
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {

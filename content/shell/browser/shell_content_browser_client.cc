@@ -855,21 +855,16 @@ void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
   SetupFieldTrials();
 }
 
-std::optional<network::ParsedPermissionsPolicy>
+std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
 ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    WebContents* web_contents,
+    content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
-  network::ParsedPermissionsPolicyDeclaration coi_decl(
-      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
-      /*allowed_origins=*/{},
-      /*self_if_matches=*/std::nullopt,
-      /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
-
-  network::ParsedPermissionsPolicyDeclaration socket_decl(
-      network::mojom::PermissionsPolicyFeature::kDirectSockets,
-      /*allowed_origins=*/{}, app_origin,
-      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-  return {{coi_decl, socket_decl}};
+  std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policy;
+  policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+      "cross-origin-isolated", std::vector<std::string>{"*"}));
+  policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+      "direct-sockets", std::vector<std::string>{"'self'"}));
+  return policy;
 }
 
 // Tests may install their own ShellContentBrowserClient, track the list here.

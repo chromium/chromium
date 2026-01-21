@@ -18,9 +18,11 @@
 #include "base/base_switches.h"
 #include "base/byte_count.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -392,6 +394,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -537,6 +540,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -553,6 +558,7 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/soda/soda_util.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -2283,33 +2289,34 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 #endif
 }
 
-std::optional<network::ParsedPermissionsPolicy>
+std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
 ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::WebContents* web_contents,
-    const url::Origin& app_origin) {
+    content::BrowserContext* browser_context,
+    const url::Origin& iwa_origin) {
 #if !BUILDFLAG(IS_ANDROID)
-  // Extensions are exempt from manifest policy enforcement and retain the
-  // default frame permissions policy.
-  if (app_origin.scheme() == extensions::kExtensionScheme) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::IwaPermissionsPolicyCache* cache =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile);
+  if (!cache) {
     return std::nullopt;
   }
 
-  CHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto& registrar =
-      web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-  std::vector<webapps::AppId> app_ids_for_origin =
-      registrar.FindAllAppsNestedInUrl(
-          app_origin.GetURL(), web_app::WebAppFilter::InstalledInChrome());
-  if (app_ids_for_origin.empty()) {
-    return network::ParsedPermissionsPolicy();
+  ASSIGN_OR_RETURN(web_app::IwaOrigin origin,
+                   web_app::IwaOrigin::Create(iwa_origin.GetURL()),
+                   [](auto) { return std::nullopt; });
+
+  const web_app::IwaPermissionsPolicyCache::CacheEntry* policy =
+      cache->GetPolicy(origin);
+  if (!policy) {
+    return std::nullopt;
   }
 
-  return registrar.GetPermissionsPolicy(app_ids_for_origin[0]);
+  return base::ToVector(*policy, [](const auto& entry) {
+    return blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        entry.feature, entry.allowed_origins);
+  });
 #else
-  NOTIMPLEMENTED();
-  return network::ParsedPermissionsPolicy();
+  return std::nullopt;
 #endif
 }
 

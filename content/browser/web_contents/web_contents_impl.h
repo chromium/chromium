@@ -848,9 +848,6 @@ class CONTENT_EXPORT WebContentsImpl
                              bool blocked) override;
   void OnVibrate(RenderFrameHostImpl*) override;
 
-  std::optional<network::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source) override;
-
   // Called when WebAudio starts or stops playing audible audio in an
   // AudioContext.
   void AudioContextPlaybackStarted(RenderFrameHostImpl* host,

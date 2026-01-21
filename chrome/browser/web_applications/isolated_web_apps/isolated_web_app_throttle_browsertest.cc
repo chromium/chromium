@@ -35,7 +35,7 @@ using testing::IsNull;
 using testing::NotNull;
 using testing::UnorderedElementsAre;
 
-MATCHER_P2(IwaPermissionPolicyEntryIs, feature, allowed_origins, "") {
+MATCHER_P2(IsolatedAppPermissionPolicyEntryIs, feature, allowed_origins, "") {
   return arg.feature == feature && arg.allowed_origins == allowed_origins;
 }
 
@@ -96,22 +96,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
   EXPECT_THAT(
       *policy,
       UnorderedElementsAre(
-          IwaPermissionPolicyEntryIs(
+          IsolatedAppPermissionPolicyEntryIs(
               "camera",
               std::vector<std::string>({"'self'", "https://example.com"})),
-          IwaPermissionPolicyEntryIs("cross-origin-isolated",
-                                     std::vector<std::string>({"'self'"})),
-          IwaPermissionPolicyEntryIs("direct-sockets",
-                                     std::vector<std::string>({"*"})),
-          IwaPermissionPolicyEntryIs("microphone",
-                                     std::vector<std::string>({"'none'"})),
-          IwaPermissionPolicyEntryIs(
+          IsolatedAppPermissionPolicyEntryIs(
+              "cross-origin-isolated", std::vector<std::string>({"'self'"})),
+          IsolatedAppPermissionPolicyEntryIs("direct-sockets",
+                                             std::vector<std::string>({"*"})),
+          IsolatedAppPermissionPolicyEntryIs(
+              "microphone", std::vector<std::string>({"'none'"})),
+          IsolatedAppPermissionPolicyEntryIs(
               "geolocation",
               std::vector<std::string>(
                   {"'self'", "https://foo.com", "https://bar.com"})),
-          IwaPermissionPolicyEntryIs("fullscreen",
-                                     std::vector<std::string>({"*"})),
-          IwaPermissionPolicyEntryIs(
+          IsolatedAppPermissionPolicyEntryIs("fullscreen",
+                                             std::vector<std::string>({"*"})),
+          IsolatedAppPermissionPolicyEntryIs(
               "hid", std::vector<std::string>(
                          {"https://baz.com", "https://google.com"}))));
 }

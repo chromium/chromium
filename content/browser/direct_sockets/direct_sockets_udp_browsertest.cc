@@ -31,6 +31,7 @@
 #include "services/network/test/udp_socket_test_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -570,29 +571,18 @@ class NoMulticastPermissionIsolatedWebAppContentBrowserClient
       const url::Origin& isolated_app_origin)
       : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
 
-  std::optional<network::ParsedPermissionsPolicy>
+  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
   GetPermissionsPolicyForIsolatedWebApp(
-      WebContents* web_contents,
+      content::BrowserContext* browser_context,
       const url::Origin& app_origin) override {
-    network::ParsedPermissionsPolicyDeclaration coi_decl(
-        network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
-        /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
-
-    network::ParsedPermissionsPolicyDeclaration sockets_decl(
-        network::mojom::PermissionsPolicyFeature::kDirectSockets,
-        /*allowed_origins=*/{},
-        /*self_if_matches=*/app_origin,
-        /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-
-    network::ParsedPermissionsPolicyDeclaration sockets_pna_decl(
-        network::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate,
-        /*allowed_origins=*/{},
-        /*self_if_matches=*/app_origin,
-        /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
-
-    return {{coi_decl, sockets_decl, sockets_pna_decl}};
+    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
+    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "cross-origin-isolated", std::vector<std::string>{"*"}));
+    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "direct-sockets", std::vector<std::string>{"'self'"}));
+    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "direct-sockets-private", std::vector<std::string>{"'self'"}));
+    return policies;
   }
 };
 

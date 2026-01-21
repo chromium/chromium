@@ -26,6 +26,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
@@ -97,15 +98,14 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
 
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
 
-  std::optional<network::ParsedPermissionsPolicy>
+  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
   GetPermissionsPolicyForIsolatedWebApp(
-      WebContents* web_contents,
-      const url::Origin& app_origin) override {
-    return {{network::ParsedPermissionsPolicyDeclaration(
-        network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
-        /*allowed_origins=*/{},
-        /*self_if_matches=*/std::nullopt,
-        /*matches_all_origins=*/true, /*matches_opaque_src=*/false)}};
+      content::BrowserContext* browser_context,
+      const url::Origin& iwa_origin) override {
+    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
+    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "cross-origin-isolated", std::vector<std::string>{"*"}));
+    return policies;
   }
 
  private:
@@ -230,6 +230,14 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
 
     if (response_headers) {
       simulator->SetResponseHeaders(response_headers);
+      // Simulate policies merging result.
+      simulator->SetPermissionsPolicyHeader(
+          {network::ParsedPermissionsPolicyDeclaration(
+              network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+              /*allowed_origins=*/{},
+              /*self_if_matches=*/std::nullopt,
+              /*matches_all_origins=*/true,
+              /*matches_opaque_src=*/false)});
     }
     simulator->Commit();
 
@@ -373,6 +381,14 @@ TEST_F(IsolatedWebAppThrottleTest,
   simulator = NavigationSimulatorImpl::CreateFromPendingInFrame(
       FrameTreeNode::GloballyFindByID(iframe_id));
   simulator->SetResponseHeaders(corp_coep_headers());
+  // Simulate policies merging result.
+  simulator->SetPermissionsPolicyHeader(
+      {network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+          /*allowed_origins=*/{},
+          /*self_if_matches=*/std::nullopt,
+          /*matches_all_origins=*/true,
+          /*matches_opaque_src=*/false)});
   simulator->Commit();
 
   auto commit_result = simulator->GetLastThrottleCheckResult();
@@ -443,6 +459,14 @@ TEST_F(IsolatedWebAppThrottleTest, AllowHistoryNavigationFromErrorPage) {
       -1, web_contents(), false /* is_renderer_initiated */);
   simulator->Start();
   simulator->SetResponseHeaders(coop_coep_headers());
+  // Simulate policies merging result.
+  simulator->SetPermissionsPolicyHeader(
+      {network::ParsedPermissionsPolicyDeclaration(
+          network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+          /*allowed_origins=*/{},
+          /*self_if_matches=*/std::nullopt,
+          /*matches_all_origins=*/true,
+          /*matches_opaque_src=*/false)});
   simulator->Commit();
 
   auto* app_rfh = simulator->GetFinalRenderFrameHost();
