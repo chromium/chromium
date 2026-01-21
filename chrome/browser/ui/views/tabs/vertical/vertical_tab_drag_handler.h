@@ -54,7 +54,6 @@ class VerticalTabDragHandler {
 // `TabDragController`.
 // TODO(crbug.com/439963720): The following is an incremental checklist of
 // support that needs to be added:
-// - Dragging more than one tab (split tabs, tab group, multi-selection).
 // - Dragging pinned tab (split tabs, tab group, multi-selection).
 class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {

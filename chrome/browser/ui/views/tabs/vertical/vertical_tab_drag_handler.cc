@@ -88,16 +88,35 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
   ResetDragState();
   drag_controller_ = std::make_unique<TabDragController>();
 
-  // TODO(crbug.com/439963720): Support dragging multiple tabs.
-  dragged_tabs_.insert(&node);
-  const gfx::Point offset_from_source = event.location();
-  ui::ListSelectionModel selection_model;
-  TabSlotView& dragged_view = GetOrCreateShimViewForNode(node);
-  dragged_view.SetBoundsRect(node.view()->GetLocalBounds());
+  const auto& selected_tabs =
+      tab_strip_model_->selection_model().selected_tabs();
 
-  if (drag_controller_->Init(this, &dragged_view, {&dragged_view},
-                             offset_from_source, std::move(selection_model),
-                             EventSourceFromEvent(event)) ==
+  std::vector<TabSlotView*> dragged_views(selected_tabs.size());
+  size_t next_dragged_view_idx = 0;
+
+  TabSlotView* source_dragged_view = nullptr;
+
+  // Track the node and build a shim view for each selected node.
+  for (tabs::TabInterface* tab : selected_tabs) {
+    CHECK(tab);
+    TabCollectionNode* selected_node =
+        root_node_->GetNodeForHandle(tab->GetHandle());
+    CHECK(selected_node);
+    dragged_tabs_.insert(selected_node);
+    auto* shim_view = &GetOrCreateShimViewForNode(*selected_node);
+    shim_view->SetBoundsRect(selected_node->view()->GetLocalBounds());
+    dragged_views[next_dragged_view_idx++] = shim_view;
+    if (selected_node == &node) {
+      source_dragged_view = shim_view;
+    }
+  }
+  CHECK(source_dragged_view);
+
+  const gfx::Point offset_from_source = event.location();
+  if (drag_controller_->Init(
+          this, source_dragged_view, dragged_views, offset_from_source,
+          tab_strip_model_->selection_model().GetListSelectionModel(),
+          EventSourceFromEvent(event)) ==
       TabDragController::Liveness::kDeleted) {
     dragged_tabs_.clear();
   }
@@ -137,8 +156,7 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
   if (dragged_tabs_.contains(&node)) {
     return;
   }
-  // TODO(crbug.com/439963720): This assumes only one tab is being dragged.
-  CHECK_EQ(1u, dragged_tabs_.size());
+  CHECK(!dragged_tabs_.empty());
   switch (node.type()) {
     case TabCollectionNode::Type::TAB:
       HandleTabDragOverTab(node);
@@ -161,8 +179,16 @@ void VerticalTabDragHandlerImpl::HandleTabDragOverTab(
     const TabCollectionNode& node) {
   const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
   CHECK(tab);
-  tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->GetIndexOfTab(tab),
-                                       tab->GetGroup());
+  const auto& selection_model = tab_strip_model_->selection_model();
+  int first_selected_idx =
+      *selection_model.GetListSelectionModel().selected_indices().cbegin();
+  int insertion_idx = tab_strip_model_->GetIndexOfTab(tab);
+  if (first_selected_idx <= insertion_idx) {
+    insertion_idx -= selection_model.size();
+    ++insertion_idx;
+  }
+  insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
+  tab_strip_model_->MoveSelectedTabsTo(insertion_idx, tab->GetGroup());
 }
 
 void VerticalTabDragHandlerImpl::HandleTabDragOverSplit(
@@ -342,6 +368,13 @@ void VerticalTabDragHandlerImpl::StartedDragging(
     dragged_tabs_.insert(&shim_view->node());
     shim_view->parent()->SetPaintToLayer();
     shim_view->parent()->layer()->SetFillsBoundsOpaquely(false);
+
+    // Update the height to use preferred size because newly added tabs will
+    // animate in from 0, which affects the window offset for newly-detached
+    // windows.
+    gfx::Rect bounds = shim_view->node().view()->GetLocalBounds();
+    bounds.set_height(shim_view->node().view()->GetPreferredSize({}).height());
+    shim_view->SetBoundsRect(bounds);
   }
 }
 
