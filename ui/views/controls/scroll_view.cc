@@ -630,12 +630,13 @@ void ScrollView::UpdateGradientMask() {
 }
 
 void ScrollView::ClipHeightTo(int min_height, int max_height) {
-  if (min_height != min_height_ || max_height != max_height_) {
-    PreferredSizeChanged();
+  if (min_height == min_height_ && max_height == max_height_) {
+    return;
   }
 
   min_height_ = min_height;
   max_height_ = max_height;
+  PreferredSizeChanged();
 }
 
 int ScrollView::GetScrollBarLayoutWidth() const {
