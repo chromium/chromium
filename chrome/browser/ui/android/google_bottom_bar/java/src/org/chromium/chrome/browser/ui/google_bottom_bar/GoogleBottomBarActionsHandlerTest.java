@@ -52,6 +52,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -585,6 +586,7 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/477372460")
     public void testOnSearchboxLensTap_lensNotEnabled_lensNotStarted() {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
