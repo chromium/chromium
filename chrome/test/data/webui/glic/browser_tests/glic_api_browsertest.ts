@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {CaptureRegionErrorReason, HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {CancelActionsResult, CaptureRegionResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -112,6 +112,44 @@ class ApiTests extends ApiTestFixtureBase {
 
     await this.advanceToNextStep();
     this.host.setAudioDucking(false);
+  }
+
+  async testDialogResponseCallOrder() {
+    assertDefined(this.host.uninterruptActorTask);
+    assertDefined(this.host.createTask);
+    assertDefined(this.host.interruptActorTask);
+    assertDefined(this.host.selectUserConfirmationDialogRequestHandler);
+
+    // Create a task and subscribe to user confirmation dialog requests.
+    const task_id = await this.host.createTask();
+    const dialogRequestPromise =
+        new Promise<UserConfirmationDialogRequest>((resolve) => {
+          assertDefined(this.host.selectUserConfirmationDialogRequestHandler);
+          this.host.selectUserConfirmationDialogRequestHandler().subscribe(
+              (request: UserConfirmationDialogRequest) => {
+                resolve(request);
+              });
+        });
+
+    // Wait for the C++ side to request a dialog.
+    await this.advanceToNextStep();
+    const request: UserConfirmationDialogRequest = await dialogRequestPromise;
+
+    // Respond to the dialog request and then uninterrupt the actor task. The
+    // C++ side will check that the dialog response and uninterrupt happen in
+    // the called order.
+    assertDefined(request);
+    request.onDialogClosed({response: {permissionGranted: false}});
+
+    // TODO(b/477060111): This test fails without this. Because onDialogClosed
+    // resolves a promise, it doesn't actually postMessage the response until a
+    // yield to the event loop. It should probably return a promise which can be
+    // awaited. This await yields allowing the queued task that does the
+    // postMessage to schedule so that the response message is sent before
+    // uninterruptActorTask.
+    await new Promise((resolve) => void setTimeout(resolve, 0));
+
+    this.host.uninterruptActorTask(task_id);
   }
 
   async testPopupOpens() {
