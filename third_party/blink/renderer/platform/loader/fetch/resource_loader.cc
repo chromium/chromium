@@ -949,7 +949,11 @@ void ResourceLoader::DidReceiveResponseInternal(
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
   if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
-      response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
+      (response.HttpStatusCode() == 206 ||
+       (base::FeatureList::IsEnabled(
+            features::kBlockPartialResponseWithoutRange) &&
+        response.HttpStatusCode() == 416)) &&
+      response.HasRangeRequested() &&
       !initial_request.HttpHeaderFields().Contains(http_names::kRange)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));

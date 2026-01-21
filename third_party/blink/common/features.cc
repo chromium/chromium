@@ -772,6 +772,9 @@ BASE_FEATURE_PARAM(std::string,
                    "FledgeOriginScopedKeyConfig",
                    "");
 
+BASE_FEATURE(kBlockPartialResponseWithoutRange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFledgeEnforceKAnonymity, base::FEATURE_DISABLED_BY_DEFAULT);
