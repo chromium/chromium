@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import dataclasses
-import hashlib
 import json
 import logging
 import multiprocessing
@@ -165,21 +164,19 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     logging.info('Using external sharding settings. This is shard %d/%d',
                  shard_index, total_shards)
 
+    all_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
+    selected_groups = [
+        g for i, g in enumerate(all_groups) if i % total_shards == shard_index
+    ]
+
     new_configs = {}
-    for config_name, methods_by_class in json_config['configs'].items():
-      new_methods_by_class = {}
-      for class_name, methods in methods_by_class.items():
-        new_methods = []
-        for method in methods:
-          test_name = f'{class_name}.{method}'
-          if _DeterministicHash(test_name) % total_shards == shard_index:
-            new_methods.append(method)
-        if new_methods:
-          new_methods_by_class[class_name] = new_methods
-      if new_methods_by_class:
-        new_configs[config_name] = new_methods_by_class
+    for group in selected_groups:
+      if group.config not in new_configs:
+        new_configs[group.config] = {}
+      new_configs[group.config].update(group.methods_by_class)
 
     return {**json_config, 'configs': new_configs}
+
   @property
   def _wrapper_path(self):
     return os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
@@ -413,11 +410,6 @@ def GroupTests(json_config, max_per_job):
   # at the end.
   ret.sort(key=lambda x: -len(x.methods_by_class))
   return ret
-
-
-def _DeterministicHash(test_name):
-  hash_bytes = hashlib.sha256(test_name.encode('utf-8')).digest()
-  return int.from_bytes(hash_bytes[-3:], byteorder='big')
 
 
 def _MakeUnknownFailureResult(message):
