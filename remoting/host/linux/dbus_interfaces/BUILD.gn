@@ -11,6 +11,7 @@ executable("gen_dbus_interface") {
 source_set("interface_headers") {
   sources = [
     "org_chromium_TestInterface.h",
+    "org_freedesktop_DBus_ObjectManager.h",
     "org_freedesktop_DBus_Properties.h",
     "org_freedesktop_portal_RemoteDesktop.h",
     "org_freedesktop_portal_Request.h",

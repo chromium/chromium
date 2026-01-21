@@ -651,6 +651,12 @@ class ObjectPath {
   friend struct Mapping<ObjectPath>;
 };
 
+// This function is needed to allow an ObjectPath to be used as a key in a map.
+inline constexpr std::strong_ordering operator<=>(const ObjectPath& lhs,
+                                                  const ObjectPath& rhs) {
+  return lhs.value() <=> rhs.value();
+}
+
 class TypeSignature;
 
 // Holds an unowned pointer to a null-terminated string known to be a valid

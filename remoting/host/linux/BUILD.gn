@@ -165,6 +165,8 @@ source_set("platform_impls") {
     "fd_string_reader.h",
     "fd_string_writer.cc",
     "fd_string_writer.h",
+    "gdm_remote_display_manager.cc",
+    "gdm_remote_display_manager.h",
     "gnome_action_executor.cc",
     "gnome_action_executor.h",
     "gnome_capture_stream_manager.cc",
