@@ -170,9 +170,8 @@ found in the LICENSE file.
     <dimen name="fusebox_glif_blur_stroke_width">3dp</dimen>
     <dimen name="fusebox_popup_width">250dp</dimen>
     <dimen name="fusebox_popup_item_icon_size">24dp</dimen>
-    <dimen name="fusebox_button_bottom_margin">8dp</dimen>
-    <dimen name="fusebox_button_size">@dimen/min_touch_target_size</dimen>
-    <dimen name="fusebox_button_start_margin">4dp</dimen>
+    <dimen name="fusebox_button_size">56dp</dimen>
+    <dimen name="fusebox_button_padding">10dp</dimen>
     <dimen name="fusebox_button_corner_radius">8dp</dimen>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
     <dimen name="fusebox_attachment_bg_vertical_inset">4dp</dimen>
@@ -189,10 +188,6 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_remove_width">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_spinner_size">20dp</dimen>
     <dimen name="fusebox_attachment_visible_height">40dp</dimen>
-    <dimen name="fusebox_expanded_location_bar_height">48dp</dimen>
-    <dimen name="fusebox_url_bar_top_margin_compact">0dp</dimen>
-    <dimen name="fusebox_url_bar_top_margin_expanded">4dp</dimen>
-    <dimen name="fusebox_url_bar_top_margin_with_attachments">0dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
 
     <!-- Search engine logo. -->
