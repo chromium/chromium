@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
@@ -120,7 +119,8 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
     CHECK_LE(bytes_read, bytes_to_read);
     CHECK_LE(buffer->size(), static_cast<uint64_t>(bytes_to_read));
 
-    UNSAFE_TODO(memcpy(data.data(), buffer->data(), bytes_to_read));
+    data.copy_prefix_from(
+        base::span(*buffer).first(base::checked_cast<size_t>(bytes_read)));
   } else {
     CHECK_EQ(bytes_read, 0);
   }
