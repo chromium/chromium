@@ -10,6 +10,13 @@ source_set("custom_handlers") {
     "protocol_handler_registry_factory.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "chrome_protocol_handler_navigation_throttle.cc",
+      "chrome_protocol_handler_navigation_throttle.h",
+    ]
+  }
+
   public_deps = [
     "//base",
     "//chrome/browser:shell_integration",
@@ -17,6 +24,10 @@ source_set("custom_handlers") {
     "//components/custom_handlers",
     "//components/pref_registry",
   ]
+
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/ui/extensions" ]
+  }
 
   deps = [
     "//build:chromeos_buildflags",

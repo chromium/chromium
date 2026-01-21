@@ -50,8 +50,10 @@ custom_handlers::ProtocolHandler CreateExtensionProtocolHandler(
 
 }  // namespace
 
-using ProtocolHandlerConfirmCallback = custom_handlers::
-    ProtocolHandlerNavigationThrottle::ProtocolHandlerConfirmCallback;
+using HandlerPermissionGrantedCallback = custom_handlers::
+    ProtocolHandlerNavigationThrottle::HandlerPermissionGrantedCallback;
+using HandlerPermissionDeniedCallback = custom_handlers::
+    ProtocolHandlerNavigationThrottle::HandlerPermissionDeniedCallback;
 
 namespace extensions {
 
@@ -62,10 +64,10 @@ class ProtocolHandlersManagerBrowserTest : public ExtensionBrowserTest {
         extensions_features::kExtensionProtocolHandlers);
 #if !BUILDFLAG(IS_ANDROID)
     custom_handlers::ProtocolHandlerNavigationThrottle::
-        GetDialogLaunchCallbackForTesting() =
-            base::BindRepeating([](ProtocolHandlerConfirmCallback callback) {
-              std::move(callback).Run(/*permission_granted=*/true,
-                                      /*remember=*/true);
+        GetDialogLaunchCallbackForTesting() = base::BindRepeating(
+            [](HandlerPermissionGrantedCallback granted_callback,
+               HandlerPermissionDeniedCallback denied_callback) {
+              std::move(granted_callback).Run(/*remember=*/true);
             });
 #endif
   }

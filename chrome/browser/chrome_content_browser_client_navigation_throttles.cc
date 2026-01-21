@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/custom_handlers/chrome_protocol_handler_navigation_throttle.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
@@ -352,8 +353,8 @@ void CreateAndAddChromeThrottlesForNavigation(
     // Could be null in some unit tests.
     if (auto* protocol_handler_registry =
             ProtocolHandlerRegistryFactory::GetForBrowserContext(profile)) {
-      custom_handlers::ProtocolHandlerNavigationThrottle::MaybeCreateAndAdd(
-          protocol_handler_registry, registry);
+      custom_handlers::ChromeProtocolHandlerNavigationThrottle::
+          MaybeCreateAndAdd(protocol_handler_registry, registry);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

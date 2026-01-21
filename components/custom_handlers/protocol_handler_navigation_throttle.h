@@ -39,20 +39,27 @@ class ProtocolHandlerNavigationThrottle : public content::NavigationThrottle {
   static void MaybeCreateAndAdd(ProtocolHandlerRegistry*,
                                 content::NavigationThrottleRegistry&);
 
-  typedef base::OnceCallback<void(bool permission_granted, bool save)>
-      ProtocolHandlerConfirmCallback;
+  typedef base::OnceCallback<void(bool save)> HandlerPermissionGrantedCallback;
+  typedef base::OnceCallback<void()> HandlerPermissionDeniedCallback;
 
   // Only for testing.
-  using LaunchCallbackForTesting =
-      base::RepeatingCallback<void(ProtocolHandlerConfirmCallback callback)>;
+  using LaunchCallbackForTesting = base::RepeatingCallback<void(
+      HandlerPermissionGrantedCallback granted_callback,
+      HandlerPermissionDeniedCallback denied_callback)>;
   static LaunchCallbackForTesting& GetDialogLaunchCallbackForTesting();
+
+  virtual void RunConfirmProtocolHandlerDialog(
+      content::WebContents* web_contents,
+      const ProtocolHandler& handler,
+      const std::optional<url::Origin>& initiating_origin,
+      HandlerPermissionGrantedCallback granted_callback,
+      HandlerPermissionDeniedCallback denied_callback) const {}
 
  private:
   content::NavigationThrottle::ThrottleCheckResult
   RequestPermissionForHandler();
-  void OnProtocolHandlerPermissionDecided(const GURL& target_url,
-                                          bool permission_granted,
-                                          bool save);
+  void OnProtocolHandlerPermissionGranted(const GURL& target_url, bool save);
+  void OnProtocolHandlerPermissionDenied();
 
   // The ProtocolHandlerRegistry instance is a KeyedService which ownership is
   // managed by the BrowserContext. BrowserContext can be destroyed before this

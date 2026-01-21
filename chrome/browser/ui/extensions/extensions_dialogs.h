@@ -33,6 +33,10 @@ namespace content {
 class WebContents;
 }
 
+namespace custom_handlers {
+class ProtocolHandler;
+}  // namespace custom_handlers
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
@@ -40,6 +44,10 @@ class ImageSkia;
 namespace permissions {
 class ChooserController;
 }  // namespace permissions
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace extensions {
 
@@ -52,6 +60,10 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogRemoveButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kConfirmProtocolHandlerDialogHandlerRedirection);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kConfirmProtocolHandlerDialogRememberMeCheckbox);
 
 void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
@@ -153,6 +165,17 @@ void ShowUploadExtensionToAccountDialog(Profile* profile,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Shows a dialog when the user tries to perform a navigation and the target url
+// has a protocol handler registered by an extension to handle the url's scheme.
+void ShowConfirmProtocolHandlerDialog(
+    content::WebContents* web_contents,
+    const custom_handlers::ProtocolHandler& handler,
+    const std::optional<url::Origin>& initiating_origin,
+    base::OnceCallback<void(bool)> granted_callback,
+    base::OnceCallback<void()> denied_callback);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 

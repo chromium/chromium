@@ -169,6 +169,7 @@ source_set("impl") {
         "//chrome/browser/ui:browser_navigator_params_headers",
         "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/common",
+        "//components/custom_handlers",
         "//components/infobars/content",
         "//content/public/browser",
         "//extensions/browser/install",
@@ -197,6 +198,7 @@ source_set("impl") {
     sources += [
       "app_launch_params.cc",
       "application_launch.cc",
+      "confirm_protocol_handler_dialog.cc",
       "extension_enable_flow.cc",
       "extension_settings_overridden_dialog.cc",
       "extensions_overrides/simple_overrides.cc",

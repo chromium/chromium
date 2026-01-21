@@ -22,6 +22,11 @@ namespace custom_handlers {
 
 constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+using HandlerPermissionGrantedCallback =
+    ProtocolHandlerNavigationThrottle::HandlerPermissionGrantedCallback;
+using HandlerPermissionDeniedCallback =
+    ProtocolHandlerNavigationThrottle::HandlerPermissionDeniedCallback;
+
 class ProtocolHandlerNavigationThrottleBrowserTest
     : public content::ContentBrowserTest {
  public:
@@ -63,8 +68,14 @@ class ProtocolHandlerNavigationThrottleBrowserTest
     ProtocolHandlerNavigationThrottle::GetDialogLaunchCallbackForTesting() =
         base::BindRepeating(
             [](bool accept, bool save,
-               ProtocolHandlerNavigationThrottle::ProtocolHandlerConfirmCallback
-                   callback) { std::move(callback).Run(accept, save); },
+               HandlerPermissionGrantedCallback granted_callback,
+               HandlerPermissionDeniedCallback denied_callback) {
+              if (accept) {
+                std::move(granted_callback).Run(save);
+              } else {
+                std::move(denied_callback).Run();
+              }
+            },
             permission_granted, remember);
   }
 

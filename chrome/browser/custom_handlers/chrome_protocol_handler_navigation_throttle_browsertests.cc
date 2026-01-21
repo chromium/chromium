@@ -16,6 +16,11 @@
 
 constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+using HandlerPermissionGrantedCallback = custom_handlers::
+    ProtocolHandlerNavigationThrottle::HandlerPermissionGrantedCallback;
+using HandlerPermissionDeniedCallback = custom_handlers::
+    ProtocolHandlerNavigationThrottle::HandlerPermissionDeniedCallback;
+
 class CustomProtocolHandlerRegistryDelegate
     : public ChromeProtocolHandlerRegistryDelegate {
   void RegisterWithOSAsDefaultClient(const std::string& protocol,
@@ -84,9 +89,13 @@ class ChromeProtocolHandlerNavigationThrottleBrowserBaseTest
     custom_handlers::ProtocolHandlerNavigationThrottle::
         GetDialogLaunchCallbackForTesting() = base::BindRepeating(
             [](bool accept, bool save,
-               custom_handlers::ProtocolHandlerNavigationThrottle::
-                   ProtocolHandlerConfirmCallback callback) {
-              std::move(callback).Run(accept, save);
+               HandlerPermissionGrantedCallback granted_callback,
+               HandlerPermissionDeniedCallback denied_callback) {
+              if (accept) {
+                std::move(granted_callback).Run(save);
+              } else {
+                std::move(denied_callback).Run();
+              }
             },
             permission_granted, remember);
   }

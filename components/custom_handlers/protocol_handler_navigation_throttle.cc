@@ -57,7 +57,6 @@ void ProtocolHandlerNavigationThrottle::MaybeCreateAndAdd(
       protocol_handler_registry->IsProtocolHandlerConfirmed(url.scheme())) {
     return;
   }
-
   registry.AddThrottle(std::make_unique<ProtocolHandlerNavigationThrottle>(
       registry, *protocol_handler_registry));
 }
@@ -77,23 +76,41 @@ ProtocolHandlerNavigationThrottle::RequestPermissionForHandler() {
     return PROCEED;
   }
 
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  ProtocolHandler handler =
+      protocol_handler_registry_->GetHandlerFor(url.scheme());
+
+  HandlerPermissionGrantedCallback permission_granted_callback = base::BindOnce(
+      &ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionGranted,
+      weak_factory_.GetWeakPtr(), url);
+  HandlerPermissionDeniedCallback permission_denied_callback = base::BindOnce(
+      &ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionDenied,
+      weak_factory_.GetWeakPtr());
+
   base::OnceClosure launch_callback = base::BindOnce(
-      [](ProtocolHandlerConfirmCallback callback) {
+      [](base::WeakPtr<ProtocolHandlerNavigationThrottle> throttle,
+         content::WebContents* web_contents, const ProtocolHandler& handler,
+         const GURL& url, HandlerPermissionGrantedCallback granted_callback,
+         HandlerPermissionDeniedCallback denied_callback) {
+        if (!throttle) {
+          return;
+        }
         auto& callback_for_test =
-            GetDialogLaunchCallbackForTesting();       // IN-TEST
-        if (callback_for_test) {                       // IN-TEST
-          CHECK_IS_TEST();                             // IN-TEST
-          callback_for_test.Run(std::move(callback));  // IN-TEST
+            GetDialogLaunchCallbackForTesting();              // IN-TEST
+        if (callback_for_test) {                              // IN-TEST
+          CHECK_IS_TEST();                                    // IN-TEST
+          callback_for_test.Run(std::move(granted_callback),  // IN-TEST
+                                std::move(denied_callback));  // IN-TEST
         } else {
           CHECK_IS_NOT_TEST();
-          // TODO(crbug.com/40482153): Implement the prompt dialog.
-          std::move(callback).Run(/*permission_granted=*/true,
-                                  /*remember=*/true);
+          throttle->RunConfirmProtocolHandlerDialog(
+              web_contents, handler, url::Origin::Create(url),
+              std::move(granted_callback), std::move(denied_callback));
         }
       },
-      base::BindOnce(&ProtocolHandlerNavigationThrottle::
-                         OnProtocolHandlerPermissionDecided,
-                     weak_factory_.GetWeakPtr(), url));
+      weak_factory_.GetWeakPtr(), web_contents, handler, url,
+      std::move(permission_granted_callback),
+      std::move(permission_denied_callback));
 
   // We want a modal prompt dialog to be launched here, hence a SingleThread
   // runner is more convenient.
@@ -103,17 +120,16 @@ ProtocolHandlerNavigationThrottle::RequestPermissionForHandler() {
   return DEFER;
 }
 
-void ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionDecided(
+void ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionGranted(
     const GURL& target_url,
-    bool permission_granted,
     bool remember) {
-  if (permission_granted) {
-    protocol_handler_registry_->ConfirmProtocolHandler(target_url.scheme(),
-                                                       remember);
-    Resume();
-  } else {
-    CancelDeferredNavigation(CANCEL);
-  }
+  protocol_handler_registry_->ConfirmProtocolHandler(target_url.scheme(),
+                                                     remember);
+  Resume();
+}
+
+void ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionDenied() {
+  CancelDeferredNavigation(CANCEL);
 }
 
 }  // namespace custom_handlers

@@ -11408,6 +11408,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/autofill/payments/select_bnpl_issuer_dialog_interactive_uitest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
+      "../browser/ui/views/extensions/dialogs/confirm_protocol_handler_dialog_interactive_uitest.cc",
       "../browser/ui/views/extensions/dialogs/extension_install_friction_dialog_interactive_uitest.cc",
       "../browser/ui/views/extensions/dialogs/mv2_deprecation_keep_dialog_interactive_uitest.cc",
       "../browser/ui/views/extensions/dialogs/mv2_disabled_dialog_controller_interactive_uitest.cc",
