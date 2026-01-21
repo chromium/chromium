@@ -273,6 +273,7 @@ public class AccessibilityState {
     private static @Nullable ServicesObserver sAccessibilityServicesObserver;
     private static @Nullable ServicesObserver sAnimationDurationScaleObserver;
     private static @Nullable ServicesObserver sDisplayInversionEnabledObserver;
+    private static @Nullable ServicesObserver sCursorBlinkRateObserver;
     private static @Nullable ServicesObserver sTextContrastObserver;
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -948,6 +949,10 @@ public class AccessibilityState {
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
                         AccessibilityState::processExtraStateChange);
+        sCursorBlinkRateObserver =
+                new ServicesObserver(
+                        ThreadUtils.getUiThreadHandler(),
+                        AccessibilityState::processExtraStateChange);
         sTextContrastObserver =
                 new ServicesObserver(
                         ThreadUtils.getUiThreadHandler(),
@@ -989,6 +994,14 @@ public class AccessibilityState {
                 Settings.Secure.getUriFor(Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED),
                 false,
                 sDisplayInversionEnabledObserver);
+
+        // We want to be notified if the user changes their cursor blink settings.
+        contentResolver.registerContentObserver(
+                Settings.Secure.getUriFor(
+                        /* Settings.Secure.ACCESSIBILITY_TEXT_CURSOR_BLINK_INTERVAL_MS */
+                        "accessibility_text_cursor_blink_interval_ms"),
+                false,
+                sCursorBlinkRateObserver);
 
         // We want to be notified if the user changes their text contrast settings.
         contentResolver.registerContentObserver(
@@ -1059,12 +1072,14 @@ public class AccessibilityState {
         assert sAccessibilityServicesObserver != null;
         assert sAnimationDurationScaleObserver != null;
         assert sDisplayInversionEnabledObserver != null;
+        assert sCursorBlinkRateObserver != null;
         assert sTextContrastObserver != null;
         Context context = ContextUtils.getApplicationContext();
         ContentResolver contentResolver = context.getContentResolver();
         contentResolver.unregisterContentObserver(sAccessibilityServicesObserver);
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
         contentResolver.unregisterContentObserver(sDisplayInversionEnabledObserver);
+        contentResolver.unregisterContentObserver(sCursorBlinkRateObserver);
         contentResolver.unregisterContentObserver(sTextContrastObserver);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             UiModeManager uiModeManager =
