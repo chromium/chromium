@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -81,7 +81,7 @@ public final class TabListEditorMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mTabGroupModelFilterSupplier = new ObservableSupplierImpl<>(mTabGroupModelFilter);
+        mTabGroupModelFilterSupplier = ObservableSuppliers.createNonNull(mTabGroupModelFilter);
 
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);

@@ -25,8 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -72,15 +74,15 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     private static final long LONGPRESS_DURATION_MS = ViewConfiguration.getLongPressTimeout();
     private final TabListModel mModel;
     private final Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-    private final ObservableSupplierImpl<Integer> mRecentlySwipedTabIdSupplier =
-            new ObservableSupplierImpl<>(Tab.INVALID_TAB_ID);
+    private final SettableNonNullObservableSupplier<Integer> mRecentlySwipedTabIdSupplier =
+            ObservableSuppliers.createNonNull(Tab.INVALID_TAB_ID);
     private final TabActionListener mTabClosedListener;
     private final String mComponentName;
     private final TabListMediator.@Nullable TabGridDialogHandler mTabGridDialogHandler;
     private final int mLongPressDpThresholdSquared;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
-    private final ObservableSupplierImpl<RecyclerView> mRecyclerViewSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<RecyclerView> mRecyclerViewSupplier =
+            ObservableSuppliers.createMonotonic();
     private final float mLongPressDpCancelThreshold;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
@@ -851,7 +853,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
     }
 
     /** Provides the tab ID for the most recently swiped tab. */
-    MonotonicObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
+    NonNullObservableSupplier<Integer> getRecentlySwipedTabIdSupplier() {
         return mRecentlySwipedTabIdSupplier;
     }
 

@@ -20,7 +20,9 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -65,11 +67,11 @@ public abstract class TabDragHandlerBase
     protected @Nullable MonotonicObservableSupplier<Boolean> mFullSpaceModeSupplier;
     protected @Nullable Callback<Boolean> mFullSpaceModeObserver;
     private @Nullable TabModelSelector mTabModelSelector;
-    private @Nullable MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private @Nullable NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private @Nullable View mDragSourceView;
-    private final ObservableSupplierImpl<Boolean> mDragInProgressSupplier =
-            new ObservableSupplierImpl<>(/* initialValue= */ false);
+    private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /**
      * Prepares the tab container view to listen to the drag events and data drop after the drag is
@@ -120,7 +122,7 @@ public abstract class TabDragHandlerBase
         return mTabModelSelector;
     }
 
-    protected MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    protected NullableObservableSupplier<TabGroupModelFilter>
             getCurrentTabGroupModelFilterSupplier() {
         assert mCurrentTabGroupModelFilterSupplier != null;
         return mCurrentTabGroupModelFilterSupplier;

@@ -31,7 +31,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -49,10 +50,10 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
-            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
+    private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
+    private final SettableNonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier =
+            ObservableSuppliers.createNonNull(TabModelDotInfo.HIDE);
 
     private Context mContext;
     private PropertyModel mModel;

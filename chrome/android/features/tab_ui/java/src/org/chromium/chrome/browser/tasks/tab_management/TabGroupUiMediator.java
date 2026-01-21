@@ -27,7 +27,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -103,12 +103,12 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     /** Wraps a child component's token with information from this component. */
     private static class NestedSnapshot {
-        private final @Nullable Object mChildSnapshot;
+        private final Object mChildSnapshot;
         private final @ColorInt int mBackgroundColor;
         private final int mWidthPx;
 
         /* package */ NestedSnapshot(
-                @Nullable Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
+                Object childSnapshot, @ColorInt int backgroundColor, int widthPx) {
             mChildSnapshot = childSnapshot;
             mBackgroundColor = backgroundColor;
             mWidthPx = widthPx;
@@ -133,8 +133,8 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final Callback<@Nullable List<GroupMember>> mOnGroupMembersChanged =
             this::onGroupMembersChanged;
     private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
-    private final ObservableSupplierImpl<Integer> mWidthPxSupplier =
-            new ObservableSupplierImpl<>(0);
+    private final SettableNonNullObservableSupplier<Integer> mWidthPxSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final ThemeColorObserver mThemeColorObserver = this::onThemeColorChanged;
     private final TintObserver mTintObserver = this::onTintChanged;
     private final PropertyModel mModel;
@@ -548,7 +548,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 new NestedSnapshot(
                         mChildTokenSupplier.get(),
                         mThemeColorProvider.getThemeColor(),
-                        assumeNonNull(mWidthPxSupplier.get()));
+                        mWidthPxSupplier.get());
         mOnSnapshotTokenChange.onResult(token);
     }
 

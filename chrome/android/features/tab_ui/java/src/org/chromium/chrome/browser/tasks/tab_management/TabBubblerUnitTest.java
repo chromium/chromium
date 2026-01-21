@@ -24,7 +24,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -57,15 +58,14 @@ public class TabBubblerUnitTest {
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<Set<Integer>> mTabIdsCaptor;
 
-    private final ObservableSupplierImpl<Token> mTabGroupIdSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Token> mTabGroupIdSupplier =
+            ObservableSuppliers.createNullable(GROUP_ID1);
 
     private TabBubbler mTabBubbler;
 
     @Before
     public void setUp() {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
-        mTabGroupIdSupplier.set(GROUP_ID1);
         mTabBubbler = new TabBubbler(mProfile, mTabListNotificationHandler, mTabGroupIdSupplier);
     }
 

@@ -29,7 +29,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -70,8 +69,8 @@ public class TabSwitcherPaneMediator
     private static final int PINNED_TABS_HIDE_SEARCH_BOX_DURATION = 100;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsDialogVisibleSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final TabActionListener mTabGridDialogOpener =
             new TabActionListener() {
                 @Override
@@ -86,7 +85,7 @@ public class TabSwitcherPaneMediator
                     // Intentional no-op.
                 }
             };
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final Callback<Boolean> mOnDialogShowingOrAnimatingCallback =
             this::onDialogShowingOrAnimatingChanged;
@@ -157,13 +156,12 @@ public class TabSwitcherPaneMediator
 
     private final Context mContext;
     private final TabSwitcherResetHandler mResetHandler;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final PropertyModel mContainerViewModel;
     private final ViewGroup mContainerView;
-    private final MonotonicObservableSupplier<Boolean> mIsVisibleSupplier;
-    private final MonotonicObservableSupplier<Boolean> mIsAnimatingSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsVisibleSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final Runnable mOnTabSwitcherShown;
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
@@ -203,13 +201,13 @@ public class TabSwitcherPaneMediator
     public TabSwitcherPaneMediator(
             Context context,
             TabSwitcherResetHandler resetHandler,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
             PropertyModel containerViewModel,
             ViewGroup containerView,
             Runnable onTabSwitcherShown,
-            MonotonicObservableSupplier<Boolean> isVisibleSupplier,
-            MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
+            NonNullObservableSupplier<Boolean> isVisibleSupplier,
+            NonNullObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             TabIndexLookup tabIndexLookup,
             BottomSheetController bottomSheetController,
@@ -280,7 +278,7 @@ public class TabSwitcherPaneMediator
     }
 
     /** Returns a supplier that indicates whether any dialogs are visible. */
-    public MonotonicObservableSupplier<Boolean> getIsDialogVisibleSupplier() {
+    public NonNullObservableSupplier<Boolean> getIsDialogVisibleSupplier() {
         return mIsDialogVisibleSupplier;
     }
 
@@ -311,7 +309,7 @@ public class TabSwitcherPaneMediator
             return BackPressResult.SUCCESS;
         }
 
-        if (Boolean.TRUE.equals(mIsAnimatingSupplier.get())) {
+        if (mIsAnimatingSupplier.get()) {
             // crbug.com/1420410: intentionally do nothing to wait for tab-to-GTS transition to be
             // finished. Note this has to be before following if-branch since during transition, the
             // container is still invisible. On tablet, the translation transition replaces the
@@ -319,7 +317,7 @@ public class TabSwitcherPaneMediator
             return BackPressResult.SUCCESS;
         }
 
-        if (Boolean.FALSE.equals(mIsVisibleSupplier.get())) {
+        if (!mIsVisibleSupplier.get()) {
             assert false : "Invisible container backpress should be handled.";
             return BackPressResult.FAILURE;
         }
@@ -522,7 +520,7 @@ public class TabSwitcherPaneMediator
     }
 
     private void notifyBackPressStateChangedInternal() {
-        if (Boolean.FALSE.equals(mIsVisibleSupplier.get())) return;
+        if (!mIsVisibleSupplier.get()) return;
 
         mIsDialogVisibleSupplier.set(isDialogVisible());
         mBackPressChangedSupplier.set(shouldInterceptBackPress());
@@ -545,7 +543,7 @@ public class TabSwitcherPaneMediator
         if (mCustomViewBackPressRunnable != null) return true;
 
         // TODO(crbug.com/40946413) consider restricting to grid + phone only.
-        if (Boolean.TRUE.equals(mIsAnimatingSupplier.get())) return true;
+        if (mIsAnimatingSupplier.get()) return true;
 
         // TODO(crbug.com/40946413): Figure out whether we care about tab selection/start surface
         // here.
@@ -570,7 +568,7 @@ public class TabSwitcherPaneMediator
     }
 
     private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+            TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
         removeTabModelObserver(oldFilter);
 
         if (newFilter != null) {
@@ -625,7 +623,7 @@ public class TabSwitcherPaneMediator
     }
 
     private void showTabsIfVisible() {
-        if (Boolean.TRUE.equals(mIsVisibleSupplier.get())) {
+        if (mIsVisibleSupplier.get()) {
             mResetHandler.resetWithListOfTabs(
                     assumeNonNull(mTabGroupModelFilterSupplier.get()).getRepresentativeTabList());
             setInitialScrollIndexOffset();

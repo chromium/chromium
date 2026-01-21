@@ -33,7 +33,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,8 +76,8 @@ public class TabLabellerUnitTest {
     @Captor private ArgumentCaptor<Map<Integer, TabCardLabelData>> mLabelDataCaptor;
     @Captor private ArgumentCaptor<DataSharingAvatarBitmapConfig> mAvatarConfigCaptor;
 
-    private final ObservableSupplierImpl<Token> mTabGroupIdSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Token> mTabGroupIdSupplier =
+            ObservableSuppliers.createNullable(GROUP_ID1);
 
     private Context mContext;
     private TabLabeller mTabLabeller;
@@ -88,7 +89,6 @@ public class TabLabellerUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mTabGroupIdSupplier.set(GROUP_ID1);
         mTabLabeller =
                 new TabLabeller(
                         mProfile,

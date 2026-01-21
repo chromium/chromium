@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
@@ -29,8 +30,8 @@ public class TabSwitcherBackPressHandlerManager implements BackPressHandler {
 
     private final ArrayList<TabSwitcherDragHandler> mHandlers =
             new ArrayList<TabSwitcherDragHandler>();
-    private final ObservableSupplierImpl<Boolean> mDragInProgressSupplier =
-            new ObservableSupplierImpl<>(/* initialValue= */ false);
+    private final SettableNonNullObservableSupplier<Boolean> mDragInProgressSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     public TabSwitcherBackPressHandlerManager() {}
 

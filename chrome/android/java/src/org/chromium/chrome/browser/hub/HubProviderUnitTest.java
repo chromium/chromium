@@ -65,8 +65,8 @@ public class HubProviderUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<DisplayButtonData>
-            mReferenceButtonDataSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<DisplayButtonData>
+            mReferenceButtonDataSupplier = ObservableSuppliers.createNullable();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =

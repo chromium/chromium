@@ -10,8 +10,9 @@ import android.content.Context;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,8 +55,7 @@ public class TabModelNotificationDotManager implements Destroyable {
                 public void displayPersistentMessage(PersistentMessage message) {
                     if (message.type != PersistentNotificationType.DIRTY_TAB) return;
 
-                    if (Boolean.TRUE.equals(
-                            assumeNonNull(mNotificationDotObservableSupplier.get()).showDot)) {
+                    if (mNotificationDotObservableSupplier.get().showDot) {
                         return;
                     }
 
@@ -66,8 +66,7 @@ public class TabModelNotificationDotManager implements Destroyable {
                 public void hidePersistentMessage(PersistentMessage message) {
                     if (message.type != PersistentNotificationType.DIRTY_TAB) return;
 
-                    if (Boolean.FALSE.equals(
-                            assumeNonNull(mNotificationDotObservableSupplier.get()).showDot)) {
+                    if (!mNotificationDotObservableSupplier.get().showDot) {
                         return;
                     }
 
@@ -120,8 +119,9 @@ public class TabModelNotificationDotManager implements Destroyable {
                 }
             };
 
-    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotObservableSupplier =
-            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
+    private final SettableNonNullObservableSupplier<TabModelDotInfo>
+            mNotificationDotObservableSupplier =
+                    ObservableSuppliers.createNonNull(TabModelDotInfo.HIDE);
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private @Nullable MessagingBackendService mMessagingBackendService;
@@ -167,10 +167,10 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     /**
-     * Returns an {@link MonotonicObservableSupplier} that contains true when the notification dot should be
-     * shown.
+     * Returns an {@link NonNullObservableSupplier} that contains true when the notification dot
+     * should be shown.
      */
-    public MonotonicObservableSupplier<TabModelDotInfo> getNotificationDotObservableSupplier() {
+    public NonNullObservableSupplier<TabModelDotInfo> getNotificationDotObservableSupplier() {
         return mNotificationDotObservableSupplier;
     }
 
@@ -187,7 +187,7 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     private void maybeUpdateForTab(Tab tab, boolean mayAddDot) {
-        TabModelDotInfo info = assumeNonNull(mNotificationDotObservableSupplier.get());
+        TabModelDotInfo info = mNotificationDotObservableSupplier.get();
         boolean stateWillBeUnchanged = info.showDot == mayAddDot;
         if (tab.getTabGroupId() == null || stateWillBeUnchanged) {
             return;

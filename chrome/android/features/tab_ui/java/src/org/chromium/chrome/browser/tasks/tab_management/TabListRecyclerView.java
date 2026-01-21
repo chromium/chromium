@@ -24,8 +24,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,8 +55,8 @@ public class TabListRecyclerView extends RecyclerView
     private RecyclerView.@Nullable ItemAnimator mDisabledAnimatorHolder;
 
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
-    private final ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private @Nullable TabListItemAnimator mTabListItemAnimator;
     private @Nullable Callback<TabKeyEventData> mKeyPageListenerCallback;
@@ -149,7 +150,7 @@ public class TabListRecyclerView extends RecyclerView
     /**
      * Returns a boolean indicating whether any animator in {@link TabListItemAnimator} is running.
      */
-    @Nullable MonotonicObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
+    @Nullable NonNullObservableSupplier<Boolean> getIsAnimatorRunningSupplier() {
         return mIsAnimatorRunningSupplier;
     }
 

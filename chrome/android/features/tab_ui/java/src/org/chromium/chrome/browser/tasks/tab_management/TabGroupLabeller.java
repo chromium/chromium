@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,14 +23,12 @@ import java.util.List;
 /** Pushes label updates to UI for tab groups. */
 @NullMarked
 public class TabGroupLabeller extends TabObjectLabeller {
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            mTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
 
     public TabGroupLabeller(
             Profile profile,
             TabListNotificationHandler tabListNotificationHandler,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    tabGroupModelFilterSupplier) {
+            NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier) {
         super(profile, tabListNotificationHandler);
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
     }

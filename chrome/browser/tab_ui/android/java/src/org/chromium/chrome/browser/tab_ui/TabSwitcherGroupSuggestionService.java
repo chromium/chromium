@@ -223,11 +223,11 @@ public class TabSwitcherGroupSuggestionService {
                 }
             };
     private final @WindowId int mWindowId;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     private final GroupSuggestionsService mGroupSuggestionsService;
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
 
     /**
@@ -239,8 +239,7 @@ public class TabSwitcherGroupSuggestionService {
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
             SuggestionLifecycleObserverHandler suggestionLifecycleObserverHandler) {
         mWindowId = windowId;
@@ -259,7 +258,7 @@ public class TabSwitcherGroupSuggestionService {
     }
 
     private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+            TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
         if (oldFilter != null) {
             oldFilter.removeObserver(mTabModelObserver);
             oldFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);

@@ -35,7 +35,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -102,12 +103,12 @@ public class TabGridContextMenuCoordinatorUnitTest {
     private Activity mActivity;
     private GURL mUrl;
     private Token mTabGroupId;
-    private ObservableSupplierImpl<TabBookmarker> mTabBookmarkerSupplier;
+    private SettableNonNullObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
 
     @Before
     public void setUp() {
         mTabGroupId = Token.createRandom();
-        mTabBookmarkerSupplier = new ObservableSupplierImpl<>(mTabBookmarker);
+        mTabBookmarkerSupplier = ObservableSuppliers.createNonNull(mTabBookmarker);
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);

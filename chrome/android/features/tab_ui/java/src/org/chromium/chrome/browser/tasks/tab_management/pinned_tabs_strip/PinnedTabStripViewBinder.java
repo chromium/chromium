@@ -12,7 +12,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,7 +24,7 @@ class PinnedTabStripViewBinder {
         if (IS_VISIBLE.equals(propertyKey)) {
             PinnedTabStripAnimationManager animationManager = model.get(ANIMATION_MANAGER);
             boolean shouldBeVisible = model.get(IS_VISIBLE);
-            ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier =
+            SettableNonNullObservableSupplier<Boolean> isVisibilityAnimationRunningSupplier =
                     model.get(IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER);
             animationManager.animatePinnedTabBarVisibility(
                     shouldBeVisible, isVisibilityAnimationRunningSupplier);

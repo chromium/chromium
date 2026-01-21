@@ -35,7 +35,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,8 +95,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
     public void setUp() {
         SuggestionMetricsServiceFactory.setForTesting(mSuggestionMetricsService);
 
-        ObservableSupplierImpl<TabGroupModelFilter> tabGroupModelFilterSupplier =
-                new ObservableSupplierImpl<>(mTabGroupModelFilter);
+        SettableNonNullObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
+                ObservableSuppliers.createNonNull(mTabGroupModelFilter);
         mTabGroupSuggestionMessageService =
                 spy(
                         new TabGroupSuggestionMessageService(

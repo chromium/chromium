@@ -37,7 +37,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -178,7 +179,8 @@ public class TabListContainerViewBinderTest {
     @MediumTest
     @UiThreadTest
     public void testHairlineVisibility() {
-        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>(false);
+        SettableNonNullObservableSupplier<Boolean> isAnimatingSupplier =
+                ObservableSuppliers.createNonNull(false);
         // The hairline is hidden when the pinned tab strip is animating.
         mContainerModel.set(
                 TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
@@ -204,7 +206,8 @@ public class TabListContainerViewBinderTest {
     @MediumTest
     @UiThreadTest
     public void testHairlineVisibility_InitialState() {
-        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>(false);
+        SettableNonNullObservableSupplier<Boolean> isAnimatingSupplier =
+                ObservableSuppliers.createNonNull(false);
 
         // Initial state: not visible, not animating
         mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, false);

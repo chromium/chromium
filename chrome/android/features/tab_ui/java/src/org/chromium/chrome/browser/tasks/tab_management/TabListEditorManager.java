@@ -48,7 +48,7 @@ public class TabListEditorManager {
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final TabContentManager mTabContentManager;
     private final TabListCoordinator mTabListCoordinator;
@@ -82,8 +82,7 @@ public class TabListEditorManager {
             ViewGroup coordinatorView,
             ViewGroup rootView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,

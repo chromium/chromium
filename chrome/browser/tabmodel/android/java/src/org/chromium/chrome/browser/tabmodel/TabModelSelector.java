@@ -247,8 +247,7 @@ public interface TabModelSelector {
     @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter();
 
     /** Returns an observable supplier for the current tab model filter. */
-    MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            getCurrentTabGroupModelFilterSupplier();
+    NullableObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier();
 
     /** Reset the internal filter list to allow initialization again. */
     void resetTabGroupModelFilterListForTesting(); // IN-TEST

@@ -39,7 +39,8 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -123,7 +124,8 @@ class TabListContainerViewBinder {
         } else if (IS_SCROLLING_SUPPLIER_CALLBACK == propertyKey) {
             Callback<MonotonicObservableSupplier<Boolean>> callback =
                     model.get(IS_SCROLLING_SUPPLIER_CALLBACK);
-            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>(false);
+            SettableNonNullObservableSupplier<Boolean> supplier =
+                    ObservableSuppliers.createNonNull(false);
             recyclerView.addOnScrollListener(
                     new OnScrollListener() {
                         @Override

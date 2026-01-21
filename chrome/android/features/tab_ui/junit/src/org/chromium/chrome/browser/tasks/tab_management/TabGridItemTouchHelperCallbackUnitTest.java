@@ -52,7 +52,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -120,8 +121,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Mock private TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private SimpleRecyclerViewAdapter mSimpleAdapter;
     private ViewHolder mMockViewHolder1;

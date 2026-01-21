@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -16,10 +17,10 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class TabListOnScrollListener extends RecyclerView.OnScrollListener {
-    private final ObservableSupplierImpl<Boolean> mYOffsetNonZeroSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mYOffsetNonZeroSupplier =
+            ObservableSuppliers.createNonNull(false);
 
-    public MonotonicObservableSupplier<Boolean> getYOffsetNonZeroSupplier() {
+    public NonNullObservableSupplier<Boolean> getYOffsetNonZeroSupplier() {
         return mYOffsetNonZeroSupplier;
     }
 

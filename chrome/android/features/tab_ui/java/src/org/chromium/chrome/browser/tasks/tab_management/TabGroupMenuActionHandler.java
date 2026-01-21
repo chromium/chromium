@@ -9,7 +9,8 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,8 +31,8 @@ public class TabGroupMenuActionHandler {
     private final Profile mProfile;
     private final TabGroupListBottomSheetCoordinatorFactory mFactory;
 
-    private final ObservableSupplierImpl<TabGroupListBottomSheetCoordinator>
-            mTabGroupListBottomSheetCoordinatorSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupListBottomSheetCoordinator>
+            mTabGroupListBottomSheetCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
     /**
      * @param context The context for the app menu.

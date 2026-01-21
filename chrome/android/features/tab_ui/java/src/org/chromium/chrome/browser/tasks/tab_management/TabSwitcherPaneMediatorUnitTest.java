@@ -45,8 +45,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -96,8 +96,6 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
     private final SettableNonNullObservableSupplier<Boolean> mDialogBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mShowingOrAnimationSupplier =
@@ -106,12 +104,14 @@ public class TabSwitcherPaneMediatorUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final ObservableSupplierImpl<TabListEditorController> mTabListEditorControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabListEditorController>
+            mTabListEditorControllerSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean>
             mTabListEditorBackPressChangedSupplier = ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
+    private SettableMonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private PropertyModel mModel;
@@ -260,11 +260,10 @@ public class TabSwitcherPaneMediatorUnitTest {
         verify(mTabGridDialogController).hideDialog(false);
         verify(mTabListEditorController).hide();
         when(mTabListEditorController.isVisible()).thenReturn(false);
-        mTabGroupModelFilterSupplier.set(null);
-        verify(mTabGroupModelFilter, times(1)).addObserver(mTabModelObserverCaptor.capture());
 
         mMediator.destroy();
 
+        mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
         mMediator =
                 new TabSwitcherPaneMediator(
                         mContext,

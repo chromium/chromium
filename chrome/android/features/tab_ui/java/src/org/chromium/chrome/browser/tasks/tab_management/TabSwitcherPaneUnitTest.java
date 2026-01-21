@@ -52,9 +52,9 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -175,7 +175,7 @@ public class TabSwitcherPaneUnitTest {
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private TabArchiveSettings mMockTabArchiveSettings;
 
-    @Captor private ArgumentCaptor<MonotonicObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
+    @Captor private ArgumentCaptor<NonNullObservableSupplier<Boolean>> mIsAnimatingSupplierCaptor;
 
     @Captor
     private ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
@@ -194,12 +194,12 @@ public class TabSwitcherPaneUnitTest {
             ObservableSuppliers.createNonNull(false);
     private final OneshotSupplierImpl<MonotonicObservableSupplier<Boolean>>
             mIsScrollingSupplierSupplier = new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mMockArchivedTabCountSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<CompositorViewHolder>
+            mCompositorViewHolderSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Integer> mMockArchivedTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
     private ArchivedTabsAutoDeletePromoManager mMockArchivedTabsAutoDeletePromoManager;
     private TabSwitcherPane mTabSwitcherPane;
     private MockTabModel mTabModel;

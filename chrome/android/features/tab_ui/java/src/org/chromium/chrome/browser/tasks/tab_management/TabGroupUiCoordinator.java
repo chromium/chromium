@@ -23,7 +23,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -165,7 +164,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
         var currentTabGroupModelFilterSupplier =
                 mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
-        ObservableSupplierImpl<View> childViewSupplier = new ObservableSupplierImpl<>();
+        SettableNullableObservableSupplier<View> childViewSupplier =
+                ObservableSuppliers.createNullable();
         mSingleChildViewManager = new SingleChildViewManager(dialogContainer, childViewSupplier);
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(

@@ -19,7 +19,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -146,7 +148,7 @@ public class TabSwitcherMessageManager {
     private final ObserverList<MessageUpdateObserver> mObservers = new ObserverList<>();
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
@@ -155,10 +157,10 @@ public class TabSwitcherMessageManager {
     private final MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
-    private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
-            mPriceWelcomeMessageReviewActionProviderSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<@Nullable TabListCoordinator> mTabListCoordinatorSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
+            mPriceWelcomeMessageReviewActionProviderSupplier = ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<TabListCoordinator>
+            mTabListCoordinatorSupplier = ObservableSuppliers.createNullable();
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final TabContentManager mTabContentManager;
     private final @TabListMode int mTabListMode;
@@ -202,8 +204,7 @@ public class TabSwitcherMessageManager {
     public TabSwitcherMessageManager(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,

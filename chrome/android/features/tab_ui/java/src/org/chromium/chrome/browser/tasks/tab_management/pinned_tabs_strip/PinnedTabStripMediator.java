@@ -81,8 +81,7 @@ public class PinnedTabStripMediator {
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
     private final TabModelObserver mTabModelObserver;
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            mTabGroupModelFilterSupplier;
+    private final MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private @Nullable PinnedTabStripItemContextMenuCoordinator mContextMenuCoordinator;
     private final BottomSheetController mBottomSheetController;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
@@ -91,7 +90,7 @@ public class PinnedTabStripMediator {
     private final @Px int mPinnedTabListItemHeight;
     private final @Px int mPinnedTabsStripRowCoverageHeightPx;
 
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final TabActionListener mContextClickTabItemEventListener =
             new TabActionListener() {
@@ -131,7 +130,7 @@ public class PinnedTabStripMediator {
             TabListModel tabGridListModel,
             TabListModel pinnedTabsModelList,
             PropertyModel stripPropertyModel,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
@@ -431,7 +430,7 @@ public class PinnedTabStripMediator {
     }
 
     private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+            TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
         if (mTabGroupListBottomSheetCoordinator != null) {
             mTabGroupListBottomSheetCoordinator.destroy();
         }

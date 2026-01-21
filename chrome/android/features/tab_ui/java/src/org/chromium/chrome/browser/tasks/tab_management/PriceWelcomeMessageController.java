@@ -13,8 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -82,25 +81,24 @@ public class PriceWelcomeMessageController {
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final TabSwitcherMessageManager mTabSwitcherMessageManager;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final MessageCardProvider mMessageCardProvider;
-    private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+    private final NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
     private final Profile mProfile;
-    private final ObservableSupplierImpl<@Nullable TabListCoordinator> mTabListCoordinatorSupplier;
+    private final NullableObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
     private final @Nullable PriceMessageService mPriceMessageService;
 
     @VisibleForTesting
     PriceWelcomeMessageController(
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
-            ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+            NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
-            ObservableSupplierImpl<@Nullable TabListCoordinator> tabListCoordinatorSupplier,
+            NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable PriceMessageService priceMessageService) {
         mTabSwitcherMessageManager = tabSwitcherMessageManager;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
@@ -130,13 +128,12 @@ public class PriceWelcomeMessageController {
     public static PriceWelcomeMessageController build(
             Context context,
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
-            ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+            NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
-            ObservableSupplierImpl<@Nullable TabListCoordinator> tabListCoordinatorSupplier) {
+            NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier) {
         PriceMessageService priceMessageService =
                 PriceTrackingFeatures.isPriceAnnotationsEnabled(profile)
                         ? new PriceMessageService(

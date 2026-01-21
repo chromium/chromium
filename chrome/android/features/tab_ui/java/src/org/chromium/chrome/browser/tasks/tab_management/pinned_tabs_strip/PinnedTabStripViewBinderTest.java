@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -47,7 +47,7 @@ public class PinnedTabStripViewBinderTest {
                         .with(PinnedTabStripProperties.ANIMATION_MANAGER, mAnimationManager)
                         .with(
                                 PinnedTabStripProperties.IS_VISIBILITY_ANIMATION_RUNNING_SUPPLIER,
-                                new ObservableSupplierImpl<>())
+                                ObservableSuppliers.createNonNull(false))
                         .build();
 
         PropertyModelChangeProcessor.create(

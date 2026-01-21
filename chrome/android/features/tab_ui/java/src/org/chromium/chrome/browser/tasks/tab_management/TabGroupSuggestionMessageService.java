@@ -11,9 +11,8 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -107,7 +106,7 @@ public class TabGroupSuggestionMessageService
     }
 
     private final Context mContext;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
 
     private final Callback<@TabId Integer> mAddOnMessageAfterTabCallback;
@@ -123,8 +122,7 @@ public class TabGroupSuggestionMessageService
      */
     public TabGroupSuggestionMessageService(
             Context context,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Callback<@TabId Integer> onMessageAfterTabCallback,
             StartMergeAnimation startMergeAnimation) {
         super(

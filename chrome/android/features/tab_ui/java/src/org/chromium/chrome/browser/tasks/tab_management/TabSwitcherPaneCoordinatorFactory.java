@@ -15,8 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -181,8 +183,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     TabSwitcherPaneCoordinator create(
             ViewGroup parentView,
             TabSwitcherResetHandler resetHandler,
-            MonotonicObservableSupplier<Boolean> isVisibleSupplier,
-            MonotonicObservableSupplier<Boolean> isAnimatingSupplier,
+            NonNullObservableSupplier<Boolean> isVisibleSupplier,
+            NonNullObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             boolean isIncognito,
             @Nullable Runnable onTabGroupCreation,
@@ -232,10 +234,10 @@ public class TabSwitcherPaneCoordinatorFactory {
     }
 
     @VisibleForTesting
-    MonotonicObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
+    MonotonicObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
             boolean isIncognito) {
-        ObservableSupplierImpl<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
+                ObservableSuppliers.createMonotonic();
         // This implementation doesn't wait for isTabStateInitialized because we want to be able to
         // show the TabSwitcherPane before tab state initialization finishes. Tab state
         // initialization is an async process; when tab state restoration completes
@@ -244,7 +246,9 @@ public class TabSwitcherPaneCoordinatorFactory {
         TabModelSelector selector = mTabModelSelector;
         if (!selector.getModels().isEmpty()) {
             TabGroupModelFilter filter = selector.getTabGroupModelFilter(isIncognito);
-            tabGroupModelFilterSupplier.set(filter);
+            if (filter != null) {
+                tabGroupModelFilterSupplier.set(filter);
+            }
         } else {
             selector.addObserver(
                     new TabModelSelectorObserver() {

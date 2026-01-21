@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.ui.animation.AnimationHandler;
@@ -72,7 +72,7 @@ class PinnedTabStripAnimationManager {
 
     void animatePinnedTabBarVisibility(
             boolean shouldBeVisible,
-            ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier) {
+            SettableNonNullObservableSupplier<Boolean> isVisibilityAnimationRunningSupplier) {
         // Ensure the recyclerView is at least invisible so that it has a valid size.
         if (shouldBeVisible && mRecyclerView.getVisibility() == View.GONE) {
             mRecyclerView.setVisibility(View.INVISIBLE);
@@ -83,7 +83,7 @@ class PinnedTabStripAnimationManager {
 
     private void updateVisibility(
             boolean shouldBeVisible,
-            ObservableSupplierImpl<Boolean> isVisibilityAnimationRunningSupplier) {
+            SettableNonNullObservableSupplier<Boolean> isVisibilityAnimationRunningSupplier) {
         TabListRecyclerView recyclerView = mRecyclerView;
         boolean currentlyVisible = recyclerView.getVisibility() == View.VISIBLE;
 
@@ -153,7 +153,8 @@ class PinnedTabStripAnimationManager {
      *
      * @param animationRunningSupplier Supplier to notify about animation status.
      */
-    void cancelPinnedTabBarAnimations(ObservableSupplierImpl<Boolean> animationRunningSupplier) {
+    void cancelPinnedTabBarAnimations(
+            SettableNonNullObservableSupplier<Boolean> animationRunningSupplier) {
         mPinnedTabBarVisibilityAnimationHandler.forceFinishAnimation();
         mRecyclerView.setVisibility(View.VISIBLE);
         mRecyclerView.setAlpha(1.0f);
@@ -229,7 +230,8 @@ class PinnedTabStripAnimationManager {
     }
 
     private void setStripVisibilityAnimationRunning(
-            ObservableSupplierImpl<Boolean> animationRunningSupplier, boolean isAnimating) {
+            SettableNonNullObservableSupplier<Boolean> animationRunningSupplier,
+            boolean isAnimating) {
         if (animationRunningSupplier != null && animationRunningSupplier.get() != isAnimating) {
             animationRunningSupplier.set(isAnimating);
         }

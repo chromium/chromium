@@ -38,7 +38,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -147,8 +148,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final boolean mAllowDragAndDrop;
     private final boolean mAllowDetachingTabsToCreateNewWindows;
     private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            mTabGroupModelFilterSupplier;
+    private final NullableObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final ObserverList<DragObserver> mDragObserverList = new ObserverList<>();
     private final TabListHighlighter mTabListHighlighter;
     private final TabListMergeAnimationManager mTabListMergeAnimationManager;
@@ -196,10 +196,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
      * @param emptyViewParent {@link ViewGroup} The root view of the empty state view.
-     * @param emptyImageResId Drawable resource for empty state.
-     * @param emptyHeadingStringResId String resource for empty heading.
-     * @param emptySubheadingStringResId String resource for empty subheading.
-     * @param onTabGroupCreation Runnable invoked on tab group creation
+     * @param emptyImageResId Drawable resource for empty state. @StringRes int
+     *     emptyHeadingStringResId, @StringRes int emptySubheadingStringResId, @Nullable Runnable
+     *     onTabGroupCreation,
      * @param allowDragAndDrop Whether to allow drag and drop for this tab list coordinator.
      * @param tabSwitcherDragHandler An instance of the {@link TabSwitcherDragHandler}.
      * @param undoBarExplicitTrigger An interface to explicitly trigger the undo closure snackbar.
@@ -209,7 +208,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
             ModalDialogManager modalDialogManager,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable DataSharingTabManager dataSharingTabManager,
@@ -1022,7 +1021,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /** Provides the tab ID for the most recently swiped tab. */
-    MonotonicObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
+    NonNullObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
         return mMediator.getRecentlySwipedTabSupplier();
     }
 

@@ -17,9 +17,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -263,7 +264,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<HubManager> hubManagerSupplier,
             Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        ObservableSupplierImpl<PaneManager> paneManagerSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<PaneManager> paneManagerSupplier =
+                ObservableSuppliers.createMonotonic();
         hubManagerSupplier.onAvailable(
                 hubManager -> paneManagerSupplier.set(hubManager.getPaneManager()));
         return new TabGroupCreationUiDelegate(

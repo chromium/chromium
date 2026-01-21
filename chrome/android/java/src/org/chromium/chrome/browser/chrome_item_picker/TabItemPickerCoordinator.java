@@ -17,8 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -350,11 +350,13 @@ public class TabItemPickerCoordinator {
     }
 
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
-    private MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-            createTabGroupModelFilterSupplier(TabModelSelector tabModelSelector) {
+    private NullableObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
+            TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
-        return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
-                tabModelSelector.getTabGroupModelFilter(isIncognito));
+        TabGroupModelFilter curFilter = tabModelSelector.getTabGroupModelFilter(isIncognito);
+        return curFilter == null
+                ? ObservableSuppliers.alwaysNull()
+                : ObservableSuppliers.createNonNull(curFilter);
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */
@@ -384,7 +386,7 @@ public class TabItemPickerCoordinator {
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
     @VisibleForTesting
     TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
-        MonotonicObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
+        NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 createTabGroupModelFilterSupplier(selector);
         BrowserControlsStateProvider browserControlStateProvider =
                 new HeadlessBrowserControlsStateProvider();

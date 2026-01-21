@@ -111,10 +111,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private CompositorViewHolder mCompositorViewHolder;
 
     private NonNullObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
-            ObservableSuppliers.alwaysNull();
-    private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
-            ObservableSuppliers.alwaysFalse();
     private TabModelSelector mTabModelSelector;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -123,6 +119,10 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private final PointerProperties[] mProperties = new PointerProperties[2];
     private final PointerCoords[] mPointerCoords = new PointerCoords[2];
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
+            ObservableSuppliers.alwaysNull();
+    private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
+            ObservableSuppliers.alwaysFalse();
 
     private float mDpToPx;
 

@@ -25,7 +25,7 @@ import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
@@ -78,7 +78,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
     private final TabContentManager mTabContentManager;
     private final TabContentManagerThumbnailProvider mTabContentManagerThumbnailProvider;
-    private final MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             this::onTabGroupModelFilterChanged;
@@ -481,8 +481,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             TabContentManager tabContentManager,
-            MonotonicObservableSupplier<@Nullable TabGroupModelFilter>
-                    currentTabGroupModelFilterSupplier) {
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         Resources resources = context.getResources();
