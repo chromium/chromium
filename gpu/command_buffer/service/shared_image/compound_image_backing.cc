@@ -109,6 +109,9 @@ SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
       // always need it for WebNN, the two other(*_TENSOR_READ/WRITE) are for
       // additional functionality in webnn (upload/readback of the tensor).
       return SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR;
+    case SharedImageAccessStream::kVulkan:
+      return SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+             SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
     case SharedImageAccessStream::kMemory:
       // Below usage set ensures that only SharedMemoryImageBacking will be able
       // to support this stream.
@@ -598,6 +601,58 @@ class WrappedVideoCompoundImageRepresentation
  private:
   std::unique_ptr<VideoImageRepresentation> wrapped_;
 };
+
+#if BUILDFLAG(ENABLE_VULKAN)
+class WrappedVulkanCompoundImageRepresentation
+    : public VulkanImageRepresentation {
+ public:
+  WrappedVulkanCompoundImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl,
+      std::unique_ptr<VulkanImageRepresentation> wrapped)
+      : VulkanImageRepresentation(manager,
+                                  backing,
+                                  tracker,
+                                  nullptr,
+                                  vulkan_device_queue,
+                                  vulkan_impl),
+        wrapped_(std::move(wrapped)) {
+    DCHECK(wrapped_);
+  }
+
+  CompoundImageBacking* compound_backing() {
+    return static_cast<CompoundImageBacking*>(backing());
+  }
+
+  bool BeginAccess(AccessMode access_mode,
+                   std::vector<VkSemaphore>& begin_semaphores,
+                   std::vector<VkSemaphore>& end_semaphores) override {
+    compound_backing()->NotifyBeginAccess(wrapped_->backing(), access_mode);
+    if (!wrapped_->BeginAccess(access_mode, begin_semaphores, end_semaphores)) {
+      return false;
+    }
+    return true;
+  }
+
+  void EndAccess(bool is_read_only, VkSemaphore end_semaphore) override {
+    wrapped_->EndAccess(is_read_only, end_semaphore);
+    compound_backing()->NotifyEndAccess(
+        wrapped_->backing(),
+        is_read_only ? AccessMode::kRead : AccessMode::kWrite);
+  }
+
+  gpu::VulkanImage& GetVulkanImage() override {
+    return wrapped_->GetVulkanImage();
+  }
+
+ private:
+  std::unique_ptr<VulkanImageRepresentation> wrapped_;
+};
+
+#endif
 
 // static
 bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
@@ -1309,6 +1364,30 @@ std::unique_ptr<VideoImageRepresentation> CompoundImageBacking::ProduceVideo(
       manager, this, tracker, std::move(real_rep));
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<VulkanImageRepresentation> CompoundImageBacking::ProduceVulkan(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl,
+    bool needs_detiling) {
+  auto* backing = GetOrAllocateBacking(SharedImageAccessStream::kVulkan);
+  if (!backing) {
+    return nullptr;
+  }
+
+  auto real_rep = backing->ProduceVulkan(manager, tracker, vulkan_device_queue,
+                                         vulkan_impl, needs_detiling);
+  if (!real_rep) {
+    return nullptr;
+  }
+
+  return std::make_unique<WrappedVulkanCompoundImageRepresentation>(
+      manager, this, tracker, vulkan_device_queue, vulkan_impl,
+      std::move(real_rep));
+}
+#endif
+
 base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
@@ -1561,6 +1640,9 @@ GPU_GLES2_EXPORT std::ostream& operator<<(
       break;
     case gpu::SharedImageAccessStream::kWebNNTensor:
       os << "kWebNNTensor";
+      break;
+    case gpu::SharedImageAccessStream::kVulkan:
+      os << "kVulkan";
       break;
   }
   return os;

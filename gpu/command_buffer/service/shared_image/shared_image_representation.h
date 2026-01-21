@@ -1300,14 +1300,21 @@ class GPU_GLES2_EXPORT VulkanImageRepresentation
     VkSemaphore end_semaphore_;
   };
 
-  virtual std::unique_ptr<ScopedAccess> BeginScopedAccess(
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(
       AccessMode access_mode,
       std::vector<VkSemaphore>& begin_semaphores,
-      std::vector<VkSemaphore>& end_semaphores) = 0;
+      std::vector<VkSemaphore>& end_semaphores);
+
+  virtual bool BeginAccess(AccessMode access_mode,
+                           std::vector<VkSemaphore>& begin_semaphores,
+                           std::vector<VkSemaphore>& end_semaphores) = 0;
+
+  virtual void EndAccess(bool is_read_only, VkSemaphore end_semaphore) = 0;
+
+  virtual gpu::VulkanImage& GetVulkanImage();
 
  protected:
-  virtual void EndScopedAccess(bool is_read_only,
-                               VkSemaphore end_semaphore) = 0;
+  friend class WrappedVulkanCompoundImageRepresentation;
 
   std::unique_ptr<gpu::VulkanImage> vulkan_image_;
   raw_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue_;

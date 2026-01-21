@@ -39,7 +39,8 @@ enum class SharedImageAccessStream {
   kDawnBuffer,
   kMemory,
   kVaapi,
-  kWebNNTensor
+  kWebNNTensor,
+  kVulkan
 };
 
 GPU_GLES2_EXPORT std::ostream& operator<<(
@@ -49,7 +50,7 @@ GPU_GLES2_EXPORT std::ostream& operator<<(
 // Used to represent what access streams a backing can be used for.
 using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
                                       SharedImageAccessStream::kSkia,
-                                      SharedImageAccessStream::kWebNNTensor>;
+                                      SharedImageAccessStream::kVulkan>;
 
 // A CompoundImageBacking is a specialized container that manages one or more
 // underlying SharedImageBacking instances of different types. It serves as a
@@ -263,6 +264,15 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VideoDevice device) override;
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl,
+      bool needs_detiling) override;
+#endif
 
  private:
   friend class CompoundImageBackingTest;
