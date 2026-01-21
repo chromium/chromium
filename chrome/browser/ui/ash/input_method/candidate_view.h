@@ -35,6 +35,9 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
 
   void SetEntry(const ui::CandidateWindow::Entry& entry);
 
+  int shortcut_width() const { return shortcut_width_; }
+  int candidate_width() const { return candidate_width_; }
+
   // Sets infolist icon.
   void SetInfolistIcon(bool enable);
 
