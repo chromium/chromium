@@ -520,6 +520,18 @@ DevToolsWindow::~DevToolsWindow() {
   browser_collection_observation_.Reset();
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  // Activate the inspected browser when undocked DevTools closes, so focus
+  // returns to the window that opened DevTools (e.g., a PWA window).
+  if (!is_docked_ && inspected_browser_session_id_.is_valid()) {
+    BrowserWindowInterface* const browser =
+        chrome::FindBrowserWithID(inspected_browser_session_id_);
+    if (browser && browser->GetWindow()) {
+      browser->GetWindow()->Activate();
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   DevToolsWindows& instances = GetDevToolsWindowInstances();
   auto it = std::ranges::find(instances, this);
   CHECK(it != instances.end());
@@ -1194,13 +1206,15 @@ void DevToolsWindow::OnPageCloseCanceled(WebContents* contents) {
   DevToolsWindow::OnPageCloseCanceled(window->main_web_contents_);
 }
 
-DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
-                               Profile* profile,
-                               std::unique_ptr<WebContents> main_web_contents,
-                               DevToolsUIBindings* bindings,
-                               WebContents* inspected_web_contents,
-                               bool can_dock,
-                               DevToolsOpenedByAction opened_by)
+DevToolsWindow::DevToolsWindow(
+    FrontendType frontend_type,
+    Profile* profile,
+    std::unique_ptr<WebContents> main_web_contents,
+    DevToolsUIBindings* bindings,
+    WebContents* inspected_web_contents,
+    bool can_dock,
+    DevToolsOpenedByAction opened_by,
+    [[maybe_unused]] SessionID inspected_browser_session_id)
     : frontend_type_(frontend_type),
       profile_(profile),
       main_web_contents_(main_web_contents.get()),
@@ -1221,6 +1235,9 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       ready_for_test_(false),
       opened_by_(opened_by),
       closed_by_(DevToolsClosedByAction::kUnknown) {
+#if BUILDFLAG(IS_MAC)
+  inspected_browser_session_id_ = inspected_browser_session_id;
+#endif  // BUILDFLAG(IS_MAC)
   // Set up delegate, so we get fully-functional window immediately.
   // It will not appear in UI though until |life_stage_ == kLoadCompleted|.
   main_web_contents_->SetDelegate(this);
@@ -1334,6 +1351,7 @@ DevToolsWindow* DevToolsWindow::Create(
     return nullptr;
   }
 
+  SessionID inspected_browser_session_id = SessionID::InvalidValue();
 #if BUILDFLAG(IS_ANDROID)
   // Docking is not supported yet.
   can_dock = false;
@@ -1341,11 +1359,16 @@ DevToolsWindow* DevToolsWindow::Create(
   if (inspected_web_contents) {
     // Check for a place to dock.
     Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
+#if BUILDFLAG(IS_MAC)
+    if (browser) {
+      inspected_browser_session_id = browser->session_id();
+    }
+#endif  // BUILDFLAG(IS_MAC)
     if (!browser || !browser->window()->CanDockDevTools()) {
       can_dock = false;
     }
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Create WebContents with devtools.
   GURL url(GetDevToolsURL(profile, frontend_type, frontend_url, can_dock, panel,
@@ -1366,7 +1389,8 @@ DevToolsWindow* DevToolsWindow::Create(
   }
   return new DevToolsWindow(frontend_type, profile,
                             std::move(main_web_contents), bindings,
-                            inspected_web_contents, can_dock, opened_by);
+                            inspected_web_contents, can_dock, opened_by,
+                            inspected_browser_session_id);
 }
 
 // static

@@ -13,10 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -369,7 +371,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                  DevToolsUIBindings* bindings,
                  content::WebContents* inspected_web_contents,
                  bool can_dock,
-                 DevToolsOpenedByAction opened_by);
+                 DevToolsOpenedByAction opened_by,
+                 [[maybe_unused]] SessionID inspected_browser_session_id);
 
   // External frontend is always undocked.
   static void OpenExternalFrontend(
@@ -602,6 +605,16 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  // Session ID of the browser that was inspected when the DevTools window was
+  // opened. Used to activate the inspected browser when DevTools closes.
+  // This is macOS-specific because on macOS, when a window closes, the system
+  // activates another window in the app, which may not be the window that
+  // originally opened DevTools (e.g., a PWA window). On Windows/Linux, focus
+  // typically returns to the previously focused window automatically.
+  SessionID inspected_browser_session_id_{SessionID::InvalidValue()};
+#endif  // BUILDFLAG(IS_MAC)
 
   PrefChangeRegistrar pref_change_registrar_;
 
