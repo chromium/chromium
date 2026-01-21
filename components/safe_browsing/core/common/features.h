@@ -236,6 +236,9 @@ extern const base::FeatureParam<int>
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 
+// Enables querying server-side Gemini model for scam detection.
+BASE_DECLARE_FEATURE(kGeminiAntiscamProtectionForMetricsCollection);
+
 // Replace the high confidence allowlist check gating notification warnings with
 // a check of the global cache list specific to safe notification sites.
 BASE_DECLARE_FEATURE(kGlobalCacheListForGatingNotificationProtections);
