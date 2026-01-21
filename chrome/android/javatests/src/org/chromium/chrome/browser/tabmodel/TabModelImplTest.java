@@ -21,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.tabmodel.TabModelOrderControllerImpl.willOpenInForeground;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -266,6 +267,12 @@ public class TabModelImplTest {
                     assertEquals(
                             TabLaunchType.FROM_TAB_LIST_INTERFACE,
                             tab.getTabLaunchTypeAtCreation());
+
+                    assertTrue(
+                            willOpenInForeground(
+                                    TabLaunchType.FROM_TAB_LIST_INTERFACE,
+                                    tab.isIncognitoBranded(),
+                                    mTabModelJni.isIncognitoBranded()));
                 });
     }
 
