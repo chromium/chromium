@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -487,7 +485,7 @@ class LoadWebUIFromDiskTest : public WebUIDataSourceTest {
 
 void LoadFromDiskCallback(scoped_refptr<base::RefCountedMemory> data) {
   std::string result(base::as_string_view(*data));
-  EXPECT_TRUE(std::ranges::contains_subrange(result, "hello plain!"));
+  EXPECT_TRUE(result.contains("hello plain!"));
 }
 
 TEST_F(LoadWebUIFromDiskTest, FilepathInfoExists) {
