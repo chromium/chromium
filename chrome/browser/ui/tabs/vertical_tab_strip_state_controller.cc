@@ -75,8 +75,6 @@ VerticalTabStripStateController::VerticalTabStripStateController(
       browser_list_observation_.Observe(BrowserList::GetInstance());
     }
   }
-
-  // TODO(crbug.com/455559992): Add uncollapsed text logic for collapse button.
 }
 
 VerticalTabStripStateController::~VerticalTabStripStateController() {
