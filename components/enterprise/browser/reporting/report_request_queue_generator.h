@@ -20,8 +20,8 @@ class ReportingDelegateFactory;
 
 // Generate a report request queue that contains full profile information. The
 // request number in the queue is decided by the maximum report size setting.
-// TODO(crbug.com/40704763): Unit tests for this class are still in
-// chrome/browser/enterprise/reporting.
+// Unit tests for this class are in chrome/browser/enterprise/reporting.
+// See crbug.com/40704763 for context.
 class ReportRequestQueueGenerator {
  public:
   explicit ReportRequestQueueGenerator(
