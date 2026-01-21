@@ -45,9 +45,8 @@ namespace {
 typedef ProxyConfigServiceAndroid::GetPropertyCallback GetPropertyCallback;
 
 // Returns whether the provided string was successfully converted to a port.
-bool ConvertStringToPort(const std::string& port, int* output) {
-  url::Component component(0, port.size());
-  int result = url::ParsePort(port.c_str(), component);
+bool ConvertStringToPort(std::string_view port, int* output) {
+  int result = url::ParsePort(port, url::Component(port));
   if (result == url::PORT_INVALID || result == url::PORT_UNSPECIFIED)
     return false;
   *output = result;

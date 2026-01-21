@@ -94,7 +94,7 @@ struct FileSystemURLParseCase {
   const char* ref;
 };
 
-AssertionResult ComponentMatches(const char* input,
+AssertionResult ComponentMatches(std::string_view input,
                                  const char* reference,
                                  const Component& component) {
   // Check that the -1 sentinel is the only allowed negative value.
@@ -121,8 +121,8 @@ AssertionResult ComponentMatches(const char* input,
   }
 
   // Now check the actual characters.
-  return UNSAFE_TODO(
-             strncmp(reference, &input[component.begin], component.len)) == 0
+  return UNSAFE_TODO(strncmp(reference, input.data() + component.begin,
+                             component.len)) == 0
              ? AssertionSuccess()
              : AssertionFailure() << "characters do not match";
 }
@@ -133,7 +133,7 @@ void ExpectInvalidComponent(const Component& component) {
 }
 
 void URLParseCaseMatches(const URLParseCase& expected, const Parsed& parsed) {
-  const char* url = expected.input;
+  const std::string_view url(expected.input);
   SCOPED_TRACE(testing::Message()
                << "url: \"" << url << "\", parsed: " << parsed);
   int port = ParsePort(url, parsed.port);
@@ -603,7 +603,7 @@ TEST(URLParser, MailtoUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& mailto_case : mailto_cases) {
-    const char* url = mailto_case.input;
+    const std::string_view url(mailto_case.input);
     Parsed parsed = ParseMailtoUrl(url);
     int port = ParsePort(url, parsed.port);
 
@@ -642,7 +642,7 @@ TEST(URLParser, FileSystemUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& filesystem_case : filesystem_cases) {
-    const char* url = filesystem_case.input;
+    const std::string_view url(filesystem_case.input);
     Parsed parsed = ParseFileSystemUrl(url);
 
     EXPECT_TRUE(ComponentMatches(url, "filesystem", parsed.scheme));
