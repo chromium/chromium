@@ -156,7 +156,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_THAT(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
-                  ->affected_params(),
+                  ->GetAffectedParams(),
               testing::UnorderedElementsAreArray({"a"}));
   EXPECT_FALSE(urls_with_no_vary_search.at(0)
                    .second->GetNoVarySearchData()
@@ -189,7 +189,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_THAT(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
-                  ->affected_params(),
+                  ->GetAffectedParams(),
               testing::UnorderedElementsAreArray({"a"}));
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
@@ -225,7 +225,7 @@ TEST_F(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()
-                  ->affected_params()
+                  ->GetAffectedParams()
                   .empty());
   EXPECT_TRUE(urls_with_no_vary_search.at(0)
                   .second->GetNoVarySearchData()

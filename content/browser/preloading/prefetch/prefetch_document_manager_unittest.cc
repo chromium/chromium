@@ -183,7 +183,7 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
     ASSERT_TRUE(prefetch);
     ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
     EXPECT_FALSE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchHint()->affected_params(),
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->GetAffectedParams(),
                 UnorderedElementsAreArray({"a"}));
   }
   {
@@ -191,7 +191,7 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
     ASSERT_TRUE(prefetch);
     ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
     EXPECT_TRUE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchHint()->affected_params(),
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->GetAffectedParams(),
                 UnorderedElementsAreArray({"a"}));
   }
   {

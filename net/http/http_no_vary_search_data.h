@@ -88,10 +88,9 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
   std::string CanonicalizeQuery(const GURL& url) const;
 
   // Member accessor methods.
-  // TODO(crbug.com/455304285): Stop exposing internals in API.
-  const base::flat_set<std::string>& affected_params() const {
-    return affected_params_;
-  }
+  // Returns a copy of the affected params as a vector, hiding the internal
+  // container type.
+  std::vector<std::string> GetAffectedParams() const;
   bool vary_on_key_order() const { return vary_on_key_order_; }
   bool vary_by_default() const { return vary_by_default_; }
 
@@ -122,6 +121,11 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
 
   // The new implementation of AreEquivalent() using UrlSearchParamsView.
   bool AreEquivalentNewImpl(const GURL& a, const GURL& b) const;
+
+  // Applies No-Vary-Search rules to URL search params. This is a private
+  // template method so it can directly access affected_params_.
+  template <typename ParamsType>
+  void ApplyRulesToParams(ParamsType& params) const;
 
   // LINT.IfChange(MagicNumber)
 
