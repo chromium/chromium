@@ -35,6 +35,18 @@ if (is_android) {
     ]
   }
 
+  source_set("android_browser_test_support") {
+    testonly = true
+    sources = [
+      "android/browser_window_android_browsertest_base.cc",
+      "android/browser_window_android_browsertest_base.h",
+    ]
+    deps = [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/test:test_support_ui_android",
+    ]
+  }
+
   # Supports native unit tests.
   android_library("native_unit_test_support_java") {
     testonly = true

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -61,42 +62,10 @@ class TabAdditionObserver : public TabListInterfaceObserver {
 
 }  // namespace
 
-class NavigateAndroidBrowserTest : public AndroidBrowserTest {
+class NavigateAndroidBrowserTest : public BrowserWindowAndroidBrowserTestBase {
  public:
-  NavigateAndroidBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {// Disable ChromeTabbedActivity instance limit so that the total number
-         // of windows created by the entire test suite won't be limited.
-         //
-         // See MultiWindowUtils#getMaxInstances() for the reason:
-         // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
-         chrome::android::kDisableInstanceLimit,
-
-         // Enable incognito windows on Android.
-         feed::kAndroidOpenIncognitoAsWindow},
-        /*disabled_features=*/{});
-  }
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
-
-    // Disable the first-run experience (FRE) so that when a function under
-    // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
-    // will be shown instead of FirstRunActivity.
-    command_line->AppendSwitch("disable-fre");
-
-    // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
-    // flag in the constructor can be effective when running tests on an
-    // emulator without "--force-desktop-android".
-    //
-    // See MultiWindowUtils#getMaxInstances() for the reason:
-    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
-    command_line->AppendSwitch(switches::kForceDesktopAndroid);
-  }
-
   void SetUpOnMainThread() override {
-    AndroidBrowserTest::SetUpOnMainThread();
+    BrowserWindowAndroidBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     std::vector<BrowserWindowInterface*> windows =
@@ -145,9 +114,6 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
   raw_ptr<BrowserWindowInterface> browser_window_;
   raw_ptr<TabListInterface> tab_list_;
   raw_ptr<content::WebContents> web_contents_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Disposition_CurrentTab) {

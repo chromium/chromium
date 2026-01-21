@@ -2140,8 +2140,10 @@ if (is_android) {
     if (is_desktop_android) {
       sources +=
           [ "../browser/ui/android/browser_navigator_android_browsertest.cc" ]
-      deps +=
-          [ "//chrome/browser/ui/browser_window/internal:android_browsertests" ]
+      deps += [
+        "//chrome/browser/ui/browser_window/internal:android_browsertests",
+        "//chrome/browser/ui/browser_window/test:android_browser_test_support",
+      ]
     }
 
     if (enable_chrome_android_internal) {
@@ -2302,7 +2304,10 @@ if (is_android) {
       "base/mixin_based_in_process_browser_test.h",
       "base/platform_browser_test.h",
     ]
-    public_deps = [ "//content/test:test_support" ]
+    public_deps = [
+      "//components/feed:feature_list",
+      "//content/test:test_support",
+    ]
     deps = [
       "//chrome/browser",
       "//chrome/browser/ui",
