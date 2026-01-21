@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -97,6 +98,10 @@ public class TopControlsLockCoordinator {
     // 1. When the device is in desktop windowing mode
     // 2. When the device is a large-tablet, and it's not hidden by height transition.
     private boolean shouldLockTopControls() {
+        // Desktop form factor always take priority.
+        // TODO(crbug.com/450970998): Explore if we can set this for all large tablets.
+        if (DeviceInfo.isDesktop()) return true;
+
         // Enable lock in desktop window mode. Only relevant when the device supports it.
         if (mDesktopWindowStateManager != null) {
             var appHeaderState = mDesktopWindowStateManager.getAppHeaderState();
@@ -114,7 +119,7 @@ public class TopControlsLockCoordinator {
             return false;
         }
 
-        // If all the check passes, lock top controls on large tablet.
+        // If all the check passes, enable the condition based on form factors.
         return DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mContext);
     }
 }

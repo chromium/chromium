@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browser_controls;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,7 +21,7 @@ public class BrowserControlsUtils {
 
     // Disallow top browser controls from scrolling off on large tablets by setting min height
     // equal to overall height.
-    // TODO(https://crbug.com/436900619): Converge on and implement long-term solution.
+    // TODO(https://crbug.com/450970998): Replace with doSyncMinHeightWithTotalHeightV2.
     public static boolean doSyncMinHeightWithTotalHeight(Context context) {
         return ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context);
@@ -28,15 +29,22 @@ public class BrowserControlsUtils {
 
     /**
      * Disallow top browser controls from scrolling off by setting min height equal to overall
-     * height. This feature does not check form factors.
+     * height. This method checks the form factors internally.
      */
+    // TODO(https://crbug.com/450970998): Move to TopControlsLockCoordinator after removing
+    //  reference from BrowserControlsManager.
     public static boolean doSyncMinHeightWithTotalHeightV2(Context context) {
         if (sSyncMinHeightWithTotalHeightForTesting != null) {
             return sSyncMinHeightWithTotalHeightForTesting;
         }
-        return ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()
-                && ChromeFeatureList.sTopControlsRefactor.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context);
+
+        if (!ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()
+                || !ChromeFeatureList.sTopControlsRefactor.isEnabled()) {
+            return false;
+        }
+
+        return DeviceInfo.isDesktop()
+                || DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context);
     }
 
     /** Whether use TopControlsStacker to drive the y offset for top control layers. */
