@@ -1462,8 +1462,7 @@ Status ProcessInputActionSequence(Session* session,
           // check if key is a single unicode code point
           size_t char_index = 0;
           base_icu::UChar32 code_point;
-          valid = base::ReadUnicodeCharacter(key->c_str(), key->size(),
-                                             &char_index, &code_point) &&
+          valid = base::ReadUnicodeCharacter(*key, &char_index, &code_point) &&
                   char_index + 1 == key->size();
         }
         if (!valid)

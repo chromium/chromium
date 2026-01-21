@@ -580,8 +580,7 @@ Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
 
   size_t char_index = 0;
   base_icu::UChar32 code_point;
-  base::ReadUnicodeCharacter(raw_key->c_str(), raw_key->size(), &char_index,
-                             &code_point);
+  base::ReadUnicodeCharacter(*raw_key, &char_index, &code_point);
 
   std::string key;
   if (code_point >= kNormalisedKeyValueBase &&
