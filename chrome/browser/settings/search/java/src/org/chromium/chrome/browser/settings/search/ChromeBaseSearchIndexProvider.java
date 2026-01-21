@@ -51,7 +51,12 @@ public class ChromeBaseSearchIndexProvider extends BaseSearchIndexProvider
                 context, xmlRes, indexData, getPrefFragmentName(), getExtras(), providerMap);
     }
 
-    protected int getXmlRes(Profile profile) {
+    /**
+     * Returns the XML resource defining the fragment's preference screen.
+     *
+     * @param profile The {@link Profile} used to obtain the preference xml resource.
+     */
+    public int getXmlRes(Profile profile) {
         return getXmlRes();
     }
 }

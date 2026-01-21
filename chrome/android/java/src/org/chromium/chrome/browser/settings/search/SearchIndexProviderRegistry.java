@@ -129,6 +129,8 @@ public final class SearchIndexProviderRegistry {
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.sync.settings.ManageSyncSettings
                             .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.sync.settings.SignInPreference
+                            .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.download.settings.DownloadSettings

@@ -993,8 +993,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowSafetyHubPref()) {
                         indexData.removeEntry(getUniqueId(PREF_SAFETY_HUB));
                     }
-                    if (!shouldShowSignInPref(profile)) {
+                    if (!shouldShowSignInPref(profile) || !SignInPreference.isSignedIn(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_SIGN_IN));
+                    } else {
+                        indexData.addChildParentLink(
+                                SignInPreference.getOpenFragmentName(profile),
+                                getUniqueId(PREF_SIGN_IN));
                     }
                     if (!shouldShowDeveloperSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_DEVELOPER));

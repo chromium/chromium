@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -36,12 +37,12 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -69,7 +70,6 @@ public class SignInPreference extends Preference
     private AccountManagerFacade mAccountManagerFacade;
     private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
-    private IdentityManager mIdentityManager;
 
     public ProfileDataCache getProfileDataCache() {
         return mProfileDataCache;
@@ -100,8 +100,6 @@ public class SignInPreference extends Preference
         mPrefService = UserPrefs.get(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
-        mIdentityManager =
-                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
     }
 
     @Override
@@ -154,13 +152,35 @@ public class SignInPreference extends Preference
             return;
         }
 
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (accountInfo != null) {
-            setupSignedIn(accountInfo.getEmail());
-            return;
+        if (isSignedIn(mProfile)) {
+            setupSignedIn(assumeNonNull(getAccountInfo(mProfile)).getEmail());
+        } else {
+            setupGenericPromo();
         }
+    }
 
-        setupGenericPromo();
+    private static boolean shouldShowManageSyncFragment(Profile profile) {
+        return isSignedIn(profile) && !hasSyncConsent(profile);
+    }
+
+    private static boolean shouldShowAccountManagementFragment(Profile profile) {
+        return isSignedIn(profile) && hasSyncConsent(profile);
+    }
+
+    /** Returns whether Chrome is signed in. */
+    public static boolean isSignedIn(Profile profile) {
+        return getAccountInfo(profile) != null;
+    }
+
+    private static @Nullable CoreAccountInfo getAccountInfo(Profile profile) {
+        var identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+    }
+
+    private static boolean hasSyncConsent(Profile profile) {
+        var syncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
+        return assumeNonNull(syncService).hasSyncConsent();
     }
 
     private void setupSigninDisabledByPolicy() {
@@ -235,11 +255,7 @@ public class SignInPreference extends Preference
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        if (!assumeNonNull(mSyncService).hasSyncConsent()) {
-            setFragment(ManageSyncSettings.class.getName());
-        } else {
-            setFragment(AccountManagementFragment.class.getName());
-        }
+        setFragment(getOpenFragmentName(mProfile));
         setIcon(profileData.getImage());
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
@@ -248,6 +264,18 @@ public class SignInPreference extends Preference
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;
+    }
+
+    /** Returns the fragment to open for this preference. */
+    public static String getOpenFragmentName(Profile profile) {
+        assert isSignedIn(profile);
+        if (shouldShowAccountManagementFragment(profile)) {
+            return AccountManagementFragment.class.getName();
+        } else {
+            // Fragment should be either AccountManagementFragment or ManageSyncSettings.
+            assert shouldShowManageSyncFragment(profile);
+            return ManageSyncSettings.class.getName();
+        }
     }
 
     // This just changes visual representation. Actual enabled flag in preference stays
@@ -296,4 +324,30 @@ public class SignInPreference extends Preference
     public void onCoreAccountInfosChanged() {
         update();
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(SignInPreference.class.getName(), 0) {
+
+                @Override
+                public int getXmlRes(Profile profile) {
+                    if (!isSignedIn(profile)) return 0;
+
+                    return shouldShowAccountManagementFragment(profile)
+                            ? AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(
+                                    profile)
+                            : ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.getXmlRes(profile);
+                }
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    if (shouldShowAccountManagementFragment(profile)) {
+                        AccountManagementFragment.SEARCH_INDEX_DATA_PROVIDER
+                                .updateDynamicPreferences(context, indexData, profile);
+                    } else {
+                        ManageSyncSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                                context, indexData, profile);
+                    }
+                }
+            };
 }
