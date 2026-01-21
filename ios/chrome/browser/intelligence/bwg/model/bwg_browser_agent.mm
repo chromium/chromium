@@ -122,15 +122,56 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
     FullscreenController::CreateForBrowser(browser_);
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_);
     fullscreen_controller_->AddObserver(this);
+
+    base::WeakPtr<BwgBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+    keyboard_show_observer_ = [[NSNotificationCenter defaultCenter]
+        addObserverForName:UIKeyboardWillShowNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* notification) {
+                  if (weak_ptr) {
+                    weak_ptr->OnKeyboardStateChanged(true);
+                  }
+                }];
+    keyboard_hide_observer_ = [[NSNotificationCenter defaultCenter]
+        addObserverForName:UIKeyboardWillHideNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* notification) {
+                  if (weak_ptr) {
+                    weak_ptr->OnKeyboardStateChanged(false);
+                  }
+                }];
   }
 }
 
 BwgBrowserAgent::~BwgBrowserAgent() {
+  if (keyboard_show_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:keyboard_show_observer_];
+    keyboard_show_observer_ = nil;
+  }
+  if (keyboard_hide_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:keyboard_hide_observer_];
+    keyboard_hide_observer_ = nil;
+  }
+
   if (fullscreen_controller_) {
     fullscreen_controller_->RemoveObserver(this);
     fullscreen_controller_ = nullptr;
   }
   StopObserving();
+}
+
+void BwgBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
+  is_keyboard_visible_ = is_visible;
+  if (fullscreen_controller_) {
+    // Re-trigger the update with the current progress to apply opacity override
+    // if needed.
+    FullscreenProgressUpdated(fullscreen_controller_,
+                              fullscreen_controller_->GetProgress());
+  }
 }
 
 void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
@@ -479,7 +520,14 @@ void BwgBrowserAgent::FullscreenProgressUpdated(
   // positive value equal to the `fullyExpandedBottomToolbarHeight`. When
   // fullscreen mode is enabled (progress == 0), the offset will be a negative
   // value, `kOverlayFullscreenOffset`.
-  ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
+  if (is_keyboard_visible_) {
+    // When the keyboard is visible, force the opacity to 1.0 (fully opaque) to
+    // prevent the floaty from disappearing, even if the fullscreen progress is
+    // 0 (enabled).
+    ios::provider::UpdateOverlayOffsetWithOpacity(offset, 1.0);
+  } else {
+    ios::provider::UpdateOverlayOffsetWithOpacity(offset, progress);
+  }
 }
 
 void BwgBrowserAgent::FullscreenWillAnimate(FullscreenController* controller,

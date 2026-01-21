@@ -210,6 +210,16 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // updates related to the Gemini overlay.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
 
+  // Observers for keyboard events.
+  id keyboard_show_observer_ = nil;
+  id keyboard_hide_observer_ = nil;
+
+  // Whether the keyboard is currently visible.
+  bool is_keyboard_visible_ = false;
+
+  // Called when keyboard state changes.
+  void OnKeyboardStateChanged(bool is_visible);
+
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.
   ios::provider::GeminiViewState last_shown_view_state_ =
