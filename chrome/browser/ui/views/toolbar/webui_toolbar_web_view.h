@@ -60,6 +60,11 @@ class WebUIToolbarWebView
   friend WebUIReloadControl;
 
   void InitializeWebView();
+
+  // Reloads the WebUI toolbar. Used for recovering from crashes or
+  // unresponsiveness.
+  void ReloadWebContents();
+
   chrome::BrowserCommandController* controller() { return controller_; }
   WebUIToolbarUI* GetWebUIToolbarUI();
 
