@@ -70,7 +70,7 @@ void GraphemesClusterList(const StringView& text,
   }
 }
 
-unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
+unsigned LengthOfGraphemeCluster(const StringView& string, unsigned offset) {
   unsigned string_length = string.length();
 
   if (string_length - offset <= 1) {

@@ -77,8 +77,7 @@ LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
 LayoutUnit ComputeCharacterWidthAtOffset(const InlineCursor& cursor,
                                          unsigned offset,
                                          const ComputedStyle& style) {
-  unsigned cluster_size =
-      LengthOfGraphemeCluster(cursor.CurrentText().ToString(), offset);
+  unsigned cluster_size = LengthOfGraphemeCluster(cursor.CurrentText(), offset);
   // The width calculation takes into account font information from style.
   // The zoom value is baked into the font size already.
   float width = ComputeTextWidth(
