@@ -1626,6 +1626,11 @@ void RecordNavigationTraceEventsAndMetrics(
           timeline.navigation_request_creation,
           &ukm::builders::NavigationTimeline::
               SetBeforeUnloadPhase1ToNavigationRequestCreationDuration);
+      if (!timeline.beforeunload_phase1_dialog_opened.is_null()) {
+        log_trace_event_and_uma("BeforeUnloadPhase1Dialog", track1,
+                                timeline.beforeunload_phase1_dialog_opened,
+                                timeline.beforeunload_phase1_dialog_closed);
+      }
     } else {
       log_trace_event_and_uma("StartToNavigationRequestCreation", track1,
                               timeline.start,
@@ -1651,6 +1656,11 @@ void RecordNavigationTraceEventsAndMetrics(
           timeline.beforeunload_phase2_end, timeline.begin_navigation,
           &ukm::builders::NavigationTimeline::
               SetBeforeUnloadPhase2ToBeginNavigationDuration);
+      if (!timeline.beforeunload_phase2_dialog_opened.is_null()) {
+        log_trace_event_and_uma("BeforeUnloadPhase2Dialog", track1,
+                                timeline.beforeunload_phase2_dialog_opened,
+                                timeline.beforeunload_phase2_dialog_closed);
+      }
     } else {
       log_trace_event_and_uma(
           "NavigationRequestToBeginNavigation", track1,
@@ -1753,15 +1763,37 @@ void RecordNavigationTraceEventsAndMetrics(
       "Navigation: Durations", base::trace_event::GetNextGlobalTraceId(),
       perfetto::Track::Global(kGlobalInstantTrackId));
 
+  base::TimeDelta beforeunload_dialog_total_duration;
+  if (!timeline.beforeunload_phase1_dialog_opened.is_null() &&
+      !timeline.beforeunload_phase1_dialog_closed.is_null() &&
+      timeline.beforeunload_phase1_dialog_opened <
+          timeline.beforeunload_phase1_dialog_closed) {
+    beforeunload_dialog_total_duration +=
+        timeline.beforeunload_phase1_dialog_closed -
+        timeline.beforeunload_phase1_dialog_opened;
+  }
+  if (!timeline.beforeunload_phase2_dialog_opened.is_null() &&
+      !timeline.beforeunload_phase2_dialog_closed.is_null() &&
+      timeline.beforeunload_phase2_dialog_opened <
+          timeline.beforeunload_phase2_dialog_closed) {
+    beforeunload_dialog_total_duration +=
+        timeline.beforeunload_phase2_dialog_closed -
+        timeline.beforeunload_phase2_dialog_opened;
+  }
+
   // Excluding beforeunload time from the total navigation duration is useful
   // because it is not under the browser's control, and may include long periods
   // of waiting for the user to interact with a dialog.
   base::TimeDelta beforeunload_total_duration;
-  if (!timeline.beforeunload_phase1_start.is_null()) {
+  if (!timeline.beforeunload_phase1_start.is_null() &&
+      !timeline.beforeunload_phase1_end.is_null() &&
+      timeline.beforeunload_phase1_start < timeline.beforeunload_phase1_end) {
     beforeunload_total_duration +=
         timeline.beforeunload_phase1_end - timeline.beforeunload_phase1_start;
   }
-  if (!timeline.beforeunload_phase2_start.is_null()) {
+  if (!timeline.beforeunload_phase2_start.is_null() &&
+      !timeline.beforeunload_phase2_end.is_null() &&
+      timeline.beforeunload_phase2_start < timeline.beforeunload_phase2_end) {
     beforeunload_total_duration +=
         timeline.beforeunload_phase2_end - timeline.beforeunload_phase2_start;
   }
@@ -1791,6 +1823,25 @@ void RecordNavigationTraceEventsAndMetrics(
         timeline.finish - duration_start);
   }
 
+  base::TimeDelta total_excluding_before_unload_dialog;
+  if (!timeline.start.is_null() && !timeline.finish.is_null() &&
+      timeline.start < timeline.finish) {
+    total_excluding_before_unload_dialog =
+        (timeline.finish - timeline.start) - beforeunload_dialog_total_duration;
+  }
+
+  if (total_excluding_before_unload_dialog.is_positive()) {
+    base::UmaHistogramTimes(
+        "Navigation.Timeline.TotalExcludingBeforeUnloadDialog.Duration",
+        total_excluding_before_unload_dialog);
+    if (is_main_frame_cross_doc) {
+      base::UmaHistogramTimes(
+          "Navigation.Timeline.TotalExcludingBeforeUnloadDialog.MainFrameOnly."
+          "Duration",
+          total_excluding_before_unload_dialog);
+    }
+  }
+
   // Also record metrics of duration that starts from user interaction timing
   // when the user interaction timing is available.
   if (is_main_frame_cross_doc && !timeline.user_interaction.is_null() &&
@@ -1803,6 +1854,8 @@ void RecordNavigationTraceEventsAndMetrics(
         timeline.finish - timeline.user_interaction;
     const base::TimeDelta excluding_before_unload_duration =
         including_before_unload_duration - beforeunload_total_duration;
+    const base::TimeDelta excluding_before_unload_dialog_duration =
+        including_before_unload_duration - beforeunload_dialog_total_duration;
     base::UmaHistogramTimes(
         "Navigation.Timeline.InteractionToActualNavigationStart."
         "MainFrameOnly.Duration",
@@ -1815,6 +1868,10 @@ void RecordNavigationTraceEventsAndMetrics(
         "Navigation.Timeline.InteractionToNavigationFinished."
         "ExcludingBeforeUnload.MainFrameOnly.Duration",
         excluding_before_unload_duration);
+    base::UmaHistogramTimes(
+        "Navigation.Timeline.InteractionToNavigationFinished."
+        "ExcludingBeforeUnloadDialog.MainFrameOnly.Duration",
+        excluding_before_unload_dialog_duration);
     if (ukm_builder.has_value()) {
       ukm_builder->SetInteractionToActualNavigationStartDurationMs(
           interaction_to_actual_navigation_start.InMilliseconds());
@@ -16988,10 +17045,23 @@ void RenderFrameHostImpl::SendBeforeUnload(
   auto before_unload_closure = base::BindOnce(
       [](base::WeakPtr<RenderFrameHostImpl> impl, bool for_legacy, bool proceed,
          base::TimeTicks renderer_before_unload_start_time,
-         base::TimeTicks renderer_before_unload_end_time) {
+         base::TimeTicks renderer_before_unload_end_time,
+         base::TimeTicks before_unload_dialog_opened_time,
+         base::TimeTicks before_unload_dialog_closed_time) {
         if (!impl) {
           return;
         }
+
+        if (impl->frame_tree_node()) {
+          if (NavigationRequest* navigation_request =
+                  impl->frame_tree_node()->navigation_request()) {
+            navigation_request->set_beforeunload_phase2_dialog_opened_time(
+                before_unload_dialog_opened_time);
+            navigation_request->set_beforeunload_phase2_dialog_closed_time(
+                before_unload_dialog_closed_time);
+          }
+        }
+
         impl->ProcessBeforeUnloadCompleted(
             proceed, /*treat_as_final_completion_callback=*/false,
             renderer_before_unload_start_time, renderer_before_unload_end_time,
@@ -17046,7 +17116,9 @@ void RenderFrameHostImpl::SendBeforeUnload(
           .Run(/*proceed=*/true, /*renderer_before_unload_start_time=*/
                send_before_unload_start_time_,
                /*renderer_before_unload_end_time=*/
-               renderer_before_unload_end_time_for_legacy);
+               renderer_before_unload_end_time_for_legacy,
+               /*before_unload_dialog_opened_time=*/base::TimeTicks(),
+               /*before_unload_dialog_closed_time=*/base::TimeTicks());
       return;
     }
 
@@ -17071,9 +17143,11 @@ void RenderFrameHostImpl::SendBeforeUnload(
                   }
                   SCOPED_CRASH_KEY_BOOL("RFHI", "is_renderer_init_nav",
                                         is_renderer_initiated_navigation);
-                  std::move(callback).Run(/*proceed=*/true,
-                                          renderer_before_unload_start_time,
-                                          renderer_before_unload_end_time);
+                  std::move(callback).Run(
+                      /*proceed=*/true, renderer_before_unload_start_time,
+                      renderer_before_unload_end_time,
+                      /*before_unload_dialog_opened_time=*/base::TimeTicks(),
+                      /*before_unload_dialog_closed_time=*/base::TimeTicks());
                   if (can_be_in_navigate_to_pending_entry &&
                       navigation_controller) {
                     navigation_controller

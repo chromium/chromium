@@ -397,7 +397,10 @@ void TestRenderFrame::SimulateBeforeUnload(bool is_reload) {
   // local descendant frames, including children of remote frames. The browser
   // process will send separate IPCs to dispatch beforeunload in any
   // out-of-process child frames.
-  frame_->DispatchBeforeUnloadEvent(is_reload);
+  base::TimeTicks before_unload_dialog_opened_time;
+  base::TimeTicks before_unload_dialog_closed_time;
+  frame_->DispatchBeforeUnloadEvent(is_reload, before_unload_dialog_opened_time,
+                                    before_unload_dialog_closed_time);
 }
 
 bool TestRenderFrame::IsPageStateUpdated() const {

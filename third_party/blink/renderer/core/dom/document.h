@@ -909,9 +909,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // |did_allow_navigation| is set to reflect the choice made by the user via
   // the modal dialog. The value is meaningless if |auto_cancel|
   // is true, in which case it will always be set to false.
-  bool DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
-                                 bool is_reload,
-                                 bool& did_allow_navigation);
+  bool DispatchBeforeUnloadEvent(
+      ChromeClient* chrome_client,
+      bool is_reload,
+      bool& did_allow_navigation,
+      base::TimeTicks& out_before_unload_dialog_opened_time,
+      base::TimeTicks& out_before_unload_dialog_closed_time);
 
   // Dispatches "pagehide", "visibilitychange" and "unload" events, if not
   // dispatched already. Fills `unload_timing_info` if present.

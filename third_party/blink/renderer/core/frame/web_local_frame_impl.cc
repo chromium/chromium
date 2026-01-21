@@ -2767,11 +2767,16 @@ void WebLocalFrameImpl::SendAttributionSrc(
   }
 }
 
-bool WebLocalFrameImpl::DispatchBeforeUnloadEvent(bool is_reload) {
+bool WebLocalFrameImpl::DispatchBeforeUnloadEvent(
+    bool is_reload,
+    base::TimeTicks& out_before_unload_dialog_opened_time,
+    base::TimeTicks& out_before_unload_dialog_closed_time) {
   if (!GetFrame())
     return true;
 
-  return GetFrame()->Loader().ShouldClose(is_reload);
+  return GetFrame()->Loader().ShouldClose(is_reload,
+                                          out_before_unload_dialog_opened_time,
+                                          out_before_unload_dialog_closed_time);
 }
 
 void WebLocalFrameImpl::CommitNavigation(

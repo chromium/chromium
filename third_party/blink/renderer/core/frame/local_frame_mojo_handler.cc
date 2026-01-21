@@ -688,17 +688,21 @@ void LocalFrameMojoHandler::RenderFallbackContent() {
 void LocalFrameMojoHandler::BeforeUnload(bool is_reload,
                                          BeforeUnloadCallback callback) {
   base::TimeTicks before_unload_start_time = base::TimeTicks::Now();
-
+  base::TimeTicks before_unload_dialog_opened_time;
+  base::TimeTicks before_unload_dialog_closed_time;
   // This will execute the BeforeUnload event in this frame and all of its
   // local descendant frames, including children of remote frames.  The browser
   // process will send separate IPCs to dispatch beforeunload in any
   // out-of-process child frames.
-  bool proceed = frame_->Loader().ShouldClose(is_reload);
+  bool proceed =
+      frame_->Loader().ShouldClose(is_reload, before_unload_dialog_opened_time,
+                                   before_unload_dialog_closed_time);
 
   DCHECK(!callback.is_null());
   base::TimeTicks before_unload_end_time = base::TimeTicks::Now();
-  std::move(callback).Run(proceed, before_unload_start_time,
-                          before_unload_end_time);
+  std::move(callback).Run(
+      proceed, before_unload_start_time, before_unload_end_time,
+      before_unload_dialog_opened_time, before_unload_dialog_closed_time);
 }
 
 void LocalFrameMojoHandler::MediaPlayerActionAt(

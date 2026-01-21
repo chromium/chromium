@@ -1390,6 +1390,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
+          base::TimeTicks() /* before_unload_dialog_opened */,
+          base::TimeTicks() /* before_unload_dialog_closed */,
           has_user_gesture_
               ? blink::mojom::NavigationInitiatorActivationAndAdStatus::
                     kStartedWithTransientActivationFromNonAd

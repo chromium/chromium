@@ -83,7 +83,10 @@ void FakeLocalFrame::RenderFallbackContent() {}
 void FakeLocalFrame::BeforeUnload(bool is_reload,
                                   BeforeUnloadCallback callback) {
   base::TimeTicks now = base::TimeTicks::Now();
-  std::move(callback).Run(true /*leave the page*/, now, now);
+  std::move(callback).Run(
+      true /*leave the page*/, now, now,
+      /*before_unload_dialog_opened_time=*/base::TimeTicks(),
+      /*before_unload_dialog_closed_time=*/base::TimeTicks());
 }
 
 void FakeLocalFrame::MediaPlayerActionAt(

@@ -979,7 +979,9 @@ interface LocalFrame {
   [SupportsUrgent]
   BeforeUnload(bool is_reload)
       => (bool proceed, mojo_base.mojom.TimeTicks before_unload_start_time,
-          mojo_base.mojom.TimeTicks before_unload_end_time);
+          mojo_base.mojom.TimeTicks before_unload_end_time,
+          mojo_base.mojom.TimeTicks before_unload_dialog_opened_time,
+          mojo_base.mojom.TimeTicks before_unload_dialog_closed_time);
 
   // Tells the renderer to perform the given action on the media player location
   // at the given point in the view coordinate space.

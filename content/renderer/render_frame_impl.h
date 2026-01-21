@@ -962,10 +962,13 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Sends a `BeginNavigation()` mojo IPC via the mojom::FrameHost interface to
   // the browser.
-  void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
-                               bool is_history_navigation_in_new_child_frame,
-                               base::TimeTicks renderer_before_unload_start,
-                               base::TimeTicks renderer_before_unload_end);
+  void BeginNavigationInternal(
+      std::unique_ptr<blink::WebNavigationInfo> info,
+      bool is_history_navigation_in_new_child_frame,
+      base::TimeTicks renderer_before_unload_start,
+      base::TimeTicks renderer_before_unload_end,
+      base::TimeTicks before_unload_dialog_opened_time,
+      base::TimeTicks before_unload_dialog_closed_time);
 
   // TODO(crbug.com/40546539): When creating a new browsing context, Blink
   // always populates it with an initial empty document synchronously, as

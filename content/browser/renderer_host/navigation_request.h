@@ -1480,6 +1480,12 @@ class CONTENT_EXPORT NavigationRequest
   // run beforeunload handlers when necessary.
   void WillStartBeforeUnload();
 
+  void set_beforeunload_phase2_dialog_opened_time(
+      const base::TimeTicks& dialog_opened_time);
+
+  void set_beforeunload_phase2_dialog_closed_time(
+      const base::TimeTicks& dialog_closed_time);
+
   // This struct holds timestamps of various stages of one navigation. This is
   // useful for recording a trace of a navigation, as well as metrics for
   // durations of all intervals within a navigation once a navigation finishes
@@ -1556,6 +1562,16 @@ class CONTENT_EXPORT NavigationRequest
     // is out of our control.
     base::TimeTicks beforeunload_phase1_end;
 
+    // The time when the user-visible dialog opens for "beforeunload phase 1",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase1_dialog_opened;
+
+    // The time when the user-visible dialog closes for "beforeunload phase 1",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase1_dialog_closed;
+
     // The time at which the NavigationRequest is created. The delta between
     // this and `start` covers the time between starting the navigation
     // (possibly in the renderer process) and the browser process starting
@@ -1583,6 +1599,16 @@ class CONTENT_EXPORT NavigationRequest
     // to be excluded from navigation metrics, since that may include
     // user-visible dialogs or JavaScript code that is out of our control.
     base::TimeTicks beforeunload_phase2_end;
+
+    // The time when the user-visible dialog opens for "beforeunload phase 2",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase2_dialog_opened;
+
+    // The time when the user-visible dialog closes for "beforeunload phase 2",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase2_dialog_closed;
 
     // The adjusted start time used by many navigation metrics, such as FCP.
     // This is currently set inconsistently, and can be after beforeunload phase
@@ -2783,6 +2809,14 @@ class CONTENT_EXPORT NavigationRequest
 
   // The time that beforeunload phase 2 ended, if it ran.
   base::TimeTicks beforeunload_phase2_end_time_;
+
+  // The time when the user-visible dialog opens for "beforeunload phase 2",
+  // or null if that phase is not used in this navigation.
+  base::TimeTicks beforeunload_phase2_dialog_opened_time_;
+
+  // The time when the user-visible dialog closes for "beforeunload phase 2",
+  // or null if that phase is not used in this navigation.
+  base::TimeTicks beforeunload_phase2_dialog_closed_time_;
 
   // The time BeginNavigation() was called.
   base::TimeTicks begin_navigation_time_;

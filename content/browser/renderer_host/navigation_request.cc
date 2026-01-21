@@ -1274,6 +1274,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
+      base::TimeTicks() /* before_unload_dialog_opened */,
+      base::TimeTicks() /* before_unload_dialog_closed */,
       initiator_activation_and_ad_status, is_container_initiated,
       storage_access_api_status, has_rel_opener);
 
@@ -11986,6 +11988,16 @@ void NavigationRequest::WillStartBeforeUnload() {
   beforeunload_phase2_start_time_ = base::TimeTicks().Now();
 }
 
+void NavigationRequest::set_beforeunload_phase2_dialog_opened_time(
+    const base::TimeTicks& dialog_opened_time) {
+  beforeunload_phase2_dialog_opened_time_ = dialog_opened_time;
+}
+
+void NavigationRequest::set_beforeunload_phase2_dialog_closed_time(
+    const base::TimeTicks& dialog_closed_time) {
+  beforeunload_phase2_dialog_closed_time_ = dialog_closed_time;
+}
+
 NavigationRequest::Timeline::Timeline() = default;
 NavigationRequest::Timeline::Timeline(
     const NavigationRequest::Timeline& timeline) = default;
@@ -12027,6 +12039,13 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
     if (!begin_params().before_unload_start.is_null()) {
       timeline.beforeunload_phase1_start = begin_params().before_unload_start;
       timeline.beforeunload_phase1_end = begin_params().before_unload_end;
+      if (!begin_params().before_unload_dialog_opened.is_null() &&
+          !begin_params().before_unload_dialog_closed.is_null()) {
+        timeline.beforeunload_phase1_dialog_opened =
+            begin_params().before_unload_dialog_opened;
+        timeline.beforeunload_phase1_dialog_closed =
+            begin_params().before_unload_dialog_closed;
+      }
     }
   } else {
     // For any legacy cases where the actual start time isn't provided, fall
@@ -12047,6 +12066,13 @@ NavigationRequest::GenerateNavigationTimelineForMetrics(
   if (!beforeunload_phase2_start_time_.is_null()) {
     timeline.beforeunload_phase2_start = beforeunload_phase2_start_time_;
     timeline.beforeunload_phase2_end = beforeunload_phase2_end_time_;
+    if (!beforeunload_phase2_dialog_opened_time_.is_null() &&
+        !beforeunload_phase2_dialog_closed_time_.is_null()) {
+      timeline.beforeunload_phase2_dialog_opened =
+          beforeunload_phase2_dialog_opened_time_;
+      timeline.beforeunload_phase2_dialog_closed =
+          beforeunload_phase2_dialog_closed_time_;
+    }
   }
   timeline.common_params_start = common_params().navigation_start;
   timeline.begin_navigation = begin_navigation_time_;

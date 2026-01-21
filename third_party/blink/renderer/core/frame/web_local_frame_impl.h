@@ -388,7 +388,10 @@ class CORE_EXPORT WebLocalFrameImpl final
       WebContentSettingsClient::StorageType storage_type) override;
 
   // WebNavigationControl overrides:
-  bool DispatchBeforeUnloadEvent(bool) override;
+  bool DispatchBeforeUnloadEvent(
+      bool is_reload,
+      base::TimeTicks& out_before_unload_dialog_opened_time,
+      base::TimeTicks& out_before_unload_dialog_closed_time) override;
   void CommitNavigation(
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;

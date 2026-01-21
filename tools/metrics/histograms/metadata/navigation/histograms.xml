@@ -2872,11 +2872,15 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".ExcludingBeforeUnload"
         summary=", excluding the time spent running beforeunload handlers"/>
+    <variant name=".ExcludingBeforeUnloadDialog"
+        summary=", excluding the time spent opening/closing the beforeunload
+                 dialogs, but including the time spent running beforeunload
+                 handlers"/>
   </token>
 </histogram>
 
 <histogram
-    name="Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration"
+    name="Navigation.Timeline.Total{ExcludingBeforeUnload}.MainFrameOnly.Duration"
     units="ms" expires_after="2026-05-24">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
@@ -2884,14 +2888,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the duration between when the navigation starts to when the browser
     process finishes processing the DidCommitNavigation IPC, at which point the
-    navigation is committed. Excludes the time spent running any beforeunload
-    handlers/dialogs.
+    navigation is committed{ExcludingBeforeUnload}.
 
     This metric is recorded each time a cross-document navigation finishes in a
     primary main frame, i.e. finishes processing the DidCommitNavigation
-    message. See also Navigation.Timeline.TotalExcludingBeforeUnload.Duration
-    for all navigations, including subframes and same-document cases.
+    message. See also Navigation.Timeline.TotalExcludingBeforeUnload.Duration or
+    Navigation.Timeline.TotalExcludingBeforeUnloadDialog.Duration for all
+    navigations, including subframes and same-document cases.
   </summary>
+  <token key="ExcludingBeforeUnload">
+    <variant name="ExcludingBeforeUnload"
+        summary=", excluding the time spent running any beforeunload
+                 handlers/dialogs"/>
+    <variant name="ExcludingBeforeUnloadDialog"
+        summary=", excluding the time spent opening/closing the beforeunload
+                 dialogs, but including the time spent running beforeunload
+                 handlers"/>
+  </token>
 </histogram>
 
 <histogram name="Navigation.Timeline.{DurationFromTo}.Duration" units="ms"
@@ -2909,12 +2922,20 @@ chromium-metrics-reviews@google.com.
     <variant name="BeforeUnloadPhase1"
         summary="the start and end of beforeunload phase 1 in the initiating
                  renderer process, if that phase runs in a given navigation"/>
+    <variant name="BeforeUnloadPhase1Dialog"
+        summary="the opening and closing the beforeunload dialog for
+                 beforeunload phase 1 in the initiating renderer process, if
+                 that phase opens the dialog in a given navigation"/>
     <variant name="BeforeUnloadPhase1ToNavigationRequestCreation"
         summary="when beforeunload phase 1 is finished to when the
                  NavigationRequest is created"/>
     <variant name="BeforeUnloadPhase2"
         summary="the start and end of beforeunload phase 2 in the browser
                  process, if that phase runs in a given navigation"/>
+    <variant name="BeforeUnloadPhase2Dialog"
+        summary="the opening and closing the beforeunload dialog for
+                 beforeunload phase 2 in the browser process, if that phase
+                 opens the dialog in a given navigation"/>
     <variant name="BeforeUnloadPhase2ToBeginNavigation"
         summary="when beforeunload phase 2 is finished to when
                  NavigationRequest::BeginNavigation() is called"/>
@@ -2993,6 +3014,12 @@ chromium-metrics-reviews@google.com.
                  finishes processing the DidCommitNavigation IPC, at which
                  point the navigation is committed. Excludes the time spent
                  running any beforeunload handlers/dialogs"/>
+    <variant name="TotalExcludingBeforeUnloadDialog"
+        summary="when the navigation starts to when the browser process
+                 finishes processing the DidCommitNavigation IPC, at which
+                 point the navigation is committed. Excludes the time spent
+                 opening/closing the beforeunload dialogs, but includes the
+                 time spent running beforeunload handlers"/>
   </token>
 </histogram>
 
