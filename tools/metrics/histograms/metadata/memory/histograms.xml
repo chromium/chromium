@@ -3169,12 +3169,14 @@ chromium-metrics-reviews@google.com.
     Recorded on Windows only. Every 100ms, the size of the system memory lists
     are queried (and if this query fails, the entire process is cancelled and
     Memory.SystemMemoryLists.QueryFailureStatus is recorded instead). This
-    metric is the number of such calls over the course of 30s that returned that
-    {PageList} were empty. Recorded every 30s in the browser process after main
-    message loop start.
+    metric is the total number of consecutive queries over the course of 30s (at
+    least two in a row to qualify, but several runs can occur disjointedly) that
+    returned that {PageList} were empty. Emitted every 30s in the browser
+    process after main message loop start.
   </summary>
   <token key="PageList">
     <variant name="FreeList" summary="free pages"/>
+    <variant name="ZeroAndFreeList" summary="both zero and free pages"/>
     <variant name="ZeroList" summary="zero pages"/>
   </token>
 </histogram>

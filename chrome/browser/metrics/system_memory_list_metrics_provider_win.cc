@@ -88,10 +88,13 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
   // of recording "exhausted" intervals per thirty seconds, we only bump these
   // counters most of the time, and record the UMA histograms only once every
   // 30s, and then we reset these.
-  int zero_list_exhausted_interval_count_ = 0;
-  int free_list_exhausted_interval_count_ = 0;
-  int total_intervals_recorded_ = 0;
-  base::TimeTicks last_pressured_interval_emission_time_ =
+  bool last_zero_interval_was_exhausted = false;
+  bool last_free_interval_was_exhausted = false;
+  int zero_list_exhausted_interval_count = 0;
+  int free_list_exhausted_interval_count = 0;
+  int both_lists_exhausted_interval_count = 0;
+  int total_intervals_recorded = 0;
+  base::TimeTicks last_pressured_interval_emission_time =
       base::TimeTicks::Now();
 
   while (!exit_signal_.TimedWait(sampling_interval_)) {
@@ -100,28 +103,48 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
     NTSTATUS status =
         outer_->GetSystemMemoryListInformation(memory_list_information);
     if (NT_SUCCESS(status)) {
-      ++total_intervals_recorded_;
+      ++total_intervals_recorded;
+      if (memory_list_information.ZeroPageCount == 0 &&
+          memory_list_information.FreePageCount == 0 &&
+          last_free_interval_was_exhausted &&
+          last_zero_interval_was_exhausted) {
+        ++both_lists_exhausted_interval_count;
+      }
       if (memory_list_information.ZeroPageCount == 0) {
-        ++zero_list_exhausted_interval_count_;
+        if (last_zero_interval_was_exhausted) {
+          ++zero_list_exhausted_interval_count;
+        }
+        last_zero_interval_was_exhausted = true;
+      } else {
+        last_zero_interval_was_exhausted = false;
       }
       if (memory_list_information.FreePageCount == 0) {
-        ++free_list_exhausted_interval_count_;
+        if (last_free_interval_was_exhausted) {
+          ++free_list_exhausted_interval_count;
+        }
+        last_free_interval_was_exhausted = true;
+      } else {
+        last_free_interval_was_exhausted = false;
       }
 
       const base::TimeTicks now = base::TimeTicks::Now();
-      if (last_pressured_interval_emission_time_ <=
+      if (last_pressured_interval_emission_time <=
           (now - recording_interval_)) {
         base::UmaHistogramCounts1000(
             "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
             "ZeroList",
-            zero_list_exhausted_interval_count_);
+            zero_list_exhausted_interval_count);
         base::UmaHistogramCounts1000(
             "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
             "FreeList",
-            free_list_exhausted_interval_count_);
+            free_list_exhausted_interval_count);
+        base::UmaHistogramCounts1000(
+            "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds."
+            "ZeroAndFreeList",
+            both_lists_exhausted_interval_count);
         base::UmaHistogramCounts1000(
             "Memory.SystemMemoryLists.TotalIntervalsRecorded",
-            total_intervals_recorded_);
+            total_intervals_recorded);
         // Record a massively subsampled record of page counts.
         base::UmaHistogramCustomCounts(
             "Memory.SystemMemoryLists.FreePageCount",
@@ -137,10 +160,11 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
                 memory_list_information.ModifiedPageCount),
             1, 500000000, 75);
 
-        free_list_exhausted_interval_count_ = 0;
-        zero_list_exhausted_interval_count_ = 0;
-        total_intervals_recorded_ = 0;
-        last_pressured_interval_emission_time_ = now;
+        free_list_exhausted_interval_count = 0;
+        zero_list_exhausted_interval_count = 0;
+        both_lists_exhausted_interval_count = 0;
+        total_intervals_recorded = 0;
+        last_pressured_interval_emission_time = now;
       }
     } else {
       // Record the status for the system call. NtQuerySystemInformation() can
