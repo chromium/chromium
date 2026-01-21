@@ -3200,6 +3200,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/password_manager/android:test_support",
       "//chrome/browser/subresource_filter:android_test_support",
       "//chrome/browser/supervised_user:test_support",
+      "//chrome/browser/ui/android/extensions:test_support",
       "//components/crash/android:crash_android",
       "//components/external_intents/android:test_support",
       "//components/minidump_uploader",

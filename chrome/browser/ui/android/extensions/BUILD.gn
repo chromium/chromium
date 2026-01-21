@@ -103,6 +103,7 @@ android_library("test_support_java") {
 
   if (enable_extensions_core) {
     sources += [
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridge.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeRule.java",
     ]
@@ -110,11 +111,34 @@ android_library("test_support_java") {
       "//chrome/browser/ui/browser_window/public/android:java",
       "//content/public/android:content_full_java",
       "//extensions/browser:extension_action_enums",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [ ":test_support_jni_headers" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (enable_extensions_core) {
+    sources += [ "extension_test_utils.cc" ]
+    deps += [
+      "//base",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/extensions:test_support_jni_headers",
+      "//extensions/common",
     ]
   }
 }
 
 if (enable_extensions_core) {
+  generate_jni("test_support_jni_headers") {
+    sources = [ "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionTestUtils.java" ]
+  }
+
   robolectric_library("junit") {
     sources = [
       "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridgeTest.java",
