@@ -90,7 +90,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -2028,12 +2027,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
       user_education::Metadata(128, "jkeitel@google.com",
                                "Shown in the autofill popup for suggestions to "
                                "create a new plus address.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      password_manager::features::kPasswordManualFallbackAvailable,
-      user_education::Metadata(
-          128, "brunobraga@google.com",
-          "For passwords manual fallback; shown in the context menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
       features::kTabstripDeclutter,

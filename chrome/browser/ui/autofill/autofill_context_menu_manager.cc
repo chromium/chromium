@@ -35,7 +35,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_counter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -205,14 +204,8 @@ AutofillContextMenuManager::AutofillContextMenuManager(
 AutofillContextMenuManager::~AutofillContextMenuManager() = default;
 
 void AutofillContextMenuManager::AppendItems() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    MaybeAddAutofillManualFallbackItems();
-    MaybeAddAutofillFeedbackItem();
-  } else {
-    MaybeAddAutofillFeedbackItem();
-    MaybeAddAutofillManualFallbackItems();
-  }
+  MaybeAddAutofillManualFallbackItems();
+  MaybeAddAutofillFeedbackItem();
 }
 
 bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
@@ -398,11 +391,8 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
   }
 
   return password_manager_driver.GetPasswordManager()
-             ->GetClient()
-             ->IsFillingEnabled(
-                 password_manager_driver.GetLastCommittedURL()) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kPasswordManualFallbackAvailable);
+      ->GetClient()
+      ->IsFillingEnabled(password_manager_driver.GetLastCommittedURL());
 }
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
@@ -427,8 +417,6 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
     menu_model_->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
-    MaybeMarkLastItemAsNewFeature(
-        password_manager::features::kPasswordManualFallbackAvailable);
   }
   if (add_password_generation_option) {
     menu_model_->AddItemWithStringId(
@@ -512,9 +500,6 @@ void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 
   LogSelectPasswordManualFallbackContextMenuEntryAccepted();
-  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-      delegate_->GetBrowserContext(),
-      password_manager::features::kPasswordManualFallbackAvailable);
 }
 
 void AutofillContextMenuManager::MaybeMarkLastItemAsNewFeature(

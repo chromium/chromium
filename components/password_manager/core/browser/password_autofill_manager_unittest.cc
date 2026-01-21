@@ -411,14 +411,12 @@ class PasswordAutofillManagerTest : public testing::Test {
     features_.Reset();
     if (move_to_context_menu) {
       features_.InitWithFeatures(
-          {features::kPasswordManualFallbackAvailable,
-           features::kAutofillReintroduceHybridPasskeyDropdownItem,
+          {features::kAutofillReintroduceHybridPasskeyDropdownItem,
            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
           {});
     } else {
       features_.InitWithFeatures(
-          {features::kPasswordManualFallbackAvailable,
-           features::kAutofillReintroduceHybridPasskeyDropdownItem},
+          {features::kAutofillReintroduceHybridPasskeyDropdownItem},
           {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
     }
 #endif

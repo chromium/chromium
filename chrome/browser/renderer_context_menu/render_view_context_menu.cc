@@ -158,7 +158,6 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/pdf/common/pdf_util.h"
@@ -1079,8 +1078,6 @@ bool RenderViewContextMenu::IsInProgressiveWebApp() const {
 
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
-
-  AppendPasswordItems();
 
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
     AppendPageItems();
@@ -2712,54 +2709,7 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
       &protocol_handler_submenu_model_);
 }
 
-void RenderViewContextMenu::AppendPasswordItems() {
-  password_manager::ContentPasswordManagerDriver* driver =
-      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          GetRenderFrameHost());
-  const bool is_pwm_field =
-      driver && driver->IsPasswordFieldForPasswordManager(
-                    autofill::FieldRendererId(params_.field_renderer_id),
-                    params_.form_control_type);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    return;
-  }
-
-  bool add_separator = false;
-
-  // Don't show the item for guest or incognito profiles and also when the
-  // automatic generation feature is disabled.
-  if (is_pwm_field &&
-      password_manager_util::ManualPasswordGenerationEnabled(driver)) {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_GENERATEPASSWORD,
-                                    IDS_CONTENT_CONTEXT_GENERATEPASSWORD);
-    add_separator = true;
-  }
-  if (is_pwm_field &&
-      password_manager_util::ShowAllSavedPasswordsContextMenuEnabled(driver)) {
-    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS,
-                                    IDS_AUTOFILL_SHOW_ALL_SAVED_FALLBACK);
-    add_separator = true;
-  }
-  const bool add_passkey_from_another_device_option =
-      webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled(
-          GetRenderFrameHost(), params_.form_renderer_id,
-          params_.field_renderer_id) &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::
-              kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
-  if (add_passkey_from_another_device_option) {
-    menu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE,
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE);
-    add_separator = true;
-  }
-
-  if (add_separator) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  }
-}
 
 void RenderViewContextMenu::AppendSharingItems() {
   size_t items_initial = menu_model_.GetItemCount();

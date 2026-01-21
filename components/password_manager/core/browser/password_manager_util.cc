@@ -99,23 +99,6 @@ bool ManualPasswordGenerationEnabled(
   return true;
 }
 
-bool ShowAllSavedPasswordsContextMenuEnabled(
-    password_manager::PasswordManagerDriver* driver) {
-  password_manager::PasswordManagerInterface* password_manager =
-      driver ? driver->GetPasswordManager() : nullptr;
-  if (!password_manager) {
-    return false;
-  }
-
-  password_manager::PasswordManagerClient* client =
-      password_manager->GetClient();
-  if (!client || !client->IsFillingEnabled(driver->GetLastCommittedURL())) {
-    return false;
-  }
-
-  return true;
-}
-
 void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client,
     autofill::AutofillClient* autofill_client) {
