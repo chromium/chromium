@@ -172,9 +172,15 @@ void GlicE2ETest::PreRunTestOnMainThread() {
 
 void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
   if (test_mode_ == kRealBackend || test_mode_ == kRecord) {
+    std::string account_label = test_account_label_;
+    // TODO(crbug.com/476984789): Remove this fallback once all tests have been
+    // updated to call set_test_account_label().
+    if (account_label.empty()) {
+      account_label =
+          running_actor_tests_ ? kTestActorAccountLabel : kTestAccountLabel;
+    }
     std::optional<signin::TestAccountSigninCredentials> test_account =
-        GetTestAccounts()->GetAccount(
-            running_actor_tests_ ? kTestActorAccountLabel : kTestAccountLabel);
+        GetTestAccounts()->GetAccount(account_label);
     signin::test::SignInFunctions sign_in_functions =
         signin::test::SignInFunctions(
             base::BindLambdaForTesting(
