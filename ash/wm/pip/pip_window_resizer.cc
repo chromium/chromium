@@ -23,6 +23,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
@@ -74,9 +75,14 @@ bool IsPastLeftOrRightEdge(const gfx::Rect& bounds, const gfx::Rect& area) {
 
 }  // namespace
 
-PipWindowResizer::PipWindowResizer(WindowState* window_state)
+PipWindowResizer::PipWindowResizer(WindowState* window_state, bool for_pinch)
     : WindowResizer(window_state) {
-  window_state->OnDragStarted(details().window_component);
+  // The window component should be valid component for drag/resize operation,
+  // but pinch zoom can happen with any component, such as HTCLIENT.
+  // Use HTCAPTION as a value default value for pinch-zoom. It will not
+  // affect the actual behavior.
+  window_state->OnDragStarted(for_pinch ? HTCAPTION
+                                        : details().window_component);
 
   // TODO(b/301232629): `DragDetails::bounds_change` should be
   // `kBoundsChange_Resizes` during pinch resizing.

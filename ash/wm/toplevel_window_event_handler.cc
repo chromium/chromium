@@ -820,7 +820,8 @@ bool ToplevelWindowEventHandler::PrepareForPinch(
   }
 
   std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window, point_in_parent, window_component, wm::WINDOW_MOVE_SOURCE_TOUCH));
+      window, point_in_parent, window_component, wm::WINDOW_MOVE_SOURCE_TOUCH,
+      /*pinch=*/true));
   if (!resizer) {
     return false;
   }

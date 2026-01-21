@@ -502,7 +502,8 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
     int window_component,
-    wm::WindowMoveSource source) {
+    wm::WindowMoveSource source,
+    bool for_pinch) {
   DCHECK(window);
 
   WindowState* window_state = WindowState::Get(window);
@@ -531,7 +532,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
       window_state->CreateDragDetails(point_in_parent, window_component,
                                       source);
       MaybeRecordResizeHandleUsage(window, point_in_parent);
-      return std::make_unique<PipWindowResizer>(window_state);
+      return std::make_unique<PipWindowResizer>(window_state, for_pinch);
     } else {
       return nullptr;
     }
