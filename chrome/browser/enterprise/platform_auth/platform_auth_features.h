@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kOktaSsoRequestHeadersAllowlist);
 BASE_DECLARE_FEATURE_PARAM(std::string, kOktaSsoResponseHeadersAllowlist);
 
 BASE_DECLARE_FEATURE_PARAM(std::string, kOktaSsoFixedRequestHeaders);
+
+BASE_DECLARE_FEATURE_PARAM(std::string, kOktaSsoURLPattern);
 #endif
 
 }  // namespace enterprise_auth

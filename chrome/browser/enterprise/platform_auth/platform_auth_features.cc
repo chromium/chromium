@@ -50,6 +50,16 @@ BASE_FEATURE_PARAM(
     "OktaSsoFixedResponseHeaders",
     "Cache-Control;no-cache|Pragma;no-cache|Priority;u=1, "
     "i|Sec-Fetch-Dest;empty|Sec-Fetch-Mode;cors|Sec-Fetch-Site;same-origin");
+// The pattern for a SSO URL request path specific to the Okta IdP.
+// The syntax of the pattern must be compatible with ContentSettingsPattern.
+
+BASE_FEATURE_PARAM(
+    std::string,
+    kOktaSsoURLPattern,
+    &kOktaSSO,
+    "OktaSsoURLPattern",
+    "https://*/idp/idx/authenticators/sso_extension/transactions/*/verify");
+
 #endif
 
 }  // namespace enterprise_auth

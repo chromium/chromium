@@ -4,15 +4,20 @@
 
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/browser/enterprise/platform_auth/url_session_url_loader.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -21,15 +26,6 @@
 #include "url/url_constants.h"
 
 namespace enterprise_auth {
-
-namespace {
-
-constexpr std::string_view kPrefix =
-    "/idp/idx/authenticators/sso_extension/transactions/";
-constexpr std::string_view kSuffix = "/verify";
-constexpr size_t kMinPathLength = kPrefix.length() + kSuffix.length() + 1;
-
-}  // namespace
 
 ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -145,32 +141,18 @@ bool ProxyingURLLoaderFactory::IsOktaSSORequest(
     return false;
   }
 
-  // Matching the path against pattern: prefix<ID>suffix
-  std::string_view path = gurl.path();
-
-  // Normalise the path to not end with '/'.
-  if (path.ends_with("/")) {
-    path = path.substr(0, path.size() - 1);
-  }
-
-  // Not long enough to fit the pattern.
-  if (path.length() < kMinPathLength) {
+  // Match the URL against the OktaSsoURLPattern parameter.
+  static const base::NoDestructor<ContentSettingsPattern> pattern(
+      ContentSettingsPattern::FromString(kOktaSsoURLPattern.Get()));
+  static bool log_emitted = false;
+  if (!pattern->IsValid() && !log_emitted) {
+    LOG_POLICY(ERROR, EXTENSIBLE_SSO)
+        << "[OktaEnterpriseSSO] invalid OktaSsoURLPattern parameter: "
+        << kOktaSsoURLPattern.Get();
+    log_emitted = true;
     return false;
   }
-
-  // Matching the prefix and the suffix.
-  if (!base::EndsWith(path, kSuffix) || !base::StartsWith(path, kPrefix)) {
-    return false;
-  }
-
-  // Check that the part between the prefix and the suffix is a single segment.
-  size_t id_len = path.length() - kPrefix.length() - kSuffix.length();
-  const std::string_view id_part = path.substr(kPrefix.length(), id_len);
-  if (id_part.find('/') != std::string_view::npos) {
-    return false;
-  }
-
-  return true;
+  return pattern->Matches(gurl);
 }
 
 }  // namespace enterprise_auth
