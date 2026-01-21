@@ -54,8 +54,12 @@ found in the LICENSE file.
     <Preference
         android:fragment="org.chromium.chrome.browser.safety_hub.SafetyHubFragment"
         android:key="safety_hub"
-        android:order="10"
+        android:order="9"
         android:title="@string/prefs_safety_check"/>
+    <Preference
+        android:key="default_browser"
+        android:order="10"
+        android:title="@string/default_browser_title" />
 
     <PreferenceCategory
         android:key="autofill_section"

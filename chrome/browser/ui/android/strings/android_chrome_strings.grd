@@ -7306,6 +7306,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Default browser promo -->
+      <message name="IDS_MAKE_CHROME_DEFAULT" desc="Menu item in the app menu to set Chrome as the default browser.">
+        Make Chrome default
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_TITLE" desc="Menu item in settings to set Chrome as the default browser.">
+          Default browser
+      </message>
       <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">
         Make Chrome your default browser
       </message>

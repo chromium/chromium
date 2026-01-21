@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,6 +127,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -191,6 +193,8 @@ public class MainSettingsFragmentTest {
 
     @Mock private Tracker mTestTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     private MainSettings mMainSettings;
 
@@ -813,6 +817,58 @@ public class MainSettingsFragmentTest {
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_SETTINGS_PROMO_CARD);
         Assert.assertNotNull(
                 "Settings promo preference exist when feature flag is enabled", preference);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserSettingEnabled() {
+        startSettings();
+        Preference preference = mMainSettings.findPreference(MainSettings.PREF_DEFAULT_BROWSER);
+        Assert.assertNotNull(
+                "Default Browser preference should exist when flag is enabled", preference);
+        Assert.assertTrue("Default Browser preference should be visible", preference.isVisible());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        // Verify that the preference is not removed from the index so that it remains searchable.
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_DEFAULT_BROWSER));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserSettingDisabled() {
+        startSettings();
+        Assert.assertNull(
+                "Default Browser preference should not exist when flag is disabled",
+                mMainSettings.findPreference(MainSettings.PREF_DEFAULT_BROWSER));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        // Verify that the preference is removed from the search index so that it does not appear in
+        // search results.
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_DEFAULT_BROWSER));
     }
 
     @Test

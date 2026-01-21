@@ -1649,6 +1649,46 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures({
+        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT + ":show_app_menu_item/true"
+    })
+    public void testDefaultBrowserPromo_Enabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        // Verify that that the menu item exists.
+        assertTrue(
+                "Default Browser Promo item should be visible",
+                isMenuVisible(modelList, R.id.default_browser_promo_menu_id));
+
+        // Verify that it has the correct title.
+        assertTrue(
+                "Title should match",
+                isMenuVisibleWithCorrectTitle(
+                        modelList,
+                        R.id.default_browser_promo_menu_id,
+                        ContextUtils.getApplicationContext()
+                                .getString(R.string.make_chrome_default)));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserPromo_Disabled() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertFalse(
+                "Default Browser Promo item should not be visible",
+                isMenuVisible(modelList, R.id.default_browser_promo_menu_id));
+    }
+
+    @Test
     public void pageZoomMenuOption_NotVisibleInReadingMode() {
         setUpMocksForPageMenu();
         PageZoomUtils.setShouldShowMenuItemForTesting(true);

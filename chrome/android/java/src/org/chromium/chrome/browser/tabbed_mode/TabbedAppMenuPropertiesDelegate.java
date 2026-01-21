@@ -425,6 +425,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             maybeAddDividerLine(modelList, R.id.menu_item_content_filter_divider_line_id);
             modelList.add(buildContentFilterHelpCenterMenuItem(currentTab));
         }
+
+        // Default browser promo menu item (entry point).
+        if (shouldShowDefaultBrowserPromo()) {
+            maybeAddDividerLine(modelList, R.id.divider_line_id);
+            modelList.add(buildDefaultBrowserPromoItem());
+        }
     }
 
     private Runnable buildUpdateStateChangedObserver() {
@@ -1084,6 +1090,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                             shouldShowIconBeforeItem() ? R.drawable.summarize_auto : 0));
         }
         return null;
+    }
+
+    private boolean shouldShowDefaultBrowserPromo() {
+        return ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
+                && ChromeFeatureList.sDefaultBrowserPromoEntryPointShowAppMenu.getValue();
+    }
+
+    private MVCListAdapter.ListItem buildDefaultBrowserPromoItem() {
+        assert shouldShowDefaultBrowserPromo();
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.default_browser_promo_menu_id,
+                        R.string.make_chrome_default,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_chrome : 0));
     }
 
     /**

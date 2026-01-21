@@ -130,6 +130,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_SAFETY_HUB = "safety_hub";
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_APPEARANCE = "appearance";
+    public static final String PREF_DEFAULT_BROWSER = "default_browser";
+
     @VisibleForTesting static final int NEW_LABEL_MAX_VIEW_COUNT = 6;
 
     // Tag for Fragment backstack entry loading the search results into the display fragment.
@@ -504,6 +506,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
             findPreference(PREF_GOOGLE_SERVICES)
                     .setIcon(R.drawable.ic_google_services_48dp_with_bg_containment);
         }
+
+        if (shouldShowDefaultBrowserSetting()) {
+            addPreferenceIfAbsent(PREF_DEFAULT_BROWSER);
+        } else {
+            removePreferenceIfPresent(PREF_DEFAULT_BROWSER);
+        }
+
         notifyPreferencesUpdated();
     }
 
@@ -511,6 +520,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         return signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false);
+    }
+
+    private static boolean shouldShowDefaultBrowserSetting() {
+        return ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled();
     }
 
     private static boolean shouldShowDeveloperSettings() {
@@ -985,6 +998,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowDeveloperSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_DEVELOPER));
+                    }
+                    if (!shouldShowDefaultBrowserSetting()) {
+                        indexData.removeEntry(getUniqueId(PREF_DEFAULT_BROWSER));
                     }
                 }
             };
