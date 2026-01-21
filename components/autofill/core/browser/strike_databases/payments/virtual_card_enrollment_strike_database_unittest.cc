@@ -117,10 +117,8 @@ class VirtualCardEnrollmentStrikeOptimizationTest
   int GetExpectedStrikeExpiryTimeInDays() {
     // If experiment is not enabled, expected strike time should be set as
     // default i.e. 180 days.
-    return IsVcnStrikeOptimizationExperimentEnabled()
-               ? std::get<1>(GetParam())
-               : VirtualCardEnrollmentStrikeDatabaseTraits::kExpiryTimeDelta
-                     .InDays();
+    return IsVcnStrikeOptimizationExperimentEnabled() ? std::get<1>(GetParam())
+                                                      : 180;
   }
 
  private:

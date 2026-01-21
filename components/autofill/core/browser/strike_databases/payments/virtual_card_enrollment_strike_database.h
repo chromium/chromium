@@ -20,25 +20,43 @@ struct VirtualCardEnrollmentStrikeDatabaseTraits {
   static constexpr size_t kMaxStrikeEntities = 50;
   static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 30;
   static constexpr size_t kMaxStrikeLimit = 3;
-  static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(180);
   static constexpr bool kUniqueIdRequired = true;
 };
 
+// This is essentially a strike_database::SimpleStrikeDatabase except that
+// GetExpiryTimeDelta() depends on a feature.
+//
+// TODO(crbug.com/409407620): Make the class an alias of
+// strike_database::SimpleStrikeDatabase when
+// `kAutofillVcnEnrollStrikeExpiryTime` launches.
 class VirtualCardEnrollmentStrikeDatabase
-    : public strike_database::SimpleStrikeDatabase<
-          VirtualCardEnrollmentStrikeDatabaseTraits> {
+    : public strike_database::StrikeDatabaseIntegratorBase {
  public:
-  using strike_database::SimpleStrikeDatabase<
-      VirtualCardEnrollmentStrikeDatabaseTraits>::SimpleStrikeDatabase;
+  explicit VirtualCardEnrollmentStrikeDatabase(
+      strike_database::StrikeDatabaseBase* strike_database);
+  ~VirtualCardEnrollmentStrikeDatabase() override;
+
+  std::optional<size_t> GetMaximumEntries() const final;
+
+  std::optional<size_t> GetMaximumEntriesAfterCleanup() const final;
+
+  std::string GetProjectPrefix() const final;
+
+  int GetMaxStrikesLimit() const final;
+
+  std::optional<base::TimeDelta> GetExpiryTimeDelta() const final;
+
+  bool UniqueIdsRequired() const final;
 
   // Whether bubble to be shown is the last offer for the card with
-  // |instrument_id|.
+  // `instrument_id`.
   bool IsLastOffer(const std::string& instrument_id) const;
 
   std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;
 
-  std::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+ private:
+  using Traits = VirtualCardEnrollmentStrikeDatabaseTraits;
 };
 
 }  // namespace autofill
