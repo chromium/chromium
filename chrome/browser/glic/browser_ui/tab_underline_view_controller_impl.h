@@ -46,8 +46,7 @@ class TabUnderlineViewControllerImpl
 
   // TabUnderlineViewController overrides:
   void Initialize(TabUnderlineView* underline_view,
-                  BrowserWindowInterface* browser_window_interface,
-                  tabs::TabHandle tab_handle) override;
+                  BrowserWindowInterface* browser_window_interface) override;
 
   // contextual_tasks::ActiveTaskContextProvider::Observer overrides:
   // Handles updates from the contextual Tasks backend.
@@ -184,9 +183,6 @@ class TabUnderlineViewControllerImpl
 
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> underline_update_reasons_;
-
-  // TODO(crbug.com/469102481): Remove after missing underlines cause is found.
-  int32_t tab_handle_id_ = 0;
 
   // The current set of active sources for the underline. The underline is
   // hidden only when this bitmask is UnderlineSource::kNone.

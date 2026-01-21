@@ -19,8 +19,7 @@ class TabUnderlineViewController {
 
   // Initialization. Starts observing the state of the browser.
   virtual void Initialize(TabUnderlineView* underline_view,
-                          BrowserWindowInterface* browser_window_interface,
-                          tabs::TabHandle tab_handle) = 0;
+                          BrowserWindowInterface* browser_window_interface) = 0;
 };
 
 }  // namespace glic

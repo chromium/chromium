@@ -40,11 +40,9 @@ TabUnderlineViewControllerImpl::~TabUnderlineViewControllerImpl() {
 // conflicting terminology.
 void TabUnderlineViewControllerImpl::Initialize(
     TabUnderlineView* underline_view,
-    BrowserWindowInterface* browser_window_interface,
-    tabs::TabHandle tab_handle) {
+    BrowserWindowInterface* browser_window_interface) {
   underline_view_ = underline_view;
   browser_window_interface_ = browser_window_interface;
-  tab_handle_id_ = tab_handle.raw_value();
 
   if (ShouldUseSignalsForGlicUnderlines()) {
     glic_service_ = GlicKeyedServiceFactory::GetGlicKeyedService(
@@ -165,20 +163,15 @@ void TabUnderlineViewControllerImpl::OnPinnedTabsChanged(
   if (!GetTabInterface()) {
     // If the TabInterface is invalid at this point, there is no relevant UI
     // to handle.
-    // TODO(crbug.com/469102481): Remove logs after missing underlines cause is
-    // found.
-    VLOG(1) << tab_handle_id_ << " OnPinnedTabsChanged | no TabInterface";
     return;
   }
 
   // Triggering is handled based on whether the tab is in the pinned set.
   if (IsUnderlineTabPinned()) {
-    VLOG(1) << tab_handle_id_ << " OnPinnedTabsChanged | pinned";
     UpdateUnderlineView(
         UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet);
     return;
   }
-  VLOG(1) << tab_handle_id_ << " OnPinnedTabsChanged | not pinned";
   UpdateUnderlineView(
       UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet);
 }
@@ -249,10 +242,6 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
                         !!glic_current_focused_contents_);
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "is_glic_window_showing",
                         glic_service_ && IsGlicWindowShowing());
-
-  // TODO(crbug.com/469102481): Remove logs after missing underlines cause is
-  // found.
-  VLOG(1) << tab_handle_id_ << " " << UpdateReasonToString(reason);
 
   switch (reason) {
     case UpdateUnderlineReason::kContextAccessIndicatorOn: {

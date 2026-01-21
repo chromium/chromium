@@ -83,7 +83,7 @@ TabUnderlineView::TabUnderlineView(
   // Post-initialization updates. Don't do the update in the controller's ctor
   // because at that time TabUnderlineView isn't fully initialized, which
   // can lead to undefined behavior.
-  controller_->Initialize(this, browser_window_interface, tab_handle);
+  controller_->Initialize(this, browser_window_interface);
 }
 
 TabUnderlineView::~TabUnderlineView() = default;

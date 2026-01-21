@@ -234,9 +234,6 @@ void AnimatedEffectView::Show() {
   if (compositor_) {
     // The user can click on the glic icon after the window is shown. The
     // animation is already playing at that time.
-    // TODO(crbug.com/469102481): Remove logs after missing underlines cause is
-    // found.
-    VLOG(1) << "Show no-op, existing compositor";
     return;
   }
 

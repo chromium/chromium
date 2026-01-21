@@ -122,20 +122,12 @@ GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {
 void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
     GlicInstanceImpl* instance,
     bool is_active) {
-  // TODO(crbug.com/469102481): Remove logs after missing underlines cause is
-  // found.
   if (is_active && active_instance_ != instance) {
-    VLOG(1) << instance
-            << " | OnInstanceActivationChanged - new instance active";
     active_instance_ = instance;
     last_active_instance_ = active_instance_;
   } else if (!is_active && active_instance_ == instance) {
-    VLOG(1) << instance
-            << " | OnInstanceActivationChanged - active instance cleared";
     active_instance_ = nullptr;
   } else {
-    VLOG(1) << instance << " | is_active: " << is_active
-            << " | OnInstanceActivationChanged - no-op";
     return;
   }
   NotifyActiveInstanceChanged();
