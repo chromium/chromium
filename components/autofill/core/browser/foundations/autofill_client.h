@@ -638,6 +638,11 @@ class AutofillClient {
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
   GetDeviceAuthenticator();
 
+  // Same as `GetDeviceAuthenticator()` but also logs authentication results to
+  // `histogram`.
+  virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
+  GetDeviceAuthenticator(std::string histogram);
+
   // Attaches the IPH for `feature` to the `field`, on
   // platforms that it. If another IPH has been shown for the tab, the IPH is
   // granteed not to be shown. Returns `true` if the IPH bubble is shown after

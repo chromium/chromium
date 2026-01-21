@@ -215,8 +215,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillMessageController* GetAutofillMessageController();
 #endif
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
-  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
-      final;
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
+      std::string histogram) final;
   bool ShowAutofillFieldIphForFeature(const FormFieldData& field,
                                       AutofillClient::IphFeature feature) final;
   void HideAutofillFieldIph() final;

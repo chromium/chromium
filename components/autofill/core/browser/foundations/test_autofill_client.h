@@ -425,8 +425,8 @@ class TestAutofillClientTemplate : public T {
     return {};
   }
 
-  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
-      override {
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
+      std::string histogram) override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
     if (device_authenticator_) {

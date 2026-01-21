@@ -244,7 +244,7 @@ class MockAutofillClient : public TestAutofillClient {
 
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
-              (),
+              (std::string),
               (override));
 
 #if BUILDFLAG(IS_IOS)
@@ -1431,7 +1431,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator)
+  EXPECT_CALL(autofill_client(),
+              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
       .WillOnce(Return(std::move(authenticator)));
 
   EXPECT_CALL(autofill_manager(),
@@ -1466,7 +1467,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthRejected) {
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
-  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator)
+  EXPECT_CALL(autofill_client(),
+              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
       .WillOnce(Return(::testing::ByMove(std::move(authenticator))));
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
 
@@ -1491,7 +1493,8 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
   // Create form with a VIN, which triggers obfuscation and thus re-auth.
   IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
 
-  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator)
+  EXPECT_CALL(autofill_client(),
+              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
       .WillOnce(Return(::testing::ByMove(nullptr)));
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(mojom::ActionPersistence::kFill,
@@ -1517,7 +1520,9 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
   // Create form with a VIN, which triggers obfuscation and thus re-auth.
   IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
 
-  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(autofill_client(),
+              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
+      .Times(0);
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                 HasQueriedFormId(), IsQueriedFieldId(), _,
@@ -1546,7 +1551,9 @@ TEST_F(AutofillExternalDelegateTest,
   // Create form with a VIN, which triggers obfuscation and thus re-auth.
   IssueOnQuery({.fields = {{.role = VEHICLE_VIN}}});
 
-  EXPECT_CALL(autofill_client(), GetDeviceAuthenticator).Times(0);
+  EXPECT_CALL(autofill_client(),
+              GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
+      .Times(0);
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                 HasQueriedFormId(), IsQueriedFieldId(), _,

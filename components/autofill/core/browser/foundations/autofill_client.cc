@@ -210,8 +210,13 @@ bool AutofillClient::IsTabInActorMode() const {
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-AutofillClient::GetDeviceAuthenticator() {
+AutofillClient::GetDeviceAuthenticator(std::string histogram) {
   return nullptr;
+}
+
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+AutofillClient::GetDeviceAuthenticator() {
+  return GetDeviceAuthenticator("");
 }
 
 void AutofillClient::ShowPlusAddressEmailOverrideNotification(

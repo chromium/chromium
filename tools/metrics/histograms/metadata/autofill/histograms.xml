@@ -1649,6 +1649,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityType" variants="Autofill.Ai.EntityType"/>
 </histogram>
 
+<histogram name="Autofill.Ai.ReauthToFill" enum="DeviceReauth.ReauthResult"
+    expires_after="M150">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Recorded whenever the user interacts with reauthentication in order to fill
+    an Autofill AI entity that contains sensitive data, or when such
+    reauthentication is skipped for a well-defined reason.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.StoredEntitiesCount{EntityType}{RecordType}"
     units="units" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

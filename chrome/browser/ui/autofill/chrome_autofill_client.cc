@@ -1157,11 +1157,11 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-ChromeAutofillClient::GetDeviceAuthenticator() {
+ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
   device_reauth::DeviceAuthParams params(
-      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
+      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill, std::move(histogram));
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
