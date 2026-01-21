@@ -71,7 +71,6 @@ future_on:
 - fuchsia
 owners:
 - cbe-cep-eng@google.com
-- drubery@chromium.org
 - domfc@chromium.org
 schema:
   items:
