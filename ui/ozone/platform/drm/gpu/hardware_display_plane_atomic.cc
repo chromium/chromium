@@ -48,8 +48,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
 // isn't a way of determining if the rotation is supported.
 // TODO(https://b/172210707): Atomic tests should work if we are using
 // the original buffers as they have the correct modifiers. See
-// kUseRealBuffersForPageFlipTest and the 'GetBufferForPageFlipTest' function.
-// Intel driver reference on rotated and flipped buffers with modifiers:
+// 'GetBufferForPageFlipTest' function. Intel driver reference on rotated and
+// flipped buffers with modifiers:
 // https://code.woboq.org/linux/linux/drivers/gpu/drm/i915/intel_sprite.c.html#1471
 bool IsRotationTransformSupported(gfx::OverlayTransform transform,
                                   uint32_t format_fourcc,
