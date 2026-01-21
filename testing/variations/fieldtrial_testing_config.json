@@ -9033,6 +9033,24 @@
             ]
         }
     ],
+    "DisableBoostPriority": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBrowserNetwork",
+                    "params": {
+                        "exempt_processes": "BrowserNetwork"
+                    },
+                    "enable_features": [
+                        "DisableBoostPriority"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableBruschettaInstallChecks": [
         {
             "platforms": [

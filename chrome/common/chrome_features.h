@@ -48,6 +48,13 @@ BASE_DECLARE_FEATURE(kAppSpecificNotifications);
 // primitives.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDisableBoostPriority);
+enum class DisableBoostPriorityExemption {
+  // Priority boosting is disabled for all processes except Browser and Network.
+  kBrowserNetwork,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityExemption,
+                           kDisableBoostPriorityExemption);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

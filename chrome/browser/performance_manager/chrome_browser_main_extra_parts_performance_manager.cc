@@ -96,6 +96,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_browser_network_policy.h"
 #endif
 
 namespace {
@@ -202,6 +203,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           switches::kSingleProcess)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
+  }
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
+      features::kDisableBoostPriorityExemption.Get() ==
+          features::DisableBoostPriorityExemption::kBrowserNetwork) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::policies::
+                             PriorityBoostBrowserNetworkPolicy>());
   }
 #endif  // BUILDFLAG(IS_WIN)
 
