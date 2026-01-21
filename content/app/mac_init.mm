@@ -6,16 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "content/common/mac/system_policy.h"
-
-namespace {
-
-constexpr char kAllowNSAutoFillHeuristicController[] =
-    "allow-ns-autofill-heuristic-controller";
-
-}  // namespace
 
 namespace content {
 
@@ -34,26 +26,25 @@ void InitializeMac() {
     // Don't allow the browser process to enter AppNap. Doing so will result in
     // large number of queued IPCs from renderers, potentially so many that
     // Chrome is unusable for a long period after returning from sleep.
-    // https://crbug.com/871235.
+    // https://crbug.com/41406192.
     @"NSAppSleepDisabled" : @YES,
   }];
 
+  // Disable NSAutoFillHeuristicController on macOS 26.0 and 26.1. On those OS
+  // releases, NSAutoFillHeuristicController triggers a large number of
+  // synchronous IME IPCs, which block the main thread and cause stalling and
+  // other usability issues. See https://crbug.com/446070423 and
+  // https://crbug.com/446481994.
+  //
+  // "NSAutoFillHeuristicControllerEnabled" no longer exists as of macOS 26.2 so
+  // don't bother setting it in that case.
+  //
+  // TODO(https://crbug.com/452372350): Verify if the main thread stalling
+  // issues still exist. If so, determine a new way to disable
+  // NSAutoFillHeuristicController, and if not, do further cleanup here.
   if (base::mac::MacOSVersion() >= 26'00'00 &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kAllowNSAutoFillHeuristicController)) {
+      base::mac::MacOSVersion() < 26'02'00) {
     [NSUserDefaults.standardUserDefaults registerDefaults:@{
-      // Disable NSAutoFillHeuristicController on macOS 26. On macOS 26,
-      // NSAutoFillHeuristicController triggers a large number of synchronous
-      // IME IPCs, which block the main thread and cause stalling and other
-      // usability issues. See https://crbug.com/446070423 and
-      // https://crbug.com/446481994.
-      //
-      // A command-line flag is provided to enable NSAutoFillHeuristicController
-      // for testing purposes. A base::Feature isn't used because this function
-      // is called too early in startup for that to work.
-      //
-      // TODO(https://crbug.com/452372350): Figure out a sustainable approach to
-      // getting NSAutoFillHeuristicController to work.
       @"NSAutoFillHeuristicControllerEnabled" : @NO,
     }];
   }
