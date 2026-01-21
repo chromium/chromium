@@ -286,7 +286,8 @@ void ExternalBeginFrameSourceAndroid::OnVSyncImpl(
   base::TimeTicks deadline = frame_time + vsync_period;
 
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, deadline, vsync_period);
+      source_id(), frame_time, deadline, vsync_period,
+      GetMinimumFrameInterval());
   if (features::IsAndroidFrameDeadlineEnabled()) {
     begin_frame_args.possible_deadlines = std::move(possible_deadlines);
   }

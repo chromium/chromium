@@ -153,12 +153,11 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     BeginFrameArgsGenerator() = default;
     ~BeginFrameArgsGenerator() = default;
 
-    BeginFrameArgs GenerateBeginFrameArgs(
-        uint64_t source_id,
-        base::TimeTicks frame_time,
-        base::TimeTicks deadline,
-        base::TimeDelta vsync_interval,
-        base::TimeDelta unthrottled_interval = base::TimeDelta());
+    BeginFrameArgs GenerateBeginFrameArgs(uint64_t source_id,
+                                          base::TimeTicks frame_time,
+                                          base::TimeTicks deadline,
+                                          base::TimeDelta vsync_interval,
+                                          base::TimeDelta unthrottled_interval);
 
    private:
     static uint64_t EstimateTickCountsBetween(
