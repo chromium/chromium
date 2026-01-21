@@ -384,8 +384,9 @@ export const HelpBubbleMixin = dedupingMixin(
          * e.g. cause a Tutorial or interactive test to advance to the next
          * step.
          *
-         * TODO(crbug.com/40243127): Figure out how to automatically send the
-         * activated event when an anchor element is clicked.
+         * Automatically sending the 'activated' event on anchor click is not
+         * implemented due to event ordering issues. See crbug.com/40243127 for
+         * context.
          */
         notifyHelpBubbleAnchorActivated(nativeId: string): boolean {
           const ctrl = this.helpBubbleControllerById_.get(nativeId);
