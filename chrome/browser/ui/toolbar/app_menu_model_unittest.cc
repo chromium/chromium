@@ -344,7 +344,9 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});
+  feature_list_.InitWithFeatures(
+      {features::kGlic, features::kGlicRollout, features::kTabstripComboButton},
+      {});
 
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
@@ -707,7 +709,25 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   EXPECT_FALSE(new_model.GetLabelAt(menu_index).empty());
 }
 
-TEST_F(AppMenuModelTest, TabSearchItem) {
+class TabSearchMenuModelTest : public AppMenuModelTest {
+ public:
+  TabSearchMenuModelTest() = default;
+  ~TabSearchMenuModelTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kTabstripComboButton,
+          {{"tab_search_toolbar_button", "true"}}}},
+        /*disabled_features=*/{});
+    AppMenuModelTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(TabSearchMenuModelTest, TabSearchItem) {
   AppMenuModel model(this, browser());
   model.Init();
   ToolsMenuModel toolModel(&model, browser());

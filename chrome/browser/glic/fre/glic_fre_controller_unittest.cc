@@ -28,7 +28,7 @@ class GlicFreControllerTest : public testing::Test {
  public:
   GlicFreControllerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
         /*disabled_features=*/{});
   }
 
