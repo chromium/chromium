@@ -79,4 +79,19 @@ class SpellCheckerSessionBridge {
   bool java_object_initialization_failed_;
 };
 
+base::android::ScopedJavaLocalRef<jobject> ToJavaSpellingMarker(
+    JNIEnv* env,
+    const spellcheck::SpellingMarker& spelling_marker);
+
+namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<spellcheck::SpellingMarker>(
+    JNIEnv* env,
+    const spellcheck::SpellingMarker& input) {
+  return ToJavaSpellingMarker(env, input);
+}
+
+}  // namespace jni_zero
+
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELLCHECKER_SESSION_BRIDGE_ANDROID_H_

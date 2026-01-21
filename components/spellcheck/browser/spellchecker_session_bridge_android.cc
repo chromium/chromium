@@ -25,39 +25,6 @@
 
 using base::android::JavaRef;
 
-namespace {
-
-base::android::ScopedJavaLocalRef<jobjectArray> ToSpellingMarkerJniArray(
-    JNIEnv* env,
-    const std::vector<spellcheck::SpellingMarker>& spelling_markers) {
-  base::android::ScopedJavaLocalRef<jclass> spelling_marker_clazz =
-      base::android::GetClass(
-          env, "org/chromium/components/spellcheck/SpellingMarker");
-  jobjectArray spelling_marker_array = env->NewObjectArray(
-      spelling_markers.size(), spelling_marker_clazz.obj(), nullptr);
-
-  base::android::CheckException(env);
-
-  int i = 0;
-  for (const auto& spelling_marker : spelling_markers) {
-    base::android::ScopedJavaLocalRef<jobject> j_spelling_marker =
-        Java_SpellCheckerSessionBridge_createSpellingMarker(
-            env, spelling_marker.start, spelling_marker.end,
-            spelling_marker.marker_type);
-    if (j_spelling_marker.is_null()) {
-      LOG(ERROR) << "Failed to create a spelling marker with range ["
-                 << spelling_marker.start << ", " << spelling_marker.end
-                 << "];";
-      continue;
-    }
-    env->SetObjectArrayElement(spelling_marker_array, i++,
-                               j_spelling_marker.obj());
-  }
-  return base::android::ScopedJavaLocalRef<jobjectArray>::Adopt(
-      env, spelling_marker_array);
-}
-}  // namespace
-
 SpellCheckerSessionBridge::SpellCheckerSessionBridge()
     : java_object_initialization_failed_(false) {}
 
@@ -121,7 +88,7 @@ void SpellCheckerSessionBridge::RequestTextCheck(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SpellCheckerSessionBridge_requestTextCheck(
       env, java_object_, base::android::ConvertUTF16ToJavaString(env, text),
-      ToSpellingMarkerJniArray(env, spelling_markers));
+      spelling_markers);
 }
 
 void SpellCheckerSessionBridge::ProcessSpellCheckResults(
@@ -167,7 +134,7 @@ void SpellCheckerSessionBridge::ProcessSpellCheckResults(
     Java_SpellCheckerSessionBridge_requestTextCheck(
         env, java_object_,
         base::android::ConvertUTF16ToJavaString(env, active_request_->text_),
-        ToSpellingMarkerJniArray(env, active_request_->spelling_markers_));
+        active_request_->spelling_markers_);
   }
 }
 
@@ -198,6 +165,20 @@ SpellCheckerSessionBridge::SpellingRequest::~SpellingRequest() {
   // Ensure that we don't clear an uncalled RequestTextCheckCallback
   if (callback_)
     std::move(callback_).Run(std::vector<SpellCheckResult>());
+}
+
+base::android::ScopedJavaLocalRef<jobject> ToJavaSpellingMarker(
+    JNIEnv* env,
+    const spellcheck::SpellingMarker& spelling_marker) {
+  base::android::ScopedJavaLocalRef<jobject> j_spelling_marker =
+      Java_SpellCheckerSessionBridge_createSpellingMarker(
+          env, spelling_marker.start, spelling_marker.end,
+          spelling_marker.marker_type);
+  if (j_spelling_marker.is_null()) {
+    LOG(ERROR) << "Failed to create a spelling marker with range ["
+               << spelling_marker.start << ", " << spelling_marker.end << "];";
+  }
+  return j_spelling_marker;
 }
 
 DEFINE_JNI(SpellCheckerSessionBridge)
