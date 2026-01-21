@@ -132,8 +132,13 @@ AttributionHost::AttributionHost(WebContents* web_contents)
       attribution_reporting::features::kConversionMeasurement));
 
 #if BUILDFLAG(IS_ANDROID)
-  input_event_tracker_android_ =
-      std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
+  // TODO(b/476468383): guest_view results in null native view. Using
+  // AttributionInputEventTrackerAndroid without a native view will crash. For
+  // now, just disable this code if the view is null.
+  if (web_contents->GetNativeView()) {
+    input_event_tracker_android_ =
+        std::make_unique<AttributionInputEventTrackerAndroid>(web_contents);
+  }
 #endif
 }
 
