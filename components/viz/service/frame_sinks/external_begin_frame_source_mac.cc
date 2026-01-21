@@ -293,7 +293,8 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   interval *= vsync_subsampling_factor_;
 
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, frame_time + interval, interval));
+      source_id(), frame_time, frame_time + interval, interval,
+      min_refresh_interval_));
 
   // Notify Display FrameRateDecider of the frame interval change.
   if (display_link_frame_interval_changed) {
@@ -344,7 +345,8 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
   if (!last_begin_frame_args_.IsValid() ||
       frame_time > last_begin_frame_args_.frame_time) {
     last_begin_frame_args_ = begin_frame_args_generator_.GenerateBeginFrameArgs(
-        source_id(), frame_time, frame_time + interval, interval);
+        source_id(), frame_time, frame_time + interval, interval,
+        min_refresh_interval_);
   }
 
   return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);
@@ -364,7 +366,8 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
   auto interval = time_source_->Interval();
 
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, time_source_->NextTickTime(), interval));
+      source_id(), frame_time, time_source_->NextTickTime(), interval,
+      min_refresh_interval_));
 
   if (last_interval_ != interval) {
     DCHECK(update_vsync_params_callback_);

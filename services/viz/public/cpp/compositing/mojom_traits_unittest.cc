@@ -96,6 +96,7 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   const uint64_t sequence_number = 10;
   const uint64_t frames_throttled_since_last = 20;
   const bool animate_only = true;
+  const base::TimeDelta unthrottled_interval = base::Microseconds(100);
   BeginFrameArgs input;
   input.frame_id = BeginFrameId(source_id, sequence_number);
   input.frames_throttled_since_last = frames_throttled_since_last;
@@ -105,6 +106,7 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   input.type = type;
   input.on_critical_path = on_critical_path;
   input.animate_only = animate_only;
+  input.unthrottled_interval = unthrottled_interval;
 
   BeginFrameArgs output;
   mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
@@ -118,6 +120,52 @@ TEST_F(StructTraitsTest, BeginFrameArgs) {
   EXPECT_EQ(type, output.type);
   EXPECT_EQ(on_critical_path, output.on_critical_path);
   EXPECT_EQ(animate_only, output.animate_only);
+  EXPECT_EQ(unthrottled_interval, output.unthrottled_interval);
+}
+
+TEST_F(StructTraitsTest, BeginFrameArgsWithUnthrottledInterval) {
+  const base::TimeTicks frame_time = base::TimeTicks::Now();
+  const base::TimeTicks deadline = base::TimeTicks::Now();
+  const base::TimeDelta interval = base::Milliseconds(1337);
+  const BeginFrameArgs::BeginFrameArgsType type = BeginFrameArgs::NORMAL;
+  const uint64_t source_id = 5;
+  const uint64_t sequence_number = 10;
+
+  {
+    // Test where unthrottled_interval matches interval.
+    // In Mojo it should be null, but deserialized back to interval.
+    BeginFrameArgs input =
+        BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id, sequence_number,
+                               frame_time, deadline, interval, type);
+
+    input.unthrottled_interval = interval;
+    BeginFrameArgs output;
+    mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+    EXPECT_EQ(interval, output.unthrottled_interval);
+  }
+
+  {
+    // Test where unthrottled_interval is different from interval.
+    // In Mojo it should be sent as a value.
+    BeginFrameArgs input =
+        BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id, sequence_number,
+                               frame_time, deadline, interval, type);
+    const base::TimeDelta unthrottled = interval - base::Milliseconds(5);
+    input.unthrottled_interval = unthrottled;
+    BeginFrameArgs output;
+    mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+    EXPECT_EQ(unthrottled, output.unthrottled_interval);
+  }
+
+  {
+    // Test where unthrottled_interval is default (which also matches interval).
+    BeginFrameArgs input =
+        BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id, sequence_number,
+                               frame_time, deadline, interval, type);
+    BeginFrameArgs output;
+    mojo::test::SerializeAndDeserialize<mojom::BeginFrameArgs>(input, output);
+    EXPECT_EQ(interval, output.unthrottled_interval);
+  }
 }
 
 TEST_F(StructTraitsTest, BeginFrameAck) {

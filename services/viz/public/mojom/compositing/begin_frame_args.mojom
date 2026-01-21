@@ -31,6 +31,8 @@ struct BeginFrameArgs {
   BeginFrameArgsType type;
   bool on_critical_path;
   bool animate_only;
+  // If omitted/null, defaults to the value of `interval`.
+  mojo_base.mojom.TimeDelta? unthrottled_interval;
 };
 
 // See components/viz/common/frame_sinks/begin_frame_args.h.

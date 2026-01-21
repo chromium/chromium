@@ -63,7 +63,8 @@ void ExternalBeginFrameSourceWin::OnVSyncOnSequence(
     vsync_interval *= 2;
   }
   auto begin_frame_args = begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), vsync_time, vsync_time + vsync_interval, vsync_interval);
+      source_id(), vsync_time, vsync_time + vsync_interval, vsync_interval,
+      vsync_interval_);
   ExternalBeginFrameSource::OnBeginFrame(begin_frame_args);
 }
 
@@ -85,7 +86,8 @@ BeginFrameArgs ExternalBeginFrameSourceWin::GetMissedBeginFrameArgs(
   if (!last_begin_frame_args_.IsValid() ||
       frame_time > last_begin_frame_args_.frame_time) {
     last_begin_frame_args_ = begin_frame_args_generator_.GenerateBeginFrameArgs(
-        source_id(), frame_time, frame_time + interval, interval);
+        source_id(), frame_time, frame_time + interval, interval,
+        vsync_interval_);
   }
 
   return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);

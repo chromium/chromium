@@ -90,9 +90,11 @@ BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgs(
 BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgsWithGenerator(
     base::TimeTicks frame_time,
     base::TimeTicks next_frame_time,
-    base::TimeDelta vsync_interval) {
+    base::TimeDelta vsync_interval,
+    base::TimeDelta unthrottled_interval) {
   return begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, next_frame_time, vsync_interval);
+      source_id(), frame_time, next_frame_time, vsync_interval,
+      unthrottled_interval);
 }
 
 void FakeExternalBeginFrameSource::TestOnBeginFrame(

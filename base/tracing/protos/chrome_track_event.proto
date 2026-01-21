@@ -2050,7 +2050,7 @@ message ChromeCompositorStateMachineV2 {
   optional MinorStateV2 minor_state = 2;
 }
 
-// Next id: 12
+// Next id: 13
 message BeginFrameArgsV2 {
   // JSON format has a "type" field that was always just "BeginFrameArgs" we
   // drop this in the proto representation, and instead make the JSON format
@@ -2080,6 +2080,7 @@ message BeginFrameArgsV2 {
     SourceLocation source_location = 10;
   }
   optional int64 frames_throttled_since_last = 11;
+  optional int64 unthrottled_interval_delta_us = 12;
 }
 
 // Next id: 7

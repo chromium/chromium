@@ -359,6 +359,35 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversAtOnce) {
   source_->RemoveObserver(&obs2);
 }
 
+TEST_F(BackToBackBeginFrameSourceTest, UnthrottledInterval) {
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 1, 1000,
+                          1000 + kDeadline, kInterval);
+  source_->AddObserver(obs_.get());
+  task_runner_->RunUntilIdle();
+
+  // Initially unthrottled_interval should match interval.
+  EXPECT_EQ(obs_->last_begin_frame_args.interval,
+            BeginFrameArgs::DefaultInterval());
+  EXPECT_EQ(obs_->last_begin_frame_args.unthrottled_interval,
+            BeginFrameArgs::DefaultInterval());
+
+  // Throttling the interval should not change unthrottled_interval.
+  base::TimeDelta throttled_interval = base::Microseconds(20000);
+  source_->SetMaxVrrInterval(throttled_interval);
+
+  task_runner_->AdvanceMockTickClock(base::Microseconds(100));
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 1100,
+                          1100 + throttled_interval.InMicroseconds(),
+                          throttled_interval.InMicroseconds(), kInterval);
+  source_->DidFinishFrame(obs_.get());
+  task_runner_->RunUntilIdle();
+
+  EXPECT_EQ(obs_->last_begin_frame_args.interval, throttled_interval);
+  EXPECT_EQ(obs_->last_begin_frame_args.unthrottled_interval,
+            BeginFrameArgs::DefaultInterval());
+}
+
 // There may not be any observers available when the OnGpuNoLongerBusy()
 // function is invoked on the BackToBackBeginFrameSource. For e.g.
 // consider the following sequence.
@@ -807,30 +836,67 @@ TEST_P(DelayBasedBeginFrameSourceTest, WithVrrInterval) {
   EXPECT_BEGIN_FRAME_SOURCE_PAUSED(obs, false);
   if (!NoLateBeginFrames()) {
     EXPECT_BEGIN_FRAME_USED_MISSED(obs, source_->source_id(), 1, 0, 25000,
-                                   25000);
+                                   25000, 10000);
   }
   source_->AddObserver(&obs);
 
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 35000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 45000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 2, 10000, 35000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 3, 20000, 45000, 25000,
+                          10000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(21000));
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(21000),
                                    base::Microseconds(10000));
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 4, 30000, 46000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 5, 31000, 56000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 4, 30000, 46000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 5, 31000, 56000, 25000,
+                          10000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(32000));
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(32000),
                                    base::Microseconds(10000));
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 6, 41000, 57000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 7, 42000, 67000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 8, 52000, 77000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 6, 41000, 57000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 7, 42000, 67000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 8, 52000, 77000, 25000,
+                          10000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(53000));
   source_->OnUpdateVSyncParameters(TicksFromMicroseconds(53000),
                                    base::Microseconds(10000));
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 9, 62000, 78000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 10, 63000, 88000, 25000);
-  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 11, 73000, 98000, 25000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 9, 62000, 78000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 10, 63000, 88000, 25000,
+                          10000);
+  EXPECT_BEGIN_FRAME_USED(obs, source_->source_id(), 11, 73000, 98000, 25000,
+                          10000);
   task_runner_->FastForwardTo(TicksFromMicroseconds(73000));
+}
+
+TEST_P(DelayBasedBeginFrameSourceTest, UnthrottledInterval) {
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  if (!NoLateBeginFrames()) {
+    EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                   10000);
+  }
+  source_->AddObserver(obs_.get());
+
+  // Initially unthrottled_interval should match interval.
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 2, 10000, 20000, 10000);
+  task_runner_->FastForwardBy(base::Microseconds(10000));
+  EXPECT_EQ(obs_->last_begin_frame_args.interval, base::Microseconds(10000));
+  EXPECT_EQ(obs_->last_begin_frame_args.unthrottled_interval,
+            base::Microseconds(10000));
+
+  // Throttling the interval should not change unthrottled_interval.
+  base::TimeDelta throttled_interval = base::Microseconds(20000);
+  source_->SetMaxVrrInterval(throttled_interval);
+
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 3, 20000, 40000, 20000,
+                          10000);
+  task_runner_->FastForwardBy(base::Microseconds(10000));
+  EXPECT_EQ(obs_->last_begin_frame_args.interval, throttled_interval);
+  EXPECT_EQ(obs_->last_begin_frame_args.unthrottled_interval,
+            base::Microseconds(10000));
 }
 
 INSTANTIATE_TEST_SUITE_P(

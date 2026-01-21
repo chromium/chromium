@@ -49,7 +49,8 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   BeginFrameArgs CreateBeginFrameArgsWithGenerator(
       base::TimeTicks frame_time,
       base::TimeTicks next_frame_time,
-      base::TimeDelta vsync_interval);
+      base::TimeDelta vsync_interval,
+      base::TimeDelta unthrottled_interval = base::TimeDelta());
   uint64_t next_begin_frame_number() const { return next_begin_frame_number_; }
 
   void TestOnBeginFrame(const BeginFrameArgs& args);

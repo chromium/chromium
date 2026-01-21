@@ -40,27 +40,29 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
     uint64_t sequence_number,
     int64_t frame_time,
     int64_t deadline,
-    int64_t interval) {
+    int64_t interval,
+    BeginFrameArgs::BeginFrameArgsType type,
+    int64_t unthrottled_interval) {
   return BeginFrameArgs::Create(
       location, source_id, sequence_number,
       base::TimeTicks() + base::Microseconds(frame_time),
       base::TimeTicks() + base::Microseconds(deadline),
-      base::Microseconds(interval), BeginFrameArgs::NORMAL);
+      base::Microseconds(interval), type,
+      base::Microseconds(unthrottled_interval));
 }
 
 BeginFrameArgs CreateBeginFrameArgsForTesting(
     BeginFrameArgs::CreationLocation location,
     uint64_t source_id,
     uint64_t sequence_number,
-    int64_t frame_time,
-    int64_t deadline,
-    int64_t interval,
-    BeginFrameArgs::BeginFrameArgsType type) {
-  return BeginFrameArgs::Create(
-      location, source_id, sequence_number,
-      base::TimeTicks() + base::Microseconds(frame_time),
-      base::TimeTicks() + base::Microseconds(deadline),
-      base::Microseconds(interval), type);
+    base::TimeTicks frame_time,
+    base::TimeTicks deadline,
+    base::TimeDelta interval,
+    BeginFrameArgs::BeginFrameArgsType type,
+    base::TimeDelta unthrottled_interval) {
+  return BeginFrameArgs::Create(location, source_id, sequence_number,
+                                frame_time, deadline, interval, type,
+                                unthrottled_interval);
 }
 
 BeginFrameArgs CreateBeginFrameArgsForTesting(
@@ -81,6 +83,7 @@ bool operator==(const BeginFrameArgs& lhs, const BeginFrameArgs& rhs) {
   return (lhs.type == rhs.type) && (lhs.frame_id == rhs.frame_id) &&
          (lhs.frame_time == rhs.frame_time) && (lhs.deadline == rhs.deadline) &&
          (lhs.interval == rhs.interval) &&
+         (lhs.unthrottled_interval == rhs.unthrottled_interval) &&
          (lhs.frames_throttled_since_last == rhs.frames_throttled_since_last);
 }
 
@@ -95,6 +98,7 @@ void PrintTo(const BeginFrameArgs& args, ::std::ostream* os) {
       << ", " << args.frame_time.since_origin().InMicroseconds() << ", "
       << args.deadline.since_origin().InMicroseconds() << ", "
       << args.interval.InMicroseconds() << "us, "
+      << args.unthrottled_interval.InMicroseconds() << "us (unthrottled), "
       << args.frames_throttled_since_last << ")";
 }
 

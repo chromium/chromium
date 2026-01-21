@@ -109,16 +109,17 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
     uint64_t source_id,
     base::TimeTicks frame_time,
     base::TimeTicks deadline,
-    base::TimeDelta vsync_interval) {
+    base::TimeDelta vsync_interval,
+    base::TimeDelta unthrottled_interval) {
   uint64_t sequence_number =
       next_sequence_number_ +
       EstimateTickCountsBetween(frame_time, next_expected_frame_time_,
                                 vsync_interval);
   next_expected_frame_time_ = deadline;
   next_sequence_number_ = sequence_number + 1;
-  return BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id,
-                                sequence_number, frame_time, deadline,
-                                vsync_interval, BeginFrameArgs::NORMAL);
+  return BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, source_id, sequence_number, frame_time, deadline,
+      vsync_interval, BeginFrameArgs::NORMAL, unthrottled_interval);
 }
 
 uint64_t BeginFrameSource::BeginFrameArgsGenerator::EstimateTickCountsBetween(
@@ -309,7 +310,7 @@ void BackToBackBeginFrameSource::OnTimerTick() {
   base::TimeDelta interval = max_vrr_interval_.value_or(vsync_interval_);
   BeginFrameArgs args = BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, source_id(), next_sequence_number_, frame_time,
-      frame_time + interval, interval, BeginFrameArgs::NORMAL);
+      frame_time + interval, interval, BeginFrameArgs::NORMAL, vsync_interval_);
   next_sequence_number_++;
 
   // This must happen after getting the LastTickTime() from the time source.
@@ -362,7 +363,7 @@ BeginFrameArgs DelayBasedBeginFrameSource::CreateBeginFrameArgs(
   base::TimeTicks deadline =
       time_source_->NextTickTime() - time_source_->Interval() + interval;
   return begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, deadline, interval);
+      source_id(), frame_time, deadline, interval, time_source_->Interval());
 }
 
 void DelayBasedBeginFrameSource::AddObserver(BeginFrameObserver* obs) {

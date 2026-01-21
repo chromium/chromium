@@ -5,6 +5,8 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_BEGIN_FRAME_ARGS_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_BEGIN_FRAME_ARGS_MOJOM_TRAITS_H_
 
+#include <optional>
+
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/viz/public/mojom/compositing/begin_frame_args.mojom-shared.h"
 
@@ -46,6 +48,15 @@ struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
 
   static base::TimeDelta interval(const viz::BeginFrameArgs& args) {
     return args.interval;
+  }
+
+  static std::optional<base::TimeDelta> unthrottled_interval(
+      const viz::BeginFrameArgs& args) {
+    if (args.unthrottled_interval == args.interval ||
+        !args.unthrottled_interval.is_positive()) {
+      return std::nullopt;
+    }
+    return args.unthrottled_interval;
   }
 
   static viz::BeginFrameId frame_id(const viz::BeginFrameArgs& args) {
