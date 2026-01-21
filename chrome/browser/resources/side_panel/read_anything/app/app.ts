@@ -637,6 +637,20 @@ export class AppElement extends AppElementBase implements SpeechListener,
           event.detail.data, this.$.container,
           this.$.containerParent.clientHeight);
       this.setLineFocus_();
+
+      const padding = Math.floor(this.$.containerParent.clientHeight / 2);
+      if (this.lineFocusController_.isStatic()) {
+        // Add padding so the top and bottom lines of the page can still be
+        // focused even though line focus stays in the middle.
+        this.$.container.style.paddingTop = `${padding}px`;
+        this.$.container.style.paddingBottom = `${padding}px`;
+        this.$.containerScroller.scrollBy({top: padding, behavior: 'instant'});
+      } else {
+        // Reset the padding and maintain the current scroll position.
+        this.$.container.style.paddingTop = '';
+        this.$.container.style.paddingBottom = '';
+        this.$.containerScroller.scrollBy({top: -padding, behavior: 'instant'});
+      }
     }
   }
 

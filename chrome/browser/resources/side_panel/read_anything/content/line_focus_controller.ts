@@ -48,8 +48,10 @@ export class LineFocusController {
     return this.model_.getCurrentLineFocusStyle();
   }
 
-  getCurrentLineFocusMovement(): LineFocusMovement {
-    return this.model_.getCurrentLineFocusMovement();
+  // Whether the current line focus mode is static.
+  isStatic(): boolean {
+    return this.model_.getCurrentLineFocusMovement() ===
+        LineFocusMovement.STATIC;
   }
 
   addListener(listener: LineFocusListener) {
@@ -70,7 +72,7 @@ export class LineFocusController {
     const lastStyle = this.model_.getLastEnabledLineFocusStyle();
     const newStyle = this.isEnabled() ? LineFocusStyle.OFF : lastStyle;
     this.setStyleAndMovement_(
-        newStyle, this.getCurrentLineFocusMovement(), container, height);
+        newStyle, this.model_.getCurrentLineFocusMovement(), container, height);
   }
 
   onScrollEnd(newScrollTop: number) {
@@ -105,7 +107,7 @@ export class LineFocusController {
     // Line focus should follow along with speech if it's active, so ignore
     // mouse movements.
     if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
-        !this.isStatic_()) {
+        !this.isStatic()) {
       this.model_.setCurrentLineIndex(null);
       const previousY = this.model_.getY();
       this.setY_(Math.max(this.model_.getMinY(), y));
@@ -116,7 +118,7 @@ export class LineFocusController {
 
   onMouseMoveInToolbar(y: number) {
     if (this.isEnabled() && !this.speechController_.isSpeechActive() &&
-        !this.isStatic_()) {
+        !this.isStatic()) {
       // Store the new position, but do not notify listeners since the mouse is
       // in the toolbar, which means they are likely trying to change some
       // settings. onAllMenusClose will notify them of the final position when
@@ -173,7 +175,7 @@ export class LineFocusController {
       const previousMaxY = this.model_.getMaxY();
       const previousMinY = this.model_.getMinY();
       this.calculateNewPositions_(container, height);
-      if (this.isStatic_()) {
+      if (this.isStatic()) {
         if (previousMaxY !== this.model_.getMaxY() ||
             previousMinY !== this.model_.getMinY()) {
           this.setCenterY_();
@@ -196,7 +198,7 @@ export class LineFocusController {
 
   onStyleChange(style: LineFocusStyle, container: HTMLElement, height: number) {
     this.setStyleAndMovement_(
-        style, this.getCurrentLineFocusMovement(), container, height);
+        style, this.model_.getCurrentLineFocusMovement(), container, height);
   }
 
   onMovementChange(
@@ -238,7 +240,7 @@ export class LineFocusController {
         chrome.readingMode.startLineFocusSession();
       }
       this.calculateNewPositions_(container, height);
-      if (this.isStatic_()) {
+      if (this.isStatic()) {
         this.setCenterY_();
       } else {
         this.setY_(Math.max(this.model_.getMinY(), this.model_.getY()));
@@ -380,10 +382,6 @@ export class LineFocusController {
         Math.max(index, (this.getCurrentLineFocusLines_() - 1) / 2);
   }
 
-  private isStatic_(): boolean {
-    return this.getCurrentLineFocusMovement() === LineFocusMovement.STATIC;
-  }
-
   private getNewY_(newBounds: DOMRect) {
     return this.getCurrentLineFocusType() === LineFocusType.LINE ?
         newBounds.bottom :
@@ -394,7 +392,7 @@ export class LineFocusController {
   // moving the line focus element.
   private setyOrScroll_(newBounds: DOMRect) {
     const newY = this.getNewY_(newBounds);
-    if (this.isStatic_()) {
+    if (this.isStatic()) {
       const scrollDiff = newY - this.model_.getY();
       this.scroll_(scrollDiff);
     } else {
@@ -463,7 +461,7 @@ export class LineFocusController {
     // due to font or other spacing changes.
     const newLines = newBounds.map(rect => rect.bottom);
     const currentLineIndex = this.model_.getCurrentLineIndex();
-    if (!this.isStatic_() && currentLineIndex && currentLineIndex >= 0 &&
+    if (!this.isStatic() && currentLineIndex && currentLineIndex >= 0 &&
         currentLineIndex < newLines.length - 1) {
       this.setY_(newLines[currentLineIndex]!);
     }
