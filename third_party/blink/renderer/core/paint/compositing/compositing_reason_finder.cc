@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -333,13 +334,16 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (object.GetDocument().Printing())
     return CompositingReason::kNone;
 
-  // Elements under canvas can only be rendered with `drawElementImage` and do
-  // not support compositing.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
-      IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
-    return CompositingReason::kNone;
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (element && RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    if (auto* canvas = DynamicTo<HTMLCanvasElement>(
+            element->ParentOrShadowHostNode())) [[unlikely]] {
+      if (canvas->layoutSubtree()) {
+        return CompositingReason::kCanvasChild;
+      }
+    }
   }
+
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
   if (object.CanHaveAdditionalCompositingReasons())
@@ -405,7 +409,6 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
         }
       });
 
-  auto* element = DynamicTo<Element>(object.GetNode());
   if (element && element->GetRestrictionTargetId()) {
     const bool is_eligible = IsEligibleForElementCapture(object);
     element->SetIsEligibleForElementCapture(is_eligible);

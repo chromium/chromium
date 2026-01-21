@@ -38,6 +38,10 @@ enum : unsigned {
   // Used to suppress painting of PII and other sensitive content, allowing
   // the result to be used in WebGL, WebGPU and 2D Canvas.
   kPrivacyPreserving = 1 << 6,
+
+  // Used when paint is invoked by CanvasRenderingContext::GetElementPaintRecord
+  // to ensure painted output is not marked "invisible".
+  kCanvasElementImage = 1 << 7,
 };
 }  // namespace PaintFlag
 

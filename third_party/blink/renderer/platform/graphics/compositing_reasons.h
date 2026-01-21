@@ -87,6 +87,7 @@ using CompositingReasons = uint64_t;
   V(Caret)                                                                     \
   V(Video)                                                                     \
   V(Canvas)                                                                    \
+  V(CanvasChild)                                                               \
   V(Plugin)                                                                    \
   V(Scrollbar)                                                                 \
   V(LinkHighlight)                                                             \
@@ -130,7 +131,8 @@ class PLATFORM_EXPORT CompositingReason {
         kWillChangeTransform | kWillChangeScale | kWillChangeRotate,
     kDirectReasonsForPaintOffsetTranslationProperty =
         kFixedPosition | kAffectedByOuterViewportBoundsDelta | kUndoOverscroll |
-        kVideo | kCanvas | kPlugin | kIFrame | kAffectedBySafeAreaBottom,
+        kVideo | kCanvas | kCanvasChild | kPlugin | kIFrame |
+        kAffectedBySafeAreaBottom,
     // TODO(dbaron): kWillChangeOther probably shouldn't be in this list.
     // TODO(vmpstr): kViewTransitionElement is needed to make sure that the
     // capture escapes clips when view transition has a descendant that

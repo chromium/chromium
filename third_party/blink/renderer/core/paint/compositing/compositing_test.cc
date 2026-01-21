@@ -3851,6 +3851,38 @@ TEST_P(CompositingSimTest, ScrollbarLayerWithDecompositedTransform) {
   EXPECT_FALSE(scrollbar_layer->subtree_property_changed());
 }
 
+TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div { width: 100px; height: 100px; }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="child_a">
+        <div id="grandchild_a">a1</div>
+        <div id="grandchild_a_wct" style="will-change: transform;">a2</div>
+        <div id="grandchild_a_bdf" style="backdrop-filter: blur(10px);">a3</div>
+      </div>
+      <div id="child_b" style="background: blue;">b</div>
+      <div id="child_c">c</div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // All direct children of canvas get a layer
+  EXPECT_TRUE(CcLayerByDOMElementId("child_a"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child_b"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child_c"));
+
+  // Composited layers are created using normal heuristics for deeper
+  // descendants.
+  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a"));
+  EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_wct"));
+  EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_bdf"));
+}
+
 // Test that canvas draw element ids are sent from blink to cc for canvas
 // elements that have opted into html-in-canvas with the layoutsubtree
 // attribute.

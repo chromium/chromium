@@ -391,8 +391,25 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   PaintController& controller = context.GetPaintController();
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
-  if (PaintedOutputInvisible(object.StyleRef()))
+
+  bool is_invisible_drawn_canvas_child = false;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element) {
+      if (auto* canvas = DynamicTo<HTMLCanvasElement>(
+              element->ParentOrShadowHostNode())) [[unlikely]] {
+        if (canvas->layoutSubtree() &&
+            !(paint_flags & PaintFlag::kCanvasElementImage)) {
+          is_invisible_drawn_canvas_child = true;
+        }
+      }
+    }
+  }
+
+  if (is_invisible_drawn_canvas_child ||
+      PaintedOutputInvisible(object.StyleRef())) {
     effectively_invisible.emplace(controller);
+  }
 
   std::optional<ScopedPaintChunkProperties> layer_chunk_properties;
 
@@ -572,9 +589,16 @@ PaintResult PaintLayerPainter::PaintChildren(
     return result;
   }
 
-  // Prevent canvas fallback content from being rendered.
-  if (IsA<HTMLCanvasElement>(layout_object.GetNode())) {
-    return result;
+  if (auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode())) {
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+        canvas->layoutSubtree()) {
+      // We need to paint the children for later use by drawElementImage, but
+      // make sure we enforce privacy-preserving paint behavior.
+      paint_flags |= PaintFlag::kPrivacyPreserving;
+    } else {
+      // Prevent canvas fallback content from being rendered.
+      return result;
+    }
   }
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
