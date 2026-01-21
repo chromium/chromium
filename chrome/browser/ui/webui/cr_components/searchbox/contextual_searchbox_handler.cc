@@ -309,7 +309,10 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
                        std::move(controller)),
       get_session_callback_(std::move(get_session_callback)) {
   // This implicitly also initializes the file upload status observer.
-  GetContextualSessionHandle();
+  if (auto* session_handle = GetContextualSessionHandle()) {
+    input_state_model_ =
+        std::make_unique<contextual_search::InputStateModel>(*session_handle);
+  }
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
