@@ -357,7 +357,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
                                      AtomicString& adjusted_name,
                                      FontSelectionValue& variant_weight) {
   struct FamilyWeightSuffix {
-    const UChar* suffix;
+    const char* suffix;
     wtf_size_t length;
     FontSelectionValue weight;
   };
@@ -367,22 +367,22 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
   // The list is intentionally incomplete, because it is for the backward
   // compatibility with GDI. See issues for crrev.com/c/542603004.
   const static FamilyWeightSuffix kVariantForSuffix[] = {
-      {u" thin", 5, FontSelectionValue(100)},
-      {u" extralight", 11, FontSelectionValue(200)},
-      {u" ultralight", 11, FontSelectionValue(200)},
-      {u" light", 6, FontSelectionValue(300)},
-      {u" regular", 8, FontSelectionValue(400)},
-      {u" medium", 7, FontSelectionValue(500)},
-      {u" demibold", 9, FontSelectionValue(600)},
-      {u" semibold", 9, FontSelectionValue(600)},
-      {u" extrabold", 10, FontSelectionValue(800)},
-      {u" ultrabold", 10, FontSelectionValue(800)},
-      {u" black", 6, FontSelectionValue(900)},
-      {u" heavy", 6, FontSelectionValue(900)}};
+      {" thin", 5, FontSelectionValue(100)},
+      {" extralight", 11, FontSelectionValue(200)},
+      {" ultralight", 11, FontSelectionValue(200)},
+      {" light", 6, FontSelectionValue(300)},
+      {" regular", 8, FontSelectionValue(400)},
+      {" medium", 7, FontSelectionValue(500)},
+      {" demibold", 9, FontSelectionValue(600)},
+      {" semibold", 9, FontSelectionValue(600)},
+      {" extrabold", 10, FontSelectionValue(800)},
+      {" ultrabold", 10, FontSelectionValue(800)},
+      {" black", 6, FontSelectionValue(900)},
+      {" heavy", 6, FontSelectionValue(900)}};
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyWeightSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
-    if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
+    if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);
       adjusted_name = AtomicString(family_name);
@@ -398,7 +398,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
                                       AtomicString& adjusted_name,
                                       FontSelectionValue& variant_stretch) {
   struct FamilyStretchSuffix {
-    const UChar* suffix;
+    const char* suffix;
     wtf_size_t length;
     FontSelectionValue stretch;
   };
@@ -407,19 +407,19 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
   // Also includes Narrow as a synonym for Condensed to to support Arial
   // Narrow and other fonts following the same naming scheme.
   const static FamilyStretchSuffix kVariantForSuffix[] = {
-      {u" ultracondensed", 15, kUltraCondensedWidthValue},
-      {u" extracondensed", 15, kExtraCondensedWidthValue},
-      {u" condensed", 10, kCondensedWidthValue},
-      {u" narrow", 7, kCondensedWidthValue},
-      {u" semicondensed", 14, kSemiCondensedWidthValue},
-      {u" semiexpanded", 13, kSemiExpandedWidthValue},
-      {u" expanded", 9, kExpandedWidthValue},
-      {u" extraexpanded", 14, kExtraExpandedWidthValue},
-      {u" ultraexpanded", 14, kUltraExpandedWidthValue}};
+      {" ultracondensed", 15, kUltraCondensedWidthValue},
+      {" extracondensed", 15, kExtraCondensedWidthValue},
+      {" condensed", 10, kCondensedWidthValue},
+      {" narrow", 7, kCondensedWidthValue},
+      {" semicondensed", 14, kSemiCondensedWidthValue},
+      {" semiexpanded", 13, kSemiExpandedWidthValue},
+      {" expanded", 9, kExpandedWidthValue},
+      {" extraexpanded", 14, kExtraExpandedWidthValue},
+      {" ultraexpanded", 14, kUltraExpandedWidthValue}};
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyStretchSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
-    if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
+    if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);
       adjusted_name = AtomicString(family_name);

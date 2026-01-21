@@ -163,12 +163,6 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.EndsWith(suffix, case_sensitivity);
   }
-  // Unicode aware case insensitive string matching. Non-ASCII characters might
-  // match to ASCII characters. This function is rarely used to implement web
-  // platform features.  See crbug.com/40476285.
-  bool DeprecatedEndsWithIgnoringCase(const StringView& suffix) const {
-    return string_.DeprecatedEndsWithIgnoringCase(suffix);
-  }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
 
   // Returns a lowercase/uppercase version of the string.
