@@ -1675,15 +1675,13 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  BOOL canShowYoutubeIncognito =
-      base::FeatureList::IsEnabled(kYoutubeIncognito);
   BOOL incognitoDisabled = [self isIncognitoDisabled];
 
   if ([self canShowIncognitoInterstitialForTargetMode:targetMode]) {
     [self showIncognitoInterstitialWithUrlLoadParams:urlLoadParams];
     completion();
   } else {
-    if (incognitoDisabled && canShowYoutubeIncognito &&
+    if (incognitoDisabled &&
         targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
       UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
       [self openSelectedTabInMode:ApplicationModeForTabOpening::NORMAL
@@ -1698,8 +1696,7 @@ void OnListFamilyMembersResponse(
       [self openSelectedTabInMode:tabOpeningMode
                 withUrlLoadParams:urlLoadParams
                        completion:completion];
-      if (canShowYoutubeIncognito &&
-          targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
+      if (targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO) {
         [self showYoutubeIncognitoWithUrlLoadParams:urlLoadParams];
       }
     }
@@ -4056,19 +4053,14 @@ using UserFeedbackDataCallback =
   // The incognito intertitial can be shown in two cases:
   //    1- The incognito interstitial is enabled and the target mode is either
   //    `UNDETERMINED` or `APP_SWITCHER_INCOGNITO`.
-  //    2- The youtube experience is enabled and the mode is
-  //    `APP_SWITCHER_UNDETERMINED`.
+  //    2- The mode is `APP_SWITCHER_UNDETERMINED`.
   PrefService* prefs = GetApplicationContext()->GetLocalState();
   BOOL shouldShowIncognitoInterstitial =
       prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled) &&
       (targetMode == ApplicationModeForTabOpening::UNDETERMINED ||
        targetMode == ApplicationModeForTabOpening::APP_SWITCHER_INCOGNITO);
-  BOOL canShowYoutubeIncognito =
-      base::FeatureList::IsEnabled(kYoutubeIncognito);
   return shouldShowIncognitoInterstitial ||
-         (canShowYoutubeIncognito &&
-          targetMode ==
-              ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED);
+         targetMode == ApplicationModeForTabOpening::APP_SWITCHER_UNDETERMINED;
 }
 
 #pragma mark - IncognitoInterstitialCoordinatorDelegate
