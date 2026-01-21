@@ -23,6 +23,7 @@
 
 class Profile;
 class HistorySyncOptinHelper;
+class SigninUIError;
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
@@ -71,7 +72,8 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // Resets the host by redirecting to the main profile picker screen and
   // canceling the ongoing signed in flow. Shows an error dialog when the reset
   // is done.
-  void ResetHostAndShowErrorDialog(const ForceSigninUIError& error);
+  void ResetHostAndShowErrorDialog(
+      const std::variant<ForceSigninUIError, SigninUIError>& error);
 
   // Finishes the creation flow for `profile_`: marks it fully created,
   // transitions from `host_` to a new browser window and calls `callback` if

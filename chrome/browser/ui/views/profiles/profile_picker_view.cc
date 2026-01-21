@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -925,19 +926,17 @@ void ProfilePickerView::UpdateAccessibleNameForRootView(views::WebView*) {
   }
 }
 
-void ProfilePickerView::ShowForceSigninErrorDialog(
-    const ForceSigninUIError& error,
+void ProfilePickerView::ShowSigninErrorDialog(
+    const std::variant<ForceSigninUIError, SigninUIError>& error,
     bool switch_step_success) {
   if (!switch_step_success) {
     return;
   }
-
-  CHECK(signin_util::IsForceSigninEnabled());
   ProfilePickerUI* web_ui = web_view_->GetWebContents()
                                 ->GetWebUI()
                                 ->GetController()
                                 ->GetAs<ProfilePickerUI>();
-  web_ui->ShowForceSigninErrorDialog(error);
+  web_ui->ShowSigninErrorDialog(error);
 }
 
 BEGIN_METADATA(ProfilePickerView)

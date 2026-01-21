@@ -25,6 +25,7 @@
 class ScopedProfileKeepAlive;
 
 class ForceSigninUIError;
+class SigninUIError;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -71,10 +72,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Displays an error dialog on top of the profile picker based on the error
   // enum.
-  // Empty `profile_path` will not show an additional "Sign in" button that
-  // allows to reach reauth step.
-  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
-                                     const ForceSigninUIError& error);
+  // `profile_path` is only used when the error is `ForceSigninUIError`.
+  // When `error` contains a `ForceSigninUIError`, using an empty `profile_path`
+  // will not show an additional "Sign in" button that allows to reach reauth
+  // step.
+  void DisplaySigninErrorDialog(
+      const base::FilePath& profile_path,
+      const std::variant<ForceSigninUIError, SigninUIError>& error);
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -125,6 +129,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetAvailableIcons(const base::Value::List& args);
   void HandleContinueWithoutAccount(const base::Value::List& args);
   void HandleGetProfileState(const base::Value::List& args);
+
+  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
+                                     const ForceSigninUIError& error);
+  void FireDisplaySigninErrorDialog(const std::u16string& title,
+                                    const std::u16string& body,
+                                    const std::u16string& profile_path);
 
   // Profile switch screen:
   void HandleConfirmProfileSwitch(const base::Value::List& args);

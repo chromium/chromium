@@ -37,6 +37,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -396,11 +397,11 @@ void ProfilePickerSignInProvider::ShowSigninError(
   if (signin_util::IsForceSigninEnabled() &&
       error.type() ==
           SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
-    host_->Reset(StepSwitchFinishedCallback(base::BindOnce(
-        &ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
-        base::Unretained(host_),
-        ForceSigninUIError::SigninPatternNotMatching(
-            base::UTF16ToUTF8(error.email())))));
+    host_->Reset(StepSwitchFinishedCallback(
+        base::BindOnce(&ProfilePickerWebContentsHost::ShowSigninErrorDialog,
+                       base::Unretained(host_),
+                       ForceSigninUIError::SigninPatternNotMatching(
+                           base::UTF16ToUTF8(error.email())))));
     return;
   }
 
@@ -416,9 +417,21 @@ void ProfilePickerSignInProvider::ShowSigninError(
     host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
     return;
   }
-
-  std::move(callback_).Run(profile_.get(), CoreAccountInfo(),
-                           std::move(contents_), error);
+  // TODO(crbug.com/307233905): Distinguish between the FRE and Profile Picker
+  // through the flow controller.
+  if (base::FeatureList::IsEnabled(switches::kSupportErrorsInProfilePicker) &&
+      !ProfilePicker::IsFirstRunOpen()) {
+    // Display the signin error in the profile picker's error dialog.
+    // In the FRE flow, the profile picker is not used, so we display the
+    // error once the browser opens below.
+    host_->Reset(StepSwitchFinishedCallback(
+        base::BindOnce(&ProfilePickerWebContentsHost::ShowSigninErrorDialog,
+                       base::Unretained(host_), error)));
+  } else {
+    // Display the signin error once the browser opens.
+    std::move(callback_).Run(profile_.get(), CoreAccountInfo(),
+                             std::move(contents_), error);
+  }
 }
 
 void ProfilePickerSignInProvider::ResetWebContentsDelegates() {
