@@ -16,7 +16,7 @@ export {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 export type {BrowserProxy} from './browser_proxy.js';
 export {BrowserProxyImpl} from './browser_proxy.js';
 export {BookmarksCommandManagerElement} from './command_manager.js';
-export {ACCOUNT_HEADING_NODE_ID, Command, DropPosition, IncognitoAvailability, LOCAL_HEADING_NODE_ID, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MAX_BOOKMARKS_URL_LENGTH, MenuSource, ROOT_NODE_ID} from './constants.js';
+export {ACCOUNT_HEADING_NODE_ID, Command, DropPosition, IncognitoAvailability, LOCAL_HEADING_NODE_ID, LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, MAX_BOOKMARK_INPUT_LENGTH, MenuSource, ROOT_NODE_ID} from './constants.js';
 export {DialogFocusManager} from './dialog_focus_manager.js';
 export {DndManager, DragInfo, overrideFolderOpenerTimeoutDelay} from './dnd_manager.js';
 export {BookmarksEditDialogElement} from './edit_dialog.js';

@@ -91,6 +91,6 @@ export const BOOKMARKS_BAR_ID: string = '1';
 
 export const OPEN_CONFIRMATION_LIMIT: number = 15;
 
-// Maximum allowed length for a bookmark URL.
+// Maximum allowed length for a bookmark URL and title.
 // Limit to 500KB to match Chrome address bar (Omnibox) behavior.
-export const MAX_BOOKMARKS_URL_LENGTH: number = 500 * 1024;
+export const MAX_BOOKMARK_INPUT_LENGTH: number = 500 * 1024;

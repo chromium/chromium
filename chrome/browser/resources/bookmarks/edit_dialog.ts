@@ -17,10 +17,10 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import {MAX_BOOKMARK_INPUT_LENGTH} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {getHtml} from './edit_dialog.html.js';
 import type {BookmarkNode} from './types.js';
-import { MAX_BOOKMARKS_URL_LENGTH } from './constants.js';
 
 export interface BookmarksEditDialogElement {
   $: {
@@ -73,30 +73,32 @@ export class BookmarksEditDialogElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const urlInput = this.$.url;
-    // Intercept paste for the URL textfield
+    const nameInput = this.$.name;
+    // Intercept paste for the URL and name textfields
     // provide sanitized clipboard text
-    urlInput.addEventListener('paste', this.onPasteUrl_.bind(this));
+    urlInput.addEventListener('paste', this.onPaste_.bind(this, urlInput));
+    nameInput.addEventListener('paste', this.onPaste_.bind(this, nameInput));
   }
 
-  private onPasteUrl_(e: ClipboardEvent) {
+  private onPaste_(inputComponent: CrInputElement, e: ClipboardEvent) {
     const text = e.clipboardData?.getData('text/plain');
     if (!text) {
       return;
     }
 
     // Limit to 500KB to match Chrome address bar (Omnibox) behavior and
-    // prevent performance issues with extremely long URLs.
-    if (text.length <= MAX_BOOKMARKS_URL_LENGTH) {
+    // prevent performance issues with extremely long strings.
+    if (text.length <= MAX_BOOKMARK_INPUT_LENGTH) {
       return;
     }
 
     e.preventDefault();
-    const truncated = text.substring(0, MAX_BOOKMARKS_URL_LENGTH);
+    const truncated = text.substring(0, MAX_BOOKMARK_INPUT_LENGTH);
     // Insert the truncated text using setRangeText, which is the modern
     // replacement for execCommand('insertText').
     // Note: This may not preserve the undo history as robustly as execCommand
     // in all cases, but it is the standard API.
-    const input = this.$.url.inputElement;
+    const input = inputComponent.inputElement;
     const start = input.selectionStart || 0;
     const end = input.selectionEnd || 0;
     input.setRangeText(truncated, start, end, 'end');
@@ -175,7 +177,7 @@ export class BookmarksEditDialogElement extends CrLitElement {
     // Early check for URL length
     // avoid performance issues with extremely long URLs.
     // Limit to 500KB to match Chrome address bar (Omnibox) behavior.
-    if (this.urlValue_.length > MAX_BOOKMARKS_URL_LENGTH) {
+    if (this.urlValue_.length > MAX_BOOKMARK_INPUT_LENGTH) {
       return false;
     }
 
@@ -200,8 +202,9 @@ export class BookmarksEditDialogElement extends CrLitElement {
   }
 
   protected onSaveButtonClick_() {
-    const edit: { title: string, url?: string, parentId?: string|null } =
-        { 'title': this.titleValue_ };
+    const edit: {title: string, url?: string, parentId?: string|null} = {
+      'title': this.titleValue_.substring(0, MAX_BOOKMARK_INPUT_LENGTH),
+    };
     if (!this.isFolder_) {
       if (!this.validateUrl()) {
         return;
