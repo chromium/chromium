@@ -242,8 +242,6 @@ const CGFloat kButtonHorizontalInset = 16;
 }
 
 - (void)loadUpdateAddressModal {
-  CHECK_GT([self.profileDataDiff count], 0ul);
-
   [_contentStack addArrangedSubview:[self updateModalDescriptionView]];
 
   BOOL showOld = [self shouldShowOldSection];
