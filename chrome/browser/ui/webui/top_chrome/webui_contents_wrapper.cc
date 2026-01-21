@@ -17,8 +17,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -84,16 +82,6 @@ content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
   return nullptr;
 }
 
-bool WebUIContentsWrapper::Host::PreHandleGestureEvent(
-    content::WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Block gestures that will zoom.
-  // TODO(crbug.com/475836809) Disable pinch to zoom for all webcontents outside
-  // the main content area.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-         (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap);
-}
-
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            Profile* profile,
                                            int task_manager_string_id,
@@ -109,6 +97,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
 
+  web_contents_->SetIgnoreZoomGestures(true);
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 
@@ -239,12 +228,6 @@ content::WebContents* WebUIContentsWrapper::AddNewContents(
                                        target_url, disposition, window_features,
                                        user_gesture, was_blocked)
                : nullptr;
-}
-
-bool WebUIContentsWrapper::PreHandleGestureEvent(
-    content::WebContents* source,
-    const blink::WebGestureEvent& event) {
-  return host_ ? host_->PreHandleGestureEvent(source, event) : false;
 }
 
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
