@@ -2973,7 +2973,7 @@ bool Textfield::Cut() {
   bool cut = false;
   std::u16string text;
   if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
-    cut = model_->Cut(std::move(text));
+    cut = model_->Cut(std::move(text), controller_->CreateClipboardWriter());
   } else {
     cut = model_->Cut();
   }
@@ -2996,7 +2996,8 @@ bool Textfield::Copy() {
   bool copied = false;
   std::u16string text;
   if (controller_ && controller_->OnBeforeCutOrCopy(this, &text)) {
-    copied = model_->Copy(std::move(text));
+    copied =
+        model_->Copy(std::move(text), controller_->CreateClipboardWriter());
   } else {
     copied = model_->Copy();
   }

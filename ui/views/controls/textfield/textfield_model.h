@@ -22,6 +22,10 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/views_export.h"
 
+namespace ui {
+class ScopedClipboardWriter;
+}  // namespace ui
+
 namespace views {
 
 namespace internal {
@@ -199,15 +203,18 @@ class VIEWS_EXPORT TextfieldModel {
 
   // Copies the provided text to the clipboard and deletes the selected text.
   // Returns true if the textfield's text has changed after cutting.
-  bool Cut(std::u16string text);
+  // `clipboard_writer` is expected to be non-null.
+  bool Cut(std::u16string text,
+           std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer);
 
   // Copies the currently selected text and puts it to clipboard. Returns true
   // if something was copied to the clipboard.
   bool Copy();
 
   // Copies the provided text to the clipboard. Returns true if any text was
-  // copied to the clipboard.
-  bool Copy(std::u16string text);
+  // copied to the clipboard. `clipboard_writer` is expected to be non-null.
+  bool Copy(std::u16string text,
+            std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer);
 
   // Pastes text from the clipboard at current cursor position. Returns true
   // if any text is pasted.

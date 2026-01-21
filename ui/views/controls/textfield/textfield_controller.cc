@@ -53,4 +53,10 @@ bool TextfieldController::OnBeforePaste(Textfield* sender,
   return false;
 }
 
+std::unique_ptr<ui::ScopedClipboardWriter>
+TextfieldController::CreateClipboardWriter() {
+  return std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste);
+}
+
 }  // namespace views

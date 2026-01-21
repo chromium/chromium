@@ -645,15 +645,19 @@ bool TextfieldModel::Cut() {
   if (!CutOrCopyAllowed()) {
     return false;
   }
-  return Cut(std::u16string(GetSelectedText()));
+  return Cut(std::u16string(GetSelectedText()),
+             std::make_unique<ui::ScopedClipboardWriter>(
+                 ui::ClipboardBuffer::kCopyPaste));
 }
 
-bool TextfieldModel::Cut(std::u16string text) {
+bool TextfieldModel::Cut(
+    std::u16string text,
+    std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer) {
   if (!CutOrCopyAllowed()) {
+    clipboard_writer->Reset();
     return false;
   }
-  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-      .WriteText(std::move(text));
+  clipboard_writer->WriteText(std::move(text));
   DeleteSelection();
   return true;
 }
@@ -662,15 +666,19 @@ bool TextfieldModel::Copy() {
   if (!CutOrCopyAllowed()) {
     return false;
   }
-  return Copy(std::u16string(GetSelectedText()));
+  return Copy(std::u16string(GetSelectedText()),
+              std::make_unique<ui::ScopedClipboardWriter>(
+                  ui::ClipboardBuffer::kCopyPaste));
 }
 
-bool TextfieldModel::Copy(std::u16string text) {
+bool TextfieldModel::Copy(
+    std::u16string text,
+    std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer) {
   if (!CutOrCopyAllowed()) {
+    clipboard_writer->Reset();
     return false;
   }
-  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-      .WriteText(std::move(text));
+  clipboard_writer->WriteText(std::move(text));
   return true;
 }
 

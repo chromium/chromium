@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_CONTROLLER_H_
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_CONTROLLER_H_
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -19,6 +20,7 @@ namespace ui {
 class KeyEvent;
 class MouseEvent;
 class GestureEvent;
+class ScopedClipboardWriter;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -95,6 +97,11 @@ class VIEWS_EXPORT TextfieldController {
   // Called after the textfield has set default drag operations to give the
   // controller a chance to update them.
   virtual void OnGetDragOperationsForTextfield(int* drag_operations) {}
+
+  // Returns a `ui::ScopedClipboardWriter` to be used for clipboard write
+  // operations. This lets the controller enhance the data written to the
+  // clipboard by adding extra information such as the exact source of the data.
+  virtual std::unique_ptr<ui::ScopedClipboardWriter> CreateClipboardWriter();
 
   // Enables the controller to append to the accepted drop formats.
   virtual void AppendDropFormats(
