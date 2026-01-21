@@ -363,14 +363,14 @@ public class NtpCustomizationMediatorUnitTest {
     @Test
     public void testBuildListContentWhenProfileIsNotReady() {
         List<Integer> listContent = mMediator.buildListContent();
-        assertEquals(List.of(MVT, NTP_CARDS), listContent);
+        assertEquals(List.of(MVT, NTP_CARDS, THEME), listContent);
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT)
+    @Features.DisableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT})
     public void testBuildListContentWhenProfileIsNotReadyAsNtpCustomizationForMvtFeatureDisabled() {
         List<Integer> listContent = mMediator.buildListContent();
-        assertEquals(List.of(NTP_CARDS), listContent);
+        assertEquals(List.of(NTP_CARDS, THEME), listContent);
     }
 
     @Test
@@ -380,13 +380,13 @@ public class NtpCustomizationMediatorUnitTest {
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
 
         assertTrue(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(MVT, NTP_CARDS, FEED), mMediator.buildListContent());
+        assertEquals(List.of(MVT, NTP_CARDS, FEED, THEME), mMediator.buildListContent());
 
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
 
         assertFalse(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(MVT, NTP_CARDS), mMediator.buildListContent());
+        assertEquals(List.of(MVT, NTP_CARDS, THEME), mMediator.buildListContent());
     }
 
     @Test
@@ -397,13 +397,13 @@ public class NtpCustomizationMediatorUnitTest {
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
 
         assertTrue(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(NTP_CARDS, FEED), mMediator.buildListContent());
+        assertEquals(List.of(NTP_CARDS, FEED, THEME), mMediator.buildListContent());
 
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
 
         assertFalse(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(NTP_CARDS), mMediator.buildListContent());
+        assertEquals(List.of(NTP_CARDS, THEME), mMediator.buildListContent());
     }
 
     @Test

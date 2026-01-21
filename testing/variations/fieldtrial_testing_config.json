@@ -17036,6 +17036,24 @@
             ]
         }
     ],
+    "NewTabPageCustomizationV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "show_logo_and_search_box": "true"
+                    },
+                    "enable_features": [
+                        "NewTabPageCustomizationV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "NimbleCollisionAvoidanceV1": [
         {
             "platforms": [
