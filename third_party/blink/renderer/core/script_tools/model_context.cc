@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -82,6 +83,9 @@ class ModelContext::ToolFunctionFinishedCallback
       if (!result) {
         result = "Operation succeeded";
       }
+    } else {
+      V8ScriptRunner::ReportException(script_state->GetIsolate(),
+                                      value.V8Value());
     }
 
     model_context_->OnToolExecuted(execution_id_, std::move(result));
