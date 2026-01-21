@@ -346,8 +346,10 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPolicies) {
     policy->set_extension_version(kExtension1Version2);
     policy->set_action(em::ExtensionInstallPolicy::ACTION_UNSPECIFIED);
   }
-  DecodeProtoFields(extension_install_policies_.payload(), POLICY_SOURCE_CLOUD,
-                    POLICY_SCOPE_USER, &policy_map_);
+  DecodeProtoFields(extension_install_policies_.payload(),
+                    /*external_data_manager=*/nullptr, POLICY_SOURCE_CLOUD,
+                    POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
 
@@ -375,8 +377,10 @@ TEST_F(PolicyProtoDecodersTest, ExtensionInstallPoliciesMalformedNotSet) {
     policy->add_reasons(em::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY);
     policy->add_reasons(em::ExtensionInstallPolicy::REASON_RISK_SCORE);
   }
-  DecodeProtoFields(extension_install_policies_.payload(), POLICY_SOURCE_CLOUD,
-                    POLICY_SCOPE_USER, &policy_map_);
+  DecodeProtoFields(extension_install_policies_.payload(),
+                    /*external_data_manager=*/nullptr, POLICY_SOURCE_CLOUD,
+                    POLICY_SCOPE_USER, &policy_map_,
+                    PolicyPerProfileFilter::kAny);
   EXPECT_TRUE(expected_policy_map_.Equals(policy_map_));
 }
 }  // namespace policy

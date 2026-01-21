@@ -65,6 +65,20 @@ class POLICY_EXPORT ProfileCloudPolicyStore : public DesktopCloudPolicyStore {
       bool validate_in_background,
       UserCloudPolicyValidator::CompletionCallback callback) override;
 
+  void ValidateExtensionInstallPolicy(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+      std::unique_ptr<enterprise_management::PolicySigningKey> key,
+      bool validate_in_background,
+      ExtensionInstallCloudPolicyValidator::CompletionCallback callback)
+      override;
+
+  template <typename PayloadProto>
+  void ValidateImpl(
+      std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator,
+      std::unique_ptr<enterprise_management::PolicySigningKey> cached_key,
+      bool validate_in_background,
+      typename CloudPolicyValidator<PayloadProto>::CompletionCallback callback);
+
   bool is_dasherless_;
 };
 

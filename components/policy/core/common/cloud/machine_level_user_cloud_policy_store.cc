@@ -176,8 +176,8 @@ MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
     return external_policy_cache_load_result;
   }
 
-  enterprise_management::PolicyData default_data;
-  enterprise_management::PolicyData external_data;
+  em::PolicyData default_data;
+  em::PolicyData external_data;
   if (default_data.ParseFromString(
           default_cached_policy_load_result.policy.policy_data()) &&
       external_data.ParseFromString(
@@ -222,8 +222,7 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
 
 std::unique_ptr<UserCloudPolicyValidator>
 MachineLevelUserCloudPolicyStore::CreateValidator(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse>
-        policy_fetch_response,
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator = std::make_unique<UserCloudPolicyValidator>(
       std::move(policy_fetch_response), background_task_runner());
@@ -254,12 +253,37 @@ void MachineLevelUserCloudPolicyStore::InitWithoutToken() {
 }
 
 void MachineLevelUserCloudPolicyStore::Validate(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-    std::unique_ptr<enterprise_management::PolicySigningKey> key,
+    std::unique_ptr<em::PolicyFetchResponse> policy,
+    std::unique_ptr<em::PolicySigningKey> key,
     bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
-  std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
+  auto validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
+  ValidateImpl<em::CloudPolicySettings>(std::move(validator), std::move(key),
+                                        validate_in_background,
+                                        std::move(callback));
+}
+
+void MachineLevelUserCloudPolicyStore::ValidateExtensionInstallPolicy(
+    std::unique_ptr<em::PolicyFetchResponse> policy,
+    std::unique_ptr<em::PolicySigningKey> key,
+    bool validate_in_background,
+    ExtensionInstallCloudPolicyValidator::CompletionCallback callback) {
+  auto validator = CreateExtensionInstallValidator(
+      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
+  ValidateImpl<em::ExtensionInstallPolicies>(
+      std::move(validator), std::move(key), validate_in_background,
+      std::move(callback));
+}
+
+template <typename PayloadProto>
+void MachineLevelUserCloudPolicyStore::ValidateImpl(
+    std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator,
+    std::unique_ptr<em::PolicySigningKey> key,
+    bool validate_in_background,
+    CloudPolicyValidator<PayloadProto>::CompletionCallback callback) {
+  static_assert(std::is_same<PayloadProto, em::CloudPolicySettings>() ||
+                std::is_same<PayloadProto, em::ExtensionInstallPolicies>());
 
   // Policies cached by the external provider do not require key and signature
   // validation since they are stored in a secure location.
@@ -268,8 +292,8 @@ void MachineLevelUserCloudPolicyStore::Validate(
   }
 
   if (validate_in_background) {
-    UserCloudPolicyValidator::StartValidation(std::move(validator),
-                                              std::move(callback));
+    CloudPolicyValidator<PayloadProto>::StartValidation(std::move(validator),
+                                                        std::move(callback));
   } else {
     validator->RunValidation();
     std::move(callback).Run(validator.get());

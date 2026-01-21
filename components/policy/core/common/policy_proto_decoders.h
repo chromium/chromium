@@ -58,9 +58,11 @@ POLICY_EXPORT ExtensionInstallDecision ConvertToExtensionInstallDecision(
 // }
 POLICY_EXPORT void DecodeProtoFields(
     const enterprise_management::ExtensionInstallPolicies& policies,
+    base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,
     PolicyScope scope,
-    PolicyMap* map);
+    PolicyMap* map,
+    PolicyPerProfileFilter per_profile);
 
 // Decode all the fields in `policy` that match the needed `per_profile` flag
 // which are recognized (see the metadata in policy_constants.cc) and store them

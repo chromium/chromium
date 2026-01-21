@@ -32,7 +32,11 @@ CloudPolicyService::CloudPolicyService(const std::string& policy_type,
       store_(store),
       refresh_state_(REFRESH_NONE),
       initialization_complete_(false) {
-  client_->AddPolicyTypeToFetch(policy_type_, settings_entity_id_);
+  if (policy_type_ != dm_protocol::kChromeExtensionInstallUserCloudPolicyType &&
+      policy_type_ !=
+          dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType) {
+    client_->AddPolicyTypeToFetch(policy_type_, settings_entity_id_);
+  }
   client_->AddObserver(this);
   store_->AddObserver(this);
 

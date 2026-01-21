@@ -57,7 +57,7 @@ class FmRegistrationTokenUploaderTest : public testing::Test {
  public:
   FmRegistrationTokenUploaderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        core_(dm_protocol::kChromeDevicePolicyType,
+        core_(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
               std::string(),
               &mock_store_,
               &mock_extension_install_store_,
