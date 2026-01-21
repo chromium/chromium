@@ -8,6 +8,8 @@ const CGFloat kOmniboxMinHeight = 44.0;
 
 const CGFloat kInputPlateMargin = 10.0f;
 
+const CGFloat kInputPlateCornerRadius = 24.0f;
+
 NSString* const kComposeboxAccessibilityIdentifier =
     @"kComposeboxAccessibilityIdentifier";
 NSString* const kComposeboxPlusButtonAccessibilityIdentifier =

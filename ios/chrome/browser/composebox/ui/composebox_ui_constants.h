@@ -11,6 +11,8 @@
 extern const CGFloat kOmniboxMinHeight;
 /// The  margin  for the input plate container with its parent view.
 extern const CGFloat kInputPlateMargin;
+/// The corner radius for the input plate container.
+extern const CGFloat kInputPlateCornerRadius;
 
 // Accessibility identifier for the composebox.
 extern NSString* const kComposeboxAccessibilityIdentifier;

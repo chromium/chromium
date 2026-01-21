@@ -13,9 +13,6 @@
 
 namespace {
 
-// The corner radius for the composebox.
-const CGFloat kComposeboxCornerRadius = 16.0f;
-
 // The additional horizontal margin to ensure the composebox covers the top
 // omnibox.
 const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
@@ -120,7 +117,8 @@ const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
   [super containerViewWillLayoutSubviews];
   _dimmingView.frame = self.containerView.bounds;
   self.presentedView.frame = [self frameOfPresentedViewInContainerView];
-  self.presentedView.layer.cornerRadius = kComposeboxCornerRadius;
+  self.presentedView.layer.cornerRadius =
+      kInputPlateCornerRadius + kInputPlateMargin;
   self.presentedView.clipsToBounds = YES;
 }
 
