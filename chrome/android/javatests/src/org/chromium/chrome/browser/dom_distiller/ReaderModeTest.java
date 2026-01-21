@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.chrome.browser.download.DownloadTestRule;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -95,7 +94,6 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "--reader-mode-heuristics=alwaystrue"
 })
-@DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_IN_VIZ)
 public class ReaderModeTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
