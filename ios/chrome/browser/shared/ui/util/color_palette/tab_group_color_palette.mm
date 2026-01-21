@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/tab_switcher/util/tab_group_color_palette.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 
-#import <CoreGraphics/CGColor.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"

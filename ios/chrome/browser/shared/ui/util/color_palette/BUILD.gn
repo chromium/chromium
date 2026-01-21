@@ -9,6 +9,22 @@ source_set("color_palette") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/common/ui/colors",
+    "//skia",
+    "//skia:skia_core_public_headers",
+    "//ui/color/dynamic_color",
+  ]
+}
+
+source_set("group_color") {
+  sources = [
+    "tab_group_color_palette.h",
+    "tab_group_color_palette.mm",
+  ]
+  deps = [
+    ":color_palette",
+    "//base",
+    "//ios/chrome/common/ui/colors",
     "//skia",
     "//skia:skia_core_public_headers",
     "//ui/color/dynamic_color",
