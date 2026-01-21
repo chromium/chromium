@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.selectable_list;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,7 +96,17 @@ public class InlineSearchBox {
         initializeSearchText(hintStringResId, onEditorActionListener);
         initializeClearTextButton();
 
-        mInlineSearchBoxContainer.setBackgroundResource(R.drawable.search_toolbar_modern_bg);
+        Resources resources = context.getResources();
+        mInlineSearchBoxContainer.setBackgroundResource(R.drawable.search_row_modern_bg);
+        int paddingStart = Math.round(16 * resources.getDisplayMetrics().density);
+        mInlineSearchBoxContainer.setPaddingRelative(paddingStart, 0, 0, 0);
+
+        int height = Math.round(40 * resources.getDisplayMetrics().density);
+        int marginBottom = Math.round(2 * resources.getDisplayMetrics().density);
+        ViewGroup.MarginLayoutParams params =
+                new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+        params.bottomMargin = marginBottom;
+        mInlineSearchBoxContainer.setLayoutParams(params);
     }
 
     /**
