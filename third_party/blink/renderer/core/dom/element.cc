@@ -10020,23 +10020,13 @@ void Element::UpdateBackdropPseudoElement(
 }
 
 void Element::ApplyPendingBackdropPseudoElementUpdate() {
-  PseudoElement* element = GetPseudoElement(PseudoId::kPseudoIdBackdrop,
-                                            /* pseudo_argument */ g_null_atom);
-
-  if (!element && CanGeneratePseudoElement(PseudoId::kPseudoIdBackdrop)) {
-    element = PseudoElement::Create(this, PseudoId::kPseudoIdBackdrop,
-                                    /* pseudo_argument */ g_null_atom);
-    data_ =
-        EnsureRareData().SetPseudoElement(PseudoId::kPseudoIdBackdrop, element,
-                                          /* pseudo_argument */ g_null_atom);
-    element->InsertedInto(*this);
-    GetDocument().AddToTopLayer(element, this);
-  }
-
-  DCHECK(element);
-  element->SetNeedsStyleRecalc(kLocalStyleChange,
-                               StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kConditionalBackdrop));
+  // Mark for style recalc, in order to trigger creation of a ::backdrop pseudo-
+  // element if needed. There's no way of telling if there'll be any need for it
+  // at this point, since we need computed style first (e.g. if it's
+  // `display:none`, there should be no pseudo-element generated).
+  SetNeedsStyleRecalc(kLocalStyleChange,
+                      StyleChangeReasonForTracing::Create(
+                          style_change_reason::kConditionalBackdrop));
 }
 
 void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
@@ -10229,6 +10219,9 @@ PseudoElement* Element::UpdatePseudoElement(
       ClearPseudoElement(pseudo_id, pseudo_argument);
       element = nullptr;
     }
+
+    // A pseudo-element without computed style should not exist.
+    DCHECK(!element || element->GetComputedStyle());
   }
 
   return element;
