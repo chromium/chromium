@@ -437,16 +437,6 @@ void TestGLES2Interface::set_max_texture_size(int size) {
   test_capabilities_.max_texture_size = size;
 }
 
-void TestGLES2Interface::set_supports_gpu_memory_buffer_format(
-    gfx::BufferFormat format,
-    bool support) {
-  if (support) {
-    test_capabilities_.gpu_memory_buffer_formats.Put(format);
-  } else {
-    test_capabilities_.gpu_memory_buffer_formats.Remove(format);
-  }
-}
-
 void TestGLES2Interface::set_supports_texture_rg(bool support) {
   test_capabilities_.texture_rg = support;
 }

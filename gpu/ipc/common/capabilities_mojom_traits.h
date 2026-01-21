@@ -6,9 +6,12 @@
 #define GPU_IPC_COMMON_CAPABILITIES_MOJOM_TRAITS_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/ipc/common/capabilities.mojom-shared.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
+#include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 
 namespace mojo {
 
@@ -85,8 +88,9 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool using_vulkan_context(const gpu::Capabilities& cap) {
     return cap.using_vulkan_context;
   }
-  static uint64_t gpu_memory_buffer_formats(const gpu::Capabilities& cap) {
-    return cap.gpu_memory_buffer_formats.ToEnumBitmask();
+  static const base::flat_set<viz::SharedImageFormat>& mappable_formats(
+      const gpu::Capabilities& cap) {
+    return cap.mappable_formats;
   }
   static const base::flat_map<uint32_t, std::vector<uint64_t>>&
   drm_formats_and_modifiers(const gpu::Capabilities& cap) {

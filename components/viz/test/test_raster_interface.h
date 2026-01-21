@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace viz {
 

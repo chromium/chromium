@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/surface_origin.h"
 
 // From gl2.h. We want to avoid including gl headers because client-side and
@@ -67,12 +68,7 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 
   bool using_vulkan_context = false;
 
-  gfx::GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
-      gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
-      gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
-      gfx::BufferFormat::YVU_420,
-  };
-
+  base::flat_set<viz::SharedImageFormat> mappable_formats;
   base::flat_map<uint32_t, std::vector<uint64_t>> drm_formats_and_modifiers;
   uint64_t drm_device_id = 0;
 };

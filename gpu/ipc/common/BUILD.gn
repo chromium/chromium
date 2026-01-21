@@ -808,8 +808,10 @@ source_set("mojom_traits") {
     ":interfaces_shared",
     ":memory_stats_sources",
     ":surface_handle_type",
+    "//base",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom/compositing:shared_image_format",
   ]
   if (enable_vulkan) {
     public_deps += [ "//gpu/vulkan" ]

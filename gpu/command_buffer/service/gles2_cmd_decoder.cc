@@ -3317,13 +3317,7 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
-
-  // Clear the Capabilities EnumSet before copying from FeatureFlags.
-  caps.gpu_memory_buffer_formats.Clear();
-  for (auto si_format : feature_info_->feature_flags().mappable_formats) {
-    caps.gpu_memory_buffer_formats.Put(
-        viz::SharedImageFormatToBufferFormat(si_format));
-  }
+  caps.mappable_formats = feature_info_->feature_flags().mappable_formats;
 
   // Technically, YUV readback is handled on the client side, but enable it here
   // so that clients can use this to detect support.

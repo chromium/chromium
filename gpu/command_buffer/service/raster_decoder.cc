@@ -1140,12 +1140,7 @@ gl::GLSurface* RasterDecoderImpl::GetGLSurface() {
 Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
-  // Clear the Capabilities EnumSet before copying from FeatureFlags.
-  caps.gpu_memory_buffer_formats.Clear();
-  for (auto si_format : feature_info()->feature_flags().mappable_formats) {
-    caps.gpu_memory_buffer_formats.Put(
-        viz::SharedImageFormatToBufferFormat(si_format));
-  }
+  caps.mappable_formats = feature_info()->feature_flags().mappable_formats;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;

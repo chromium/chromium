@@ -129,8 +129,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void set_support_texture_half_float_linear(bool support);
   void set_support_texture_norm16(bool support);
   void set_max_texture_size(int size);
-  void set_supports_gpu_memory_buffer_format(gfx::BufferFormat format,
-                                             bool support);
   void set_supports_texture_rg(bool support);
 
   // When set, MapBufferCHROMIUM will return NULL after this many times.

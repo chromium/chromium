@@ -4,6 +4,8 @@
 
 module gpu.mojom;
 
+import "services/viz/public/mojom/compositing/shared_image_format.mojom";
+
 // See gpu/command_buffer/common/capabilities.h.
 struct Capabilities {
   int32 max_texture_size;
@@ -31,7 +33,7 @@ struct Capabilities {
   bool mesa_framebuffer_flip_y;
   bool context_supports_distance_field_text;
   bool using_vulkan_context;
-  uint64 gpu_memory_buffer_formats;
+  array<viz.mojom.SharedImageFormat> mappable_formats;
   map<uint32, array<uint64>> drm_formats_and_modifiers;
   uint64 drm_device_id;
 };

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/constants.h"
 
@@ -127,9 +128,9 @@ void TestRasterInterface::set_supports_gpu_memory_buffer_format(
     gfx::BufferFormat format,
     bool support) {
   if (support) {
-    caps_.gpu_memory_buffer_formats.Put(format);
+    caps_.mappable_formats.insert(GetSharedImageFormat(format));
   } else {
-    caps_.gpu_memory_buffer_formats.Remove(format);
+    caps_.mappable_formats.erase(GetSharedImageFormat(format));
   }
 }
 
