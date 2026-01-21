@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.ARCHIVED_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildNonOtrShadowStore;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
 import android.content.Context;
 
@@ -80,8 +81,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
-    public static final String ARCHIVED_TAB_SELECTOR_UNIQUE_TAG = "archived";
-
     /** Observer for the ArchivedTabModelOrchestrator class. */
     public interface Observer {
         /**
@@ -402,8 +401,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
-                        TabMetadataFileManager.getMetadataFileName(
-                                ARCHIVED_TAB_SELECTOR_UNIQUE_TAG),
+                        TabMetadataFileManager.getMetadataFileName(ARCHIVED_WINDOW_TAG),
                         /* otherWindowTag= */ null,
                         /* mergeTabsOnStartup= */ false,
                         /* tabMergingEnabled= */ false) {
@@ -587,7 +585,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mTabModelSelector,
                         mTabPersistencePolicy,
                         mTabPersistentStore,
-                        ARCHIVED_TAB_SELECTOR_UNIQUE_TAG,
+                        ARCHIVED_WINDOW_TAG,
                         ARCHIVED_TAG);
     }
 

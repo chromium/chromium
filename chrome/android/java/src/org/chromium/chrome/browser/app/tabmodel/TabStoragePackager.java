@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -69,7 +70,7 @@ public class TabStoragePackager {
                             : "Regular or incognito tab model must have a valid window ID.";
                     return Integer.toString(windowId);
                 case TabModelType.ARCHIVED:
-                    return ArchivedTabModelOrchestrator.ARCHIVED_TAB_SELECTOR_UNIQUE_TAG;
+                    return ARCHIVED_WINDOW_TAG;
                 default:
                     assert false : "Unknown tab model type: " + tabModelType;
                     return "";

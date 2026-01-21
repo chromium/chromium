@@ -12,6 +12,8 @@ android_library("java") {
   ]
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/tabwindow/PersistentStoreMigrationManagerImpl.java",
+
     # This factory needs to stay as a Java file for the
     # //chrome/browser/tabwindow:factory_javafactory target.
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerFactory.java",

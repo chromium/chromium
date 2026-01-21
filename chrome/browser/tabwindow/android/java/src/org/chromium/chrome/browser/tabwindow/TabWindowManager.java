@@ -56,6 +56,8 @@ public interface TabWindowManager {
     // Maximum number of TabModelSelectors. Set high enough that it is functionally unlimited.
     int MAX_SELECTORS = 1000;
 
+    // Used when an identifier is required to identify the window of archived tabs.
+    String ARCHIVED_WINDOW_TAG = "archived";
     String ASSERT_INDICES_MATCH_HISTOGRAM_NAME = "Android.MultiWindowMode.AssertIndicesMatch";
     String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
     String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";

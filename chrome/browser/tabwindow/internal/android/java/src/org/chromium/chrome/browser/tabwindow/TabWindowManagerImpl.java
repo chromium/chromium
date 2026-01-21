@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabwindow;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.ARCHIVED_WINDOW_TAG;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
@@ -100,7 +102,24 @@ public class TabWindowManagerImpl implements TabWindowManager {
         int NUM_ENTRIES = 7;
     }
 
-    private final Map<@WindowId Integer, TabModelSelector> mWindowIdToSelectors = new HashMap<>();
+    /** Holds dependencies associated with a specific window. */
+    private static class WindowDeps {
+        @SuppressWarnings("unused")
+        public final PersistentStoreMigrationManager manager;
+
+        public final TabModelSelector selector;
+
+        /**
+         * @param manager The migration manager for the window.
+         * @param selector The tab model selector for the window.
+         */
+        public WindowDeps(PersistentStoreMigrationManager manager, TabModelSelector selector) {
+            this.manager = manager;
+            this.selector = selector;
+        }
+    }
+
+    private final Map<@WindowId Integer, WindowDeps> mWindowIdToDeps = new HashMap<>();
     private final Map<TabModelSelector, @WindowId Integer> mSelectorsToWindowId = new HashMap<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
@@ -113,7 +132,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
 
-    private @Nullable TabModelSelector mArchivedTabModelSelector;
+    private @Nullable WindowDeps mArchivedTabModelDeps;
     private boolean mKeepAllTabModelsLoaded;
     private boolean mTabStateInitialized;
 
@@ -154,7 +173,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         if (mActivityAssignments.get(activity) != null) {
             TabModelSelector assignedSelector = mActivityAssignments.get(activity);
             for (Integer i : mSelectorsToWindowId.values()) {
-                if (mWindowIdToSelectors.get(i) == assignedSelector) {
+                if (assumeNonNull(mWindowIdToDeps.get(i)).selector == assignedSelector) {
                     @WindowId
                     int existingWindowId =
                             assertIndicesMatch(
@@ -180,13 +199,13 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
 
         @WindowId int originalWindowId = windowId;
-        if (mWindowIdToSelectors.get(windowId) != null) {
+        if (mWindowIdToDeps.get(windowId) != null) {
             if (shutdownIfHeadless(windowId)) {
                 // Can safely use requested window id now.
             } else {
                 // Find the next valid/empty window id.
                 for (int i = 0; i < mMaxSelectors; i++) {
-                    if (mWindowIdToSelectors.get(i) == null) {
+                    if (mWindowIdToDeps.get(i) == null) {
                         windowId = i;
                         break;
                     }
@@ -195,7 +214,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         }
 
         // Too many activities going at once.
-        if (mWindowIdToSelectors.get(windowId) != null) return null;
+        if (mWindowIdToDeps.get(windowId) != null) return null;
 
         @WindowId
         int assignedWindowId =
@@ -213,7 +232,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         tabCreatorManager,
                         nextTabPolicySupplier,
                         multiInstanceManager);
-        mWindowIdToSelectors.put(assignedWindowId, selector);
+
+        addDepForWindow(assignedWindowId, selector);
         mSelectorsToWindowId.put(selector, assignedWindowId);
         mActivityAssignments.put(activity, selector);
 
@@ -230,8 +250,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
             @WindowId int windowId, Profile profile) {
         if (windowId == INVALID_WINDOW_ID) return null;
 
-        if (mWindowIdToSelectors.containsKey(windowId)) {
-            return mWindowIdToSelectors.get(windowId);
+        if (mWindowIdToDeps.containsKey(windowId)) {
+            return mWindowIdToDeps.get(windowId).selector;
         }
 
         Pair<TabModelSelector, Destroyable> pair =
@@ -239,7 +259,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         TabModelSelector selector = pair.first;
         mHeadlessAssignments.put(selector, pair.second);
         mSelectorsToWindowId.put(selector, windowId);
-        mWindowIdToSelectors.put(windowId, selector);
+        addDepForWindow(windowId, selector);
 
         for (Observer obs : mObservers) obs.onTabModelSelectorAdded(selector);
         return selector;
@@ -247,14 +267,14 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public boolean shutdownIfHeadless(@WindowId int windowId) {
-        if (!mWindowIdToSelectors.containsKey(windowId)) return false;
-        TabModelSelector selector = mWindowIdToSelectors.get(windowId);
+        if (!mWindowIdToDeps.containsKey(windowId)) return false;
+        TabModelSelector selector = mWindowIdToDeps.get(windowId).selector;
 
         if (!mHeadlessAssignments.containsKey(selector)) return false;
 
         Destroyable shutdown = mHeadlessAssignments.remove(selector);
         assumeNonNull(shutdown).destroy();
-        mWindowIdToSelectors.remove(windowId);
+        mWindowIdToDeps.remove(windowId);
         mSelectorsToWindowId.remove(selector);
         return true;
     }
@@ -286,7 +306,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
             return assignedWindowId;
         }
 
-        TabModelSelector selectorAtRequestedWindowId = mWindowIdToSelectors.get(requestedWindowId);
+        WindowDeps windowDeps = mWindowIdToDeps.get(requestedWindowId);
+        TabModelSelector selectorAtRequestedWindowId =
+                windowDeps == null ? null : windowDeps.selector;
         Activity activityAtRequestedWindowId = null;
         for (Activity mappedActivity : mActivityAssignments.keySet()) {
             if (mActivityAssignments.get(mappedActivity).equals(selectorAtRequestedWindowId)) {
@@ -488,9 +510,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public @Nullable TabWindowInfo getTabWindowInfoById(@TabId int tabId) {
-        for (Map.Entry<@WindowId Integer, TabModelSelector> entry :
-                mWindowIdToSelectors.entrySet()) {
-            TabModelSelector selector = entry.getValue();
+        for (Map.Entry<@WindowId Integer, WindowDeps> entry : mWindowIdToDeps.entrySet()) {
+            TabModelSelector selector = entry.getValue().selector;
             for (TabModel tabModel : selector.getModels()) {
                 @Nullable final Tab tab = tabModel.getTabById(tabId);
                 if (tab != null) {
@@ -516,7 +537,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId) {
-        return mWindowIdToSelectors.get(windowId);
+        WindowDeps windowDeps = mWindowIdToDeps.get(windowId);
+        return windowDeps == null ? null : windowDeps.selector;
     }
 
     @Override
@@ -528,12 +550,18 @@ public class TabWindowManagerImpl implements TabWindowManager {
 
     @Override
     public Collection<TabModelSelector> getAllTabModelSelectors() {
-        return mWindowIdToSelectors.values();
+        return mSelectorsToWindowId.keySet();
     }
 
     @Override
     public void setArchivedTabModelSelector(@Nullable TabModelSelector archivedTabModelSelector) {
-        mArchivedTabModelSelector = archivedTabModelSelector;
+        if (archivedTabModelSelector != null) {
+            PersistentStoreMigrationManager manager =
+                    new PersistentStoreMigrationManagerImpl(ARCHIVED_WINDOW_TAG);
+            mArchivedTabModelDeps = new WindowDeps(manager, archivedTabModelSelector);
+        } else {
+            mArchivedTabModelDeps = null;
+        }
     }
 
     @Override
@@ -567,10 +595,10 @@ public class TabWindowManagerImpl implements TabWindowManager {
         } else {
             for (InstanceInfo instanceInfo : instanceInfoList) {
                 @WindowId int windowId = instanceInfo.instanceId;
-                if (!mWindowIdToSelectors.containsKey(windowId)) {
+                if (!mWindowIdToDeps.containsKey(windowId)) {
                     tabModelSelectorList.add(requestSelectorWithoutActivity(windowId, profile));
                 } else {
-                    tabModelSelectorList.add(mWindowIdToSelectors.get(windowId));
+                    tabModelSelectorList.add(mWindowIdToDeps.get(windowId).selector);
                 }
             }
         }
@@ -660,7 +688,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         TabModelSelector selector = mActivityAssignments.remove(activity);
         @WindowId int windowId = getWindowIdForSelectorChecked(selector);
         if (windowId >= 0) {
-            mWindowIdToSelectors.remove(windowId);
+            mWindowIdToDeps.remove(windowId);
             mSelectorsToWindowId.remove(selector);
             if (mKeepAllTabModelsLoaded) {
                 Profile profile = findActiveProfile();
@@ -683,8 +711,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
     }
 
     private boolean isPossiblyAnArchivedTab() {
-        return mArchivedTabModelSelector == null
-                || !mArchivedTabModelSelector.isTabStateInitialized();
+        return mArchivedTabModelDeps == null
+                || !mArchivedTabModelDeps.selector.isTabStateInitialized();
     }
 
     private @Nullable Tab getTabFromTabModelSelector(
@@ -699,8 +727,8 @@ public class TabWindowManagerImpl implements TabWindowManager {
             return asyncTabParams.getTabToReparent();
         }
 
-        if (mArchivedTabModelSelector != null) {
-            return mArchivedTabModelSelector.getTabById(tabId);
+        if (mArchivedTabModelDeps != null) {
+            return mArchivedTabModelDeps.selector.getTabById(tabId);
         }
 
         return null;
@@ -710,5 +738,11 @@ public class TabWindowManagerImpl implements TabWindowManager {
         if (selector == null) return TabWindowManager.INVALID_WINDOW_ID;
         @WindowId Integer windowId = mSelectorsToWindowId.get(selector);
         return windowId == null || windowId == -1 ? TabWindowManager.INVALID_WINDOW_ID : windowId;
+    }
+
+    private void addDepForWindow(@WindowId int windowId, TabModelSelector selector) {
+        PersistentStoreMigrationManager manager =
+                new PersistentStoreMigrationManagerImpl(String.valueOf(windowId));
+        mWindowIdToDeps.put(windowId, new WindowDeps(manager, selector));
     }
 }
