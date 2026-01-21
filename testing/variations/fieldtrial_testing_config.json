@@ -15235,18 +15235,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDSEKeepAlive",
-                    "enable_features": [
-                        "KeepDefaultSearchEngineRendererAlive",
-                        "ProcessPerSiteSkipDevtoolsUsers",
-                        "TrackEmptyRendererProcessesForReuse"
-                    ],
-                    "disable_features": [
-                        "ProcessPerSiteForDSE",
-                        "ProcessPerSiteUpToMainFrameThreshold"
-                    ]
-                },
-                {
                     "name": "EnabledDSEKeepAliveWithProcessSharing",
                     "params": {
                         "ProcessPerSiteMainFrameThreshold": "15"
