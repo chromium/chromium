@@ -53,7 +53,8 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
   // also sets the accessible name. Primarily used for scrollable rows in
   // detailed views.
   // New callers should use the function below which takes an ImageModel.
-  // TODO(b/259490845): Change callers to pass an ImageModel and eliminate this.
+  // Most probably we can migrate callers to pass an ImageModel and eliminate
+  // this function. (see b/259490845)
   void AddIconAndLabel(const gfx::ImageSkia& image, const std::u16string& text);
 
   // The same as the above function with `ImageModel` parameter instead.
