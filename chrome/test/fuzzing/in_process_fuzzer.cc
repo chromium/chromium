@@ -192,8 +192,7 @@ class FuzzerTestLauncherDelegate : public content::TestLauncherDelegate {
   FuzzerTestLauncherDelegate(std::unique_ptr<InProcessFuzzer>&& fuzzer,
                              std::vector<std::string>&& libfuzzer_arguments)
       : fuzzer_(std::move(fuzzer)),
-        libfuzzer_arguments_(std::move(libfuzzer_arguments)) {
-  }
+        libfuzzer_arguments_(std::move(libfuzzer_arguments)) {}
 
   int RunTestSuite(int argc, char** argv) override {
     fuzzer_->Run(libfuzzer_arguments_);
@@ -257,7 +256,14 @@ class ChildProcessTestLauncherDelegate : public content::TestLauncherDelegate {
  public:
   ChildProcessTestLauncherDelegate() = default;
   int RunTestSuite(int argc, char** argv) override {
-    LOG(FATAL) << "Trying to run tests in child";
+    LOG(FATAL)
+        << "Trying to run tests in child.\n"
+        << "It looks like you may be trying to pass Chromium command line "
+           "arguments to the fuzzer. This fuzzer does not accept "
+           "Chromium arguments on its command line (subclasses can "
+           "override InProcessFuzzer::GetChromiumCommandLineArguments() "
+           "to modify these). The command line arguments passed to the "
+           "fuzzing engine should use single dashes (e.g. -runs=1).";
   }
 #if !BUILDFLAG(IS_ANDROID)
   // Android browser tests set the ContentMainDelegate itself for the test
