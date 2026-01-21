@@ -93,9 +93,10 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
   // DirectReceiver requires an I/O MessagePump, or the pump to expose an
   // IOWatcher like MessagePumpAndroid.
   const bool should_use_io_pump =
-      mojo::IsDirectReceiverSupported() &&
-      (features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
-       features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled());
+      features::IsVizWithIoMessagePumpEnabled() ||
+      (mojo::IsDirectReceiverSupported() &&
+       (features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
+        features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()));
   if (should_use_io_pump) {
     thread_options.message_pump_type = base::MessagePumpType::IO;
   }

@@ -133,6 +133,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kSingleVideoFrameRateThrottling);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizDirectCompositorThreadIpcNonRoot);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kVizDirectCompositorThreadIpcFrameSinkManager);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizWithIoMessagePump);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizNullHypothesis);
 #if BUILDFLAG(IS_CHROMEOS)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrosContentAdjustedRefreshRate);
@@ -164,6 +165,7 @@ VIZ_COMMON_EXPORT bool IsBackForwardTransitionsSameDocSharedImageEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsVizDirectCompositorThreadIpcNonRootEnabled();
 VIZ_COMMON_EXPORT bool IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled();
+VIZ_COMMON_EXPORT bool IsVizWithIoMessagePumpEnabled();
 #if BUILDFLAG(IS_WIN)
 VIZ_COMMON_EXPORT bool ShouldRemoveRedirectionBitmap();
 #endif

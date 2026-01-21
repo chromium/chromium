@@ -27603,6 +27603,21 @@
             ]
         }
     ],
+    "VizWithIoMessagePump": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VizWithIoMessagePump"
+                    ]
+                }
+            ]
+        }
+    ],
     "VulkanV2": [
         {
             "platforms": [

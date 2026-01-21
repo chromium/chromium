@@ -354,6 +354,9 @@ BASE_FEATURE(kVizDirectCompositorThreadIpcNonRoot,
 BASE_FEATURE(kVizDirectCompositorThreadIpcFrameSinkManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Switches the message pump to base::MessagePumpType::IO on the Viz thread.
+BASE_FEATURE(kVizWithIoMessagePump, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Null Hypothesis test for viz. This will be used in an meta experiment to
 // judge finch variation.
 BASE_FEATURE(kVizNullHypothesis, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -406,6 +409,10 @@ bool IsVizDirectCompositorThreadIpcNonRootEnabled() {
 bool IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled() {
   return base::FeatureList::IsEnabled(
       kVizDirectCompositorThreadIpcFrameSinkManager);
+}
+
+bool IsVizWithIoMessagePumpEnabled() {
+  return base::FeatureList::IsEnabled(kVizWithIoMessagePump);
 }
 
 bool IsUsingVizFrameSubmissionForWebView() {
