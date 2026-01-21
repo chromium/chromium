@@ -1218,7 +1218,12 @@ void ViewTransition::DecrementWaitUntilPromises() {
   CHECK_GT(wait_until_pending_promise_count_, 0);
   // If we reach 0, then schedule an animation so that we process the animation.
   if (--wait_until_pending_promise_count_ == 0) {
-    document_->View()->ScheduleAnimation();
+    // Since this call happens via some promise resolution, it could be the case
+    // that we're in a tear-down or some other state where we don't have a View
+    // anymore.
+    if (document_ && document_->View()) {
+      document_->View()->ScheduleAnimation();
+    }
   }
 }
 
