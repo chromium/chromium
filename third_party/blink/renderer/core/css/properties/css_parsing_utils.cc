@@ -124,7 +124,7 @@ using cssvalue::CSSFontVariationValue;
 namespace css_parsing_utils {
 namespace {
 
-const char kTwoDashes[] = "--";
+constexpr char kTwoDashes[] = "--";
 constexpr size_t kMaxLanguageOverrideLength = 4;
 
 bool IsLeftOrRightKeyword(CSSValueID id) {
@@ -1750,7 +1750,7 @@ CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream& stream,
   // requirement of <dashed-ident>.
   // https://github.com/w3c/csswg-drafts/issues/12206
   if (stream.Peek().GetType() == kIdentToken &&
-      !stream.Peek().Value().ToString().StartsWith(kTwoDashes)) {
+      !stream.Peek().Value().starts_with(kTwoDashes)) {
     return nullptr;
   }
   return ConsumeCustomIdent(stream, context, local_context);
@@ -4173,7 +4173,7 @@ bool IsDashedIdent(const CSSParserToken& token) {
     return false;
   }
   DCHECK(!IsCSSWideKeyword(token.Value()));
-  return token.Value().ToString().StartsWith(kTwoDashes);
+  return token.Value().starts_with(kTwoDashes);
 }
 
 CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
@@ -9300,7 +9300,7 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
     }
     if (context.Mode() == kUASheetMode && !dashed_ident) {
       if (stream.Peek().GetType() == kIdentToken &&
-          stream.Peek().Value().ToString().StartsWith("-internal-")) {
+          stream.Peek().Value().starts_with("-internal-")) {
         dashed_ident = ConsumeCustomIdent(stream, context, local_context);
         continue;
       }

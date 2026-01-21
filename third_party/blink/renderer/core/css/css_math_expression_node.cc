@@ -5381,7 +5381,7 @@ const RandomValueSharing* RandomValueSharing::Parse(
     stream.ConsumeIncludingWhitespace();
   }
 
-  if (token.Value().ToString().StartsWith("--")) {
+  if (token.Value().starts_with("--")) {
     name = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
   }
 
