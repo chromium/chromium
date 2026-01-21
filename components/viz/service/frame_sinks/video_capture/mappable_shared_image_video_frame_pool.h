@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
-#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
 
 #include <memory>
 
@@ -18,22 +18,23 @@ namespace viz {
 
 class GmbVideoFramePoolContextProvider;
 
-class VIZ_SERVICE_EXPORT GpuMemoryBufferVideoFramePool : public VideoFramePool {
+class VIZ_SERVICE_EXPORT MappableSharedImageVideoFramePool
+    : public VideoFramePool {
  public:
   // Creates new pool instance with specified |capacity|.
   // The |context_provider| must outlive this instance.
-  explicit GpuMemoryBufferVideoFramePool(
+  explicit MappableSharedImageVideoFramePool(
       int capacity,
       media::VideoPixelFormat format,
       const gfx::ColorSpace& color_space,
       GmbVideoFramePoolContextProvider* context_provider,
       mojom::BufferFormatPreference buffer_format_preference);
-  ~GpuMemoryBufferVideoFramePool() override;
+  ~MappableSharedImageVideoFramePool() override;
 
-  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&& other) =
-      delete;
-  GpuMemoryBufferVideoFramePool& operator=(
-      const GpuMemoryBufferVideoFramePool& other) = delete;
+  MappableSharedImageVideoFramePool(
+      const MappableSharedImageVideoFramePool&& other) = delete;
+  MappableSharedImageVideoFramePool& operator=(
+      const MappableSharedImageVideoFramePool& other) = delete;
 
   // VideoFramePool implementation:
   scoped_refptr<media::VideoFrame> ReserveVideoFrame(
@@ -86,9 +87,9 @@ class VIZ_SERVICE_EXPORT GpuMemoryBufferVideoFramePool : public VideoFramePool {
   mojom::BufferFormatPreference buffer_format_preference_ =
       mojom::BufferFormatPreference::kDefault;
 
-  base::WeakPtrFactory<GpuMemoryBufferVideoFramePool> weak_factory_{this};
+  base::WeakPtrFactory<MappableSharedImageVideoFramePool> weak_factory_{this};
 };
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_

@@ -29,7 +29,7 @@
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
-#include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
+#include "components/viz/service/frame_sinks/video_capture/mappable_shared_image_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -118,7 +118,7 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
       switch (buffer_format_preference) {
         case mojom::BufferFormatPreference::kPreferMappableSharedImage:
         case mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle:
-          return std::make_unique<GpuMemoryBufferVideoFramePool>(
+          return std::make_unique<MappableSharedImageVideoFramePool>(
               capacity, format, color_space, context_provider,
               buffer_format_preference);
         case mojom::BufferFormatPreference::kDefault:
@@ -128,7 +128,7 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
       }
     }
     case media::PIXEL_FORMAT_NV12:
-      return std::make_unique<GpuMemoryBufferVideoFramePool>(
+      return std::make_unique<MappableSharedImageVideoFramePool>(
           capacity, format, gfx::ColorSpace::CreateREC709(), context_provider,
           buffer_format_preference);
     default:

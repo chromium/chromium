@@ -2261,7 +2261,7 @@ TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
     return;
   }
 
-  // GpuMemoryBufferVideoFramePool only kicks in for the
+  // MappableSharedImageVideoFramePool only kicks in for the
   // kPreferMappableSharedImage and kPreferSharedImageWithNativeHandle formats.
   if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
     return;

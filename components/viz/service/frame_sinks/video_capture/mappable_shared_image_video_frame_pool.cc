@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/video_capture/gpu_memory_buffer_video_frame_pool.h"
+#include "components/viz/service/frame_sinks/video_capture/mappable_shared_image_video_frame_pool.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 
 namespace viz {
 
-GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
+MappableSharedImageVideoFramePool::MappableSharedImageVideoFramePool(
     int capacity,
     media::VideoPixelFormat format,
     const gfx::ColorSpace& color_space,
@@ -24,13 +24,14 @@ GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
   RecreateVideoFramePool();
 }
 
-GpuMemoryBufferVideoFramePool::~GpuMemoryBufferVideoFramePool() {
+MappableSharedImageVideoFramePool::~MappableSharedImageVideoFramePool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 scoped_refptr<media::VideoFrame>
-GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
-                                                 const gfx::Size& size) {
+MappableSharedImageVideoFramePool::ReserveVideoFrame(
+    media::VideoPixelFormat format,
+    const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(format, format_) << "Reserving a format that is different from the "
                                "one specified in the constructor.";
@@ -46,7 +47,7 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
   if (result) {
     num_reserved_frames_++;
     result->AddDestructionObserver(base::BindOnce(
-        &GpuMemoryBufferVideoFramePool::OnVideoFrameDestroyed,
+        &MappableSharedImageVideoFramePool::OnVideoFrameDestroyed,
         weak_factory_.GetWeakPtr(), video_frame_pool_generation_));
   }
 
@@ -54,7 +55,7 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
 }
 
 media::mojom::VideoBufferHandlePtr
-GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
+MappableSharedImageVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
   CHECK(frame.HasMappableSharedImage());
 
@@ -64,17 +65,17 @@ GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
       std::move(handle));
 }
 
-size_t GpuMemoryBufferVideoFramePool::GetNumberOfReservedFrames() const {
+size_t MappableSharedImageVideoFramePool::GetNumberOfReservedFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return num_reserved_frames_;
 }
 
-void GpuMemoryBufferVideoFramePool::RecreateVideoFramePool() {
+void MappableSharedImageVideoFramePool::RecreateVideoFramePool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto pool_context = context_provider_->CreateContext(
-      base::BindOnce(&GpuMemoryBufferVideoFramePool::RecreateVideoFramePool,
+      base::BindOnce(&MappableSharedImageVideoFramePool::RecreateVideoFramePool,
                      weak_factory_.GetWeakPtr()));
   // Determine whether the video frame pool should use CPU mappable buffers.
   // If the caller prefers SharedImage with native handle (i.e., no CPU
@@ -89,7 +90,7 @@ void GpuMemoryBufferVideoFramePool::RecreateVideoFramePool() {
   num_reserved_frames_ = 0;
 }
 
-void GpuMemoryBufferVideoFramePool::OnVideoFrameDestroyed(
+void MappableSharedImageVideoFramePool::OnVideoFrameDestroyed(
     uint32_t frame_pool_generation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
