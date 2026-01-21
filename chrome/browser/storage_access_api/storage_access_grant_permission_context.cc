@@ -202,21 +202,6 @@ bool ShouldPersistSetting(bool permission_allowed, RequestOutcome outcome) {
   return permission_allowed;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AutograntViaFedCmOutcome {
-  kAllowed,
-  kDeniedByPermissionsPolicy,
-  kDeniedByPermission,
-  kDeniedByPreventSilentAccess,
-
-  kMaxValue = kDeniedByPreventSilentAccess,
-};
-
-void RecordAutograntViaFedCmOutcomeSample(AutograntViaFedCmOutcome outcome) {
-  base::UmaHistogramEnumeration("API.StorageAccess.AutograntViaFedCm", outcome);
-}
-
 FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* rfh,
@@ -226,8 +211,6 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   CHECK(browser_context);
   if (!rfh->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
-    RecordAutograntViaFedCmOutcomeSample(
-        AutograntViaFedCmOutcome::kDeniedByPermissionsPolicy);
     return nullptr;
   }
   FederatedIdentityPermissionContext* fedcm_context =
@@ -235,8 +218,6 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
   if (!fedcm_context || !fedcm_context->HasSharingPermission(
                             /*relying_party_embedder=*/embedding_site,
                             /*identity_provider=*/requesting_site)) {
-    RecordAutograntViaFedCmOutcomeSample(
-        AutograntViaFedCmOutcome::kDeniedByPermission);
     return nullptr;
   }
 
@@ -245,12 +226,9 @@ FederatedIdentityPermissionContext* IsAutograntViaFedCmAllowed(
               browser_context);
       !reauth_context ||
       reauth_context->RequiresUserMediation(embedding_origin)) {
-    RecordAutograntViaFedCmOutcomeSample(
-        AutograntViaFedCmOutcome::kDeniedByPreventSilentAccess);
     return nullptr;
   }
 
-  RecordAutograntViaFedCmOutcomeSample(AutograntViaFedCmOutcome::kAllowed);
   RecordOutcomeSample(RequestOutcome::kAllowedByFedCM, requesting_site);
   return fedcm_context;
 }

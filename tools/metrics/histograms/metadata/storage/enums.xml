@@ -70,13 +70,6 @@ chromium-metrics-reviews@google.com.
              TopLevelStorageAccess and StorageAccess"/>
 </enum>
 
-<enum name="AutograntViaFedCmOutcome">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Denied by permissions policy"/>
-  <int value="2" label="Denied by permission"/>
-  <int value="3" label="Denied by preventSilentAccess"/>
-</enum>
-
 <!-- LINT.IfChange(BlobBuildFromStreamResult) -->
 
 <enum name="BlobBuildFromStreamResult">
