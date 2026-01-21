@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -22,14 +21,13 @@ SigninErrorHandler::SigninErrorHandler(Browser* browser,
   // |browser_| must not be null when this dialog is presented from the
   // profile picker.
   DCHECK(browser_ || from_profile_picker_);
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-SigninErrorHandler::~SigninErrorHandler() {
-  BrowserList::RemoveObserver(this);
-}
+SigninErrorHandler::~SigninErrorHandler() = default;
 
-void SigninErrorHandler::OnBrowserRemoved(Browser* browser) {
+void SigninErrorHandler::OnBrowserClosed(BrowserWindowInterface* browser) {
   if (browser_ == browser) {
     browser_ = nullptr;
   }

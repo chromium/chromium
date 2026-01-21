@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -21,7 +24,8 @@ class PrefRegistrySyncable;
 
 // SessionDataService is responsible for deleting SessionOnly cookies and
 // site data when the browser or all windows of a profile are closed.
-class SessionDataService : public BrowserListObserver, public KeyedService {
+class SessionDataService : public BrowserCollectionObserver,
+                           public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -52,8 +56,8 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
 
  private:
   // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // Starts a deletion of session only cookies and storage unless the deletion
   // is already running or the browser is already shutting down.
@@ -77,6 +81,8 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   // cleanup should be ignored.
   bool cleanup_started_ = false;
 
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
   base::WeakPtrFactory<SessionDataService> weak_factory_{this};
 };
 

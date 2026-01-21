@@ -9,8 +9,9 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -37,20 +38,20 @@ SavedTabGroupModelListener::SavedTabGroupModelListener(
   CHECK(service);
   CHECK(profile);
 
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser) {
-        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
-        return true;
-      });
-
-  BrowserList::GetInstance()->AddObserver(this);
+  auto* browser_collection = ProfileBrowserCollection::GetForProfile(profile_);
+  browser_collection_observation_.Observe(browser_collection);
+  browser_collection->ForEach([this](BrowserWindowInterface* browser) {
+    OnBrowserCreated(browser);
+    return true;
+  });
 }
 
 SavedTabGroupModelListener::~SavedTabGroupModelListener() {
-  BrowserList::GetInstance()->RemoveObserver(this);
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
-        OnBrowserRemoved(browser->GetBrowserForMigrationOnly());
+        if (browser->GetProfile() == profile_) {
+          OnBrowserClosed(browser);
+        }
         return true;
       });
 }
@@ -321,20 +322,9 @@ void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
   }
 }
 
-void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
-  if (profile_ != browser->profile()) {
-    return;
-  }
-
-  browser->tab_strip_model()->AddObserver(this);
-}
-
-void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
-  if (profile_ != browser->profile()) {
-    return;
-  }
-
-  browser->tab_strip_model()->RemoveObserver(this);
+void SavedTabGroupModelListener::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->AddObserver(this);
 }
 
 std::pair<SavedTabGroup, std::map<tabs::TabInterface*, base::Uuid>>

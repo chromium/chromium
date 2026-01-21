@@ -9,12 +9,14 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -41,8 +43,7 @@ SyncConfirmationScreenMode GetScreenMode(
 // in this class use signin::ConsentLevel::kSignin because the user hasn't
 // consented to sync yet.
 class SyncConfirmationHandler : public content::WebUIMessageHandler,
-                                public signin::IdentityManager::Observer,
-                                public BrowserListObserver {
+                                public signin::IdentityManager::Observer {
  public:
   // Creates a SyncConfirmationHandler for the `profile`. All strings in the
   // corresponding Web UI should be represented in `string_to_grd_id_map` and
@@ -64,8 +65,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser);
 
  protected:
   // Handles "confirm" message from the page. No arguments.
@@ -157,6 +157,8 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // Tracks time that passes between the UI is fully initialized, but the
   // confirm / not now buttons are not ready yet.
   std::optional<base::ElapsedTimer> user_visible_latency_;
+
+  base::CallbackListSubscription browser_close_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

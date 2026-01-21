@@ -470,6 +470,7 @@ source_set("sync_integration_test_support") {
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/webdata_services",
     "//components/autofill/core/common:credit_card_number_validation",
     "//components/bookmarks/browser",

@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -63,8 +64,10 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -2311,7 +2314,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 namespace {
 
-class MultiBrowserObserver : public BrowserListObserver {
+class MultiBrowserObserver : public BrowserCollectionObserver {
  public:
   enum class Event {
     kAdded,
@@ -2319,13 +2322,14 @@ class MultiBrowserObserver : public BrowserListObserver {
   };
   MultiBrowserObserver(size_t num_expected, Event event)
       : num_expected_(num_expected), event_(event) {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   MultiBrowserObserver(const MultiBrowserObserver&) = delete;
   MultiBrowserObserver& operator=(const MultiBrowserObserver&) = delete;
 
-  ~MultiBrowserObserver() override { BrowserList::RemoveObserver(this); }
+  ~MultiBrowserObserver() override = default;
 
   // Note that the returned pointers might no longer be valid (because the
   // Browser objects were closed).
@@ -2334,17 +2338,17 @@ class MultiBrowserObserver : public BrowserListObserver {
     return browsers_;
   }
 
-  // BrowserListObserver implementation.
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver implementation.
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     if (event_ == Event::kAdded) {
-      browsers_.push_back(browser);
+      browsers_.push_back(browser->GetBrowserForMigrationOnly());
       if (--num_expected_ == 0)
         run_loop_.Quit();
     }
   }
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (event_ == Event::kRemoved) {
-      browsers_.push_back(browser);
+      browsers_.push_back(browser->GetBrowserForMigrationOnly());
       if (--num_expected_ == 0)
         run_loop_.Quit();
     }
@@ -2355,6 +2359,8 @@ class MultiBrowserObserver : public BrowserListObserver {
   Event event_;
   std::vector<raw_ptr<Browser, VectorExperimental>> browsers_;
   base::RunLoop run_loop_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace
@@ -2447,19 +2453,17 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tracks the load order of tabs in a new browser.
-class LoadOrderObserver : public BrowserListObserver,
+class LoadOrderObserver : public BrowserCollectionObserver,
                           public TabStripModelObserver,
                           public WebContentsCollection::Observer {
  public:
   explicit LoadOrderObserver(int expected_tabs)
       : expected_tabs_(expected_tabs) {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
-  ~LoadOrderObserver() override {
-    browser_->tab_strip_model()->RemoveObserver(this);
-    BrowserList::RemoveObserver(this);
-  }
+  ~LoadOrderObserver() override = default;
 
   void WaitForAllTabsToStartLoading() { run_loop_.Run(); }
 
@@ -2468,12 +2472,12 @@ class LoadOrderObserver : public BrowserListObserver,
     return web_contents_;
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     ASSERT_EQ(browser_, nullptr);
     browser_ = browser;
-    EXPECT_TRUE(browser_->tab_strip_model()->empty());
-    browser_->tab_strip_model()->AddObserver(this);
+    EXPECT_TRUE(browser_->GetTabStripModel()->empty());
+    browser_->GetTabStripModel()->AddObserver(this);
   }
 
   // TabStripModelObserver:
@@ -2502,11 +2506,13 @@ class LoadOrderObserver : public BrowserListObserver,
 
  private:
   const size_t expected_tabs_;
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::RunLoop run_loop_;
   WebContentsCollection web_contents_collection_{this};
   // Ordered by load start order.
   std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // PRE_CorrectLoadingOrder is flaky on ChromeOS MSAN and Mac.

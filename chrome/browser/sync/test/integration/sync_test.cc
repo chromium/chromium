@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -117,8 +118,9 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -162,24 +164,25 @@ int GetNumClients(SyncTest::TestType test_type) {
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
-class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
+class SyncTest::ClosedBrowserObserver : public BrowserCollectionObserver {
  public:
   using OnBrowserRemovedCallback =
       base::RepeatingCallback<void(Browser* browser)>;
 
   explicit ClosedBrowserObserver(OnBrowserRemovedCallback callback)
       : browser_remove_callback_(std::move(callback)) {
-    BrowserList::AddObserver(this);
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
   }
 
-  ~ClosedBrowserObserver() override { BrowserList::RemoveObserver(this); }
+  ~ClosedBrowserObserver() override = default;
 
-  // BrowserListObserver overrides.
-  void OnBrowserRemoved(Browser* browser) override {
-    browser_remove_callback_.Run(browser);
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    browser_remove_callback_.Run(browser->GetBrowserForMigrationOnly());
   }
 
  private:
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
   OnBrowserRemovedCallback browser_remove_callback_;
 };
 #endif
@@ -198,11 +201,6 @@ SyncTest::SyncTest(TestType test_type)
   sync_run_loop_timeout.SetAddGTestFailureOnTimeout();
 
   sync_datatype_helper::AssociateWithTest(this);
-
-#if !BUILDFLAG(IS_ANDROID)
-  browser_list_observer_ = std::make_unique<ClosedBrowserObserver>(
-      base::BindRepeating(&SyncTest::OnBrowserRemoved, base::Unretained(this)));
-#endif
 }
 
 SyncTest::~SyncTest() = default;
@@ -518,6 +516,14 @@ bool SyncTest::SetupClients() {
   }
   bool has_any_browser = false;
 #if !BUILDFLAG(IS_ANDROID)
+  // Create the browser observer now that GlobalBrowserCollection is available.
+  // This cannot be done in the constructor because it runs before browser
+  // process initialization.
+  if (!browser_list_observer_) {
+    browser_list_observer_ =
+        std::make_unique<ClosedBrowserObserver>(base::BindRepeating(
+            &SyncTest::OnBrowserRemoved, base::Unretained(this)));
+  }
   has_any_browser = !browsers_.empty();
 #endif
   if (!profiles_.empty() || has_any_browser || !clients_.empty()) {
@@ -852,6 +858,11 @@ void SyncTest::TearDownOnMainThread() {
     }
   }
   browsers_.clear();
+#endif
+
+// Clean up the browser observer.
+#if !BUILDFLAG(IS_ANDROID)
+  browser_list_observer_.reset();
 #endif
 
   PlatformBrowserTest::TearDownOnMainThread();

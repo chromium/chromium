@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -101,12 +100,14 @@ SyncConfirmationHandler::SyncConfirmationHandler(
       browser_(browser),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   DCHECK(profile_);
-  BrowserList::AddObserver(this);
+  if (browser_) {
+    browser_close_subscription_ =
+        browser_->RegisterBrowserDidClose(base::BindRepeating(
+            &SyncConfirmationHandler::OnBrowserClosed, base::Unretained(this)));
+  }
 }
 
 SyncConfirmationHandler::~SyncConfirmationHandler() {
-  BrowserList::RemoveObserver(this);
-
   // Abort signin and prevent sync from starting if none of the actions on the
   // sync confirmation dialog are taken by the user.
   if (!did_user_explicitly_interact_) {
@@ -114,7 +115,7 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
   }
 }
 
-void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
+void SyncConfirmationHandler::OnBrowserClosed(BrowserWindowInterface* browser) {
   if (browser_ == browser) {
     browser_ = nullptr;
   }

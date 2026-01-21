@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
@@ -20,9 +21,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -134,21 +135,22 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
 
 // A helper class that listens to browser removal event.
 class SessionCrashedBubbleView::BrowserRemovalObserver
-    : public BrowserListObserver {
+    : public BrowserCollectionObserver {
  public:
   explicit BrowserRemovalObserver(BrowserWindowInterface* browser)
       : browser_(browser) {
     DCHECK(browser_);
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   BrowserRemovalObserver(const BrowserRemovalObserver&) = delete;
   BrowserRemovalObserver& operator=(const BrowserRemovalObserver&) = delete;
 
-  ~BrowserRemovalObserver() override { BrowserList::RemoveObserver(this); }
+  ~BrowserRemovalObserver() override = default;
 
-  // Overridden from BrowserListObserver.
-  void OnBrowserRemoved(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (browser == browser_) {
       browser_ = nullptr;
     }
@@ -158,6 +160,8 @@ class SessionCrashedBubbleView::BrowserRemovalObserver
 
  private:
   raw_ptr<BrowserWindowInterface> browser_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // static

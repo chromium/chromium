@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SigninErrorHandlerTest,
 
   // Inform the handler that the browser was removed.
   CreateHandlerInBrowser();
-  handler()->OnBrowserRemoved(browser());
+  handler()->OnBrowserClosed(browser());
 
   // Open learn more.
   base::Value::List args;

@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "content/public/test/browser_test.h"
@@ -16,29 +19,30 @@
 namespace supervised_user {
 namespace {
 
-class AllIncognitoBrowsersClosedWaiter : public BrowserListObserver {
+class AllIncognitoBrowsersClosedWaiter : public BrowserCollectionObserver {
  public:
-  AllIncognitoBrowsersClosedWaiter() { BrowserList::AddObserver(this); }
+  AllIncognitoBrowsersClosedWaiter() {
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
+  }
 
   AllIncognitoBrowsersClosedWaiter(const AllIncognitoBrowsersClosedWaiter&) =
       delete;
   AllIncognitoBrowsersClosedWaiter& operator=(
       const AllIncognitoBrowsersClosedWaiter&) = delete;
 
-  ~AllIncognitoBrowsersClosedWaiter() override {
-    BrowserList::RemoveObserver(this);
-  }
+  ~AllIncognitoBrowsersClosedWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
 
-  // BrowserListObserver implementation.
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (chrome::GetIncognitoBrowserCount() == 0u) {
       run_loop_.Quit();
     }
   }
 
  private:
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
   base::RunLoop run_loop_;
 };
 

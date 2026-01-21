@@ -67,7 +67,8 @@ bool IsBrowserTypeSupported(const Browser& browser) {
 SearchEngineChoiceDialogService::BrowserRegistry::BrowserRegistry(
     SearchEngineChoiceDialogService& service)
     : search_engine_choice_dialog_service_(service) {
-  observation_.Observe(BrowserList::GetInstance());
+  observation_.Observe(ProfileBrowserCollection::GetForProfile(
+      &search_engine_choice_dialog_service_->profile_.get()));
 }
 
 SearchEngineChoiceDialogService::BrowserRegistry::~BrowserRegistry() {
@@ -97,9 +98,14 @@ bool SearchEngineChoiceDialogService::BrowserRegistry::RegisterBrowser(
   return true;
 }
 
-void SearchEngineChoiceDialogService::BrowserRegistry::OnBrowserRemoved(
-    Browser* browser) {
-  registered_browsers_.erase(CHECK_DEREF(browser));
+void SearchEngineChoiceDialogService::BrowserRegistry::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  Browser* browser_for_close = browser->GetBrowserForMigrationOnly();
+  if (!browser_for_close) {
+    return;
+  }
+
+  registered_browsers_.erase(CHECK_DEREF(browser_for_close));
 }
 
 bool SearchEngineChoiceDialogService::BrowserRegistry::IsRegistered(

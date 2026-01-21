@@ -22,7 +22,7 @@ source_set("search_engine_choice") {
     ]
 
     public_deps += [
-      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/browser_window",
       "//components/keyed_service/core",
       "//components/prefs",
       "//components/search_engines",

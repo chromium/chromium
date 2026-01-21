@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -54,14 +55,15 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -234,7 +236,7 @@ void ReportRestoredWindowCreated(aura::Window* window) {
 // SessionRestoreImpl is responsible for fetching the set of tabs to create
 // from SessionService. SessionRestoreImpl deletes itself when done.
 
-class SessionRestoreImpl : public BrowserListObserver {
+class SessionRestoreImpl : public BrowserCollectionObserver {
  public:
   SessionRestoreImpl(Profile* profile,
                      Browser* browser,
@@ -327,7 +329,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
     if (browser_) {
-      BrowserList::AddObserver(this);
+      browser_collection_observation_.Observe(
+          ProfileBrowserCollection::GetForProfile(profile_));
     }
 
     return browser_;
@@ -434,7 +437,6 @@ class SessionRestoreImpl : public BrowserListObserver {
   SessionRestoreImpl& operator=(const SessionRestoreImpl&) = delete;
 
   ~SessionRestoreImpl() override {
-    BrowserList::RemoveObserver(this);
     active_session_restorers->erase(this);
     if (active_session_restorers->empty()) {
       delete active_session_restorers;
@@ -442,8 +444,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
   }
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     if (browser == browser_) {
       if (log_event_) {
         LogSessionServiceRestoreCanceledEvent(profile_);
@@ -505,7 +507,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       // if the browser is deleted. Don't listen to anything. This avoid a
       // possible double delete too (if browser is closed before DeleteSoon() is
       // processed).
-      BrowserList::RemoveObserver(this);
+      browser_collection_observation_.Reset();
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1353,6 +1355,9 @@ class SessionRestoreImpl : public BrowserListObserver {
   // Same as |keep_alive_|, but also prevent |profile_| from getting deleted
   // (when DestroyProfileOnBrowserClose is enabled).
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // The time we started the restore.
   base::TimeTicks restore_started_;

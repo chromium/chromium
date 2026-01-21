@@ -7,12 +7,15 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class SigninErrorHandler : public content::WebUIMessageHandler,
-                           public BrowserListObserver {
+                           public BrowserCollectionObserver {
  public:
   // Constructor of a message handler that handles messages from the
   // sign-in error WebUI.
@@ -27,8 +30,8 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
 
   ~SigninErrorHandler() override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -80,6 +83,9 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
   const bool from_profile_picker_;
 
   base::FilePath duplicate_profile_path_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_HANDLER_H_
