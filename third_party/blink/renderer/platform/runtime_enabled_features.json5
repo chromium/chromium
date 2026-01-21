@@ -1743,7 +1743,7 @@
     {
       // crbug.com/434361099
       name: "CssTextIndent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CssTextIndentAsPrimitive",
