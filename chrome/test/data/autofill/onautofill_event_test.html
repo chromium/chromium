@@ -85,7 +85,7 @@
           }
         }
 
-        const fieldData = event.autofillValues();
+        const fieldData = event.autofillValues;
         window.testState.eventData.push({
           fireCount: window.testState.eventFireCount,
           fieldData: fieldData.map(f => ({

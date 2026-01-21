@@ -47,7 +47,7 @@ class CORE_EXPORT AutofillEvent : public Event {
   // supported. When called, the callback triggers the refill and returns a
   // Promise that resolves immediately.
   V8AutofillRefillCallback* refill(ScriptState*);
-  const HeapVector<Member<AutofillFieldData>>& autofillValues(ScriptState*);
+  const HeapVector<Member<AutofillFieldData>>& autofillValues() const;
 
   void Trace(Visitor*) const final;
 

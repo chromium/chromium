@@ -375,8 +375,8 @@ interface AuthenticatorResponse
     method constructor
 interface AutofillEvent : Event
     attribute @@toStringTag
+    getter autofillValues
     getter refill
-    method autofillValues
     method constructor
 interface BackForwardCacheRestoration : PerformanceEntry
     attribute @@toStringTag

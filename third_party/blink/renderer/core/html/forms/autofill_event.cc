@@ -55,8 +55,8 @@ const AtomicString& AutofillEvent::InterfaceName() const {
   return event_interface_names::kAutofillEvent;
 }
 
-const HeapVector<Member<AutofillFieldData>>& AutofillEvent::autofillValues(
-    ScriptState* script_state) {
+const HeapVector<Member<AutofillFieldData>>& AutofillEvent::autofillValues()
+    const {
   return field_data_;
 }
 
