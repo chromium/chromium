@@ -225,7 +225,6 @@ class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
   }
 
  private:
-  // TODO(crbug.com/40156088): Set default policy map for content/.
   // Changes to `same_origin_map_` require security review.
   MojoBinderPolicyMapImpl same_origin_map_;
 
