@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
@@ -141,6 +142,14 @@ void ToolbarActionsModel::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   if (profile_->IsOffTheRecord()) {
     // The on-the-record version will update the prefs; incognito is read-only.
+    return;
+  }
+  if (reason == extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT) {
+    // If the extension is uninstalled by policy, keep it in the pinned list.
+    // The "pinned extensions" pref field is synced, so removing it here would
+    // be treated as a sync event, unpinning the extension on other devices
+    // where it might still be installed. The extension will be filtered out of
+    // the local toolbar while uninstalled.
     return;
   }
 

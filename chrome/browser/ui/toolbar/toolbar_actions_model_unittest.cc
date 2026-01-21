@@ -1307,3 +1307,38 @@ TEST_F(ToolbarActionsModelUnitTest, InitActionList_NonUserEmitHistograms) {
       /*is_guest=*/true));
   RunEmitUserHistogramsTest(/*incremented_histogram_count=*/0);
 }
+
+TEST_F(ToolbarActionsModelUnitTest,
+       UninstallingExtensionByPolicyPreservesPinState) {
+  Init();
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("extension")
+          .SetAction(extensions::ActionInfo::Type::kBrowser)
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+
+  // Add and pin an extension.
+  EXPECT_TRUE(AddExtension(extension));
+  toolbar_model()->SetActionVisibility(extension->id(), true);
+  EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
+
+  extensions::ExtensionPrefs* const prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(extension->id()));
+
+  // Uninstall the extension with UNINSTALL_REASON_INTERNAL_MANAGEMENT.
+  registrar()->UninstallExtension(
+      extension->id(), extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT,
+      nullptr);
+
+  // The extension should be removed from the model (active toolbar).
+  EXPECT_FALSE(toolbar_model()->HasAction(extension->id()));
+  EXPECT_FALSE(toolbar_model()->IsActionPinned(extension->id()));
+
+  // But not from the prefs, to prevent it from being unpinned on other synced
+  // devices.
+  EXPECT_THAT(prefs->GetPinnedExtensions(),
+              testing::ElementsAre(extension->id()));
+}
