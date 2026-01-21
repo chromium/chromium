@@ -477,6 +477,7 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category(TRACE_DISABLED_BY_DEFAULT("xr.debug")).SetTags("debug"),
     perfetto::Category::Group("android_webview,toplevel"),
     perfetto::Category::Group("android_webview.timeline,android.ui.jank"),
+    perfetto::Category::Group("audio,latency"),
     perfetto::Category::Group("base,toplevel"),
     perfetto::Category::Group("benchmark,drm"),
     perfetto::Category::Group("benchmark,latencyInfo,rail"),
