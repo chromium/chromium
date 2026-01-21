@@ -1466,6 +1466,7 @@ static_library("ui") {
       "//chrome/browser/ui/task_manager",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/ui/translate:impl",
+      "//chrome/browser/ui/waap",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:impl",
       "//chrome/browser/ui/web_applications:launch_utils",
@@ -1702,7 +1703,6 @@ static_library("ui") {
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/waap",
       "//chrome/browser/ui/webui/on_device_internals",
     ]
     if (use_aura) {
