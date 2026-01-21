@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,12 +31,11 @@ public class KeyboardAccessoryData {
      */
     public static final class Tab {
         private final String mTitle;
-        private Drawable mIcon;
         private final String mContentDescription;
         private final int mTabLayout;
         private final @AccessoryTabType int mRecordingType;
         private final @Nullable Listener mListener;
-        private final Provider<Drawable> mIconProvider = new Provider<>();
+        private final SettableNonNullObservableSupplier<Drawable> mIconSupplier;
 
         /** A Tab's Listener get's notified when e.g. the Tab was assigned a view. */
         public interface Listener {
@@ -57,7 +58,7 @@ public class KeyboardAccessoryData {
                 @AccessoryTabType int recordingType,
                 @Nullable Listener listener) {
             mTitle = title;
-            mIcon = icon;
+            mIconSupplier = ObservableSuppliers.createNonNull(icon);
             mContentDescription = contentDescription;
             mTabLayout = tabLayout;
             mListener = listener;
@@ -65,8 +66,7 @@ public class KeyboardAccessoryData {
         }
 
         public void setIcon(Drawable icon) {
-            mIcon = icon;
-            mIconProvider.notifyObservers(mIcon);
+            mIconSupplier.set(icon);
         }
 
         /**
@@ -74,8 +74,8 @@ public class KeyboardAccessoryData {
          *
          * @param observer The observer that will be notified of the icon change.
          */
-        public void addIconObserver(Provider.Observer<Drawable> observer) {
-            mIconProvider.addObserver(observer);
+        public void addIconObserver(Callback<Drawable> callback) {
+            mIconSupplier.addObserver(callback);
         }
 
         /**
@@ -93,7 +93,7 @@ public class KeyboardAccessoryData {
          * @return The small icon that identifies this tab uniquely.
          */
         public Drawable getIcon() {
-            return mIcon;
+            return mIconSupplier.get();
         }
 
         /**

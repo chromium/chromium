@@ -11,8 +11,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
-import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.ListObservable;
@@ -72,6 +70,7 @@ public class PasswordAccessorySheetControllerTest {
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mProfile;
+    @Mock private Callback<Drawable> mMockObserver;
 
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -79,7 +78,6 @@ public class PasswordAccessorySheetControllerTest {
     @Before
     public void setUp() {
         when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
-        AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator =
                 new PasswordAccessorySheetCoordinator(
                         RuntimeEnvironment.application, mProfile, null);
@@ -248,17 +246,15 @@ public class PasswordAccessorySheetControllerTest {
 
     @Test
     public void testToggleChangeDelegateIsCalledWhenToggleIsAdded() {
-        Provider.Observer<Drawable> mMockObserver = mock(Provider.Observer.class);
         mCoordinator.getTab().addIconObserver(mMockObserver);
 
         addToggleToSheet(false);
-        verify(mMockObserver).onItemAvailable(eq(Provider.Observer.DEFAULT_TYPE), any());
+        verify(mMockObserver).onResult(any());
     }
 
     @Test
     public void testToggleChangeDelegateIsCalledWhenToggleIsChanged() {
-        Provider.Observer<Drawable> mMockIconObserver = mock(Provider.Observer.class);
-        mCoordinator.getTab().addIconObserver(mMockIconObserver);
+        mCoordinator.getTab().addIconObserver(mMockObserver);
 
         addToggleToSheet(false);
 
@@ -271,8 +267,7 @@ public class PasswordAccessorySheetControllerTest {
         repackagedToggle.getCallback().onResult(true);
 
         // Note that the icon observer is called once for initialization and once for the change.
-        verify(mMockIconObserver, times(2))
-                .onItemAvailable(eq(Provider.Observer.DEFAULT_TYPE), any());
+        verify(mMockObserver, times(2)).onResult(any());
     }
 
     @Test
