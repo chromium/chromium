@@ -259,11 +259,11 @@ class ChromeAuthenticatorRequestDelegate
   void OnCableEvent(device::cablev2::Event event);
 
   // Adds GPM passkeys matching |rp_id| to |tai|.
-  void GetPhoneContactableGpmPasskeysForRpId(
+  void GetGpmPasskeys(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
       base::OnceCallback<void(
           device::FidoRequestHandlerBase::TransportAvailabilityInfo)> callback);
-  void DoGetPhoneContactableGpmPasskeysForRpId(
+  void DoGetGpmPasskeys(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
       base::OnceCallback<void(
           device::FidoRequestHandlerBase::TransportAvailabilityInfo)> callback);
@@ -349,9 +349,6 @@ class ChromeAuthenticatorRequestDelegate
   // don't show errors on the desktop too.
   bool cable_device_ready_ = false;
 
-  // can_use_synced_phone_passkeys_ is true if there is a phone pairing
-  // available that can service requests for synced GPM passkeys.
-  bool can_use_synced_phone_passkeys_ = false;
 
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
 

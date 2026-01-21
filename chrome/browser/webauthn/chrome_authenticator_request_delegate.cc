@@ -955,9 +955,8 @@ void ChromeAuthenticatorRequestDelegate::TryToShowUI() {
 void ChromeAuthenticatorRequestDelegate::MaybeShowUI(
     TransportAvailabilityInfo tai,
     PasswordCredentials passwords) {
-  if (can_use_synced_phone_passkeys_ ||
-      (enclave_controller_ && enclave_controller_->is_active())) {
-    GetPhoneContactableGpmPasskeysForRpId(
+  if (enclave_controller_ && enclave_controller_->is_active()) {
+    GetGpmPasskeys(
         std::move(tai),
         base::BindOnce(&ChromeAuthenticatorRequestDelegate::FinishMaybeShowUI,
                        weak_ptr_factory_.GetWeakPtr(), std::move(passwords)));
@@ -1039,7 +1038,7 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
   dialog_controller_->OnCableEvent(event);
 }
 
-void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
+void ChromeAuthenticatorRequestDelegate::GetGpmPasskeys(
     TransportAvailabilityInfo tai,
     base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
   // For immediate `get()` requests, the enclave might need to do an async check
@@ -1054,11 +1053,10 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
       enclave_controller_) {
     switch (enclave_controller_->account_ready_state()) {
       case GPMEnclaveController::AccountReadyState::kLoading:
-        enclave_controller_->RunWhenAccountReady(
-            base::BindOnce(&ChromeAuthenticatorRequestDelegate::
-                               DoGetPhoneContactableGpmPasskeysForRpId,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(tai),
-                           std::move(callback)));
+        enclave_controller_->RunWhenAccountReady(base::BindOnce(
+            &ChromeAuthenticatorRequestDelegate::DoGetGpmPasskeys,
+            weak_ptr_factory_.GetWeakPtr(), std::move(tai),
+            std::move(callback)));
         return;
       case GPMEnclaveController::AccountReadyState::kReady:
       case GPMEnclaveController::AccountReadyState::kNotReady:
@@ -1067,13 +1065,12 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     }
   }
 
-  DoGetPhoneContactableGpmPasskeysForRpId(std::move(tai), std::move(callback));
+  DoGetGpmPasskeys(std::move(tai), std::move(callback));
 }
 
-void ChromeAuthenticatorRequestDelegate::
-    DoGetPhoneContactableGpmPasskeysForRpId(
-        TransportAvailabilityInfo tai,
-        base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
+void ChromeAuthenticatorRequestDelegate::DoGetGpmPasskeys(
+    TransportAvailabilityInfo tai,
+    base::OnceCallback<void(TransportAvailabilityInfo)> callback) {
   if (!enclave_controller_ || !enclave_controller_->is_active() ||
       enclave_controller_->creds().empty()) {
     std::move(callback).Run(std::move(tai));
