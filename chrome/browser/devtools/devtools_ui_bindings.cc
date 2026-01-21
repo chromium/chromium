@@ -1732,10 +1732,12 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
   return result;
 }
 
-void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
+// static
+base::Value::Dict DevToolsUIBindings::GetHostConfigDictionary(
+    Profile* profile) {
   base::Value::Dict response_dict;
 
-  AidaClient::Availability availability = AidaClient::CanUseAida(profile_);
+  AidaClient::Availability availability = AidaClient::CanUseAida(profile);
 
   base::Value::Dict aida_availability;
   aida_availability.Set("enabled", availability.available);
@@ -1909,7 +1911,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   ve_logging_dict.Set("testing", false);
   response_dict.Set("devToolsVeLogging", std::move(ve_logging_dict));
 
-  response_dict.Set("isOffTheRecord", profile_->IsOffTheRecord());
+  response_dict.Set("isOffTheRecord", profile->IsOffTheRecord());
 
   base::Value::Dict devtools_privacy_ui_dict;
   devtools_privacy_ui_dict.Set(
@@ -1932,7 +1934,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
             content_settings::features::kTpcdHeuristicsGrants));
 
     policy::PolicyService* policy_service =
-        profile()->GetProfilePolicyConnector()->policy_service();
+        profile->GetProfilePolicyConnector()->policy_service();
     CHECK(policy_service);
     const policy::PolicyMap& policies = policy_service->GetPolicies(
         policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
@@ -2038,7 +2040,7 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
 #endif
   gdp_profiles_availability_dict.Set(
       "enterprisePolicyValue",
-      profile_->GetPrefs()->GetInteger(
+      profile->GetPrefs()->GetInteger(
           prefs::kDevToolsGoogleDeveloperProgramProfileAvailability));
   response_dict.Set("devToolsGdpProfilesAvailability",
                     std::move(gdp_profiles_availability_dict));
@@ -2088,7 +2090,11 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   response_dict.Set("devToolsConsoleInsightsTeasers",
                     std::move(console_insights_teasers_dict));
 
-  base::Value response = base::Value(std::move(response_dict));
+  return response_dict;
+}
+
+void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
+  base::Value response(GetHostConfigDictionary(profile_));
   std::move(callback).Run(&response);
 }
 

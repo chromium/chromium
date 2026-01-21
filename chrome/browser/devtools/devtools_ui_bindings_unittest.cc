@@ -13,8 +13,10 @@
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -741,4 +743,59 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestStreamingTest,
           "test_token", base::Time::Max());
 
   run_loop.Run();
+}
+
+class DevToolsUIBindingsHostConfigTest : public testing::Test {
+ public:
+  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+
+  void TearDown() override { profile_.reset(); }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigBasic) {
+  base::Value::Dict result =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  // Check some basic keys that should always be present.
+  EXPECT_TRUE(result.FindDict("aidaAvailability"));
+  EXPECT_TRUE(result.FindDict("devToolsConsoleInsights"));
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
+  // Verify initial state of features.
+  base::Value::Dict initial_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  const base::Value::Dict* initial_durable_messages =
+      initial_config.FindDict("devToolsEnableDurableMessages");
+  ASSERT_FALSE(initial_durable_messages);
+
+  const base::Value::Dict* initial_freestyler =
+      initial_config.FindDict("devToolsFreestyler");
+  ASSERT_TRUE(initial_freestyler);
+  EXPECT_TRUE(initial_freestyler->FindBool("enabled").value_or(false));
+
+  // Enable features.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {::features::kDevToolsEnableDurableMessages,
+       ::features::kDevToolsFreestyler},
+      {});
+
+  // Verify state of features after enabling them.
+  base::Value::Dict result =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  const base::Value::Dict* durable_messages =
+      result.FindDict("devToolsEnableDurableMessages");
+  ASSERT_TRUE(durable_messages);
+  EXPECT_TRUE(durable_messages->FindBool("enabled").value_or(false));
+
+  const base::Value::Dict* freestyler = result.FindDict("devToolsFreestyler");
+  ASSERT_TRUE(freestyler);
+  EXPECT_TRUE(freestyler->FindBool("enabled").value_or(false));
 }

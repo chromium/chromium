@@ -106,6 +106,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   static bool IsValidFrontendURL(const GURL& url);
   static bool IsValidRemoteFrontendURL(const GURL& url);
 
+  static base::Value::Dict GetHostConfigDictionary(Profile* profile);
+
   explicit DevToolsUIBindings(content::WebContents* web_contents);
 
   DevToolsUIBindings(const DevToolsUIBindings&) = delete;
