@@ -459,7 +459,7 @@ bool PasswordFormManager::IsBlocklisted() const {
 }
 
 bool PasswordFormManager::IsMovableToAccountStore() const {
-  if (!client_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+  if (!client_->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     return false;
   }
 
@@ -650,7 +650,7 @@ void PasswordFormManager::OnPasswordsRevealed() {
 }
 
 void PasswordFormManager::MoveCredentialsToAccountStore() {
-  DCHECK(client_->GetPasswordFeatureManager()->IsAccountStorageEnabled());
+  DCHECK(client_->GetPasswordFeatureManager()->IsAccountStorageActive());
   password_save_manager_->MoveCredentialsToAccountStore(
       metrics_util::MoveToAccountStoreTrigger::
           kSuccessfulLoginWithProfileStorePassword);

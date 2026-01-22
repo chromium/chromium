@@ -17,12 +17,11 @@ bool WebViewPasswordFeatureManager::IsGenerationEnabled() const {
   return true;
 }
 
-bool WebViewPasswordFeatureManager::IsAccountStorageEnabled() const {
+bool WebViewPasswordFeatureManager::IsAccountStorageActive() const {
   // Although ios/web_view will only write to the account store, this should
   // still be controlled on a per user basis to ensure that the logged out user
   // remains with account storage disabled.
-  return password_manager::features_util::IsAccountStorageActive(
-      sync_service_);
+  return password_manager::features_util::IsAccountStorageActive(sync_service_);
 }
 
 password_manager::features_util::PasswordAccountStorageUsageLevel

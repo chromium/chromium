@@ -391,7 +391,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
             IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(Return(false));
     ON_CALL(*password_client()->GetPasswordFeatureManager(),
-            IsAccountStorageEnabled)
+            IsAccountStorageActive)
         .WillByDefault(Return(false));
     window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
 
@@ -1308,7 +1308,7 @@ TEST_F(PasswordAccessoryControllerTest, SavePasswordsToggledUpdatesCache) {
 TEST_F(PasswordAccessoryControllerTest,
        SavePasswordsEnabledUpdatesAccountStore) {
   ON_CALL(*password_client()->GetPasswordFeatureManager(),
-          IsAccountStorageEnabled)
+          IsAccountStorageActive)
       .WillByDefault(Return(true));
   CreateSheetController();
   password_manager::PasswordFormDigest form_digest(
@@ -1331,7 +1331,7 @@ TEST_F(PasswordAccessoryControllerTest,
 TEST_F(PasswordAccessoryControllerTest,
        SavePasswordsDisabledUpdatesAccountStore) {
   ON_CALL(*password_client()->GetPasswordFeatureManager(),
-          IsAccountStorageEnabled)
+          IsAccountStorageActive)
       .WillByDefault(Return(true));
   CreateSheetController();
   PasswordForm expected_form;

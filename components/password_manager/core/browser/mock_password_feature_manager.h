@@ -17,7 +17,7 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
   ~MockPasswordFeatureManager() override;
 
   MOCK_METHOD(bool, IsGenerationEnabled, (), (override, const));
-  MOCK_METHOD(bool, IsAccountStorageEnabled, (), (override, const));
+  MOCK_METHOD(bool, IsAccountStorageActive, (), (override, const));
 
   MOCK_METHOD(features_util::PasswordAccountStorageUsageLevel,
               ComputePasswordAccountStorageUsageLevel,

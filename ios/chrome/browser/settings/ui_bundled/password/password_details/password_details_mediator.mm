@@ -572,8 +572,7 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     // storage is enabled.
     credentialDetails.shouldOfferToMoveToAccount =
         self.context == DetailsContext::kPasswordSettings &&
-        password_manager::features_util::IsAccountStorageActive(
-            _syncService) &&
+        password_manager::features_util::IsAccountStorageActive(_syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:credentialDetails];
   }

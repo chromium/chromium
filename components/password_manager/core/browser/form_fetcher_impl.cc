@@ -182,7 +182,9 @@ base::span<const PasswordForm> FormFetcherImpl::GetFederatedMatches() const {
 }
 
 bool FormFetcherImpl::IsBlocklisted() const {
-  if (client_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+  // TODO(crbug.com/470332074): Verify whether this should check for
+  // "enabled" instead of "active".
+  if (client_->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     return is_blocklisted_in_account_store_;
   }
   return is_blocklisted_in_profile_store_;

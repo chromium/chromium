@@ -104,7 +104,7 @@ TEST_F(PasswordFeatureManagerImplTest, AccountStorageDisabledIfSigninPaused) {
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_EQ(password_manager::sync_util::GetPasswordSyncState(&sync_service_),
             password_manager::sync_util::SyncState::kNotActive);
-  EXPECT_FALSE(password_feature_manager_.IsAccountStorageEnabled());
+  EXPECT_FALSE(password_feature_manager_.IsAccountStorageActive());
 }
 
 #if BUILDFLAG(IS_ANDROID)

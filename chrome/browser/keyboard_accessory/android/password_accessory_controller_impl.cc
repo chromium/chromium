@@ -747,8 +747,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
 
   password_manager::PasswordStoreInterface* store;
-  if (password_client_->GetPasswordFeatureManager()
-          ->IsAccountStorageEnabled()) {
+  if (password_client_->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     store = password_client_->GetAccountPasswordStore();
   } else {
     store = password_client_->GetProfilePasswordStore();

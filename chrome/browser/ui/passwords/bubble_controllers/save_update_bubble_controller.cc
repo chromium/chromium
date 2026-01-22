@@ -241,7 +241,9 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 }
 
 bool SaveUpdateBubbleController::IsUsingAccountStore() {
-  return delegate_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
+  // TODO(crbug.com/470332074): Verify whether this should check for
+  // "enabled" instead of "active".
+  return delegate_->GetPasswordFeatureManager()->IsAccountStorageActive();
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {

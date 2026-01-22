@@ -308,7 +308,7 @@ bool ManagePasswordsBubbleController::IsAccountStorageEnabled() const {
   if (!delegate_) {
     return false;
   }
-  return delegate_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
+  return delegate_->GetPasswordFeatureManager()->IsAccountStorageActive();
 }
 
 void ManagePasswordsBubbleController::OnFaviconReady(

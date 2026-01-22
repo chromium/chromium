@@ -700,7 +700,7 @@ void PasswordsPrivateDelegateImpl::MovePasswordsToAccount(
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
 
-  if (!client->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+  if (!client->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     return;
   }
 
@@ -841,8 +841,10 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageEnabled(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
+  // TODO(crbug.com/470332074): Verify whether this should check for "enabled"
+  // instead of "active".
   if (enabled ==
-      client->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+      client->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     return;
   }
   SyncServiceFactory::GetForProfile(profile_)

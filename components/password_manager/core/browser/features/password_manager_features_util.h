@@ -61,7 +61,7 @@ enum class PasswordAccountStorageUsageLevel {
 //
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
-// See PasswordFeatureManager::IsAccountStorageEnabled.
+// See PasswordFeatureManager::IsAccountStorageActive.
 bool IsAccountStorageActive(const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
