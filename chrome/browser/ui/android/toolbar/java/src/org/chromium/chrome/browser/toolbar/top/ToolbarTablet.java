@@ -187,6 +187,8 @@ public class ToolbarTablet extends ToolbarLayout {
         } else if (mButtonVisibilityAnimators != null) {
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS);
+        } else if (isLayoutRequested() || isInLayout()) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.LAYOUT_REQUESTED);
         } else {
             return getReadinessStateWithSuppression();
         }

@@ -601,6 +601,14 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testIsReadyForTextureCapture_inLayout() {
+        mToolbarTablet.requestLayout();
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.LAYOUT_REQUESTED, result.blockReason);
+    }
+
+    @Test
     public void testOptionalButtonTooltipText() {
         updateOptionalButton(
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
@@ -685,6 +693,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress_Legacy() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 
@@ -710,6 +720,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress_Legacy() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 
@@ -719,7 +731,8 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(List.of(animator));
 
         // Run animation.
-        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.measure(310, 310);
+        mToolbarTablet.layout(0, 1, 0, 1);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(
@@ -734,6 +747,8 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testIsReadyForTextureCapture_Snapshot() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
             Assert.assertTrue(result.isReady);
