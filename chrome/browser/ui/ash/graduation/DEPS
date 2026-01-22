@@ -16,3 +16,10 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "graduation_manager_impl_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
+  ]
+}

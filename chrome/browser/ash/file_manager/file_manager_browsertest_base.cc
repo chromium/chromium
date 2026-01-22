@@ -124,6 +124,7 @@
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/platform_util.h"
@@ -2562,6 +2563,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   if (!options.locale.empty()) {
     SwitchLanguageWaiter waiter;
     ash::locale_util::SwitchLanguage(
+        g_browser_process->GetFeatures()->application_locale_storage(),
         options.locale, /*enable_locale_keyboard_layouts=*/true,
         /*login_layouts_only=*/false, waiter.CreateCallback(), profile());
     waiter.Wait();
@@ -3800,6 +3802,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(language);
     base::RunLoop run_loop;
     ash::locale_util::SwitchLanguage(
+        g_browser_process->GetFeatures()->application_locale_storage(),
         *language, true, false,
         base::BindRepeating(
             [](base::RunLoop* run_loop,

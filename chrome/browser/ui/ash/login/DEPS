@@ -78,4 +78,9 @@ specific_include_rules = {
   "fake_.*\\.cc": [
     "+chrome/test/base",
   ],
+
+  # TODO(crbug.com/396534588): Remove g_browser_process->GetFeatures() usage.
+  "login_display_host_webui\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
 }

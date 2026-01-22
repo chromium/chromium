@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -399,11 +400,15 @@ void LocaleSwitchScreen::SwitchLocale() {
     return;
   }
 
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   locale_util::SwitchLanguageCallback callback(
       base::BindOnce(&LocaleSwitchScreen::OnLanguageChangedCallback,
                      weak_factory_.GetWeakPtr()));
   locale_util::SwitchLanguage(
-      locale_,
+      application_locale_storage, locale_,
       /*enable_locale_keyboard_layouts=*/false,  // The layouts will be synced
                                                  // instead. Also new user could
                                                  // enable required layouts from

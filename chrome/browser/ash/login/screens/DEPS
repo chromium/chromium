@@ -43,6 +43,7 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/consent_auditor",
   "+chrome/browser/enterprise/util",
   "+chrome/browser/lifetime",

@@ -37,5 +37,6 @@ specific_include_rules = {
 
   "customization_document_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
   ],
 }

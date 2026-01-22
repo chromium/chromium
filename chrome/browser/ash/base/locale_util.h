@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 class PrefService;
 
@@ -46,7 +47,11 @@ using SwitchLanguageCallback =
 // with an unsupported input method may lead to undefined behavior. Use
 // |enable_locale_keyboard_layouts = false| with caution.
 // Note 2: |login_layouts_only = true| enables only login-capable layouts.
-void SwitchLanguage(const std::string& locale,
+// `application_locale_storage` must be non-null and must outlive the
+// SequencedTaskRunner::GetCurrentDefault() as it's bound to a task which will
+// be posted to the task runner.
+void SwitchLanguage(ApplicationLocaleStorage* application_locale_storage,
+                    const std::string& locale,
                     const bool enable_locale_keyboard_layouts,
                     const bool login_layouts_only,
                     SwitchLanguageCallback callback,

@@ -57,6 +57,7 @@ specific_include_rules = {
   # Testing
   ".*_browsertest\.cc": [
     "+chrome/browser/browser_process.h",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+mojo/public",
     "+testing/gmock",

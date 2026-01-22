@@ -111,6 +111,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -1003,6 +1004,10 @@ bool UserSessionManager::RespectLocalePreference(
 
   profile->ChangeAppLocale(pref_locale, app_locale_changed_via);
 
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   // Here we don't enable keyboard layouts for normal users. Input methods
   // are set up when the user first logs in. Then the user may customize the
   // input methods.  Hence changing input methods here, just because the user's
@@ -1014,8 +1019,8 @@ bool UserSessionManager::RespectLocalePreference(
   // So input methods should be enabled somewhere.
   const bool enable_layouts =
       user_manager::UserManager::Get()->IsLoggedInAsGuest();
-  locale_util::SwitchLanguage(pref_locale, enable_layouts,
-                              false /* login_layouts_only */,
+  locale_util::SwitchLanguage(application_locale_storage, pref_locale,
+                              enable_layouts, false /* login_layouts_only */,
                               std::move(callback), profile);
 
   return true;

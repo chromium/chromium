@@ -25,6 +25,8 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -364,9 +366,10 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
 
   // Switch the application locale to Spanish.
   base::RunLoop run_loop;
-  locale_util::SwitchLanguage("es", true, false,
-                              base::BindRepeating(&OnLocaleSwitched, &run_loop),
-                              ProfileManager::GetActiveUserProfile());
+  locale_util::SwitchLanguage(
+      g_browser_process->GetFeatures()->application_locale_storage(), "es",
+      true, false, base::BindRepeating(&OnLocaleSwitched, &run_loop),
+      ProfileManager::GetActiveUserProfile());
   run_loop.Run();
 
   EXPECT_EQ("es", GetLanguageCode());
