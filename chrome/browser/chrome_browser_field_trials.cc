@@ -131,11 +131,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
-  // Enables the caret browsing a11y feature - can use arrow keys to navigate
-  // through web pages.
-  // TODO(crbug.com/369139090): Remove when rollout is complete
-  feature_overrides.EnableFeature(features::kAndroidCaretBrowsing);
-
   // Enable the link hover status bar.
   // TODO(crbug.com/404678510): Remove when the feature is stable.
   feature_overrides.EnableFeature(chrome::android::kLinkHoverStatusBar);
