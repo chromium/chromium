@@ -867,7 +867,7 @@ ci.thin_tester(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 9,
+                    shards = 18,
                 ),
             ),
             "leveldb_unittests": targets.mixin(
