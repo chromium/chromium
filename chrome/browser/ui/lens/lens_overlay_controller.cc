@@ -1797,7 +1797,8 @@ void LensOverlayController::InitializeOverlayUI(
 
   // Only show the CSB if the results side panel is not open.
   bool is_side_panel_open = IsResultsSidePanelShowing();
-  page_->ShouldShowContextualSearchBox(!is_side_panel_open);
+  page_->ShouldShowContextualSearchBox(
+      !is_side_panel_open && lens_search_controller_->should_show_csb());
   // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
   if (lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
     lens_search_controller_->HandleThumbnailCreatedBitmap(

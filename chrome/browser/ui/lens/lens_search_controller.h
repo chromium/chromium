@@ -90,7 +90,8 @@ class LensSearchController {
   // of `invocation_source` will be recorded in the relevant metrics. Virtual
   // for testing.
   virtual void OpenLensOverlay(
-      lens::LensOverlayInvocationSource invocation_source);
+      lens::LensOverlayInvocationSource invocation_source,
+      bool should_show_csb = true);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
@@ -266,6 +267,9 @@ class LensSearchController {
 
   // Returns the current invocation source.
   virtual std::optional<lens::LensOverlayInvocationSource> invocation_source();
+
+  // Returns whether the contextual search box should be shown on overlay open.
+  bool should_show_csb() { return should_show_csb_; }
 
   lens::LensPermissionBubbleController*
   get_lens_permission_bubble_controller_for_testing() {
@@ -463,6 +467,9 @@ class LensSearchController {
 
   // Whether the handshake with the Lens backend is complete.
   bool is_handshake_complete_ = false;
+
+  // Whether the Contextual Search Box should be shown when the overlay opens.
+  bool should_show_csb_ = true;
 
   // The invocation source of the current Lens session.
   std::optional<lens::LensOverlayInvocationSource> invocation_source_;
