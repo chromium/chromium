@@ -359,8 +359,6 @@ public class ToolbarManager
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    private @Nullable Callback<TopInsetProvider> mTopInsetProviderAvailableCallback;
-    private TopInsetProvider.@Nullable Observer mTopInsetChangeObserver;
     private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
             mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.NONE);
     private final OneshotSupplier<ChromeAndroidTask> mChromeAndroidTaskSupplier;
@@ -1274,6 +1272,7 @@ public class ToolbarManager
                             backPressManager,
                             scrollListener,
                             tabModelSelectorSupplier,
+                            topInsetProviderSupplier,
                             mToolbarLayout,
                             new LocationBarEmbedderUiOverrides(),
                             mActivity.findViewById(R.id.coordinator),
@@ -1888,6 +1887,7 @@ public class ToolbarManager
                         mProgressBarContainer,
                         controlContainerTranslationSupplier,
                         controlContainerHeightSupplier,
+                        mTopInsetProviderSupplier,
                         new Handler(Looper.getMainLooper()),
                         mActivity,
                         mToolbarPositionSupplier,
@@ -1895,11 +1895,6 @@ public class ToolbarManager
                         assertNonNull(mWindowAndroid.getInsetObserver())
                                 .getSupplierForKeyboardInset(),
                         mWindowAndroid);
-
-        // Set up TopInsetProvider observer to handle edge-to-edge changes.
-        mTopInsetProviderAvailableCallback = this::onTopInsetProviderAvailable;
-        mTopInsetProviderSupplier.addSyncObserverAndCallIfNonNull(
-                mTopInsetProviderAvailableCallback);
 
         mMiniOriginBarController =
                 new MiniOriginBarController(
@@ -1914,38 +1909,6 @@ public class ToolbarManager
                         controlContainerTranslationSupplier,
                         keyboardAccessoryStateSupplier.getIsSheetShowingSupplier(),
                         this::isUrlBarFocused);
-    }
-
-    /**
-     * Called when the {@link TopInsetProvider} becomes available.
-     *
-     * @param topInsetProvider The {@link TopInsetProvider} instance.
-     */
-    private void onTopInsetProviderAvailable(TopInsetProvider topInsetProvider) {
-        mTopInsetChangeObserver = this::onToEdgeChange;
-        topInsetProvider.addObserver(mTopInsetChangeObserver);
-
-        if (mTopInsetProviderAvailableCallback != null) {
-            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
-            mTopInsetProviderAvailableCallback = null;
-        }
-    }
-
-    /**
-     * Called when the toolbar's embedder surface layout changes between edge-to-edge and standard.
-     *
-     * @param systemTopInset The system's top inset, i.e., the height of the Status bar. It is
-     *     always bigger than 0.
-     * @param consumeTopInset Determines if the toolbar should utilize this top inset, extending
-     *     across the full height of both the status bar and itself.
-     */
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
-        if (mToolbarPositionController != null) {
-            mToolbarPositionController.onToEdgeChange(systemTopInset, consumeTopInset);
-        }
-        if (mLocationBar instanceof LocationBarCoordinator coordinator) {
-            coordinator.onToEdgeChange(systemTopInset, consumeTopInset);
-        }
     }
 
     // TODO(b/315204103): add tests
@@ -2756,18 +2719,6 @@ public class ToolbarManager
         if (mToolbarPositionController != null) {
             mToolbarPositionController.destroy();
             mToolbarPositionController = null;
-        }
-
-        if (mTopInsetChangeObserver != null) {
-            var topInsetProvider = mTopInsetProviderSupplier.get();
-            if (topInsetProvider != null) {
-                topInsetProvider.removeObserver(mTopInsetChangeObserver);
-            }
-            mTopInsetChangeObserver = null;
-        }
-        if (mTopInsetProviderAvailableCallback != null) {
-            mTopInsetProviderSupplier.removeObserver(mTopInsetProviderAvailableCallback);
-            mTopInsetProviderAvailableCallback = null;
         }
 
         if (mMiniOriginBarController != null) {

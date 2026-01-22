@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -76,6 +77,10 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private ViewGroup mParentView;
+    @Mock private TopInsetProvider mTopInsetProvider;
+
+    private final ObservableSupplierImpl<TopInsetProvider> mTopInsetProviderSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -83,6 +88,7 @@ public class AutocompleteCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mTopInsetProviderSupplier.set(mTopInsetProvider);
 
         lenient().when(mParentView.getContext()).thenReturn(mContext);
         lenient()
@@ -105,6 +111,7 @@ public class AutocompleteCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mLocationBarDataProvider,
                         mProfileObservableSupplier,
+                        mTopInsetProviderSupplier,
                         mBringToForegroundCallback,
                         mBookmarkState,
                         mOmniboxActionDelegate,

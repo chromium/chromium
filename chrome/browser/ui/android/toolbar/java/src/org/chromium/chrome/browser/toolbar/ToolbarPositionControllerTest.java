@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransi
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -265,6 +266,7 @@ public class ToolbarPositionControllerTest {
     @Mock private View mControlContainerView;
     @Mock private View mProgressBarContainer;
     @Mock private ViewGroup mProgressBarParent;
+    @Mock private TopInsetProvider mTopInsetProvider;
     @Mock private View mRootView;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
@@ -300,6 +302,8 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>(TOOLBAR_HEIGHT);
     private final ObservableSupplierImpl<Integer> mKeyboardHeightSupplier =
             new ObservableSupplierImpl<>(0);
+    private final ObservableSupplierImpl<TopInsetProvider> mTopInsetProviderSupplier =
+            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
 
@@ -343,6 +347,7 @@ public class ToolbarPositionControllerTest {
         mProgressBarLayoutParams.gravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.anchorGravity = Gravity.BOTTOM;
         mProgressBarLayoutParams.setAnchorId(CONTROL_CONTAINER_ID);
+        mTopInsetProviderSupplier.set(mTopInsetProvider);
         mProfileSupplier.set(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
@@ -372,6 +377,7 @@ public class ToolbarPositionControllerTest {
                         mProgressBarContainer,
                         mControlContainerTranslationSupplier,
                         mControlContainerHeightSupplier,
+                        mTopInsetProviderSupplier,
                         new Handler(Looper.getMainLooper()),
                         mContext,
                         mToolbarPosition,

@@ -376,6 +376,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         backPressManager,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ ObservableSuppliers.createMonotonic(),
+                        /* topInsetProviderSupplier= */ ObservableSuppliers.createMonotonic(),
                         new LocationBarEmbedder() {},
                         mLocationBarUiOverrides,
                         findViewById(R.id.control_container),

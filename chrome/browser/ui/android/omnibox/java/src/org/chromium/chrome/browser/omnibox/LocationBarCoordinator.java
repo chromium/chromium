@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
@@ -219,6 +220,7 @@ public class LocationBarCoordinator
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             LocationBarEmbedder locationBarEmbedder,
             LocationBarEmbedderUiOverrides uiOverrides,
             @Nullable View baseChromeLayout,
@@ -350,6 +352,7 @@ public class LocationBarCoordinator
                         shareDelegateSupplier,
                         locationBarDataProvider,
                         profileObservableSupplier,
+                        topInsetProviderSupplier,
                         bringTabGroupToFrontCallback,
                         bookmarkState,
                         omniboxActionDelegate,
@@ -1097,19 +1100,6 @@ public class LocationBarCoordinator
         mZoomButton.setContentDescription(zoomString);
         mZoomButton.setTooltipText(zoomString);
         mLocationBarMediator.onZoomLevelChanged();
-    }
-
-    /**
-     * Called when the edge-to-edge state changes to update the autocomplete suggestions container.
-     *
-     * @param systemTopInset The top inset from the system in pixels.
-     * @param consumeTopInset Whether the top inset should be consumed.
-     */
-    public void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
-        if (mAutocompleteCoordinator != null) {
-            mAutocompleteCoordinator.onToEdgeChange(
-                    systemTopInset, consumeTopInset, isToolbarBottomAnchored());
-        }
     }
 
     /**
