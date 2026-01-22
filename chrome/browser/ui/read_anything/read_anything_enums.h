@@ -10,9 +10,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. ReadAnythingOpenTrigger in
-// tools/metrics/histograms/enums.xml should also be updated when changed
-// here.
+// numeric values should never be reused.
+// LINT.IfChange(ReadAnythingOpenTrigger)
 enum class ReadAnythingOpenTrigger {
   kAppMenu = 0,
   kMinValue = kAppMenu,
@@ -24,6 +23,7 @@ enum class ReadAnythingOpenTrigger {
   kReadAnythingTogglePresentationButton = 6,
   kMaxValue = kReadAnythingTogglePresentationButton,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
 
 namespace read_anything {
 
