@@ -9,7 +9,7 @@ import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_bu
 
 export function getHtml(this: ContextualEntrypointButtonElement) {
   // clang-format off
-  const entrypointButton = !this.hideEntrypointButton ? html`
+  const entrypointButton = html`
     ${this.showContextMenuDescription ? html`
     <cr-button id="entrypoint"
         class="ai-mode-button"
@@ -33,7 +33,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         ?disabled="${this.inputsDisabled}"
         title="${this.i18n('addContextTitle')}"
         noink>
-    </cr-icon-button>`}` : '';
+    </cr-icon-button>`}`;
   return html`<!--_html_template_start_-->
     ${this.glifAnimationState !== GlifAnimationState.INELIGIBLE ? html`
     <div id="glowWrapper" class="glow-container">
@@ -49,12 +49,10 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
         }"></div>
     </div>
     ` : entrypointButton}
-
   <cr-composebox-contextual-action-menu id="menu"
       .fileNum="${this.fileNum}"
       .disabledTabIds="${this.disabledTabIds}"
       .tabSuggestions="${this.tabSuggestions}"
-      .entrypointName="${this.entrypointName}"
       .searchboxLayoutMode="${this.searchboxLayoutMode}"
       @close="${this.onMenuClose_}">
   </cr-composebox-contextual-action-menu>
