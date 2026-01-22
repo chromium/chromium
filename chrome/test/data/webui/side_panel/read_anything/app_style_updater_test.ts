@@ -597,6 +597,124 @@ suite('AppStyleUpdater', () => {
     assertEquals(expectedDarkLineFocus, computeStyle('--line-focus-bg'));
   });
 
+  test('audio player colors change with theme', () => {
+    const expectedDefaultBg = 'rgb(1, 1, 1)';
+    const expectedDefaultIcon = 'rgb(2, 2, 2)';
+    const expectedLightBg = 'rgb(3, 3, 3)';
+    const expectedLightIcon = 'rgb(4, 4, 4)';
+    const expectedDarkBg = 'rgb(5, 5, 5)';
+    const expectedDarkIcon = 'rgb(6, 6, 6)';
+    const expectedYellowBg = 'rgb(7, 7, 7)';
+    const expectedYellowIcon = 'rgb(8, 8, 8)';
+    const expectedBlueBg = 'rgb(9, 9, 9)';
+    const expectedBlueIcon = 'rgb(10, 10, 10)';
+    const expectedHighContrastBg = 'rgb(11, 11, 11)';
+    const expectedHighContrastIcon = 'rgb(12, 12, 12)';
+    const expectedLowContrastBg = 'rgb(13, 13, 13)';
+    const expectedLowContrastIcon = 'rgb(14, 14, 14)';
+    const expectedSepiaLightBg = 'rgb(15, 15, 15)';
+    const expectedSepiaLightIcon = 'rgb(16, 16, 16)';
+    const expectedSepiaDarkBg = 'rgb(17, 17, 17)';
+    const expectedSepiaDarkIcon = 'rgb(18, 18, 18)';
+    updateStyles({
+      '--color-read-anything-audio-player-background': expectedDefaultBg,
+      '--color-read-anything-audio-player-icon': expectedDefaultIcon,
+      '--color-read-anything-audio-player-background-light': expectedLightBg,
+      '--color-read-anything-audio-player-icon-light': expectedLightIcon,
+      '--color-read-anything-audio-player-background-dark': expectedDarkBg,
+      '--color-read-anything-audio-player-icon-dark': expectedDarkIcon,
+      '--color-read-anything-audio-player-background-yellow': expectedYellowBg,
+      '--color-read-anything-audio-player-icon-yellow': expectedYellowIcon,
+      '--color-read-anything-audio-player-background-blue': expectedBlueBg,
+      '--color-read-anything-audio-player-icon-blue': expectedBlueIcon,
+      '--color-read-anything-audio-player-background-high-contrast':
+          expectedHighContrastBg,
+      '--color-read-anything-audio-player-icon-high-contrast':
+          expectedHighContrastIcon,
+      '--color-read-anything-audio-player-background-low-contrast':
+          expectedLowContrastBg,
+      '--color-read-anything-audio-player-icon-low-contrast':
+          expectedLowContrastIcon,
+      '--color-read-anything-audio-player-background-sepia-light':
+          expectedSepiaLightBg,
+      '--color-read-anything-audio-player-icon-sepia-light':
+          expectedSepiaLightIcon,
+      '--color-read-anything-audio-player-background-sepia-dark':
+          expectedSepiaDarkBg,
+      '--color-read-anything-audio-player-icon-sepia-dark':
+          expectedSepiaDarkIcon,
+    });
+
+    // Default theme
+    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDefaultBg, computeStyle('--audio-player-background-color'));
+    assertEquals(
+        expectedDefaultIcon, computeStyle('--audio-player-icon-color'));
+
+    // Light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLightBg, computeStyle('--audio-player-background-color'));
+    assertEquals(expectedLightIcon, computeStyle('--audio-player-icon-color'));
+
+    // Dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDarkBg, computeStyle('--audio-player-background-color'));
+    assertEquals(expectedDarkIcon, computeStyle('--audio-player-icon-color'));
+
+    // Yellow theme
+    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedYellowBg, computeStyle('--audio-player-background-color'));
+    assertEquals(expectedYellowIcon, computeStyle('--audio-player-icon-color'));
+
+    // Blue theme
+    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedBlueBg, computeStyle('--audio-player-background-color'));
+    assertEquals(expectedBlueIcon, computeStyle('--audio-player-icon-color'));
+
+    // High contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedHighContrastBg,
+        computeStyle('--audio-player-background-color'));
+    assertEquals(
+        expectedHighContrastIcon, computeStyle('--audio-player-icon-color'));
+
+    // Low contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastBg, computeStyle('--audio-player-background-color'));
+    assertEquals(
+        expectedLowContrastIcon, computeStyle('--audio-player-icon-color'));
+
+    // Sepia light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaLightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedSepiaLightBg, computeStyle('--audio-player-background-color'));
+    assertEquals(
+        expectedSepiaLightIcon, computeStyle('--audio-player-icon-color'));
+
+    // Sepia dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.sepiaDarkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedSepiaDarkBg, computeStyle('--audio-player-background-color'));
+    assertEquals(
+        expectedSepiaDarkIcon, computeStyle('--audio-player-icon-color'));
+  });
+
   test('setTheme with line focus window does not update color', () => {
     const lineFocusColor = 'rgb(50, 21, 0)';
     const expectedLineFocusBg = 'none';

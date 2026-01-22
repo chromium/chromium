@@ -13,10 +13,15 @@
 
 .read-anything-header {
   align-items: center;
-  background-color: var(--color-sys-base-container-elevated);
+  background-color: var(--background-color);
+  color: var(--foreground-color);
   display: flex;
   font-size: 14px;
   justify-content: space-between;
   padding-left: 16px;
   padding-right: 8px;
+}
+
+.toolbar-button {
+  --cr-icon-button-fill-color: var(--foreground-color);
 }

@@ -13,7 +13,7 @@
 
 #play-pause {
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-button-fill-color: var(--color-sys-primary);
+  --cr-icon-button-fill-color: var(--audio-player-icon-color);
   --cr-icon-button-size: 28px;
   color: var(--color-side-panel-entry-icon);
 }
@@ -35,7 +35,7 @@
 }
 
 .audio-background-when-active-true {
-  --audio-controls-background: var(--color-sys-tonal-container);
+  --audio-controls-background: var(--audio-player-background-color);
   --audio-controls-right-margin: 6px;
   --audio-controls-right-padding: 4px;
 }
@@ -76,8 +76,13 @@
   display: none;
 }
 
+#font-size-increase {
+  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
+}
+
 #font-size-decrease {
   margin-inline-start: 12px;
+  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
 }
 
 #font-size-reset {
@@ -99,6 +104,7 @@
 }
 
 .immersive-toolbar-container {
+  background-color: var(--background-color);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -124,7 +130,7 @@
   background-color: transparent;
   border: none;
   border-radius: 50%;
-  --cr-button-text-color: var(--color-sys-on-surface-subtle);
+  --cr-button-text-color: var(--foreground-color);
   display: flex;
   align-items: center;
   justify-content: center;
