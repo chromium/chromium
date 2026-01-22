@@ -59,7 +59,6 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   struct FrameInfo {
     base::TimeDelta duration;
     base::TimeDelta timestamp;
-    bool received = false;
   };
 
   // ImageDecoder:
