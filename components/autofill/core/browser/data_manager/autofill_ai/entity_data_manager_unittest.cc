@@ -92,12 +92,13 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
       fr, base::DoNothing());
   helper().WaitUntilIdle();
 
-  EntityDataManager entity_data_manager(client().GetPrefs(),
-                                        /*identity_manager=*/nullptr,
-                                        &sync_service(),
-                                        helper().autofill_webdata_service(),
-                                        /*history_service=*/nullptr,
-                                        /*strike_database=*/nullptr);
+  EntityDataManager entity_data_manager(
+      client().GetPrefs(),
+      /*identity_manager=*/nullptr, &sync_service(),
+      helper().autofill_webdata_service(),
+      /*history_service=*/nullptr,
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US"));
   EXPECT_THAT(entity_data_manager.GetEntityInstances(), IsEmpty());
 
   helper().WaitUntilIdle();
@@ -119,12 +120,13 @@ TEST_F(EntityDataManagerTest, StorageMetrics) {
   helper().WaitUntilIdle();
 
   base::HistogramTester histogram_tester;
-  EntityDataManager entity_data_manager(client().GetPrefs(),
-                                        /*identity_manager=*/nullptr,
-                                        &sync_service(),
-                                        helper().autofill_webdata_service(),
-                                        /*history_service=*/nullptr,
-                                        /*strike_database=*/nullptr);
+  EntityDataManager entity_data_manager(
+      client().GetPrefs(),
+      /*identity_manager=*/nullptr, &sync_service(),
+      helper().autofill_webdata_service(),
+      /*history_service=*/nullptr,
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US"));
   helper().WaitUntilIdle();
   EXPECT_THAT(entity_data_manager.GetEntityInstances(),
               UnorderedElementsAre(passport, vehicle));
@@ -157,7 +159,8 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Status.Startup"),
       BucketsAre(Bucket(0, 1)));
@@ -169,7 +172,8 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Status.Startup"),
       BucketsAre(Bucket(0, 1), Bucket(1, 1)));
@@ -179,12 +183,14 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
 class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
  public:
   EntityDataManagerTest_InitiallyEmpty()
-      : entity_data_manager_(client().GetPrefs(),
-                             /*identity_manager=*/nullptr,
-                             &sync_service(),
-                             helper().autofill_webdata_service(),
-                             /*history_service=*/nullptr,
-                             /*strike_database=*/nullptr) {}
+      : entity_data_manager_(
+            client().GetPrefs(),
+            /*identity_manager=*/nullptr,
+            &sync_service(),
+            helper().autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*strike_database=*/nullptr,
+            /*variation_country_code=*/GeoIpCountryCode("US")) {}
 
   EntityDataManager& entity_data_manager() { return entity_data_manager_; }
 
@@ -461,7 +467,8 @@ TEST_F(EntityDataManagerTest,
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
 
   // Opt the user in.
   ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
@@ -470,7 +477,8 @@ TEST_F(EntityDataManagerTest,
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
   EXPECT_TRUE(prefs::IsAutofillAiSyncedOptInStatusEnabled(client().GetPrefs()));
   // The first construction of the `EntityDataManager` triggered no migration
   // because the user was not opted-in.
@@ -497,7 +505,8 @@ TEST_F(EntityDataManagerTest, SyncablePrefIsOn_DoNotMigrate) {
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
 
   // Opt the user in.
   ASSERT_TRUE(client().SetUpPrefsAndIdentityForAutofillAi());
@@ -509,7 +518,8 @@ TEST_F(EntityDataManagerTest, SyncablePrefIsOn_DoNotMigrate) {
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
   // The first construction of the `EntityDataManager` triggered no migration
   // because the user was not opted-in.
   histogram_tester.ExpectBucketCount(
@@ -534,7 +544,8 @@ TEST_F(
       client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
-      /*strike_database=*/nullptr));
+      /*strike_database=*/nullptr,
+      /*variation_country_code=*/GeoIpCountryCode("US")));
   histogram_tester.ExpectTotalCount("Autofill.Ai.OptIn.PrefMigration", 0);
 }
 

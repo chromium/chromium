@@ -29,9 +29,11 @@ EntityDataManager::EntityDataManager(
     syncer::SyncService* sync_service,
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
-    strike_database::StrikeDatabaseBase* strike_database)
+    strike_database::StrikeDatabaseBase* strike_database,
+    GeoIpCountryCode variation_country_code)
     : webdata_service_(std::move(webdata_service)),
-      entity_instance_cleaner_(this, sync_service, pref_service) {
+      entity_instance_cleaner_(this, sync_service, pref_service),
+      variation_country_code_(std::move(variation_country_code)) {
   CHECK(webdata_service_);
   webdata_service_observation_.Observe(webdata_service_.get());
   LoadEntities();

@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -85,7 +86,8 @@ class EntityDataManager : public KeyedService,
       syncer::SyncService* sync_service,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
-      strike_database::StrikeDatabaseBase* strike_database);
+      strike_database::StrikeDatabaseBase* strike_database,
+      GeoIpCountryCode variation_country_code);
   EntityDataManager(const EntityDataManager&) = delete;
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;
@@ -176,6 +178,8 @@ class EntityDataManager : public KeyedService,
   base::ObserverList<Observer> observers_;
 
   EntityInstanceCleaner entity_instance_cleaner_;
+
+  GeoIpCountryCode variation_country_code_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };
