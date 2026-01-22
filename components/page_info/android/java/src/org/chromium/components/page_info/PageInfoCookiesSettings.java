@@ -364,8 +364,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         return true;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
-                    PageInfoCookiesSettings.class.getName(), R.xml.page_info_cookie_preference);
+                    PageInfoCookiesSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
