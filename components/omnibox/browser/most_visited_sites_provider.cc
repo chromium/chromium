@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
@@ -31,6 +30,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -134,8 +134,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
   }
 
   // Sets to ensure uniqueness of titles and urls for returned suggestions.
-  std::unordered_set<std::u16string> match_titles;
-  std::unordered_set<std::string> match_urls;
+  absl::flat_hash_set<std::u16string> match_titles;
+  absl::flat_hash_set<std::string> match_urls;
 
   const TabMatcher& tab_matcher = client->GetTabMatcher();
   // Explicitly clear the query since this isn't done in the
@@ -149,8 +149,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
           ? omnibox::kMostVisitedTilesZeroSuggestLowRelevance
           : omnibox::kMostVisitedTilesZeroSuggestHighRelevance;
   // Store open tab titles and stripped urls to compare to history results.
-  std::unordered_set<std::u16string> tab_titles;
-  std::unordered_set<std::string> tab_stripped_urls;
+  absl::flat_hash_set<std::u16string> tab_titles;
+  absl::flat_hash_set<std::string> tab_stripped_urls;
   std::vector<TabMatcher::TabWrapper> open_tabs =
       tab_matcher.GetOpenTabs(&input, /*exclude_active_tab=*/false);
   // Deduplication is not guaranteed when the number of open tabs is
