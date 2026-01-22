@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/data_sharing/public",
   "+ios/chrome/browser/ai_prototyping/coordinator",
   "+ios/chrome/browser/app_store_rating/model",
@@ -41,6 +42,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager/public",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/safari_data_import/public",
+  "+ios/chrome/browser/scene/coordinator",
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/sessions/model",
@@ -61,5 +63,5 @@ include_rules = [
   "+ios/chrome/browser/widget_kit/model/model_swift.h",
   "+ios/chrome/browser/window_activities/model",
   "+ios/chrome/browser/youtube_incognito/coordinator",
-  "+ios/chrome/browser/scene/coordinator",
+  # keep-sorted end
 ]

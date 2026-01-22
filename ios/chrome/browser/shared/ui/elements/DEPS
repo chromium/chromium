@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+  # keep-sorted end
 ]

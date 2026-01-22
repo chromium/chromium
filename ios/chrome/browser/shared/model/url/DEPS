@@ -1,4 +1,6 @@
 include_rules = [
-  "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
+  # keep-sorted start
   "+components/webui/regional_capabilities_internals/constants.h",
+  "+ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h",
+  # keep-sorted end
 ]
