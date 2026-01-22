@@ -26,6 +26,10 @@ class TabStripRegionView : public views::AccessiblePaneView,
  public:
   ~TabStripRegionView() override = default;
 
+  // -- Life Time Management --
+  virtual void InitializeTabStrip() = 0;
+  virtual void ResetTabStrip() = 0;
+
   // -- View State Queries --
   virtual bool IsTabStripEditable() const = 0;
   virtual void DisableTabStripEditingForTesting() const = 0;

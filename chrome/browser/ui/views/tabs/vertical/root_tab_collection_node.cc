@@ -38,19 +38,27 @@ tabs::ConstChildPtr GetNodeFromHandle(
 
 RootTabCollectionNode::RootTabCollectionNode(
     TabStripModel* tab_strip_model,
-    CustomAddChildViewCallback add_node_view_to_parent)
+    CustomAddChildViewCallback add_node_view_to_parent,
+    CustomRemoveChildViewCallback remove_node_view_from_parent)
     : TabCollectionNode(tab_strip_model->Root()),
-      tab_strip_model_(tab_strip_model) {
+      tab_strip_model_(tab_strip_model),
+      add_node_view_to_parent_(add_node_view_to_parent),
+      remove_node_view_from_parent_(remove_node_view_from_parent) {}
+
+RootTabCollectionNode::~RootTabCollectionNode() = default;
+
+void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
-  tab_strip_model_->AddObserver(this);
-  add_node_view_to_parent.Run(Initialize());
+  tab_strip_model_->SetTabStripUI(this);
+  add_node_view_to_parent_.Run(Initialize());
 }
 
-RootTabCollectionNode::~RootTabCollectionNode() {
-  if (tab_strip_model_) {
-    tab_strip_model_->Root()->RemoveObserver(this);
-    tab_strip_model_->RemoveObserver(this);
-  }
+void RootTabCollectionNode::Reset() {
+  tab_strip_model_->Root()->RemoveObserver(this);
+  tab_strip_model_->RemoveObserver(this);
+  Deinitialize();
+  views::View* view = std::exchange(node_view_, nullptr);
+  remove_node_view_from_parent_.Run(view);
 }
 
 void RootTabCollectionNode::OnChildrenAdded(
@@ -61,7 +69,7 @@ void RootTabCollectionNode::OnChildrenAdded(
     tabs::ConstChildPtr child = GetNodeFromHandle(handle);
     GetNodeForHandle(position.parent_handle)
         ->AddNewChild(GetPassKey(), child, position.index,
-                      insert_from_detached);
+                      /*perform_initialization=*/insert_from_detached);
   }
 }
 
@@ -74,7 +82,8 @@ void RootTabCollectionNode::OnChildrenRemoved(
   }
 
   for (auto& handle : handles) {
-    parent_node->RemoveChild(GetPassKey(), handle);
+    parent_node->RemoveChild(GetPassKey(), handle,
+                             /*perform_deinitialization=*/false);
   }
 }
 
@@ -98,7 +107,8 @@ void RootTabCollectionNode::OnChildMoved(
   if (pin_state_changed) {
     // Pin state change is treated as a remove and add instead of an attach and
     // detach since we have separate concurrent animations in each container.
-    src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
+    src_parent_node->RemoveChild(GetPassKey(), moved_node_handle,
+                                 /*perform_deinitialization=*/false);
     dst_parent_node->AddNewChild(
         GetPassKey(), GetNodeFromHandle(moved_node_handle), to_position.index,
         /*perform_initialization=*/true);

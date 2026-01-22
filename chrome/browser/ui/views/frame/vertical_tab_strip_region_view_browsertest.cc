@@ -43,6 +43,13 @@ class VerticalTabStripRegionViewTest
         .vertical_tab_strip_region_view_for_testing();
   }
 
+  RootTabCollectionNode* root_node() {
+    return browser()
+        ->GetBrowserView()
+        .vertical_tab_strip_region_view_for_testing()
+        ->root_node_for_testing();
+  }
+
   tabs::VerticalTabStripStateController* state_controller() {
     return tabs::VerticalTabStripStateController::From(browser());
   }
@@ -596,34 +603,30 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   tab_strip_model->AddToNewSplit(
       {index4}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
-  // Create view hierarchy from an arbitrary parent view since we don't
-  // currently support updates from the API.
-  auto parent_view = std::make_unique<views::View>();
-  parent_view->SetBounds(0, 0, 200, 600);
-  RootTabCollectionNode root_node(
-      browser()->tab_strip_model(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-
-  auto* pinned_tabs = root_node.children()[0]->get_view_for_testing();
+  auto* pinned_tabs = root_node()->children()[0]->get_view_for_testing();
   EXPECT_TRUE(views::IsViewClass<VerticalPinnedTabContainerView>(pinned_tabs));
   EXPECT_EQ(pinned_tabs->children().size(), 1);
-  auto* unpinned_tabs = root_node.children()[1]->get_view_for_testing();
+  auto* unpinned_tabs = root_node()->children()[1]->get_view_for_testing();
   EXPECT_TRUE(
       views::IsViewClass<VerticalUnpinnedTabContainerView>(unpinned_tabs));
-  EXPECT_EQ(unpinned_tabs->children().size(), 2);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return unpinned_tabs->children().size() == 2; }));
 
   // Expect pinned tabs to have equal width.
   auto pinned_split_tab = pinned_tabs->children()[0];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(pinned_split_tab));
   EXPECT_EQ(pinned_split_tab->children().size(), 2);
-  EXPECT_EQ(pinned_split_tab->children()[0]->size().width(),
-            pinned_split_tab->children()[1]->size().width());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return pinned_split_tab->children()[0]->size().width() ==
+           pinned_split_tab->children()[1]->size().width();
+  }));
 
   // Expect unpinned tabs to have equal width.
   auto unpinned_split_tab = unpinned_tabs->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(unpinned_split_tab));
   EXPECT_EQ(unpinned_split_tab->children().size(), 2);
-  EXPECT_EQ(unpinned_split_tab->children()[0]->size().width(),
-            unpinned_split_tab->children()[1]->size().width());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return unpinned_split_tab->children()[0]->size().width() ==
+           unpinned_split_tab->children()[1]->size().width();
+  }));
 }
