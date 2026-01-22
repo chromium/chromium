@@ -638,11 +638,12 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT(sync_user_agent);
   VISIT(chrome_version);
   VISIT(signin_scoped_device_id);
-  VISIT(model);
-  VISIT(manufacturer);
   VISIT(last_updated_timestamp);
   VISIT(feature_fields);
   VISIT(sharing_fields);
+  VISIT(model);
+  VISIT(manufacturer);
+  VISIT(pulse_interval_in_minutes);
   VISIT(invalidation_fields);
   VISIT(paask_fields);
   VISIT(full_hardware_class);
