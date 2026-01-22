@@ -85,6 +85,15 @@ source_set("legion") {
   ]
 }
 
+source_set("testing") {
+  testonly = true
+  sources = [ "testing/mock_legion_client.h" ]
+  public_deps = [
+    ":legion",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

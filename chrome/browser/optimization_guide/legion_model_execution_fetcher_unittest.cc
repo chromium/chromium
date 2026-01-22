@@ -6,8 +6,8 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/legion/client.h"
 #include "components/legion/proto/legion.pb.h"
+#include "components/legion/testing/mock_legion_client.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -16,35 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
-
-class MockLegionClient : public legion::Client {
- public:
-  MOCK_METHOD(void,
-              EstablishSession,
-              (OnEstablishSessionCompletedCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SendTextRequest,
-              (legion::proto::FeatureName feature_name,
-               const std::string& text,
-               OnTextRequestCompletedCallback callback,
-               const RequestOptions& options),
-              (override));
-  MOCK_METHOD(void,
-              SendGenerateContentRequest,
-              (legion::proto::FeatureName feature_name,
-               const legion::proto::GenerateContentRequest& request,
-               OnGenerateContentRequestCompletedCallback callback,
-               const RequestOptions& options),
-              (override));
-  MOCK_METHOD(void,
-              SendPaicRequest,
-              (legion::proto::FeatureName feature_name,
-               const legion::proto::PaicMessage& request,
-               OnPaicMessageRequestCompletedCallback callback,
-               const RequestOptions& options),
-              (override));
-};
 
 class LegionModelExecutionFetcherTest : public testing::Test {
  public:
@@ -55,7 +26,7 @@ class LegionModelExecutionFetcherTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockLegionClient mock_legion_client_;
+  legion::MockLegionClient mock_legion_client_;
   std::unique_ptr<LegionModelExecutionFetcher> fetcher_;
 };
 
