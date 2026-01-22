@@ -79,6 +79,7 @@ void SSLClientSocket::RecordSSLConnectResult(
     const std::optional<std::vector<uint8_t>>& ech_retry_configs,
     bool trust_anchor_ids_from_dns,
     bool retried_with_trust_anchor_ids,
+    bool trust_anchor_retry_used_mtc_fallback,
     const LoadTimingInfo::ConnectTiming& connect_timing) {
   const bool is_ok = result == OK;
   if (is_ech_capable && ech_enabled) {
@@ -115,7 +116,10 @@ void SSLClientSocket::RecordSSLConnectResult(
 
   TrustAnchorIDsResult tai_result;
   if (trust_anchor_ids_from_dns) {
-    if (retried_with_trust_anchor_ids) {
+    if (retried_with_trust_anchor_ids && trust_anchor_retry_used_mtc_fallback) {
+      tai_result = is_ok ? TrustAnchorIDsResult::kDnsSuccessRetryMtcFallback
+                         : TrustAnchorIDsResult::kDnsErrorRetryMtcFallback;
+    } else if (retried_with_trust_anchor_ids) {
       tai_result = is_ok ? TrustAnchorIDsResult::kDnsSuccessRetry
                          : TrustAnchorIDsResult::kDnsErrorRetry;
     } else {
@@ -123,7 +127,10 @@ void SSLClientSocket::RecordSSLConnectResult(
                          : TrustAnchorIDsResult::kDnsErrorInitial;
     }
   } else {
-    if (retried_with_trust_anchor_ids) {
+    if (retried_with_trust_anchor_ids && trust_anchor_retry_used_mtc_fallback) {
+      tai_result = is_ok ? TrustAnchorIDsResult::kNoDnsSuccessRetryMtcFallback
+                         : TrustAnchorIDsResult::kNoDnsErrorRetryMtcFallback;
+    } else if (retried_with_trust_anchor_ids) {
       tai_result = is_ok ? TrustAnchorIDsResult::kNoDnsSuccessRetry
                          : TrustAnchorIDsResult::kNoDnsErrorRetry;
     } else {

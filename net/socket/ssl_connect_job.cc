@@ -243,11 +243,11 @@ int SSLConnectJob::DoTransportConnect() {
   // before.
   std::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
-  if (ech_retry_configs_ || !trust_anchor_ids_for_retry_.empty()) {
+  if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
     if (ech_retry_configs_) {
       DCHECK(ssl_client_context()->config().ech_enabled);
     }
-    if (!trust_anchor_ids_for_retry_.empty()) {
+    if (trust_anchor_ids_for_retry_.has_value()) {
       DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
     }
     DCHECK(endpoint_result_);
@@ -376,8 +376,8 @@ int SSLConnectJob::DoSSLConnect() {
   }
 
   if (ssl_client_context()->config().ShouldAdvertiseTrustAnchorIDs()) {
-    if (!trust_anchor_ids_for_retry_.empty()) {
-      ssl_config.trust_anchor_ids = trust_anchor_ids_for_retry_;
+    if (trust_anchor_ids_for_retry_.has_value()) {
+      ssl_config.trust_anchor_ids = *trust_anchor_ids_for_retry_;
     } else if (endpoint_result_) {
       ssl_config.trust_anchor_ids =
           ssl_client_context()->config().SelectTrustAnchorIDs(
@@ -469,22 +469,24 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   //
   // TODO(https://crbug.com/399937371): clarify and test the interactions of ECH
   // retry and TAI retry.
-  if (IsCertificateError(result) && trust_anchor_ids_for_retry_.empty() &&
+  if (IsCertificateError(result) && !trust_anchor_ids_for_retry_.has_value() &&
       base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
     std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
         ssl_socket_->GetServerTrustAnchorIDsForRetry();
+    SSLInfo ssl_info;
+    CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
+    CHECK(ssl_info.cert.get());
     // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
     // If the EncryptedExtensions had no trust_anchor extension, or no match was
     // found, the client returns the error to the application.
-    if (!server_trust_anchor_ids.empty()) {
-      trust_anchor_ids_for_retry_ =
-          ssl_client_context()->config().SelectTrustAnchorIDs(
-              server_trust_anchor_ids);
-      if (!trust_anchor_ids_for_retry_.empty()) {
-        ResetStateForRestart();
-        next_state_ = GetInitialState(params_->GetConnectionType());
-        return OK;
-      }
+    trust_anchor_ids_for_retry_ =
+        ssl_client_context()->config().SelectTrustAnchorIDsForRetry(
+            ssl_info.cert.get(), server_trust_anchor_ids,
+            &trust_anchor_retry_used_mtc_fallback_);
+    if (trust_anchor_ids_for_retry_.has_value()) {
+      ResetStateForRestart();
+      next_state_ = GetInitialState(params_->GetConnectionType());
+      return OK;
     }
   }
 
@@ -492,7 +494,8 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
       ssl_socket_.get(), result, is_ech_capable, ech_enabled,
       ech_retry_configs_,
       endpoint_result_ && !endpoint_result_->metadata.trust_anchor_ids.empty(),
-      !trust_anchor_ids_for_retry_.empty(), connect_timing_);
+      trust_anchor_ids_for_retry_.has_value(),
+      trust_anchor_retry_used_mtc_fallback_, connect_timing_);
 
   if (result == OK || IsCertificateError(result)) {
     SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));

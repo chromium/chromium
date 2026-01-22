@@ -3210,6 +3210,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="7"
       label="There was no DNS hint, and the connection failed after retrying
              with fresh Trust Anchor IDs"/>
+  <int value="8"
+      label="There was a DNS hint, and the connection succeeded after
+             retrying with the MTC fallback"/>
+  <int value="9"
+      label="There was a DNS hint, and the connection failed after retrying
+             with the MTC fallback"/>
+  <int value="10"
+      label="There was no DNS hint, and the connection succeeded after
+             retrying with the MTC fallback"/>
+  <int value="11"
+      label="There was no DNS hint, and the connection failed after retrying
+             with the MTC fallback"/>
 </enum>
 
 <!-- LINT.IfChange(StreamSocketCloseReason) -->

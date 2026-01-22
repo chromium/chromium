@@ -11,6 +11,7 @@
 
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
+#include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_config.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -65,6 +66,15 @@ struct NET_EXPORT SSLContextConfig {
   std::vector<uint8_t> SelectTrustAnchorIDs(
       const std::vector<std::vector<uint8_t>>&
           server_advertised_trust_anchor_ids) const;
+
+  // Helper function to select TLS Trust Anchor IDs to advertise in a retry
+  // attempt if the initial certificate the server sent could not be verified.
+  // If the result is nullopt, the connection should not be retried.
+  std::optional<std::vector<uint8_t>> SelectTrustAnchorIDsForRetry(
+      X509Certificate* server_cert,
+      const std::vector<std::vector<uint8_t>>&
+          server_advertised_trust_anchor_ids,
+      bool* used_mtc_fallback) const;
 
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
