@@ -429,18 +429,59 @@ TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
   EXPECT_EQ(nullptr, menu_model);
 }
 
-TEST_F(AppContextMenuTest, ArcMenu) {
-  app_service_test().SetUp(profile());
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
+TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
+  // Tests that CommandId enums are not changed as the values are used in
+  // histograms.
+  EXPECT_EQ(9, ash::NOTIFICATION_CONTAINER);
+  EXPECT_EQ(100, ash::LAUNCH_NEW);
+  EXPECT_EQ(101, ash::TOGGLE_PIN);
+  EXPECT_EQ(102, ash::SHOW_APP_INFO);
+  EXPECT_EQ(103, ash::OPTIONS);
+  EXPECT_EQ(104, ash::UNINSTALL);
+  EXPECT_EQ(105, ash::REMOVE_FROM_FOLDER);
+  EXPECT_EQ(106, ash::APP_CONTEXT_MENU_NEW_WINDOW);
+  EXPECT_EQ(107, ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW);
+  EXPECT_EQ(108, ash::INSTALL);
+  EXPECT_EQ(200, ash::USE_LAUNCH_TYPE_COMMAND_START);
+  EXPECT_EQ(200, ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED);
+  EXPECT_EQ(201, ash::USE_LAUNCH_TYPE_REGULAR);
+  EXPECT_EQ(202, ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN);
+  EXPECT_EQ(203, ash::USE_LAUNCH_TYPE_WINDOW);
+  EXPECT_EQ(204, ash::USE_LAUNCH_TYPE_TABBED_WINDOW);
+}
 
-  const auto& app_info = arc_app_test.fake_apps()[1];
+class AppContextMenuArcTest : public AppContextMenuTest {
+ public:
+  AppContextMenuArcTest() = default;
+  AppContextMenuArcTest(const AppContextMenuArcTest&) = delete;
+  AppContextMenuArcTest& operator=(const AppContextMenuArcTest&) = delete;
+  ~AppContextMenuArcTest() override = default;
+
+  void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
+
+    AppContextMenuTest::SetUp();
+
+    app_service_test().SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
+  }
+
+  void TearDown() override {
+    arc_app_test_.PreProfileTearDown();
+    AppContextMenuTest::TearDown();
+    arc_app_test_.PostProfileTearDown();
+  }
+
+ protected:
+  ArcAppTest arc_app_test_;
+};
+
+TEST_F(AppContextMenuArcTest, ArcMenu) {
+  const auto& app_info = arc_app_test_.fake_apps()[1];
   const std::string app_id = ArcAppTest::GetAppId(*app_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
 
   std::unique_ptr<FakeAppServiceAppItem> item =
       GetAppListItem(profile(), app_id);
@@ -461,7 +502,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
 
   // Test activate request.
-  EXPECT_EQ(0u, arc_app_test.app_instance()->launch_requests().size());
+  EXPECT_EQ(0u, arc_app_test_.app_instance()->launch_requests().size());
 
   menu->ActivatedAt(0);
 
@@ -469,12 +510,12 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   item->WaitForLaunch();
 
   const std::vector<std::unique_ptr<arc::FakeAppInstance::Request>>&
-      launch_requests = arc_app_test.app_instance()->launch_requests();
+      launch_requests = arc_app_test_.app_instance()->launch_requests();
   ASSERT_EQ(1u, launch_requests.size());
   EXPECT_TRUE(launch_requests[0]->IsForApp(*app_info));
 
   controller()->SetAppOpen(app_id, true);
-  arc_app_test.app_instance()->SendTaskCreated(1, *app_info, std::string());
+  arc_app_test_.app_instance()->SendTaskCreated(1, *app_info, std::string());
 
   // It is not expected that menu model is unchanged on GetContextMenuModel.
   // ARC app menu requires model to be recalculated.
@@ -501,15 +542,15 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   }
 
   // Test launching app shortcut item.
-  EXPECT_EQ(0, arc_app_test.app_instance()->launch_app_shortcut_item_count());
+  EXPECT_EQ(0, arc_app_test_.app_instance()->launch_app_shortcut_item_count());
   menu->ActivatedAt(menu->GetItemCount() - 1);
-  EXPECT_EQ(1, arc_app_test.app_instance()->launch_app_shortcut_item_count());
+  EXPECT_EQ(1, arc_app_test_.app_instance()->launch_app_shortcut_item_count());
 
   // This makes all apps non-ready.
   controller()->SetAppOpen(app_id, false);
-  arc_app_test.app_instance()->SendTaskDestroyed(1);
+  arc_app_test_.app_instance()->SendTaskDestroyed(1);
   arc::ConnectionObserver<arc::mojom::AppInstance>* connection_observer =
-      arc_app_test.arc_app_list_prefs();
+      arc_app_test_.arc_app_list_prefs();
   connection_observer->OnConnectionClosed();
 
   menu = GetContextMenuModel(item.get());
@@ -535,33 +576,23 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   }
 
   // Uninstall all apps.
-  arc_app_test.app_instance()->SendRefreshAppList(
+  arc_app_test_.app_instance()->SendRefreshAppList(
       std::vector<arc::mojom::AppInfoPtr>());
   controller()->SetAppOpen(app_id, false);
 
   // No app available case.
   menu = GetContextMenuModel(item.get());
   EXPECT_EQ(nullptr, menu);
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
 }
 
-TEST_F(AppContextMenuTest, ArcMenuShortcut) {
-  app_service_test().SetUp(profile());
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
+TEST_F(AppContextMenuArcTest, ArcMenuShortcut) {
   const arc::mojom::ShortcutInfo& shortcut_info =
-      arc_app_test.fake_shortcuts()[0];
+      arc_app_test_.fake_shortcuts()[0];
   const std::string app_id = ArcAppTest::GetAppId(shortcut_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
-  arc_app_test.app_instance()->SendInstallShortcuts(
-      arc_app_test.fake_shortcuts());
+  arc_app_test_.app_instance()->SendInstallShortcuts(
+      arc_app_test_.fake_shortcuts());
 
   std::unique_ptr<AppServiceAppItem> item = GetAppListItem(profile(), app_id);
 
@@ -589,7 +620,7 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
 
   // This makes all apps non-ready. Shortcut is still uninstall-able.
   arc::ConnectionObserver<arc::mojom::AppInstance>* connection_observer =
-      arc_app_test.arc_app_list_prefs();
+      arc_app_test_.arc_app_list_prefs();
   connection_observer->OnConnectionClosed();
 
   menu = GetContextMenuModel(item.get());
@@ -613,24 +644,14 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
     if (index < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
 }
 
-TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
-  app_service_test().SetUp(profile());
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
+TEST_F(AppContextMenuArcTest, ArcMenuStickyItem) {
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
 
   {
     // Verify menu of store
-    const auto& store_info = arc_app_test.fake_apps()[0];
+    const auto& store_info = arc_app_test_.fake_apps()[0];
     const std::string store_id = ArcAppTest::GetAppId(*store_info);
     controller()->SetAppPinnable(store_id,
                                  AppListControllerDelegate::PIN_EDITABLE);
@@ -659,23 +680,13 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
         EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
     }
   }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
 }
 
 // In suspended state app does not have launch item.
-TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
-  app_service_test().SetUp(profile());
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
+TEST_F(AppContextMenuArcTest, ArcMenuSuspendedItem) {
   std::vector<arc::mojom::AppInfoPtr> apps;
-  apps.emplace_back(arc_app_test.fake_apps()[0]->Clone())->suspended = true;
-  arc_app_test.app_instance()->SendRefreshAppList(apps);
+  apps.emplace_back(arc_app_test_.fake_apps()[0]->Clone())->suspended = true;
+  arc_app_test_.app_instance()->SendRefreshAppList(apps);
 
   const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
@@ -701,31 +712,6 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
     if (index < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
-}
-
-TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {
-  // Tests that CommandId enums are not changed as the values are used in
-  // histograms.
-  EXPECT_EQ(9, ash::NOTIFICATION_CONTAINER);
-  EXPECT_EQ(100, ash::LAUNCH_NEW);
-  EXPECT_EQ(101, ash::TOGGLE_PIN);
-  EXPECT_EQ(102, ash::SHOW_APP_INFO);
-  EXPECT_EQ(103, ash::OPTIONS);
-  EXPECT_EQ(104, ash::UNINSTALL);
-  EXPECT_EQ(105, ash::REMOVE_FROM_FOLDER);
-  EXPECT_EQ(106, ash::APP_CONTEXT_MENU_NEW_WINDOW);
-  EXPECT_EQ(107, ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW);
-  EXPECT_EQ(108, ash::INSTALL);
-  EXPECT_EQ(200, ash::USE_LAUNCH_TYPE_COMMAND_START);
-  EXPECT_EQ(200, ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED);
-  EXPECT_EQ(201, ash::USE_LAUNCH_TYPE_REGULAR);
-  EXPECT_EQ(202, ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN);
-  EXPECT_EQ(203, ash::USE_LAUNCH_TYPE_WINDOW);
-  EXPECT_EQ(204, ash::USE_LAUNCH_TYPE_TABBED_WINDOW);
 }
 
 }  // namespace app_list
