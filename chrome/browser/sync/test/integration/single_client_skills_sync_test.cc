@@ -83,7 +83,7 @@ class SkillsServiceChecker : public StatusChangeChecker,
 
   // skills::SkillsService::Observer overrides.
   void OnSkillUpdated(
-      const std::string& skill_id,
+      std::string_view skill_id,
       skills::SkillsService::UpdateSource update_source) override {
     CheckExitCondition();
   }

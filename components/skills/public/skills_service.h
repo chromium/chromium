@@ -41,7 +41,7 @@ class SkillsService : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     // Called whenever a skill is created, updated or deleted.
-    virtual void OnSkillUpdated(const std::string& skill_id,
+    virtual void OnSkillUpdated(std::string_view skill_id,
                                 UpdateSource update_source) {}
 
     // Called when the service is ready to use and data is loaded from the disk.

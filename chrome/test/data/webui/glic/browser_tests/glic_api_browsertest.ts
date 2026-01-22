@@ -2699,6 +2699,35 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
       withErrorMessage: 'GetContextFromTab not allowed while backgrounded',
     });
   }
+
+  async testGetSkillSuccess() {
+    assertDefined(this.host.getSkillPreviews);
+    assertDefined(this.host.getSkill);
+    const skillPreviewsSequence =
+        observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    const targetSkill = skills.find(s => s.name === 'test_skill_1');
+    assertDefined(targetSkill);
+    const actualSkill = await this.host.getSkill(targetSkill.id);
+    assertDefined(actualSkill);
+    assertEquals(actualSkill.preview.id, targetSkill.id);
+    assertEquals(actualSkill.preview.name, 'test_skill_1');
+    assertEquals(actualSkill.preview.icon, 'test_icon_1');
+    assertEquals(actualSkill.prompt, 'test_prompt_1');
+  }
+
+  async testGetSkillPreviewsSuccess() {
+    assertDefined(this.host.getSkillPreviews);
+    const skillPreviewsSequence =
+        observeSequence(this.host.getSkillPreviews());
+    const skills = await skillPreviewsSequence.waitFor(s => s.length === 2);
+    const skill1 = skills.find(s => s.name === 'test_skill_1');
+    assertDefined(skill1);
+    assertEquals('test_icon_1', skill1.icon);
+    const skill2 = skills.find(s => s.name === 'test_skill_2');
+    assertDefined(skill2);
+    assertEquals('test_icon_2', skill2.icon);
+  }
 }
 
 type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|

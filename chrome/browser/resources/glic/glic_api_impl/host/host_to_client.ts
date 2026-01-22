@@ -205,6 +205,13 @@ export class WebClientImpl implements WebClientInterface {
         `skill-${skillPreview.id}`);
   }
 
+  notifySkillDeleted(skillId: string): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifySkillDeleted', {
+          skillId,
+        });
+  }
+
   notifySkillToInvokeChanged(skill: SkillMojo): void {
     this.sender.sendLatestWhenActive(
         'glicWebClientNotifySkillToInvokeChanged', {

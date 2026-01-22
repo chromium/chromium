@@ -40,7 +40,7 @@ class MockObserver : public SkillsService::Observer {
  public:
   MOCK_METHOD(void,
               OnSkillUpdated,
-              (const std::string& skill_id,
+              (std::string_view skill_id,
                SkillsService::UpdateSource update_source));
   MOCK_METHOD(void, OnInitialized, ());
 };

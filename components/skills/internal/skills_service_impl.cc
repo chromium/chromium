@@ -41,7 +41,7 @@ SkillsServiceImpl::SkillsServiceImpl(
 
 SkillsServiceImpl::~SkillsServiceImpl() = default;
 
-void SkillsServiceImpl::NotifySkillChanged(const std::string& skill_id,
+void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
                                            UpdateSource update_source) {
   for (Observer& observer : observers_) {
     observer.OnSkillUpdated(skill_id, update_source);
@@ -154,6 +154,9 @@ void SkillsServiceImpl::SortSkills() {
 
 void SkillsServiceImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+  if (is_initialized_) {
+    observer->OnInitialized();
+  }
 }
 
 void SkillsServiceImpl::RemoveObserver(Observer* observer) {

@@ -730,6 +730,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
       skill: Skill,
     },
   },
+  glicWebClientNotifySkillDeleted: {
+    request: {
+      skillId: string,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientPinCandidatesChanged: {
     request: {
       candidates: PinCandidatePrivate[],

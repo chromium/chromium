@@ -70,7 +70,7 @@ class SkillsServiceImpl : public SkillsService {
       override;
 
  private:
-  void NotifySkillChanged(const std::string& skill_id,
+  void NotifySkillChanged(std::string_view skill_id,
                           UpdateSource update_source);
 
   // Adds a skill to the service and returns the created skill.

@@ -822,7 +822,6 @@ interface WebClientHandler {
   UpdateSkill(UpdateSkillRequest request) => (bool modal_opened);
 
   // Gets a skill by its id. Returns null if the skill does not exist.
-  // TODO(crbug.com/471796872): Add the actual c++ implementation.
   GetSkill(string id) => (Skill? skill);
 
   // Subscribes to receive updates on pin candidates.
@@ -1418,11 +1417,14 @@ interface WebClient {
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
   NotifyPinnedTabDataChanged(TabData tab_data);
 
-  // Notify that the skills previews have changed.
-  NotifySkillPreviewsChanged(array<SkillPreview> skill_previews);
+  // Notify that a skill has been deleted.
+  NotifySkillDeleted(string skill_id);
 
   // Notify that a skill preview has changed.
   NotifySkillPreviewChanged(SkillPreview skill_preview);
+
+  // Notify that the skills previews have changed.
+  NotifySkillPreviewsChanged(array<SkillPreview> skill_previews);
 
   // Notify that the skill to invoke has changed.
   NotifySkillToInvokeChanged(Skill skill);

@@ -238,6 +238,23 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.skillPreviews.assignAndSignal(this.cachedSkillPreviews);
   }
 
+  glicWebClientNotifySkillDeleted(payload: {
+    skillId: string,
+  }): void {
+    const skillId = payload.skillId;
+    this.cachedSkillPrompts.delete(skillId);
+    const index = this.cachedSkillPreviews.findIndex(
+        (cachedSkillPreview) => cachedSkillPreview.id === skillId);
+    if (index !== -1) {
+      // SkillPreview with the same ID exists, remove it.
+      this.cachedSkillPreviews = [
+        ...this.cachedSkillPreviews.slice(0, index),
+        ...this.cachedSkillPreviews.slice(index + 1),
+      ];
+    }
+    this.host.skillPreviews.assignAndSignal(this.cachedSkillPreviews);
+  }
+
   glicWebClientNotifySkillToInvokeChanged(payload: {skill: Skill}): void {
     this.host.skillToInvoke.assignAndSignal(payload.skill);
   }
@@ -1182,7 +1199,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return result.skill;
   }
 
-  getSkills?(): ObservableValue<SkillPreview[]> {
+  getSkillPreviews?(): ObservableValue<SkillPreview[]> {
     return this.skillPreviews;
   }
 

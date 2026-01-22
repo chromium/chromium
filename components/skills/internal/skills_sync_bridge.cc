@@ -270,7 +270,7 @@ bool SkillsSyncBridge::IsEntityDataValid(
 }
 
 void SkillsSyncBridge::OnSkillUpdated(
-    const std::string& skill_id,
+    std::string_view skill_id,
     SkillsService::UpdateSource update_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -289,8 +289,9 @@ void SkillsSyncBridge::OnSkillUpdated(
   const Skill* skill = skills_service_->GetSkillById(skill_id);
   if (!skill) {
     // Skill was deleted locally.
-    batch->DeleteData(skill_id);
-    change_processor()->Delete(skill_id, syncer::DeletionOrigin::Unspecified(),
+    std::string skill_id_str(skill_id.data());
+    batch->DeleteData(skill_id_str);
+    change_processor()->Delete(skill_id_str, syncer::DeletionOrigin::Unspecified(),
                                batch->GetMetadataChangeList());
   } else {
     // Skill was created or updated locally.
