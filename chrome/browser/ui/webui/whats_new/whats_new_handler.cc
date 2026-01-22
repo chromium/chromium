@@ -148,8 +148,11 @@ void WhatsNewHandler::RecordScrollDepth(whats_new::mojom::ScrollDepth depth) {
   }
 }
 
-void WhatsNewHandler::RecordTimeOnPage(base::TimeDelta time) {
+void WhatsNewHandler::RecordTimeOnPage(base::TimeDelta time,
+                                       bool is_heartbeat) {
   base::UmaHistogramMediumTimes("UserEducation.WhatsNew.TimeOnPage", time);
+  base::UmaHistogramBoolean("UserEducation.WhatsNew.TimeOnPageHeartbeat",
+                            is_heartbeat);
 }
 
 void WhatsNewHandler::RecordModuleLinkClicked(

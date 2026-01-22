@@ -44,6 +44,7 @@ enum EventType {
   CLOSE_EXPANDED_MEDIA = 'close_expanded_media',
   CTA_CLICK = 'cta_click',
   NEXT_BUTTON_CLICK = 'next_button_click',
+  TIME_ON_PAGE_HEARTBEAT_MS = 'time_on_page_heartbeat_ms',
 }
 
 enum SectionType {
@@ -232,6 +233,11 @@ interface NextButtonClickMetric {
   order?: '1'|'2'|'3'|'4'|'5'|'6';
 }
 
+interface TimeOnPageHeartbeatMetric {
+  event: EventType.TIME_ON_PAGE_HEARTBEAT_MS;
+  time: number;
+}
+
 type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
@@ -240,7 +246,7 @@ type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     QrCodeToggleOpenMetric|QrCodeToggleCloseMetric|NavClickMetric|
     FeatureTileNavigationMetric|CarouselScrollButtonClickMetric|
     ExpandMediaMetric|CloseExpandedMediaMetric|CtaClickMetric|
-    NextButtonClickMetric;
+    NextButtonClickMetric|TimeOnPageHeartbeatMetric;
 
 interface EventData {
   data: BrowserCommand|MetricData;
@@ -428,14 +434,15 @@ function handleModuleEvent(
   }
 }
 
-function handleTimeOnPageMetric(data: TimeOnPageMetric) {
-  if (Number.isInteger(data.time) && data.time > 0) {
+// Handle the two types of time_on_page metrics.
+function handleTimeOnPageMetric(time: number, isHeartbeat: boolean) {
+  if (Number.isInteger(time) && time > 0) {
     const {handler} = WhatsNewProxyImpl.getInstance();
     // Event contains time in milliseconds. Convert to microseconds.
-    const delta: TimeDelta = {microseconds: BigInt(data.time) * 1000n};
-    handler.recordTimeOnPage(delta);
+    const delta: TimeDelta = {microseconds: BigInt(time) * 1000n};
+    handler.recordTimeOnPage(delta, isHeartbeat);
   } else {
-    console.warn('Invalid time: ', data.time);
+    console.warn('Invalid time: ', time);
   }
 }
 
@@ -462,6 +469,9 @@ export class WhatsNewAppElement extends CrLitElement {
 
   private isAutoOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
+  private heartbeatTimeOnPage_: number = 0;
+  private beforeUnloadHandlerBound_:
+      () => void = this.beforeUnloadHandler_.bind(this);
 
   constructor() {
     super();
@@ -482,11 +492,23 @@ export class WhatsNewAppElement extends CrLitElement {
     WhatsNewProxyImpl.getInstance()
         .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
         .then(({url}: {url: Url}) => this.handleUrlResult_(url));
+
+    // Beforeunload events are unreliable in iframes when the tab is closed
+    // directly. Using this event in the top-level frame is more robust in
+    // ensuring this metric is recorded.
+    window.addEventListener('beforeunload', this.beforeUnloadHandlerBound_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    window.removeEventListener('beforeunload', this.beforeUnloadHandlerBound_);
+  }
+
+  private beforeUnloadHandler_() {
+    if (this.heartbeatTimeOnPage_ > 0) {
+      handleTimeOnPageMetric(this.heartbeatTimeOnPage_, true);
+    }
   }
 
   /**
@@ -546,7 +568,10 @@ export class WhatsNewAppElement extends CrLitElement {
         handleScrollDepthMetric(data);
         break;
       case EventType.TIME_ON_PAGE_MS:
-        handleTimeOnPageMetric(data);
+        // If heartbeat metric has been recorded, ignore this event.
+        if (this.heartbeatTimeOnPage_ === 0) {
+          handleTimeOnPageMetric(data.time, false);
+        }
         break;
       case EventType.MODULE_IMPRESSION:
       case EventType.GENERAL_LINK_CLICK:
@@ -580,6 +605,12 @@ export class WhatsNewAppElement extends CrLitElement {
         break;
       case EventType.NEXT_BUTTON_CLICK:
         WhatsNewProxyImpl.getInstance().handler.recordNextButtonClick();
+        break;
+      case EventType.TIME_ON_PAGE_HEARTBEAT_MS:
+        if (Number.isInteger(data.time)) {
+          this.heartbeatTimeOnPage_ =
+              Math.max(this.heartbeatTimeOnPage_, data.time);
+        }
         break;
       default:
         console.warn('Unrecognized message.', data);

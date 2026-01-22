@@ -166,8 +166,10 @@ TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {
   handler_->RecordScrollDepth(whats_new::mojom::ScrollDepth::k25);
   histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.ScrollDepth", 1);
 
-  handler_->RecordTimeOnPage(base::TimeDelta());
+  handler_->RecordTimeOnPage(base::TimeDelta(), true);
   histogram_tester_.ExpectTotalCount("UserEducation.WhatsNew.TimeOnPage", 1);
+  histogram_tester_.ExpectTotalCount(
+      "UserEducation.WhatsNew.TimeOnPageHeartbeat", 1);
 
   handler_->RecordModuleLinkClicked(
       "AnotherFeature", whats_new::mojom::ModulePosition::kExploreMore1);

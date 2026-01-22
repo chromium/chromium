@@ -4,7 +4,7 @@
 
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {ModulePosition, ScrollDepth} from 'chrome://whats-new/whats_new.mojom-webui.js';
@@ -163,9 +163,11 @@ suite('WhatsNewAppTest', function() {
     const whatsNewApp = document.createElement('whats-new-app');
     document.body.appendChild(whatsNewApp);
 
-    const timeOnPage = await proxy.handler.whenCalled('recordTimeOnPage');
+    const [timeOnPage, isHeartbeat] =
+        await proxy.handler.whenCalled('recordTimeOnPage');
     // 3 million microseconds = 3 thousand milliseconds
     assertEquals(3n * 1000n * 1000n, timeOnPage.microseconds);
+    assertFalse(isHeartbeat);
   });
 
   test('with module_click metrics from embedded page', async () => {
