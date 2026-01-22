@@ -722,6 +722,19 @@
       valid_type: "bool",
     },
 
+    // - is_animation_affecting
+    //
+    // Properties that affect animations are not allowed to be affected by
+    // animations. Animation properties must always be animation-affecting.
+    // Internal properties ignore this field; can_be_animated() always
+    // returns true.
+    //
+    // https://w3.org/TR/web-animations-1/#animating-properties
+    is_animation_affecting: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // Whether changing this property is so independent that we can apply
     // a change to them incrementally on top of the old style. This happens
     // only when inline style is changed. Conceptually, this could be a blocklist,
@@ -861,6 +874,7 @@
       default_value: "EffectModel::kCompositeReplace",
       type_name: "EffectModel::CompositeOperation",
       valid_for_marker: true,
+      is_animation_affecting: true,
     },
     {
       name: "animation-delay",
@@ -873,6 +887,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -890,6 +905,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -906,6 +922,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -922,6 +939,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -940,6 +958,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -957,6 +976,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -973,6 +993,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -987,6 +1008,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -1001,6 +1023,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -1017,6 +1040,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1044,6 +1068,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1063,6 +1088,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "AnimationTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-name",
@@ -1081,6 +1107,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-entry-range-start",
@@ -1092,6 +1119,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-entry-range-end",
@@ -1103,6 +1131,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-active-range-start",
@@ -1114,6 +1143,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-active-range-end",
@@ -1125,6 +1155,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-source",
@@ -1138,6 +1169,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "transition-delay",
@@ -1150,6 +1182,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1164,6 +1197,7 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1178,6 +1212,7 @@
       typedom_types: ["Keyword"],
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1193,6 +1228,7 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1219,6 +1255,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1291,6 +1328,7 @@
       valid_for_marker: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
+      is_animation_affecting: true,
     },
     {
       name: "font-family",
@@ -1782,6 +1820,7 @@
       computable: false,
       invalidate: ["layout", "paint"],
       valid_for_marker: true,
+      is_animation_affecting: true,
     },
     {
       name: "-webkit-text-orientation",
@@ -1811,6 +1850,7 @@
       supports_incremental_style: false,
       invalidate: ["layout", "paint"],
       highlight_style_comes_from_originating_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -1819,6 +1859,7 @@
       type_name: "WritingMode",
       priority: 1,
       surrogate_for: "writing-mode",
+      is_animation_affecting: true,
     },
     {
       name: "text-rendering",
@@ -2972,6 +3013,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       invalidate: ["layout"],
+      is_animation_affecting: true,
     },
     {
       name: "contain-intrinsic-width",
@@ -3013,6 +3055,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "container-type",
@@ -3027,6 +3070,7 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       invalidate: ["layout"],
+      is_animation_affecting: true,
     },
     {
       name: "content",
@@ -3796,6 +3840,7 @@
       typedom_types: ["Keyword"],
       default_value: "numeric-only",
       invalidate: [],
+      is_animation_affecting: true,
     },
     {
       name: "isolation",
@@ -5416,6 +5461,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "scroll-timeline-name",
@@ -5426,6 +5472,7 @@
       type_name: "Vector<AtomicString>",
       converter: "ConvertViewTimelineName",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "shape-image-threshold",
@@ -5779,6 +5826,7 @@
       valid_for_marker: true,
       computable: false,
       invalidate: ["layout", "paint"],
+      is_animation_affecting: true,
     },
     {
       name: "text-decoration-color",
@@ -6046,6 +6094,7 @@
       type_name: "StyleTimelineScope",
       converter: "ConvertTimelineScope",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "top",
@@ -6209,6 +6258,7 @@
       type_name: "UnicodeBidi",
       valid_for_marker: true,
       invalidate: ["reshape"],
+      is_animation_affecting: true,
     },
     {
       name: "vector-effect",
@@ -6241,6 +6291,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline-inset",
@@ -6252,6 +6303,7 @@
       type_name: "Vector<TimelineInset>",
       converter: "ConvertViewTimelineInset",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline-name",
@@ -6262,6 +6314,7 @@
       type_name: "Vector<AtomicString>",
       converter: "ConvertViewTimelineName",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-transition-class",
@@ -7480,6 +7533,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "word-break",
@@ -8331,6 +8385,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      is_animation_affecting: true,
     },
     {
       name: "animation-range",
@@ -8340,6 +8395,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      is_animation_affecting: true,
     },
     {
       name: "background",
@@ -9085,6 +9141,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       // Animation properites are never incremental.
       supports_incremental_style: false,
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline",

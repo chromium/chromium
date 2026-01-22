@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -3523,61 +3524,7 @@ const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
 // animations.
 // https://w3.org/TR/web-animations-1/#animating-properties
 bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
-  // Internal properties are not animatable because they should not be exposed
-  // to the page/author in the first place.
-  if (property.IsInternal()) {
-    return true;
-  }
-
-  switch (property.PropertyID()) {
-    case CSSPropertyID::kAnimation:
-    case CSSPropertyID::kAnimationComposition:
-    case CSSPropertyID::kAnimationDelay:
-    case CSSPropertyID::kAnimationDirection:
-    case CSSPropertyID::kAnimationDuration:
-    case CSSPropertyID::kAnimationFillMode:
-    case CSSPropertyID::kAnimationIterationCount:
-    case CSSPropertyID::kAnimationName:
-    case CSSPropertyID::kAnimationPlayState:
-    case CSSPropertyID::kAnimationRange:
-    case CSSPropertyID::kAnimationRangeEnd:
-    case CSSPropertyID::kAnimationRangeStart:
-    case CSSPropertyID::kAnimationTimeline:
-    case CSSPropertyID::kAnimationTimingFunction:
-    case CSSPropertyID::kAnimationTrigger:
-    case CSSPropertyID::kContain:
-    case CSSPropertyID::kContainerName:
-    case CSSPropertyID::kContainerType:
-    case CSSPropertyID::kDirection:
-    case CSSPropertyID::kInterpolateSize:
-    case CSSPropertyID::kScrollTimelineAxis:
-    case CSSPropertyID::kScrollTimelineName:
-    case CSSPropertyID::kTextCombineUpright:
-    case CSSPropertyID::kTextOrientation:
-    case CSSPropertyID::kTimelineScope:
-    case CSSPropertyID::kTimelineTriggerName:
-    case CSSPropertyID::kTimelineTriggerEntryRangeStart:
-    case CSSPropertyID::kTimelineTriggerEntryRangeEnd:
-    case CSSPropertyID::kTimelineTriggerActiveRangeStart:
-    case CSSPropertyID::kTimelineTriggerActiveRangeEnd:
-    case CSSPropertyID::kTimelineTriggerSource:
-    case CSSPropertyID::kTransition:
-    case CSSPropertyID::kTransitionBehavior:
-    case CSSPropertyID::kTransitionDelay:
-    case CSSPropertyID::kTransitionDuration:
-    case CSSPropertyID::kTransitionProperty:
-    case CSSPropertyID::kTransitionTimingFunction:
-    case CSSPropertyID::kUnicodeBidi:
-    case CSSPropertyID::kViewTimelineAxis:
-    case CSSPropertyID::kViewTimelineInset:
-    case CSSPropertyID::kViewTimelineName:
-    case CSSPropertyID::kWebkitWritingMode:
-    case CSSPropertyID::kWillChange:
-    case CSSPropertyID::kWritingMode:
-      return true;
-    default:
-      return false;
-  }
+  return kAnimationAffectingProperties.Has(property.PropertyID());
 }
 
 bool CSSAnimations::IsAffectedByKeyframesFromScope(

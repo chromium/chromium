@@ -87,6 +87,8 @@ def validate_property(prop, props_by_name):
         assert prop.reset_on_new_style, 'Derived flags must have reset_on_new_style [%s]' % name
     if prop.is_logical:
         assert not prop.field_group, 'Logical properties can not have fields [%s]' % name
+    if prop.is_animation_property:
+        assert prop.is_animation_affecting, 'Animation properties must always be animation-affecting [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -161,6 +163,14 @@ class PropertyBase(object):
         return not self.is_internal \
             and not self.runtime_flag \
             and not self.alternative
+
+    @property
+    def effective_is_animation_affecting(self):
+        """True if this property may not be animated.
+
+        Internal properties are not animatable because they should not be exposed
+        to the page/author in the first place."""
+        return self.is_animation_affecting or self.is_internal
 
     @property
     def ultimate_property(self):

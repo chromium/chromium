@@ -22,6 +22,10 @@ extern const CSSBitset kLogicalGroupProperties;
 // two rather hot cache lines). This saves a little time in parsing.
 extern const CSSBitset kKnownExposedProperties;
 
+// Helper for CSSAnimations::IsAnimationAffectingProperty(); properties that
+// cannot be animated (usually because they affect animation itself).
+extern const CSSBitset kAnimationAffectingProperties;
+
 // Properties that have the IsSurrogate() bit set; i.e., they may need
 // to go through SurrogateFor() to be resolved against direction and
 // writing mode.
