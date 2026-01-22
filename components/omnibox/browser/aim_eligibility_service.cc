@@ -183,6 +183,34 @@ bool GetResponseFromPrefs(const PrefService* prefs,
   return true;
 }
 
+// Determines whether the specified tool mode is permitted based on the
+// allowed tools list within the `SearchboxConfig` rule set.
+bool IsToolAllowed(const omnibox::SearchboxConfig& config,
+                   omnibox::ToolMode tool_mode) {
+  if (config.has_rule_set()) {
+    for (const auto& allowed_tool : config.rule_set().allowed_tools()) {
+      if (allowed_tool == tool_mode) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Determines whether the specified input type is permitted based on the
+// allowed input types list within the `SearchboxConfig` rule set.
+bool IsInputTypeAllowed(const omnibox::SearchboxConfig& config,
+                        omnibox::InputType input_type) {
+  if (config.has_rule_set()) {
+    for (const auto& allowed_type : config.rule_set().allowed_input_types()) {
+      if (allowed_type == input_type) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -371,23 +399,33 @@ bool AimEligibilityService::IsAimEligible() const {
 }
 
 bool AimEligibilityService::IsPdfUploadEligible() const {
-  return IsEligibleByServer(most_recent_response_.is_pdf_upload_eligible());
+  bool server_eligible = IsInputTypeAllowed(
+      *GetSearchboxConfig(), omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  return IsEligibleByServer(server_eligible);
 }
 
 bool AimEligibilityService::IsDeepSearchEligible() const {
-  return IsEligibleByServer(most_recent_response_.is_deep_search_eligible());
+  bool server_eligible = IsToolAllowed(
+      *GetSearchboxConfig(), omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  return IsEligibleByServer(server_eligible);
 }
 
 bool AimEligibilityService::IsCreateImagesEligible() const {
   if (is_off_the_record_) {
     return false;
   }
-  return IsEligibleByServer(
-      most_recent_response_.is_image_generation_eligible());
+  bool server_eligible =
+      IsToolAllowed(*GetSearchboxConfig(),
+                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) &&
+      IsToolAllowed(*GetSearchboxConfig(),
+                    omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+  return IsEligibleByServer(server_eligible);
 }
 
 bool AimEligibilityService::IsCanvasEligible() const {
-  return IsEligibleByServer(most_recent_response_.is_canvas_eligible());
+  bool server_eligible =
+      IsToolAllowed(*GetSearchboxConfig(), omnibox::ToolMode::TOOL_MODE_CANVAS);
+  return IsEligibleByServer(server_eligible);
 }
 
 const omnibox::AimEligibilityResponse&
@@ -405,7 +443,25 @@ const omnibox::SearchboxConfig* AimEligibilityService::GetSearchboxConfig()
   if (most_recent_response_.has_searchbox_config()) {
     return &most_recent_response_.searchbox_config();
   }
-  return nullptr;
+
+  fallback_config_.Clear();
+  auto* rule_set = fallback_config_.mutable_rule_set();
+
+  if (most_recent_response_.is_deep_search_eligible()) {
+    rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  }
+  if (most_recent_response_.is_canvas_eligible()) {
+    rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  }
+  if (most_recent_response_.is_image_generation_eligible()) {
+    rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+    rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD);
+  }
+  if (most_recent_response_.is_pdf_upload_eligible()) {
+    rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  }
+
+  return &fallback_config_;
 }
 
 void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
