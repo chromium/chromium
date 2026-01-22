@@ -27,6 +27,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -877,6 +878,13 @@ void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
   for (Observer& observer : observer_list_) {
     observer.OnThemeSyncStarted(startup_state);
   }
+
+  if (profile_->GetPrefs()->GetBoolean(
+          syncer::prefs::internal::kMigrateThemeFromLocalToAccount)) {
+    DeduplicateLocalThemeIfSameAsAccountTheme();
+    profile_->GetPrefs()->ClearPref(
+        syncer::prefs::internal::kMigrateThemeFromLocalToAccount);
+  }
 }
 
 std::optional<sync_pb::ThemeSpecifics>
@@ -925,4 +933,19 @@ bool ThemeSyncableService::ApplySavedLocalThemeIfExistsAndClear() {
   }
   profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
   return local_theme_specifics.has_value();
+}
+
+void ThemeSyncableService::DeduplicateLocalThemeIfSameAsAccountTheme() {
+  std::optional<sync_pb::ThemeSpecifics> saved_local_theme_specifics =
+      GetSavedLocalTheme();
+  if (!saved_local_theme_specifics.has_value()) {
+    return;
+  }
+  if (!AreThemeSpecificsEquivalent(
+          GetThemeSpecificsFromCurrentTheme(),
+          saved_local_theme_specifics.value(),
+          theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
+    return;
+  }
+  profile_->GetPrefs()->ClearPref(prefs::kSavedLocalTheme);
 }
