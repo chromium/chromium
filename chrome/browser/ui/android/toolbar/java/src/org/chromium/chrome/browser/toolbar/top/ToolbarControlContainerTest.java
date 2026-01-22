@@ -42,8 +42,10 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -124,20 +126,20 @@ public class ToolbarControlContainerTest {
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
-    private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mCompositorInMotionSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final BrowserStateBrowserControlsVisibilityDelegate
             mBrowserStateBrowserControlsVisibilityDelegate =
                     new BrowserStateBrowserControlsVisibilityDelegate(
-                            new ObservableSupplierImpl<>(false));
+                            ObservableSuppliers.alwaysFalse());
     private final AtomicInteger mOnResourceRequestedCount = new AtomicInteger();
 
     private boolean mIsVisible;
     private final BooleanSupplier mIsVisibleSupplier = () -> mIsVisible;
 
     private boolean mHasTestConstraintsOverride;
-    private final ObservableSupplierImpl<Integer> mConstraintsSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Integer> mConstraintsSupplier =
+            ObservableSuppliers.createNullable();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
@@ -634,7 +636,7 @@ public class ToolbarControlContainerTest {
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
-        doReturn(new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH))
+        doReturn(ObservableSuppliers.of(AutocompleteRequestType.SEARCH))
                 .when(mLocationBarCoordinator)
                 .getAutocompleteRequestTypeSupplier();
         doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
@@ -724,7 +726,7 @@ public class ToolbarControlContainerTest {
     @Test
     public void testHeightSupplier() {
         var controlContainer = new ToolbarControlContainer(mActivity, null);
-        ObservableSupplierImpl<Integer> heightSupplier = new ObservableSupplierImpl<>();
+        var heightSupplier = ObservableSuppliers.createNonNull(-1);
         controlContainer.setOnHeightChangedListener(heightSupplier);
         controlContainer.onSizeChanged(100, 200, 100, 100);
         assertEquals(200, (int) heightSupplier.get());
@@ -733,10 +735,10 @@ public class ToolbarControlContainerTest {
     @Test
     public void testHeightSupplier_noHeightChange() {
         var controlContainer = new ToolbarControlContainer(mActivity, null);
-        ObservableSupplierImpl<Integer> heightSupplier = new ObservableSupplierImpl<>();
+        var heightSupplier = ObservableSuppliers.createNonNull(-1);
         controlContainer.setOnHeightChangedListener(heightSupplier);
         controlContainer.onSizeChanged(100, 100, 100, 100);
-        assertEquals(null, heightSupplier.get());
+        assertEquals(-1, (int) heightSupplier.get());
     }
 
     @Test

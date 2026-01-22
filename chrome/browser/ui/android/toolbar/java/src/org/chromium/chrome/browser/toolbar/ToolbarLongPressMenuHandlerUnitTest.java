@@ -53,7 +53,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
@@ -119,7 +120,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @Mock PrefService mLocalPrefService;
 
     private ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
-    private ObservableSupplierImpl mProfileSupplier;
+    private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
 
     private Activity mActivity;
     private boolean mShouldSuppress;
@@ -137,8 +138,7 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
         UrlBar urlBar = new UrlBarApi26(mActivity, null);
         mUrlBar = spy(urlBar);
 
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
 
         TrackerFactory.setTrackerForTests(mTracker);
 

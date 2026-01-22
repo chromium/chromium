@@ -19,7 +19,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
@@ -32,7 +33,8 @@ public final class ConstraintsCheckerTest {
 
     @Mock private ViewResourceAdapter mViewResourceAdapter;
 
-    private final ObservableSupplierImpl mConstraintsSupplier = new ObservableSupplierImpl();
+    private final SettableNullableObservableSupplier<Integer> mConstraintsSupplier =
+            ObservableSuppliers.createNullable();
 
     @Test
     public void testScheduleRequestResourceOnUnlock() {

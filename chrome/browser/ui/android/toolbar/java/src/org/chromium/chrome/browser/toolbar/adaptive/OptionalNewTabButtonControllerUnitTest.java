@@ -31,7 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -70,8 +71,8 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock private Tracker mTracker;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
 
-    private final ObservableSupplierImpl<@StripVisibilityState Integer>
-            mTabStripVisibilitySupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Integer> mTabStripVisibilitySupplier =
+            ObservableSuppliers.createMonotonic();
 
     private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;

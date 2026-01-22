@@ -14,7 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,7 +42,8 @@ public class AddressBarSettingsFragment extends ChromeBaseSettingsFragment {
     @VisibleForTesting static final String PREF_ADDRESS_BAR_TITLE = "address_bar_title";
     public static final String HIGHLIGHTED_OPTION = "AddressBarSettingsFragment.HighlightedOption";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {

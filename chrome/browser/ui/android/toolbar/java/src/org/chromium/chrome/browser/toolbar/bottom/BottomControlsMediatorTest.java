@@ -33,8 +33,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -91,11 +92,11 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
             ObservableSuppliers.createNullable();
-    private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
-            new ObservableSupplierImpl();
+    private final SettableNonNullObservableSupplier<Boolean> mOverlayPanelVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private PropertyModel mModel;
     private BottomControlsMediator mMediator;
@@ -112,7 +113,7 @@ public class BottomControlsMediatorTest {
                         .with(BottomControlsProperties.ANDROID_VIEW_VISIBLE, false)
                         .with(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE, false)
                         .build();
-        mEdgeToEdgeControllerSupplier = new ObservableSupplierImpl<>(mEdgeToEdgeController);
+        mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic(mEdgeToEdgeController);
         mMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -141,7 +142,7 @@ public class BottomControlsMediatorTest {
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl<>(null),
+                        ObservableSuppliers.alwaysNull(),
                         mReadAloudRestoringSupplier);
         assertNull(plainMediator.getEdgeToEdgeChangeObserverForTesting());
     }
@@ -172,7 +173,7 @@ public class BottomControlsMediatorTest {
                         null,
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        new ObservableSupplierImpl<>(mLayoutManager),
+                        ObservableSuppliers.of(mLayoutManager),
                         mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
@@ -185,7 +186,7 @@ public class BottomControlsMediatorTest {
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
-                        new ObservableSupplierImpl<>(liveEdgeToEdgeController),
+                        ObservableSuppliers.of(liveEdgeToEdgeController),
                         mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         plainMediator.destroy();
@@ -204,7 +205,7 @@ public class BottomControlsMediatorTest {
                         null,
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
-                        new ObservableSupplierImpl<>(mLayoutManager),
+                        ObservableSuppliers.of(mLayoutManager),
                         mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
@@ -216,7 +217,7 @@ public class BottomControlsMediatorTest {
                 DEFAULT_HEIGHT,
                 DEFAULT_SHADOW_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
-                new ObservableSupplierImpl<>(liveEdgeToEdgeController),
+                ObservableSuppliers.of(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);
         assertNotNull(liveEdgeToEdgeController.getAnyChangeObserverForTesting());
         liveEdgeToEdgeController.setIsOptedIntoEdgeToEdgeForTesting(false);

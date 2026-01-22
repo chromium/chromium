@@ -10,7 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
@@ -52,7 +53,8 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
 
     private ChromeSwitchPreference mToolbarShortcutSwitch;
     private RadioButtonGroupAdaptiveToolbarPreference mRadioButtonGroup;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
