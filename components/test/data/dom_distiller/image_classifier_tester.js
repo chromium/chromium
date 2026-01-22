@@ -151,4 +151,64 @@ suite('ImageClassifier', function() {
     assertHasClass('fallback_wide', ImageClassifier.FULL_WIDTH_CLASS);
     assertHasClass('fallback_narrow', ImageClassifier.INLINE_CLASS);
   });
+
+  test('should detect and load lazy-loaded image attributes', async function() {
+    const {assert} = await import('./index.js');
+
+    const MODERN_URL = 'https://example.com/modern.jpg';
+    const LEGACY_URL = 'https://example.com/legacy.jpg';
+    const WP_URL = 'https://example.com/wordpress.jpg';
+    const WP_SRCSET = [
+      'https://example.com/wp-400.jpg 400w',
+      'https://example.com/wp-800.jpg 800w',
+    ].join(',');
+    const WP_SIZES = '(max-width: 600px) 100vw, 600px';
+
+    const imagePromises = [
+      createImageTest(
+          'lazy_modern', 100, 100, 'p', '<img>', {'data-src': MODERN_URL}),
+      createImageTest(
+          'lazy_legacy', 100, 100, 'p', '<img>', {'data-original': LEGACY_URL}),
+      createImageTest('lazy_wordpress', 100, 100, 'p', '<img>', {
+        'data-lazy-src': WP_URL,
+        'data-lazy-srcset': WP_SRCSET,
+        'data-lazy-sizes': WP_SIZES,
+      }),
+      createImageTest('lazy_priority', 100, 100, 'p', '<img>', {
+        'data-src': MODERN_URL,
+        'data-original': LEGACY_URL,
+      }),
+    ];
+    await Promise.all(imagePromises);
+    ImageClassifier.processImagesIn(testContainer);
+
+    const imgModern = document.getElementById('lazy_modern');
+    assert.equal(
+        imgModern.getAttribute('src'), MODERN_URL,
+        'Should promote data-src to src');
+    assert.isFalse(
+        imgModern.hasAttribute('data-src'),
+        'Should remove data-src after promotion');
+
+    const imgLegacy = document.getElementById('lazy_legacy');
+    assert.equal(
+        imgLegacy.getAttribute('src'), LEGACY_URL,
+        'Should promote data-original to src');
+
+    const imgWP = document.getElementById('lazy_wordpress');
+    assert.equal(
+        imgWP.getAttribute('src'), WP_URL,
+        'Should promote data-lazy-src to src');
+    assert.equal(
+        imgWP.getAttribute('srcset'), WP_SRCSET,
+        'Should promote data-lazy-srcset to srcset');
+    assert.equal(
+        imgWP.getAttribute('sizes'), WP_SIZES,
+        'Should promote data-lazy-sizes to sizes');
+
+    const imgPriority = document.getElementById('lazy_priority');
+    assert.equal(
+        imgPriority.getAttribute('src'), MODERN_URL,
+        'Should prioritize data-src over data-original');
+  });
 });

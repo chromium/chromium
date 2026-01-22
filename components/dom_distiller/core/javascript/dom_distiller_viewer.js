@@ -69,6 +69,27 @@ class ImageClassifier {
   static INLINE_CLASS = 'distilled-inline-img';
   static FULL_WIDTH_CLASS = 'distilled-full-width-img';
   static DOMINANT_IMAGE_MIN_VIEWPORT_RATIO = 0.8;
+  static SRC_CANDIDATES = [
+    // Used by lazysizes and UI Frameworks like Bootstrap.
+    'data-src',
+    // Mostly used in websites that depend on jQuery LazyLoad.
+    'data-original',
+    // WordPress standard, injected by plugins like WP Rocket or Smush.
+    'data-lazy-src',
+    // Other implementations.
+    'data-url',
+    'data-image',
+  ];
+  static SRCSET_CANDIDATES = [
+    'data-srcset',
+    'data-lazy-srcset',
+    'data-original-set',
+  ];
+  static SIZES_CANDIDATES = [
+    'data-sizes',
+    'data-lazy-sizes',
+  ];
+
 
   constructor() {
     // Baseline thresholds in density-independent units (CSS pixels).
@@ -185,6 +206,40 @@ class ImageClassifier {
   }
 
   /**
+   * Detects lazy-loading attributes and moves them to standard attributes
+   * (src, srcset, sizes) to trigger native loading.
+   * This is necessary for static environments where the original page's
+   * lazy-loading JavaScript does not run, ensuring the real content is loaded
+   * instead of a placeholder.
+   * @param {HTMLImageElement} img The image element to check.
+   * @private
+   */
+  _loadLazyImageAttributes(img) {
+    if (!img.src || img.src.startsWith('data:')) {
+      const srcAttribute =
+          ImageClassifier.SRC_CANDIDATES.find(el => img.hasAttribute(el));
+      if (srcAttribute) {
+        img.src = img.getAttribute(srcAttribute);
+        img.removeAttribute(srcAttribute);
+      }
+    }
+
+    const srcsetAttribute =
+        ImageClassifier.SRCSET_CANDIDATES.find(el => img.hasAttribute(el));
+    if (srcsetAttribute) {
+      img.srcset = img.getAttribute(srcsetAttribute);
+      img.removeAttribute(srcsetAttribute);
+    }
+
+    const sizeAttribute =
+        ImageClassifier.SIZES_CANDIDATES.find(el => img.hasAttribute(el));
+    if (sizeAttribute) {
+      img.sizes = img.getAttribute(sizeAttribute);
+      img.removeAttribute(sizeAttribute);
+    }
+  }
+
+  /**
    * Determines an image's display style using a prioritized cascade of checks.
    * @param {HTMLImageElement} img The image element to classify.
    * @return {string} The CSS class to apply.
@@ -226,6 +281,7 @@ class ImageClassifier {
     };
 
     for (const img of images) {
+      classifier._loadLazyImageAttributes(img);
       img.onload = imageLoadHandler;
 
       // If the image is already loaded (e.g., from cache), manually trigger.
