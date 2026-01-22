@@ -11,7 +11,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/auto_spanification_helper.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -100,8 +99,8 @@ gfx::ImageSkia ExtractImageFromVideoFrame(const media::VideoFrame& frame) {
   media::PaintCanvasVideoRenderer renderer;
   SkBitmap bitmap;
   bitmap.allocN32Pixels(visible_size.width(), visible_size.height());
-  base::span<uint8_t> pixmap_span = UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap);
-  renderer.ConvertVideoFrameToRGBPixels(&frame, pixmap_span, bitmap.rowBytes());
+  renderer.ConvertVideoFrameToRGBPixels(&frame, bitmap.getPixels(),
+                                        bitmap.rowBytes());
 
   // Since this image will be used as a thumbnail, we can scale it down to save
   // on memory if needed. For example, if recording a FHD display, that will be
