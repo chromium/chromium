@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
 "+ios/chrome/browser/bubble/ui_bundled/bubble_util.h",
 "+ios/chrome/browser/fullscreen/ui_bundled",
 "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
 "+ios/chrome/browser/reader_mode/model/features.h",
+  # keep-sorted end
 ]
