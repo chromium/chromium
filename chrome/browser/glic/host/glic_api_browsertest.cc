@@ -2110,9 +2110,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testClosedCaptioning) {
   ExecuteJsTest();
 }
 
-// TODO(crbug.com/468460949): Add new tests for ChromeOS.
-// ChromeOS doesn't support multi-profile, so these tests don't make sense.
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetUserProfileInfo) {
   ExecuteJsTest();
 }
@@ -2137,7 +2134,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testSignInPauseState) {
       [&]() { return FindGlicGuestMainFrame() == nullptr; }));
   WaitForWebUiState(mojom::WebUiState::kSignIn);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testRefreshSignInCookies) {
   ExecuteJsTest();
