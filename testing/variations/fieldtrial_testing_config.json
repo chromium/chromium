@@ -9537,6 +9537,25 @@
             ]
         }
     ],
+    "DumpWithoutCrashingForMissingSecurityState": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260121",
+                    "enable_features": [
+                        "DumpWithoutCrashingForMissingSecurityState"
+                    ]
+                }
+            ]
+        }
+    ],
     "DwaFeature": [
         {
             "platforms": [
