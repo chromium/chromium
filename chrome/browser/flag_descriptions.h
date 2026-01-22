@@ -8247,6 +8247,10 @@ inline constexpr char kGlicMITabContextMenuName[] =
 inline constexpr char kGlicMITabContextMenuDescription[] =
     "Enables the Glic context menu for the tabs in the tabstrip.";
 
+inline constexpr char kGlicShareImageName[] = "Glic Share Image";
+inline constexpr char kGlicShareImageDescription[] =
+    "Enables the Create Image with Gemini context menu item";
+
 inline constexpr char kGlicZOrderChangesName[] = "Glic Z Order Changes";
 inline constexpr char kGlicZOrderChangesDescription[] =
     "Enables glic z order changing";

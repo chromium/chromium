@@ -11547,6 +11547,7 @@ from previous Chrome versions.
   <int value="-969028093" label="FullRestore:disabled"/>
   <int value="-968896078" label="AllowWgcScreenCapturer:enabled"/>
   <int value="-968675274" label="Rar2Fs:enabled"/>
+  <int value="-968486209" label="GlicShareImage:enabled"/>
   <int value="-968010468" label="SharedArrayBuffer:disabled"/>
   <int value="-967825290" label="WebViewConnectionlessSafeBrowsing:disabled"/>
   <int value="-967743769" label="BorealisEnableUnsupportedHardware:enabled"/>
@@ -12936,6 +12937,7 @@ from previous Chrome versions.
   <int value="-487324278" label="TpcdSupportSettings:enabled"/>
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
   <int value="-486491020" label="ReadAnythingWithScreen2x:enabled"/>
+  <int value="-484870143" label="GlicShareImage:disabled"/>
   <int value="-482494879"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>

@@ -5253,6 +5253,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-share-image",
+    "owners": [
+      "vollick@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-side-panel",
     "owners": [
       "perrier@chromium.org",
