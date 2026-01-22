@@ -1356,8 +1356,16 @@ union AdditionalContextPart {
   CapturedRegion region;
 };
 
+// @generate glic_api
+enum AdditionalContextSource {
+  kShareContextMenu = 0,
+  kRegionSelection = 1,
+};
+
 // An additional context object.
 struct AdditionalContext {
+  // The source of the additional context.
+  AdditionalContextSource source;
   // The name of the context.
   string? name;
   // Tab id, if associated with a tab.

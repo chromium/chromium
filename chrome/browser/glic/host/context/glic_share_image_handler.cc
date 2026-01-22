@@ -74,6 +74,7 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
   auto context_data = mojom::ContextData::New();
+  context->source = glic::mojom::AdditionalContextSource::kShareContextMenu;
   context_data->mime_type = mime_type;
   context_data->data = mojo_base::BigBuffer(thumbnail_data);
   parts.push_back(

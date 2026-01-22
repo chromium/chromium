@@ -319,6 +319,7 @@ export class WebClientImpl implements WebClientInterface {
     });
 
     const clientContext: AdditionalContextPrivate = {
+      source: context.source as number as api.AdditionalContextSource,
       name: optionalToClient(context.name),
       tabId: idToClient(context.tabId),
       origin: originToClient(context.origin),
