@@ -67,6 +67,8 @@ void GlicFrePageHandler::LogDismissalMetrics() {
   if (close_reason_ != CloseReason::kActive) {
     return;
   }
+// NEEDS_ANDROID_IMPL: Crashes on android
+#if !BUILDFLAG(IS_ANDROID)
   // Skip TotalTime if the start timestamp was missing or already consumed to
   // avoid invalid durations.
   if (!open_start_time_.is_null()) {
@@ -82,6 +84,7 @@ void GlicFrePageHandler::LogDismissalMetrics() {
                             interaction_timer_->Elapsed());
     interaction_timer_.reset();
   }
+#endif
   // Mark as dismissed so we don't log again until it becomes visible.
   close_reason_ = CloseReason::kDismissed;
 }
@@ -95,6 +98,8 @@ GlicKeyedService* GlicFrePageHandler::GetGlicService() {
 }
 
 void GlicFrePageHandler::AcceptFre() {
+  // NEEDS_ANDROID_IMPL: Crashes on android
+#if !BUILDFLAG(IS_ANDROID)
   // Log metrics for this specific instance. Skip TotalTime if the start
   // timestamp was missing or already consumed to avoid invalid durations.
   if (!open_start_time_.is_null()) {
@@ -109,6 +114,7 @@ void GlicFrePageHandler::AcceptFre() {
                                 : "Glic.Fre.InteractionTime.Accepted",
                             interaction_timer_->Elapsed());
   }
+#endif
   close_reason_ = CloseReason::kAccepted;
   GetGlicService()->metrics()->OnFreAccepted();
   GetGlicService()->fre_controller().AcceptFre(this);

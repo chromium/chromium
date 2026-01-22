@@ -910,10 +910,12 @@ void GlicMetrics::OnImpressionTimerFired() {
   }
   base::UmaHistogramEnumeration("Glic.EntryPoint.Status", impression);
 
+#if !BUILDFLAG(IS_ANDROID)
   ui::Accelerator saved_hotkey =
       glic::GlicLauncherConfiguration::GetGlobalHotkey();
   base::UmaHistogramBoolean("Glic.OsEntrypoint.Settings.ShortcutStatus",
                             saved_hotkey != ui::Accelerator());
+#endif
 }
 
 void GlicMetrics::OnGlicWindowSizeTimerFired() {

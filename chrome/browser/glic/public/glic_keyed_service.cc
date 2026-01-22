@@ -158,9 +158,7 @@ GlicKeyedService::GlicKeyedService(
       enabling_(std::make_unique<GlicEnabling>(
           profile,
           &profile_manager->GetProfileAttributesStorage())),
-#if !BUILDFLAG(IS_ANDROID)
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
-#endif
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
       window_controller_(CreateWindowController(profile,
