@@ -19899,6 +19899,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_ERROR_DETAILS" desc="Details of an error encountered by the updater, including numeric category, code, and extra code values.">
         Error: Category: <ph name="CATEGORY">$1<ex>1</ex></ph>, Code: <ph name="CODE">$2<ex>2</ex></ph>, Extra Code: <ph name="EXTRA_CODE">$3<ex>0</ex></ph>
       </message>
+      <message name="IDS_UPDATER_EVENT_LIST_TITLE" desc="Title for a section of the chrome://updater page which displays an event log detailing the activity of Chrome's updater on a user's system.">
+        Event History
+      </message>
       <message name="IDS_UPDATER_EVENT_TYPE" desc="Label for a filter category allowing the user to filter logs by the type of event.">
         Event Type
       </message>
@@ -19995,6 +19998,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_OUTCOME_UNKNOWN" desc="Summary of an event carried out by the Chrome Updater where the outcome is unknown.">
         Operation completed with unknown outcome
       </message>
+      <message name="IDS_UPDATER_PAGE_TITLE" desc="Title of the chrome://updater page, which displays information about the state and history of the Chrome updater installation on the users machine.">
+        Updater
+      </message>
       <message name="IDS_UPDATER_PARSE_ERROR_EVENTS" desc="Message indicating that one or more events could not be parsed and are hidden from the Chrome Updater event log.">
         {NUM_EVENTS, plural, =1 {1 event could not be parsed and is not shown} other {# events could not be parsed and are not shown}}
       </message>
@@ -20027,6 +20033,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_START_DATE" desc="Label for the start date input field.">
         Start Date:
+      </message>
+      <message name="IDS_UPDATER_STATE_TITLE" desc="Title for a section of the chrome://updater page which displays information about the current state of the instances of Chrome's updater on the user's system.">
+        Status
       </message>
       <message name="IDS_UPDATER_UNDATED_EVENTS" desc="Message indicating that the timestamp of one or more events was not able to determined. Events without timestamps can't be displayed in the Chrome Updater event log.">
         {NUM_EVENTS, plural, =1 {1 event could not be dated and is not shown} other {# events could not be dated and are not shown}}

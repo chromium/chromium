@@ -12,7 +12,7 @@
   --separator-color:  var(--google-grey-300);
   color: var(--cr-primary-text-color);
   display: block;
-  padding: 16px;
+  padding: 0 16px;
 }
 
 @media (prefers-color-scheme: dark) {

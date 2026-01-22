@@ -10,10 +10,22 @@ export function getHtml(this: UpdaterAppElement) {
   // clang-format off
   return html`
 <!--_html_template_start_-->
-<h2>Status</h2>
-<updater-state></updater-state>
-<h2>Event History</h1>
-<event-list .messages="${this.messages}"></event-list>
+<header>
+  <div class="header-bar">
+    <div id="logo"></div>
+    <h1>$i18n{title}</h1>
+  </div>
+</header>
+<div id="content">
+  <div>
+    <h2>$i18n{updaterStateTitle}</h2>
+    <updater-state></updater-state>
+  </div>
+  <div>
+    <h2>$i18n{eventListTitle}</h1>
+    <event-list .messages="${this.messages}"></event-list>
+  </div>
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

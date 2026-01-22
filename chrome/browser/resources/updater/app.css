@@ -12,3 +12,36 @@
   color: var(--cr-primary-text-color)
 }
 
+.header-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#logo {
+  background-image: image-set("chrome://theme/current-channel-logo@1x" 1x,
+                              "chrome://theme/current-channel-logo@2x" 2x);
+  background-size: cover;
+  height: 24px;
+  margin-inline-end: 10px;
+  width: 24px;
+}
+
+h1 {
+  font-size: 1.7em;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  line-height: 80%;
+  margin: 0;
+}
+
+h2 {
+  margin-bottom: 0.5em;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+}
