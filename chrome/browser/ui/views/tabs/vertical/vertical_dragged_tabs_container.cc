@@ -47,6 +47,13 @@ VerticalDraggedTabsContainer& VerticalDraggedTabsContainer::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
   gfx::Point point_in_container = views::View::ConvertPointFromScreen(
       base::to_address(host_view_), point_in_screen);
+
+  // TODO(476081516) Update this logic for vertical pinned tabs.
+  // Use the center of the host_view_ (in this case the unpinned container).
+  // so views with padding are still targetable from the sides of the tabstrip.
+  point_in_container.set_x(host_view_->bounds().x() +
+                           (host_view_->bounds().width() / 2));
+
   for (views::View* child : host_view_->children()) {
     if (!child->GetVisible() || !child->bounds().Contains(point_in_container) ||
         dragging_views_.contains(child)) {
