@@ -2564,6 +2564,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ThreadsRail.Action" enum="NTPThreadsRailAction"
+    expires_after="2026-07-15">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user action within the threads rail. Only logged
+    on the 1P NTP. Note that Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ThreadsRail.Shown" enum="BooleanShown"
+    expires_after="2026-07-15">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Recorded when the threads rail is shown on the New Tab Page. This is
+    recorded once when the threads rail is attached to DOM. Only logged on the
+    1P NTP. Note that Incognito and Guest mode NTPs are not considered 1P and
+    don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.TileTitleClicked{NewTabPageProviders}"
     enum="NTPTileTitleSource" expires_after="2024-02-04">
   <owner>romanarora@chromium.org</owner>
