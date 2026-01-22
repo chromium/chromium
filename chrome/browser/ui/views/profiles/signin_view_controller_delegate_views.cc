@@ -318,11 +318,11 @@ bool SigninViewControllerDelegateViews::HandleContextMenu(
 bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  // If this is a MODAL_TYPE_CHILD, then GetFocusManager() will return the focus
-  // manager of the parent window, which has registered accelerators, and the
-  // accelerators will fire. If this is a MODAL_TYPE_WINDOW, then this will have
-  // no effect, since no accelerators have been registered for this standalone
-  // window.
+  // If this is a ModalType::kChild, then GetFocusManager() will return the
+  // focus manager of the parent window, which has registered accelerators, and
+  // the accelerators will fire. If this is a ModalType::kWindow, then this will
+  // have no effect, since no accelerators have been registered for this
+  // standalone window.
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }

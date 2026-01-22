@@ -26,7 +26,7 @@ void ShimlessRmaDialog::ShowDialog() {
 ShimlessRmaDialog::ShimlessRmaDialog()
     : SystemWebDialogDelegate(GURL(kChromeUIShimlessRMAUrl),
                               /*title=*/std::u16string()) {
-  // MODAL_TYPE_SYSTEM renders over OOBE/login screens, but does not support
+  // ModalType::kSystem renders over OOBE/login screens, but does not support
   // ui::mojom::WindowShowState::kFullscreen correctly.
   // This dialog uses DisplayObserver::OnDisplayMetricsChanged to update the
   // window size as screen size changes.

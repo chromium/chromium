@@ -503,7 +503,7 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 Widget* BubbleDialogDelegate::CreateBubble(
     BubbleDialogDelegate* bubble_delegate,
     Widget::InitParams::Ownership ownership) {
-  // On Mac, MODAL_TYPE_WINDOW is implemented using sheets, which can't be
+  // On Mac, ModalType::kWindow is implemented using sheets, which can't be
   // anchored at a specific point - they are always placed near the top center
   // of the window. To avoid unpleasant surprises, disallow setting an anchor
   // view or rectangle on these types of bubbles.

@@ -75,9 +75,9 @@ views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
 // |dialog->GetModalType()|.  The modal type must be either
 // ui::mojom::ModalType::kSystem or ui::mojom::ModalType::kWindow.  This places
 // the dialog appropriately if |parent| is a valid browser window. Currently,
-// |parent| may be null for MODAL_TYPE_WINDOW, but that's a bug and callers
+// |parent| may be null for ModalType:kWindow, but that's a bug and callers
 // shouldn't rely on that working. See http://crbug.com/657293. Instead of
-// calling this function with null |parent| and MODAL_TYPE_WINDOW, consider
+// calling this function with null |parent| and ModalType:kWindow, consider
 // calling views:: DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr)
 // instead. For dialogs that may appear without direct user interaction (i.e.,
 // that may appear while a user is busily accomplishing some other task in the

@@ -336,7 +336,7 @@ class VIEWS_EXPORT WidgetDelegate {
     // contexts. Never displayed to the user, and not translated.
     std::string internal_name;
 
-    // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
+    // The widget's modality type. Note that ModalType::kSystem does not work at
     // all on Mac.
     ui::mojom::ModalType modal_type = ui::mojom::ModalType::kNone;
 

@@ -561,7 +561,7 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   DCHECK_NE(ui::mojom::ModalType::kSystem, modal_type);
 
   // A peculiarity of the constrained window framework is that it permits a
-  // dialog of MODAL_TYPE_WINDOW to have a null parent window; falling back to
+  // dialog of ModalType::kWindow to have a null parent window; falling back to
   // a non-modal window in this case.
   DCHECK(ns_window_host_->parent() ||
          modal_type == ui::mojom::ModalType::kWindow);

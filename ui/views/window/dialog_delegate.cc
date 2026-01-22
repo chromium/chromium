@@ -627,7 +627,7 @@ int DialogDelegate::GetCornerRadius() const {
     return 0;
   }
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40144839): On Mac MODAL_TYPE_WINDOW is implemented using
+  // TODO(crbug.com/40144839): On Mac ModalType::kWindow is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.
   if (GetModalType() == ui::mojom::ModalType::kWindow) {
