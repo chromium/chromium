@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -697,7 +696,6 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
   auto throttled_interval = MainFrameThrottledInterval();
-
   if (throttled_interval.is_positive() &&
       last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
           throttled_interval) {
@@ -709,15 +707,6 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   // throttle. This is more expensive, but is required to reach perceptual
   // visual parity between throttled and non-throttled scrolling.
   if (is_current_scroll_main_painted_) {
-    result = false;
-  }
-
-  // Only evaluate the condition if we would be throttling, this is important
-  // for experiment targeting (not querying the feature).
-  if (result &&
-      base::FeatureList::IsEnabled(
-          features::kBoostFrameRateForUrgentMainFrame) &&
-      (Now() - last_urgent_main_frame_request_) < kUrgentBoostDuration) {
     result = false;
   }
 
@@ -1730,7 +1719,6 @@ void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
 
   if (now) {
     last_sent_begin_main_frame_time_ = base::TimeTicks();
-    last_urgent_main_frame_request_ = Now();
   }
 }
 
@@ -1896,10 +1884,6 @@ void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
   if (base::FeatureList::IsEnabled(features::kRenderThrottleFrameRate)) {
     throttle_frame_rate_ = flag;
   }
-}
-
-base::TimeTicks SchedulerStateMachine::Now() const {
-  return base::TimeTicks::Now();
 }
 
 base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {

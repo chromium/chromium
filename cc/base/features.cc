@@ -141,9 +141,6 @@ BASE_FEATURE(kThrottleMainFrameTo60HzWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kBoostFrameRateForUrgentMainFrame,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible) {
   s_is_eligible_for_throttle_main_frame_to_60hz.store(
       true, std::memory_order_relaxed);

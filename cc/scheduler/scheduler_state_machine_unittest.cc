@@ -257,7 +257,7 @@ class StateMachine : public SchedulerStateMachine {
   }
 
   void AdvanceTimeBy(base::TimeDelta delta) { now_ticks_ += delta; }
-  base::TimeTicks Now() const override { return now_ticks_; }
+  base::TimeTicks Now() const { return now_ticks_; }
 
   using SchedulerStateMachine::ProactiveBeginFrameWanted;
   using SchedulerStateMachine::ShouldDraw;
@@ -1448,78 +1448,6 @@ TEST(SchedulerStateMachineTest, TestMainFrameThrottlingWithUrgentUpdates) {
   }
   // One extra main frame, doesn't make all the subsequent ones urgent.
   EXPECT_EQ(begin_main_frame_count, 5 + 1);
-}
-
-TEST(SchedulerStateMachineTest, TestMainFrameThrottlingWithUrgentBoost) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {features::kThrottleMainFrameTo60Hz,
-       features::kBoostFrameRateForUrgentMainFrame},
-      {});
-
-  SchedulerSettings default_scheduler_settings;
-  StateMachine state(default_scheduler_settings);
-  SET_UP_STATE(state);
-
-  state.FrameIntervalUpdated(base::Hertz(120));
-  state.AdvanceTimeBy(base::Seconds(1280));  // Start at an arbitrary point.
-
-  int begin_main_frame_count = 0;
-  for (int i = 0; i < 10; i++) {
-    // One frame marked urgent.
-    bool urgent = (i == 0);
-    state.SetNeedsBeginMainFrame(urgent);
-    begin_main_frame_count +=
-        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
-    state.AdvanceTimeBy(base::Hertz(120));
-    state.SetNeedsBeginMainFrame(false);
-  }
-  // A single urgent frame, none of the subsequent frames are throttled.
-  EXPECT_EQ(begin_main_frame_count, 10);
-
-  // Normal throttling resumes after the boost duration.
-  state.AdvanceTimeBy(SchedulerStateMachine::kUrgentBoostDuration);
-  begin_main_frame_count = 0;
-  for (int i = 0; i < 10; i++) {
-    state.SetNeedsBeginMainFrame(false);
-    begin_main_frame_count +=
-        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
-    state.AdvanceTimeBy(base::Hertz(120));
-    state.SetNeedsBeginMainFrame(false);
-  }
-  EXPECT_EQ(begin_main_frame_count, 5);
-
-  // Boost starting point is reset at every urgent frame.
-  state.AdvanceTimeBy(SchedulerStateMachine::kUrgentBoostDuration);
-  state.SetNeedsBeginMainFrame(true);
-  RunOneFrameAndReturnWhetherMainFrameIsIssued(state);
-
-  state.AdvanceTimeBy(SchedulerStateMachine::kUrgentBoostDuration / 2);
-  state.SetNeedsBeginMainFrame(true);
-  RunOneFrameAndReturnWhetherMainFrameIsIssued(state);
-
-  state.AdvanceTimeBy(SchedulerStateMachine::kUrgentBoostDuration / 2);
-  begin_main_frame_count = 0;
-  for (int i = 0; i < 10; i++) {
-    state.SetNeedsBeginMainFrame(false);
-    begin_main_frame_count +=
-        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
-    state.AdvanceTimeBy(base::Hertz(120));
-    state.SetNeedsBeginMainFrame(false);
-  }
-  EXPECT_EQ(begin_main_frame_count, 10);
-
-  // But not forever.
-  state.AdvanceTimeBy(SchedulerStateMachine::kUrgentBoostDuration / 2);
-  begin_main_frame_count = 0;
-  for (int i = 0; i < 10; i++) {
-    state.SetNeedsBeginMainFrame(false);
-    begin_main_frame_count +=
-        RunOneFrameAndReturnWhetherMainFrameIsIssued(state) ? 1 : 0;
-    state.AdvanceTimeBy(base::Hertz(120));
-    state.SetNeedsBeginMainFrame(false);
-  }
-  EXPECT_EQ(begin_main_frame_count, 5);
 }
 
 TEST(SchedulerStateMachineTest, CommitWithoutDrawWithPendingTree) {
