@@ -1024,6 +1024,38 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
   Navigate(&params);
 }
 
+void ContextualTasksUiService::OnFileClickedFromSourcesMenu(
+    const GURL& url,
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    return;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
+    const GURL& url,
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    return;
+  }
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  NavigateParams params(browser->GetProfile(), url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
   for (const auto& host : ai_page_hosts_) {
     if (net::SchemefulSite::IsSameSite(url, host)) {

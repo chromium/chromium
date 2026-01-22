@@ -178,6 +178,16 @@ class ContextualTasksUiService : public KeyedService {
                                    const GURL& url,
                                    BrowserWindowInterface* browser);
 
+  // Called when a file in the sources menu is clicked. Opens the file in a new
+  // foreground tab.
+  void OnFileClickedFromSourcesMenu(const GURL& url,
+                                    BrowserWindowInterface* browser);
+
+  // Called when an image in the sources menu is clicked. Opens the image in a
+  // new foreground tab.
+  void OnImageClickedFromSourcesMenu(const GURL& url,
+                                     BrowserWindowInterface* browser);
+
   void set_auto_tab_context_suggestion_enabled(bool enabled) {
     auto_tab_context_suggestion_enabled_ = enabled;
   }
