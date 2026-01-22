@@ -129,6 +129,9 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
 
 bool VerticalUnpinnedTabContainerView::IsViewDragging(
     const views::View& child_view) const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
   return GetDragHandler().IsViewDragging(child_view);
 }
 
