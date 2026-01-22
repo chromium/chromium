@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
 import android.content.Context;
@@ -45,6 +46,10 @@ import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -52,6 +57,9 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
@@ -511,6 +519,15 @@ public class NtpCustomizationUtils {
     public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundImageType int type) {
         return type == NtpBackgroundImageType.IMAGE_FROM_DISK
                 || type == NtpBackgroundImageType.THEME_COLLECTION;
+    }
+
+    /**
+     * Returns whether the edit icon should use a grey background on LFF devices. This is true if
+     * the current background image type is theme collection or uploaded image.
+     */
+    @VisibleForTesting
+    static boolean shouldUseEditIconWithGreyBackground() {
+        return shouldApplyWhiteBackgroundOnSearchBox();
     }
 
     /**
@@ -1449,6 +1466,50 @@ public class NtpCustomizationUtils {
     private static int getLogoVerticalPaddingForShadowPx(Resources resources) {
         return resources.getDimensionPixelSize(
                 R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+    }
+
+    /**
+     * Creates and configures an NTP customization button.
+     *
+     * @param context The current Context.
+     * @param onClickListener The listener to be attached to the button.
+     * @return The created and configured ImageButton.
+     */
+    public static ImageButton createNtpCustomizationButton(
+            Context context, View.OnClickListener onClickListener) {
+        ImageButton ntpCustomizationButton = new ImageButton(context);
+        Resources resources = context.getResources();
+        ntpCustomizationButton.setImageResource(R.drawable.ic_edit_24dp);
+        ntpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
+
+        if (shouldUseEditIconWithGreyBackground()) {
+            ImageViewCompat.setImageTintList(
+                    ntpCustomizationButton, ColorStateList.valueOf(Color.WHITE));
+            ViewCompat.setBackgroundTintList(
+                    ntpCustomizationButton,
+                    ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                    context,
+                                    R.color.ntp_customization_edit_icon_color_in_grey_background)));
+        } else {
+            ImageViewCompat.setImageTintList(
+                    ntpCustomizationButton, ColorStateList.valueOf(getDefaultIconColor(context)));
+        }
+
+        int size =
+                resources.getDimensionPixelSize(
+                        R.dimen.ntp_customization_edit_icon_background_size);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
+        layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
+        int margin = resources.getDimensionPixelSize(R.dimen.ntp_customization_button_margin);
+        layoutParams.setMargins(0, 0, margin, margin);
+        ntpCustomizationButton.setLayoutParams(layoutParams);
+
+        ntpCustomizationButton.setOnClickListener(onClickListener);
+        ntpCustomizationButton.setContentDescription(
+                context.getString(R.string.ntp_customization_title));
+
+        return ntpCustomizationButton;
     }
 
     public static void resetSharedPreferenceForTesting() {

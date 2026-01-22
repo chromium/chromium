@@ -55,6 +55,7 @@ found in the LICENSE file.
     <color name="baseline_neutral_10_alpha_10">#191F1F1F</color>
     <color name="baseline_neutral_10_alpha_12">#1E1F1F1F</color>
     <color name="baseline_neutral_10_alpha_38">#611F1F1F</color>
+    <color name="baseline_neutral_10_alpha_60">#991F1F1F</color>
     <color name="baseline_neutral_10_with_neutral_90_alpha_38">#696969</color>
     <color name="baseline_neutral_10_with_surface_tint_dark_alpha_5" tools:ignore="UnusedResources">#28282A</color>
     <color name="baseline_neutral_10_with_surface_tint_dark_alpha_8" tools:ignore="UnusedResources">#2D2E31</color>

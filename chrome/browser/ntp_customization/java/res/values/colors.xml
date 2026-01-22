@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <resources>
     <color name="ntp_customization_edit_icon_background_color">@color/color_primary_with_alpha_15</color>
+    <color name="ntp_customization_edit_icon_color_in_grey_background">@color/baseline_neutral_10_alpha_60</color>
 
     <!-- Ntp customization theme colors. -->
     <color name="ntp_color_blue_primary">@color/ntp_color_blue_primary_light</color>

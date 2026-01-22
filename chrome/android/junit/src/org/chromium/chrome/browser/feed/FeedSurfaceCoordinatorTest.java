@@ -582,6 +582,15 @@ public class FeedSurfaceCoordinatorTest {
         assertEquals(View.GONE, snapshotOverlay.getVisibility());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    @Config(qualifiers = "sw600dp")
+    public void testNtpCustomizationButtonCreated() {
+        assertNotNull(
+                "NTP customization button should be created.",
+                mCoordinator.getNtpCustomizationButtonForTesting());
+    }
+
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;

@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.feed;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +31,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -63,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
@@ -518,31 +515,12 @@ public class FeedSurfaceCoordinator
         // The NTP customization button needs to be added after the RecyclerView to make it float
         // above the RecyclerView.
         if (mIsNewTabPageCustomizationEnabled && mUseStaggeredLayout) {
-            mNtpCustomizationButton = new ImageButton(mActivity);
-            mNtpCustomizationButton.setImageResource(R.drawable.ic_edit_24dp);
-            mNtpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
-            ImageViewCompat.setImageTintList(
-                    mNtpCustomizationButton,
-                    ColorStateList.valueOf(getDefaultIconColor(mRootView.getContext())));
-            int size =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.ntp_customization_edit_icon_background_size);
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
-            layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
-            int margin =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.ntp_customization_button_margin);
-            layoutParams.setMargins(0, 0, margin, margin);
-            mNtpCustomizationButton.setLayoutParams(layoutParams);
-            mNtpCustomizationButton.setOnClickListener(
-                    v -> {
-                        showNtpCustomizationBottomSheet();
-                    });
-            mNtpCustomizationButton.setContentDescription(
-                    mActivity.getString(R.string.ntp_customization_title));
+            mNtpCustomizationButton =
+                    NtpCustomizationUtils.createNtpCustomizationButton(
+                            mActivity,
+                            v -> {
+                                showNtpCustomizationBottomSheet();
+                            });
             mRootView.addView(mNtpCustomizationButton);
         }
 
@@ -1525,5 +1503,9 @@ public class FeedSurfaceCoordinator
     public void setBackgroundImageCoordinatorForTesting(
             NtpBackgroundImageCoordinator backgroundImageCoordinator) {
         mNtpBackgroundImageCoordinator = backgroundImageCoordinator;
+    }
+
+    @Nullable ImageButton getNtpCustomizationButtonForTesting() {
+        return mNtpCustomizationButton;
     }
 }

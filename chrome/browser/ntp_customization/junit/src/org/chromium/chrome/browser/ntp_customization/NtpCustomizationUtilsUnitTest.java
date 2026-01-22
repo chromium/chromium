@@ -18,14 +18,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -34,9 +37,13 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -89,6 +96,7 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
+    @Mock private NtpCustomizationConfigManager mConfigManager;
 
     private Context mContext;
     private Resources mResources;
@@ -100,6 +108,7 @@ public class NtpCustomizationUtilsUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
+        NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
     }
 
     @After
@@ -1228,5 +1237,79 @@ public class NtpCustomizationUtilsUnitTest {
                 NtpCustomizationUtils.getSearchBoxHeightWithShadows(
                         mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ false);
         assertEquals(expectedHeight, actualHeight);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testShouldUseEditIconWithGreyBackground_flagDisabled() {
+        when(mConfigManager.getBackgroundImageType()).thenReturn(NtpBackgroundImageType.DEFAULT);
+        assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
+
+        when(mConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.CHROME_COLOR);
+        assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
+
+        when(mConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.COLOR_FROM_HEX);
+        assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
+
+        when(mConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
+
+        when(mConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.THEME_COLLECTION);
+        assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testCreateNtpCustomizationButton_greyBackground() {
+        when(mConfigManager.getBackgroundImageType()).thenReturn(IMAGE_FROM_DISK);
+        View.OnClickListener listener = mock(View.OnClickListener.class);
+
+        ImageButton button = NtpCustomizationUtils.createNtpCustomizationButton(mContext, listener);
+
+        assertNotNull(button);
+        assertEquals(R.drawable.ic_edit_24dp, shadowOf(button.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.edit_icon_circle_background,
+                shadowOf(button.getBackground()).getCreatedFromResId());
+        assertEquals(
+                mContext.getString(R.string.ntp_customization_title),
+                button.getContentDescription());
+        assertEquals(ColorStateList.valueOf(Color.WHITE), button.getImageTintList());
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                                mContext,
+                                R.color.ntp_customization_edit_icon_color_in_grey_background)),
+                ViewCompat.getBackgroundTintList(button));
+
+        button.performClick();
+        verify(listener).onClick(button);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testCreateNtpCustomizationButton_defaultBackground() {
+        when(mConfigManager.getBackgroundImageType()).thenReturn(DEFAULT);
+        View.OnClickListener listener = mock(View.OnClickListener.class);
+
+        ImageButton button = NtpCustomizationUtils.createNtpCustomizationButton(mContext, listener);
+
+        assertNotNull(button);
+        assertEquals(R.drawable.ic_edit_24dp, shadowOf(button.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.edit_icon_circle_background,
+                shadowOf(button.getBackground()).getCreatedFromResId());
+        assertEquals(
+                mContext.getString(R.string.ntp_customization_title),
+                button.getContentDescription());
+        assertEquals(
+                ColorStateList.valueOf(getDefaultIconColor(mContext)), button.getImageTintList());
+        assertNull(ViewCompat.getBackgroundTintList(button));
     }
 }
