@@ -17048,7 +17048,9 @@ void RenderFrameHostImpl::SendBeforeUnload(
           return;
         }
 
-        if (impl->frame_tree_node()) {
+        if (impl->frame_tree_node() &&
+            !before_unload_dialog_opened_time.is_null() &&
+            !before_unload_dialog_closed_time.is_null()) {
           if (NavigationRequest* navigation_request =
                   impl->frame_tree_node()->navigation_request()) {
             navigation_request->set_beforeunload_phase2_dialog_opened_time(
