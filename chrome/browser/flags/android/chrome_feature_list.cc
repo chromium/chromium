@@ -177,6 +177,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kEnableFullscreenToAnyScreenAndroid,
     &features::kFluidResize,
     &features::kGenericSensorExtraClasses,
+    &features::kGlic,
     &features::kHttpsFirstBalancedMode,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
     &features::kNetworkServiceInProcess,
