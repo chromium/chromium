@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
 
 #include <memory>
 #include <optional>
@@ -508,6 +508,7 @@ class AutofillCreditCardBenefitsLabelTest
         metadata_logging_context.instrument_ids_to_available_benefit_sources,
         expected_instrument_ids_to_available_benefit_sources);
   }
+
  private:
   std::u16string expected_benefit_text_;
   CreditCard card_;
