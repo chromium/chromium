@@ -96,6 +96,11 @@ bool IsFatalError(media::VideoCaptureError error) {
 bool IsGpuRasterizationSupported(ui::ContextFactory* context_factory) {
   DCHECK(context_factory);
   auto provider = context_factory->SharedMainThreadRasterContextProvider();
+
+  if (!provider) {
+    return false;
+  }
+
   const auto& gpu_feature_info = provider->GetGpuFeatureInfo();
   return features::IsUiGpuRasterizationEnabled() &&
          gpu_feature_info
