@@ -645,6 +645,11 @@ inline constexpr char kEnableFullscreenToAnyScreenAndroidDescription[] =
     "API. This enables usage of the screen parameter in the "
     "Element.requestFullscreen web API.";
 
+inline constexpr char kUseSurfaceViewForThinWebViewName[] =
+    "Use SurfaceView for ThinWebView";
+inline constexpr char kUseSurfaceViewForThinWebViewDescription[] =
+    "Enables the use of SurfaceView for ThinWebView on Android.";
+
 inline constexpr char kTextBasedAudioDescriptionName[] =
     "Enable audio descriptions.";
 inline constexpr char kTextBasedAudioDescriptionDescription[] =

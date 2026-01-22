@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
+#include "components/thin_webview/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_utils_android.h"
@@ -23,8 +24,6 @@ namespace thin_webview {
 namespace android {
 namespace {
 const int kPixelFormatUnknown = 0;
-
-BASE_FEATURE(kUseSurfaceViewForThinWebView, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 static int64_t JNI_CompositorViewImpl_Init(
@@ -40,7 +39,8 @@ static int64_t JNI_CompositorViewImpl_Init(
 }
 
 static jboolean JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
-  return base::FeatureList::IsEnabled(kUseSurfaceViewForThinWebView);
+  return base::FeatureList::IsEnabled(
+      thin_webview::android::kUseSurfaceViewForThinWebView);
 }
 
 // static
