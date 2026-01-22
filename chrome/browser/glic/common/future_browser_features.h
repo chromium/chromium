@@ -22,15 +22,6 @@
 // on Android.
 namespace glic {
 
-inline BrowserWindowInterface* GetBrowserWindowInterface(
-    tabs::TabInterface* tab) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return tab->GetBrowserWindowInterface();
-#else
-  return nullptr;
-#endif
-}
-
 inline base::CallbackListSubscription RegisterDidBecomeActive(
     BrowserWindowInterface* browser_window,
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {

@@ -62,7 +62,7 @@ class GlicTabDataObserver::TabObserver : public content::WebContentsObserver {
   }
 
   void UpdateWindowObservations() {
-    BrowserWindowInterface* browser_window = GetBrowserWindowInterface(tab_);
+    BrowserWindowInterface* browser_window = tab_->GetBrowserWindowInterface();
     if (!browser_window) {
       return;
     }

@@ -284,7 +284,7 @@ void GlicShareImageHandler::OnCopyPolicyCheckComplete(
     ShareComplete(ShareImageResult::kFailedNoTab);
     return;
   }
-  BrowserWindowInterface* browser = GetBrowserWindowInterface(tab);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   if (!browser) {
     ShareComplete(ShareImageResult::kFailedNoBrowser);
     return;
