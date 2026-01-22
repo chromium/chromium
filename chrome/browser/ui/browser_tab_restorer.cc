@@ -30,7 +30,6 @@ const char kBrowserTabRestorerKey[] = "BrowserTabRestorer";
 // BrowserTabRestorer is installed on the Profile (by way of user data), only
 // one instance is created per profile at a time.
 class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
-                           public BrowserListObserver,
                            public base::SupportsUserData::Data {
  public:
   BrowserTabRestorer(const BrowserTabRestorer&) = delete;
@@ -48,16 +47,15 @@ class BrowserTabRestorer : public sessions::TabRestoreServiceObserver,
       sessions::TabRestoreService* service) override;
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserRemoved(BrowserWindowInterface* browser);
 
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_;
+  base::CallbackListSubscription browser_did_close_subscription_;
 };
 
 BrowserTabRestorer::~BrowserTabRestorer() {
   tab_restore_service_->RemoveObserver(this);
-  BrowserList::RemoveObserver(this);
 }
 
 // static
@@ -78,7 +76,9 @@ BrowserTabRestorer::BrowserTabRestorer(BrowserWindowInterface* browser)
   DCHECK(tab_restore_service_);
   DCHECK(!tab_restore_service_->IsLoaded());
   tab_restore_service_->AddObserver(this);
-  BrowserList::AddObserver(this);
+  browser_did_close_subscription_ =
+      browser->RegisterBrowserDidClose(base::BindRepeating(
+          &BrowserTabRestorer::OnBrowserRemoved, base::Unretained(this)));
   browser_->GetProfile()->SetUserData(kBrowserTabRestorerKey,
                                       base::WrapUnique(this));
   tab_restore_service_->LoadTabsFromLastSession();
@@ -94,7 +94,7 @@ void BrowserTabRestorer::TabRestoreServiceLoaded(
   browser_->GetProfile()->SetUserData(kBrowserTabRestorerKey, nullptr);
 }
 
-void BrowserTabRestorer::OnBrowserRemoved(Browser* browser) {
+void BrowserTabRestorer::OnBrowserRemoved(BrowserWindowInterface* browser) {
   // This deletes us.
   browser_->GetProfile()->SetUserData(kBrowserTabRestorerKey, nullptr);
 }
