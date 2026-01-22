@@ -110,7 +110,7 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
 // should outlive ExtensionPlatformKeysService)
 // * or an appropriate keyed service that will always exist during
 // ExtensionPlatformKeysService lifetime (because of KeyedService dependencies).
-crosapi::mojom::KeystoreService* GetKeystoreService(
+crosapi::KeystoreServiceAsh* GetKeystoreService(
     content::BrowserContext* browser_context) {
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);

@@ -40,7 +40,6 @@ namespace api_pki = api::platform_keys_internal;
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
 using crosapi::mojom::KeystoreAlgorithmName;
-using crosapi::mojom::KeystoreService;
 
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
@@ -64,7 +63,7 @@ const struct NameValuePair {
 #undef CERT_STATUS_FLAG
 };
 
-crosapi::mojom::KeystoreService* GetKeystoreService(
+crosapi::KeystoreServiceAsh* GetKeystoreService(
     content::BrowserContext* browser_context) {
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);

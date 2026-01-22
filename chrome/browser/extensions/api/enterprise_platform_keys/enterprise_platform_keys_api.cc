@@ -30,12 +30,11 @@ namespace {
 
 namespace api_epk = api::enterprise_platform_keys;
 namespace api_epki = api::enterprise_platform_keys_internal;
-using crosapi::mojom::KeystoreService;
 
 const char kExtensionDoesNotHavePermission[] =
     "The extension does not have permission to call this function.";
 
-crosapi::mojom::KeystoreService* GetKeystoreService(
+crosapi::KeystoreServiceAsh* GetKeystoreService(
     content::BrowserContext* browser_context) {
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);

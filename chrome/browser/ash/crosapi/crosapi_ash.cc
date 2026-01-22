@@ -152,11 +152,6 @@ void CrosapiAsh::BindInSessionAuth(
   chromeos::auth::BindToInSessionAuthService(std::move(receiver));
 }
 
-void CrosapiAsh::BindKeystoreService(
-    mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
-  keystore_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindLocalPrinter(
     mojo::PendingReceiver<crosapi::mojom::LocalPrinter> receiver) {
   local_printer_ash_->BindReceiver(std::move(receiver));

@@ -17,7 +17,6 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {
 class BrowserContext;
@@ -36,14 +35,43 @@ class PlatformKeysService;
 
 namespace crosapi {
 
+// TODO(crbug.com/365902693): Update this comment.
 // This class is the ash implementation of the KeystoreService crosapi. It
 // allows lacros to expose blessed extension APIs which can query or modify the
 // system keystores. This class is affine to the UI thread.
-class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
+class KeystoreServiceAsh : public KeyedService {
  public:
   using KeystoreType = mojom::KeystoreType;
   using SigningScheme = mojom::KeystoreSigningScheme;
   using KeystoreKeyAttributeType = mojom::KeystoreKeyAttributeType;
+
+  using ChallengeAttestationOnlyKeystoreCallback = base::OnceCallback<void(
+      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr)>;
+  using GetKeyStoresCallback =
+      base::OnceCallback<void(crosapi::mojom::GetKeyStoresResultPtr)>;
+  using SelectClientCertificatesCallback = base::OnceCallback<void(
+      crosapi::mojom::KeystoreSelectClientCertificatesResultPtr)>;
+  using GetCertificatesCallback =
+      base::OnceCallback<void(crosapi::mojom::GetCertificatesResultPtr)>;
+  using AddCertificateCallback =
+      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+  using RemoveCertificateCallback =
+      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+  using GetPublicKeyCallback =
+      base::OnceCallback<void(crosapi::mojom::GetPublicKeyResultPtr)>;
+  using GenerateKeyCallback =
+      base::OnceCallback<void(crosapi::mojom::KeystoreBinaryResultPtr)>;
+  using RemoveKeyCallback =
+      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+  using SignCallback =
+      base::OnceCallback<void(crosapi::mojom::KeystoreBinaryResultPtr)>;
+  using GetKeyTagsCallback =
+      base::OnceCallback<void(crosapi::mojom::GetKeyTagsResultPtr)>;
+  using AddKeyTagsCallback =
+      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
+  using CanUserGrantPermissionForKeyCallback = base::OnceCallback<void(bool)>;
+  using SetAttributeForKeyCallback =
+      base::OnceCallback<void(bool, crosapi::mojom::KeystoreError)>;
 
   explicit KeystoreServiceAsh(content::BrowserContext* fixed_context);
   // Allows to create the service early. It will use the current primary profile
@@ -57,98 +85,52 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
   ~KeystoreServiceAsh() override;
 
-  void BindReceiver(mojo::PendingReceiver<mojom::KeystoreService> receiver);
-
-  // mojom::KeystoreService:
   void ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
       mojom::KeystoreAlgorithmName algorithm,
-      ChallengeAttestationOnlyKeystoreCallback callback) override;
-  void GetKeyStores(GetKeyStoresCallback callback) override;
+      ChallengeAttestationOnlyKeystoreCallback callback);
+  void GetKeyStores(GetKeyStoresCallback callback);
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
-      SelectClientCertificatesCallback callback) override;
+      SelectClientCertificatesCallback callback);
   void GetCertificates(mojom::KeystoreType keystore,
-                       GetCertificatesCallback callback) override;
+                       GetCertificatesCallback callback);
   void AddCertificate(mojom::KeystoreType keystore,
                       const std::vector<uint8_t>& certificate,
-                      AddCertificateCallback callback) override;
+                      AddCertificateCallback callback);
   void RemoveCertificate(mojom::KeystoreType keystore,
                          const std::vector<uint8_t>& certificate,
-                         RemoveCertificateCallback callback) override;
+                         RemoveCertificateCallback callback);
   void GetPublicKey(const std::vector<uint8_t>& certificate,
                     mojom::KeystoreAlgorithmName algorithm_name,
-                    GetPublicKeyCallback callback) override;
+                    GetPublicKeyCallback callback);
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreAlgorithmPtr algorithm,
-                   GenerateKeyCallback callback) override;
+                   GenerateKeyCallback callback);
   void RemoveKey(KeystoreType keystore,
                  const std::vector<uint8_t>& public_key,
-                 RemoveKeyCallback callback) override;
+                 RemoveKeyCallback callback);
   void Sign(bool is_keystore_provided,
             KeystoreType keystore,
             const std::vector<uint8_t>& public_key,
             SigningScheme scheme,
             const std::vector<uint8_t>& data,
-            SignCallback callback) override;
+            SignCallback callback);
   void GetKeyTags(const std::vector<uint8_t>& public_key,
-                  GetKeyTagsCallback callback) override;
+                  GetKeyTagsCallback callback);
   void AddKeyTags(const std::vector<uint8_t>& public_key,
                   uint64_t tags,
-                  AddKeyTagsCallback callback) override;
+                  AddKeyTagsCallback callback);
   void CanUserGrantPermissionForKey(
       const std::vector<uint8_t>& public_key,
-      CanUserGrantPermissionForKeyCallback callback) override;
+      CanUserGrantPermissionForKeyCallback callback);
   void SetAttributeForKey(KeystoreType keystore,
                           const std::vector<uint8_t>& public_key,
                           KeystoreKeyAttributeType attribute_type,
                           const std::vector<uint8_t>& attribute_value,
-                          SetAttributeForKeyCallback callback) override;
-
-  // DEPRECATED, use `GenerateKey` instead.
-  void DEPRECATED_ExtensionGenerateKey(
-      mojom::KeystoreType keystore,
-      mojom::KeystoreAlgorithmPtr algorithm,
-      const std::optional<std::string>& extension_id,
-      DEPRECATED_ExtensionGenerateKeyCallback callback) override;
-  // DEPRECATED, use `Sign` instead.
-  void DEPRECATED_ExtensionSign(
-      KeystoreType keystore,
-      const std::vector<uint8_t>& public_key,
-      SigningScheme scheme,
-      const std::vector<uint8_t>& data,
-      const std::string& extension_id,
-      DEPRECATED_ExtensionSignCallback callback) override;
-  // DEPRECATED, use `GetPublicKey` instead.
-  void DEPRECATED_GetPublicKey(
-      const std::vector<uint8_t>& certificate,
-      mojom::KeystoreAlgorithmName algorithm_name,
-      DEPRECATED_GetPublicKeyCallback callback) override;
-  // DEPRECATED, use `GetKeyStores` instead.
-  void DEPRECATED_GetKeyStores(
-      DEPRECATED_GetKeyStoresCallback callback) override;
-  // DEPRECATED, use `GetCertificates` instead.
-  void DEPRECATED_GetCertificates(
-      mojom::KeystoreType keystore,
-      DEPRECATED_GetCertificatesCallback callback) override;
-  // DEPRECATED, use `AddCertificate` instead.
-  void DEPRECATED_AddCertificate(
-      mojom::KeystoreType keystore,
-      const std::vector<uint8_t>& certificate,
-      DEPRECATED_AddCertificateCallback callback) override;
-  // DEPRECATED, use `RemoveCertificate` instead.
-  void DEPRECATED_RemoveCertificate(
-      mojom::KeystoreType keystore,
-      const std::vector<uint8_t>& certificate,
-      DEPRECATED_RemoveCertificateCallback callback) override;
-  // DEPRECATED, use `ChallengeAttestationOnlyKeystore` instead.
-  void DEPRECATED_ChallengeAttestationOnlyKeystore(
-      const std::string& challenge,
-      mojom::KeystoreType type,
-      bool migrate,
-      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback) override;
+                          SetAttributeForKeyCallback callback);
 
  private:
   // Returns a correct instance of PlatformKeysService to use. If a specific
@@ -217,7 +199,6 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // other services that may be deleted by that point.
   std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
       outstanding_challenges_;
-  mojo::ReceiverSet<mojom::KeystoreService> receivers_;
 
   base::WeakPtrFactory<KeystoreServiceAsh> weak_factory_{this};
 };

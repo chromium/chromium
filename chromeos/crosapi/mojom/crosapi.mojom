@@ -139,13 +139,8 @@ interface Crosapi {
 
   // BindNetworkSettingsService@46 was removed.
   // BindKerberosInBrowser@111 was removed.
-
-  // Binds the KeystoreService interface for challenging keys.
-  // Added in M87.
-  BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
-
+  // BindKeystoreService@2 was removed.
   // BindLacrosShelfItemTracker@128 was removed.
-
   // BindLacrosAppPublisher@119 was removed.
 
   // Binds the LocalPrinter interface for printing.

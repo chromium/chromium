@@ -32,6 +32,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace crosapi {
+class KeystoreServiceAsh;
+}  // namespace crosapi
+
 namespace chromeos::platform_keys {
 
 // PlatformKeys is a field stored in each extension's state store. It saves
@@ -216,7 +220,7 @@ class ExtensionKeyPermissionsService {
       extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   const raw_ptr<policy::PolicyService> profile_policies_;
-  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
+  const raw_ptr<crosapi::KeystoreServiceAsh> keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 
