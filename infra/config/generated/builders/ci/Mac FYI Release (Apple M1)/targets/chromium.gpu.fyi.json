@@ -15,7 +15,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -45,7 +45,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -79,7 +79,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -103,7 +103,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -131,7 +131,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -161,7 +161,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -202,7 +202,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -251,7 +251,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -291,7 +291,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -331,7 +331,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -375,7 +375,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -424,7 +424,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -465,7 +465,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -505,7 +505,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -545,7 +545,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -588,7 +588,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -631,7 +631,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -672,7 +672,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
@@ -712,7 +712,7 @@
             "display_attached": "1",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5|Mac-15.7",
+            "os": "Mac-15.7",
             "pool": "chromium.tests"
           },
           "hard_timeout": 1800,
