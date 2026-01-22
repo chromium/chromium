@@ -53,22 +53,26 @@ std::optional<mojom::AppState> GetLastKnownUpdaterRegistration() {
 
 void GetSystemUpdaterState(
     base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mojom::UpdaterState{}));
 }
 
 void GetUserUpdaterState(
     base::OnceCallback<void(const mojom::UpdaterState&)> callback) {
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mojom::UpdaterState{}));
 }
 
 void GetSystemPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
 }
 
 void GetUserPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
 }
 
 }  // namespace updater
