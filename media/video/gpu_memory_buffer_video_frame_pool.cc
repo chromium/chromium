@@ -1079,6 +1079,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // TOOD(crbug.com/425634684): Check for webgpu support from
+  // SharedImageCapabilities, once this metadata is compatible.
   is_webgpu_compatible =
       handle.type == gfx::NATIVE_PIXMAP &&
       handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
@@ -1246,9 +1248,9 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
       si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40194712): Always add the flag once the
-    // OzoneImageBacking is by default turned on.
+    // TOOD(crbug.com/425634684): Check for webgpu support from
+    // SharedImageCapabilities, once this metadata is compatible.
+#if BUILDFLAG(IS_CHROMEOS)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableUnsafeWebGPU)) {
       // This SharedImage may be used for zero-copy import into WebGPU.
