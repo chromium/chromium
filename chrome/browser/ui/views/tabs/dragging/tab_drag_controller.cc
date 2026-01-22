@@ -1723,6 +1723,11 @@ std::vector<TabSlotView*> TabDragController::GetViewsMatchingDraggedContents(
   const TabStripModel* const model = context->GetTabStripModel();
   std::vector<TabSlotView*> views;
   for (const TabDragData& tab_drag_datum : drag_data_.tab_drag_data_) {
+    // TODO(crbug.com/477230662): Ideally, split tabs would also be directly
+    // compatible with `TabDragController`, rather than relying on the tab
+    // selection model to achieve expected behavior. As is, this is incompatible
+    // with the vertical tab strip because the split tabs are contained within
+    // a single dedicated `VerticalSplitTabView`.
     if (tab_drag_datum.view_type == TabSlotView::ViewType::kTab) {
       TabSlotView* tab_view =
           context->GetTabForContents(tab_drag_datum.contents);

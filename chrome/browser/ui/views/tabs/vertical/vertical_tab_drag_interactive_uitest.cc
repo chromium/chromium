@@ -357,6 +357,52 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
 // that if a layout cycle hasn't happened between drag loop iterations then
 // the tab strip model updates might bounce. This should be fixed once a more
 // robust hit-testing approach is implemented.
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragSplitTabs) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      Do([&]() {
+        tab_strip_model->ActivateTabAt(
+            2, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+        tab_strip_model->AddToNewSplit(
+            {3}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+      }),
+      PollState(kTabOrderPoller, GetTabOrder(tab_strip_model)),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                    })),
+      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kDragStatePoller, GetDragActive()), MoveMouseToTabAsync(0),
+      WaitForState(kTabOrderPoller, URLs({
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                    })),
+      MoveMouseToTabAsync(2),
+      WaitForState(kTabOrderPoller, URLs({
+                                        url::kAboutBlankURL,
+                                        chrome::kChromeUISettingsURL,
+                                        chrome::kChromeUIVersionURL,
+                                        chrome::kChromeUIBookmarksURL,
+                                    })),
+      ReleaseMouseAsync());
+}
+
+// TODO(crbug.com/476509652): This test flakes because drag handling hit tests
+// against the view's position in the layout (skipping animation), which means
+// that if a layout cycle hasn't happened between drag loop iterations then
+// the tab strip model updates might bounce. This should be fixed once a more
+// robust hit-testing approach is implemented.
 IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest, DISABLED_DragOverSplit) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();

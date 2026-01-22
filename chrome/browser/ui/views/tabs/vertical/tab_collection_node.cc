@@ -168,6 +168,12 @@ TabCollectionNode* TabCollectionNode::GetNodeForHandle(
 
 TabCollectionNode* TabCollectionNode::GetParentNodeForHandle(
     const tabs::TabCollectionNodeHandle& handle) {
+  return const_cast<TabCollectionNode*>(
+      std::as_const(*this).GetParentNodeForHandle(handle));
+}
+
+const TabCollectionNode* TabCollectionNode::GetParentNodeForHandle(
+    const tabs::TabCollectionNodeHandle& handle) const {
   for (auto& child_node : children_) {
     if (child_node->GetHandle() == handle) {
       return this;

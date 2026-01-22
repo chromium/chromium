@@ -134,7 +134,7 @@ void VerticalDraggedTabsContainer::InitializeDragState(
   // Move each dragged tab to the origin position. Transformations will be used
   // to render them during the drag.
   for (TabSlotView* slot_view : controller.GetSessionData().attached_views()) {
-    auto* tab_view = VerticalTabDragHandler::ViewFromTabSlot(slot_view);
+    auto* tab_view = GetDragHandler().ViewFromTabSlot(slot_view);
     CHECK(tab_view);
     if (tab_view->parent() == base::to_address(host_view_)) {
       dragging_views_.insert(tab_view);

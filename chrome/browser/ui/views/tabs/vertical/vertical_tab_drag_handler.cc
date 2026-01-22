@@ -66,14 +66,6 @@ ui::mojom::DragEventSource EventSourceFromEvent(const ui::LocatedEvent& event) {
 
 }  // namespace
 
-// static
-views::View* VerticalTabDragHandler::ViewFromTabSlot(TabSlotView* view) {
-  if (auto* shim_view = views::AsViewClass<TabSlotShimView>(view)) {
-    return shim_view->parent();
-  }
-  return nullptr;
-}
-
 VerticalTabDragHandlerImpl::VerticalTabDragHandlerImpl(
     TabStripModel& tab_strip_model,
     TabCollectionNode& root_node)
@@ -102,7 +94,6 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
     TabCollectionNode* selected_node =
         root_node_->GetNodeForHandle(tab->GetHandle());
     CHECK(selected_node);
-    dragged_tabs_.insert(selected_node);
     auto* shim_view = &GetOrCreateShimViewForNode(*selected_node);
     shim_view->SetBoundsRect(selected_node->view()->GetLocalBounds());
     dragged_views[next_dragged_view_idx++] = shim_view;
@@ -118,7 +109,7 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
           tab_strip_model_->selection_model().GetListSelectionModel(),
           EventSourceFromEvent(event)) ==
       TabDragController::Liveness::kDeleted) {
-    dragged_tabs_.clear();
+    ResetDragState();
   }
 }
 
@@ -153,10 +144,6 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
     // first iteration of the drag loop).
     return;
   }
-  if (dragged_tabs_.contains(&node)) {
-    return;
-  }
-  CHECK(!dragged_tabs_.empty());
   switch (node.type()) {
     case TabCollectionNode::Type::TAB:
       HandleTabDragOverTab(node);
@@ -276,8 +263,40 @@ TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
 }
 
 bool VerticalTabDragHandlerImpl::IsViewDragging(const views::View& view) const {
-  return std::ranges::find(dragged_tabs_, &view, &TabCollectionNode::view) !=
-         dragged_tabs_.end();
+  if (!drag_controller_) {
+    return false;
+  }
+  for (TabSlotView* slot_view :
+       drag_controller_->GetSessionData().attached_views()) {
+    if (&view == ViewFromTabSlot(slot_view)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+views::View* VerticalTabDragHandlerImpl::ViewFromTabSlot(
+    TabSlotView* view) const {
+  auto* shim_view = views::AsViewClass<TabSlotShimView>(view);
+  CHECK(shim_view);
+
+  const TabCollectionNode& node = shim_view->node();
+
+  // If the dragged tab view is in a split, return the split's tab view
+  // instead.
+  if (node.type() == TabCollectionNode::Type::TAB) {
+    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+    CHECK(tab);
+    if (tab->IsSplit()) {
+      const TabCollectionNode* split_node =
+          root_node_->GetParentNodeForHandle(tab->GetHandle());
+      CHECK(split_node);
+      CHECK_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
+      return split_node->view();
+    }
+  }
+
+  return node.view();
 }
 
 bool VerticalTabDragHandlerImpl::CanAcceptEvent(const ui::Event& event) {
@@ -365,9 +384,11 @@ void VerticalTabDragHandlerImpl::StartedDragging(
   for (auto* view : views) {
     auto* shim_view = views::AsViewClass<TabSlotShimView>(view);
     CHECK(shim_view);
-    dragged_tabs_.insert(&shim_view->node());
-    shim_view->parent()->SetPaintToLayer();
-    shim_view->parent()->layer()->SetFillsBoundsOpaquely(false);
+
+    views::View* dragged_view = ViewFromTabSlot(shim_view);
+    CHECK(dragged_view);
+    dragged_view->SetPaintToLayer();
+    dragged_view->layer()->SetFillsBoundsOpaquely(false);
 
     // Update the height to use preferred size because newly added tabs will
     // animate in from 0, which affects the window offset for newly-detached
@@ -378,15 +399,14 @@ void VerticalTabDragHandlerImpl::StartedDragging(
   }
 }
 
-void VerticalTabDragHandlerImpl::DraggedTabsDetached() {
-  dragged_tabs_.clear();
-}
+void VerticalTabDragHandlerImpl::DraggedTabsDetached() {}
 
 void VerticalTabDragHandlerImpl::StoppedDragging() {
   for (auto& [_, shim_view] : shim_views_) {
-    shim_view->parent()->DestroyLayer();
+    views::View* dragged_view = ViewFromTabSlot(shim_view);
+    CHECK(dragged_view);
+    dragged_view->DestroyLayer();
   }
-  dragged_tabs_.clear();
 }
 
 void VerticalTabDragHandlerImpl::SetDragControllerCallbackForTesting(
@@ -431,12 +451,10 @@ void VerticalTabDragHandlerImpl::OnNodeWillDestroy(TabCollectionNode& node) {
   CHECK(it != shim_views_.end());
   auto view = node.view()->RemoveChildViewT(it->second);
   shim_views_.erase(it);
-  dragged_tabs_.erase(&node);
 }
 
 void VerticalTabDragHandlerImpl::ResetDragState() {
   drag_controller_.reset();
-  dragged_tabs_.clear();
 }
 
 BEGIN_METADATA(VerticalTabDragHandlerImpl)

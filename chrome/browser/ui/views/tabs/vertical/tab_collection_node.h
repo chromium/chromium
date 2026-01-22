@@ -59,6 +59,8 @@ class TabCollectionNode {
       const tabs::TabCollectionNodeHandle& handle);
   TabCollectionNode* GetParentNodeForHandle(
       const tabs::TabCollectionNodeHandle& handle);
+  const TabCollectionNode* GetParentNodeForHandle(
+      const tabs::TabCollectionNodeHandle& handle) const;
 
   // Creates a new child and adds it at model_index. If |perform_initialization|
   // is true, then the entire subtree of the node data will be constructed as

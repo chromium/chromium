@@ -216,6 +216,12 @@ class TabDragController : public views::WidgetObserver,
   //   kDraggingUsingSystemDnD state for the first time.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
+  // TabDragTarget::DragController
+  std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
+      int drag_idx) override;
+  const DragSessionData& GetSessionData() const override;
+  const TabDragContext* GetAttachedContext() const override;
+
  private:
   friend class TabDragControllerTest;
 
@@ -281,12 +287,6 @@ class TabDragController : public views::WidgetObserver,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
-
-  // TabDragTarget::DragController
-  std::unique_ptr<tabs::TabModel> DetachTabAtForInsertion(
-      int drag_idx) override;
-  const DragSessionData& GetSessionData() const override;
-  const TabDragContext* GetAttachedContext() const override;
 
   // Forget the source tabstrip. It doesn't exist any more, so it doesn't
   // make sense to insert dragged tabs back into it if the drag is reverted.

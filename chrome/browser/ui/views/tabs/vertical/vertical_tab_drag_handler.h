@@ -47,7 +47,7 @@ class VerticalTabDragHandler {
   // For vertical tabs, `TabSlotView` doesn't represent the actual tab
   // view. This method converts `view` to its actual tab view, or nullptr
   // if this handler doesn't manage it.
-  static views::View* ViewFromTabSlot(TabSlotView* view);
+  virtual views::View* ViewFromTabSlot(TabSlotView* view) const = 0;
 };
 
 // Implements a minimal drag context to interact with the central
@@ -75,6 +75,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleDraggedTabsOverNode(const TabCollectionNode& node) override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
+  views::View* ViewFromTabSlot(TabSlotView* view) const override;
 
   // TabDragContext
   bool CanAcceptEvent(const ui::Event& event) override;
@@ -126,10 +127,6 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // Null if this handler is not managing a dragging session.
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;
-
-  // The tabs currently being dragged as part of a dragging session managed by
-  // this handler.
-  std::set<raw_ptr<const TabCollectionNode>> dragged_tabs_;
 
   // A mapping from nodes to their `TabSlotView` shims, used for compatibility
   // with the core dragging system.
