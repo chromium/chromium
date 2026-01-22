@@ -12174,6 +12174,24 @@
             ]
         }
     ],
+    "GpuPersistentCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuPersistentCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "GpuYieldRasterization": [
         {
             "platforms": [
