@@ -1,5 +1,6 @@
 include_rules = [
   "-ios/chrome/browser/autofill/model",
+
   # TODO(crbug.com/468036457): Remove this once a public subdirectory is
   # extracted from autofill/model
   "+ios/chrome/browser/autofill/model/features.h",
