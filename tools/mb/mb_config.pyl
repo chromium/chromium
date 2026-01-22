@@ -156,6 +156,7 @@
       'Linux Debug Builder': 'debug_bot_blink',
       'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_remoteexec',
       'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp_remoteexec',
+      'Mac V8 FYI Release (Apple M2)': 'gpu_tests_release_trybot_minimal_symbols_arm64_remoteexec',
       'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols_remoteexec',
       'V8 Blink Linux': 'release_bot_blink',
       'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_remoteexec',
@@ -427,6 +428,10 @@
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_remoteexec': [
       'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'x86', 'resource_allowlisting', 'use_siso',
+    ],
+
+    'gpu_tests_release_trybot_minimal_symbols_arm64_remoteexec': [
+      'gpu_tests', 'release_trybot_minimal_symbols_remoteexec', 'arm64', 'use_siso',
     ],
 
     'gpu_tests_release_trybot_minimal_symbols_remoteexec': [

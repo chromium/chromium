@@ -69,6 +69,20 @@
       "v8_enable_pointer_compression": false
     }
   },
+  "Mac V8 FYI Release (Apple M2)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "use_siso": true
+    }
+  },
   "Mac V8 FYI Release (Intel)": {
     "gn_args": {
       "dcheck_always_on": true,
