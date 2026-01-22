@@ -304,4 +304,36 @@ public class SettingsIndexDataTest {
                 "Parent-child map should be empty after clear.",
                 mIndexData.getChildFragmentToParentKeysForTesting().isEmpty());
     }
+
+    @Test
+    public void testSearch_normalization_stripsNonWesternDiacritics() {
+        // 1. Arabic Example: "Marhaban"
+        // Title has Tashkeel (vowel marks): "مَرْحَبًا"
+        // Search query has no marks: "مرحبا"
+        mIndexData.addEntry(
+                id("key_arabic"),
+                new SettingsIndexData.Entry.Builder(
+                                id("key_arabic"), "key_arabic", "مَرْحَبًا", "P1")
+                        .setHeader("Header 1")
+                        .build());
+
+        // 2. Hebrew Example: "Shalom"
+        // Title has Nikkud (dots): "שָׁלוֹם"
+        // Search query has no dots: "שלום"
+        mIndexData.addEntry(
+                id("key_hebrew"),
+                new SettingsIndexData.Entry.Builder(id("key_hebrew"), "key_hebrew", "שָׁלוֹם", "P1")
+                        .setHeader("Header 1")
+                        .build());
+
+        SettingsIndexData.SearchResults arabicResults = mIndexData.search("مرحبا");
+        assertEquals(
+                "Should find Arabic match ignoring Tashkeel.", 1, arabicResults.getItems().size());
+        assertEquals(id("key_arabic"), arabicResults.getItems().get(0).id);
+
+        SettingsIndexData.SearchResults hebrewResults = mIndexData.search("שלום");
+        assertEquals(
+                "Should find Hebrew match ignoring Nikkud.", 1, hebrewResults.getItems().size());
+        assertEquals(id("key_hebrew"), hebrewResults.getItems().get(0).id);
+    }
 }

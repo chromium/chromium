@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** Data from Preferences used for settings search. This is a collection of data to be indexed. */
 @NullMarked
@@ -29,6 +30,9 @@ public class SettingsIndexData {
     public static final int EXACT_TITLE_MATCH = 10;
     public static final int PARTIAL_TITLE_MATCH = 5;
     public static final int PARTIAL_SUMMARY_MATCH = 3;
+
+    // Regular expression to remove diacritics.
+    private static final Pattern STRIP_ACCENTS_PATTERN = Pattern.compile("\\p{M}");
 
     private final Map<String, Entry> mEntries = new LinkedHashMap<>();
     // Map from a child fragment's class name to the list of preference keys that can link to it.
@@ -78,7 +82,7 @@ public class SettingsIndexData {
         // 1. Decompose characters into base letters and combining accent marks.
         String decomposed = Normalizer.normalize(input, Normalizer.Form.NFD);
         // 2. Remove the combining accent marks using a regular expression.
-        String stripped = decomposed.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String stripped = STRIP_ACCENTS_PATTERN.matcher(decomposed).replaceAll("");
         // 3. Convert to lowercase for case-insensitive matching.
         return stripped.toLowerCase(Locale.getDefault());
     }
