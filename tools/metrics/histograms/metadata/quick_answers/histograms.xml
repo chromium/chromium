@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2026-06-07">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.ActiveImpression.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2026-06-07">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close.Duration{InteractionType}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.DictionaryIntent.Language" enum="LanguageName"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.DictionaryIntent.Source"
-    enum="QuickAnswersDictionaryIntentSource" expires_after="2026-02-01">
+    enum="QuickAnswersDictionaryIntentSource" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ExitPoint" enum="QuickAnswersExitPoint"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.FeatureEnabled" enum="BooleanEnabled"
-    expires_after="2026-04-05">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
-    expires_after="2026-04-05">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Duration" units="ms"
-    expires_after="2026-04-05">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Status" enum="QuickAnswersLoadStatus"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.NetworkError.IntentType"
-    enum="QuickAnswersIntentType" expires_after="2026-02-01">
+    enum="QuickAnswersIntentType" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.NetworkError.ResponseCode.{IntentType}"
-    enum="HttpResponseCode" expires_after="2026-02-01">
+    enum="HttpResponseCode" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.RequestTextLength.{IntentType}"
-    units="characters" expires_after="2026-02-01">
+    units="characters" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Result.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"
-    expires_after="2026-02-01">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.TextToSpeech.EngineEvent"
-    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2026-02-01">
+    enum="QuickAnswersTextToSpeechEngineEvent" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.V2.Consent" units="impressions"
-    expires_after="2026-04-05">
+    expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.V2.Consent.Duration{QuickAnswersV2ConsentResultType}"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
-    units="impressions" expires_after="2026-04-05">
+    units="impressions" expires_after="2026-12-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
