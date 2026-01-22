@@ -376,19 +376,19 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   }
 
   // The user is signed out.
-  if (!identity_manager) {
-    MaybeOutputReason(debug_message, "User is signed out.");
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    MaybeOutputReason(debug_message, "User not signed into Chrome.");
     return false;
   }
 
-  // The user is only signed in on the web.
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    MaybeOutputReason(debug_message, "User is signed in only on the web.");
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin))) {
+    MaybeOutputReason(debug_message,
+                      "User's sign-in is in a persistent error state.");
     return false;
   }
-
-  // All other states (sign-in and sync including their paused/error states)
-  // are sufficient for us to validate the user's account information.
   return true;
 }
 
@@ -488,14 +488,15 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
     return false;
   }
   const bool has_entity_data_saved = !edm->GetEntityInstances().empty();
-  if (!SatisfiesPreferenceRequirements(client, has_entity_data_saved, action,
-                                       debug_message)) {
-    return false;
-  }
 
   if (!SatisfiesAccountRequirements(client.GetIdentityManager(),
                                     has_entity_data_saved, action,
                                     debug_message)) {
+    return false;
+  }
+
+  if (!SatisfiesPreferenceRequirements(client, has_entity_data_saved, action,
+                                       debug_message)) {
     return false;
   }
 
