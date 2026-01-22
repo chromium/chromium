@@ -132,6 +132,10 @@ export class LineFocusController {
   }
 
   onWordBoundary(segments: Segment[]) {
+    if (!this.isEnabled()) {
+      return;
+    }
+
     const rects: DOMRect[] = [];
     for (const {node, start} of segments) {
       const domNode = node.domNode();

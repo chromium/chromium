@@ -895,6 +895,29 @@ suite('LineFocusController', () => {
     assertFalse(lineFocusMoved);
   });
 
+  test('onWordBoundary does nothing when disabled', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    const container = createShortContainer();
+    lineFocusController.onStyleChange(
+        LineFocusStyle.OFF, container, defaultHeight);
+    assertFalse(lineFocusController.isEnabled());
+    lineFocusMoved = false;
+    scrollDiffReceived = 0;
+    NodeStore.getInstance().setDomNode(container, 1);
+    const segments = [{
+      node: ReadAloudNode.create(container)!,
+      start: 0,
+      length: 5,
+    }];
+
+    lineFocusController.onWordBoundary(segments);
+
+    assertFalse(lineFocusMoved);
+    assertEquals(0, speechLines);
+    assertEquals(0, keyboardLines);
+    assertEquals(0, scrollDiffReceived);
+  });
+
   test('snapToNextLine with cursor line moves by line', () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = document.createElement('p');
