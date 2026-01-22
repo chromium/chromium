@@ -435,7 +435,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1692622044604477956">Rasporedi prikazivanja za kina i kazališta</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima<ph name="END_BOLD" />: Chrome automatski briše teme koje su starije od četiri tjedna. Kako nastavljate s pregledavanjem, tema se može ponovo pojaviti na popisu. U postavkama Chromea uvijek možete blokirati teme koje ne želite da Chrome dijeli s web-lokacijama, odnosno u potpunosti isključiti opciju tema oglasa.</translation>
-<translation id="1697808683313379647">Google upotrebljava podatke sa stranice za naplatu i druge relevantne podatke kako bi ponudio te opcije.</translation>
 <translation id="1699651774646344471">Sada možete upotrebljavati adrese sa svojeg Google računa</translation>
 <translation id="1700542542921501212">Za pretraživanje weba možete upotrebljavati <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="299122504639061328">Upravljajte zadanom tražilicom i pretraživanjem web-lokacije</translation>
 <translation id="2991571918955627853">Trenutačno ne možete otvoriti <ph name="SITE" /> jer web-lokacija upotrebljava HSTS. Mrežne pogreške i napadi obično su privremeni, tako da će stranica kasnije vjerojatno funkcionirati.</translation>
 <translation id="2991865971341174470">Potvrdite svoj identitet kako bi Chrome mogao unijeti vaše podatke o plaćanju.</translation>
-<translation id="2995010188916335277">Google upotrebljava podatke sa stranice za naplatu i druge relevantne podatke kako bi ponudio te opcije. Da biste sakrili opcije plaćanja kasnije u automatskom popunjavanju, otvorite <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Koristi za sve profile gostiju</translation>
 <translation id="2995517112308048736">Veličina datoteke:</translation>
 <translation id="299990983510665749">Monovolumenska vozila</translation>
@@ -1986,6 +1984,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4152495263075154876">Zaslon napretka kupnje uz odgodu plaćanja je zatvoren.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> ne podržava sigurnu vezu s HTTPS-om</translation>
+<translation id="4153858337812834972">Najnovije kartice</translation>
 <translation id="4154277373259957087">Chrome će sada potvrditi da ste to vi prije nego što unesete načine plaćanja. To možete ažurirati bilo kada u <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Dodaj karticu u tablicu za usporedbu</translation>
 <translation id="4159784952369912983">Ljubičasto</translation>
@@ -4144,6 +4143,7 @@ Dodatne pojedinosti:
 <translation id="759889825892636187">Host <ph name="HOST_NAME" /> trenutačno ne može obraditi zahtjev.</translation>
 <translation id="7599089013883397081">Isteklo je vrijeme za preuzimanje</translation>
 <translation id="7602868996817972616">Postavite pitanje Googleu o ovoj stranici</translation>
+<translation id="7606123685356405076">Modeli Geminija 3</translation>
 <translation id="7610193165460212391">Vrijednost je izvan raspona <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Debeo</translation>
 <translation id="7613889955535752492">Istječe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

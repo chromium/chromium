@@ -435,7 +435,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1689333818294560261">Nadimak</translation>
 <translation id="1692622044604477956">Liste filmova i repertoari bioskopa</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 nedelje. Kada nastavite da pregledate, tema će se možda ponovo pojaviti na listi. Možete i da blokirate teme koje ne želite da Chrome deli sa sajtovima i da isključite teme oglasa u bilo kom trenutku u podešavanjima Chrome-a.</translation>
-<translation id="1697808683313379647">Google koristi informacije sa stranice za plaćanje i druge relevantne podatke da bi nudio ove opcije.</translation>
 <translation id="1699651774646344471">Sada možete da koristite adrese sa Google naloga</translation>
 <translation id="1700542542921501212">Za pretragu veba možete da koristite <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="299122504639061328">Upravljajte podrazumevanim pretraživačem i pretragom sajta</translation>
 <translation id="2991571918955627853">Trenutno ne možete da posetite <ph name="SITE" /> jer veb-sajt koristi HSTS. Greške i napadi na mreži su obično privremeni, pa će ova stranica verovatno funkcionisati kasnije.</translation>
 <translation id="2991865971341174470">Potvrdite da ste to vi da bi Chrome mogao da unese informacije o plaćanju.</translation>
-<translation id="2995010188916335277">Google koristi informacije sa stranice za plaćanje i druge relevantne podatke da bi nudio ove opcije. Da biste sakrili opcije za kasnije plaćanje u automatskom popunjavanju, idite na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Koristi za sve profile gosta</translation>
 <translation id="2995517112308048736">Veličina datoteke:</translation>
 <translation id="299990983510665749">Hečbek vozila</translation>
@@ -1987,6 +1985,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4152495263075154876">Ekran sa napretkom za opciju Kupite odmah, platite kasnije je zatvoren.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> ne podržava bezbednu vezu sa HTTPS-om</translation>
+<translation id="4153858337812834972">Najnovije kartice</translation>
 <translation id="4154277373259957087">Chrome će sada potvrditi da ste to vi pre nego što unese načine plaćanja. To možete da ažurirate u svakom trenutku u odeljku <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Dodaj karticu u tabelu za poređenje</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
@@ -4144,6 +4143,7 @@ Dodatni detalji:
 <translation id="759889825892636187">Host <ph name="HOST_NAME" /> trenutno ne može da obradi ovaj zahtev.</translation>
 <translation id="7599089013883397081">Vreme za preuzimanje je isteklo</translation>
 <translation id="7602868996817972616">Upitajte Google o ovoj stranici</translation>
+<translation id="7606123685356405076">Gemini 3 modeli</translation>
 <translation id="7610193165460212391">Vrednost je izvan opsega <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Debela</translation>
 <translation id="7613889955535752492">Ističe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

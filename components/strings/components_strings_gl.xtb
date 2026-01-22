@@ -435,7 +435,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1689333818294560261">Alcume</translation>
 <translation id="1692622044604477956">Carteleira e horarios de cines</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Chrome elimina automaticamente os temas que teñen máis de 4 semanas de antigüidade. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios, así como desactivar os temas de anuncios en calquera momento na configuración de Chrome.</translation>
-<translation id="1697808683313379647">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións.</translation>
 <translation id="1699651774646344471">Agora podes utilizar os enderezos da túa Conta de Google</translation>
 <translation id="1700542542921501212">Podes usar <ph name="SEARCH_ENGINE_NAME" /> para buscar contido na Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="299122504639061328">Xestionar o teu motor de busca predeterminado e a busca de sitios</translation>
 <translation id="2991571918955627853">Non podes visitar <ph name="SITE" /> neste momento porque o sitio web utiliza HSTS. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="2991865971341174470">Verifica a túa identidade para que Chrome poida completar a túa información de pago.</translation>
-<translation id="2995010188916335277">Google usa a información da páxina de tramitación da compra e outros datos relevantes para ofrecer estas opcións de pago aprazado. Para ocultalas na función de autocompletar, vai a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Usar para todos os perfís de convidado</translation>
 <translation id="2995517112308048736">Tamaño do ficheiro:</translation>
 <translation id="299990983510665749">Vehículos compactos</translation>
@@ -1987,6 +1985,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4152495263075154876">A pantalla de progreso de pago aprazado está pechada.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Unha pestana}other{# pestanas}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> non admite unha conexión segura con HTTPS</translation>
+<translation id="4153858337812834972">Pestanas máis recentes</translation>
 <translation id="4154277373259957087">Chrome agora verificará a túa identidade antes de completar os métodos de pago. Podes actualizar esta opción en calquera momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Engadir pestana á táboa comparativa</translation>
 <translation id="4159784952369912983">Púrpura</translation>
@@ -4144,6 +4143,7 @@ Detalles adicionais:
 <translation id="759889825892636187">Actualmente <ph name="HOST_NAME" /> non pode procesar esta solicitude.</translation>
 <translation id="7599089013883397081">Esgotouse o tempo de espera para a descarga</translation>
 <translation id="7602868996817972616">Pregúntalle a Google sobre esta páxina</translation>
+<translation id="7606123685356405076">Modelos de Gemini 3</translation>
 <translation id="7610193165460212391">O valor está fóra do rango de <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Groso</translation>
 <translation id="7613889955535752492">Caducidade: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

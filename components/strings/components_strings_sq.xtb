@@ -435,7 +435,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1692622044604477956">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin në mënyrë automatike temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe të çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
-<translation id="1697808683313379647">Google përdor informacionet nga faqja e përfundimit të blerjes dhe të dhëna të tjera përkatëse për të ofruar këto opsione.</translation>
 <translation id="1699651774646344471">Tani mund të përdorësh adresat nga "Llogaria jote e Google"</translation>
 <translation id="1700542542921501212">Mund të përdorësh <ph name="SEARCH_ENGINE_NAME" /> për të kërkuar në ueb.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="299122504639061328">Menaxho motorin e parazgjedhur të kërkimit dhe kërkimin në sajte</translation>
 <translation id="2991571918955627853">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse uebsajti përdor HSTS. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="2991865971341174470">Verifiko që je ti që Chrome të mund të plotësojë informacionet e tua të pagesës.</translation>
-<translation id="2995010188916335277">Google përdor informacionet nga faqja e përfundimit të blerjes dhe të dhëna të tjera përkatëse për të ofruar këto opsione. Për të fshehur opsionet e "Paguaj më vonë" te plotësimi automatik, shko te <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Përdore për të gjitha profilet e vizitorëve</translation>
 <translation id="2995517112308048736">Madhësia e skedarit:</translation>
 <translation id="299990983510665749">Automjet me portobagazh</translation>
@@ -1987,6 +1985,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4152495263075154876">Ekrani i progresit për metodën "Bli tani, paguaj më vonë" u mbyll.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> nuk e mbështet një lidhje të sigurt me HTTPS</translation>
+<translation id="4153858337812834972">Skedat më të fundit</translation>
 <translation id="4154277373259957087">Chrome tani do të verifikojë që je ti para se të plotësojë mënyrat e pagesës. Mund ta përditësosh këtë në çdo kohë te <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Shto skedën te tabela e krahasimit</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
@@ -4143,6 +4142,7 @@ Detaje shtesë:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> nuk mund ta administrojë këtë kërkesë aktualisht.</translation>
 <translation id="7599089013883397081">Koha e shkarkimit skadoi</translation>
 <translation id="7602868996817972616">Pyet Google rreth kësaj faqeje</translation>
+<translation id="7606123685356405076">Modelet e Gemini 3</translation>
 <translation id="7610193165460212391">Vlera është jashtë gamës <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">E trashë</translation>
 <translation id="7613889955535752492">Data e skadimit: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

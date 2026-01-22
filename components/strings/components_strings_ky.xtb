@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Ылакап ат</translation>
 <translation id="1692622044604477956">Тасмалар жана театралдык спектаклдер</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Маалыматыңызды кантип тескей аласыз:<ph name="END_BOLD" /> Chrome 4 аптадан ашуун убакыт мурун пайда болгон темаларды автоматтык түрдө жок кылып турат. Серептөөнү улантсаңыз, тема кайрадан тизмеде пайда болушу мүмкүн. Ошондой эле, Chrome параметрлеринен каалаган убакта жарнама темаларын өчүрүп жана Chrome'го сайттар менен белгилүү бир темаларды бөлүшүүгө тыюу сала аласыз.</translation>
-<translation id="1697808683313379647">Бул варианттарды сунуштоо үчүн Google төлөө бетинен алынган маалыматты жана башка тиешелүү нерселерди колдонот.</translation>
 <translation id="1699651774646344471">Эми Google аккаунтуңуздагы даректерди колдоно аласыз</translation>
 <translation id="1700542542921501212"><ph name="SEARCH_ENGINE_NAME" /> аркылуу Интернеттен керектүү нерсени издей аласыз.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Демейки издөө куралын жана сайттан издөөнү башкаруу</translation>
 <translation id="2991571918955627853">Азыр <ph name="SITE" /> сайтына кире албайсыз, анткени вебсайт HSTS протоколун иштетип жатат. Тармак каталары жана чабуулдар адатта убактылуу көйгөй болгондуктан, бул барак кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="2991865971341174470">Chrome төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
-<translation id="2995010188916335277">Бул варианттарды сунуштоо үчүн Google төлөө бетинен алынган маалыматты жана башка тиешелүү нерселерди колдонот. Автотолтурууда кийинчерээк төлөө варианттарын жашыруу үчүн <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөлүмүнө өтүңүз.</translation>
 <translation id="2995121550202354573">Бардык Конок профилдери үчүн колдонуу</translation>
 <translation id="2995517112308048736">Файлдын өлчөмү:</translation>
 <translation id="299990983510665749">Хэтчбектер</translation>
@@ -1986,6 +1984,7 @@
 <translation id="4152495263075154876">Азыр сатып ал, кийин төлө абал экраны жабык.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> сайты HTTPS аркылуу коопсуз туташууну колдоого албайт</translation>
+<translation id="4153858337812834972">Соңку өтмөктөр</translation>
 <translation id="4154277373259957087">Эми Chrome төлөм ыкмаларын толтуруудан мурун сиз экениңизди текшерет. Муну каалаган убакта <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="415440494507469262">Салыштыруучу таблицага өтмөк кошуу</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
@@ -4143,6 +4142,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> учурда бул өтүнүчтү аткара албайт.</translation>
 <translation id="7599089013883397081">Жүктөп алуу убакыты аяктады</translation>
 <translation id="7602868996817972616">Google'дан бул бет жөнүндө сураңыз</translation>
+<translation id="7606123685356405076">Gemini 3 үлгүлөрү</translation>
 <translation id="7610193165460212391">Маани <ph name="VALUE" /> аралыгынан чыгып кетти.</translation>
 <translation id="761261689936461781">Жоон</translation>
 <translation id="7613889955535752492">Мөөнөтү бүтөт: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">နာမည်ပြောင်</translation>
 <translation id="1692622044604477956">ရုပ်ရှင်စာရင်း၊ ရုပ်ရှင်ပြသချိန်</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />သင့်ဒေတာကို စီမံနိုင်ပုံ-<ph name="END_BOLD" /> Chrome သည် ၄ ပတ်ကျော်ပြီဖြစ်သော အကြောင်းအရာများကို အလိုအလျောက်ဖျက်သည်။ ဆက်လက်၍ ကြည့်ရှုသည်နှင့်အမျှ အကြောင်းအရာသည် စာရင်းတွင် ပြန်ပေါ်လာနိုင်သည်။ Chrome အား ဝဘ်ဆိုက်များနှင့် မမျှဝေစေလိုသော အကြောင်းအရာကိုလည်း သင်က ပိတ်ထားနိုင်သည့်အပြင် Chrome ဆက်တင်များတွင် ကြော်ငြာအကြောင်းအရာများကို အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
-<translation id="1697808683313379647">Google သည် ဤရွေးစရာများကို ပေးရန်အတွက် ငွေရှင်းရန် စာမျက်နှာနှင့် အခြားသက်ဆိုင်ရာဒေတာများမှ အချက်အလက်များကို အသုံးပြုသည်။</translation>
 <translation id="1699651774646344471">သင့် Google Account မှ လိပ်စာများကို ယခုသုံးနိုင်ပါပြီ</translation>
 <translation id="1700542542921501212">ဝဘ်တွင်ရှာရန် <ph name="SEARCH_ENGINE_NAME" /> ကိုသုံးနိုင်သည်။</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1251,7 +1250,6 @@
 <translation id="299122504639061328">သင်၏မူရင်း ရှာဖွေရေး အင်ဂျင်နှင့် ဝဘ်ဆိုက်ရှာဖွေမှုကို စီမံနိုင်သည်</translation>
 <translation id="2991571918955627853">ဝဘ်ဆိုက်က HSTS ကို သုံးထားသောကြောင့် <ph name="SITE" /> ကို လောလောဆယ် ဖွင့်၍မရပါ။ ကွန်ရက်အမှားအယွင်းများနှင့် တိုက်ခိုက်မှုများမှာ ပုံမှန်အားဖြင့် ခဏတာသာ ဖြစ်သည့်အတွက် ဤစာမျက်နှာကို နောက်ပိုင်းတွင် ပြန်ဖွင့်၍ရနိုင်ပါသည်။</translation>
 <translation id="2991865971341174470">သင့်ငွေချေအချက်အလက်တွင် Chrome ကဖြည့်နိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုနေသည်။</translation>
-<translation id="2995010188916335277">Google သည် ဤရွေးစရာများကို ပေးရန်အတွက် ငွေရှင်းရန် စာမျက်နှာမှ အချက်အလက်နှင့် အခြားသက်ဆိုင်ရာဒေတာများကို အသုံးပြုသည်။ ‘အော်တိုဖြည့်’ တွင် ‘နောက်မှပေး’ ရွေးစရာများကို ဖျောက်ရန် <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> သို့ သွားပါ။</translation>
 <translation id="2995121550202354573">ဧည့်သည်ပရိုဖိုင်အားလုံးအတွက် သုံးရန်</translation>
 <translation id="2995517112308048736">ဖိုင်အရွယ်အစား-</translation>
 <translation id="299990983510665749">နောက်ဖုံးဖွင့်ကားများ</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">‘အခုဝယ်-နောက်မှပေး’ အခြေအနေပြစခရင်ကို ပိတ်လိုက်သည်။</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{တဘ် ၁}other{# တဘ်များ}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> သည် HTTPS ဖြင့် လုံခြုံသော ချိတ်ဆက်မှုကို မပံ့ပိုးပါ</translation>
+<translation id="4153858337812834972">နောက်ဆုံးတဘ်များ</translation>
 <translation id="4154277373259957087">ငွေပေးချေနည်းလမ်းများ မဖြည့်သွင်းမီ Chrome က သင်ဖြစ်ကြောင်း ယခု စိစစ်ပါမည်။ ၎င်းကို <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> တွင် အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="415440494507469262">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
@@ -4145,6 +4144,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> သည်လောလောဆယ်တွင် ဤတောင်းဆိုမှုကို မကိုင်သွယ်နိုင်ပါ။</translation>
 <translation id="7599089013883397081">ဒေါင်းလုဒ် အချိန်ကုန်သွားသည်</translation>
 <translation id="7602868996817972616">ဤစာမျက်နှာအကြောင်း Google ကို မေးရန်</translation>
+<translation id="7606123685356405076">Gemini 3 မိုဒယ်များ</translation>
 <translation id="7610193165460212391">တန်ဖိုးမှာ ဘောင် အပြင်မှာ ရှိနေ<ph name="VALUE" />။</translation>
 <translation id="761261689936461781">အထူ</translation>
 <translation id="7613889955535752492">ကုန်ဆုံးရက် − <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

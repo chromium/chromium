@@ -430,7 +430,6 @@
 <translation id="1689333818294560261">మారుపేరు</translation>
 <translation id="1692622044604477956">సినిమా లిస్టింగ్‌లు &amp; థియేటర్ షోటైమ్‌లు</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />మీ డేటాను మీరు ఎలా మేనేజ్ చేయగలరు:<ph name="END_BOLD" /> 4 వారాల కంటే పాతవైన టాపిక్‌లను Chrome ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు బ్రౌజ్ చేస్తూ ఉన్నప్పుడు, లిస్ట్‌లో ఏదైనా ఒక టాపిక్ మళ్లీ కనిపించవచ్చు. Chrome ఏవైనా టాపిక్‌లను సైట్‌లతో షేర్ చేయకూడదు అని మీరు భావిస్తే, వాటిని మీరు బ్లాక్ చేయవచ్చు. అలాగే Chrome సెట్టింగ్‌లలో ఎప్పుడైనా యాడ్ టాపిక్‌లను ఆఫ్ చేయవచ్చు.</translation>
-<translation id="1697808683313379647">ఈ ఆప్షన్‌లను అందించడానికి Google చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది.</translation>
 <translation id="1699651774646344471">మీరు ఇప్పుడు మీ Google ఖాతా నుండి అడ్రస్‌లను ఉపయోగించుకోవచ్చు</translation>
 <translation id="1700542542921501212">మీరు <ph name="SEARCH_ENGINE_NAME" />‌ను ఉపయోగించి వెబ్‌లో సెర్చ్ చేయవచ్చు.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1241,7 +1240,6 @@
 <translation id="299122504639061328">మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, అలాగే సైట్ సెర్చ్‌ను మేనేజ్ చేయండి</translation>
 <translation id="2991571918955627853">వెబ్‌సైట్ HSTS ఉపయోగిస్తున్నందున మీరు ప్రస్తుతం <ph name="SITE" />‌ను సందర్శించలేరు. నెట్‌వర్క్ ఎర్ర‌ర్‌లు మరియు దాడులు సాధారణంగా తాత్కాలికమే. కనుక ఈ పేజీ తర్వాత పని చేయవచ్చు.</translation>
 <translation id="2991865971341174470">ఇది మీరేనని వెరిఫై చేయండి, తద్వారా Chrome మీ పేమెంట్ సమాచారాన్ని ఫిల్ చేయగలదు.</translation>
-<translation id="2995010188916335277">ఈ ఆప్షన్‌లను అందించడానికి Google, చెక్ అవుట్ పేజీలోని సమాచారాన్ని, ఇతర సంబంధిత డేటాను ఉపయోగిస్తుంది. ఆటోఫిల్‌లో 'తర్వాత పే చేయండి' ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి.</translation>
 <translation id="2995121550202354573">గెస్ట్ ప్రొఫైల్‌లన్నింటి కోసం ఉపయోగించండి</translation>
 <translation id="2995517112308048736">ఫైల్ సైజ్:</translation>
 <translation id="299990983510665749">హ్యాచ్‌బ్యాక్‌లు</translation>
@@ -1982,6 +1980,7 @@
 <translation id="4152495263075154876">'ఇప్పుడు కొనండి, పేమెంట్ తర్వాత చేయండి' ప్రోగ్రెస్ స్క్రీన్ మూసివేయబడింది.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> HTTPSతో సురక్షితమైన కనెక్షన్‌కు సపోర్ట్ చేయదు</translation>
+<translation id="4153858337812834972">అత్యంత ఇటీవలి ట్యాబ్‌లు</translation>
 <translation id="4154277373259957087">పేమెంట్ ఆప్షన్‌లలో వివరాలను పూరించడానికి ముందు ఇకపై Chrome, అలా చేస్తున్నది మీరేనని వెరిఫై చేస్తుంది. మీరు దీన్ని <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
 <translation id="415440494507469262">కంపారిజన్ టేబుల్‌కు ట్యాబ్‌ను జోడించండి</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
@@ -4140,6 +4139,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ప్రస్తుతం ఈ రిక్వెస్ట్‌ను నిర్వహించలేదు.</translation>
 <translation id="7599089013883397081">డౌన్‌లోడ్ చేయడానికి సమయం ముగిసింది</translation>
 <translation id="7602868996817972616">ఈ పేజీ వివరాల గురించి Googleను అడగండి</translation>
+<translation id="7606123685356405076">Gemini 3 మోడల్స్</translation>
 <translation id="7610193165460212391">విలువ <ph name="VALUE" /> పరిధి వెలుపల ఉంది.</translation>
 <translation id="761261689936461781">మందమైన</translation>
 <translation id="7613889955535752492">గడువు ముగింపు: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

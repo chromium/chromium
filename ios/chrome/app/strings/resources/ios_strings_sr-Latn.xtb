@@ -484,7 +484,7 @@
 <translation id="2761788987260570878">Slikajte pretragu</translation>
 <translation id="2761898608071930085">Koristite drugi nalog</translation>
 <translation id="2762000892062317888">malopre</translation>
-<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte do 1 sliku}one{Dodajte do {COUNT} sliku}few{Dodajte do {COUNT} slike}other{Dodajte do {COUNT} slika}}</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte najviše 1 sliku}one{Dodajte najviše {COUNT} sliku}few{Dodajte najviše {COUNT} slike}other{Dodajte najviše {COUNT} slika}}</translation>
 <translation id="2772667768515195373">Možete da koristite sačuvane adrese u svim Google proizvodima. Ova adresa je sačuvana na Google nalogu, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Obaveštenja imejlom</translation>
 <translation id="2781331604911854368">Uključeno</translation>

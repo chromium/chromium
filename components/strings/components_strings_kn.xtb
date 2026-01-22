@@ -434,7 +434,6 @@
 <translation id="1689333818294560261">ಅಡ್ಡಹೆಸರು</translation>
 <translation id="1692622044604477956">ಚಲನಚಿತ್ರ ಲಿಸ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಥಿಯೇಟರ್ ಶೋಟೈಮ್‌ಗಳು</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನೀವು ಹೇಗೆ ನಿರ್ವಹಿಸಬಹುದು:<ph name="END_BOLD" /> Chrome 4 ವಾರಗಳಿಗಿಂತ ಹಳೆಯದಾದ ವಿಷಯಗಳನ್ನು ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ. ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿದ್ದಂತೆ, ವಿಷಯವೊಂದು ಪಟ್ಟಿಯಲ್ಲಿ ಮತ್ತೆ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಸೈಟ್‌ಗಳೊಂದಿಗೆ Chrome ಹಂಚಿಕೊಳ್ಳಬಾರದೆಂದು ನೀವು ಬಯಸುವ ವಿಷಯಗಳನ್ನು ಸಹ ನೀವು ನಿರ್ಬಂಧಿಸಬಹುದು ಮತ್ತು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಜಾಹೀರಾತು ವಿಷಯಗಳನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
-<translation id="1697808683313379647">ಈ ಆಯ್ಕೆಗಳನ್ನು ನೀಡಲು ಚೆಕ್‌ಔಟ್ ಪುಟ ಮತ್ತು ಇತರ ಸಂಬಂಧಿತ ಡೇಟಾದಿಂದ ಮಾಹಿತಿಯನ್ನು Google ಬಳಸುತ್ತದೆ.</translation>
 <translation id="1699651774646344471">ಈಗ ನೀವು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ವಿಳಾಸಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="1700542542921501212">ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕಲು ನೀವು <ph name="SEARCH_ENGINE_NAME" /> ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2991571918955627853">ವೆಬ್‌ಸೈಟ್ HSTS ಅನ್ನು ಬಳಸುವ ಕಾರಣದಿಂದ ನೀವು ಸದ್ಯಕ್ಕೆ <ph name="SITE" /> ಅನ್ನು ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನೆಟ್‌ವರ್ಕ್ ದೋಷಗಳು ಮತ್ತು ಆಕ್ರಮಣಗಳು ಸಾಮಾನ್ಯವಾಗಿ ತಾತ್ಕಾಲಿಕವಾಗಿವೆ, ಹಾಗಾಗಿ ಈ ಪುಟವು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಕಾರ್ಯ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="2991865971341174470">ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ, ಇದರಿಂದ Chrome ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿಮಾಡಬಹುದು.</translation>
-<translation id="2995010188916335277">ಈ ಆಯ್ಕೆಗಳನ್ನು ನೀಡಲು ಚೆಕ್‌ಔಟ್ ಪುಟ ಮತ್ತು ಇತರ ಸಂಬಂಧಿತ ಡೇಟಾದಿಂದ ಮಾಹಿತಿಯನ್ನು Google ಬಳಸುತ್ತದೆ. ಆಟೋಫಿಲ್‌ನಲ್ಲಿ ನಂತರ ಪಾವತಿಸುವ ಆಯ್ಕೆಗಳನ್ನು ಮರೆಮಾಡಲು, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ಗೆ ಹೋಗಿ.</translation>
 <translation id="2995121550202354573">ಎಲ್ಲಾ ಅತಿಥಿ ಪ್ರೊಫೈಲ್‌ಗಳಿಗಾಗಿ ಬಳಸಿ</translation>
 <translation id="2995517112308048736">ಫೈಲ್ ಗಾತ್ರ:</translation>
 <translation id="299990983510665749">ಹ್ಯಾಚ್‌ಬ್ಯಾಕ್‌ಗಳು</translation>
@@ -1984,6 +1982,7 @@
 <translation id="4152495263075154876">ಈಗ ಖರೀದಿಸಿ, ನಂತರ ಪಾವತಿಸಿ ಪ್ರಗತಿ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> HTTPS ನೊಂದಿಗೆ ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
+<translation id="4153858337812834972">ತೀರಾ ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4154277373259957087">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವ ಮುನ್ನ Chrome ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಈಗ ಪರಿಶೀಲಿಸುತ್ತದೆ. ನೀವು ಇದನ್ನು <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ನಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="415440494507469262">ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4159784952369912983">ನೇರಳೆ</translation>
@@ -4141,6 +4140,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ಗೆ ಪ್ರಸ್ತುತ ಈ ವಿನಂತಿಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="7599089013883397081">ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಸಮಯ ಮೀರಿದೆ</translation>
 <translation id="7602868996817972616">ಈ ಪುಟದ ಕುರಿತು Google ಅನ್ನು ಕೇಳಿ</translation>
+<translation id="7606123685356405076">Gemini 3 ಮಾಡಲ್‌ಗಳು</translation>
 <translation id="7610193165460212391">ಮೌಲ್ಯವು ವ್ಯಾಪ್ತಿಯಿಂದ <ph name="VALUE" /> ಹೊರಗಿದೆ.</translation>
 <translation id="761261689936461781">ದಪ್ಪ</translation>
 <translation id="7613889955535752492">ಅವಧಿ ಮೀರುವ ಸಮಯ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

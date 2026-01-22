@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">উপনাম</translation>
 <translation id="1692622044604477956">চলচ্চিত্ৰৰ সূচী আৰু চিনেমা হলৰ দৰ্শনীৰ সময়</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />আপুনি নিজৰ ডেটা কেনেকৈ পৰিচালনা কৰিব পাৰে:<ph name="END_BOLD" /> Chromeএ ৪ সপ্তাহতকৈ পুৰণি হোৱা বিষয়সমূহ স্বয়ংক্ৰিয়ভাৱে মচে। আপুনি ব্ৰাউজ কৰি থাকিলে, সূচীখনত পুনৰ কোনো এটা বিষয় প্ৰদৰ্শিত হ’ব পাৰে। আপুনি সেই বিষয়সমূহো অৱৰোধ কৰিব পাৰে যিসমূহ আপুনি Chrome-এ ছাইটসমূহৰ সৈতে শ্বেয়াৰ কৰাটো নিবিচাৰে আৰু আপুনি Chromeৰ ছেটিঙত যিকোনো সময়তে বিজ্ঞাপনৰ বিষয়সমূহ অফ কৰিব পাৰে।</translation>
-<translation id="1697808683313379647">Googleএ এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠা আৰু অন্যান্য প্ৰাসংগিক ডেটাৰ পৰা তথ্য ব্যৱহাৰ কৰে।</translation>
 <translation id="1699651774646344471">আপুনি এতিয়া আপোনাৰ Google একাউণ্টৰ পৰা ঠিকনাসমূহ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="1700542542921501212">আপুনি ৱেবত সন্ধান কৰিবলৈ <ph name="SEARCH_ENGINE_NAME" /> ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিন আৰু Site Search পৰিচালনা কৰক</translation>
 <translation id="2991571918955627853">আপুনি এই মুহূৰ্তত <ph name="SITE" /> খুলিব নোৱাৰিব কাৰণ ৱেবছাইটটোৱে HSTS. ব্যৱহাৰ কৰে। নেটৱর্কৰ আসোঁৱাহ আৰু আক্ৰমণবোৰ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে পাছত কাম কৰিব পাৰে।</translation>
 <translation id="2991865971341174470">এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক যাতে Chromeএ আপোনাৰ পৰিশোধৰ তথ্য পূৰ কৰিব পাৰে।</translation>
-<translation id="2995010188916335277">Googleএ এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠা আৰু অন্যান্য প্ৰাসংগিক ডেটাৰ পৰা তথ্য ব্যৱহাৰ কৰে। স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাত পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />লৈ যাওক।</translation>
 <translation id="2995121550202354573">আটাইবোৰ অতিথিৰ প্ৰ’ফাইলৰ বাবে ব্যৱহাৰ কৰক</translation>
 <translation id="2995517112308048736">ফাইলৰ আকাৰ:</translation>
 <translation id="299990983510665749">হেচ্চবেক</translation>
@@ -1984,6 +1982,7 @@
 <translation id="4152495263075154876">এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰকৰ অগ্ৰগতিৰ স্ক্ৰীন বন্ধ কৰা হৈছে।</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{১টা টেব}one{#টা টেব}other{#টা টেব}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" />এ HTTPSৰ জৰিয়তে সুৰক্ষিত সংযোগ সমৰ্থন নকৰে</translation>
+<translation id="4153858337812834972">একেবাৰে শেহতীয়া টেব</translation>
 <translation id="4154277373259957087">Chromeএ এতিয়া পৰিশোধ পদ্ধতি পূৰ কৰাৰ আগতে এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব। আপুনি <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="415440494507469262">তুলনাৰ তালিকাত টেব যোগ দিয়ক</translation>
 <translation id="4159784952369912983">বেঙুনীয়া</translation>
@@ -4139,6 +4138,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" />এ এই মুহূৰ্তত এই অনুৰোধটো নিয়ন্ত্ৰণ কৰিব নোৱাৰে।</translation>
 <translation id="7599089013883397081">ডাউনল’ড কৰাৰ সময় উকলিছে</translation>
 <translation id="7602868996817972616">Googleক এই পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
+<translation id="7606123685356405076">Gemini 3 মডেল</translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> মান পৰিসৰৰ বাহিৰৰ।</translation>
 <translation id="761261689936461781">মোটা</translation>
 <translation id="7613889955535752492">ম্যাদ উকলিব: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

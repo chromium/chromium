@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1692622044604477956">चित्रपटाच्या सूची आणि चित्रपटगृहाचे शोटाइम</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:<ph name="END_BOLD" /> Chrome हे चार आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो. Chrome सेटिंग्जमध्ये, Chrome ने साइटसह शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉकदेखील करू शकता आणि जाहिरातीचे विषय कधीही बंद करू शकता.</translation>
-<translation id="1697808683313379647">हे पर्याय देऊ करण्यासाठी Google चेकआउट पेजवरील माहिती आणि इतर सुसंबद्ध डेटा वापरते.</translation>
 <translation id="1699651774646344471">तुम्ही आता तुमच्या Google खाते मधील पत्ता वापरू शकता</translation>
 <translation id="1700542542921501212">तुम्ही वेबवर शोधण्यासाठी <ph name="SEARCH_ENGINE_NAME" /> वापरू शकता.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">तुमचे डीफॉल्ट शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="2991571918955627853">ही वेबसाइट HSTS वापरत असल्यामुळे तुम्ही <ph name="SITE" /> आत्ता पाहू शकत नाही. नेटवर्क एरर आणि आक्रमण शक्यतो तात्पुरती असतात, त्यामुळे हे पेज नंतर पाहता येईल.</translation>
 <translation id="2991865971341174470">हे तुम्हीच आहात याची पडताळणी करा, जेणेकरून Chrome ला तुमची पेमेंट माहिती भरता येईल.</translation>
-<translation id="2995010188916335277">हे पर्याय देऊ करण्यासाठी Google चेकआउट पेजवरील माहिती आणि इतर सुसंबद्ध डेटा वापरते. ऑटोफिलमध्ये नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा.</translation>
 <translation id="2995121550202354573">सर्व अतिथी प्रोफाइलसाठी वापरा</translation>
 <translation id="2995517112308048736">फाइलचा आकार:</translation>
 <translation id="299990983510665749">हॅचबॅक</translation>
@@ -1986,6 +1984,7 @@
 <translation id="4152495263075154876">आता विकत घ्या, नंतर पैसे द्या यासंबंधित प्रगतीची स्क्रीन बंद आहे.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टॅब}other{# टॅब}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> ही HTTPS सह सुरक्षित कनेक्शनला सपोर्ट करत नाही</translation>
+<translation id="4153858337812834972">सर्वात अलीकडील टॅब</translation>
 <translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
 <translation id="415440494507469262">तुलना सारणीमध्ये टॅप जोडा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
@@ -4145,6 +4144,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> सध्या ही विनंती हाताळण्यात अक्षम आहे.</translation>
 <translation id="7599089013883397081">डाउनलोड करणे टाइम आउट झाले</translation>
 <translation id="7602868996817972616">Google ला या पेजबद्दल विचारा</translation>
+<translation id="7606123685356405076">Gemini 3 मॉडेल</translation>
 <translation id="7610193165460212391">मूल्य <ph name="VALUE" /> श्रेणीच्या बाहेर आहे.</translation>
 <translation id="761261689936461781">जाड</translation>
 <translation id="7613889955535752492">कालबाह्य: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

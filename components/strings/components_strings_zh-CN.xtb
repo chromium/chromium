@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">别名</translation>
 <translation id="1692622044604477956">上映影片与放映时间</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可以随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题功能。</translation>
-<translation id="1697808683313379647">这些选项是 Google 依据结账页中的信息和其他相关数据提供的。</translation>
 <translation id="1699651774646344471">您现在可以使用您 Google 账号中的地址</translation>
 <translation id="1700542542921501212">您可以使用 <ph name="SEARCH_ENGINE_NAME" /> 在网络上搜索。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">管理您的默认搜索引擎和网站搜索</translation>
 <translation id="2991571918955627853">您目前无法访问 <ph name="SITE" />，因为此网站使用了 HSTS。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="2991865971341174470">您需要验证身份，Chrome 才能填充您的付款信息。</translation>
-<translation id="2995010188916335277">Google 会根据结账页中的信息和其他相关数据来提供这些选项。如要隐藏“先买后付”自动填充选项，请前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="2995121550202354573">用于所有访客资料</translation>
 <translation id="2995517112308048736">文件大小：</translation>
 <translation id="299990983510665749">掀背车</translation>
@@ -1983,6 +1981,7 @@
 <translation id="4152495263075154876">“先买后付”进度界面已关闭。</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> 不支持 HTTPS 安全连接</translation>
+<translation id="4153858337812834972">最近打开的标签页</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
 <translation id="415440494507469262">向比较表格添加标签页</translation>
 <translation id="4159784952369912983">紫色</translation>
@@ -2049,7 +2048,7 @@
 <translation id="4242981939686657948">如需更强大的浏览记录搜索方式，请开启</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="4246517972543675653">出国留学</translation>
-<translation id="4250343410682686342">“先买后付”错误界面已以最大高度显示。</translation>
+<translation id="4250343410682686342">“先买后付”错误界面已以标准高度显示。</translation>
 <translation id="4250431568374086873">您与此网站之间建立的连接并非完全安全</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -4140,6 +4139,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
 <translation id="7599089013883397081">下载超时</translation>
 <translation id="7602868996817972616">问问 Google 有关此页面的问题</translation>
+<translation id="7606123685356405076">Gemini 3 模型</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>

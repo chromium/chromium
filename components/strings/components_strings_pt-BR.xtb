@@ -435,7 +435,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1689333818294560261">Apelido</translation>
 <translation id="1692622044604477956">Listas de filmes e horários de sessões</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: o Chrome exclui automaticamente temas com mais de quatro semanas. Enquanto você navega, um tema pode reaparecer na lista. Também é possível bloquear temas que você não quer que o Chrome compartilhe com sites e desativá-los quando quiser nas configurações do Chrome.</translation>
-<translation id="1697808683313379647">O Google usa informações da página de finalização da compra e outros dados relevantes para oferecer essas alternativas.</translation>
 <translation id="1699651774646344471">Agora você pode usar endereços da sua Conta do Google</translation>
 <translation id="1700542542921501212">Você pode usar <ph name="SEARCH_ENGINE_NAME" /> para pesquisar na Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="299122504639061328">Gerencie a pesquisa no site e o mecanismo de pesquisa padrão</translation>
 <translation id="2991571918955627853">Você não pode visitar <ph name="SITE" /> agora, porque o site usa HSTS. Erros de rede e ataques são geralmente temporários. Esta página provavelmente funcionará mais tarde.</translation>
 <translation id="2991865971341174470">Confirme sua identidade no Chrome para preencher suas informações de pagamento.</translation>
-<translation id="2995010188916335277">O Google usa informações da página de finalização da compra e outros dados relevantes para oferecer essas alternativas. Para ocultar as opções de parcelamento no preenchimento automático, acesse as <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Usar para todos os perfis de visitante</translation>
 <translation id="2995517112308048736">Tamanho do arquivo:</translation>
 <translation id="299990983510665749">Carros hatch</translation>
@@ -1987,6 +1985,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4152495263075154876">A tela de progresso da opção "Compre agora, pague depois" foi fechada.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 guia}one{# guias}other{# guias}}</translation>
 <translation id="4153446078232988116">O site <ph name="SITE" /> não pode fazer uma conexão segura com HTTPS</translation>
+<translation id="4153858337812834972">Guias mais recentes</translation>
 <translation id="4154277373259957087">O Chrome vai confirmar sua identidade antes de preencher as formas de pagamento. Você pode atualizar isso a qualquer momento nas <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Adicionar guia à tabela de comparação</translation>
 <translation id="4159784952369912983">Roxo</translation>
@@ -2310,7 +2309,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="469028408546145398">Botão "Fechar janelas anônimas". Ative para fechar todas as janelas anônimas abertas</translation>
 <translation id="4691093235373904540">Serviços de telhadista</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
-<translation id="4695702626068620848"><ph name="KEYWORD" /> - Perguntar ao <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" />: perguntar ao <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Lutas</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
@@ -4145,6 +4144,7 @@ Mais detalhes:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue atender a esta solicitação no momento.</translation>
 <translation id="7599089013883397081">O tempo de download expirou</translation>
 <translation id="7602868996817972616">Perguntar ao Google sobre esta página</translation>
+<translation id="7606123685356405076">Modelos do Gemini 3</translation>
 <translation id="7610193165460212391">O valor não corresponde ao período <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Grosso</translation>
 <translation id="7613889955535752492">Data de expiração: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Псеўданім</translation>
 <translation id="1692622044604477956">Расклад паказаў у тэатрах і кінатэатрах</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Як кіраваць сваімі данымі.<ph name="END_BOLD" /> Chrome аўтаматычна выдаляе тэмы, дададзеныя больш чым 4 тыдні таму назад. Па меры прагляду сайтаў у інтэрнэце пэўныя тэмы могуць з’яўляцца ў спісе зноў. У наладах Chrome можна ў любы час забараніць браўзеру абагульваць пэўныя тэмы з сайтамі або наогул адключыць тэмы рэкламы.</translation>
-<translation id="1697808683313379647">Google выкарыстоўвае інфармацыю са старонкі афармлення заказу і іншыя адпаведныя даныя, каб прапанаваць гэтыя варыянты.</translation>
 <translation id="1699651774646344471">Цяпер вы можаце выкарыстоўваць адрасы з Уліковага запісу Google</translation>
 <translation id="1700542542921501212">Вы можаце выкарыстоўваць пошукавую сістэму "<ph name="SEARCH_ENGINE_NAME" />", каб знаходзіць інфармацыю ў інтэрнэце.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1247,7 +1246,6 @@
 <translation id="299122504639061328">Кіраваць стандартнай пошукавай сістэмай і пошукам на сайце</translation>
 <translation id="2991571918955627853">Наведаць сайт <ph name="SITE" /> зараз нельга, паколькі ён выкарыстоўвае механізм HSTS. Звычайна сеткавыя памылкі і атакі – часовая з’ява, таму гэта старонка будзе, хутчэй за ўсё, працаваць пазней.</translation>
 <translation id="2991865971341174470">Пацвердзіце сваю асобу, каб запоўніць плацежную інфармацыю ў Chrome.</translation>
-<translation id="2995010188916335277">Google выкарыстоўвае інфармацыю са старонкі афармлення заказу і іншыя адпаведныя даныя, каб прапанаваць гэтыя варыянты. Каб схаваць параметры аплаты ў растэрміноўку ў аўтазапаўненні, адкрыйце <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Выкарыстоўваць для ўсіх гасцявых профіляў</translation>
 <translation id="2995517112308048736">Памер файла:</translation>
 <translation id="299990983510665749">Аўтамабілі з кузавам "хэтчбэк"</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">Экран прагрэсу куплі ў растэрміноўку закрыты.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="4153446078232988116">Сайт <ph name="SITE" /> не падтрымлівае абароненае падключэнне па пратаколе HTTPS</translation>
+<translation id="4153858337812834972">Нядаўнія ўкладкі</translation>
 <translation id="4154277373259957087">Цяпер Chrome уносіць даныя спосабаў аплаты толькі пасля спраўджання асобы. Калі вы хочаце змяніць гэтыя параметры, перайдзіце ў <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Дадаць укладку ў табліцу параўнання</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
@@ -4144,6 +4143,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> пакуль што не можа апрацаваць гэты запыт.</translation>
 <translation id="7599089013883397081">Час чакання спампоўвання перавышаны</translation>
 <translation id="7602868996817972616">Спытаць Google пра гэту старонку</translation>
+<translation id="7606123685356405076">Мадэлі Gemini 3</translation>
 <translation id="7610193165460212391">Значэнне параметра знаходзіцца па-за межамі дыяпазону (<ph name="VALUE" />).</translation>
 <translation id="761261689936461781">Тоўстыя рысы</translation>
 <translation id="7613889955535752492">Да: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

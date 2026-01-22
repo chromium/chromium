@@ -435,7 +435,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1692622044604477956">Film listings and cinema showtimes</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. You can also block topics that you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.</translation>
-<translation id="1697808683313379647">Google uses information from the checkout page and other relevant data to offer these options.</translation>
 <translation id="1699651774646344471">You can now use addresses from your Google Account</translation>
 <translation id="1700542542921501212">You can use <ph name="SEARCH_ENGINE_NAME" /> to search the web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="299122504639061328">Manage your default search engine and site search</translation>
 <translation id="2991571918955627853">You cannot visit <ph name="SITE" /> right now because the website uses HSTS. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="2991865971341174470">Verify it's you so Chrome can fill in your payment info.</translation>
-<translation id="2995010188916335277">Google uses information from the checkout page and other relevant data to offer these options. To hide pay later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Use for all guest profiles</translation>
 <translation id="2995517112308048736">File size:</translation>
 <translation id="299990983510665749">Hatchbacks</translation>
@@ -1987,6 +1985,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4152495263075154876">Buy-now, pay-later progress screen is closed.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> doesn't support a secure connection with HTTPS</translation>
+<translation id="4153858337812834972">Most recent tabs</translation>
 <translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Add tab to comparison table</translation>
 <translation id="4159784952369912983">Purple</translation>
@@ -4145,6 +4144,7 @@ Additional details:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7602868996817972616">Ask Google about this page</translation>
+<translation id="7606123685356405076">Gemini 3 models</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Thick</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Ləqəb</translation>
 <translation id="1692622044604477956">Film Siyahıları və Teatr Seansları</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Chrome 4 həftədən köhnə mövzuları avtomatik silir. Baxmağa davam etdikcə mövzu siyahıda yenidən görünə bilər. Həmçinin Chrome-un saytlarla paylaşmasını istəmədiyiniz mövzuları bloklaya və istənilən vaxt Chrome ayarlarında reklam mövzularını deaktiv edə bilərsiniz.</translation>
-<translation id="1697808683313379647">Google bu seçimləri təklif etmək üçün ödəniş səhifəsindən və digər müvafiq datadan istifadə edir.</translation>
 <translation id="1699651774646344471">Artıq Google Hesabındakı ünvanları istifadə edə bilərsiniz</translation>
 <translation id="1700542542921501212">Vebdə axtarış üçün <ph name="SEARCH_ENGINE_NAME" /> istifadə edə bilərsiniz.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Defolt axtarış sisteminizi və sayt axtarışınızı idarə edin</translation>
 <translation id="2991571918955627853">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə HSTS istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, bu səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="2991865971341174470">Chrome-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
-<translation id="2995010188916335277">Google bu seçimləri təklif etmək üçün ödəniş səhifəsindən və digər müvafiq datadan istifadə edir. Avtomatik doldurmada sonra ödəyin seçimlərini gizlətmək üçün <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> bölməsinə keçin.</translation>
 <translation id="2995121550202354573">Bütün Qonaq profilləri üçün istifadə edin</translation>
 <translation id="2995517112308048736">Fayl ölçüsü:</translation>
 <translation id="299990983510665749">Hetçbeklər</translation>
@@ -1983,6 +1981,7 @@
 <translation id="4152495263075154876">"İndi al, sonra ödə" gedişat ekranı bağlanıb.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 panel}other{# panel}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> HTTPS ilə güvənli bağlantını dəstəkləmir</translation>
+<translation id="4153858337812834972">Ən son tablar</translation>
 <translation id="4154277373259957087">Chrome ödəniş metodlarını doldurmazdan əvvəl kimliyinizi doğrulayacaq. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> bölməsində yeniləyə bilərsiniz.</translation>
 <translation id="415440494507469262">Müqayisə cədvəlinə tab əlavə edin</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
@@ -4140,6 +4139,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> hal-hazırda bu tələbi idarə edə bilmir.</translation>
 <translation id="7599089013883397081">Endirmə vaxtı bitdi</translation>
 <translation id="7602868996817972616">Bu səhifə haqqında Google-dan soruşun</translation>
+<translation id="7606123685356405076">Gemini 3 modelləri</translation>
 <translation id="7610193165460212391">Dəyər <ph name="VALUE" /> aralığından kənardır.</translation>
 <translation id="761261689936461781">Qalın</translation>
 <translation id="7613889955535752492">Bitmə tarixi: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

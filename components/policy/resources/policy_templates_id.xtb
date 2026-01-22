@@ -2325,7 +2325,7 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
-<translation id="2571353268726025696">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+<translation id="2571353268726025696">Kebijakan ini disediakan sebagai cara untuk menonaktifkan fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
 
 Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
 

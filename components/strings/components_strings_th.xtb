@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="1692622044604477956">รายชื่อหนังและเวลาฉาย</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />วิธีที่คุณสามารถจัดการข้อมูลของตน:<ph name="END_BOLD" /> Chrome จะลบหัวข้อที่เก่ากว่า 4 สัปดาห์ออกโดยอัตโนมัติ ในขณะที่คุณท่องเว็บไปเรื่อยๆ บางหัวข้ออาจกลับมาปรากฏในรายการอีก นอกจากนี้ คุณยังสามารถบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ และปิดหัวข้อโฆษณาได้ทุกเมื่อในการตั้งค่า Chrome</translation>
-<translation id="1697808683313379647">Google ใช้ข้อมูลจากหน้าชำระเงินและข้อมูลอื่นๆ ที่เกี่ยวข้องเพื่อเสนอตัวเลือกเหล่านี้</translation>
 <translation id="1699651774646344471">ตอนนี้คุณใช้ที่อยู่จากบัญชี Google ได้แล้ว</translation>
 <translation id="1700542542921501212">คุณใช้ <ph name="SEARCH_ENGINE_NAME" /> เพื่อค้นหาเว็บได้</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">จัดการเครื่องมือค้นหาและการค้นหาเว็บไซต์เริ่มต้น</translation>
 <translation id="2991571918955627853">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้ HSTS โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
 <translation id="2991865971341174470">ยืนยันว่าเป็นคุณจริงๆ เพื่อให้ Chrome กรอกข้อมูลการชำระเงินได้</translation>
-<translation id="2995010188916335277">Google ใช้ข้อมูลจากหน้าชำระเงินและข้อมูลอื่นๆ ที่เกี่ยวข้องเพื่อเสนอตัวเลือกเหล่านี้ หากต้องการซ่อนตัวเลือกการชำระเงินภายหลังในการป้อนข้อความอัตโนมัติ ให้ไปที่<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2995121550202354573">ใช้สำหรับโปรไฟล์ผู้มาเยือนทั้งหมด</translation>
 <translation id="2995517112308048736">ขนาดไฟล์:</translation>
 <translation id="299990983510665749">รถยนต์ห้าประตู</translation>
@@ -1986,6 +1984,7 @@
 <translation id="4152495263075154876">ปิดหน้าจอความคืบหน้าของ "ซื้อก่อน จ่ายทีหลัง" อยู่</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> ไม่รองรับการเชื่อมต่อที่ปลอดภัยด้วย HTTPS</translation>
+<translation id="4153858337812834972">แท็บล่าสุด</translation>
 <translation id="4154277373259957087">ตอนนี้ Chrome จะยืนยันตัวตนของคุณก่อนกรอกวิธีการชําระเงิน คุณอัปเดตข้อมูลนี้ได้ทุกเมื่อใน<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /></translation>
 <translation id="415440494507469262">เพิ่มแท็บลงในตารางเปรียบเทียบ</translation>
 <translation id="4159784952369912983">ม่วง</translation>
@@ -4144,6 +4143,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
 <translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
 <translation id="7602868996817972616">ถาม Google เกี่ยวกับหน้านี้</translation>
+<translation id="7606123685356405076">โมเดล Gemini 3</translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
 <translation id="761261689936461781">หนา</translation>
 <translation id="7613889955535752492">หมดอายุ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -127,7 +127,7 @@
 <translation id="5339733443032484186">最後のタブ</translation>
 <translation id="5380159289133845234">重複するタブをアーカイブする</translation>
 <translation id="5446043142172831860">タブを削除するとグループから退出します</translation>
-<translation id="5465437530117042974">タブのボトムシートの変更が閉じられました。</translation>
+<translation id="5465437530117042974">タブのボトムシートが閉じられました。</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択</translation>
 <translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{追加できるファイル、タブ、または画像は最大 <ph name="LIMIT_COUNT_ONE" /> 個です}other{追加できるファイル、タブ、または画像は最大 <ph name="LIMIT_COUNT_MANY" /> 個です}}</translation>

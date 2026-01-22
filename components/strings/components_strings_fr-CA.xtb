@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1692622044604477956">Films à l'affiche et horaires de représentations</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Comment gérer vos données :<ph name="END_BOLD" /> Chrome supprime automatiquement les sujets ayant plus de quatre semaines. Au fil de votre navigation sur le Web, un sujet peut réapparaître dans la liste. Vous pouvez également bloquer les sujets que vous ne souhaitez pas que Chrome partage avec des sites et désactiver les sujets d'annonces à tout moment dans les paramètres de Chrome.</translation>
-<translation id="1697808683313379647">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options.</translation>
 <translation id="1699651774646344471">Vous pouvez maintenant utiliser les adresses de votre compte Google</translation>
 <translation id="1700542542921501212">Vous pouvez utiliser <ph name="SEARCH_ENGINE_NAME" /> pour effectuer une recherche sur le Web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Gérer votre moteur de recherche par défaut et la recherche de sites</translation>
 <translation id="2991571918955627853">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car il utilise le protocole HSTS. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
 <translation id="2991865971341174470">Vérifiez qu'il s'agit bien de vous afin que Chrome puisse remplir vos infos de paiement.</translation>
-<translation id="2995010188916335277">Google utilise les informations de la page de paiement et d'autres données pertinentes pour proposer ces options. Pour masquer les options de paiement différé dans le remplissage automatique, accédez aux <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Utiliser pour tous les profils d'invités</translation>
 <translation id="2995517112308048736">Taille du fichier :</translation>
 <translation id="299990983510665749">Véhicules bicorps</translation>
@@ -1987,6 +1985,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4152495263075154876">L'écran de progression Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> ne prend pas en charge une connexion sécurisée avec HTTPS</translation>
+<translation id="4153858337812834972">Onglets les plus récents</translation>
 <translation id="4154277373259957087">Chrome va maintenant vérifier qu'il s'agit bien de vous avant de renseigner les modes de paiement. Vous pouvez le mettre à jour à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Ajouter un onglet au tableau de comparaison</translation>
 <translation id="4159784952369912983">Mauve</translation>
@@ -4144,6 +4143,7 @@ Détails supplémentaires :
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ne parvient pas à traiter la demande pour le moment.</translation>
 <translation id="7599089013883397081">Le téléchargement a dépassé le délai</translation>
 <translation id="7602868996817972616">Poser des questions à Google à propos de cette page</translation>
+<translation id="7606123685356405076">Modèles de Gemini 3</translation>
 <translation id="7610193165460212391">La valeur « <ph name="VALUE" /> » est hors limites.</translation>
 <translation id="761261689936461781">Épais</translation>
 <translation id="7613889955535752492">Expiration : <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

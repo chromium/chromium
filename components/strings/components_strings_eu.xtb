@@ -435,7 +435,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1689333818294560261">Goitizena</translation>
 <translation id="1692622044604477956">Filmen zerrendak eta antzokiko ikuskizunen ordutegia</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Lau aste baino gehiago dituzten gaiak automatikoki ezabatzen ditu Chrome-k. Arakatzen jarraitu ahala, baliteke gai bat berriro agertzea zerrendan. Era berean, Chrome-k webguneekin partekatzerik nahi ez duzun gaiak blokea ditzakezu, eta iragarkien gaiak desaktibatu. Horretarako, joan Chrome-ren ezarpenetara.</translation>
-<translation id="1697808683313379647">Ordainketa-prozesuaren orriko informazioa eta bestelako datu garrantzitsuak erabiltzen ditu Google-k aukera horiek eskaintzeko.</translation>
 <translation id="1699651774646344471">Orain, Google-ko kontuko helbideak erabil ditzakezu</translation>
 <translation id="1700542542921501212">Sarean bilaketak egiteko, <ph name="SEARCH_ENGINE_NAME" /> erabil dezakezu.</translation>
 <translation id="1702815194757674443">ROC 16K (Txina)</translation>
@@ -745,7 +744,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2184405333245229118">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
 <translation id="218940509700321686">Komaz bereizitako balioak</translation>
-<translation id="2191980191135734720">Desblokeatu pantaila hurrengo estekan, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
+<translation id="2191980191135734720">Desblokeatu pantaila hurrengo urratsean, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2198183835992354675">Bidaiari ezagunaren zenbakia</translation>
 <translation id="2198215508485017216">Ustekabeko errore bat gertatu da. <ph name="BEGIN_LINK" />Lortu Drive-ko kargei buruzko informazio gehiago<ph name="END_LINK" /></translation>
@@ -1246,7 +1245,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="299122504639061328">Kudeatu bilatzaile eta webgune-bilaketa lehenetsiak</translation>
 <translation id="2991571918955627853">Une honetan ezin zara joan <ph name="SITE" /> webgunera, webguneak HSTS darabilelako. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="2991865971341174470">Egiaztatu zu zarela Chrome-k zure ordainketa-informazioa betetzeko.</translation>
-<translation id="2995010188916335277">Ordainketa-prozesuaren orriko informazioa eta bestelako datu garrantzitsuak erabiltzen ditu Google-k aukera horiek eskaintzeko. Betetze automatikoan geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> atalera.</translation>
 <translation id="2995121550202354573">Erabili gonbidatu-profil guztietarako</translation>
 <translation id="2995517112308048736">Fitxategiaren tamaina:</translation>
 <translation id="299990983510665749">Hatchback-ak</translation>
@@ -1983,6 +1981,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4152495263075154876">Epekako ordainketaren garapenaren pantaila itxita dago.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Fitxa bat}other{# fitxa}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> webguneak ez du onartzen HTTPS bidezko konexio segururik</translation>
+<translation id="4153858337812834972">Azkenaldiko fitxak</translation>
 <translation id="4154277373259957087">Orain, Chrome-k zu zarela egiaztatuko du ordainketa-metodoak bete baino lehen. Hori eguneratzeko, joan <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> atalera.</translation>
 <translation id="415440494507469262">Gehitu fitxa konparazio-taulan</translation>
 <translation id="4159784952369912983">Morea</translation>
@@ -4139,6 +4138,7 @@ Xehetasun gehiago:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> webguneak ezin du gauzatu eskaera.</translation>
 <translation id="7599089013883397081">Deskargatzeko denbora-muga gainditu da</translation>
 <translation id="7602868996817972616">Galdetu Google-ri orri honi buruz</translation>
+<translation id="7606123685356405076">Gemini 3-ren ereduak</translation>
 <translation id="7610193165460212391">Balioa barrutitik kanpo dago: <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Lodia</translation>
 <translation id="7613889955535752492">Iraungitze-data: <ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>

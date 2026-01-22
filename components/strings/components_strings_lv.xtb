@@ -435,7 +435,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1689333818294560261">Apzīmējums</translation>
 <translation id="1692622044604477956">Filmu seansi un teātru programmas</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek automātiski dzēstas tēmas, kas ir vecākas par četrām nedēļām. Turpinot pārlūkošanu, tēma var tikt atkārtoti iekļauta sarakstā. Chrome iestatījumos jebkurā brīdī varat bloķēt tēmas, ko nevēlaties kopīgot ar vietnēm, un izslēgt reklāmu tēmas.</translation>
-<translation id="1697808683313379647">Lai piedāvātu šīs iespējas, Google izmanto informāciju no norēķināšanās lapas un citus atbilstošus datus.</translation>
 <translation id="1699651774646344471">Tagad varat izmantot adreses no sava Google konta.</translation>
 <translation id="1700542542921501212">Varat izmantot meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" />, lai veiktu meklēšanu tīmeklī.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="299122504639061328">Pārvaldīt noklusējuma meklētājprogrammu un meklēšanu vietnēs</translation>
 <translation id="2991571918955627853">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tā izmanto HSTS. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, visticamāk, šī lapa vēlāk darbosies.</translation>
 <translation id="2991865971341174470">Verificējiet savu identitāti, lai Chrome varētu ievadīt jūsu maksājumu informāciju.</translation>
-<translation id="2995010188916335277">Lai piedāvātu šīs iespējas, Google izmanto informāciju no norēķināšanās lapas un citus atbilstošus datus. Lai, izmantojot automātisko aizpildi, paslēptu iespējas maksāšanai vēlāk, pārejiet uz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Izmantot visiem viesu profiliem</translation>
 <translation id="2995517112308048736">Faila lielums:</translation>
 <translation id="299990983510665749">Hečbeki</translation>
@@ -1985,6 +1983,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4152495263075154876">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” norises ekrāns ir aizvērts.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> neatbalsta drošu savienojumu, izmantojot protokolu HTTPS</translation>
+<translation id="4153858337812834972">Pēdējās izmantotās cilnes</translation>
 <translation id="4154277373259957087">Turpmāk pārlūkā Chrome pirms maksājuma veida informācijas aizpildīšanas tiks pārbaudīta jūsu identitāte. To varat jebkurā laikā atspējot sadaļā <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Pievienot cilni salīdzinājuma tabulai</translation>
 <translation id="4159784952369912983">Violets</translation>
@@ -4143,6 +4142,7 @@ Papildu informācija:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> pašlaik nevar apstrādāt šo pieprasījumu.</translation>
 <translation id="7599089013883397081">Lejupielādei iestājās noildze</translation>
 <translation id="7602868996817972616">Jautāt Google par šo lapu</translation>
+<translation id="7606123685356405076">Gemini 3 modeļi</translation>
 <translation id="7610193165460212391">Vērtība pārsniedz diapazonu: <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Plats</translation>
 <translation id="7613889955535752492">Derīguma termiņš: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1692622044604477956">Filme și programe de cinema</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. În plus, poți să blochezi subiectele pe care nu vrei să le trimită Chrome la site-uri și să dezactivezi oricând subiectele anunțurilor din setările Chrome.</translation>
-<translation id="1697808683313379647">Pentru a oferi aceste opțiuni, Google folosește informații din pagina de finalizare a achiziției și alte date relevante.</translation>
 <translation id="1699651774646344471">Acum poți folosi adrese din Contul Google</translation>
 <translation id="1700542542921501212">Poți folosi <ph name="SEARCH_ENGINE_NAME" /> pentru a căuta pe web.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Gestionează opțiunile prestabilite pentru motoarele de căutare și căutarea pe site</translation>
 <translation id="2991571918955627853">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește HSTS. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
 <translation id="2991865971341174470">Confirmă-ți identitatea pentru ca Google Chrome să-ți completeze informațiile de plată.</translation>
-<translation id="2995010188916335277">Ca să ofere aceste opțiuni, Google folosește informații din pagina de finalizare a achiziției și alte date relevante. Ca să ascunzi opțiunile de plată mai târziu în completarea automată, accesează <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Folosește pentru toate profilurile de invitați</translation>
 <translation id="2995517112308048736">Dimensiunea fișierului:</translation>
 <translation id="299990983510665749">Hatchbackuri</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">Ecranul de progres Cumpără acum, plătește mai târziu este închis.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{O filă}few{# file}other{# de file}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> nu acceptă o conexiune securizată cu HTTPS</translation>
+<translation id="4153858337812834972">Cele mai recente file</translation>
 <translation id="4154277373259957087">Chrome îți va confirma identitatea înainte să completeze metodele de plată. Poți actualiza oricând opțiunea în <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Adaugă o filă în tabelul de comparație</translation>
 <translation id="4159784952369912983">Mov</translation>
@@ -4145,6 +4144,7 @@ Detalii suplimentare:
 <translation id="759889825892636187">Momentan, <ph name="HOST_NAME" /> nu poate procesa această solicitare.</translation>
 <translation id="7599089013883397081">Descărcarea a expirat</translation>
 <translation id="7602868996817972616">Întreabă Google despre această pagină</translation>
+<translation id="7606123685356405076">Modelele Gemini 3</translation>
 <translation id="7610193165460212391">Valoarea este în afara intervalului <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Groasă</translation>
 <translation id="7613889955535752492">Expiră pe: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

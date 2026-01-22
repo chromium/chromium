@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="1692622044604477956">Филми и часове на кинопрожекции</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Също така можете да блокирате темите, които не искате Chrome да споделя със сайтовете, и да изключвате рекламни теми по всяко време от настройките на браузъра.</translation>
-<translation id="1697808683313379647">Google използва информация от страницата за плащане и други подходящи данни, за да предлага тези опции.</translation>
 <translation id="1699651774646344471">Вече можете да използвате адреси от профила си в Google</translation>
 <translation id="1700542542921501212">Можете да използвате <ph name="SEARCH_ENGINE_NAME" />, за да търсите в мрежата.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Управление на търсещата машина и настройките ви за търсене в сайтовете</translation>
 <translation id="2991571918955627853">В момента не можете да посетите <ph name="SITE" />, тъй като уебсайтът използва HSTS. Обикновено грешките в мрежата и атаките срещу нея са временни, така че тази страница вероятно ще работи по-късно.</translation>
 <translation id="2991865971341174470">Потвърдете, че това сте вие, за да може Chrome да попълни данните ви за плащане.</translation>
-<translation id="2995010188916335277">Google използва информация от страницата за плащане и други подходящи данни, за да предлага тези опции. За да скриете опциите за плащане по-късно във функцията за автоматично попълване, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Използване за всички потребителски профили на гост</translation>
 <translation id="2995517112308048736">Размер на файла:</translation>
 <translation id="299990983510665749">Хечбек</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">Екранът за напредъка на „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> не поддържа защитена връзка с HTTPS</translation>
+<translation id="4153858337812834972">Най-скорошни раздели</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="415440494507469262">Добавяне на раздел към таблицата за сравнение</translation>
 <translation id="4159784952369912983">лилаво</translation>
@@ -4145,6 +4144,7 @@
 <translation id="759889825892636187">Понастоящем <ph name="HOST_NAME" /> не може да обработи тази заявка.</translation>
 <translation id="7599089013883397081">Времето за изчакване при изтегляне изтече</translation>
 <translation id="7602868996817972616">Попитайте Google за тази страница</translation>
+<translation id="7606123685356405076">Модели на Gemini 3</translation>
 <translation id="7610193165460212391">Стойността е извън обхват <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебела</translation>
 <translation id="7613889955535752492">Валидна до: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="1692622044604477956">Филмски репертоари и театарски претстави</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како може да управувате со вашите податоци:<ph name="END_BOLD" /> Chrome автоматски ги брише темите што се постари од 4 седмици. Со понатамошното прелистување, некоја тема може одново да се појави на списокот. Може и да ги блокирате темите што не сакате Chrome да ги споделува со сајтови и да ги исклучите темите за реклами во секое време во поставките за Chrome.</translation>
-<translation id="1697808683313379647">За да ги понуди опцииве, Google ги користи податоците од страницата за наплата, а и други релевантни податоци.</translation>
 <translation id="1699651774646344471">Сега може да користите адреси од вашата сметка на Google</translation>
 <translation id="1700542542921501212">Може да користите <ph name="SEARCH_ENGINE_NAME" /> за пребарување на интернет.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Управувајте со стандардниот пребарувач и пребарувањето сајтови</translation>
 <translation id="2991571918955627853">Не може да го посетите <ph name="SITE" /> во моментов затоа што веб-сајтот користи HSTS. Грешките на мрежата и нападите обично се привремени, така што страницава веројатно ќе работи подоцна.</translation>
 <translation id="2991865971341174470">Потврдете го вашиот идентитет за да може Chrome да ги пополни вашите податоци за плаќање.</translation>
-<translation id="2995010188916335277">За да ги понуди опцииве, Google ги користи податоците од страницата за наплата, а и други релевантни податоци. За да ги скриете опциите за „Платете подоцна“ во „Автоматско пополнување“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Користи за сите гостински профили</translation>
 <translation id="2995517112308048736">Големина на датотека:</translation>
 <translation id="299990983510665749">Хечбек автомобили</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">Екранот за напредокот на „Купете сега, платете подоцна“ е затворен.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> не поддржува безбедна врска со HTTPS</translation>
+<translation id="4153858337812834972">Најнови картички</translation>
 <translation id="4154277373259957087">Сега Chrome ќе го потврди вашиот идентитет пред да ги пополни начините на плаќање. Ова може да го ажурирате во секое време во <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Додајте картичка во табела за споредба</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
@@ -4144,6 +4143,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> моментално не може да го изврши барањето.</translation>
 <translation id="7599089013883397081">Времето за преземање истече</translation>
 <translation id="7602868996817972616">Прашајте го Google за страницава</translation>
+<translation id="7606123685356405076">Модели на Gemini 3</translation>
 <translation id="7610193165460212391">Вредноста е надвор од опсегот <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебело</translation>
 <translation id="7613889955535752492">Истекува: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">عرفی نام</translation>
 <translation id="1692622044604477956">مووی کی فہرستیں اور تھیٹر شو کے اوقات</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> Chrome ‏4 ہفتوں سے زیادہ پرانے موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ آپ ان موضوعات کو بھی مسدود کر سکتے ہیں جن کا آپ چاہتے ہیں کہ Chrome سائٹس کے ساتھ اشتراک نہ کرے اور Chrome کی ترتیبات میں کسی بھی وقت اشتہار کے موضوعات کو بند کر سکتے ہیں۔</translation>
-<translation id="1697808683313379647">‏ان اختیارات کی پیشکش کرنے کیلئے، Google چیک آؤٹ صفحے اور دیگر متعلقہ ڈیٹا کی معلومات کا استعمال کرتا ہے۔</translation>
 <translation id="1699651774646344471">‏اب آپ اپنے Google اکاؤنٹ پر محفوظ پتوں کا استعمال کر سکتے ہیں</translation>
 <translation id="1700542542921501212">ویب پر تلاش کرنے کیلئے آپ <ph name="SEARCH_ENGINE_NAME" /> کو استعمال کر سکتے ہیں۔</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">اپنے ڈیفالٹ سرچ انجن اور سائٹ کی تلاش کا نظم کریں</translation>
 <translation id="2991571918955627853">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے کیونکہ ویب سائٹ HSTS کا استعمال کرتی ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="2991865971341174470">‏تصدیق کریں کہ یہ آپ ہی ہیں تاکہ Chrome آپ کی ادائیگی کی معلومات کو پُر کر سکے۔</translation>
-<translation id="2995010188916335277">‏ان اختیارات کی پیشکش کرنے کیلئے، Google چیک آؤٹ صفحے اور دیگر متعلقہ ڈیٹا کی معلومات کا استعمال کرتا ہے۔ آٹو فل میں بعد میں ادائیگی کے اختیارات کو چھپانے کے لیے، <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> پر جائیں۔</translation>
 <translation id="2995121550202354573">تمام مہمان پروفائلز کے لیے استعمال کریں</translation>
 <translation id="2995517112308048736">فائل سائز:</translation>
 <translation id="299990983510665749">ہیچ بیکس</translation>
@@ -1988,6 +1986,7 @@
 <translation id="4152495263075154876">ابھی خریدیں، ادائیگی بعد میں کریں کی پیشرفت اسکرین بند ہے۔</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="4153446078232988116">‏<ph name="SITE" /> HTTPS کے ساتھ محفوظ کنکشن کا تعاون نہیں کرتی ہے</translation>
+<translation id="4153858337812834972">حالیہ ترین ٹیبز</translation>
 <translation id="4154277373259957087">‏Chrome اب ادائیگی کے طریقے پُر کرنے سے پہلے تصدیق کرے گا کہ یہ آپ ہی ہیں۔ آپ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> میں اسے کسی بھی وقت اپ ڈیٹ کر سکتے ہیں۔</translation>
 <translation id="415440494507469262">موازنہ ٹیبل میں ٹیب شامل کریں</translation>
 <translation id="4159784952369912983">جامنی</translation>
@@ -4146,6 +4145,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> فی الحال اس درخواست کو نمٹانے سے قاصر ہے۔</translation>
 <translation id="7599089013883397081">ڈاؤن لوڈ کا وقت ختم ہو گیا</translation>
 <translation id="7602868996817972616">‏اس صفحہ کے بارے میں Google سے پوچھیں</translation>
+<translation id="7606123685356405076">‏‫Gemini 3 ماڈلز</translation>
 <translation id="7610193165460212391">قدر رینج سے باہر کی ہے <ph name="VALUE" />۔</translation>
 <translation id="761261689936461781">موٹا</translation>
 <translation id="7613889955535752492">‏اختتامی تاریخ: ‎<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />‎</translation>

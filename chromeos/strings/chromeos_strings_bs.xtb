@@ -140,10 +140,10 @@
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Odaberite temu, a zatim podvučene riječi da personalizirate AI slike.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Odaberite "Inspiriraj me" da dobijete više jedinstvenih i raznolikih opcija AI slika.
+          Odaberite "Inspiriši me" da dobijete više jedinstvenih i raznolikih opcija AI slika.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Kada kreirate pomoću AI-ja, upit će se poslati na servere Google AI-ja radi generiranja slika i poboljšanja proizvoda podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Kada kreirate uz AI, upit će se poslati na servere Google AI-ja radi generiranja slika i poboljšanja proizvoda podložno <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleovim Pravilima privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generativni AI je eksperimentalan, u ranoj je fazi razvoja i trenutno je njegova dostupnost ograničena.</translation>
@@ -1153,7 +1153,7 @@
 <translation id="6104112872696127344">Skeniranje je otkazano</translation>
 <translation id="6106186594183574873">Unesite staru lozinku da završite</translation>
 <translation id="6108689792487843350">Pristupnik je van dometa</translation>
-<translation id="6108952804512516814">Kreiraj pomoću AI-ja</translation>
+<translation id="6108952804512516814">Kreiranje uz AI</translation>
 <translation id="6112878310391905610">Ovom postavkom upravljaju vaši administratori</translation>
 <translation id="6113701710518389813">Strelica nagore</translation>
 <translation id="6116005346231504406">Kreirajte prvu kontrolu</translation>

@@ -435,7 +435,6 @@
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="1692622044604477956">Кіноафіші й години показу фільмів</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Як ви можете керувати своїми даними.<ph name="END_BOLD" /> Chrome автоматично видаляє теми через 4 тижні. Під час подальшого веб-перегляду тема може знову з’явитися в списку. Ви також можете будь-коли заблокувати теми оголошень, якими Chrome не має ділитись із сайтами, або вимкнути їх у налаштуваннях Chrome.</translation>
-<translation id="1697808683313379647">Google пропонує ці варіанти на основі інформації зі сторінки оформлення замовлення й інших відповідних даних.</translation>
 <translation id="1699651774646344471">Тепер ви можете використовувати адреси зі свого облікового запису Google</translation>
 <translation id="1700542542921501212">Ви можете використовувати <ph name="SEARCH_ENGINE_NAME" /> для пошуку інформації в Інтернеті.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -1246,7 +1245,6 @@
 <translation id="299122504639061328">Керуйте пошуковою системою за умовчанням і пошуком на сайті</translation>
 <translation id="2991571918955627853">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки веб-сайт використовує протокол HSTS. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
 <translation id="2991865971341174470">Підтвердьте свою особу в Chrome, щоб автоматично заповнити платіжну інформацію.</translation>
-<translation id="2995010188916335277">Google пропонує ці варіанти на основі інформації зі сторінки оформлення замовлення й інших відповідних даних. Щоб приховати варіанти автозаповнення з оплатою пізніше, перейдіть на сторінку <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2995121550202354573">Використовувати для всіх профілів гостей</translation>
 <translation id="2995517112308048736">Повний розмір:</translation>
 <translation id="299990983510665749">Хетчбеки</translation>
@@ -1987,6 +1985,7 @@
 <translation id="4152495263075154876">Екран придбання з оплатою пізніше закрито.</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="4153446078232988116">Сайт <ph name="SITE" /> не підтримує захищене підключення за протоколом HTTPS</translation>
+<translation id="4153858337812834972">Нещодавні вкладки</translation>
 <translation id="4154277373259957087">Тепер Chrome підтверджуватиме вашу особу, перш ніж заповнювати способи оплати. Ви будь-коли можете змінити це налаштування на сторінці <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Додати вкладку в порівняльну таблицю</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
@@ -4145,6 +4144,7 @@
 <translation id="759889825892636187">Хост <ph name="HOST_NAME" /> зараз не може обробити цей запит.</translation>
 <translation id="7599089013883397081">Час очікування завантаження минув</translation>
 <translation id="7602868996817972616">Запитати Google про цю сторінку</translation>
+<translation id="7606123685356405076">Моделі Gemini 3</translation>
 <translation id="7610193165460212391">Значення за межами діапазону <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Товстий</translation>
 <translation id="7613889955535752492">Діє до: <ph name="EXPIRATION_MONTH" />.<ph name="EXPIRATION_YEAR" /></translation>
