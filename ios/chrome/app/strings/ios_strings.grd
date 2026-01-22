@@ -6244,6 +6244,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT" desc="The message indicating that Chrome sent a crash report. [Length: 140em]">
         Crash report sent.
       </message>
+      <message name="IDS_IOS_SAFE_MODE_NEEDS_OS_UPDATE" desc="The message indicating that Chrome crashed due to a known issue with the current version of iOS. [Length: 140em]">
+        Something went really wrong. Please update your iOS version.
+      </message>
       <message name="IDS_IOS_SAFE_MODE_RELOAD_CHROME" desc="The label of a button used to start Chrome from safe mode.  Clicking this button dismisses the safe mode UI and launches Chrome. [Length: 30em]">
         Try again
       </message>

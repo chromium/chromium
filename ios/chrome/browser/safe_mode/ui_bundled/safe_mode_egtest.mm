@@ -117,6 +117,22 @@ void AssertTryAgainButtonOnPage() {
       LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
+// Tests that Safe Mode screen is displayed with a message asking the user
+// to update their version of iOS.
+- (void)testSafeModeDetectedKnownBadOSVersion {
+  // Mocks the +detectedThirdPartyMods method by swizzling to return positively
+  // that device appears to be jailbroken and contains third party mods.
+  EarlGreyScopedBlockSwizzler thirdParty(@"SafeModeViewController",
+                                         @"isKnownBadOSVersion", ^{
+                                           return YES;
+                                         });
+  [SafeModeAppInterface presentSafeMode];
+  // Verifies screen content that does not show crash report being uploaded.
+  // When devices are jailbroken, the crash reports are not very useful.
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_NEEDS_OS_UPDATE"));
+  AssertMessageNotOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE"));
+}
+
 // Tests that Safe Mode screen is displayed with a message that there are
 // jailbroken mods listing the names of the known to be bad mods that caused a
 // crash. Crash reports are not sent.

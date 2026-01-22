@@ -8,7 +8,10 @@
 
 #import <string_view>
 
+#import "base/containers/fixed_flat_set.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/safe_mode/model/safe_mode_crashing_modules_config.h"
 #import "ios/chrome/browser/safe_mode/model/safe_mode_util.h"
@@ -32,6 +35,9 @@ constexpr std::string_view kThirdPartyModsDirectory =
 @interface SafeModeViewController ()
 // Returns `YES` if any third-party modifications are detected.
 + (BOOL)detectedThirdPartyMods;
+// Returns `YES` if the current OS version has known stability issues
+// and is blocklisted.
++ (BOOL)isKnownBadOSVersion;
 // Returns `YES` if there are crash reports to upload.
 + (BOOL)hasReportToUpload;
 // Returns a message explaining which, if any, 3rd party modules were detected
@@ -41,6 +47,8 @@ constexpr std::string_view kThirdPartyModsDirectory =
 - (void)startUploadProgress;
 // Updates progress bar for crash report upload.
 - (void)pumpUploadProgress;
+// Returns `YES` if this VC should display the button to resume chrome.
+- (BOOL)shouldShowStartButton;
 // Called when user taps on "Resume Chrome" button. Notifies the delegate to
 // attempt to start the browser.
 - (void)startBrowserFromSafeMode;
@@ -50,6 +58,7 @@ constexpr std::string_view kThirdPartyModsDirectory =
   __weak id<SafeModeViewControllerDelegate> _delegate;
   UIView* _innerView;
   UIButton* _startButton;
+  UIView* _uploadDescriptionAnchorView;
   UILabel* _uploadDescription;
   UIProgressView* _uploadProgress;
   NSDate* _uploadStartTime;
@@ -73,7 +82,25 @@ constexpr std::string_view kThirdPartyModsDirectory =
   dispatch_once(&once_token, ^{
     crash_helper::ProcessIntermediateReportsForSafeMode();
   });
+
+  if ([SafeModeViewController isKnownBadOSVersion]) {
+    return YES;
+  }
+
   return [SafeModeViewController hasReportToUpload];
+}
+
++ (BOOL)isKnownBadOSVersion {
+  static constexpr auto kBadOSVersions =
+      base::MakeFixedFlatSet<std::string_view>({
+          "23a5260n",  // iOS 26 beta1
+          "23a5260u",  // iOS 26 beta1 (rerelease)
+          "23a5276f",  // iOS 26 beta2
+          "23a5287g",  // iOS 26 beta3
+      });
+
+  std::string build = base::ToLowerASCII(base::SysInfo::GetIOSBuildNumber());
+  return kBadOSVersions.contains(std::string_view(build));
 }
 
 + (BOOL)detectedThirdPartyMods {
@@ -133,6 +160,8 @@ constexpr std::string_view kThirdPartyModsDirectory =
     return text;
   } else if ([SafeModeViewController detectedThirdPartyMods]) {
     return NSLocalizedString(@"IDS_IOS_SAFE_MODE_TWEAKS_FOUND", @"");
+  } else if ([SafeModeViewController isKnownBadOSVersion]) {
+    return NSLocalizedString(@"IDS_IOS_SAFE_MODE_NEEDS_OS_UPDATE", @"");
   } else {
     return NSLocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE", @"");
   }
@@ -211,44 +240,48 @@ constexpr std::string_view kThirdPartyModsDirectory =
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  UIView* lastView = description;
+  if ([self shouldShowStartButton]) {
+    _startButton = [UIButton buttonWithType:UIButtonTypeSystem];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  NSString* startText =
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
-  buttonConfiguration.title = startText;
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.background.cornerRadius = kButtonCornerRadius;
-  buttonConfiguration.titleAlignment =
-      UIButtonConfigurationTitleAlignmentCenter;
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kSolidWhiteColor];
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
-  _startButton.configuration = buttonConfiguration;
-  _startButton.configurationUpdateHandler = ^(UIButton* button) {
-    UIButtonConfiguration* innerConfiguration = button.configuration;
-    innerConfiguration.background.backgroundColor =
-        button.enabled ? [UIColor colorNamed:kBlueColor]
-                       : [UIColor colorNamed:kGrey300Color];
-    button.configuration = innerConfiguration;
-  };
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    NSString* startText =
+        NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
+    buttonConfiguration.title = startText;
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    buttonConfiguration.background.cornerRadius = kButtonCornerRadius;
+    buttonConfiguration.titleAlignment =
+        UIButtonConfigurationTitleAlignmentCenter;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidWhiteColor];
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+    _startButton.configuration = buttonConfiguration;
+    _startButton.configurationUpdateHandler = ^(UIButton* button) {
+      UIButtonConfiguration* innerConfiguration = button.configuration;
+      innerConfiguration.background.backgroundColor =
+          button.enabled ? [UIColor colorNamed:kBlueColor]
+                         : [UIColor colorNamed:kGrey300Color];
+      button.configuration = innerConfiguration;
+    };
 
-  frame = [_startButton frame];
-  frame.size.width =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? kIPadWidth
-          : kIPhoneWidth;
-  frame.size.height = _startButton.intrinsicContentSize.height;
-  [_startButton setFrame:frame];
-  [_startButton addTarget:self
-                   action:@selector(startBrowserFromSafeMode)
-         forControlEvents:UIControlEventTouchUpInside];
-  [self centerView:_startButton afterView:description];
-  [_innerView addSubview:_startButton];
+    frame = [_startButton frame];
+    frame.size.width =
+        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+            ? kIPadWidth
+            : kIPhoneWidth;
+    frame.size.height = _startButton.intrinsicContentSize.height;
+    [_startButton setFrame:frame];
+    [_startButton addTarget:self
+                     action:@selector(startBrowserFromSafeMode)
+           forControlEvents:UIControlEventTouchUpInside];
+    [self centerView:_startButton afterView:description];
+    [_innerView addSubview:_startButton];
 
-  UIView* lastView = _startButton;
+    lastView = _startButton;
+  }
+
   if ([SafeModeViewController hasReportToUpload]) {
     crash_helper::StartUploadingReportsInRecoveryMode();
 
@@ -257,6 +290,7 @@ constexpr std::string_view kThirdPartyModsDirectory =
     if (![SafeModeViewController detectedThirdPartyMods]) {
       [_startButton setEnabled:NO];
 
+      _uploadDescriptionAnchorView = lastView;
       _uploadDescription = [[UILabel alloc] init];
       [_uploadDescription
           setText:NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT",
@@ -264,7 +298,7 @@ constexpr std::string_view kThirdPartyModsDirectory =
       [_uploadDescription setFont:[UIFont systemFontOfSize:13]];
       _uploadDescription.textColor = [UIColor colorNamed:kTextSecondaryColor];
       [_uploadDescription sizeToFit];
-      [self centerView:_uploadDescription afterView:_startButton];
+      [self centerView:_uploadDescription afterView:lastView];
       [_innerView addSubview:_uploadDescription];
 
       _uploadProgress = [[UIProgressView alloc]
@@ -323,9 +357,13 @@ constexpr std::string_view kThirdPartyModsDirectory =
     [_uploadDescription
         setText:NSLocalizedString(@"IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT", @"")];
     [_uploadDescription sizeToFit];
-    [self centerView:_uploadDescription afterView:_startButton];
+    [self centerView:_uploadDescription afterView:_uploadDescriptionAnchorView];
     [_uploadProgress setHidden:YES];
   }
+}
+
+- (BOOL)shouldShowStartButton {
+  return ![SafeModeViewController isKnownBadOSVersion];
 }
 
 - (void)startBrowserFromSafeMode {
