@@ -159,8 +159,14 @@ void RunGetPeakGpuMemoryUsageCallbackOnMainThread(
 gpu::GpuPersistentCache::AsyncDiskWriteOpts
 GetPersistentCacheAsyncDiskWriteOpts() {
   gpu::GpuPersistentCache::AsyncDiskWriteOpts async_opts;
+  // The GpuPersistentCache uses a task runner for doing disk writes in the
+  // background. These are low priority tasks but once the task starts running,
+  // we do not want it to be interrupted because it holds locks on the database.
+  // This behaviour is achieved with the BEST_EFFORT priority and
+  // MUST_USE_FOREGROUND policy.
   async_opts.task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::MUST_USE_FOREGROUND,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   async_opts.max_pending_bytes_to_write = gpu::GetDefaultGpuDiskCacheSize();
   return async_opts;
