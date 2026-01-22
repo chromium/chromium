@@ -38,17 +38,22 @@ namespace {
 constexpr int kGroupHeaderCornerRadius = 8;
 constexpr int kGroupHeaderHorizontalInset = 8;
 constexpr int kIconSize = 16;
+constexpr int kFocusRingInset = 2;
 
 void ConfigureEditorBubbleButton(views::LabelButton* button) {
   button->SetHasInkDropActionOnClick(true);
-  auto ink_drop_highlight_path =
+
+  // Inkdrop configuration
+  auto highlight_path =
       std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets());
-  ink_drop_highlight_path->set_use_contents_bounds(true);
-  views::HighlightPathGenerator::Install(button,
-                                         std::move(ink_drop_highlight_path));
+
+  highlight_path->set_use_contents_bounds(true);
+  views::HighlightPathGenerator::Install(button, std::move(highlight_path));
+
   views::InkDrop::Get(button)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(button)->SetHighlightOpacity(0.2f);
   views::InkDrop::Get(button)->SetVisibleOpacity(0.08f);
+
   button->button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   button->GetViewAccessibility().SetName(
@@ -56,6 +61,7 @@ void ConfigureEditorBubbleButton(views::LabelButton* button) {
   button->SetFocusBehavior(
       VerticalTabGroupHeaderView::FocusBehavior::ACCESSIBLE_ONLY);
   button->SetVisible(false);
+  views::FocusRing::Install(button);
 }
 
 void UpdateEditorButtonColors(views::LabelButton* button,
@@ -133,7 +139,18 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
 
-  OnDataChanged(tab_group_visual_data);
+  // Add accessibility and focus ring for the header.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsEditable(true);
+  views::FocusRing::Install(this);
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
+  // Rounds the corners of the focus ring to match the header's shape
+  views::HighlightPathGenerator::Install(
+      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
+                gfx::Insets(kFocusRingInset), kGroupHeaderCornerRadius));
 }
 
 VerticalTabGroupHeaderView::~VerticalTabGroupHeaderView() = default;
