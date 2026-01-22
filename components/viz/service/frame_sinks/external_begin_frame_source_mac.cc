@@ -405,24 +405,6 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
     return;
   }
 
-  // For the monitor with multitple refresh rates and CVDisplayLink
-  // SetPreferredInterval is supported. Just set the preferred interval without
-  // skipping VSyncs.
-  if (min_refresh_interval_ != max_refresh_interval_) {
-    if (base::FeatureList::IsEnabled(kUseRefreshRateRange)) {
-      // Request a dynamic refrate rate with a range.
-      display_link_mac_->SetPreferredIntervalRange(
-          min_refresh_interval_, max_refresh_interval_, interval);
-    } else {
-      // Request a fixed refresh rate.
-      display_link_mac_->SetPreferredInterval(interval);
-    }
-    nominal_refresh_period_ = interval;
-    vsync_subsampling_factor_ = 1;
-    vsyncs_to_skip_ = 0;
-    return;
-  }
-
   // Here is for the monitor with a fixed refresh rate.
   // Cap the preferred refresh interval if it's out of the range.
   base::TimeDelta adjusted_interval = interval;

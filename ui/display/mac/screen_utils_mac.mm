@@ -25,9 +25,18 @@ NSScreen* GetNSScreenFromDisplayID(CGDirectDisplayID display_id) {
 
 base::TimeDelta GetNSScreenRefreshInterval(CGDirectDisplayID display_id) {
   NSScreen* screen = GetNSScreenFromDisplayID(display_id);
+  base::TimeDelta interval;
 
   if (screen) {
-    return base::Seconds(1) * screen.minimumRefreshInterval;
+    interval = base::Seconds(1) * screen.minimumRefreshInterval;
+  }
+
+  // For ExternalDisplayLinkMac, we start to use a display link before it's
+  // actually created in the browser. If this NSScreen is invalid, just use a
+  // default value. Viz will be updated again later if anything goes wrong in
+  // the browser.
+  if (interval.is_positive()) {
+    return interval;
   } else {
     return base::Seconds(1) / 60.0;
   }
