@@ -1,7 +1,9 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",
   "+third_party/omnibox_proto",
+  # keep-sorted end
 ]

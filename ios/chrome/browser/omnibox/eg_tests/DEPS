@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+  # keep-sorted end
 ]

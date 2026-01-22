@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/default_browser/model",
@@ -8,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/history/model/top_sites_factory.h",
   "+ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/ntp/model",
@@ -17,8 +19,8 @@ include_rules = [
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
-  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/url_loading/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
