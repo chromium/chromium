@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/context_menu_params.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 
@@ -57,6 +58,21 @@ void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
   OmniboxPopupWebUIBaseContent::CloseUI();
+}
+
+// Override of WebUIContentsWrapper::Host::HandleContextMenu. This mirrors
+// content::WebContentsDelegate::HandleContextMenu, which is called by the
+// WebContentsImpl to allow the delegate to handle the context menu if desired.
+// Returning true means the context menu request was handled (and thus
+// the caller suppresses their own context menu). Returning false allows
+// the default context menu to be shown.
+bool OmniboxAimPopupWebUIContent::HandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Suppress the context menu unless it's on an editable element (e.g. a
+  // text field). This allows users to use spellcheck and other text-editing
+  // features in text fields, but hides the menu otherwise.
+  return !params.is_editable;
 }
 
 void OmniboxAimPopupWebUIContent::ShowUI() {
