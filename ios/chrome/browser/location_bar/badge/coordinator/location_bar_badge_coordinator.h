@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_COORDINATOR_LOCATION_BAR_BADGE_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 
 @protocol LocationBarBadgeCoordinatorDelegate;
 @class IncognitoBadgeViewController;
@@ -16,7 +18,9 @@
 // leading badge into a chip. Responsible for all leading badges and chips
 // within the omnibox. Multiple features will send badge configurations to
 // prompt badge updates within LocationBarBadge.
-@interface LocationBarBadgeCoordinator : ChromeCoordinator
+@interface LocationBarBadgeCoordinator
+    : ChromeCoordinator <ContextualPanelEntrypointCommands,
+                         LocationBarBadgeCommands>
 
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<LocationBarBadgeCoordinatorDelegate> delegate;

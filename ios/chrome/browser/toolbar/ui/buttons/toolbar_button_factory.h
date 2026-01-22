@@ -36,9 +36,6 @@
 // Creates a tools menu button.
 - (ToolbarButton*)makeToolsMenuButton;
 
-// Creates an omnibox button (location bar).
-- (UIButton*)makeOmniboxButton;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUTTONS_TOOLBAR_BUTTON_FACTORY_H_

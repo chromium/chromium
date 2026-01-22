@@ -99,7 +99,6 @@ class ToolbarMediatorTest : public PlatformTest,
 TEST_P(ToolbarMediatorTest, TestWebStateSelectionUpdatesConsumer) {
   OCMExpect([consumer_ setCanGoBack:YES]);
   OCMExpect([consumer_ setCanGoForward:NO]);
-  OCMExpect([consumer_ setLocationBarText:[OCMArg any]]);
   OCMExpect([consumer_ setShareEnabled:YES]);
   OCMExpect([consumer_ setIsLoading:NO]);
 

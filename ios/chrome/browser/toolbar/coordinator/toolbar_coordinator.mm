@@ -26,9 +26,11 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -62,7 +64,9 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 }  // namespace
 
-@interface ToolbarCoordinator () <GuidedTourCommands,
+@interface ToolbarCoordinator () <ContextualPanelEntrypointCommands,
+                                  GuidedTourCommands,
+                                  LocationBarBadgeCommands,
                                   LocationBarCoordinatorHeightDelegate,
                                   PageActionMenuEntryPointCommands,
                                   PrimaryToolbarViewControllerDelegate,
@@ -116,10 +120,14 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   ToolbarMediator* _topToolbarMediator;
   /// Top toolbar view controller.
   ToolbarViewController* _topToolbarViewController;
+  /// Top location bar coordinator.
+  LocationBarCoordinator* _topLocationBarCoordinator;
   /// Bottom toolbar mediator.
   ToolbarMediator* _bottomToolbarMediator;
   /// Bottom toolbar view controller.
   ToolbarViewController* _bottomToolbarViewController;
+  /// Bottom location bar coordinator.
+  LocationBarCoordinator* _bottomLocationBarCoordinator;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -180,6 +188,32 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
                isIncognito:browser->GetProfile()->IsOffTheRecord()];
   self.legacyToolbarMediator.delegate = self;
 
+  if (IsChromeNextIaEnabled()) {
+    _topLocationBarCoordinator = [self createLocationBarCoordinator];
+    _topToolbarMediator = [self createToolbarMediatorTopPosition:YES];
+    _topToolbarViewController = [self
+        createToolbarViewControllerForMediator:_topToolbarMediator
+                                   locationBar:_topLocationBarCoordinator
+                                                   .locationBarViewController];
+
+    _bottomLocationBarCoordinator = [self createLocationBarCoordinator];
+    _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
+    _bottomToolbarViewController = [self
+        createToolbarViewControllerForMediator:_bottomToolbarMediator
+                                   locationBar:_bottomLocationBarCoordinator
+                                                   .locationBarViewController];
+
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(LocationBarBadgeCommands)];
+
+    self.started = YES;
+    return;
+  }
+
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
   self.locationBarCoordinator.delegate = self.omniboxFocusDelegate;
@@ -187,19 +221,6 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
-
-  if (IsChromeNextIaEnabled()) {
-    _topToolbarMediator = [self createToolbarMediatorTopPosition:YES];
-    _topToolbarViewController =
-        [self createToolbarViewControllerForMediator:_topToolbarMediator];
-
-    _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
-    _bottomToolbarViewController =
-        [self createToolbarViewControllerForMediator:_bottomToolbarMediator];
-
-    self.started = YES;
-    return;
-  }
 
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
   self.primaryToolbarCoordinator.toolbarHeightDelegate =
@@ -723,6 +744,26 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
 }
 
+#pragma mark - LocationBarBadgeCommands
+
+- (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator updateBadgeConfig:config];
+  [_bottomLocationBarCoordinator updateBadgeConfig:config];
+}
+
+- (void)updateColorForIPH {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator updateColorForIPH];
+  [_bottomLocationBarCoordinator updateColorForIPH];
+}
+
+- (void)markDisplayedBadgeAsUnread:(BOOL)read {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator markDisplayedBadgeAsUnread:read];
+  [_bottomLocationBarCoordinator markDisplayedBadgeAsUnread:read];
+}
+
 #pragma mark - LocationBarCoordinatorHeightDelegate
 
 - (void)locationBarCoordinator:(LocationBarCoordinator*)coordinator
@@ -763,6 +804,20 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   }
 }
 
+#pragma mark - ContextualPanelEntrypointCommands
+
+- (void)notifyContextualPanelEntrypointIPHDismissed {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator notifyContextualPanelEntrypointIPHDismissed];
+  [_bottomLocationBarCoordinator notifyContextualPanelEntrypointIPHDismissed];
+}
+
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  CHECK(IsChromeNextIaEnabled());
+  [_topLocationBarCoordinator cancelContextualPanelEntrypointLoudMoment];
+  [_bottomLocationBarCoordinator cancelContextualPanelEntrypointLoudMoment];
+}
+
 #pragma mark - PageActionMenuEntryPointCommands
 
 - (void)toggleEntryPointHighlight:(BOOL)highlight {
@@ -799,8 +854,11 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 
 - (void)focusLocationBarForVoiceOver {
   if (IsChromeNextIaEnabled()) {
-    [_topToolbarViewController focusLocationBarForVoiceOver];
-    [_bottomToolbarViewController focusLocationBarForVoiceOver];
+    if (_topToolbarViewController.visible) {
+      [_topLocationBarCoordinator focusOmniboxForVoiceOver];
+    } else {
+      [_bottomLocationBarCoordinator focusOmniboxForVoiceOver];
+    }
   } else {
     id<OmniboxCommands> omniboxHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), OmniboxCommands);
@@ -987,6 +1045,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
     return nil;
   }
 
+  if (IsChromeNextIaEnabled()) {
+    return nil;
+  }
+
   AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
       [self coordinatorWithToolbarType:_omniboxPosition];
   UIView* locationBarContainer =
@@ -1027,8 +1089,9 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
 }
 
 // Creates a new toolbar view controller, for the associated `mediator`.
-- (ToolbarViewController*)createToolbarViewControllerForMediator:
-    (ToolbarMediator*)mediator {
+- (ToolbarViewController*)
+    createToolbarViewControllerForMediator:(ToolbarMediator*)mediator
+                               locationBar:(UIViewController*)locationBar {
   CHECK(IsChromeNextIaEnabled());
 
   Browser* browser = self.browser;
@@ -1047,10 +1110,21 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   toolbarViewController.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
+  toolbarViewController.locationBarViewController = locationBar;
 
   mediator.consumer = toolbarViewController;
 
   return toolbarViewController;
+}
+
+// Creates a new location bar coordinator.
+- (LocationBarCoordinator*)createLocationBarCoordinator {
+  LocationBarCoordinator* coordinator =
+      [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
+  coordinator.heightDelegate = self;
+  [coordinator start];
+
+  return coordinator;
 }
 
 // Creates a new toolbar mediator.

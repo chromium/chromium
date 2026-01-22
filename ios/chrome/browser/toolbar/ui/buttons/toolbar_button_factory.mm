@@ -96,10 +96,4 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
   return button;
 }
 
-- (UIButton*)makeOmniboxButton {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  button.accessibilityIdentifier = kToolbarOmniboxButtonIdentifier;
-  return button;
-}
-
 @end

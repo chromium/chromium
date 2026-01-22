@@ -49,12 +49,14 @@
 // Layout Guide Center.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// Whether this toolbar is currently visible or not.
+@property(nonatomic, assign) BOOL visible;
+
+// The location bar in this toolbar.
+@property(nonatomic, strong) UIViewController* locationBarViewController;
+
 // Triggers the animation for the slide in of the toolbar.
 - (void)triggerToolbarSlideInAnimation;
-
-// Moves the focus of VoiceOver to the location bar, without activating it if
-// this toolbar is visible.
-- (void)focusLocationBarForVoiceOver;
 
 @end
 

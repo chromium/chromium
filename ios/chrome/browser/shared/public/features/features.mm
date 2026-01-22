@@ -940,6 +940,9 @@ bool ShouldShowKeyboardAccessoryFeatures() {
 BASE_FEATURE(kLocationBarBadgeMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLocationBarBadgeMigrationEnabled() {
+  if (IsChromeNextIaEnabled()) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kLocationBarBadgeMigration);
 }
 

@@ -24,9 +24,6 @@
 // Sets whether the share button is enabled.
 - (void)setShareEnabled:(BOOL)enabled;
 
-// Sets the text for the omnibox button (location bar).
-- (void)setLocationBarText:(NSString*)text;
-
 // Sets whether the toolbar is visible.
 - (void)setVisible:(BOOL)visible;
 

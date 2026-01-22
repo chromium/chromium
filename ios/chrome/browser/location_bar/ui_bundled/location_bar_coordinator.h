@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 
 @protocol BrowserCoordinatorCommands;
@@ -29,9 +31,12 @@
 @end
 
 // Location bar coordinator.
-@interface LocationBarCoordinator : ChromeCoordinator <LocationBarURLLoader,
-                                                       OmniboxCommands,
-                                                       OmniboxStateProvider>
+@interface LocationBarCoordinator
+    : ChromeCoordinator <ContextualPanelEntrypointCommands,
+                         LocationBarBadgeCommands,
+                         LocationBarURLLoader,
+                         OmniboxCommands,
+                         OmniboxStateProvider>
 
 // View controller containing the omnibox.
 @property(nonatomic, strong, readonly)

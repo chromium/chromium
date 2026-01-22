@@ -17,6 +17,9 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // The visibility mask for this button.
 @property(nonatomic, assign) ToolbarButtonVisibility visibilityMask;
 
+// When true the button is hidden, no matter the visibility mask. Default NO.
+@property(nonatomic, assign) BOOL forceHidden;
+
 // The `imageLoader` for this button.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
 

@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 
 @interface LocationBarBadgeCoordinator () <
-    ContextualPanelEntrypointCommands,
     ContextualPanelEntrypointMediatorDelegate,
     LocationBarBadgeMediatorDelegate>
 @end
@@ -83,8 +82,10 @@
   id<BWGCommands> BWGCommandHandler =
       HandlerForProtocol(_dispatcher, BWGCommands);
   _mediator.BWGCommandHandler = BWGCommandHandler;
-  [_dispatcher startDispatchingToTarget:_mediator
-                            forProtocol:@protocol(LocationBarBadgeCommands)];
+  if (!IsChromeNextIaEnabled()) {
+    [_dispatcher startDispatchingToTarget:_mediator
+                              forProtocol:@protocol(LocationBarBadgeCommands)];
+  }
 }
 
 - (void)stop {
@@ -169,12 +170,31 @@
   }
 }
 
+#pragma mark - LocationBarBadgeCommands
+
+- (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  CHECK(IsChromeNextIaEnabled());
+  [_mediator updateBadgeConfig:config];
+}
+
+- (void)updateColorForIPH {
+  CHECK(IsChromeNextIaEnabled());
+  [_mediator updateColorForIPH];
+}
+
+- (void)markDisplayedBadgeAsUnread:(BOOL)read {
+  CHECK(IsChromeNextIaEnabled());
+  [_mediator markDisplayedBadgeAsUnread:read];
+}
+
 #pragma mark - Private
 
 - (void)attachContextualPanelEntrypoint {
-  [_dispatcher
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  if (!IsChromeNextIaEnabled()) {
+    [_dispatcher
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(ContextualPanelEntrypointCommands)];
+  }
   _mediator.contextualSheetHandler =
       HandlerForProtocol(_dispatcher, ContextualSheetCommands);
   _mediator.entrypointHelpHandler =

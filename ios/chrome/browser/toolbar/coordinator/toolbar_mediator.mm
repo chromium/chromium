@@ -161,9 +161,6 @@
   [_consumer setIsLoading:webState->IsLoading()];
 
   GURL visibleURL = webState->GetVisibleURL();
-  [_consumer
-      setLocationBarText:[NSString
-                             stringWithUTF8String:visibleURL.spec().c_str()]];
 
   [_consumer setShareEnabled:!visibleURL.is_empty()];
 }

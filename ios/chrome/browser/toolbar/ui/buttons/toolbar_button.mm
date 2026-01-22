@@ -28,6 +28,10 @@
 }
 
 - (void)updateVisibility {
+  if (self.forceHidden) {
+    self.hidden = YES;
+    return;
+  }
   BOOL isCurrentRegularRegular = IsRegularXRegularSizeClass(self);
   BOOL isCurrentCompactHeight =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
@@ -55,6 +59,11 @@
     _image = _imageLoader();
   }
   return _image;
+}
+
+- (void)setForceHidden:(BOOL)forceHidden {
+  _forceHidden = forceHidden;
+  [self updateVisibility];
 }
 
 - (void)setEnabled:(BOOL)enabled {

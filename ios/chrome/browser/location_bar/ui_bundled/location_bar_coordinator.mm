@@ -199,9 +199,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     return;
   }
 
-  [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self
-                   forProtocol:@protocol(OmniboxCommands)];
+  if (!IsChromeNextIaEnabled()) {
+    [self.browser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(OmniboxCommands)];
+  }
 
   BOOL isIncognito = self.isOffTheRecord;
 
@@ -302,7 +304,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
         didMoveToParentViewController:self.viewController];
   }
 
-  if (IsReaderModeAvailable()) {
+  if (IsReaderModeAvailable() && !IsChromeNextIaEnabled()) {
     self.readerModeChipCoordinator = [[ReaderModeChipCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
@@ -697,6 +699,34 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
          didChangeEditStateHeight:(CGFloat)height {
   [self.heightDelegate locationBarCoordinator:self
                      didChangeEditStateHeight:height];
+}
+
+#pragma mark - LocationBarBadgeCommands
+
+- (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  CHECK(IsChromeNextIaEnabled());
+  [self.locationBarBadgeCoordinator updateBadgeConfig:config];
+}
+
+- (void)updateColorForIPH {
+  CHECK(IsChromeNextIaEnabled());
+  [self.locationBarBadgeCoordinator updateColorForIPH];
+}
+
+- (void)markDisplayedBadgeAsUnread:(BOOL)read {
+  CHECK(IsChromeNextIaEnabled());
+  [self.locationBarBadgeCoordinator markDisplayedBadgeAsUnread:read];
+}
+
+#pragma mark - ContextualPanelEntrypointCommands
+
+- (void)notifyContextualPanelEntrypointIPHDismissed {
+  [self.locationBarBadgeCoordinator
+          notifyContextualPanelEntrypointIPHDismissed];
+}
+
+- (void)cancelContextualPanelEntrypointLoudMoment {
+  [self.locationBarBadgeCoordinator cancelContextualPanelEntrypointLoudMoment];
 }
 
 #pragma mark - ContextualPanelEntrypointCoordinatorDelegate
