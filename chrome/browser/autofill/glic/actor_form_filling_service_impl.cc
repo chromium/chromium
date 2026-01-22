@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/credit_card_suggestion_generator.h"
@@ -354,20 +355,25 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
   }
 
   CreditCardSuggestionSummary summary;
+  autofill_metrics::CreditCardFormEventLogger logger(nullptr);
+  CreditCardSuggestionGenerator generator(
+      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      logger, AutofillMetrics::PaymentsSigninState::kUnknown);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
+      suggestion_data = generator.FetchCreditCardOrCvcFieldSuggestionDataSync(
           autofill_manager.client(), *autofill_field_for_labels,
           autofill_field_for_labels->Type().GetCreditCardType(),
           /*four_digit_combinations_in_dom=*/{},
           /*autofilled_last_four_digits_in_form_for_filtering=*/{}, summary);
   std::vector<Suggestion> suggestions =
-      GenerateCreditCardOrCvcFieldSuggestionsSync(
+      generator.GenerateCreditCardOrCvcFieldSuggestionsSync(
           autofill_manager.client(), *autofill_field_for_labels,
           autofill_field_for_labels->Type().GetCreditCardType(),
           /*should_show_scan_credit_card=*/false, summary,
           /*is_card_number_field_empty=*/true, {suggestion_data},
           payments::AmountExtractionStatus());
+  logger.OnDestroyed();
 
   std::erase_if(suggestions, [](const Suggestion& s) {
     return s.type != SuggestionType::kCreditCardEntry;

@@ -36,8 +36,47 @@ namespace autofill {
 using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
 using SuggestionData = SuggestionGenerator::SuggestionData;
 
+std::vector<Suggestion> GetSuggestionsForCreditCards(
+    const FormData& form,
+    const FormStructure& form_structure,
+    const FormFieldData& trigger_field,
+    const AutofillField& autofill_trigger_field,
+    AutofillClient& client,
+    const std::vector<std::string>& four_digit_combinations_in_dom,
+    const payments::AmountExtractionStatus& amount_extraction_status,
+    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
+    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  std::vector<Suggestion> suggestions;
+  CreditCardSuggestionGenerator credit_card_suggestion_generator(
+      four_digit_combinations_in_dom, amount_extraction_status,
+      credit_card_form_event_logger, signin_state_for_metrics);
+
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
+
+  auto on_suggestion_data_returned =
+      [&](std::pair<SuggestionGenerator::SuggestionDataSource,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        credit_card_suggestion_generator.GenerateSuggestions(
+            form, trigger_field, &form_structure, &autofill_trigger_field,
+            client, {std::move(suggestion_data)},
+            std::move(on_suggestions_generated));
+      };
+
+  // Since the `on_suggestions_generated` callback is called synchronously,
+  // we can assume that `suggestions` will hold correct value.
+  credit_card_suggestion_generator.FetchSuggestionData(
+      form, trigger_field, &form_structure, &autofill_trigger_field, client,
+      std::move(on_suggestion_data_returned));
+  return suggestions;
+}
+
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
-FetchCreditCardOrCvcFieldSuggestionDataSync(
+CreditCardSuggestionGenerator::FetchCreditCardOrCvcFieldSuggestionDataSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
@@ -95,7 +134,8 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
   return {SuggestionDataSource::kCreditCard, std::move(suggestion_data)};
 }
 
-std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
+std::vector<Suggestion>
+CreditCardSuggestionGenerator::GenerateCreditCardOrCvcFieldSuggestionsSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
@@ -155,10 +195,12 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
 }
 
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
-FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
+CreditCardSuggestionGenerator::
+    FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+        const AutofillClient& client,
+        const FormFieldData& trigger_field,
+        autofill_metrics::CardMetadataLoggingContext&
+            metadata_logging_context) {
   std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
       client, trigger_field, CREDIT_CARD_VERIFICATION_CODE,
       /*suppress_disused_cards=*/true, /*prefix_match=*/false,
@@ -174,15 +216,16 @@ FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
           std::move(suggestion_data)};
 }
 
-std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    const base::flat_map<std::string,
-                         VirtualCardUsageData::VirtualCardLastFour>&
-        virtual_card_guid_to_last_four_map,
-    const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
-        suggestion_data,
-    const payments::AmountExtractionStatus& amount_extraction_status) {
+std::vector<Suggestion> CreditCardSuggestionGenerator::
+    GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+        const AutofillClient& client,
+        const FormFieldData& trigger_field,
+        const base::flat_map<std::string,
+                             VirtualCardUsageData::VirtualCardLastFour>&
+            virtual_card_guid_to_last_four_map,
+        const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
+            suggestion_data,
+        const payments::AmountExtractionStatus& amount_extraction_status) {
   std::vector<Suggestion> suggestions;
 
   const std::vector<SuggestionData>* credit_card_data = base::FindOrNull(
@@ -242,45 +285,6 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
           /*with_gpay_logo=*/true, amount_extraction_status),
       std::back_inserter(suggestions));
 
-  return suggestions;
-}
-
-std::vector<Suggestion> GetSuggestionsForCreditCards(
-    const FormData& form,
-    const FormStructure& form_structure,
-    const FormFieldData& trigger_field,
-    const AutofillField& autofill_trigger_field,
-    AutofillClient& client,
-    const std::vector<std::string>& four_digit_combinations_in_dom,
-    const payments::AmountExtractionStatus& amount_extraction_status,
-    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
-    const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-  std::vector<Suggestion> suggestions;
-  CreditCardSuggestionGenerator credit_card_suggestion_generator(
-      four_digit_combinations_in_dom, amount_extraction_status,
-      credit_card_form_event_logger, signin_state_for_metrics);
-
-  auto on_suggestions_generated =
-      [&suggestions](
-          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
-        suggestions = std::move(returned_suggestions.second);
-      };
-
-  auto on_suggestion_data_returned =
-      [&](std::pair<SuggestionGenerator::SuggestionDataSource,
-                    std::vector<SuggestionGenerator::SuggestionData>>
-              suggestion_data) {
-        credit_card_suggestion_generator.GenerateSuggestions(
-            form, trigger_field, &form_structure, &autofill_trigger_field,
-            client, {std::move(suggestion_data)},
-            std::move(on_suggestions_generated));
-      };
-
-  // Since the `on_suggestions_generated` callback is called synchronously,
-  // we can assume that `suggestions` will hold correct value.
-  credit_card_suggestion_generator.FetchSuggestionData(
-      form, trigger_field, &form_structure, &autofill_trigger_field, client,
-      std::move(on_suggestion_data_returned));
   return suggestions;
 }
 
