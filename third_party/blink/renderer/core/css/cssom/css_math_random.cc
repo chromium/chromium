@@ -59,7 +59,7 @@ CSSNumericValue* CSSMathRandom::step() {
 }
 
 std::optional<CSSNumericSumValue> CSSMathRandom::SumValue() const {
-  // TODO(crbug.com/413385732): Spec and implement sum value for random():
+  // TODO(crbug.com/475807587): Spec and implement sum value for random():
   // https://drafts.css-houdini.org/css-typed-om/#create-a-sum-value
   return std::nullopt;
 }

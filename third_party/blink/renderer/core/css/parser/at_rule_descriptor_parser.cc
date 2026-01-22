@@ -346,7 +346,7 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
   stream.ConsumeWhitespace();
   CSSParserContext::ParserModeOverridingScope scope(context,
                                                     kCSSFontFaceRuleMode);
-  // TODO(crbug.com/413385732): Store correct property name in
+  // TODO(crbug.com/475808971): Store correct property name in
   // CSSParserLocalContext for random().
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForAtRules();

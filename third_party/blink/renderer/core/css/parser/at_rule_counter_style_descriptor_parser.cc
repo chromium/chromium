@@ -301,7 +301,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  // TODO(crbug.com/413385732): Store correct property name in
+  // TODO(crbug.com/475808971): Store correct property name in
   // CSSParserLocalContext for random().
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForAtRules();

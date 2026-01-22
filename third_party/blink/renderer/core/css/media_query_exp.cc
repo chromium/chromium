@@ -515,8 +515,8 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       << "Under the assumption that custom properties in style() container "
          "queries are currently the only case sensitive features";
 
-  // TODO(crbug.com/413385732): We don't have property name for random in media
-  // query, this should probably be speced.
+  // TODO(crbug.com/475808971): We don't have property name for random in media
+  // query, this should probably be specified.
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForMediaQueries();
   if (media_feature == media_feature_names::kFallbackMediaFeature) {

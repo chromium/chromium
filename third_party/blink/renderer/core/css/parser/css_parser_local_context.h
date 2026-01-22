@@ -45,7 +45,7 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): We use this constructor for at-rules and their
+  // TODO(crbug.com/475808971): We use this constructor for at-rules and their
   // descriptors. We should probably use descriptor name as property name for
   // random and only use this constructor inside rule definition since we don't
   // have a property context in that case.
@@ -81,7 +81,7 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): We use this constructor to create a local
+  // TODO(crbug.com/40068516): We use this constructor to create a local
   // context for all css_parsing_utils::Consume* calls from inspector classes.
   // Figure out if we actually need property context for random() in there.
   static CSSParserLocalContext CreateWithoutPropertyForInspector() {

@@ -164,7 +164,7 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     DCHECK(node.GetRandomValueSharing()->IsFixed());
     CSSNumericValue* min = CalcToNumericValue(*node.Min());
     CSSNumericValue* max = CalcToNumericValue(*node.Max());
-    // TODO(crbug.com/413385732): Use correct random_base_value instead of 0 if
+    // TODO(crbug.com/475807587): Use correct random_base_value instead of 0 if
     // it's not calculated.
     double random_base_value =
         node.GetRandomValueSharing()->GetFixed()->GetValueIfKnown().value_or(0);
