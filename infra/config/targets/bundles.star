@@ -2606,6 +2606,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "cronet_python_unittest",
+    targets = ["cronet_python_unittests"],
+    per_test_modifications = {
+        "cronet_python_unittests": targets.per_test_modification(
+            remove_mixins = [
+                "16-x64-emulator",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "cronet_rel_isolated_scripts",
     targets = [
         "cronet_resource_sizes",

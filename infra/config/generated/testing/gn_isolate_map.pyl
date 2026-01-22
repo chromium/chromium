@@ -874,6 +874,12 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
+  "cronet_python_unittests": {
+    "label": "//components/cronet/testing:cronet_python_unittests",
+    "type": "generated_script",
+    "module_scheme": "pyunit",
+    "skip_usage_check": True,
+  },
   "cronet_sample_test_apk": {
     "label": "//components/cronet/android:cronet_sample_test_apk",
     "type": "console_test_launcher",
