@@ -379,9 +379,6 @@
 -MlEmbedderTest.ReturnsEmbeddings
 -MlEmbedderTest.ReturnsExecutionFailure
 
-# TODO(crbug.com/413598265): The test is flaky both on simulator and on device.
--FeaturedSearchProviderTest.FLAKY_StarterPackExpansionRelevance
-
 # TODO(crbug.com/440947113): This test has been failing since
 # https://crrev.com/c/6862660.
 -AccountConsistencyServiceTest.ChromeAddSessionWithEmail
