@@ -69,10 +69,6 @@ function showBottomSheet(hasUserGesture: boolean): void {
     form = lastBlurredElement_;
   }
 
-  // TODO(crbug.com/40261693): convert these "gCrWebLegacy.fill" and
-  // "gCrWebLegacy.form" calls to import and call the functions directly once
-  // the conversion to TypeScript is done.
-
   const msg = {
     'frameID': gCrWeb.getFrameId(),
     'formName': getFormIdentifier(form),

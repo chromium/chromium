@@ -116,10 +116,6 @@ class CrWeb {
         }
         return registeredApi.getProperty(funcOrPropName);
       }
-      if (apiName === '') {
-        return gCrWebLegacy[funcOrPropName](...args);
-      }
-      return gCrWebLegacy[apiName][funcOrPropName](...args);
     } catch (error) {
       if (error instanceof CrWebError) {
         sendWebKitMessage(
@@ -137,8 +133,7 @@ export class CrWebApi {
 
   addFunction(funcName: string, func: Function): void {
     this.functions[funcName] = function(...args: unknown[]) {
-      return catchAndReportErrors.apply(
-        null, [/*crweb=*/ true, funcName, func, args]);
+      return catchAndReportErrors.apply(null, [funcName, func, args]);
     };
   }
 
@@ -177,5 +172,4 @@ if (!(window as CrWebType).__gCrWeb) {
   (window as CrWebType).__gCrWeb = new CrWeb();
 }
 
-export const gCrWebLegacy: any = (window as CrWebType).__gCrWeb;
 export const gCrWeb: CrWeb = (window as CrWebType).__gCrWeb;
