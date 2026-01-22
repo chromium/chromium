@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,6 +86,11 @@ void OnCreateActorTabComplete(
 }  // namespace
 
 namespace actor {
+
+namespace {
+BASE_FEATURE(kGlicActorFixPageObservationCrash,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}
 
 std::optional<page_content_annotations::PaintPreviewOptions>
 CreateOptionalPaintPreviewOptions() {
@@ -386,6 +392,14 @@ void ActorKeyedService::RequestTabObservation(
              const GURL& last_committed_url,
              page_content_annotations::FetchPageContextResultCallbackArg
                  result) {
+            if (base::FeatureList::IsEnabled(
+                    kGlicActorFixPageObservationCrash)) {
+              if (!result.has_value()) {
+                std::move(callback).Run(base::unexpected(result.error()));
+                return;
+              }
+            }
+
             if (result.has_value() &&
                 result.value()->annotated_page_content_result.has_value() &&
                 result.value()->screenshot_result.has_value()) {
