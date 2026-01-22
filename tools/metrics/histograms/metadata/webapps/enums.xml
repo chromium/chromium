@@ -744,6 +744,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dialog canceled"/>
 </enum>
 
+<!-- LINT.IfChange(WebappUninstallSource) -->
+
 <enum name="WebappUninstallSource">
   <int value="0" label="Unknown surface, potentially in ChromeOS"/>
   <int value="1" label="Menu item from the 3-dot menu of a WebApp window"/>
@@ -764,7 +766,14 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Incomplete uninstall cleanup on startup."/>
   <int value="17" label="Sub apps uninstall kicked off by parent app"/>
   <int value="18" label="Lock screen app infrastructure"/>
+  <int value="19" label="Cleaned up during tests"/>
+  <int value="20" label="Deduping install urls"/>
+  <int value="21" label="Healthcare app cleaning up during sessions."/>
+  <int value="22" label="IWA enterprise policy"/>
+  <int value="23" label="PWA.uninstall from devtools"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/webapps/browser/installable/installable_metrics.h:WebappUninstallSource) -->
 
 <!-- LINT.IfChange(WebAppUpdateDataReadResult) -->
 

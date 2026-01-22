@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -111,6 +112,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, NoUserInstalledWebApps) {
 }
 
 TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
+  base::HistogramTester tester;
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   {
@@ -142,6 +144,10 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_TRUE(web_app->GetSources().Has(WebAppManagement::kPolicy));
   EXPECT_FALSE(web_app->GetSources().Has(WebAppManagement::kSync));
+  EXPECT_THAT(
+      tester.GetAllSamples("Webapp.Install.UninstallEvent"),
+      base::BucketsAre(base::Bucket(
+          webapps::WebappUninstallSource::kHealthcareUserInstallCleanup, 1)));
 }
 
 TEST_F(UninstallAllUserInstalledWebAppsCommandTest,

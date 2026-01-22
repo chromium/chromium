@@ -221,6 +221,12 @@ TEST_F(DedupeInstallUrlsCommandTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
       base::BucketsAre(base::Bucket(/*apps=*/2, /*count=*/1)));
+
+  // There are 2 apps, and one of them gets uninstalled.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Webapp.Install.UninstallEvent"),
+      base::BucketsAre(base::Bucket(
+          webapps::WebappUninstallSource::kInstallUrlDeduping, /*count=*/1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest,
@@ -580,6 +586,13 @@ TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
   histogram_tester.ExpectUniqueSample("WebApp.DedupeInstallUrls.AppsDeduped",
                                       /*apps=*/3,
                                       /*count=*/2);
+
+  // There are 6 apps, and 4 of them gets uninstalled, while only 2 apps remain
+  // (`app_a` and `app_b`).
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Webapp.Install.UninstallEvent"),
+      base::BucketsAre(base::Bucket(
+          webapps::WebappUninstallSource::kInstallUrlDeduping, /*count=*/4)));
 }
 
 }  // namespace web_app

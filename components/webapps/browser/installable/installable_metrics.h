@@ -169,6 +169,8 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source);
 // Uninstall surface from which an uninstall was initiated. This value cannot be
 // used to infer an install source. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused.
+
+// LINT.IfChange(WebappUninstallSource)
 enum class WebappUninstallSource {
   // Unknown surface, potentially in ChromeOS.
   kUnknown = 0,
@@ -254,6 +256,8 @@ enum class WebappUninstallSource {
   kMaxValue = kIwaBlocklisted,
 };
 
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebappUninstallSource)
+
 std::ostream& operator<<(std::ostream& os, WebappUninstallSource source);
 
 bool IsUserUninstall(WebappUninstallSource source);
@@ -278,7 +282,9 @@ class InstallableMetrics {
       content::WebContents* web_contents,
       InstallTrigger trigger);
 
-  // Records |source| in the Webapp.Install.UninstallEvent histogram.
+  // Records |source| in the Webapp.Install.UninstallEvent histogram. This is
+  // recorded like the TrackInstallEvent() function, whenever an uninstall
+  // is triggered, without waiting for it to complete.
   static void TrackUninstallEvent(WebappUninstallSource source);
 
   // Records the result for WebApp.Install.Result,

@@ -219,6 +219,9 @@ void DedupeInstallUrlsCommand::ProcessPendingJobsOrComplete() {
   if (!pending_jobs_.empty()) {
     std::swap(active_job_, pending_jobs_.back());
     pending_jobs_.pop_back();
+    // Track an uninstallation event, regardless of whether it succeeded or not.
+    webapps::InstallableMetrics::TrackUninstallEvent(
+        webapps::WebappUninstallSource::kInstallUrlDeduping);
     active_job_->Start(*lock_,
                        base::BindOnce(&DedupeInstallUrlsCommand::JobComplete,
                                       weak_ptr_factory_.GetWeakPtr()));

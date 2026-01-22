@@ -1143,7 +1143,8 @@ chromium-metrics-reviews@google.com.
   <owner>sunggch@microsoft.com</owner>
   <summary>
     Records the mechanism and source from which a web app uninstallation was
-    triggered, regardless of whether the uninstallation was successful.
+    triggered, regardless of whether the uninstallation was successful. Warning:
+    this histogram was expired from 2024 to 2026-01-21; data may be missing.
   </summary>
 </histogram>
 
