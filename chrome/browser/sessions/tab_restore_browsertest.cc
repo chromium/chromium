@@ -1226,6 +1226,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow_ActiveTabIndex) {
   AddFileSchemeTabs(browser(), 4);
 
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  tab_groups::TabGroupVisualData group_data(u"Bar",
+                                            tab_groups::TabGroupColorId::kBlue);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, group_data);
+
   // Create a second browser.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),

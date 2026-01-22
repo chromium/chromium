@@ -179,8 +179,10 @@ TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
   }
 
   // Add the tabs to a new group in the tabstrip and link it to `group`.
-  return AddOpenedTabsToGroup(browser->tab_strip_model(),
-                              std::move(tab_guid_mapping), group.value());
+  return AddOpenedTabsToGroup(
+      browser->tab_strip_model(), std::move(tab_guid_mapping), group.value(),
+      desktop_context->opening_source !=
+          tab_groups::OpeningSource::kOpenedFromTabRestore);
 }
 
 void TabGroupSyncDelegateDesktop::CreateLocalTabGroup(
@@ -361,7 +363,8 @@ TabGroupSyncDelegateDesktop::OpenTabsAndMapToUuids(
 TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
     TabStripModel* tab_strip_model,
     const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
-    const SavedTabGroup& saved_group) {
+    const SavedTabGroup& saved_group,
+    bool switch_focus) {
   std::vector<int> tab_indices;
   for (int i = 0; tabs::TabInterface* tab : *tab_strip_model) {
     if (tab_guid_mapping.contains(tab) && !tab->GetGroup().has_value()) {
@@ -376,13 +379,15 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   service_->UpdateLocalTabGroupMapping(saved_group.saved_guid(), tab_group_id,
                                        OpeningSource::kOpenedFromRevisitUi);
 
-  TabGroup* const tab_group =
-      tab_strip_model->group_model()->GetTabGroup(tab_group_id);
+  if (switch_focus) {
+    TabGroup* const tab_group =
+        tab_strip_model->group_model()->GetTabGroup(tab_group_id);
 
-  // Activate the first tab in the group.
-  tabs::TabInterface* first_tab = tab_group->GetFirstTab();
-  DCHECK(first_tab);
-  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(first_tab));
+    // Activate the first tab in the group.
+    tabs::TabInterface* first_tab = tab_group->GetFirstTab();
+    DCHECK(first_tab);
+    tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(first_tab));
+  }
 
   // Update the group to use the saved title and color.
   TabGroupVisualData visual_data(saved_group.title(), saved_group.color(),

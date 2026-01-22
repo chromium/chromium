@@ -69,12 +69,14 @@ class TabGroupSyncDelegateDesktop : public TabGroupSyncDelegate,
       const SavedTabGroup& saved_group);
 
   // Adds the opened tabs from OpenTabsAndMapToUuids into a tab
-  // group and links it to `saved_group`.
+  // group and links it to `saved_group`. `switch_focus` controls whether the
+  // focus should be switched to the group, such as when opening a group.
   TabGroupId AddOpenedTabsToGroup(
       TabStripModel* tab_strip_model,
       const std::map<tabs::TabInterface*, base::Uuid>&
           opened_web_contents_to_uuid,
-      const SavedTabGroup& saved_group);
+      const SavedTabGroup& saved_group,
+      bool switch_focus);
 
   // The profile used to create this delegate.
   raw_ptr<Profile> profile_ = nullptr;

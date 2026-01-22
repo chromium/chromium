@@ -288,8 +288,10 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value());
-      tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
-          group_id.value());
+      if (original_session_type == sessions::tab_restore::Type::GROUP) {
+        tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
+            group_id.value());
+      }
 
       // Move the group into `browser` if it is open in a different browser.
       if (source_browser != browser) {
