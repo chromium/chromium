@@ -1135,6 +1135,73 @@ BuildProtocolAssociatedCookies(const net::CookieAccessResultList& net_list) {
   return protocol_list;
 }
 
+std::unique_ptr<protocol::Network::DeviceBoundSessionKey>
+BuildProtocolDeviceBoundSessionKey(
+    const net::device_bound_sessions::SessionKey& key) {
+  return protocol::Network::DeviceBoundSessionKey::Create()
+      .SetSite(key.site.Serialize())
+      .SetId(key.id.value())
+      .Build();
+}
+
+const char* GetProtocolSessionUsage(
+    network::mojom::DeviceBoundSessionUsage usage) {
+  switch (usage) {
+    case network::mojom::DeviceBoundSessionUsage::kSiteMatchNotInScope:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::NotInScope;
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::
+          InScopeRefreshNotYetNeeded;
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotAllowed:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::
+          InScopeRefreshNotAllowed;
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshNotPossible:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::
+          ProactiveRefreshNotPossible;
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshAttempted:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::
+          ProactiveRefreshAttempted;
+    case network::mojom::DeviceBoundSessionUsage::kDeferred:
+      return Network::DeviceBoundSessionWithUsage::UsageEnum::Deferred;
+    case network::mojom::DeviceBoundSessionUsage::kUnknown:
+    case network::mojom::DeviceBoundSessionUsage::kNoSiteMatchNotInScope:
+      NOTREACHED();
+  }
+}
+
+std::unique_ptr<protocol::Array<protocol::Network::DeviceBoundSessionWithUsage>>
+BuildProtocolDeviceBoundSessionUsages(
+    const std::vector<network::mojom::DeviceBoundSessionWithUsagePtr>&
+        device_bound_session_usages) {
+  if (!base::FeatureList::IsEnabled(features::kDeviceBoundSessionsDevTools)) {
+    return nullptr;
+  }
+  auto protocol_list = std::make_unique<
+      protocol::Array<protocol::Network::DeviceBoundSessionWithUsage>>();
+  for (const auto& session_usage : device_bound_session_usages) {
+    // Don't send the usage if the usage is unknown or if the session's site is
+    // irrelevant.
+    if (session_usage->usage ==
+            network::mojom::DeviceBoundSessionUsage::kNoSiteMatchNotInScope ||
+        session_usage->usage ==
+            network::mojom::DeviceBoundSessionUsage::kUnknown) {
+      continue;
+    }
+    protocol_list->push_back(
+        protocol::Network::DeviceBoundSessionWithUsage::Create()
+            .SetSessionKey(
+                BuildProtocolDeviceBoundSessionKey(session_usage->session_key))
+            .SetUsage(GetProtocolSessionUsage(session_usage->usage))
+            .Build());
+  }
+  if (protocol_list->empty()) {
+    return nullptr;
+  }
+  return protocol_list;
+}
+
 using SourceTypeEnum = net::SourceStreamType;
 namespace ContentEncodingEnum = protocol::Network::ContentEncodingEnum;
 std::optional<SourceTypeEnum> SourceTypeFromProtocol(
@@ -1660,15 +1727,6 @@ Response NetworkHandler::EnableReportingApi(const bool enable) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace {
-std::unique_ptr<protocol::Network::DeviceBoundSessionKey>
-BuildProtocolDeviceBoundSessionKey(
-    const net::device_bound_sessions::SessionKey& key) {
-  return protocol::Network::DeviceBoundSessionKey::Create()
-      .SetSite(key.site.Serialize())
-      .SetId(key.id.value())
-      .Build();
-}
-
 String BuildProtocolDeviceBoundSessionUrlRuleType(
     net::device_bound_sessions::InclusionResult rule_type) {
   switch (rule_type) {
@@ -4176,10 +4234,10 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
     return;
   }
 
-  // TODO(crbug.com/471017388): Send DBSC usages to front-end.
   frontend_->RequestWillBeSentExtraInfo(
       devtools_request_id, BuildProtocolAssociatedCookies(request_cookie_list),
       GetRawHeaders(request_headers), GetConnectTiming(timestamp),
+      BuildProtocolDeviceBoundSessionUsages(device_bound_session_usages),
       MaybeBuildClientSecurityState(security_state),
       other_partition_info
           ? std::optional<bool>(

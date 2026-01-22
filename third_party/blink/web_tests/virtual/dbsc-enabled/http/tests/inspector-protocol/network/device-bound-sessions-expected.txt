@@ -12,11 +12,11 @@ Creation event: {
         fetchResult : Success
         newSession : {
             allowedRefreshInitiators : [
-                [0] : localhost
+                [0] : dbsc.test
             ]
             cookieCravings : [
                 [0] : {
-                    domain : localhost
+                    domain : .dbsc.test
                     httpOnly : true
                     name : dbsc-cookie
                     path : /
@@ -27,10 +27,20 @@ Creation event: {
             expiryDate : <number>
             inclusionRules : {
                 includeSite : false
-                origin : http://localhost:8080
+                origin : https://dbsc.test:8443
                 urlRules : [
                     [0] : {
-                        hostPattern : localhost
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/
+                        ruleType : Exclude
+                    }
+                    [1] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/protected-resource.php
+                        ruleType : Include
+                    }
+                    [2] : {
+                        hostPattern : dbsc.test
                         pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
                         ruleType : Exclude
                     }
@@ -38,14 +48,14 @@ Creation event: {
             }
             key : {
                 id : dbsc-session-id
-                site : http://localhost
+                site : https://dbsc.test
             }
-            refreshUrl : http://localhost:8080/inspector-protocol/network/resources/dbsc/refresh.php
+            refreshUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/refresh.php?cookie_name=dbsc-cookie&domain_prefix=dbsc
         }
     }
     eventId : <string>
     sessionId : dbsc-session-id
-    site : http://localhost
+    site : https://dbsc.test
     succeeded : true
 }
 
@@ -58,11 +68,11 @@ New sessions: {
     sessions : [
         [0] : {
             allowedRefreshInitiators : [
-                [0] : localhost
+                [0] : dbsc.test
             ]
             cookieCravings : [
                 [0] : {
-                    domain : localhost
+                    domain : .dbsc.test
                     httpOnly : true
                     name : dbsc-cookie
                     path : /
@@ -73,10 +83,20 @@ New sessions: {
             expiryDate : <number>
             inclusionRules : {
                 includeSite : false
-                origin : http://localhost:8080
+                origin : https://dbsc.test:8443
                 urlRules : [
                     [0] : {
-                        hostPattern : localhost
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/
+                        ruleType : Exclude
+                    }
+                    [1] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/protected-resource.php
+                        ruleType : Include
+                    }
+                    [2] : {
+                        hostPattern : dbsc.test
                         pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
                         ruleType : Exclude
                     }
@@ -84,9 +104,9 @@ New sessions: {
             }
             key : {
                 id : dbsc-session-id
-                site : http://localhost
+                site : https://dbsc.test
             }
-            refreshUrl : http://localhost:8080/inspector-protocol/network/resources/dbsc/refresh.php
+            refreshUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/refresh.php?cookie_name=dbsc-cookie&domain_prefix=dbsc
         }
     ]
 }
@@ -100,7 +120,7 @@ Refresh event: {
         wasFullyProactiveRefresh : false
     }
     sessionId : dbsc-session-id
-    site : http://localhost
+    site : https://dbsc.test
     succeeded : true
 }
 
@@ -112,7 +132,7 @@ Challenge event: {
     }
     eventId : <string>
     sessionId : dbsc-session-id
-    site : http://localhost
+    site : https://dbsc.test
     succeeded : true
 }
 
@@ -120,7 +140,7 @@ Challenge event: {
 Termination event: {
     eventId : <string>
     sessionId : dbsc-session-id
-    site : http://localhost
+    site : https://dbsc.test
     succeeded : true
     terminationEventDetails : {
         deletionReason : StoragePartitionCleared
@@ -140,4 +160,48 @@ Running test: testFetchSchemefulSite
 {
     schemefulSite : file://
 }
+
+Running test: testRequestWillBeSentExtraInfo
+
+--- Make sure initial set of sessions is empty ---
+Num sessions received: 0
+
+--- Set up four sessions (one for a different site) ---
+Sessions added successfully: 4
+
+--- Trigger deferred refresh for session 1, proactive refresh for session 2, nothing for session 3 ---
+Usages (only same-site included): [
+    [0] : {
+        sessionKey : {
+            id : dbsc-session-id1
+            site : https://dbsc.test
+        }
+        usage : Deferred
+    }
+    [1] : {
+        sessionKey : {
+            id : dbsc-session-id2
+            site : https://dbsc.test
+        }
+        usage : ProactiveRefreshAttempted
+    }
+    [2] : {
+        sessionKey : {
+            id : dbsc-session-id3
+            site : https://dbsc.test
+        }
+        usage : InScopeRefreshNotYetNeeded
+    }
+]
+
+--- Trigger deferred refresh for session 1 for alternate site ---
+Usages (only same-site for alternate site included): [
+    [0] : {
+        sessionKey : {
+            id : dbsc-session-id1
+            site : https://dbsc-alternate.test
+        }
+        usage : Deferred
+    }
+]
 
