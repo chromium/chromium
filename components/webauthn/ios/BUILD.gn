@@ -78,6 +78,8 @@ source_set("utils") {
     "//base",
     "//components/autofill/ios/browser",
     "//components/password_manager/core/browser:passkey_credential",
+    "//components/strings",
+    "//ui/base",
   ]
 }
 
@@ -97,6 +99,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/ios",
+    "//components/strings",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
     "//device/fido/public",

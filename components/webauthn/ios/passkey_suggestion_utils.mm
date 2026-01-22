@@ -7,19 +7,42 @@
 #import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/strings/grit/components_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
 
 NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
     const std::vector<password_manager::PasskeyCredential>& passkeys) {
-  NSMutableArray<FormSuggestion*>* passkey_suggestions = [NSMutableArray array];
+  if (passkeys.empty()) {
+    return @[];
+  }
+
+  NSMutableArray<FormSuggestion*>* passkey_suggestions =
+      [NSMutableArray arrayWithCapacity:passkeys.size()];
+
+  NSString* passkey_label =
+      l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
 
   for (const auto& passkey : passkeys) {
-    // TODO(crbug.com/463429359): Set right value and display description
-    // depending on scenario.
+    NSString* value;
+    NSString* display_description;
+
+    const std::string& display_name = passkey.display_name();
+    NSString* username = base::SysUTF8ToNSString(passkey.username());
+
+    if (display_name.empty()) {
+      value = username;
+      display_description = passkey_label;
+    } else {
+      value = base::SysUTF8ToNSString(display_name);
+      display_description =
+          [NSString stringWithFormat:@"%@ • %@", username, passkey_label];
+    }
+
     FormSuggestion* suggestion = [FormSuggestion
-        suggestionWithValue:base::SysUTF8ToNSString(passkey.username())
-         displayDescription:base::SysUTF8ToNSString(passkey.rp_id())
+        suggestionWithValue:value
+         displayDescription:display_description
                        icon:nil
                        type:autofill::SuggestionType::kWebauthnCredential
                     payload:autofill::Suggestion::Guid(
