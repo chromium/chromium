@@ -47,10 +47,11 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
  private:
   // Returns the minimum size of all toolbar-height content except the toolbar-
   // height side panel.
-  gfx::Size GetMinimumMainAreaSize() const;
+  gfx::Size GetMinimumMainAreaSize(const BrowserLayoutParams& params) const;
 
   // Returns the size of the vertical and horizontal tabstrips, as a pair.
-  std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize() const;
+  std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize(
+      const BrowserLayoutParams& params) const;
 
   // Returns the type of tabstrip present.
   enum class TabStripType { kNone, kWebUi, kVertical, kHorizontal };
