@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -89,6 +90,15 @@ class VIZ_SERVICE_EXPORT VizDebugger {
   }
 
   static VizDebugger* GetInstance();
+
+  // Parse the given hex string to produce a SkColor value. The hex string must
+  // have a length of 7 and starts with a '#', e.g. "#ffffff". Returns
+  // SK_ColorTRANSPARENT on parse failure.
+  static SkColor HexStringToSkColor(std::string_view hex_string);
+
+  // Converts a SkColor value to its corresponding hex string. e.g. SK_ColorRED
+  // will produce "#ff0000".
+  static std::string SkColorToHexString(SkColor color);
 
   VizDebugger();
   ~VizDebugger();

@@ -17,6 +17,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "skia/ext/codec_utils.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
 
@@ -42,6 +44,23 @@ VizDebugger* VizDebugger::GetInstance() {
   return g_debugger.get();
 }
 
+SkColor VizDebugger::HexStringToSkColor(std::string_view hex_string) {
+  uint32_t red, green, blue;
+
+  if (hex_string.size() == 7 && hex_string[0] == '#' &&
+      base::HexStringToUInt(hex_string.substr(1, 2), &red) &&
+      base::HexStringToUInt(hex_string.substr(3, 2), &green) &&
+      base::HexStringToUInt(hex_string.substr(5, 2), &blue)) {
+    return SkColorSetRGB(red, green, blue);
+  }
+  return SK_ColorTRANSPARENT;
+}
+
+std::string VizDebugger::SkColorToHexString(SkColor color) {
+  return absl::StrFormat("#%02x%02x%02x", SkColorGetR(color),
+                         SkColorGetG(color), SkColorGetB(color));
+}
+
 VizDebugger::FilterBlock::FilterBlock(const std::string file_str,
                                       const std::string func_str,
                                       const std::string anno_str,
@@ -64,11 +83,11 @@ base::Value::Dict VizDebugger::CallSubmitCommon::GetDictionaryValue() const {
       // Since this is only for debugging, it's ok for thread ids to be
       // truncated.
       .Set("thread_id", static_cast<int32_t>(thread_id))
-      .Set("option",
-           base::Value::Dict()
-               .Set("color", base::StringPrintf("#%02x%02x%02x", option.color_r,
-                                                option.color_g, option.color_b))
-               .Set("alpha", option.color_a));
+      .Set("option", base::Value::Dict()
+                         .Set("color", SkColorToHexString(SkColorSetRGB(
+                                           option.color_r, option.color_g,
+                                           option.color_b)))
+                         .Set("alpha", option.color_a));
 }
 
 VizDebugger::StaticSource::StaticSource(const char* anno_name,

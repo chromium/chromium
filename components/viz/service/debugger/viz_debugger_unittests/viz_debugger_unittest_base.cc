@@ -152,15 +152,11 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
 
     const base::Value::Dict* option_dict = dict.FindDict("option");
 
-    uint32_t red;
-    uint32_t green;
-    uint32_t blue;
-    UNSAFE_TODO(std::sscanf(option_dict->FindString("color")->c_str(),
-                            "#%x%x%x", &red, &green, &blue));
-
-    option->color_r = red;
-    option->color_g = green;
-    option->color_b = blue;
+    SkColor color =
+        VizDebugger::HexStringToSkColor(*(option_dict->FindString("color")));
+    option->color_r = SkColorGetR(color);
+    option->color_g = SkColorGetG(color);
+    option->color_b = SkColorGetB(color);
     option->color_a =
         static_cast<uint8_t>(option_dict->FindInt("alpha").value_or(kNoVal));
   };
