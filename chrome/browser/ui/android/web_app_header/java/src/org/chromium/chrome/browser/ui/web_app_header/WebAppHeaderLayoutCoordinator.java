@@ -277,6 +277,10 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
             initWCOControls();
         }
 
+        if (mDisplayMode == DisplayMode.STANDALONE) {
+            initStandaloneControls();
+        }
+
         // Determine width of initialized UI controls.
         mUIControlsMinWidthPx = calculateUIControlsMinWidth();
     }
@@ -406,6 +410,36 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             /* isWebApp= */ true);
         }
         mMediator.setOnButtonBottomInsetChanged(this::onButtonBottomInsetChanged);
+    }
+
+    private void initStandaloneControls() {
+        assert mView != null;
+        assert mMediator != null;
+
+        if (mIsTWA && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled()) {
+            mMenuButtonContainer = mView.findViewById(R.id.web_app_menu_button_wrapper);
+            mMenuButtonContainer.setVisibility(View.VISIBLE);
+
+            // TODO(crbug.com/453007852): When ObservableSupplier<E> extends Supplier<@Nullable E>,
+            // remove cast to Supplier<@Nullable MenuButtonState>,
+            mMenuButtonCoordinator =
+                    new MenuButtonCoordinator(
+                            mActivity,
+                            mAppMenuCoordinatorSupplier,
+                            mBrowserStateBrowserControlsVisibilityDelegate,
+                            mActivityWindowAndroid,
+                            /* setUrlBarFocusFunction= */ (should, reason) -> {},
+                            mRequestRenderRunnable,
+                            /* canShowAppUpdateBadge= */ false,
+                            /* isInOverviewModeSupplier= */ () -> false,
+                            mThemeColorProvider,
+                            mIncognitoStateProvider,
+                            (Supplier<@Nullable MenuButtonState>) mMenuButtonStateSupplier,
+                            this::onMenuButtonClicked,
+                            R.id.menu_button_wrapper,
+                            /* visibilityDelegate= */ null,
+                            /* isWebApp= */ true);
+        }
     }
 
     private void onUnoccludedWidthChanged(int newUnoccludedWidthPx) {
