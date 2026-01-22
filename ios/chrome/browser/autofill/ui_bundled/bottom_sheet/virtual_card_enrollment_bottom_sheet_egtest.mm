@@ -112,13 +112,6 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 
 @implementation VirtualCardEnrollmentBottomSheetEgTest
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillSaveCardBottomSheet);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [AutofillAppInterface clearCreditCardStore];

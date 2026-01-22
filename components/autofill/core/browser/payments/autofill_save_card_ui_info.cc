@@ -29,11 +29,11 @@ AutofillSaveCardUiInfo& AutofillSaveCardUiInfo::operator=(
 
 static std::u16string GetConfirmButtonText(
     const payments::PaymentsAutofillClient::SaveCreditCardOptions& options) {
+#if BUILDFLAG(IS_ANDROID)
   // Requesting name or expiration date from the user makes the save prompt
   // a 2-step fix flow.
   bool prompt_continue = options.should_request_name_from_user ||
                          options.should_request_expiration_date_from_user;
-#if BUILDFLAG(IS_ANDROID)
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly:
     case CardSaveType::kCardSaveWithCvc: {
@@ -52,15 +52,7 @@ static std::u16string GetConfirmButtonText(
     case CardSaveType::kCardSaveWithCvc: {
       // TODO(crbug.com/407742057): Update confirm button's string id
       // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillSaveCardBottomSheet) ||
-          base::FeatureList::IsEnabled(
-              features::kAutofillLocalSaveCardBottomSheet)) {
-        return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
-      }
-      return l10n_util::GetStringUTF16(
-          prompt_continue ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
-                          : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
     }
     case CardSaveType::kCvcSaveOnly: {
       return l10n_util::GetStringUTF16(
@@ -174,13 +166,10 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
 #elif BUILDFLAG(IS_IOS)
   // On iOS, the UI (infobar vs. bottom sheet) and title are determined by
   // whether the feature is enabled and the card's strike count.
-  is_for_bottom_sheet =
-      ShouldShowSaveCardBottomSheet(
-          options.card_save_type, options.num_strikes.value_or(0),
-          /*should_request_name_from_user=*/false,
-          /*should_request_expiration_date_from_user=*/false) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillLocalSaveCardBottomSheet);
+  is_for_bottom_sheet = ShouldShowSaveCardBottomSheet(
+      options.card_save_type, options.num_strikes.value_or(0),
+      /*should_request_name_from_user=*/false,
+      /*should_request_expiration_date_from_user=*/false);
 
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly: {
@@ -299,13 +288,10 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     }
   }
 #elif BUILDFLAG(IS_IOS)
-  is_for_bottom_sheet =
-      ShouldShowSaveCardBottomSheet(
-          options.card_save_type, options.num_strikes.value_or(0),
-          options.should_request_name_from_user,
-          options.should_request_expiration_date_from_user) &&
-      base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
-
+  is_for_bottom_sheet = ShouldShowSaveCardBottomSheet(
+      options.card_save_type, options.num_strikes.value_or(0),
+      options.should_request_name_from_user,
+      options.should_request_expiration_date_from_user);
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveWithCvc: {
       CHECK(base::FeatureList::IsEnabled(
@@ -318,18 +304,12 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
         save_card_icon_description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
         save_card_prompt_title_id =
-            base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
-                ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
-                : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
-        description_text =
-            base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet)
-                ? l10n_util::GetStringUTF16(
-                      base::FeatureList::IsEnabled(
-                          features::kAutofillEnableWalletBranding)
-                          ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY
-                          : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
-                : l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY;
+        description_text = l10n_util::GetStringUTF16(
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBranding)
+                ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY
+                : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
       } else {
         save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
         save_card_prompt_title_id =

@@ -938,11 +938,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "autofill-local-save-card-bottomsheet",
-    "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-manual-testing-data",
     "owners": ["fleimgruber@google.com", "chrome-autofill@google.com"],
     "expiry_milestone": 146
@@ -974,11 +969,6 @@
     "name": "autofill-prioritize-save-card-over-mandatory-reauth",
     "owners": [ "averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
-  },
-  {
-    "name": "autofill-save-card-bottomsheet",
-    "owners": [ "kavitasoni@google.com", "chrome-payments-eng@google.com"],
-    "expiry_milestone": 145
   },
   {
     "name": "autofill-shared-storage-server-card-data",

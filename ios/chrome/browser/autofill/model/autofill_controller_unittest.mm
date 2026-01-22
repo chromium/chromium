@@ -373,8 +373,6 @@ class AutofillControllerTest : public PlatformTest {
   raw_ptr<AutofillBottomSheetTabHelper, DanglingUntriaged>
       bottomsheet_tab_helper_;
   id<AutofillCommands> autofill_commands_handler_;
-  ScopedFeatureList scoped_feature_list_{
-      features::kAutofillLocalSaveCardBottomSheet};
   ScopedFeatureList scoped_feature_list_2_;
 
  private:
@@ -1417,76 +1415,6 @@ TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
   histogram_tester_->ExpectUniqueSample(
       /*name=*/kAutofillSubmissionDetectionSourceHistogram,
       /*sample=*/mojom::SubmissionSource::XHR_SUCCEEDED,
-      /*expected_count=*/1);
-}
-
-class AutofillControllerWithoutLocalSaveCardBottomSheetTest
-    : public AutofillControllerTest {
- protected:
-  AutofillControllerWithoutLocalSaveCardBottomSheetTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillLocalSaveCardBottomSheet);
-  }
-  ScopedFeatureList scoped_feature_list_;
-};
-
-// Checks that an HTML page containing a credit card-type form which is
-// submitted with scripts (simulating user form submission) results in a credit
-// card being successfully imported into the PersonalDataManager.
-// TODO(crbug.com/422148854): Remove this test post local save card bottomsheet
-// is launched.
-TEST_F(AutofillControllerWithoutLocalSaveCardBottomSheetTest,
-       CreditCardImport) {
-  InfoBarManagerImpl::CreateForWebState(web_state());
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile_.get());
-  personal_data_manager->SetSyncServiceForTest(nullptr);
-
-  // Check there are no registered profiles already.
-  EXPECT_EQ(
-      0U,
-      personal_data_manager->payments_data_manager().GetCreditCards().size());
-
-  LoadAndFillCreditCardForm();
-  web::test::ExecuteJavaScript(@"submit.click()", web_state());
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state());
-  WaitForCondition(^bool() {
-    return infobar_manager->infobars().size();
-  });
-  ExpectMetric("Autofill.CreditCardInfoBar.Local",
-               AutofillMetrics::INFOBAR_SHOWN);
-  ExpectMetric("Autofill.SaveCreditCardPromptResult.IOS.Local.Banner."
-               "NumStrikes.0.NoFixFlow.SavingWithoutCvc",
-               static_cast<int>(
-                   autofill_metrics::SaveCreditCardPromptResultIOS::kShown));
-  ASSERT_EQ(1U, infobar_manager->infobars().size());
-  infobars::InfoBarDelegate* infobar =
-      infobar_manager->infobars()[0]->delegate();
-  ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
-
-  {
-    // This call cause a modification of the PersonalDataManager, so wait until
-    // the asynchronous task completes in addition to waiting for the UI update.
-    PersonalDataChangedWaiter waiter(*personal_data_manager);
-    confirm_infobar->Accept();
-    std::move(waiter).Wait();
-  }
-
-  const std::vector<const CreditCard*>& credit_cards =
-      personal_data_manager->payments_data_manager().GetCreditCards();
-  ASSERT_EQ(1U, credit_cards.size());
-  const CreditCard& credit_card = *credit_cards[0];
-  EXPECT_EQ(u"Superman", credit_card.GetInfo(CREDIT_CARD_NAME_FULL, "en-US"));
-  EXPECT_EQ(u"4000444444444444",
-            credit_card.GetInfo(CREDIT_CARD_NUMBER, "en-US"));
-  EXPECT_EQ(u"11", credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, "en-US"));
-  EXPECT_EQ(u"2999",
-            credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, "en-US"));
-
-  histogram_tester_->ExpectUniqueSample(
-      /*name=*/kAutofillSubmissionDetectionSourceHistogram,
-      /*sample=*/mojom::SubmissionSource::FORM_SUBMISSION,
       /*expected_count=*/1);
 }
 

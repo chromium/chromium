@@ -1663,10 +1663,9 @@ bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
   // Since this code is only reached when no CVC was found on the form,
   // the save type is kCardSaveOnly.
   return !autofill::ShouldShowSaveCardBottomSheet(
-             payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly,
-             num_strikes, should_request_name_from_user_,
-             should_request_expiration_date_from_user_) ||
-         !base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly,
+      num_strikes, should_request_name_from_user_,
+      should_request_expiration_date_from_user_);
 #else
   // For other platforms, we only request the CVC-inclusive message if a CVC
   // was present in the form.

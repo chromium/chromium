@@ -254,13 +254,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
 // Payments, and Google Pay will instead reference Google Wallet.
 BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
-// When enabled, save card bottomsheet will be shown to save the card locally
-// when the user has not previously rejected the offer to save the card.
-BASE_FEATURE(kAutofillLocalSaveCardBottomSheet,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // When enabled, Payments Autofill Buy Now Pay Later (BNPL) will use each
 // corresponding issuer's blocklist instead of allowlist to check for website
 // eligibility.
@@ -278,13 +271,6 @@ BASE_FEATURE(kAutofillPrioritizeSaveCardOverMandatoryReauth,
 // TODO(crbug.com/40276036): Clean up after M139 branch (June 23, 2025).
 BASE_FEATURE(kAutofillRetryImageFetchOnFailure,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-// When enabled, save card bottomsheet will be shown to save the card to the
-// server when the user has not previously rejected the offer to save the card,
-// and both a valid expiry date and cardholder name are present.
-BASE_FEATURE(kAutofillSaveCardBottomSheet, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // If enabled, we will store autofill server card data in shared storage.
 BASE_FEATURE(kAutofillSharedStorageServerCardData,
