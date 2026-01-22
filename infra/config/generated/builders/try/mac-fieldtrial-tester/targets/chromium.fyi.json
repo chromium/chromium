@@ -31,6 +31,29 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
+        "name": "browser_tests_no_field_trial",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-15",
+            "pool": "chromium.tests.finch"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
+          "--disable-field-trial-config"
+        ],
+        "ci_only": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
         "module_name": "//components:components_browsertests",
         "module_scheme": "gtest",
         "name": "components_browsertests_no_field_trial",
