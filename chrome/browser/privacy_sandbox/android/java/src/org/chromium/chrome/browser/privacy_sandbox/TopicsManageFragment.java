@@ -13,7 +13,8 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,7 +44,8 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {

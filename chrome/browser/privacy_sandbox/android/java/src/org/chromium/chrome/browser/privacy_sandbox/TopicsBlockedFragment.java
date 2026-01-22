@@ -12,7 +12,8 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -30,7 +31,8 @@ public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
     private static final String BLOCKED_TOPICS_PREFERENCE = "block_list";
 
     private PreferenceCategory mBlockedTopicsCategory;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {

@@ -14,7 +14,8 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,7 +63,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private Preference mActiveTopicsPreference;
     private Preference mBlockedTopicsPreference;
     private Preference mManageTopicsPreference;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     static boolean isTopicsPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);

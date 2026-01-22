@@ -10,7 +10,8 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
@@ -36,7 +37,8 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
 
     private ChromeSwitchPreference mSecureDnsSwitch;
     private SecureDnsProviderPreference mSecureDnsProviderPreference;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     /**
      * @return A summary for use in the Preference that opens this fragment.
