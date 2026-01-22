@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
   apps::IconInfo icon(GURL("https://example.com/icon.png"), /*size=*/32);
   GURL app_url("https://example.com/scope/index.html");
   GURL scope("https://example.com/scope/");
-  webapps::ManifestId manifest_id("https://example.com/manifest-id");
+  webapps::ManifestId manifest_id(GURL("https://example.com/manifest-id"));
   std::string app_name = "app name";
   auto install_info = std::make_unique<WebAppInstallInfo>(manifest_id, app_url);
   install_info->scope = scope;
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
 
   // Fragment part of ID should have been stripped off.
   EXPECT_EQ(web_app->manifest_id(),
-            webapps::ManifestId("https://example.com/explicit_id"));
+            webapps::ManifestId(GURL("https://example.com/explicit_id")));
   EXPECT_EQ(web_app->sync_proto().relative_manifest_id(), stripped_manifest_id);
 
   histogram_tester.ExpectUniqueSample(

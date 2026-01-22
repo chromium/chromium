@@ -1272,7 +1272,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest, Prompts) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1300,7 +1300,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kInnerAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kInnerAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerDiyAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kInnerDiyAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kInnerDiyAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kInnerAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kInnerAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1381,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kInnerAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kInnerAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1407,7 +1407,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kInnerAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kInnerAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kInnerAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1437,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kNewAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kNewAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kNewAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kNewAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kNewAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kNewAppUrl), future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerNoFakeBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), kNewAppUrl));
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(kNewAppUrl, future.Get());
+  EXPECT_EQ(ManifestId(kNewAppUrl), future.Get());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
