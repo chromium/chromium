@@ -114,9 +114,10 @@ class WebRtcVideoTrackSourceTest
     track_source_->OnFrameCaptured(frame);
   }
 
-  void SendTestFrameWithMappableGMB(const FrameParameters& frame_parameters,
-                                    base::TimeDelta timestamp,
-                                    bool premapped) {
+  void SendTestFrameWithMappableSharedImage(
+      const FrameParameters& frame_parameters,
+      base::TimeDelta timestamp,
+      bool premapped) {
     std::optional<viz::SharedImageFormat> si_format =
         media::VideoPixelFormatToSharedImageFormat(
             frame_parameters.pixel_format);
@@ -689,7 +690,7 @@ TEST_P(WebRtcVideoTrackSourceTest, PassesMappedFramesInOrder) {
       .pixel_format = std::get<1>(GetParam())};
   if (frame_parameters.storage_type !=
       media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    // Mapping is only valid for GMB backed frames.
+    // Mapping is only valid for MappableSI-backed frames.
     return;
   }
   constexpr int kSentFrames = 10;
@@ -703,43 +704,43 @@ TEST_P(WebRtcVideoTrackSourceTest, PassesMappedFramesInOrder) {
   }
 
   SetRequireMappedFrame(false);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(0),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(0),
+                                       /*premapped=*/false);
 
   SetRequireMappedFrame(true);
   // This will be the 1st async frame.
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(1),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(1),
+                                       /*premapped=*/false);
   SetRequireMappedFrame(true);
   // This will be the 2nd async frame.
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(2),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(2),
+                                       /*premapped=*/false);
   SetRequireMappedFrame(true);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(3),
-                               /*premapped=*/true);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(3),
+                                       /*premapped=*/true);
   // This will return the 1st async frame.
   InvokeNextMapCallback();
 
   SetRequireMappedFrame(true);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(4),
-                               /*premapped=*/true);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(4),
+                                       /*premapped=*/true);
 
   SetRequireMappedFrame(true);
   // This will be the 3rd async frame.
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(5),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(5),
+                                       /*premapped=*/false);
 
   SetRequireMappedFrame(false);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(6),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(6),
+                                       /*premapped=*/false);
 
   // This will return the 2nd async frame.
   InvokeNextMapCallback();
 
   SetRequireMappedFrame(true);
   // This will be the 4th async frame.
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(7),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(7),
+                                       /*premapped=*/false);
 
   // This will return the 3rd async frame.
   InvokeNextMapCallback();
@@ -749,12 +750,12 @@ TEST_P(WebRtcVideoTrackSourceTest, PassesMappedFramesInOrder) {
 
   SetRequireMappedFrame(true);
   // This will be the 5th async frame.
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(8),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(8),
+                                       /*premapped=*/false);
 
   SetRequireMappedFrame(true);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(9),
-                               /*premapped=*/true);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(9),
+                                       /*premapped=*/true);
 
   // This will return the 5th async frame.
   InvokeNextMapCallback();
@@ -770,12 +771,12 @@ TEST_P(WebRtcVideoTrackSourceTest, DoesntCrashOnLateCallbacks) {
       .pixel_format = std::get<1>(GetParam())};
   if (frame_parameters.storage_type !=
       media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
-    // Mapping is only valid for GMB backed frames.
+    // Mapping is only valid for MappableSI-backed frames.
     return;
   }
   SetRequireMappedFrame(true);
-  SendTestFrameWithMappableGMB(frame_parameters, base::Seconds(0),
-                               /*premapped=*/false);
+  SendTestFrameWithMappableSharedImage(frame_parameters, base::Seconds(0),
+                                       /*premapped=*/false);
   track_source_->Dispose();
   track_source_->RemoveSink(&mock_sink_);
   track_source_.reset();
