@@ -205,7 +205,8 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
   EXPECT_EQ(image->IsTextureBacked(), expect_accelerated_images());
 }
 
-TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
+TEST_P(VideoFrameImageUtilTest,
+       CreateImageFromVideoFrameMappableSharedImageFrame) {
   auto cpu_frame = CreateTestFrame(
       kTestSize, gfx::Rect(kTestSize), kTestSize,
       media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
