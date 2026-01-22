@@ -316,6 +316,10 @@ BASE_FEATURE(kActorUiThemed, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicHandoffButtonHiddenClientControl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, post tasks in the window controller to fix re-entrancy crash.
+BASE_FEATURE(kGlicActorPostTaskUiUpdateEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, shows handoff button in immersive mode.
 BASE_FEATURE(kGlicHandoffButtonShowInImmersiveMode,
              base::FEATURE_ENABLED_BY_DEFAULT);

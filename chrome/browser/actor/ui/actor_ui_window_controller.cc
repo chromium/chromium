@@ -263,6 +263,22 @@ void ActorUiWindowController::InitializeImmersiveModeObserver() {
 }
 
 void ActorUiWindowController::NotifyControllersOfImmersiveChange() {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorPostTaskUiUpdateEnabled)) {
+    // Use PostTask to avoid re-entrancy issues and race conditions during
+    // Tab Discard where the WebContents <-> TabModel mapping is temporarily
+    // unstable. This prevents the crash in GetFromContents().
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ActorUiWindowController::
+                           NotifyControllersOfImmersiveChangeInternal,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    NotifyControllersOfImmersiveChangeInternal();
+  }
+}
+
+void ActorUiWindowController::NotifyControllersOfImmersiveChangeInternal() {
   for (const auto& controller : contents_container_controllers_) {
     controller->NotifyTabControllerOnImmersiveModeChanged();
   }

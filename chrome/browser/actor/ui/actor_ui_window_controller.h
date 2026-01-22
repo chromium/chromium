@@ -137,6 +137,9 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   void NotifyControllersOfImmersiveChange();
   void OnImmersiveFullscreenToolbarPrefChanged();
 
+  // Helper to run the immersive change notification asynchronously.
+  void NotifyControllersOfImmersiveChangeInternal();
+
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedObservation<ImmersiveModeController,
