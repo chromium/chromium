@@ -83,6 +83,13 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
   void SetBeginFrameSourceForFlingScheduler(
       viz::BeginFrameSource* begin_frame_source);
 
+  // Sets the value of the delay before the renderer is considered hung.
+  // Already running timers won't be affected.
+  // Note: This only affects the RenderInputRouter in the current process
+  // (either Browser or Viz) and does not propagate to other processes (either
+  // Browser or Viz).
+  void SetHungRendererDelay(base::TimeDelta delay);
+
   // InputRouterClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(

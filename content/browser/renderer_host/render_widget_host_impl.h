@@ -317,6 +317,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const gfx::Point& point,
       const ui::mojom::MenuSourceType source_type) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
+  void SetHungRendererDelay(const base::TimeDelta& delay) override;
 
   // RenderProcessHostPriorityClient implementation.
   RenderProcessHostPriorityClient::Priority GetPriority() override;
@@ -1036,6 +1037,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return synthetic_gesture_controller_.get();
   }
 
+  base::TimeDelta GetHungRendererDelayForTesting();
+
  protected:
   // |routing_id| must not be IPC::mojom::kRoutingIdNone.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -1511,6 +1514,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // This value indicates how long to wait for a new compositor frame from a
   // renderer process before clearing any previously displayed content.
   base::TimeDelta new_content_rendering_delay_;
+
+  // This value indicates how long to wait before we consider a renderer hung.
+  base::TimeDelta hung_renderer_delay_;
 
   // When true, the RenderWidget is regularly sending updates regarding
   // composition info. It should only be true when there is a focused editable

@@ -786,6 +786,11 @@ void RenderInputRouter::RenderProcessBlockedStateChanged(bool blocked) {
               : RestartInputEventAckTimeoutIfNecessary();
 }
 
+void RenderInputRouter::SetHungRendererDelay(base::TimeDelta delay) {
+  CHECK_LE(delay, input::kHungRendererDelay);
+  hung_renderer_delay_ = delay;
+}
+
 void RenderInputRouter::SetInputTargetClientForTesting(
     mojo::Remote<viz::mojom::InputTargetClient> input_target_client) {
   input_target_client_ = std::move(input_target_client);
