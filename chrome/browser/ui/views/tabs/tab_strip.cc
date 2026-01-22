@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
@@ -1603,8 +1604,25 @@ gfx::Range TabStrip::ListTabsInGroup(
 }
 
 bool TabStrip::CanExtendDragHandle() const {
-  return !controller_->IsFrameCondensed() &&
-         !controller_->EverHasVisibleBackgroundTabShapes();
+  BrowserWindowInterface* const browser_window_interface =
+      GetBrowserWindowInterface();
+  BrowserView* const browser_view =
+      browser_window_interface
+          ? BrowserView::GetBrowserViewForBrowser(browser_window_interface)
+          : nullptr;
+
+  // `browser_view` can be null during unit tests.
+  if (!browser_view) {
+    return false;
+  }
+
+  BrowserFrameView* const browser_frame_view =
+      browser_view->browser_widget()->GetFrameView();
+  return !browser_frame_view->IsFrameCondensed() &&
+         !(browser_frame_view->HasVisibleBackgroundTabShapes(
+               BrowserFrameActiveState::kActive) ||
+           browser_frame_view->HasVisibleBackgroundTabShapes(
+               BrowserFrameActiveState::kInactive));
 }
 
 const views::View* TabStrip::GetTabClosingModeMouseWatcherHostView() const {
@@ -2028,11 +2046,6 @@ std::u16string TabStrip::GetAccessibleTabName(const Tab* tab) const {
              : std::u16string();
 }
 
-std::optional<int> TabStrip::GetCustomBackgroundId(
-    BrowserFrameActiveState active_state) const {
-  return controller_->GetCustomBackgroundId(active_state);
-}
-
 float TabStrip::GetHoverOpacityForTab(float range_parameter) const {
   return gfx::Tween::FloatValueBetween(range_parameter, hover_opacity_min_,
                                        hover_opacity_max_);
@@ -2076,10 +2089,6 @@ Browser* TabStrip::GetBrowser() {
 
 BrowserWindowInterface* TabStrip::GetBrowserWindowInterface() {
   return controller_->GetBrowserWindowInterface();
-}
-
-bool TabStrip::IsFrameCondensed() const {
-  return controller_->IsFrameCondensed();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

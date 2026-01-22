@@ -87,11 +87,6 @@ SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
 }
 
-std::optional<int> FakeTabSlotController::GetCustomBackgroundId(
-    BrowserFrameActiveState active_state) const {
-  return std::nullopt;
-}
-
 std::u16string FakeTabSlotController::GetAccessibleTabName(
     const Tab* tab) const {
   return std::u16string();
@@ -137,10 +132,6 @@ Browser* FakeTabSlotController::GetBrowser() {
 
 BrowserWindowInterface* FakeTabSlotController::GetBrowserWindowInterface() {
   return nullptr;
-}
-
-bool FakeTabSlotController::IsFrameCondensed() const {
-  return false;
 }
 
 TabGroup* FakeTabSlotController::GetTabGroup(

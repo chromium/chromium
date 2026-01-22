@@ -89,10 +89,6 @@ class FakeBaseTabStripController : public TabStripController {
   void AddTabToGroup(int model_index,
                      const tab_groups::TabGroupId& group) override;
   void RemoveTabFromGroup(int model_index) override;
-  bool IsFrameCondensed() const override;
-  bool EverHasVisibleBackgroundTabShapes() const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;

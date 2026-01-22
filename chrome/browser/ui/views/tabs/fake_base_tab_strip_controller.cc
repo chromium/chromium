@@ -284,19 +284,6 @@ void FakeBaseTabStripController::OnStoppedDragging() {}
 void FakeBaseTabStripController::OnKeyboardFocusedTabChanged(
     std::optional<int> index) {}
 
-bool FakeBaseTabStripController::IsFrameCondensed() const {
-  return false;
-}
-
-bool FakeBaseTabStripController::EverHasVisibleBackgroundTabShapes() const {
-  return false;
-}
-
-std::optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
-    BrowserFrameActiveState active_state) const {
-  return std::nullopt;
-}
-
 std::u16string FakeBaseTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
   return std::u16string();

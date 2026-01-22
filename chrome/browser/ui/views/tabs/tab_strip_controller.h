@@ -212,20 +212,6 @@ class TabStripController {
   virtual gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Determines whether the top frame is condensed vertically, as when the
-  // window is maximized. If true, the top frame is just the height of a tab,
-  // rather than having extra vertical space above the tabs.
-  virtual bool IsFrameCondensed() const = 0;
-
-  // Returns whether the shapes of background tabs are visible against the
-  // frame for either active or inactive windows.
-  virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
-
-  // For non-transparent windows, returns the background tab image resource ID
-  // if the image has been customized, directly or indirectly, by the theme.
-  virtual std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const = 0;
-
   // Returns the accessible tab name.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 

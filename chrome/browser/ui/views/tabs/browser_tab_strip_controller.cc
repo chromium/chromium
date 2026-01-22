@@ -616,22 +616,6 @@ gfx::Range BrowserTabStripController::ListTabsInGroup(
   return model_->group_model()->GetTabGroup(group)->ListTabs();
 }
 
-bool BrowserTabStripController::IsFrameCondensed() const {
-  return GetFrameView()->IsFrameCondensed();
-}
-
-bool BrowserTabStripController::EverHasVisibleBackgroundTabShapes() const {
-  return GetFrameView()->HasVisibleBackgroundTabShapes(
-             BrowserFrameActiveState::kActive) ||
-         GetFrameView()->HasVisibleBackgroundTabShapes(
-             BrowserFrameActiveState::kInactive);
-}
-
-std::optional<int> BrowserTabStripController::GetCustomBackgroundId(
-    BrowserFrameActiveState active_state) const {
-  return GetFrameView()->GetCustomBackgroundId(active_state);
-}
-
 std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
   return browser_view_->GetAccessibleTabLabel(

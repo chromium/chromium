@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -17,6 +18,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -174,6 +176,8 @@ class TabStyleViewsImpl : public TabStyleViews {
   // left/right insets and positioning.
   bool IsRightSplitTab(const Tab* tab) const;
 
+  BrowserFrameView* GetBrowserFrameView() const;
+
   const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
@@ -250,11 +254,13 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     float right = aligned_bounds.right() - extension_corner_radius;
     const int bottom = top + tab_height;
 
+    BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+    const bool is_frame_condensed =
+        browser_frame_view ? browser_frame_view->IsFrameCondensed() : false;
     // For maximized and full screen windows, extend the tab hit test to the top
     // of the tab, encompassing the top padding. This makes it easy to click on
     // tabs by moving the mouse to the top of the screen.
-    if (path_type == TabStyle::PathType::kHitTest &&
-        tab()->controller()->IsFrameCondensed()) {
+    if (path_type == TabStyle::PathType::kHitTest && is_frame_condensed) {
       top -= GetLayoutConstant(LayoutConstant::kTabStripPadding) * scale;
       // Don't round the top corners to avoid creating dead space between tabs.
       top_left_corner_radius = 0;
@@ -583,9 +589,11 @@ void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
   if (tab_->GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
     active_tab_fill_id = IDR_THEME_TOOLBAR;
   }
+  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
   const std::optional<int> inactive_tab_fill_id =
-      tab_->controller()->GetCustomBackgroundId(
-          BrowserFrameActiveState::kUseCurrent);
+      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
+                               BrowserFrameActiveState::kUseCurrent)
+                         : std::nullopt;
 
   if (active_tab_fill_id.has_value() || inactive_tab_fill_id.has_value()) {
     PaintTabBackgroundWithImages(canvas, active_tab_fill_id,
@@ -1057,6 +1065,20 @@ bool TabStyleViewsImpl::IsRightSplitTab(const Tab* tab) const {
   }
   return tab ==
          tabs_in_split[base::i18n::IsRTL() ? 0 : tabs_in_split.size() - 1];
+}
+
+BrowserFrameView* TabStyleViewsImpl::GetBrowserFrameView() const {
+  BrowserWindowInterface* browser_window_interface =
+      tab()->controller()->GetBrowserWindowInterface();
+  // BrowserWindowInterface can be null during unit tests
+  if (!browser_window_interface) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
+
+  return BrowserView::GetBrowserViewForBrowser(browser_window_interface)
+      ->browser_widget()
+      ->GetFrameView();
 }
 
 float TabStyleViewsImpl::GetTopCornerRadiusForWidth(int width) const {

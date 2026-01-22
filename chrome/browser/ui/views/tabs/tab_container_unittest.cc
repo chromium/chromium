@@ -135,10 +135,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsBrowserClosing();
   }
 
-  bool CanExtendDragHandle() const override {
-    return !tab_strip_controller_->IsFrameCondensed() &&
-           !tab_strip_controller_->EverHasVisibleBackgroundTabShapes();
-  }
+  bool CanExtendDragHandle() const override { return true; }
 
   const views::View* GetTabClosingModeMouseWatcherHostView() const override {
     return nullptr;

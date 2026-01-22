@@ -77,8 +77,6 @@ class FakeTabSlotController : public TabSlotController {
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
   SkColor GetTabSeparatorColor() const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
@@ -96,7 +94,6 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
   Browser* GetBrowser() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  bool IsFrameCondensed() const override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)

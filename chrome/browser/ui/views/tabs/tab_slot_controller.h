@@ -193,11 +193,6 @@ class TabSlotController {
   // Returns the color of the separator between the tabs.
   virtual SkColor GetTabSeparatorColor() const = 0;
 
-  // Returns the background tab image resource ID if the image has been
-  // customized, directly or indirectly, by the theme.
-  virtual std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const = 0;
-
   // Returns the accessible tab name for this tab.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
@@ -245,9 +240,6 @@ class TabSlotController {
   virtual Browser* GetBrowser() = 0;
 
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
-
-  // See BrowserFrameView::IsFrameCondensed().
-  virtual bool IsFrameCondensed() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only

@@ -113,10 +113,6 @@ class BrowserTabStripController : public TabStripController,
       const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group_id) const override;
-  bool IsFrameCondensed() const override;
-  bool EverHasVisibleBackgroundTabShapes() const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 #if BUILDFLAG(IS_CHROMEOS)

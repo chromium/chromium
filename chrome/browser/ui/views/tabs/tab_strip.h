@@ -301,8 +301,6 @@ class TabStrip : public views::View,
   bool CanPaintThrobberToLayer() const override;
   SkColor GetTabSeparatorColor() const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
   std::u16string GetGroupTitle(
@@ -317,7 +315,6 @@ class TabStrip : public views::View,
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   Browser* GetBrowser() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  bool IsFrameCondensed() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif
