@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
+import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import './icons.html.js';
 import './user_skills_page.js';
 import './discover_skills_page.js';
@@ -13,6 +14,7 @@ import type {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_m
 import {CrRouter} from '//resources/js/cr_router.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -31,6 +33,7 @@ export enum Page {
 export interface SkillsAppElement {
   $: {
     menu: CrMenuSelector,
+    toolbar: CrToolbarElement,
   };
 }
 
@@ -51,6 +54,7 @@ export class SkillsAppElement extends CrLitElement {
     return {
       menuItems_: {type: Array},
       selectedPage_: {type: String},
+      narrow_: {type: Boolean},
     };
   }
 
@@ -69,6 +73,7 @@ export class SkillsAppElement extends CrLitElement {
       page: Page.DISCOVER_SKILLS,
     },
   ];
+  protected accessor narrow_: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -86,6 +91,24 @@ export class SkillsAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  // Called when the page is narrow & the menu button appears.
+  // Clicking it should open a cr-drawer.
+  protected onMenuButtonClick_() {
+    // TODO(crbug.com/476409946): Implement this.
+  }
+
+  // Called whenever the text in the search input field changes.
+  protected onSearchChanged_() {
+    // TODO(crbug.com/475604659): Implement this.
+  }
+
+  // Called whenever the browser window drops below the defined
+  // narrow-threshold.
+  protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
+    this.narrow_ = e.detail.value;
+    // TODO(crbug.com/476409946): Add additional impl here.
   }
 
   protected onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {

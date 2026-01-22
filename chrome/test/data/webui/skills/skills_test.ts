@@ -27,6 +27,8 @@ suite('SkillsAppPage', function() {
   }
 
   test('InitialPageLoadsCorrectly', function() {
+    assertEquals('Skills', app.$.toolbar.pageName);
+
     const tabs =
         app.shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
     assertEquals(2, tabs.length);

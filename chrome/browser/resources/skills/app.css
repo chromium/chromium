@@ -12,17 +12,35 @@
 
 :host {
   display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
+#content {
+  display: flex;
+  flex: 1;
+  overflow: overlay;
+  position: relative;
+}
+
+#left {
+  flex: 0 0 250px;
+  height: 100%;
+  position: sticky;
+  top: 0;
+}
+
 #sidebar {
-  min-width: 250px;
+  max-height: 100%;
+  width: 100%;
+  overscroll-behavior: contain;
   overflow: auto;
 }
 
 cr-page-selector {
   flex: 1;
   overflow: auto;
+  min-width: 0;
 }
 
 .cr-nav-menu-item {
