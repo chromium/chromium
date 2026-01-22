@@ -481,6 +481,9 @@ extra_kv = { allow_unsafe = true }
 [crate.once_cell]
 extra_kv = { allow_unsafe = true }
 
+[crate.ordered-float]
+extra_kv = { allow_unsafe = true }
+
 [crate.parking_lot]
 extra_kv = { allow_unsafe = true }
 

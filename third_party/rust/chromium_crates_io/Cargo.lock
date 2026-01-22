@@ -173,6 +173,7 @@ dependencies = [
  "llguidance",
  "log",
  "minijinja",
+ "ordered-float",
  "png",
  "proc-macro2",
  "prost",
@@ -917,6 +918,14 @@ dependencies = [
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "ordered-float"
+version = "5.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "parking_lot"
