@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Pointer Events attributes</title>
+<title>Pointer Events optional attributes</title>
 <meta name="viewport" content="width=device-width">
 <meta name="variant" content="?mouse">
 <meta name="variant" content="?pen">
@@ -38,81 +38,6 @@
 
   let eventsLogged = [];
 
-  function verifyButtonAttributes(event) {
-    let downButton, upButton, downButtons, upButtons;
-    if (button == 'right') {
-        downButton = 2;
-        downButtons = 2;
-        upButton = 2;
-        upButtons = 0;
-    } else {
-      // defaults to left button click
-      downButton = 0;
-      downButtons = 1;
-      upButton = 0;
-      upButtons = 0;
-    }
-    const expectationsHover = {
-      // Pointer over, enter, and move are processed before the button press.
-      pointerover:  { button: -1, buttons: 0 },
-      pointerenter: { button:  -1, buttons: 0 },
-      pointermove:  { button:  -1, buttons: 0 },
-      // Button status changes on pointer down and up.
-      pointerdown:  { button:  downButton, buttons: downButtons },
-      pointerup:    { button:  upButton, buttons: upButtons },
-      // Pointer out and leave are processed after the button release.
-      pointerout:   { button:  -1, buttons: 0 },
-      pointerleave: { button:  -1, buttons: 0 }
-    };
-    const expectationsNoHover = {
-      // We don't see pointer events except during a touch gesture.
-      // Move is the only pointer event where the "button" click state is not
-      // changing. All other pointer events are associated with the start or
-      // end of a touch gesture.
-      pointerover:  { button:  0, buttons: 1 },
-      pointerenter: { button:  0, buttons: 1 },
-      pointerdown:  { button:  0, buttons: 1 },
-      pointermove:  { button: -1, buttons: 1 },
-      pointerup:    { button:  0, buttons: 0 },
-      pointerout:   { button:  0, buttons: 0 },
-      pointerleave: { button:  0, buttons: 0 }
-    };
-    const expectations =
-        (pointerType == 'touch') ? expectationsNoHover : expectationsHover;
-
-    assert_equals(event.button, expectations[event.type].button,
-                  `Button attribute on ${event.type}`);
-    assert_equals(event.buttons, expectations[event.type].buttons,
-                  `Buttons attribute on ${event.type}`);
-  }
-
-  function verifyPosition(event) {
-    const boundingRect = event.target.getBoundingClientRect();
-
-    // With a touch pointer type, the pointerout and pointerleave will trigger
-    // on pointerup while clientX and clientY are still within the target's
-    // bounds. With a hover pointer, these events will be triggered only after
-    // clientX or clientY are out of the target's bounds.
-    if (pointerType != 'touch' &&
-        (event.type == 'pointerout' || event.type == 'pointerleave')) {
-      assert_true(
-          boundingRect.left > event.clientX ||
-          boundingRect.right < event.clientX ||
-          boundingRect.top > event.clientY ||
-          boundingRect.bottom < event.clientY,
-          `clientX/clientY is outside the element bounds for ${event.type} event`);
-    } else {
-      assert_true(
-          boundingRect.left <= event.clientX &&
-          boundingRect.right >= event.clientX,
-          `clientX is within the expected range for ${event.type} event`);
-      assert_true(
-          boundingRect.top <= event.clientY &&
-          boundingRect.bottom >= event.clientY,
-          `clientY is within the expected range for ${event.type} event`);
-    }
-  }
-
   async function runTests() {
     await frameLoadedPromise;
 
@@ -129,11 +54,7 @@
         function eventChecker(e) {
           e.preventDefault();
           eventsLogged.push(e.type);
-
-          verifyButtonAttributes(e);
-          verifyPosition(e);
-          assert_true(e.isPrimary, `${testNamePrefix}: isPrimary attribute is true`);
-          check_PointerEvent(e, testNamePrefix);
+          check_PointerEvent(e, testNamePrefix, true);
         };
 
         eventsTested.forEach(type => {
