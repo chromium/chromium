@@ -336,7 +336,9 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   }
 
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
+      base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+          ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY
+          : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {

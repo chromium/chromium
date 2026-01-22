@@ -2008,6 +2008,26 @@ TEST_F(SaveCardBubbleControllerImplTest,
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
 }
 
+TEST_F(SaveCardBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletBranding};
+  ShowUploadBubble();
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY),
+      controller()->GetExplanatoryMessage());
+}
+
+TEST_F(SaveCardBubbleControllerImplTest,
+       ReturnsApplicableExplanatoryMessage_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+  ShowUploadBubble();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
+            controller()->GetExplanatoryMessage());
+}
+
 class SaveCardBubbleControllerImplTestWithCvCStorageAndFilling
     : public SaveCardBubbleControllerImplTest {
   base::test::ScopedFeatureList scoped_feature_list_{
