@@ -3668,6 +3668,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/activity_reporter/internal': {
+    'url': Var('chrome_git') + '/activity_reporter_internal.git' + '@' +
+        '68ce3440cdbec9ef8bb9dbdba7c934a172836f15',
+    'condition': 'checkout_src_internal',
+  },
+
   'src/components/autofill/core/browser/geo/chrome_alternative_state_name_maps': {
       'url': Var('chrome_git') + '/chrome/components/autofill_alternative_state_name_maps.git' + '@' +
         '474fa23d405f49279673ef101c41d61613bd05cb',

@@ -33,6 +33,7 @@ source_set("model") {
     "//components/translate/core/browser",
     "//components/ukm",
     "//components/update_client",
+    "//components/update_client:network_impl",
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",

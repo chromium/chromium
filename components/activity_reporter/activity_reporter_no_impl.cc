@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "components/activity_reporter/activity_reporter.h"
 
 namespace activity_reporter {
@@ -14,8 +15,12 @@ class ActivityReporterNoImpl : public ActivityReporter {
  public:
   ActivityReporterNoImpl() = default;
   void ReportActive() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Do nothing.
   }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
