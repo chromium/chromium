@@ -128,7 +128,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   std::wstring product_string_;
 
   size_t buttons_length_ = 0;
-  bool buttons_[Gamepad::kButtonsLengthCap];
+  bool buttons_[Gamepad::kButtonsLengthCap] = {};
 
   // The report ID for each button index, or nullopt if the button is not used.
   std::vector<std::optional<uint8_t>> button_report_id_;
@@ -145,7 +145,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
   std::vector<int> special_button_map_;
 
   size_t axes_length_ = 0;
-  RawGamepadAxis axes_[Gamepad::kAxesLengthCap];
+  RawGamepadAxis axes_[Gamepad::kAxesLengthCap] = {};
 
   bool supports_touch_events_ = false;
   size_t touches_length_ = 0;

@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -304,11 +303,11 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
 
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
                                  Gamepads* output) {
-    UNSAFE_TODO(memset(output, 0, sizeof(Gamepads)));
+    *output = {};
     int32_t version;
     do {
       version = buffer->seqlock.ReadBegin();
-      UNSAFE_TODO(memcpy(output, &buffer->data, sizeof(Gamepads)));
+      *output = *reinterpret_cast<const Gamepads*>(&buffer->data);
     } while (buffer->seqlock.ReadRetry(version));
   }
 
