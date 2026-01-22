@@ -45,7 +45,8 @@ export function getHtml(this: TopToolbarElement) {
   </div>
   <cr-lazy-render-lit id="sourcesMenu" .template="${() => html`
     <contextual-tasks-sources-menu .attachedTabs="${this.attachedTabs}"
-      .attachedFiles="${this.attachedFiles}">
+      .attachedFiles="${this.attachedFiles}"
+      .attachedImages="${this.attachedImages}">
     </contextual-tasks-sources-menu>`}">
   </cr-lazy-render-lit>
   <cr-lazy-render-lit id="menu" .template="${() => html`

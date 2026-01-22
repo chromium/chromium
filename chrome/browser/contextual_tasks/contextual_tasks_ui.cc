@@ -202,6 +202,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"sourcesMenuTabsHeader", IDS_CONTEXTUAL_TASKS_SOURCES_MENU_TABS_HEADER},
       {"sourcesMenuFilesHeader",
        IDS_CONTEXTUAL_TASKS_SOURCES_MENU_FILES_HEADER},
+      {"sourcesMenuImagesHeader",
+       IDS_CONTEXTUAL_TASKS_SOURCES_MENU_IMAGES_HEADER},
       {"title", IDS_CONTEXTUAL_TASKS_AI_MODE_TITLE},
       /* composeDeepSearchPlaceholder and
        * composeCreateImagePlaceholder are defined by searchbox_handler.cc.

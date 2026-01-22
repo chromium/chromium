@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -45,11 +46,11 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
 
 std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
     contextual_tasks::ContextualTaskContext* context) {
-  std::vector<contextual_tasks::mojom::TabPtr> tabs;
-
   if (!context) {
     return {};
   }
+  std::vector<contextual_tasks::mojom::TabPtr> tabs;
+
   for (const auto& attachment : context->GetUrlAttachments()) {
     if (attachment.GetResourceType() !=
         contextual_tasks::ResourceType::kWebpage) {
@@ -69,6 +70,13 @@ std::vector<contextual_tasks::mojom::UploadedFilePtr> FilesFromContext(
   std::vector<contextual_tasks::mojom::UploadedFilePtr> files;
   // TODO(crbug.com/475032728): Implement to handle load file data from context.
   return files;
+}
+
+std::vector<contextual_tasks::mojom::ImagePtr> ImagesFromContext(
+    contextual_tasks::ContextualTaskContext* context) {
+  std::vector<contextual_tasks::mojom::ImagePtr> images;
+  // TODO(crbug.com/474372781): Implement logic to get image data from context.
+  return images;
 }
 
 }  // namespace
@@ -181,6 +189,11 @@ void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
 
 void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
   // TODO(crbug.com/475032728): Implement logic to handle file click.
+}
+
+void ContextualTasksPageHandler::OnImageClickedFromSourcesMenu(
+    const GURL& url) {
+  // TODO(crbug.com/473514418): Implement logic to handle image click.
 }
 
 void ContextualTasksPageHandler::OnWebviewMessage(
@@ -296,7 +309,7 @@ void ContextualTasksPageHandler::UpdateContextForTask(
     const base::Uuid& task_id) {
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksContextLibrary)) {
-    web_ui_controller_->page()->OnContextUpdated({}, {});
+    web_ui_controller_->page()->OnContextUpdated({}, {}, {});
     return;
   }
   contextual_tasks_service_->GetContextForTask(
@@ -310,8 +323,10 @@ void ContextualTasksPageHandler::UpdateContextForTask(
                   TabsFromContext(context.get());
               std::vector<contextual_tasks::mojom::UploadedFilePtr> files =
                   FilesFromContext(context.get());
+              std::vector<contextual_tasks::mojom::ImagePtr> images =
+                  ImagesFromContext(context.get());
               self->web_ui_controller_->page()->OnContextUpdated(
-                  std::move(tabs), std::move(files));
+                  std::move(tabs), std::move(files), std::move(images));
             }
           },
           weak_ptr_factory_.GetWeakPtr()));

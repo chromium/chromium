@@ -153,7 +153,6 @@ suite('TopToolbarTest', () => {
     await microtasksFinished();
 
     const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
-
     const crActionMenu =
         sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
     assertTrue(!!crActionMenu);
@@ -171,6 +170,41 @@ suite('TopToolbarTest', () => {
 
     const url = await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
     assertEquals(url, file.url);
+  });
+
+  test('handles image sources menu interactions', async () => {
+    const image = {
+      title: 'Test Image',
+      url: 'https://www.example.com/example.jpeg',
+    };
+    topToolbar.attachedImages = [image];
+    await microtasksFinished();
+
+    const sourcesButton =
+        topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+    assertTrue(!!sourcesButton);
+    sourcesButton.click();
+    await microtasksFinished();
+
+    const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
+
+    const crActionMenu =
+        sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!crActionMenu);
+    assertTrue(crActionMenu.open);
+
+    const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+    assertEquals(2, headers.length);
+
+    // Click the first image item.
+    const imageButton =
+        sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+            'button.dropdown-item');
+    assertTrue(!!imageButton);
+    imageButton.click();
+
+    const url = await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
+    assertEquals(url, image.url);
   });
 
   test('handles more menu interactions', async () => {
