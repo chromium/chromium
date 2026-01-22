@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -31,19 +32,6 @@ namespace web_app {
 
 class AppLock;
 class WebAppDataRetriever;
-// The result of checking if a URL is installable.
-enum class InstallableCheckResult {
-  // The URL is not installable as a web app.
-  kNotInstallable,
-  // The URL is installable as a web app.
-  kInstallable,
-  // A web app for the given URL is already installed.
-  kAlreadyInstalled,
-};
-
-using FetchInstallabilityForChromeManagementCallback =
-    base::OnceCallback<void(InstallableCheckResult result,
-                            std::optional<webapps::AppId> app_id)>;
 
 // Given a url and web contents, this command determines if the given url is
 // installable, what the webapps::AppId is, and if it is already installed.

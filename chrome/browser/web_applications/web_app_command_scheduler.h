@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
+#include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -270,9 +271,6 @@ class WebAppCommandScheduler {
       ManifestWriteCallback callback,
       const base::Location& location = FROM_HERE);
 
-  using FetchInstallabilityForChromeManagementCallback =
-      base::OnceCallback<void(InstallableCheckResult result,
-                              std::optional<webapps::AppId> app_id)>;
   // Checks if a URL is installable as a web app, used for enterprise policy
   // checks. Returns whether it's installable, not installable, or already
   // installed, along with the app ID if applicable.
