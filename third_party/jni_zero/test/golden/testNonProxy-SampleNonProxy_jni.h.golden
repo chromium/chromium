@@ -12,19 +12,19 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
-// static jlong JNI_SampleNonProxy_AddBookmark(
+// static int64_t JNI_SampleNonProxy_AddBookmark(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint nativeChromeBrowserProvider,
+//     int32_t nativeChromeBrowserProvider,
 //     const jni_zero::JavaRef<jstring>& url,
 //     const jni_zero::JavaRef<jstring>& title,
-//     jboolean isFolder,
-//     jlong parentId);
+//     bool isFolder,
+//     int64_t parentId);
 //
-// static jlong JNI_SampleNonProxy_AddBookmarkFromAPI(
+// static int64_t JNI_SampleNonProxy_AddBookmarkFromAPI(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint nativeChromeBrowserProvider,
+//     int32_t nativeChromeBrowserProvider,
 //     const jni_zero::JavaRef<jstring>& url,
 //     const jni_zero::JavaRef<jobject>& created,
 //     const jni_zero::JavaRef<jobject>& isBookmark,
@@ -36,14 +36,14 @@
 // static void JNI_SampleNonProxy_CreateHistoricalTabFromState(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jbyteArray>& state,
-//     jint tabIndex);
+//     int32_t tabIndex);
 //
 // static void JNI_SampleNonProxy_Destroy(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint nativeChromeBrowserProvider);
+//     int32_t nativeChromeBrowserProvider);
 //
-// static jint JNI_SampleNonProxy_FindAll(
+// static int32_t JNI_SampleNonProxy_FindAll(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     const jni_zero::JavaRef<jstring>& find);
@@ -65,14 +65,14 @@
 // static void JNI_SampleNonProxy_GotOrientation(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint nativeDataFetcherImplAndroid,
-//     jdouble alpha,
-//     jdouble beta,
-//     jdouble gamma);
+//     int32_t nativeDataFetcherImplAndroid,
+//     double alpha,
+//     double beta,
+//     double gamma);
 //
-// static jint JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
+// static int32_t JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
 //
-// static jint JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
+// static int32_t JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
 //
 // static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleNonProxy_MessWithJavaException(
 //     JNIEnv* env,
@@ -81,7 +81,7 @@
 // static jni_zero::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_QueryBitmap(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint nativeChromeBrowserProvider,
+//     int32_t nativeChromeBrowserProvider,
 //     const jni_zero::JavaRef<jobjectArray>& projection,
 //     const jni_zero::JavaRef<jstring>& selection,
 //     const jni_zero::JavaRef<jobjectArray>& selectionArgs,
@@ -90,7 +90,7 @@
 // static void JNI_SampleNonProxy_SetRecognitionResults(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
-//     jint sessionId,
+//     int32_t sessionId,
 //     const jni_zero::JavaRef<jobjectArray>& results);
 //
 
@@ -101,14 +101,14 @@
 #define DEFINE_JNI_FOR_SampleNonProxy_SEE_JNI_ZERO_README()                                        \
   namespace {                                                                                      \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(              \
+  JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(            \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint nativeChromeBrowserProvider,                                                            \
+      int32_t nativeChromeBrowserProvider,                                                         \
       jstring url,                                                                                 \
       jstring title,                                                                               \
-      jboolean isFolder,                                                                           \
-      jlong parentId) {                                                                            \
+      bool isFolder,                                                                               \
+      int64_t parentId) {                                                                          \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleNonProxy_AddBookmark(std::forward<decltype(args)>(args)...)) {              \
@@ -126,10 +126,10 @@
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(       \
+  JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(     \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint nativeChromeBrowserProvider,                                                            \
+      int32_t nativeChromeBrowserProvider,                                                         \
       jstring url,                                                                                 \
       jobject created,                                                                             \
       jobject isBookmark,                                                                          \
@@ -161,7 +161,7 @@
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
       jbyteArray state,                                                                            \
-      jint tabIndex) {                                                                             \
+      int32_t tabIndex) {                                                                          \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
@@ -177,7 +177,7 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint nativeChromeBrowserProvider) {                                                          \
+      int32_t nativeChromeBrowserProvider) {                                                       \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleNonProxy_Destroy(std::forward<decltype(args)>(args)...)) {                  \
@@ -190,7 +190,7 @@
         nativeChromeBrowserProvider);                                                              \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(                   \
+  JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeFindAll(                \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
       jstring find) {                                                                              \
@@ -267,10 +267,10 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(            \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint nativeDataFetcherImplAndroid,                                                           \
-      jdouble alpha,                                                                               \
-      jdouble beta,                                                                                \
-      jdouble gamma) {                                                                             \
+      int32_t nativeDataFetcherImplAndroid,                                                        \
+      double alpha,                                                                                \
+      double beta,                                                                                 \
+      double gamma) {                                                                              \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleNonProxy_GotOrientation(std::forward<decltype(args)>(args)...)) {           \
@@ -286,7 +286,7 @@
         gamma);                                                                                    \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(                      \
+  JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
@@ -301,7 +301,7 @@
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(                      \
+  JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller) {                                                                           \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
@@ -335,7 +335,7 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(            \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint nativeChromeBrowserProvider,                                                            \
+      int32_t nativeChromeBrowserProvider,                                                         \
       jobjectArray projection,                                                                     \
       jstring selection,                                                                           \
       jobjectArray selectionArgs,                                                                  \
@@ -360,7 +360,7 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults(     \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jint sessionId,                                                                              \
+      int32_t sessionId,                                                                           \
       jobjectArray results) {                                                                      \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \

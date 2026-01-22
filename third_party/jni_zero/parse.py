@@ -197,8 +197,9 @@ def _parse_type(type_resolver, value):
   if converted_type == 'std::vector':
     # Allow "std::vector" as shorthand for types that can be inferred:
     if array_dimensions == 1 and primitive_name:
-      # e.g.: std::vector<jint>
-      converted_type += f'<j{primitive_name}>'
+      # e.g.: std::vector<int32_t>
+      inner = java_types.CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(primitive_name)
+      converted_type += f'<{inner}>'
     elif array_dimensions > 0 or java_class in java_types.COLLECTION_CLASSES:
       # std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
       converted_type += '<jni_zero::ScopedJavaLocalRef<jobject>>'

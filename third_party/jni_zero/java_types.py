@@ -10,7 +10,7 @@ from typing import Tuple
 import common
 import java_lang_classes
 
-_CPP_TYPE_BY_JAVA_TYPE = {
+CPP_TYPE_BY_JAVA_TYPE = {
     'boolean': 'jboolean',
     'byte': 'jbyte',
     'char': 'jchar',
@@ -19,6 +19,21 @@ _CPP_TYPE_BY_JAVA_TYPE = {
     'int': 'jint',
     'long': 'jlong',
     'short': 'jshort',
+    'void': 'void',
+    'java/lang/Class': 'jclass',
+    'java/lang/String': 'jstring',
+    'java/lang/Throwable': 'jthrowable',
+}
+
+CPP_UNDERLYING_TYPE_BY_JAVA_TYPE = {
+    'boolean': 'bool',  # underlying type of jboolean
+    'byte': 'int8_t',  # underlying type of jbyte
+    'char': 'uint16_t',  # underlying type of jchar
+    'double': 'double',  # underlying type of jdouble
+    'float': 'float',  # underlying type of jfloat
+    'int': 'int32_t',  # underlying type of jint
+    'long': 'int64_t',  # underlying type of jlong
+    'short': 'int16_t',  # underlying type of jshort
     'void': 'void',
     'java/lang/Class': 'jclass',
     'java/lang/String': 'jstring',
@@ -241,11 +256,12 @@ class JavaType:
       # There is no jstringArray.
       return 'jobjectArray'
 
-    cpp_type = _CPP_TYPE_BY_JAVA_TYPE.get(self.non_array_full_name_with_slashes,
-                                          'jobject')
     if self.array_dimensions:
-      cpp_type = f'{cpp_type}Array'
-    return cpp_type
+      cpp_type = CPP_TYPE_BY_JAVA_TYPE.get(
+          self.non_array_full_name_with_slashes, 'jobject')
+      return f'{cpp_type}Array'
+    return CPP_UNDERLYING_TYPE_BY_JAVA_TYPE.get(
+        self.non_array_full_name_with_slashes, 'jobject')
 
   def to_cpp_default_value(self):
     """Returns a valid C return value for the given java type."""

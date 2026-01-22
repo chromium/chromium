@@ -246,7 +246,7 @@ def multiplexing_boundary_method(sb, muxed_aliases, gen_jni_class):
   with sb.param_list() as plist:
     plist += ['JNIEnv* env', 'jclass jcaller']
     if has_switch_num:
-      plist.append('jint switch_num')
+      plist.append('int32_t switch_num')
     param_names += ['env']
     for i, p in enumerate(sig.param_list):
       plist.append(f'{p.java_type.to_cpp()} p{i}')

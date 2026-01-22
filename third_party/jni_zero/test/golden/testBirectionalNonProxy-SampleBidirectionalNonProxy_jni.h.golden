@@ -30,11 +30,11 @@ inline jclass org_jni_1zero_SampleBidirectionalNonProxy_clazz(JNIEnv* env) {
 
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
-static jint JNI_SampleBidirectionalNonProxy_Init(
+static int32_t JNI_SampleBidirectionalNonProxy_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jcaller);
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */
@@ -50,11 +50,11 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nat
 }
 
 // Forward declaration. To be implemented by the including .cc file.
-static jint JNI_SampleBidirectionalNonProxy_Init(
+static int32_t JNI_SampleBidirectionalNonProxy_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jcaller);
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */
@@ -69,11 +69,11 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nat
   return _ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeMethod(
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeMethod(
     JNIEnv* env,
     jobject jcaller,
-    jlong nativeTest,
-    jint arg1) {
+    int64_t nativeTest,
+    int32_t arg1) {
   Test* _ptr = reinterpret_cast<Test*>(nativeTest);
   /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */
   auto _jni_func_wrapper = [&](auto&&... args) ->
@@ -88,11 +88,11 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nat
   return _ret;
 }
 
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeStaticMethod(
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller,
-    jlong nativeTest,
-    jint arg1) {
+    int64_t nativeTest,
+    int32_t arg1) {
   Test* _ptr = reinterpret_cast<Test*>(nativeTest);
   /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */
   auto _jni_func_wrapper = [&](auto&&... args) ->
@@ -158,7 +158,7 @@ static void Java_SampleBidirectionalNonProxy_setStringBuilder(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), sb.obj());
 }
 
-static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
+static double Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
@@ -226,7 +226,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
   return jni_zero::ScopedJavaLocalRef<jstring>::Adopt(env, _ret2);
 }
 
-static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
+static int32_t Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
     JNIEnv* env,
     JniIntWrapper iParam) {
   static std::atomic<jmethodID> cached_method_id(nullptr);

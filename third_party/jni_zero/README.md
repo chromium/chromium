@@ -121,7 +121,7 @@ void JNI_MyClass_Foo(JNIEnv* env) {
   ...
 }
 
-void JNI_MyClass_Bar(jint a, jint b) {
+void JNI_MyClass_Bar(int32_t a, int32_t b) {
   ...
 }
 
@@ -179,8 +179,14 @@ expose the functions to the others via additional wrapper functions.
 ### Automatic Type Conversions using @JniType
 
 Normally, Java types map to C++ types from `<jni.h>` (`jobject` for
-reference types, `jint` for `int`, etc). The first thing most people do is
-convert the jni spec types into standard C++ types.
+reference types, `int32_t` for `int`, etc). Note that here `int32_t` is the
+underlying type of `jint`. Instead of using `jint`, `jlong`, `jboolean`,
+`jfloat`, etc., we prefer using their underlying types `int32_t`, `int64_t`,
+`bool`, `float`, etc., so that it's more clear what the type is. It also
+saves an instruction when having to convert from `jboolean` to `bool`.
+
+The first thing most people do is convert the jni spec types into standard C++
+types.
 
 `@JniType` to the rescue. By annotating a parameter or a return type with
 `@JniType("cpp_type_here")` the generated code will automatically convert from
@@ -493,7 +499,7 @@ class N {
 ```
 ```C++
 // Generated C++ to be compiled into the final binary.
-int Java_N__1V(jint switch_num) {
+int Java_N__1V(int32_t switch_num) {
   switch (switch_num) {
     case 0:
       return org_foo_Foo_f();

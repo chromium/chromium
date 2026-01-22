@@ -12,7 +12,7 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
-// static jint JNI_SampleProxyEdgeCases_AddStructB(
+// static int32_t JNI_SampleProxyEdgeCases_AddStructB(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& caller,
 //     const jni_zero::JavaRef<jobject>& b);
@@ -38,11 +38,11 @@
 //     const jni_zero::JavaRef<jobject>& b,
 //     const jni_zero::JavaRef<jobject>& i);
 //
-// static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(
+// static bool JNI_SampleProxyEdgeCases_SetStringBuilder(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& sb);
 //
-// static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
+// static int32_t JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, int32_t sb);
 //
 // static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
 //
@@ -62,7 +62,7 @@
 #define DEFINE_JNI_FOR_SampleProxyEdgeCases_SEE_JNI_ZERO_README()                                  \
   namespace {                                                                                      \
                                                                                                    \
-  JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(              \
+  JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(           \
       JNIEnv* env,                                                                                 \
       jobject caller,                                                                              \
       jobject b) {                                                                                 \
@@ -154,7 +154,7 @@
         jni_zero::JavaRef<jobject>::CreateLeaky(env, i));                                          \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(    \
+  JNI_ZERO_MUXED_ENTRYPOINT bool Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(        \
       JNIEnv* env,                                                                                 \
       jobject sb) {                                                                                \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
@@ -169,9 +169,9 @@
     return _ret;                                                                                   \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(        \
+  JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(     \
       JNIEnv* env,                                                                                 \
-      jint sb) {                                                                                   \
+      int32_t sb) {                                                                                \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleProxyEdgeCases_SetStringBuilder(std::forward<decltype(args)>(args)...)) {   \
@@ -211,7 +211,7 @@
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(      \
       JNIEnv* env,                                                                                 \
-      jlong nativeInstance) {                                                                      \
+      int64_t nativeInstance) {                                                                    \
     Instance* _ptr = reinterpret_cast<Instance*>(nativeInstance);                                  \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \

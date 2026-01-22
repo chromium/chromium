@@ -326,8 +326,8 @@ bool WebContentsObserverProxy::SetToBaseURLForDataURLIfNeeded(GURL* url) {
 void WebContentsObserverProxy::ViewportFitChanged(
     blink::mojom::ViewportFit value) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_viewportFitChanged(
-      env, java_observer_, as_jint(static_cast<int>(value)));
+  Java_WebContentsObserverProxy_viewportFitChanged(env, java_observer_,
+                                                   static_cast<int32_t>(value));
 }
 
 void WebContentsObserverProxy::SafeAreaConstraintChanged(bool has_constraint) {
@@ -340,7 +340,7 @@ void WebContentsObserverProxy::VirtualKeyboardModeChanged(
     ui::mojom::VirtualKeyboardMode mode) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_virtualKeyboardModeChanged(
-      env, java_observer_, as_jint(static_cast<int>(mode)));
+      env, java_observer_, static_cast<int32_t>(mode));
 }
 
 void WebContentsObserverProxy::OnWebContentsFocused(RenderWidgetHost*) {

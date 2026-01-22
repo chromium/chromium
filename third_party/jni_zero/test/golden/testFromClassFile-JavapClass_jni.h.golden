@@ -52,7 +52,7 @@ enum Java_JavapClass_constant_fields {
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
     JNIEnv* env,
-    jboolean p0) {
+    bool p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -84,7 +84,7 @@ enum Java_JavapClass_constant_fields {
   return jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-[[maybe_unused]] static jint Java_JavapClass_intMethod(
+[[maybe_unused]] static int32_t Java_JavapClass_intMethod(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj,
     const jni_zero::JavaRef<jstring>& p0) {
@@ -168,7 +168,7 @@ enum Java_JavapClass_constant_fields {
   return jni_zero::ScopedJavaLocalRef<jclass>::Adopt(env, _ret2);
 }
 
-[[maybe_unused]] static jint Java_JavapClass_staticIntMethod(
+[[maybe_unused]] static int32_t Java_JavapClass_staticIntMethod(
     JNIEnv* env,
     const jni_zero::JavaRef<jstring>& p0,
     const jni_zero::JavaRef<jobject>& p1) {

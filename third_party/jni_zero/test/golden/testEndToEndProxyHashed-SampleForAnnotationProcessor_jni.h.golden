@@ -18,7 +18,7 @@
 //
 // static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env);
 //
-// static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env);
+// static bool JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForAnnotationProcessor_ReturnClass(
 //     JNIEnv* env);
@@ -29,7 +29,7 @@
 // static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> JNI_SampleForAnnotationProcessor_ReturnConvertedAppObjects(
 //     JNIEnv* env);
 //
-// static std::vector<jint> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
+// static std::vector<int32_t> JNI_SampleForAnnotationProcessor_ReturnConvertedInts(JNIEnv* env);
 //
 // static std::string JNI_SampleForAnnotationProcessor_ReturnConvertedString(JNIEnv* env);
 //
@@ -76,19 +76,19 @@
 //     JNIEnv* env,
 //     int zint,
 //     std::vector<int32_t>& ints,
-//     jlong zlong,
+//     int64_t zlong,
 //     const jni_zero::JavaRef<jlongArray>& longs,
-//     jshort zshort,
+//     int16_t zshort,
 //     const jni_zero::JavaRef<jshortArray>& shorts,
 //     int zchar,
 //     const jni_zero::JavaRef<jcharArray>& chars,
-//     jbyte zbyte,
+//     int8_t zbyte,
 //     const jni_zero::JavaRef<jbyteArray>& bytes,
-//     jdouble zdouble,
+//     double zdouble,
 //     const jni_zero::JavaRef<jdoubleArray>& doubles,
-//     jfloat zfloat,
+//     float zfloat,
 //     const jni_zero::JavaRef<jfloatArray>& floats,
-//     jboolean zbool,
+//     bool zbool,
 //     const jni_zero::JavaRef<jbooleanArray>& bools);
 //
 // static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
@@ -147,7 +147,7 @@
     jni_zero::internal::DispatchJniFunc(_jni_func_wrapper, env);                                   \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange( \
+  JNI_ZERO_BOUNDARY_EXPORT bool Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange( \
       JNIEnv* env,                                                                                 \
       jclass jcaller) {                                                                            \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
@@ -383,27 +383,29 @@
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
-      jint zint,                                                                                   \
+      int32_t zint,                                                                                \
       jobject ints,                                                                                \
-      jlong zlong,                                                                                 \
+      int64_t zlong,                                                                               \
       jobject longs,                                                                               \
-      jshort zshort,                                                                               \
+      int16_t zshort,                                                                              \
       jobject shorts,                                                                              \
-      jchar zchar,                                                                                 \
+      uint16_t zchar,                                                                              \
       jobject chars,                                                                               \
-      jbyte zbyte,                                                                                 \
+      int8_t zbyte,                                                                                \
       jobject bytes,                                                                               \
-      jdouble zdouble,                                                                             \
+      double zdouble,                                                                              \
       jobject doubles,                                                                             \
-      jfloat zfloat,                                                                               \
+      float zfloat,                                                                                \
       jobject floats,                                                                              \
-      jboolean zbool,                                                                              \
+      bool zbool,                                                                                  \
       jobject bools) {                                                                             \
-    int zint_converted = jni_zero::internal::PrimitiveConvert<int, jint>::FromJniType(env, zint);  \
+    int zint_converted = jni_zero::internal::PrimitiveConvert<int, int32_t>::FromJniType(          \
+        env,                                                                                       \
+        zint);                                                                                     \
     std::vector<int32_t> ints_converted = jni_zero::FromJniArray<std::vector<int32_t>>(            \
         env,                                                                                       \
         jni_zero::JavaRef<jintArray>::CreateLeaky(env, static_cast<jintArray>(ints)));             \
-    int zchar_converted = jni_zero::internal::PrimitiveConvert<int, jchar>::FromJniType(           \
+    int zchar_converted = jni_zero::internal::PrimitiveConvert<int, uint16_t>::FromJniType(        \
         env,                                                                                       \
         zchar);                                                                                    \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \

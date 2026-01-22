@@ -164,7 +164,7 @@ typedef void (*InfoListInsertionFunction)(
     const base::android::JavaRef<jobject>&,
     const base::android::JavaRef<jstring>&,
     const base::android::JavaRef<jstring>&,
-    jboolean,
+    bool,
     JniIntWrapper);
 
 void GetOrigins(JNIEnv* env,

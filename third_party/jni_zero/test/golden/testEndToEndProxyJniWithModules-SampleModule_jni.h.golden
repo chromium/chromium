@@ -12,7 +12,7 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
-// static jboolean JNI_SampleModule_Bar(JNIEnv* env, jboolean a);
+// static bool JNI_SampleModule_Bar(JNIEnv* env, bool a);
 //
 // static void JNI_SampleModule_Foo(JNIEnv* env);
 //
@@ -24,10 +24,7 @@
 #define DEFINE_JNI_FOR_SampleModule_SEE_JNI_ZERO_README()                                          \
   namespace {                                                                                      \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(                                     \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller,                                                                              \
-      jboolean a) {                                                                                \
+  JNI_ZERO_BOUNDARY_EXPORT bool Java_J_module_1N_MejItBT4(JNIEnv* env, jclass jcaller, bool a) {   \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleModule_Bar(std::forward<decltype(args)>(args)...)) {                        \

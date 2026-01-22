@@ -12,7 +12,7 @@
 #include "extra_include.h"
 
 // Example signatures (to be implemented by #including file).
-// static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x, jint y);
+// static int32_t JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, int32_t x, int32_t y);
 //
 // static void JNI_SampleUniqueAnnotations_Baz(
 //     JNIEnv* env,
@@ -30,11 +30,11 @@
 #define DEFINE_JNI_FOR_SampleUniqueAnnotations_SEE_JNI_ZERO_README()                               \
   namespace {                                                                                      \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1bar( \
+  JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1bar( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
-      jint x,                                                                                      \
-      jint y) {                                                                                    \
+      int32_t x,                                                                                   \
+      int32_t y) {                                                                                 \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
     decltype(JNI_SampleUniqueAnnotations_Bar(std::forward<decltype(args)>(args)...)) {             \
@@ -62,7 +62,7 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo( \
       JNIEnv* env,                                                                                 \
       jclass jcaller,                                                                              \
-      jlong nativePtr,                                                                             \
+      int64_t nativePtr,                                                                           \
       jobject arg) {                                                                               \
     std::string arg_converted = jni_zero::FromJniType<std::string>(                                \
         env,                                                                                       \
@@ -79,7 +79,7 @@
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject( \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
-      jlong nativePtr) {                                                                           \
+      int64_t nativePtr) {                                                                         \
     Foo::Bar* _ptr = reinterpret_cast<Foo::Bar*>(nativePtr);                                       \
     /* Use a wrapper function to allow compiler to pick an overloaded version of JNI function */   \
     auto _jni_func_wrapper = [&](auto&&... args) ->                                                \
