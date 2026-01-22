@@ -219,6 +219,11 @@ TEST_F(VideoDecoderTest, ResetReleasesPressure) {
   EXPECT_TRUE(fake_decoder->IsReclamationTimerActiveForTesting());
 
   // Reset the codec.
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Reset_(_))
+      .WillOnce([](base::OnceClosure& closure) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, std::move(closure));
+      });
   fake_decoder->reset(v8_scope.GetExceptionState());
 
   // The underlying codec might not be internally released.

@@ -485,6 +485,11 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kReset);
   DCHECK_GT(reset_generation_, 0u);
 
+  if (shutting_down_) {
+    // No need to process reset during shutdown.
+    return true;
+  }
+
   // Signal [[codec implementation]] to cease producing output for the previous
   // configuration.
   if (decoder()) {
@@ -549,13 +554,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   // in the stack.
   main_thread_task_runner_->DeleteSoon(FROM_HERE, std::move(decoder_));
 
-  if (pending_request_) {
-    // This request was added as part of calling ResetAlgorithm above. However,
-    // OnResetDone() will never execute, since we are now in a kClosed state,
-    // and |decoder_| has been reset.
-    DCHECK_EQ(pending_request_->type, Request::Type::kReset);
-    pending_request_.Release()->EndTracing(/*shutting_down=*/true);
-  }
+  DCHECK(!pending_request_);
 
   if (TRACE_EVENT_CATEGORY_ENABLED(kCategory)) {
     for (auto& pending_decode : pending_decodes_)
