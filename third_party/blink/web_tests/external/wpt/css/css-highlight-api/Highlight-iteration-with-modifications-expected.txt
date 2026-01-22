@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Highlight iteration includes ranges added after starting the iteration (Set-like behavior)
+  assert_false: The iteration continues when a new range is added after starting the iteration expected false got true
+[FAIL] Highlight iteration includes ranges added after starting the iteration when there were already ranges (Set-like behavior)
+  assert_false: The iteration continues to the range added after starting the iteration, following Set semantics expected false got true
+[FAIL] Highlight iteration skips ranges deleted before being visited (Set-like behavior)
+  assert_true: The iteration ends when the only range is deleted before visiting it, following Set semantics expected true got false
+[FAIL] Highlight iteration skips ranges deleted before being visited even when other ranges remain (Set-like behavior)
+  assert_true: The iteration ends after the first range since the second range was deleted before being visited, following Set semantics expected true got false
+[FAIL] Highlight iteration skips all ranges when .clear() is called before visiting them (Set-like behavior)
+  assert_true: The iteration ends when all ranges are cleared before visiting them, following Set semantics expected true got false
+Harness: the test ran to completion.
+

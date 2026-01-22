@@ -376077,6 +376077,14 @@
      }
     },
     "css-highlight-api": {
+     "Highlight-iteration-with-modifications-expected.txt": [
+      "41e122e787d7c32059a5dc856983c7bdd4d4b1f2",
+      []
+     ],
+     "HighlightRegistry-iteration-with-modifications-expected.txt": [
+      "7f431bb5650b416d814508e551e05dbeb687b1cf",
+      []
+     ],
      "META.yml": [
       "61d26feb5437a20eac67ea7fb503d9196d502e80",
       []
@@ -442270,6 +442278,10 @@
        "b343d6d6154219cfc911d0e31dc747f29ec0bec3",
        []
       ],
+      "html-comment": [
+       "6ddcff09a09ade65474dc8ef9c2c56b2972112b9",
+       []
+      ],
       "rss.html": [
        "d708b0d8ebdde748773a7f3a2518d61506830d3e",
        []
@@ -460663,8 +460675,16 @@
       "b8b8f2e0be08062aab5f5bbb8dc045dfab5ed35a",
       []
      ],
+     "held.tentative.https-expected.txt": [
+      "41269d02c646f47397ed08b538be4c645ceb49bf",
+      []
+     ],
      "helpers.js": [
-      "7997f982a8f748281c21e1be05c9c74407600fe2",
+      "b2937043389d3fc7e7ea12378366f46a17b34428",
+      []
+     ],
+     "release-across-thread.tentative.https-expected.txt": [
+      "b377a00fa393f81c283937ac8cd36ba7b6e3e185",
       []
      ],
      "release.tentative.https-expected.txt": [
@@ -464241,7 +464261,7 @@
        []
       ],
       "sdp.js": [
-       "d464ee168ee5d1b6351d60ee60f520c0b2bfb19d",
+       "955aeb87eb80c7d74ae8812f87fc6d504066d8e6",
        []
       ]
      }
@@ -514817,6 +514837,27 @@
        null,
        {}
       ]
+     ],
+     "pseudo-background-image-before-in-container-timing.html": [
+      "33706539e8149c8b089887acf2bdd180de7ba1ed",
+      [
+       null,
+       {}
+      ]
+     ],
+     "pseudo-with-image-content-in-container-timing.html": [
+      "c436462a976648445b1b7d6c48f117f575f9684c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "pseudo-with-text-content-in-container-timing.html": [
+      "f0bde383a646c20b56593efaac84f22904643e62",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -537224,6 +537265,13 @@
        {}
       ]
      ],
+     "fontface-font-variation-settings-persisted-js-api.html": [
+      "0ce037b746ca5af73365ea89cb789024dab4f7b3",
+      [
+       null,
+       {}
+      ]
+     ],
      "fontface-fonts-loading.html": [
       "52355dbc988d2cbe8fd404828eafe717aeb3242f",
       [
@@ -543253,7 +543301,7 @@
     },
     "css-highlight-api": {
      "Highlight-iteration-with-modifications.html": [
-      "b1f0fb10ee47457e0be02e0873ddf93cd889799a",
+      "af2798f8eea9a2c0c9d7e77f373fe0e983189fd6",
       [
        null,
        {}
@@ -543309,7 +543357,7 @@
       ]
      ],
      "HighlightRegistry-iteration-with-modifications.html": [
-      "7e1a0c08f3c795fa7d71cc77f531a10d865e0506",
+      "978677baeb43e2360d8608e18e08852b5a4be6a2",
       [
        null,
        {}
@@ -585836,6 +585884,13 @@
       {}
      ]
     ],
+    "input-type-image.html": [
+     "e3761655f1b214b05b8253f5aa9d033f3a437b1b",
+     [
+      null,
+      {}
+     ]
+    ],
     "invisible-images.html": [
      "ffde3ce2f6f46819b812c5b8445f2cb7f716e61d",
      [
@@ -585843,8 +585898,22 @@
       {}
      ]
     ],
+    "list-style-image.html": [
+     "09f5bcec379602afcd92fe8d065b45e6cffadb17",
+     [
+      null,
+      {}
+     ]
+    ],
     "multiple-background-images.html": [
      "380e5e825e187d970bf156e143c77317ca5fc758",
+     [
+      null,
+      {}
+     ]
+    ],
+    "object.html": [
+     "0ddca13e6f53eb010ac63d3e58311fc9e5007398",
      [
       null,
       {}
@@ -585920,8 +585989,36 @@
       {}
      ]
     ],
+    "picture.html": [
+     "442fda5392f310754d6ab01cede42ce4525811cd",
+     [
+      null,
+      {}
+     ]
+    ],
     "progressively-loaded-image.html": [
      "6695d8f9c324b0c20f9b19c1f064a7349c770d5d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "pseudo-background-image.html": [
+     "35dae13b822085b7cf27d65e9b79ffce87ac251b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "pseudo-content-image.html": [
+     "44b4b75bb2a47559854c36464c155f613a3babca",
+     [
+      null,
+      {}
+     ]
+    ],
+    "pseudo-content-text.html": [
+     "ba9107bca88e0241c14d2693f42d17665661faa3",
      [
       null,
       {}
@@ -712070,6 +712167,13 @@
      ]
     },
     "sniffing": {
+     "html-comment.tentative.window.js": [
+      "097588fb3cadf4bed13568a84333bdbd57589b83",
+      [
+       "mimesniff/sniffing/html-comment.tentative.window.html",
+       {}
+      ]
+     ],
      "html.window.js": [
       "3fef45bb4779561a92eaf432646c7344630a7b2b",
       [
@@ -719775,49 +719879,6 @@
          [
           "script",
           "/websockets/constants.sub.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
-     "performance-navigation-timing-lock.https.tentative.window.js": [
-      "51a44db11b5e5dff51fb5a0afde0642e4cc045d7",
-      [
-       "performance-timeline/not-restored-reasons/performance-navigation-timing-lock.https.tentative.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Ensure that if WebLock is held upon entering bfcache, it cannot enter bfcache and gets reported."
-         ],
-         [
-          "script",
-          "./test-helper.js"
-         ],
-         [
-          "script",
-          "/common/dispatcher/dispatcher.js"
-         ],
-         [
-          "script",
-          "/common/get-host-info.sub.js"
-         ],
-         [
-          "script",
-          "/common/utils.js"
-         ],
-         [
-          "script",
-          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
-         ],
-         [
-          "script",
-          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
           "timeout",
@@ -794725,7 +794786,7 @@
     ],
     "bfcache": {
      "abort.tentative.https.html": [
-      "35d9b11270d7850107d914601a5872c8c1d354aa",
+      "04bb460f23a54ae1c74b962c96f78b7548075130",
       [
        null,
        {
@@ -794733,8 +794794,555 @@
        }
       ]
      ],
+     "contention.https.window.js": [
+      "e305b9cfe600d870cec83d1707d86bb23c7e26c5",
+      [
+       "web-locks/bfcache/contention.https.window.html?context=document&contention=query",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=document&contention=request",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=nested-worker&contention=query",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=nested-worker&contention=request",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=shared-worker&contention=query",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=shared-worker&contention=request",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=worker&contention=query",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=worker&contention=request",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "held.tentative.https.html": [
-      "9d670c58892370bd07d801602fccc982cafc6220",
+      "f4b19f25ca3007f30c4909b2883d1149629c2db0",
       [
        null,
        {
@@ -794743,7 +795351,7 @@
       ]
      ],
      "release-across-thread.tentative.https.html": [
-      "374cee8b6d248836847dc58057fae1e984d911e7",
+      "934dca938ac176cbef34a32f9112940183d4fc2d",
       [
        null,
        {
@@ -794752,7 +795360,7 @@
       ]
      ],
      "release.tentative.https.html": [
-      "97f542fc2eeee0e1c7a246c9e0c58471c0ce7477",
+      "e8e504e8fe2d3e418389a9682d5013db8bb0726c",
       [
        null,
        {
@@ -861118,15 +861726,22 @@
        {}
       ]
      ],
+     "xrWebGLBinding_createCubeLayer.https.html": [
+      "1701ca64428e8282af6fa8128b00a6b507cb66e5",
+      [
+       null,
+       {}
+      ]
+     ],
      "xrWebGLBinding_createCylinderLayer.https.html": [
-      "69e9909a79107cce0ec4185625cbeba25ee81409",
+      "c4b45bb31f8780074da0c42194dba507148f4489",
       [
        null,
        {}
       ]
      ],
      "xrWebGLBinding_createEquirectLayer.https.html": [
-      "183fcd7f30bfc04ad8a08d80692c1ac2d95a6464",
+      "de8766890cd471305fa98ea16bde6a7d320dbb80",
       [
        null,
        {}

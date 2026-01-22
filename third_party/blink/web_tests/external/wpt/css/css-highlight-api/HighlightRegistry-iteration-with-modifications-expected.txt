@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] HighlightRegistry iteration includes Highlights added after starting the iteration (Map-like behavior)
+  assert_false: The iteration continues when a new Highlight is added after starting the iteration expected false got true
+[FAIL] HighlightRegistry iteration includes Highlights added after starting the iteration when there were already Highlights (Map-like behavior)
+  assert_false: The iteration continues to the Highlight added after starting the iteration, following Map semantics expected false got true
+[FAIL] HighlightRegistry iteration skips Highlights deleted before being visited (Map-like behavior)
+  assert_true: The iteration ends when the only Highlight is deleted before visiting it, following Map semantics expected true got false
+[FAIL] HighlightRegistry iteration skips Highlights deleted before being visited even when other Highlights remain (Map-like behavior)
+  assert_true: The iteration ends after the first Highlight since the second Highlight was deleted before being visited, following Map semantics expected true got false
+[FAIL] HighlightRegistry iteration skips all Highlights when .clear() is called before visiting them (Map-like behavior)
+  assert_true: The iteration ends when all Highlights are cleared before visiting them, following Map semantics expected true got false
+Harness: the test ran to completion.
+
