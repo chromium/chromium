@@ -44,6 +44,10 @@ namespace ui {
 class ColorProvider;
 }  // namespace ui
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 // A theme consists of a set of colors and images, including the NTP background
 // image. See CustomThemeSupplier for details. There are multiple sources for
 // themes, including extensions, NTP, the system theme, and policy.
@@ -89,6 +93,8 @@ class ThemeService : public KeyedService,
   static std::unique_ptr<ui::ThemeProvider> CreateBoundThemeProvider(
       Profile* profile,
       BrowserThemeProviderDelegate* delegate);
+
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   ThemeService(Profile* profile, const ThemeHelper& theme_helper);
   ThemeService(const ThemeService&) = delete;
