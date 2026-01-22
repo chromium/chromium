@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,6 +20,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -45,16 +47,23 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
           CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(
-          channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
-                                               channel_->task_runner(),
-                                               CommandBufferNamespace::GPU_IO,
-                                               command_buffer_id_)),
+      sequence_(channel->scheduler()->CreateSequence(
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+          base::FeatureList::IsEnabled(features::kSharedImageStubHighPriority)
+              ? SchedulingPriority::kHigh
+              : SchedulingPriority::kLow,
+#else
+          SchedulingPriority::kLow,
+#endif
+          channel_->task_runner(),
+          CommandBufferNamespace::GPU_IO,
+          command_buffer_id_)),
       memory_tracker_(base::MakeRefCounted<MemoryTracker>(
           command_buffer_id_,
           channel_->client_tracing_id(),
           channel_->gpu_channel_manager()->peak_memory_monitor(),
-          GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB)) {}
+          GpuPeakMemoryAllocationSource::SHARED_IMAGE_STUB)) {
+}
 
 SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
