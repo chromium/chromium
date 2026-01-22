@@ -32,6 +32,8 @@ class WebAppFilter {
   static WebAppFilter IsDevModeIsolatedApp();
   // Only consider force-installed Isolated Web Apps.
   static WebAppFilter PolicyInstalledIsolatedWebApp();
+  // Only consider user installed Isolated Web Apps
+  static WebAppFilter UserInstalledIsolatedWebApp();
   // Only consider user installed Isolated Web Apps without any external
   // management (policy/kiosk/shimless).
   static WebAppFilter IsIsolatedWebAppWithOnlyUserManagement();
@@ -94,6 +96,7 @@ class WebAppFilter {
 
   struct IsolatedWebAppFilter {
     bool must_be_in_dev_mode = false;
+    bool must_be_user_installed = false;
     bool must_have_no_external_management = false;
     bool must_be_policy_installed = false;
     bool is_sub_app = false;

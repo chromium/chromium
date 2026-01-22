@@ -63,6 +63,13 @@ WebAppFilter WebAppFilter::PolicyInstalledIsolatedWebApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::UserInstalledIsolatedWebApp() {
+  WebAppFilter filter;
+  filter.isolated_app_filter_ = {{.must_be_user_installed = true}};
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::IsIsolatedWebAppWithOnlyUserManagement() {
   WebAppFilter filter;
   filter.isolated_app_filter_ = {{.must_have_no_external_management = true}};

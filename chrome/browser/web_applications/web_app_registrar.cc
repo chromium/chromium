@@ -1052,6 +1052,10 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     if (iwa_filter->must_be_policy_installed) {
       matches &= IsInstalledByPolicy(iwa_app_id);
     }
+    if (iwa_filter->must_be_user_installed) {
+      matches &=
+          iwa.GetSources().Has(web_app::WebAppManagement::kIwaUserInstalled);
+    }
     if (iwa_filter->must_have_no_external_management) {
       matches &=
           !iwa.GetSources().HasAny({web_app::WebAppManagement::kKiosk,

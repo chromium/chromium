@@ -244,8 +244,11 @@ enum class WebappUninstallSource {
   // Via devtools PWA.uninstall or similar commands.
   kDevtools = 23,
 
+  // When IWA is blocklisted it is automatically removed from the device.
+  kIwaBlocklisted = 24,
+
   // Add any new values above this one.
-  kMaxValue = kDevtools,
+  kMaxValue = kIwaBlocklisted,
 };
 
 std::ostream& operator<<(std::ostream& os, WebappUninstallSource source);

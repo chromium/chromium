@@ -147,6 +147,8 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
       return os << "Isolated Web Apps Enterprise Policy";
     case webapps::WebappUninstallSource::kDevtools:
       return os << "Devtools";
+    case webapps::WebappUninstallSource::kIwaBlocklisted:
+      return os << "Isolated Web App Blocklisted";
   }
 }
 
@@ -167,6 +169,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
     case webapps::WebappUninstallSource::kInstallUrlDeduping:
     case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
     case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
+    case webapps::WebappUninstallSource::kIwaBlocklisted:
       return false;
     case webapps::WebappUninstallSource::kUnknown:
     case webapps::WebappUninstallSource::kAppMenu:

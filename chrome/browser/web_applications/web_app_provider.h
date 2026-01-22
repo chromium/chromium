@@ -40,6 +40,7 @@ class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
 class IsolatedWebAppPolicyManager;
 class IsolatedWebAppUpdateManager;
+class IsolatedWebAppUserInstalledManager;
 class ManifestUpdateManager;
 class NavigationCapturingLog;
 class OsIntegrationManager;
@@ -181,6 +182,9 @@ class WebAppProvider : public KeyedService {
   // Keeps Isolated Web Apps up to date by regularly checking for updates,
   // downloading them, and applying them.
   IsolatedWebAppUpdateManager& iwa_update_manager();
+  // Manages the lifetime of IsolatedWebApps, e.g., removes apps that are added
+  // to the blocklist
+  IsolatedWebAppUserInstalledManager& isolated_web_app_user_installed_manager();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Runs web apps on OS login.
@@ -300,6 +304,8 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppInstallationManager>
       isolated_web_app_installation_manager_;
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
+  std::unique_ptr<IsolatedWebAppUserInstalledManager>
+      isolated_web_app_user_installed_manager_;
   std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_user_installed_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
@@ -236,6 +237,12 @@ IsolatedWebAppUpdateManager& WebAppProvider::iwa_update_manager() {
   return *iwa_update_manager_;
 }
 
+IsolatedWebAppUserInstalledManager&
+WebAppProvider::isolated_web_app_user_installed_manager() {
+  CheckIsConnected();
+  return *isolated_web_app_user_installed_manager_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 WebAppRunOnOsLoginManager& WebAppProvider::run_on_os_login_manager() {
   CheckIsConnected();
@@ -388,6 +395,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
   isolated_web_app_policy_manager_ =
       std::make_unique<IsolatedWebAppPolicyManager>(profile);
+  isolated_web_app_user_installed_manager_ =
+      std::make_unique<IsolatedWebAppUserInstalledManager>(*profile);
   extensions_manager_ = ExtensionsManager::CreateForProfile(profile);
   generated_icon_fix_manager_ = std::make_unique<GeneratedIconFixManager>();
 
@@ -449,6 +458,7 @@ void WebAppProvider::ConnectSubsystems() {
   isolated_web_app_installation_manager_->SetProvider(pass_key, *this);
   iwa_update_manager_->SetProvider(pass_key, *this);
   isolated_web_app_policy_manager_->SetProvider(pass_key, *this);
+  isolated_web_app_user_installed_manager_->SetProvider(pass_key, *this);
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_->SetProvider(pass_key, *this);
   iwa_cache_manager_->SetProvider(pass_key, *this);
@@ -499,6 +509,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   isolated_web_app_installation_manager_->Start();
   iwa_update_manager_->Start();
   isolated_web_app_policy_manager_->Start(concurrent.CreateClosure());
+  isolated_web_app_user_installed_manager_->Start();
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
