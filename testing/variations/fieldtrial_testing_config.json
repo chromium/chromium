@@ -27626,7 +27626,7 @@
             ]
         }
     ],
-    "VizDirectCompositorThreadIpcWindows": [
+    "VizWithIoMessagePump": [
         {
             "platforms": [
                 "windows"
@@ -27638,37 +27638,7 @@
                         "VizDirectCompositorThreadIpcFrameSinkManager"
                     ],
                     "disable_features": [
-                        "VizDirectCompositorThreadIpcNonRoot"
-                    ]
-                },
-                {
-                    "name": "EnabledNonRoot",
-                    "enable_features": [
-                        "VizDirectCompositorThreadIpcNonRoot"
-                    ],
-                    "disable_features": [
-                        "VizDirectCompositorThreadIpcFrameSinkManager"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "VizDirectCompositorThreadIpcFrameSinkManager",
-                        "VizDirectCompositorThreadIpcNonRoot"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VizWithIoMessagePump": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot",
                         "VizWithIoMessagePump"
                     ]
                 }
