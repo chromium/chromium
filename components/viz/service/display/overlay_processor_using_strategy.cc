@@ -1025,11 +1025,6 @@ void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
 
 bool OverlayProcessorUsingStrategy::BlockForCopyRequests(
     const AggregatedRenderPass* root_render_pass) {
-  if (!base::FeatureList::IsEnabled(
-          features::kTemporalSkipOverlaysWithRootCopyOutputRequests)) {
-    return !root_render_pass->copy_requests.empty();
-  }
-
   bool has_copy = false;
   if (!root_render_pass->copy_requests.empty()) {
     has_copy = true;

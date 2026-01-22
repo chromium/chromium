@@ -68,9 +68,6 @@ BASE_FEATURE(kUseFrameIntervalDeciderAdaptiveFrameRate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kTemporalSkipOverlaysWithRootCopyOutputRequests,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseMultipleOverlays,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT

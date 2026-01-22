@@ -4838,10 +4838,6 @@ TEST_F(UnderlayTest, DisableOverlayWithRootCopies) {
     expected_overlays[i] = true;
   }
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kTemporalSkipOverlaysWithRootCopyOutputRequests);
-
   for (size_t i = 0; i < copy_frames.size(); ++i) {
     SCOPED_TRACE(i);
 

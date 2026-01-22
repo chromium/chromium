@@ -61,8 +61,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDrmBlackFullscreenOptimization);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseFrameIntervalDeciderAdaptiveFrameRate);
 #endif
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kTemporalSkipOverlaysWithRootCopyOutputRequests);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVizFrameSubmissionForWebView);
