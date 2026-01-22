@@ -1300,7 +1300,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/intents:java",
       "//chrome/browser/autofill/android:java",
-      "//chrome/browser/browser_controls/android:java",
       "//chrome/browser/feature_engagement:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",

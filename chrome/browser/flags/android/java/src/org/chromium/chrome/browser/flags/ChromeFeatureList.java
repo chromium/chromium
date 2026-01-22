@@ -958,8 +958,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
             newCachedFlag(
                     LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValue= */ false);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
