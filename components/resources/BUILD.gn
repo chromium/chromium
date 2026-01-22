@@ -176,7 +176,10 @@ if (is_android) {
       "android/webxr_resource_id.h",
     ]
 
-    public_deps = [ "//device/vr/buildflags" ]
+    public_deps = [
+      "//build:branding_buildflags",
+      "//device/vr/buildflags",
+    ]
   }
 }
 
