@@ -181,14 +181,8 @@ using search_engines::SearchEngineChoiceScreenEvents;
 
 - (void)didTapPrimaryButton {
   if (_didTapPrimaryButton) {
-    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "isfirstrun", _firstRun);
-    int64_t delay =
-        (base::Time::Now() - _lastCallToDidTapPrimaryButtonTimestamp)
-            .InMilliseconds();
-    SCOPED_CRASH_KEY_NUMBER("SearchEngineChoice", "delay", delay);
-    NOTREACHED(base::NotFatalUntil::M150)
-        << "Double tap on primary button [_firstRun = " << _firstRun
-        << " ; delay : " << delay << " ms]";
+    // The user was able to tap twice on the button, in a very short period.
+    // The second tap can be ignored.
     return;
   }
   _didTapPrimaryButton = YES;
