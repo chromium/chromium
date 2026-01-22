@@ -106,9 +106,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
  private:
   TabCollectionNode* GetNodeForContents(content::WebContents* contents);
 
-  // Creates a `TabSlotView` shim for `node`, used for compatibility with the
-  // core dragging system. The created shim view is cached in `shim_views_`.
-  TabSlotView& GetOrCreateShimViewForNode(TabCollectionNode& node);
+  // Creates a `TabSlotView` for `node`, used for compatibility with the
+  // core dragging system. The created slot view is cached in `slot_views_`.
+  TabSlotView& GetOrCreateSlotViewForNode(TabCollectionNode& node);
 
   // Resets member variables that track a drag being managed by this handler.
   void ResetDragState();
@@ -128,9 +128,9 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   // Null if this handler is not managing a dragging session.
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;
 
-  // A mapping from nodes to their `TabSlotView` shims, used for compatibility
+  // A mapping from nodes to their `TabSlotView`, used for compatibility
   // with the core dragging system.
-  std::map<raw_ptr<const TabCollectionNode>, raw_ptr<TabSlotView>> shim_views_;
+  std::map<raw_ptr<const TabCollectionNode>, raw_ptr<TabSlotView>> slot_views_;
   std::vector<base::CallbackListSubscription> node_destroyed_callbacks_;
 };
 
