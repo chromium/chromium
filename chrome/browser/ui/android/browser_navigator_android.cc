@@ -9,15 +9,20 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -49,6 +54,55 @@ bool ValidNavigateParams(NavigateParams* params) {
   return true;
 }
 
+bool IsNtpUrl(const GURL& url) {
+  return url.host() == chrome::kChromeUINewTabHost &&
+         (url.SchemeIs(content::kChromeUIScheme) ||
+          url.SchemeIs(content::kChromeNativeScheme));
+}
+
+// Searches across all windows and tabs to locate a tab with the same url,
+// if such a tab exists. Otherwise returns nullptr.
+// TODO(crbug.com/441594986) Share with chrome/browser/ui/singleton_tabs.h?
+raw_ptr<BrowserWindowInterface> LocateWindowWithSameUrl(
+    NavigateParams* params) {
+  raw_ptr<BrowserWindowInterface> bwi = nullptr;
+  raw_ptr<tabs::TabInterface> tab = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* current_bwi) {
+        TabListInterface* tab_list = TabListInterface::From(current_bwi);
+        for (tabs::TabInterface* current_tab : tab_list->GetAllTabs()) {
+          content::WebContents* web_contents = current_tab->GetContents();
+          if (web_contents->GetVisibleURL() == params->url) {
+            tab = current_tab;
+            bwi = current_bwi;
+            return false;  // stop iterating
+          }
+        }
+        return true;  // continue iterating
+      });
+
+  if (bwi && tab) {
+    // Locate the previously active tab.
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(params->browser)->GetActiveTab();
+
+    // Activate window and tab we are switching to.
+    bwi->GetWindow()->Activate();
+    TabListInterface* tab_list = TabListInterface::From(bwi);
+    tabs::TabHandle tab_handle = tab->GetHandle();
+    tab_list->HighlightTabs(tab_handle, {tab_handle});
+
+    // Close the current tab if NTP.
+    // TODO (crbug.com/441594986) This should only close an NTP tab if there
+    // is no associated history.
+    if (tab != active_tab &&
+        IsNtpUrl(active_tab->GetContents()->GetVisibleURL())) {
+      active_tab->Close();
+    }
+  }
+  return bwi;
+}
+
 // Helper to create/locate windows.
 void GetOrCreateBrowserWindowForDisposition(
     NavigateParams* params,
@@ -72,6 +126,18 @@ void GetOrCreateBrowserWindowForDisposition(
       CreateBrowserWindow(std::move(create_params), std::move(callback));
       break;
     }
+    case WindowOpenDisposition::SWITCH_TO_TAB: {
+      // Search through all existing tabs and windows for a tab with same url.
+      auto bwi = LocateWindowWithSameUrl(params);
+      if (bwi) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), bwi));
+        break;
+      }
+      // If no tab found, navigate like CURRENT_TAB.
+      params->disposition = WindowOpenDisposition::CURRENT_TAB;
+    }
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
@@ -198,6 +264,8 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
       }
       // Otherwise use the active tab.
       [[fallthrough]];
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      [[fallthrough]];
     case WindowOpenDisposition::OFF_THE_RECORD:
       // A new incognito window has already been created with a new tab.
       [[fallthrough]];
@@ -258,10 +326,29 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Only handles dispositions that do not create new windows.
   if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+      params->disposition != WindowOpenDisposition::SWITCH_TO_TAB) {
     return nullptr;
   }
-  auto tab = GetOrCreateTabForDisposition(params->browser, params);
+
+  BrowserWindowInterface* bwi = params->browser;
+  // This call may activate a different window, but no new window will be
+  // created.
+  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
+    if (BrowserWindowInterface* bwi_with_tab =
+            LocateWindowWithSameUrl(params)) {
+      bwi = bwi_with_tab;
+    } else {
+      // If matching tab not found, navigate like CURRENT_TAB, if possible.
+      if (params->source_contents) {
+        params->disposition = WindowOpenDisposition::CURRENT_TAB;
+      } else {
+        return nullptr;
+      }
+    }
+  }
+
+  auto tab = GetOrCreateTabForDisposition(bwi, params);
 
   return PerformNavigation(tab, params);
 }
