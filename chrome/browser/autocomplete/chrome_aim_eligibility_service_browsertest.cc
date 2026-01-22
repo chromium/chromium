@@ -796,6 +796,75 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       "Omnibox.AimEligibility.EligibilityRequestStatus.NetworkChange", 2);
 }
 
+// Test that `GetSearchboxConfig` correctly retrieves and parses the config when
+// provided by the server.
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       GetSearchboxConfig_ReturnsConfigWhenPresent) {
+  // Prepare a response containing a SearchboxConfig.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  auto* config = response.mutable_searchbox_config();
+  // Set a specific value to verify that we retrieved the correct object later.
+  config->set_initial_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  // Wait for the service to update its internal state.
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // Verify the config was correctly parsed and matches the input.
+  const auto* actual_config = service->GetSearchboxConfig();
+  ASSERT_NE(actual_config, nullptr);
+  EXPECT_EQ(actual_config->initial_tool_mode(),
+            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+}
+
+// Test that `GetSearchboxConfig` safely returns nullptr when the config is
+// missing from the response.
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       GetSearchboxConfig_ReturnsNullWhenAbsent) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  // Explicitly ensure searchbox_config is NOT present in the response.
+  response.clear_searchbox_config();
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // Verify that the getter returns nullptr instead of crashing or returning an
+  // empty object.
+  const auto* actual_config = service->GetSearchboxConfig();
+  EXPECT_EQ(actual_config, nullptr);
+}
+
 class ChromeAimEligibilityServiceRetryRequestBrowserTest
     : public InProcessBrowserTest {
  public:

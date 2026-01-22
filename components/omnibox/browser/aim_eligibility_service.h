@@ -136,6 +136,9 @@ class AimEligibilityService
   // Returns the source of the most recent eligibility response.
   EligibilityResponseSource GetMostRecentResponseSource() const;
 
+  // Returns the `SearchboxConfig` from the AIMEligibilityResponse.
+  const omnibox::SearchboxConfig* GetSearchboxConfig() const;
+
   // NOTE: Following methods are intended for chrome://aim-eligibility-internals
   // for debugging purposes only:
   // Triggers a server request to fetch eligibility from the server.

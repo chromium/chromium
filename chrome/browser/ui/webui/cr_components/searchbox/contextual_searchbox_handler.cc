@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -308,11 +309,11 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       get_session_callback_(std::move(get_session_callback)) {
   // This implicitly also initializes the file upload status observer.
   if (auto* session_handle = GetContextualSessionHandle()) {
-    // TODO(crbug.com/476105004): Get `SearchboxConfig` from
-    // `AIMEligibilityService`
-    //   and pass it through here.
+    auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
+    const omnibox::SearchboxConfig* config_ptr =
+        service ? service->GetSearchboxConfig() : nullptr;
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle, omnibox::SearchboxConfig());
+        *session_handle, config_ptr ? *config_ptr : omnibox::SearchboxConfig());
   }
 
   auto* browser_window_interface =
