@@ -5,6 +5,7 @@
 """Siso configuration for grit."""
 
 load("@builtin//struct.star", "module")
+# load("./config.star", "config")
 
 def __step_config(ctx, step_config):
     step_config["rules"].extend([
@@ -14,7 +15,8 @@ def __step_config(ctx, step_config):
             # actions we want to support all grit actions to run remotely and
             # use command_prefix instead of action
             "action": "__chrome_app_generated_resources_grit.*",
-            "remote": True,
+            # TODO: enable this.
+            # "remote": config.get(ctx, "googlechrome"),
         },
     ])
     return step_config
