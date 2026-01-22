@@ -258,16 +258,18 @@ void NativeViewHostMac::ShowWidget(int x,
                                    int native_h) {
   // TODO(crbug.com/41132564): Implement host_->fast_resize().
 
+  int superview_height =
+      host_->GetWidget()->GetClientAreaBoundsInScreen().height();
+
   if (native_view_hostable_) {
-    native_view_hostable_->ViewsHostableSetBounds(gfx::Rect(x, y, w, h));
+    native_view_hostable_->ViewsHostableSetBounds(gfx::Rect(x, y, w, h),
+                                                  superview_height);
     native_view_hostable_->ViewsHostableSetVisible(true);
   } else {
     // Coordinates will be from the top left of the parent Widget. The
     // NativeView is already in the same NSWindow, so just flip to get Cocoa
     // coordinates and then convert to the containing view.
-    NSRect window_rect = NSMakeRect(
-        x, host_->GetWidget()->GetClientAreaBoundsInScreen().height() - y - h,
-        w, h);
+    NSRect window_rect = NSMakeRect(x, superview_height - y - h, w, h);
 
     // Convert window coordinates to the hosted view's superview, since that's
     // how coordinates of the hosted view's frame is based.

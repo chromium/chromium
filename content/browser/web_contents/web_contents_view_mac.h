@@ -127,7 +127,8 @@ class WebContentsViewMac : public WebContentsView,
   // ViewsHostableView:
   void ViewsHostableAttach(ViewsHostableView::Host* host) override;
   void ViewsHostableDetach() override;
-  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) override;
+  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview,
+                              int superview_height) override;
   void ViewsHostableSetVisible(bool visible) override;
   void ViewsHostableMakeFirstResponder() override;
   void ViewsHostableSetParentAccessible(

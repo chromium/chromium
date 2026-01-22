@@ -23,7 +23,9 @@ interface WebContentsNSView {
   ResetParentNSView();
 
   // Sets the NSView's frame in its superview's coordinate.
-  SetBounds(gfx.mojom.Rect bounds_in_superview);
+  // `superview_height` is needed to flip Y into Cocoa coordinates. We pass it
+  // explicitly because the hosted view's bounds may be stale during resize.
+  SetBounds(gfx.mojom.Rect bounds_in_superview, int32 superview_height);
 
   // Short or hide the NSView.
   SetVisible(bool visible);

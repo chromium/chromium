@@ -53,7 +53,8 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   // mojom::WebContentsNSViewBridge:
   void SetParentNSView(uint64_t parent_ns_view_id) override;
   void ResetParentNSView() override;
-  void SetBounds(const gfx::Rect& bounds_in_superview) override;
+  void SetBounds(const gfx::Rect& bounds_in_superview,
+                 int32_t superview_height) override;
   void SetVisible(bool visible) override;
   void MakeFirstResponder() override;
   void TakeFocus(bool reverse) override;

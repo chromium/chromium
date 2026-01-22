@@ -768,11 +768,12 @@ void WebContentsViewMac::ViewsHostableDetach() {
 }
 
 void WebContentsViewMac::ViewsHostableSetBounds(
-    const gfx::Rect& bounds_in_superview) {
+    const gfx::Rect& bounds_in_superview,
+    int superview_height) {
   // Update both the in-process and out-of-process NSViews' bounds.
-  in_process_ns_view_bridge_->SetBounds(bounds_in_superview);
+  in_process_ns_view_bridge_->SetBounds(bounds_in_superview, superview_height);
   if (remote_ns_view_)
-    remote_ns_view_->SetBounds(bounds_in_superview);
+    remote_ns_view_->SetBounds(bounds_in_superview, superview_height);
 }
 
 void WebContentsViewMac::ViewsHostableSetVisible(bool visible) {
