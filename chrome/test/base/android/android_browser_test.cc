@@ -124,3 +124,13 @@ Profile* AndroidBrowserTest::GetProfile() const {
   }
   return nullptr;
 }
+
+TabListInterface* AndroidBrowserTest::GetTabListInterface() const {
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() == GetProfile()) {
+      return model;
+    }
+  }
+  ADD_FAILURE() << "No TabModel found for the current profile.";
+  return nullptr;
+}

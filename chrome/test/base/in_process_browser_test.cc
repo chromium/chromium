@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -548,8 +549,9 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
       command_line, open_about_blank_on_browser_launch_);
 
   // TODO(pkotwicz): Investigate if we can remove this switch.
-  if (exit_when_last_browser_closes_)
+  if (exit_when_last_browser_closes_) {
     command_line->AppendSwitch(switches::kDisableZeroBrowsersOpenForTests);
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   // Do not automaximize in browser tests.
   command_line->AppendSwitch(switches::kDisableAutoMaximizeForTests);
@@ -614,12 +616,14 @@ void InProcessBrowserTest::RecordPropertyFromMap(
            tag_pair.first.find("=") == std::string::npos);
     DCHECK(tag_pair.second.find(";") == std::string::npos &&
            tag_pair.second.find("=") == std::string::npos);
-    if (!result.empty())
+    if (!result.empty()) {
       result = base::StrCat({result, ";"});
+    }
     result = base::StrCat({result, tag_pair.first, "=", tag_pair.second});
   }
-  if (!result.empty())
+  if (!result.empty()) {
     RecordProperty("gtest_tag", result);
+  }
 }
 
 void InProcessBrowserTest::SetUpLocalStatePrefService(
@@ -634,6 +638,10 @@ void InProcessBrowserTest::SetUpLocalStatePrefService(
 
 Profile* InProcessBrowserTest::GetProfile() const {
   return browser() ? browser()->profile() : nullptr;
+}
+
+TabListInterface* InProcessBrowserTest::GetTabListInterface() const {
+  return TabListInterface::From(browser());
 }
 
 void InProcessBrowserTest::CloseBrowserSynchronously(
@@ -748,8 +756,9 @@ Browser* InProcessBrowserTest::CreateBrowser(Profile* profile) {
 
 Browser* InProcessBrowserTest::CreateIncognitoBrowser(Profile* profile) {
   // Use active profile if default nullptr was passed.
-  if (!profile)
+  if (!profile) {
     profile = browser()->profile();
+  }
   // Create a new browser with using the incognito profile.
   Browser* incognito = Browser::Create(Browser::CreateParams(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));

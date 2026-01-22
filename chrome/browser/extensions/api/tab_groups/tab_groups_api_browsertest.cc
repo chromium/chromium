@@ -190,14 +190,6 @@ class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
     return *group;
   }
 
-  // Returns the `TabListInterface` for the test's main browser window.
-  TabListInterface* GetTabListInterface() {
-    TabListInterface* tab_list =
-        TabListInterface::From(browser_window_interface());
-    CHECK(tab_list);
-    return tab_list;
-  }
-
  private:
   // The original web contentses in order.
   std::vector<raw_ptr<content::WebContents, VectorExperimental>> web_contents_;

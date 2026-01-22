@@ -178,13 +178,6 @@ class ExtensionTabsTest : public ExtensionApiTest {
   ExtensionTabsTest(const ExtensionTabsTest&) = delete;
   ExtensionTabsTest& operator=(const ExtensionTabsTest&) = delete;
 
-  TabListInterface* GetTabListInterface(BrowserWindowInterface* browser) {
-    return TabListInterface::From(browser);
-  }
-  TabListInterface* GetTabListInterface() {
-    return GetTabListInterface(browser_window_interface());
-  }
-
   std::string GetWindowType(BrowserWindowInterface* test_browser,
                             scoped_refptr<const Extension> extension) {
     auto function = base::MakeRefCounted<WindowsGetFunction>();
@@ -580,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
             error);
 
   // Ensure the tab was not updated. It should stay as the new tab page.
-  TabListInterface* tab_list = GetTabListInterface(incognito);
+  TabListInterface* tab_list = TabListInterface::From(incognito);
   EXPECT_EQ(1, tab_list->GetTabCount());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             tab_list->GetActiveTab()->GetContents()->GetLastCommittedURL());
