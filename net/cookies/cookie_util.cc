@@ -452,6 +452,8 @@ std::optional<std::string> GetCookieDomainWithString(
       GetEffectiveDomain(url_scheme, cookie_domain));
   if (url_domain_and_registry != cookie_domain_and_registry) {
     // Can't set a cookie on a different domain + registry.
+    status.AddExclusionReason(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH);
     return std::nullopt;
   }
 

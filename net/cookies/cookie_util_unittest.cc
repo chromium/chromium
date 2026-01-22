@@ -206,7 +206,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_ETldDifferentUrl) {
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://nhs.gov.uk"),
                                                       "gov.uk", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A cookie domain with a different eTLD+1 ("organization-identifying host")
@@ -215,7 +216,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_DifferentOrgHost) {
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://portal.globex.com"), "portal.initech.com", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A cookie domain that matches the URL results in a domain cookie domain.
@@ -261,7 +263,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://myglobex.com"), "globex.com", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A URL which has a different subdomain of the eTLD+1 than the cookie domain is
@@ -301,10 +304,12 @@ TEST(CookieUtilTest,
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
                                                       ".foo.com..", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
                                                       ".foo.com.", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A URL containing an IP address is allowed, if that IP matches the cookie

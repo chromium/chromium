@@ -590,7 +590,8 @@ TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
       &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 }
 
 // Creating a cookie for an eTLD is possible, but it must match the hostname and
@@ -2955,6 +2956,7 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   ASSERT_FALSE(cookie2);
   EXPECT_TRUE(create_status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 
   // Test IsSetPermittedInContext()
@@ -4106,7 +4108,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A", "B", std::string(), "foo",
       base::Time(), base::Time(), base::Time(), false /*secure*/,
@@ -4209,7 +4212,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 
   // Path with unusual characters escaped.
   cc = CanonicalCookie::CreateSanitizedCookie(
