@@ -1504,11 +1504,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "cert-verification-network-time",
-    "owners": [ "carlosil@chromium.org", "chrome-secure-web-and-net@google.com" ],
-    "expiry_milestone": 134
-  },
-  {
     "name": "change-unfocused-priority",
     "owners": [ "asriniva@google.com"],
     "expiry_milestone": 140

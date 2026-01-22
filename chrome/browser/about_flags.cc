@@ -11237,12 +11237,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kTaskManagerDesktopRefresh)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"cert-verification-network-time",
-     flag_descriptions::kCertVerificationNetworkTimeName,
-     flag_descriptions::kCertVerificationNetworkTimeDescription,
-     kOsMac | kOsWin | kOsLinux | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kCertVerificationNetworkTime)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-translate-button",
      flag_descriptions::kLensOverlayTranslateButtonName,
