@@ -25950,7 +25950,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ThrottleMainFrameTo60Hz"
+                        "ThrottleMainFrameTo60Hz",
+                        "UrgentMainFrameForInput"
                     ]
                 }
             ]
@@ -25965,8 +25966,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ThrottleMainFrameTo60HzWebView",
-                        "UrgentMainFrameForInput"
+                        "ThrottleMainFrameTo60HzWebView"
                     ]
                 }
             ]
