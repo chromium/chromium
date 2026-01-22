@@ -1893,15 +1893,6 @@ bool Browser::TabsNeedBeforeUnloadFired() const {
   return unload_controller_.TabsNeedBeforeUnloadFired();
 }
 
-bool Browser::PreHandleGestureEvent(content::WebContents* source,
-                                    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming in undocked dev tools window due to poor UX.
-  if (app_name() == DevToolsWindow::kDevToolsApp) {
-    return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
-  }
-  return false;
-}
-
 bool Browser::CanDragEnter(content::WebContents* source,
                            const content::DropData& data,
                            blink::DragOperationsMask operations_allowed) {
@@ -3060,6 +3051,11 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   DUMP_WILL_BE_CHECK(!is_delete_scheduled_);
 
   SetAsDelegate(contents, true);
+
+  // Disable pinch zooming in undocked dev tools window due to poor UX.
+  if (app_name() == DevToolsWindow::kDevToolsApp) {
+    contents->SetIgnoreZoomGestures(true);
+  }
 
   sessions::SessionTabHelper::FromWebContents(contents)->SetWindowID(
       session_id());
