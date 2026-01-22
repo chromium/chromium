@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/autofill/core/browser/proto",
   "+components/password_manager/core/browser/generation",
   "+components/password_manager/core/common/password_manager_constants.h",
@@ -6,6 +7,7 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+device/fido",
   "+ios/components/credential_provider_extension",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
