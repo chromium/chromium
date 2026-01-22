@@ -116,7 +116,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
     controller_ = new FakeBaseTabStripController;
     tab_strip_ = new TabStrip(std::unique_ptr<TabStripController>(controller_));
-    tab_strip_->Initialize();
     controller_->set_tab_strip(tab_strip_);
     // Do this to force TabStrip to create the buttons.
     auto tab_strip_parent = std::make_unique<views::View>();

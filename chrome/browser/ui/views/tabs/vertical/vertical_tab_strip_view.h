@@ -45,7 +45,6 @@ class VerticalTabStripView final : public views::View,
 
  private:
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
-  void RemoveScrollViewContents(views::View* view);
 
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<VerticalPinnedTabContainerView> pinned_tabs_container_view_ = nullptr;

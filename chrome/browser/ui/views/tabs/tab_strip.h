@@ -85,12 +85,6 @@ class TabStrip : public views::View,
   TabStrip& operator=(const TabStrip&) = delete;
   ~TabStrip() override;
 
-  // Initializes the `tab_container_` so tabs can be added to it.
-  void Initialize();
-
-  // Resets the tab strip by removing the tabs in `tab_container_` .
-  void Reset();
-
   void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback);
 
@@ -434,7 +428,7 @@ class TabStrip : public views::View,
   raw_ref<TabDragContextImpl, AcrossTasksDanglingUntriaged> drag_context_;
 
   // The View parent for the tabs and the various group views.
-  raw_ptr<TabContainer, AcrossTasksDanglingUntriaged> tab_container_;
+  raw_ref<TabContainer, AcrossTasksDanglingUntriaged> tab_container_;
 
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;

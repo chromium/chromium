@@ -53,9 +53,6 @@ class TabCollectionNode {
   // as a child of this.
   std::unique_ptr<views::View> Initialize();
 
-  // Deinitializes all the child nodes in a recursive manner.
-  void Deinitialize();
-
   // Gets the collection under this subtree that has the associated handle.
   // Returns nullptr if no such node exists.
   TabCollectionNode* GetNodeForHandle(
@@ -75,8 +72,7 @@ class TabCollectionNode {
 
   // Removes the child and removes and destroys the view.
   void RemoveChild(base::PassKey<TabCollectionNode> pass_key,
-                   const tabs::TabCollectionNodeHandle& handle,
-                   bool perform_deinitialization);
+                   const tabs::TabCollectionNodeHandle& handle);
 
   // Moves the node to the new index within the same parent. Also updates the
   // z-order of the moved child to the highest to ensure it shows over other

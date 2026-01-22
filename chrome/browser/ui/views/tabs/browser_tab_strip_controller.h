@@ -52,7 +52,6 @@ class BrowserTabStripController : public TabStripController,
   ~BrowserTabStripController() override;
 
   void InitFromModel(TabStrip* tabstrip);
-  void Reset();
 
   // TabStripController implementation:
   ui::ListSelectionModel GetSelectionModel() const override;

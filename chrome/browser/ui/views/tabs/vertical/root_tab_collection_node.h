@@ -24,12 +24,8 @@ class RootTabCollectionNode : public TabCollectionNode,
  public:
   explicit RootTabCollectionNode(
       TabStripModel* tab_strip_model,
-      CustomAddChildViewCallback add_node_view_to_parent,
-      CustomRemoveChildViewCallback remove_node_view_from_parent);
+      CustomAddChildViewCallback add_node_view_to_parent);
   ~RootTabCollectionNode() override;
-
-  void Init();
-  void Reset();
 
  private:
   using SelectionHandles = base::flat_set<tabs::TabHandle>;
@@ -62,8 +58,6 @@ class RootTabCollectionNode : public TabCollectionNode,
 
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;
-  CustomAddChildViewCallback add_node_view_to_parent_;
-  CustomRemoveChildViewCallback remove_node_view_from_parent_;
   base::WeakPtrFactory<RootTabCollectionNode> weak_ptr_factory_{this};
 };
 

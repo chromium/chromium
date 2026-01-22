@@ -56,9 +56,6 @@ VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node) {
 
   collection_node->set_add_child_to_node(base::BindRepeating(
       &VerticalTabStripView::AddScrollViewContents, base::Unretained(this)));
-
-  collection_node->set_remove_child_from_node(base::BindRepeating(
-      &VerticalTabStripView::RemoveScrollViewContents, base::Unretained(this)));
 }
 
 VerticalTabStripView::~VerticalTabStripView() = default;
@@ -208,22 +205,6 @@ views::View* VerticalTabStripView::AddScrollViewContents(
   CHECK(container);
   pinned_tabs_container_view_ = container;
   return pinned_tabs_scroll_view_->SetContents(std::move(view));
-}
-
-void VerticalTabStripView::RemoveScrollViewContents(views::View* view) {
-  if (views::IsViewClass<VerticalUnpinnedTabContainerView>(view)) {
-    unpinned_tabs_container_view_ = nullptr;
-    unpinned_tabs_scroll_view_->SetContents(nullptr);
-    return;
-  }
-  if (views::IsViewClass<VerticalPinnedTabContainerView>(view)) {
-    pinned_tabs_container_view_ = nullptr;
-    pinned_tabs_scroll_view_->SetContents(nullptr);
-    return;
-  }
-  // |view| should only ever be VerticalUnpinnedTabContainerView or
-  // VerticalPinnedTabContainerView.
-  NOTREACHED();
 }
 
 BEGIN_METADATA(VerticalTabStripView)

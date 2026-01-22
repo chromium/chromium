@@ -978,8 +978,6 @@ BrowserView::BrowserView(Browser* browser)
             *this, CustomFloatingCorner::CornerOrientation::kBottomLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
             CustomFloatingCorner::FrameColor()));
-  } else {
-    horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
 
   if (tabs::IsProjectsPanelFeatureEnabled()) {
@@ -1465,14 +1463,6 @@ bool BrowserView::IsInSplitView() const {
 
 void BrowserView::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
-  if (controller->ShouldDisplayVerticalTabs()) {
-    horizontal_tab_strip_region_view_->ResetTabStrip();
-    vertical_tab_strip_region_view_->InitializeTabStrip();
-  } else {
-    vertical_tab_strip_region_view_->ResetTabStrip();
-    horizontal_tab_strip_region_view_->InitializeTabStrip();
-  }
-
   UpdateTabSearchBubbleHost();
   InvalidateLayout();
 }
@@ -5343,13 +5333,8 @@ void BrowserView::AddedToWidget() {
                 weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (auto* const vertical_tab_strip_state_controller =
-          tabs::VerticalTabStripStateController::From(browser_)) {
-    if (vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()) {
-      vertical_tab_strip_region_view_->InitializeTabStrip();
-    } else {
-      horizontal_tab_strip_region_view_->InitializeTabStrip();
-    }
+  if (vertical_tab_strip_region_view_) {
+    vertical_tab_strip_region_view_->CreateTabStripController(this);
   }
 
   dialog_anchor_ = std::make_unique<user_education::ViewSubregionAnchor>(

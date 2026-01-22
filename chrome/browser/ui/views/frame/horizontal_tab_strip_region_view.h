@@ -94,8 +94,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   TabStrip* tab_strip() { return tab_strip_; }
 
   // TabStripRegionView:
-  void InitializeTabStrip() override;
-  void ResetTabStrip() override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
@@ -135,8 +133,6 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   // Gets called on `Layout` and adjusts the x-axis position of the `view` based
   // on `offset`. This should only used for views that show before tab strip.
   void AdjustViewBoundsRect(View* view, int offset);
-
-  bool tab_strip_set_ = false;
 
   raw_ptr<const Profile> profile_ = nullptr;
   raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;

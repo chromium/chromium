@@ -99,8 +99,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   views::View* GetDefaultFocusableChild() override;
 
   // TabStripRegionView
-  void InitializeTabStrip() override;
-  void ResetTabStrip() override;
   bool IsTabStripEditable() const override;
   void DisableTabStripEditingForTesting() const override;
   bool IsTabStripCloseable() const override;
@@ -129,6 +127,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  void CreateTabStripController(BrowserView* browser_view);
+
   // These methods provide the toolbar height and exclusion width, before the
   // layout of this view, for use in calculating positioning of child views. If
   // an exclusion width is provided, nothing can be rendered within the
@@ -141,7 +141,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
-  void ClearTabStripView(views::View* view);
 
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
@@ -151,8 +150,6 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   void UpdateColors();
 
   bool IsFrameActive() const;
-
-  raw_ptr<BrowserView> browser_view_;
 
   // When false simulates a non-editable tabstrip. For testing only.
   bool tab_strip_editable_for_testing_ = true;
