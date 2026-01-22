@@ -273,6 +273,7 @@ source_set("policy_specific_browser_tests") {
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/heap_profiling/in_process",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/proxy_config",

@@ -11,18 +11,25 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
+#include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
@@ -36,14 +43,16 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
+#include "services/network/public/mojom/network_service.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/boringssl/src/include/openssl/tls1.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
@@ -62,6 +71,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/net_errors.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+// Used by DisableWithNewProfile test. See the comment in above that test.
+#include "chrome/test/base/ui_test_utils.h"
 #endif
 
 namespace policy {
@@ -898,36 +912,53 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
 }
 
+// https://crbug.com/475587477 means that requests shortly after the network
+// service starts can fail or crash the browser process on DCHECK-enabled
+// builds. Skip tests that restart the network service on Windows for now.
+// TODO(https://crbug.com/475587477): Remove this and enable the tests on
+// Windows.
+constexpr bool kSuffersFromBug475587477 = BUILDFLAG(IS_WIN);
+
 // TLS13EarlyDataPolicyTest relies on the fact that EmbeddedTestServer
 // uses HTTP/1.1 without connection reuse (unless the protocol is explicitly
 // specified). If EmbeddedTestServer ever gains connection reuse by default,
 // we'll need to force it off.
-class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
-                                 public ::testing::WithParamInterface<bool> {
+class TLS13EarlyDataPolicyTestBase
+    : public SSLPolicyTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   static constexpr std::string_view kHostname = "a.test";
   static constexpr std::string_view kEarlyDataCheckPath = "/test-request";
   static constexpr std::string_view kEarlyDataAcceptedTitle = "accepted";
   static constexpr std::string_view kEarlyDataNotAcceptedTitle = "not accepted";
 
-  TLS13EarlyDataPolicyTest()
+  // net::features::kEnableTLS13EarlyData will be enabled or disabled depending
+  // on the value of `feature_enabled`.
+  explicit TLS13EarlyDataPolicyTestBase(bool feature_enabled)
       : test_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.emplace_back(net::features::kHappyEyeballsV3);
-    } else {
-      disabled_features.emplace_back(net::features::kHappyEyeballsV3);
-    }
-    disabled_features.emplace_back(net::features::kEnableTLS13EarlyData);
+    auto& happy_eyeballs_feature_list =
+        GetParam() ? enabled_features : disabled_features;
+    happy_eyeballs_feature_list.emplace_back(net::features::kHappyEyeballsV3);
+    auto& early_data_feature_list =
+        feature_enabled ? enabled_features : disabled_features;
+    early_data_feature_list.emplace_back(net::features::kEnableTLS13EarlyData);
+    // Heap profiling makes the tests that call
+    // content::RestartNetworkService() flakily crash. so force it off.
+    // TODO(crbug.com/470131729): Re-enable heap profiler reporting.
+    disabled_features.emplace_back(heap_profiling::kHeapProfilerReporting);
+
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    // This is needed for the tests that restart the network service to work.
+    content::ForceOutOfProcessNetworkService();
   }
 
   void SetUpOnMainThread() override {
     net::SSLServerConfig server_config;
     server_config.early_data_enabled = true;
     test_server_.RegisterRequestHandler(
-        base::BindRepeating(&TLS13EarlyDataPolicyTest::HandleRequest));
+        base::BindRepeating(&TLS13EarlyDataPolicyTestBase::HandleRequest));
     test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES,
                               server_config);
     ASSERT_TRUE(test_server_.Start());
@@ -939,18 +970,32 @@ class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
     return test_server_.GetURL(kHostname, path);
   }
 
+  GURL GetTestPageURL() { return GetURL("/index.html"); }
+
   void NavigateToTestPage() {
-    ASSERT_TRUE(NavigateToUrl(GetURL("/index.html"), this));
+    ASSERT_TRUE(NavigateToUrl(GetTestPageURL(), this));
   }
 
-  std::string FetchResourceForEarlyDataCheck(GURL url) {
-    content::EvalJsResult result =
-        content::EvalJs(chrome_test_utils::GetActiveWebContents(this),
-                        content::JsReplace(R"(
+  std::string FetchResourceForEarlyDataCheck(
+      content::WebContents* for_web_contents = nullptr) {
+    if (!for_web_contents) {
+      for_web_contents = chrome_test_utils::GetActiveWebContents(this);
+    }
+    content::EvalJsResult result = content::EvalJs(
+        for_web_contents, content::JsReplace(R"(
       fetch($1).then(res => res.text())
     )",
-                                           GetURL(kEarlyDataCheckPath)));
+                                             GetURL(kEarlyDataCheckPath)));
     return result.ExtractString();
+  }
+
+  static void RestartNetworkServiceAndWaitUntilReady() {
+    // This is a DCHECK() just because a CHECK() would lead to an unreachable
+    // code compiler error on Windows.
+    DCHECK(!kSuffersFromBug475587477);
+
+    content::RestartNetworkService();
+    content::FlushNetworkServiceInstanceForTesting();
   }
 
  private:
@@ -976,6 +1021,12 @@ class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
   net::EmbeddedTestServer test_server_;
 };
 
+class TLS13EarlyDataPolicyTest : public TLS13EarlyDataPolicyTestBase {
+ public:
+  TLS13EarlyDataPolicyTest()
+      : TLS13EarlyDataPolicyTestBase(/*feature_enabled=*/false) {}
+};
+
 INSTANTIATE_TEST_SUITE_P(, TLS13EarlyDataPolicyTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
@@ -984,8 +1035,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
 
   NavigateToTestPage();
 
-  EXPECT_EQ(FetchResourceForEarlyDataCheck(GetURL(kEarlyDataCheckPath)),
-            kEarlyDataNotAcceptedTitle);
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataNotAcceptedTitle);
 }
 
 // TODO(crbug.com/418717917, crbug.com/419211957): Flaky on Windows and Android.
@@ -1004,8 +1054,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
 
   NavigateToTestPage();
 
-  EXPECT_EQ(FetchResourceForEarlyDataCheck(GetURL(kEarlyDataCheckPath)),
-            kEarlyDataAcceptedTitle);
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataAcceptedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyDisable) {
@@ -1016,8 +1065,133 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyDisable) {
 
   NavigateToTestPage();
 
-  EXPECT_EQ(FetchResourceForEarlyDataCheck(GetURL(kEarlyDataCheckPath)),
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataNotAcceptedTitle);
+}
+
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, EnableWithRestart) {
+  if (kSuffersFromBug475587477) {
+    GTEST_SKIP()
+        << "Test is flaky on this platform due to https://crbug.com/475587477";
+  }
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(true));
+  UpdateProviderPolicy(policies);
+  EXPECT_TRUE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Restart to ensure that the policy setting persists.
+  RestartNetworkServiceAndWaitUntilReady();
+
+  NavigateToTestPage();
+
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataAcceptedTitle);
+}
+
+class TLS13EarlyDataPolicyEnabledByDefaultTest
+    : public TLS13EarlyDataPolicyTestBase {
+ public:
+  TLS13EarlyDataPolicyEnabledByDefaultTest()
+      : TLS13EarlyDataPolicyTestBase(/*feature_enabled=*/true) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TLS13EarlyDataPolicyEnabledByDefaultTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest, Disable) {
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  content::FlushNetworkServiceInstanceForTesting();
+
+  NavigateToTestPage();
+
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataNotAcceptedTitle);
+}
+
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
+                       DisableWithRestart) {
+  if (kSuffersFromBug475587477) {
+    GTEST_SKIP()
+        << "Test is flaky on this platform due to https://crbug.com/475587477";
+  }
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Restart to ensure that the policy setting persists.
+  RestartNetworkServiceAndWaitUntilReady();
+
+  NavigateToTestPage();
+
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(), kEarlyDataNotAcceptedTitle);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// This test doesn't work on Android because off-the-record profiles work
+// differently there. The behavior being tested is cross-platform, so it is not
+// critical to test on Android, but it would be better.
+// TODO(crbug.com/469517452): Make this test work on Android as well. Probably
+// some extra abstractions should be added to policy_test_utils.h.
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
+                       DisableWithNewOTPProfile) {
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  content::FlushNetworkServiceInstanceForTesting();
+
+  Browser* incognito_browser = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      true));
+
+  auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser, GetTestPageURL(),
+      WindowOpenDisposition::OFF_THE_RECORD,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(render_frame_host);
+
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(
+                incognito_browser->tab_strip_model()->GetActiveWebContents()),
             kEarlyDataNotAcceptedTitle);
 }
+
+// Creating arbitrary user profiles via `ProfileManager` is not supported on
+// ChromeOS, so this test cannot work there.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
+                       DisableWithNewRegularProfile) {
+  PolicyMap policies;
+  SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  content::FlushNetworkServiceInstanceForTesting();
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->user_data_dir().AppendASCII("New Profile");
+
+  base::test::TestFuture<Profile*> profile_future;
+  profile_manager->CreateProfileAsync(profile_path,
+                                      profile_future.GetCallback());
+  Profile* new_profile = profile_future.Get();
+
+  Browser* new_browser = CreateBrowser(new_profile);
+
+  auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
+      new_browser, GetTestPageURL(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(render_frame_host);
+
+  EXPECT_EQ(FetchResourceForEarlyDataCheck(
+                new_browser->tab_strip_model()->GetActiveWebContents()),
+            kEarlyDataNotAcceptedTitle);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

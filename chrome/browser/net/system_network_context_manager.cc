@@ -876,6 +876,8 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   UpdateIPv6ReachabilityOverrideEnabled();
 
+  UpdateTLS13EarlyDataEnabled();
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kNetworkAnnotationMonitoring)) {
     // Create NetworkAnnotationMonitor.
