@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "net/log/net_log_with_source.h"
 #include "net/quic/web_transport_client.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -81,6 +82,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
 
   // WebTransportClientVisitor implementation:
   void OnLocalNetworkAccessCheck(const net::IPEndPoint& server_address,
+                                 const net::NetLogWithSource& net_log,
                                  net::CompletionOnceCallback callback) override;
   void OnBeforeConnect(const net::IPEndPoint& server_address) override;
   void OnConnected(

@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "net/http/http_response_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
@@ -587,6 +588,7 @@ void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
 
 void WebTransport::OnLocalNetworkAccessCheck(
     const net::IPEndPoint& server_address,
+    const net::NetLogWithSource& net_log,
     net::CompletionOnceCallback callback) {
   if (!base::FeatureList::IsEnabled(
           features::kLocalNetworkAccessChecksWebTransport)) {
@@ -615,11 +617,16 @@ void WebTransport::OnLocalNetworkAccessCheck(
 
   if (url_loader_network_observer_ &&
       check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+    // WebTransport connections are not cached, so just use kDirect.
+    mojom::TransportType transport_type = mojom::TransportType::kDirect;
+
     url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
-        // WebTransport connections are not cached, so just pass kDirect.
-        mojom::TransportType::kDirect, *checker.ResponseAddressSpace(),
+        transport_type, *checker.ResponseAddressSpace(),
         base::BindOnce(
             [](base::WeakPtr<WebTransport> weak_self,
+               const net::NetLogWithSource& net_log,
+               const mojom::TransportType transport_type,
+               const mojom::IPAddressSpace address_space,
                net::CompletionOnceCallback callback,
                mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
@@ -629,12 +636,27 @@ void WebTransport::OnLocalNetworkAccessCheck(
                 // `WebTransport`.
                 return;
               }
+
+              net_log.AddEvent(
+                  net::NetLogEventType::
+                      LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
+                  [&] {
+                    return base::Value::Dict()
+                        .Set("address_space",
+                             IPAddressSpaceToStringPiece(address_space))
+                        .Set("transport_type",
+                             TransportTypeToStringPiece(transport_type))
+                        .Set("result",
+                             LocalNetworkAccessResultToStringPiece(result));
+                  });
+
               std::move(callback).Run(
                   result == mojom::LocalNetworkAccessResult::kGranted
                       ? net::OK
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
-            weak_factory_.GetWeakPtr(), std::move(callback)));
+            weak_factory_.GetWeakPtr(), net_log, transport_type,
+            *checker.ResponseAddressSpace(), std::move(callback)));
   } else {
     std::move(callback).Run(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
   }

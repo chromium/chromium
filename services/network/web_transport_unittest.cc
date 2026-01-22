@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
@@ -44,6 +45,10 @@
 
 namespace network {
 namespace {
+
+using ::testing::Eq;
+using ::testing::Pointee;
+using ::testing::SizeIs;
 
 class HostResolverFactory final : public net::HostResolver::Factory {
  public:
@@ -584,6 +589,14 @@ TEST_F(WebTransportTest, ConnectLNAPermissionDenied) {
   ASSERT_TRUE(test_handshake_client.handshake_error().has_value());
   EXPECT_EQ(test_handshake_client.handshake_error()->net_error,
             net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
+
+  std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(1));
+  const base::Value::Dict& params = entries[0].params;
+  EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+  EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+  EXPECT_THAT(params.FindString("result"), Pointee(Eq("denied")));
 }
 
 TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
@@ -619,6 +632,14 @@ TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
   EXPECT_EQ(test_handshake_client.selected_application_protocol(),
             std::nullopt);
   EXPECT_EQ(1u, network_context().NumOpenWebTransports());
+
+  std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(1));
+  const base::Value::Dict& params = entries[0].params;
+  EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+  EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+  EXPECT_THAT(params.FindString("result"), Pointee(Eq("granted")));
 }
 
 TEST_F(WebTransportTest, SendDatagram) {

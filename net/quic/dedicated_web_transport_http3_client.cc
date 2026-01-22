@@ -591,8 +591,9 @@ int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheck() {
   IPEndPoint server_address =
       resolve_host_request_->GetAddressResults().front();
   visitor_->OnLocalNetworkAccessCheck(
-      server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
-                                     base::Unretained(this)));
+      server_address, net_log_,
+      base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
+                     base::Unretained(this)));
   return ERR_IO_PENDING;
 }
 
