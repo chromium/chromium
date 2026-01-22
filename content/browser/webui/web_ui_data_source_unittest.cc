@@ -146,7 +146,7 @@ TEST_F(WebUIDataSourceTest, SomeValues) {
   StartDataRequest("strings.js", base::BindOnce(&SomeValuesCallback));
 }
 
-void DefaultResourceFoobarCallback(scoped_refptr<base::RefCountedMemory> data) {
+void DefaultResourceCallback(scoped_refptr<base::RefCountedMemory> data) {
   std::string result(base::as_string_view(*data));
   EXPECT_NE(result.find(kDummyDefaultResource), std::string::npos);
 }
@@ -157,11 +157,15 @@ void DefaultResourceStringsCallback(
   EXPECT_NE(result.find(kDummyDefaultResource), std::string::npos);
 }
 
+void NullCallback(scoped_refptr<base::RefCountedMemory> data) {
+  EXPECT_EQ(nullptr, data);
+}
+
 TEST_F(WebUIDataSourceTest, DefaultResource) {
   source()->SetDefaultResource(kDummyDefaultResourceId);
-  StartDataRequest("foobar", base::BindOnce(&DefaultResourceFoobarCallback));
-  StartDataRequest("strings.js",
-                   base::BindOnce(&DefaultResourceStringsCallback));
+  StartDataRequest("", base::BindOnce(&DefaultResourceCallback));
+  StartDataRequest("foobar", base::BindOnce(&DefaultResourceCallback));
+  StartDataRequest("strings.js", base::BindOnce(&NullCallback));
 }
 
 void NamedResourceFoobarCallback(scoped_refptr<base::RefCountedMemory> data) {
@@ -169,16 +173,11 @@ void NamedResourceFoobarCallback(scoped_refptr<base::RefCountedMemory> data) {
   EXPECT_NE(result.find(kDummyResource), std::string::npos);
 }
 
-void NamedResourceStringsCallback(scoped_refptr<base::RefCountedMemory> data) {
-  std::string result(base::as_string_view(*data));
-  EXPECT_NE(result.find(kDummyDefaultResource), std::string::npos);
-}
-
 TEST_F(WebUIDataSourceTest, NamedResource) {
   source()->SetDefaultResource(kDummyDefaultResourceId);
   source()->AddResourcePath("foobar", kDummyResourceId);
   StartDataRequest("foobar", base::BindOnce(&NamedResourceFoobarCallback));
-  StartDataRequest("strings.js", base::BindOnce(&NamedResourceStringsCallback));
+  StartDataRequest("strings.js", base::BindOnce(&NullCallback));
 }
 
 void NamedResourceWithQueryStringCallback(
@@ -307,11 +306,11 @@ TEST_F(WebUIDataSourceTest, NoSetDefaultResource) {
   source()->AddResourcePath("bar.js", kDummyJSResourceId);
 
   // Empty paths return the resource for the empty path.
-  StartDataRequest("", base::BindOnce(&DefaultResourceFoobarCallback));
-  StartDataRequest("/", base::BindOnce(&DefaultResourceFoobarCallback));
+  StartDataRequest("", base::BindOnce(&DefaultResourceCallback));
+  StartDataRequest("/", base::BindOnce(&DefaultResourceCallback));
   // Un-mapped path that does not look like a file request also returns the
   // resource associated with the empty path.
-  StartDataRequest("subpage", base::BindOnce(&DefaultResourceFoobarCallback));
+  StartDataRequest("subpage", base::BindOnce(&DefaultResourceCallback));
   // Paths that are valid filenames succeed and return the file contents.
   StartDataRequest("foobar.html", base::BindOnce(&NamedResourceFoobarCallback));
   StartDataRequest("bar.js", base::BindOnce(&NamedResourceBarJSCallback));

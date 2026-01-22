@@ -86,14 +86,6 @@ void PopulateLocalResourceMap(
     return;
   }
 
-  // Add default resource.
-  int default_resource_id = webui_data_source.default_resource();
-  if (default_resource_id != WebUIDataSourceImpl::kNonExistentResource &&
-      path_to_resource_map.find("") == path_to_resource_map.end()) {
-    path_to_resource_map[""] =
-        blink::mojom::LocalResourceValue::NewResourceId(default_resource_id);
-  }
-
   // Add generated resources.
   base::flat_map<std::string, std::string> generated_resources;
   webui_data_source.PopulateWebUIResources(generated_resources);

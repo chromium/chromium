@@ -208,8 +208,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
 WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
     : URLDataSourceImpl(source_name,
                         std::make_unique<InternalDataSource>(this)),
-      source_name_(source_name),
-      default_resource_(kNonExistentResource) {
+      source_name_(source_name) {
   // |source_name| is assumed to match one of the following patterns:
   //
   // some-host
@@ -300,7 +299,7 @@ void WebUIDataSourceImpl::AddResourcePaths(
 }
 
 void WebUIDataSourceImpl::SetDefaultResource(int resource_id) {
-  default_resource_ = resource_id;
+  AddResourcePath("", resource_id);
 }
 
 void WebUIDataSourceImpl::SetRequestFilter(
@@ -549,9 +548,6 @@ int WebUIDataSourceImpl::URLToIdrOrDefault(const GURL& url) const {
   auto it = path_to_idr_map_.find(path);
   if (it != path_to_idr_map_.end())
     return it->second;
-
-  if (default_resource_ != kNonExistentResource)
-    return default_resource_;
 
   // Use GetMimeType() to check for most file requests. It returns text/html by
   // default regardless of the extension if it does not match a different file

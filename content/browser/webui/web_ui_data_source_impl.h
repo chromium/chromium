@@ -82,8 +82,6 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
     return path_to_response_map_;
   }
 
-  int default_resource() const { return default_resource_; }
-
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
   ~WebUIDataSourceImpl() override;
@@ -125,7 +123,6 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   // E.g., for favicons, this could be "favicon", which results in paths for
   // specific resources like "favicon/34" getting sent to this source.
   std::string source_name_;
-  int default_resource_;
   bool use_strings_js_ = false;
   std::map<std::string, int> path_to_idr_map_;
   std::map<std::string, std::string> path_to_response_map_;
