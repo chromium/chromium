@@ -10,6 +10,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -176,11 +177,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
   if (!snapshot_provider_ ||
       !required_provider_info.Matches(*snapshot_provider_)) {
     snapshot_provider_ = CreateSnapshotProviderForVideo(
-        required_provider_info,
-        // TODO(crbug.com/468035607): The RasterContextProvider is nullptr since
-        // this API has historically provided software backed images, but maybe
-        // shouldn't be.
-        /*raster_context_provider=*/nullptr);
+        required_provider_info, GetRasterContextProvider().get());
   }
 
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
