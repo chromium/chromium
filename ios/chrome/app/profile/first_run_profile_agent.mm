@@ -210,6 +210,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)stepCompleted:(GuidedTourStep)step {
   CHECK_EQ(step, _currentGuidedTourStep);
   if (step == GuidedTourStep::kNTP) {
+    [_guidedTourCoordinator stop];
+    _guidedTourCoordinator = nil;
+
     _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
     id<SceneCommands> sceneHandler =
         HandlerForProtocol([self commandDispatcher], SceneCommands);
@@ -237,6 +240,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)dismissGuidedTourPromo {
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  _guidedTourPromoCoordinator = nil;
   [self guidedTourCompleted];
   [self logGuidedTourPromoResult:NO];
 }
@@ -247,6 +251,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     [weakSelf showNTPStep];
   };
   [_guidedTourPromoCoordinator stopWithCompletion:completion];
+  _guidedTourPromoCoordinator = nil;
   [self logGuidedTourPromoResult:YES];
 }
 
