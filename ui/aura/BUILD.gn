@@ -210,6 +210,8 @@ static_library("test_support") {
     "test/test_windows.h",
     "test/ui_controls_aurawin.h",
     "test/ui_controls_factory_aura.h",
+    "test/window_destroyed_waiter.cc",
+    "test/window_destroyed_waiter.h",
     "test/window_event_dispatcher_test_api.cc",
     "test/window_event_dispatcher_test_api.h",
     "test/window_occlusion_tracker_test_api.cc",

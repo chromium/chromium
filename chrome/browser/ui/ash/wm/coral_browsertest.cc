@@ -43,8 +43,8 @@
 #include "components/app_restore/restore_data.h"
 #include "content/public/test/browser_test.h"
 #include "gmock/gmock.h"
+#include "ui/aura/test/window_destroyed_waiter.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 
 namespace ash {
 namespace {
@@ -95,31 +95,6 @@ aura::Window* GetNativeWindowForSwa(SystemWebAppType swa_type) {
   return found_window;
 }
 
-class WindowDestroyedObserver : public aura::WindowObserver {
- public:
-  explicit WindowDestroyedObserver(aura::Window* window) {
-    CHECK(window);
-    window_observation_.Observe(window);
-  }
-
-  void Wait() {
-    if (window_observation_.IsObserving()) {
-      run_loop_.Run();
-    }
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override {
-    window_observation_.Reset();
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      window_observation_{this};
-};
-
 }  // namespace
 
 class CoralBrowserTest : public InProcessBrowserTest {
@@ -149,10 +124,10 @@ class CoralBrowserTest : public InProcessBrowserTest {
 
   void CloseBrowserAndNativeWindowSynchronously(
       BrowserWindowInterface* browser) {
-    WindowDestroyedObserver window_destroyed_observer(
+    aura::test::WindowDestroyedWaiter waiter(
         browser->GetWindow()->GetNativeWindow());
     CloseBrowserSynchronously(browser);
-    window_destroyed_observer.Wait();
+    waiter.Wait();
   }
 
  private:

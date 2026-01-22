@@ -131,8 +131,8 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/window_destroyed_waiter.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -444,31 +444,6 @@ class BrowsersAddedObserver : public BrowserListObserver {
  private:
   int num_browser_adds_left_;
   base::RunLoop run_loop_;
-};
-
-class WindowDestroyedObserver : public aura::WindowObserver {
- public:
-  explicit WindowDestroyedObserver(aura::Window* window) {
-    CHECK(window);
-    window_observation_.Observe(window);
-  }
-
-  void Wait() {
-    if (window_observation_.IsObserving()) {
-      run_loop_.Run();
-    }
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override {
-    window_observation_.Reset();
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      window_observation_{this};
 };
 
 }  // namespace
@@ -3028,11 +3003,13 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // Send a key to OK the close dialog. Wait for the Browser to close and its
   // NativeWindow to be destroyed (which may occur async and independently to
   // Browser destruction).
-  WindowDestroyedObserver window_destroyed_observer(
-      browser()->window()->GetNativeWindow());
-  SendKey(ui::VKEY_RETURN);
-  ui_test_utils::WaitForBrowserToClose(browser());
-  window_destroyed_observer.Wait();
+  {
+    aura::test::WindowDestroyedWaiter waiter(
+        browser()->window()->GetNativeWindow());
+    SendKey(ui::VKEY_RETURN);
+    ui_test_utils::WaitForBrowserToClose(browser());
+    waiter.Wait();
+  }
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
