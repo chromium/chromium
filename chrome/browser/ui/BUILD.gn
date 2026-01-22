@@ -1472,6 +1472,7 @@ static_library("ui") {
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/access_code_cast:impl",
+      "//chrome/browser/ui/webui/default_browser:default_browser_modal",
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",

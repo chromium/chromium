@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("default_browser_modal") {
+  sources = [
+    "default_browser_modal_dialog_delegate.cc",
+    "default_browser_modal_dialog_delegate.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/dialogs",
+    "//chrome/common",
+    "//ui/gfx",
+    "//ui/web_dialogs",
+    "//url",
+  ]
+}
