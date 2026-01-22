@@ -83,7 +83,9 @@ void VerticalSplitTabView::OnPaint(gfx::Canvas* canvas) {
         collection_node_ ? collection_node_->GetDirectChildren()
                          : std::vector<views::View*>();
     std::optional<SkColor> background_color =
-        static_cast<VerticalTabView*>(children[0])->GetBackgroundColor();
+        !children.empty()
+            ? static_cast<VerticalTabView*>(children[0])->GetBackgroundColor()
+            : std::nullopt;
     if (background_color.has_value()) {
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
