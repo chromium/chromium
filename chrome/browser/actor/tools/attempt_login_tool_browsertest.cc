@@ -114,7 +114,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
          password_manager::features::kActorLoginGetCredentialsNoLoginForm,
          actor::kGlicEnableAutoLoginDialogs,
          actor::kGlicEnableAutoLoginPersistedPermissions},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
 
   ~ActorAttemptLoginToolTest() override = default;

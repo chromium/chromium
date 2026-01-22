@@ -225,7 +225,10 @@ class ActorPageStabilityNavigationTypesTest
     allowlist_params["allowlist_only"] = "true";
 
     page_tools_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{kGlicActionAllowlist, allowlist_params}},
+        /*enabled_features=*/{{kGlicActionAllowlist, allowlist_params},
+                              {kGlicCrossOriginNavigationGating,
+                               {{"confirm_navigation_to_new_origins",
+                                 "false"}}}},
         /*disabled_features=*/{});
   }
 

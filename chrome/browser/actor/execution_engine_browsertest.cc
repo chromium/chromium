@@ -140,7 +140,10 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
                                {{features::kGlicActorPolicyControlExemption
                                      .name,
                                  "true"}}},
-                              {kGlicExternalProtocolActionResultCode, {}}},
+                              {kGlicExternalProtocolActionResultCode, {}},
+                              {kGlicCrossOriginNavigationGating,
+                               {{"confirm_navigation_to_new_origins",
+                                 "false"}}}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;
