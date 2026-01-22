@@ -67,8 +67,7 @@ class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionV
  public:
   HorizontalTabStripRegionViewBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kTabstripComboButton,
-                              features::kLaunchedTabSearchToolbarButton},
+        /*enabled_features=*/{},
         /*disabled_features=*/{});
   }
   HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;

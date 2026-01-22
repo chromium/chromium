@@ -26,9 +26,7 @@ namespace {
 
 class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  TabSearchToolbarButtonInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTabstripComboButton);
-  }
+  TabSearchToolbarButtonInteractiveUiTest() = default;
   ~TabSearchToolbarButtonInteractiveUiTest() override = default;
 
   auto SendTabSearchKeyPress(ui::ElementIdentifier target) {
@@ -40,9 +38,6 @@ class TabSearchToolbarButtonInteractiveUiTest : public InteractiveBrowserTest {
                         ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This test verifies the TabSearch functionality when pinned.
