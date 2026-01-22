@@ -507,6 +507,7 @@ source_set("browser_tests") {
       "glic_policy_browsertest.cc",
       "glic_profile_manager_browsertest.cc",
       "glic_user_status_browsertest.cc",
+      "host/context/glic_active_instance_sharing_manager_browsertest.cc",
       "host/context/glic_pinned_tab_manager_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
       "host/glic_api_browsertest.cc",
