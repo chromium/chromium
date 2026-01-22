@@ -434,58 +434,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when assertions are used/edited</summary>
-</histogram>
-
-<histogram name="DevTools.RecordingCodeToggled"
-    enum="DevToolsRecordingCodeToggled" expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when the code view for a recording was toggled in Recorder panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.RecordingCopiedToClipboard"
-    enum="DevToolsRecordingCopiedToClipboard" expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when user copies a recording or step to clipboard in Recorder
-    panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when a recording is being edited by the user.</summary>
-</histogram>
-
-<histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when a recording is exported.</summary>
-</histogram>
-
 <histogram name="DevTools.RecordingReplayFinished"
-    enum="DevToolsRecordingReplayFinished" expires_after="2026-07-05">
+    enum="DevToolsRecordingReplayFinished" expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -493,21 +443,8 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a replay is over.</summary>
 </histogram>
 
-<histogram name="DevTools.RecordingReplaySpeed"
-    enum="DevToolsRecordingReplaySpeed" expires_after="2026-03-01">
-  <owner>ergunsh@google.com</owner>
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when a recording is being replayed. Used to count number of times
-    replay started with which speed.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.RecordingReplayStarted"
-    enum="DevToolsRecordingReplayStarted" expires_after="2026-03-01">
+    enum="DevToolsRecordingReplayStarted" expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -516,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
-    expires_after="2026-03-01">
+    expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
