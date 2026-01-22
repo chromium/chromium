@@ -1,3 +1,4 @@
 # crbug.com/475665154
+-WebUIURLLoaderFactoryTest.RangeRequest/0
 -WebUIURLLoaderFactoryTest.RangeRequest/3
 -WebUIURLLoaderFactoryTest.RangeRequest/4
