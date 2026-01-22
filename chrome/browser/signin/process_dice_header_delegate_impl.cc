@@ -330,8 +330,6 @@ void ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin(
       IdentityManagerFactory::GetForProfile(&profile_.get());
   CHECK(identity_manager);
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
-                                  access_point_);
     if (!AttemptSettingPrimaryAccount(account_info)) {
       return;
     }
