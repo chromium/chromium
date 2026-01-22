@@ -27582,7 +27582,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "kVisitedLinksOn404"
+                        "VisitedLinksOn404"
                     ]
                 }
             ]
