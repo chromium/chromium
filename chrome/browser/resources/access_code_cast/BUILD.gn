@@ -11,9 +11,9 @@ build_webui("build") {
 
   static_files = [ "index.html" ]
 
-  web_component_files = [ "access_code_cast.ts" ]
-
   ts_files = [
+    "access_code_cast.html.ts",
+    "access_code_cast.ts",
     "browser_proxy.ts",
     "error_message/error_message.html.ts",
     "error_message/error_message.ts",
@@ -22,6 +22,7 @@ build_webui("build") {
   ]
 
   css_files = [
+    "access_code_cast.css",
     "error_message/error_message.css",
     "passcode_input/passcode_input.css",
   ]
@@ -38,7 +39,6 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
