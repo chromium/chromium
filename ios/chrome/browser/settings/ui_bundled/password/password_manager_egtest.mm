@@ -2485,8 +2485,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 }
 
-// Tests that removing multiple passwords works fine.
-- (void)testRemovingMultiplePasswords {
+// TODO(crbug.com/477806564): Test is flaky.
+- (void)DISABLED_testRemovingMultiplePasswords {
   constexpr int kPasswordsCount = 4;
 
   // Send the passwords to the queue to be added to the ProfilePasswordStore.
