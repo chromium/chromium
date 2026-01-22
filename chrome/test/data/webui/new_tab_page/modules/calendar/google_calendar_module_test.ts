@@ -25,8 +25,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
   const title = 'Google Calendar';
 
   async function initializeModule(numEvents: number = 0) {
-    handler.setResultFor(
-        'getEvents', Promise.resolve({events: createEvents(numEvents)}));
+    handler.setPromiseResolveFor(
+        'getEvents', {events: createEvents(numEvents)});
     module = await googleCalendarDescriptor.initialize(0) as
         GoogleCalendarModuleElement;
     document.body.append(module);

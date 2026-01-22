@@ -61,21 +61,21 @@ suite('NewTabPageAppTest', () => {
         CustomizeButtonsHandlerRemote,
         mock => CustomizeButtonsProxy.setInstance(
             mock, new CustomizeButtonsDocumentCallbackRouter()));
-    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
+    handler.setPromiseResolveFor('getMostVisitedSettings', {
       customLinksEnabled: false,
       shortcutsVisible: false,
-    }));
-    handler.setResultFor('getDoodle', Promise.resolve({
+    });
+    handler.setPromiseResolveFor('getDoodle', {
       doodle: null,
-    }));
-    handler.setResultFor('getModulesIdNames', Promise.resolve({data: []}));
+    });
+    handler.setPromiseResolveFor('getModulesIdNames', {data: []});
     windowProxy.setResultMapperFor('matchMedia', () => ({
                                                    addListener() {},
                                                    addEventListener() {},
                                                    removeListener() {},
                                                    removeEventListener() {},
                                                  }));
-    windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setPromiseResolveFor('waitForLazyRender');
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
     callbackRouterRemote = NewTabPageProxy.getInstance()
@@ -84,8 +84,8 @@ suite('NewTabPageAppTest', () => {
         CustomizeButtonsProxy.getInstance()
             .callbackRouter.$.bindNewPipeAndPassRemote();
     backgroundManager = installMock(BackgroundManager);
-    backgroundManager.setResultFor(
-        'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
+    backgroundManager.setPromiseResolveFor(
+        'getBackgroundImageLoadTime', backgroundImageLoadTime);
     moduleRegistry = installMock(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
@@ -101,7 +101,7 @@ suite('NewTabPageAppTest', () => {
       ComposeboxProxyImpl.getInstance().searchboxHandler = mock;
       SearchboxBrowserProxy.getInstance().handler = mock;
     });
-    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -647,8 +647,8 @@ suite('NewTabPageAppTest', () => {
       const promoBrowserCommandHandler = installMock(
           CommandHandlerRemote,
           mock => BrowserCommandProxy.getInstance().handler = mock);
-      promoBrowserCommandHandler.setResultFor(
-          'canExecuteCommand', Promise.resolve({canExecute: true}));
+      promoBrowserCommandHandler.setPromiseResolveFor(
+          'canExecuteCommand', {canExecute: true});
 
       const commandId = 123;  // Unsupported command.
       window.dispatchEvent(new MessageEvent('message', {
@@ -678,8 +678,8 @@ suite('NewTabPageAppTest', () => {
       const promoBrowserCommandHandler = installMock(
           CommandHandlerRemote,
           mock => BrowserCommandProxy.getInstance().handler = mock);
-      promoBrowserCommandHandler.setResultFor(
-          'executeCommand', Promise.resolve({commandExecuted: true}));
+      promoBrowserCommandHandler.setPromiseResolveFor(
+          'executeCommand', {commandExecuted: true});
 
       const commandId = 123;  // Unsupported command.
       const clickInfo = {middleButton: true};
@@ -2269,8 +2269,7 @@ suite('NewTabPageAppTest', () => {
     test(
         'Nano Banana chip click opens composebox create image mode',
         async () => {
-          searchboxHandler.setResultFor(
-              'getRecentTabs', Promise.resolve({tabs: []}));
+          searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
           const actionChipsElement =
               app.shadowRoot.querySelector('ntp-action-chips');
           assertTrue(!!actionChipsElement);

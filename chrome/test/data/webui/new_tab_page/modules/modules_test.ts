@@ -968,8 +968,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
           waitToLoadModules: false,
         });
 
-        handler.setResultFor(
-            'getModulesOrder', Promise.resolve({moduleIds: []}));
+        handler.setPromiseResolveFor('getModulesOrder', {moduleIds: []});
       });
 
       test('loads module container with newly enabled module', async () => {
@@ -1077,9 +1076,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
         // Set the modules order, without the foo module, to be verified later.
-        handler.setResultFor('getModulesOrder', Promise.resolve({
+        handler.setPromiseResolveFor('getModulesOrder', {
           moduleIds: [barDescriptor.id, bazDescriptor.id],
-        }));
+        });
 
         // Act - Enable the bar module by removing it from the disabled modules
         // list and trigger a reload operation.
@@ -1176,9 +1175,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
         // Set the module order, to be verified later.
-        handler.setResultFor(
+        handler.setPromiseResolveFor(
             'getModulesOrder',
-            Promise.resolve({moduleIds: [fooDescriptor.id, barDescriptor.id]}));
+            {moduleIds: [fooDescriptor.id, barDescriptor.id]});
 
         // Act - Clear the disabled modules list multiple times.
         callbackRouterRemote.setDisabledModules(false, []);

@@ -80,9 +80,9 @@ suite('NewTabPageLogoTest', () => {
   async function createLogo(
       doodle: Doodle|null = null,
       theme: Theme|null = null): Promise<LogoElement> {
-    handler.setResultFor('getDoodle', Promise.resolve({
+    handler.setPromiseResolveFor('getDoodle', {
       doodle: doodle,
-    }));
+    });
     const logo = document.createElement('ntp-logo');
     document.body.appendChild(logo);
     logo.theme = theme;
@@ -98,11 +98,11 @@ suite('NewTabPageLogoTest', () => {
     handler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-    handler.setResultFor('onDoodleImageRendered', Promise.resolve({
+    handler.setPromiseResolveFor('onDoodleImageRendered', {
       imageClickParams: '',
       interactionLogUrl: null,
       shareId: '',
-    }));
+    });
   });
 
   [true, false].forEach(dark => {
@@ -306,7 +306,7 @@ suite('NewTabPageLogoTest', () => {
 
   test('before doodle loaded shows nothing', () => {
     // Act.
-    handler.setResultFor('getDoodle', new Promise(() => {}));
+    handler.setPromiseResolveFor('getDoodle');
     const logo = document.createElement('ntp-logo');
     document.body.appendChild(logo);
 
@@ -641,11 +641,11 @@ suite('NewTabPageLogoTest', () => {
       const logo = document.createElement('ntp-logo');
       document.body.appendChild(logo);
       logo.theme = createTheme({isDark: dark});
-      handler.setResultFor('onDoodleImageRendered', Promise.resolve({
+      handler.setPromiseResolveFor('onDoodleImageRendered', {
         imageClickParams: 'foo=bar&hello=world',
         interactionLogUrl: null,
         shareId: '123',
-      }));
+      });
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       doodle.image.onClickUrl = 'https://click.com?ct=supi';
@@ -695,11 +695,11 @@ suite('NewTabPageLogoTest', () => {
       const logo = document.createElement('ntp-logo');
       document.body.appendChild(logo);
       logo.theme = createTheme({isDark: dark});
-      handler.setResultFor('onDoodleImageRendered', Promise.resolve({
+      handler.setPromiseResolveFor('onDoodleImageRendered', {
         imageClickParams: '',
         interactionLogUrl: 'https://interaction.com',
         shareId: '',
-      }));
+      });
       const doodle = createImageDoodle();
       assertTrue(!!doodle.image);
       assertTrue(!!doodle.image.dark);
@@ -725,11 +725,11 @@ suite('NewTabPageLogoTest', () => {
 
       // Act (CTA click).
       handler.resetResolver('onDoodleImageRendered');
-      handler.setResultFor('onDoodleImageRendered', Promise.resolve({
+      handler.setPromiseResolveFor('onDoodleImageRendered', {
         imageClickParams: 'foo=bar&hello=world',
         interactionLogUrl: null,
         shareId: '123',
-      }));
+      });
       $$<HTMLElement>(logo, '#image')!.click();
 
       // Assert (CTA click).

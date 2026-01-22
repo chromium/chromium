@@ -57,7 +57,7 @@ suite('NewTabPageComposeboxTest', () => {
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
-    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
     searchboxCallbackRouterRemote =
         ComposeboxProxyImpl.getInstance()
             .searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -181,8 +181,8 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert no files.
     assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
-    searchboxHandler.setResultFor(ADD_FILE_CONTEXT_FN,
-                                  Promise.resolve({token: token}));
+    searchboxHandler.setPromiseResolveFor(ADD_FILE_CONTEXT_FN,
+                                  {token: token});
 
     // Act.
     const dataTransfer = new DataTransfer();
@@ -221,9 +221,9 @@ suite('NewTabPageComposeboxTest', () => {
   test('clear functionality', async () => {
     loadTimeData.overrideValues({composeboxShowSubmit: true});
     createComposeboxElement();
-    searchboxHandler.setResultFor(
+    searchboxHandler.setPromiseResolveFor(
         ADD_FILE_CONTEXT_FN,
-        Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+        {token: {low: BigInt(1), high: BigInt(2)}});
 
     // Check submit button disabled.
     assertStyle(composeboxElement.$.submitContainer, 'cursor', 'not-allowed');
@@ -503,9 +503,9 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload pdf', async () => {
     createComposeboxElement();
-    searchboxHandler.setResultFor(
+    searchboxHandler.setPromiseResolveFor(
         ADD_FILE_CONTEXT_FN,
-        Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+        {token: {low: BigInt(1), high: BigInt(2)}});
 
     // Assert no files.
     assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
@@ -799,9 +799,9 @@ suite('NewTabPageComposeboxTest', () => {
     loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
     loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
     createComposeboxElement();
-    searchboxHandler.setResultFor(
+    searchboxHandler.setPromiseResolveFor(
         ADD_FILE_CONTEXT_FN,
-        Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+        {token: {low: BigInt(1), high: BigInt(2)}});
 
     // File upload buttons are not disabled when there are no files.
     assertFalse(composeboxElement.$.context.$.fileUploadButton.disabled);
@@ -832,9 +832,9 @@ suite('NewTabPageComposeboxTest', () => {
         createComposeboxElement();
         await microtasksFinished();
 
-        searchboxHandler.setResultFor(
+        searchboxHandler.setPromiseResolveFor(
             ADD_FILE_CONTEXT_FN,
-            Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+            {token: {low: BigInt(1), high: BigInt(2)}});
 
         // Upload a PDF file. `inputsDisabled` should be true.
         const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
@@ -856,9 +856,9 @@ suite('NewTabPageComposeboxTest', () => {
         await microtasksFinished();
         assertFalse(composeboxElement.$.context['inputsDisabled_']);
         searchboxHandler.resetResolver(ADD_FILE_CONTEXT_FN);
-        searchboxHandler.setResultFor(
+        searchboxHandler.setPromiseResolveFor(
             ADD_FILE_CONTEXT_FN,
-            Promise.resolve({token: {low: BigInt(3), high: BigInt(4)}}));
+            {token: {low: BigInt(3), high: BigInt(4)}});
 
         // Upload an image file. `inputsDisabled` should be false.
         const imageFile = new File(['foo'], 'foo.png', {type: 'image/png'});
@@ -1970,9 +1970,9 @@ suite('NewTabPageComposeboxTest', () => {
     // Arrange.
     loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
     createComposeboxElement();
-    searchboxHandler.setResultFor(
+    searchboxHandler.setPromiseResolveFor(
         ADD_FILE_CONTEXT_FN,
-        Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+        {token: {low: BigInt(1), high: BigInt(2)}});
 
     const pngFile = new File(['foo'], 'foo.png', {type: 'image/png'});
     const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
@@ -2611,9 +2611,9 @@ suite('NewTabPageComposeboxTest', () => {
 
     test('add tab context', async () => {
       createComposeboxElement();
-      searchboxHandler.setResultFor(
+      searchboxHandler.setPromiseResolveFor(
           ADD_TAB_CONTEXT_FN,
-          Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+          {token: {low: BigInt(1), high: BigInt(2)}});
 
       // Assert no files.
       assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));

@@ -40,8 +40,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
   async function createModule(
       tabGroups: TabGroup[]|null,
       showZeroState: boolean = false): Promise<TabGroupsModuleElement> {
-    handler.setResultFor(
-        'getTabGroups', Promise.resolve({tabGroups, showZeroState}));
+    handler.setPromiseResolveFor('getTabGroups', {tabGroups, showZeroState});
     const module =
         await tabGroupsDescriptor.initialize(0) as TabGroupsModuleElement;
     document.body.append(module);
@@ -407,7 +406,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     assertTrue(isVisible(createNewTabGroupButton));
 
     // Act.
-    handler.setResultFor('createNewTabGroup', Promise.resolve());
     createNewTabGroupButton.click();
     await microtasksFinished();
 
@@ -451,7 +449,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const index = 1;
 
     // Act.
-    handler.setResultFor('openTabGroup', Promise.resolve());
     groups[index]!.click();
     await microtasksFinished();
 
@@ -545,7 +542,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       assertTrue(isVisible(createNewTabGroupButton));
 
       // Act.
-      handler.setResultFor('createNewTabGroup', Promise.resolve());
       createNewTabGroupButton.click();
       await microtasksFinished();
 

@@ -82,8 +82,8 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
   async function createMiddleSlotPromo(
       canShowPromo: boolean, hasPromoId: boolean = true) {
-    promoBrowserCommandHandler.setResultFor(
-        'canExecuteCommand', Promise.resolve({canExecute: canShowPromo}));
+    promoBrowserCommandHandler.setPromiseResolveFor(
+        'canExecuteCommand', {canExecute: canShowPromo});
 
     middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
@@ -158,8 +158,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
   test('clicking on command', async () => {
     await createMiddleSlotPromoWithData();
-    promoBrowserCommandHandler.setResultFor(
-        'executeCommand', Promise.resolve());
+    promoBrowserCommandHandler.setPromiseResolveFor('executeCommand');
     const promoContainer = $$(middleSlotPromo, '#promoContainer');
     assertTrue(!!promoContainer);
 

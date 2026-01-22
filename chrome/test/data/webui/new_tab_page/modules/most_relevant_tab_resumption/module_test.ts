@@ -71,7 +71,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
   async function initializeModule(urlVisits: URLVisit[]):
       Promise<MostRelevantTabResumptionModuleElement> {
-    handler.setResultFor('getURLVisits', Promise.resolve({urlVisits}));
+    handler.setPromiseResolveFor('getURLVisits', {urlVisits});
     const moduleElement = await mostRelevantTabResumptionDescriptor.initialize(
                               0) as MostRelevantTabResumptionModuleElement;
     document.body.append(moduleElement);

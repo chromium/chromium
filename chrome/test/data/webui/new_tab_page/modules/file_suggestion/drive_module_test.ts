@@ -77,7 +77,7 @@ suite('DriveModuleV2', () => {
             },
           ],
         };
-        handler.setResultFor('getFiles', Promise.resolve(data));
+        handler.setPromiseResolveFor('getFiles', data);
 
         const module =
             await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
@@ -93,7 +93,7 @@ suite('DriveModuleV2', () => {
       });
 
   test('module does not render if there are no files', async () => {
-    handler.setResultFor('getFiles', Promise.resolve({files: []}));
+    handler.setPromiseResolveFor('getFiles', {files: []});
 
     const module = await driveModuleDescriptor.initialize(0);
     await handler.whenCalled('getFiles');
@@ -113,7 +113,7 @@ suite('DriveModuleV2', () => {
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const driveModule =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);
@@ -147,7 +147,7 @@ suite('DriveModuleV2', () => {
             },
           ],
         };
-        handler.setResultFor('getFiles', Promise.resolve(data));
+        handler.setPromiseResolveFor('getFiles', data);
         const driveModule =
             await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
         document.body.append(driveModule);
@@ -180,7 +180,7 @@ suite('DriveModuleV2', () => {
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const moduleElement =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!moduleElement);
@@ -222,7 +222,7 @@ suite('DriveModuleV2', () => {
         },
       ],
     };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+    handler.setPromiseResolveFor('getFiles', data);
     const driveModule =
         await driveModuleDescriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);

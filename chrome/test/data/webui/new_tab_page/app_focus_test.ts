@@ -52,24 +52,24 @@ suite('NewTabPageAppFocusTest', () => {
                                                    removeListener() {},
                                                    removeEventListener() {},
                                                  }));
-    windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setPromiseResolveFor('waitForLazyRender');
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
     fakeMetricsPrivate();
     backgroundManager = installMock(BackgroundManager);
-    backgroundManager.setResultFor(
-        'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
+    backgroundManager.setPromiseResolveFor(
+        'getBackgroundImageLoadTime', backgroundImageLoadTime);
     handler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
-    handler.setResultFor('getMostVisitedSettings', Promise.resolve({
+    handler.setPromiseResolveFor('getMostVisitedSettings', {
       customLinksEnabled: false,
       shortcutsVisible: false,
-    }));
-    handler.setResultFor('getDoodle', Promise.resolve({
+    });
+    handler.setPromiseResolveFor('getDoodle', {
       doodle: null,
-    }));
-    handler.setResultFor('getModulesIdNames', Promise.resolve({data: []}));
+    });
+    handler.setPromiseResolveFor('getModulesIdNames', {data: []});
     installMock(
         CustomizeButtonsHandlerRemote,
         mock => CustomizeButtonsProxy.setInstance(
@@ -85,7 +85,7 @@ suite('NewTabPageAppFocusTest', () => {
       ComposeboxProxyImpl.getInstance().searchboxHandler = mock;
       SearchboxBrowserProxy.getInstance().handler = mock;
     });
-    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+    searchboxHandler.setPromiseResolveFor('getRecentTabs', {tabs: []});
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
