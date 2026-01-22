@@ -875,7 +875,10 @@ void SerializeLayer(LayerImpl& layer,
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
-  if (needs_full_sync ||
+  // TODO(crbug.com/476891734): force full sync until we pin down the root
+  // cause of this bug.
+  const bool force_full_sync = true;
+  if (needs_full_sync || force_full_sync ||
       layer.GetChangeFlag(LayerImpl::kChangedGeneralProperty)) {
     auto general = viz::mojom::LayerGeneralProperties::New();
     general->element_id = layer.element_id();
