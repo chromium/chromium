@@ -10,6 +10,7 @@
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "build/build_config.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 
 namespace viz {
@@ -122,10 +123,15 @@ BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
       frame_id(BeginFrameId(source_id, sequence_number)),
       type(type) {
   DCHECK_LE(kStartingFrameNumber, sequence_number);
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/477242770): Re-enable on Mac. Changing the system display
   // refresh rate on macOS causes the unthrottled_interval state to go
   // stale, which incorrectly trips this DCHECK.
+  //
+  // TODO(crbug.com/477617022): Re-enable on Android.
+  // ExternalBeginFrameSourceAndroid currently does not implement
+  // GetMinimumFrameInterval() causing unthrottled_interval to always be
+  // BeginFrameArgs::DefaultInterval()
   if (type != BeginFrameArgs::INVALID && interval.is_positive()) {
     DCHECK_LE(this->unthrottled_interval,
               this->interval * kUnthrottledIntervalJitterMultiplier);
