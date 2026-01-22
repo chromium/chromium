@@ -56,6 +56,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/testing_pref_service.h"
@@ -2229,7 +2230,7 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
   // If all the callbacks were invoked, we should terminate.
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 // Verifies that the simple backend is always used when encrypting the cache.
 TEST_F(NetworkContextTest, EncryptedHttpCacheForcesSimpleBackend) {
   mojom::NetworkContextParamsPtr context_params =
@@ -2253,7 +2254,7 @@ TEST_F(NetworkContextTest, EncryptedHttpCacheForcesSimpleBackend) {
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             GetBackendType(backend));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 
 TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
   const std::vector<GURL> kUrls = {

@@ -47,6 +47,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -2785,23 +2786,22 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             params_->file_paths->no_vary_search_directory->path();
       }
       cache_params.type = network_session_configurator::ChooseCacheType();
-#if BUILDFLAG(IS_WIN)
-      // For enterprise users, we always use simple backend when encryption is
-      // enabled.
-      if (params_->enable_encrypted_http_cache) {
-        cache_params.type =
-            net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-      }
-#endif
+
       if (params_->http_cache_file_operations_factory) {
         cache_params.file_operations_factory =
             base::MakeRefCounted<MojoBackendFileOperationsFactory>(
                 std::move(params_->http_cache_file_operations_factory));
       }
 
-      // For enterprise users, we wrap `BackendFileOperations` to intercept file
-      // I/O with encryption ops.
       if (params_->enable_encrypted_http_cache) {
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+        // For enterprise users, we always use simple backend when encryption is
+        // enabled.
+        cache_params.type =
+            net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+
+        // We wrap `BackendFileOperations` to intercept file I/O with encryption
+        // ops.
         if (!cache_params.file_operations_factory) {
           // Since it's the fallback later anyways, explicitly created here to
           // wrap.
@@ -2811,6 +2811,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         cache_params.file_operations_factory = base::MakeRefCounted<
             enterprise_encryption::EncryptedBackendFileOperationsFactory>(
             std::move(cache_params.file_operations_factory));
+#else
+        NOTREACHED();
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
       }
     }
     cache_params.reset_cache = params_->reset_http_cache_backend;
