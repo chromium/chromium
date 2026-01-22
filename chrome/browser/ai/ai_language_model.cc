@@ -434,8 +434,8 @@ AILanguageModel::Context::ContextItem::~ContextItem() = default;
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-AILanguageModel::Context::Context(uint32_t max_tokens)
-    : max_tokens_(max_tokens) {}
+AILanguageModel::Context::Context(uint32_t total_model_tokens)
+    : total_model_tokens_(total_model_tokens) {}
 
 AILanguageModel::Context::Context(const Context& context) = default;
 
@@ -443,21 +443,22 @@ AILanguageModel::Context::~Context() = default;
 
 AILanguageModel::Context::SpaceReservationResult
 AILanguageModel::Context::ReserveSpace(uint32_t num_tokens) {
+  const uint32_t capacity = GetEvictableTokensCapacity();
   // If there is not enough space to hold the newly requested `num_tokens`,
   // return `kInsufficientSpace`.
-  if (num_tokens > max_tokens_) {
+  if (num_tokens > capacity) {
     return AILanguageModel::Context::SpaceReservationResult::kInsufficientSpace;
   }
 
-  if (current_tokens_ + num_tokens <= max_tokens_) {
+  if (evictable_tokens_ + num_tokens <= capacity) {
     return AILanguageModel::Context::SpaceReservationResult::kSufficientSpace;
   }
 
   CHECK(!context_items_.empty());
   do {
-    current_tokens_ -= context_items_.begin()->tokens;
+    evictable_tokens_ -= context_items_.begin()->tokens;
     context_items_.pop_front();
-  } while (current_tokens_ + num_tokens > max_tokens_);
+  } while (evictable_tokens_ + num_tokens > capacity);
 
   return AILanguageModel::Context::SpaceReservationResult::kSpaceMadeAvailable;
 }
@@ -467,7 +468,7 @@ AILanguageModel::Context::AddContextItem(ContextItem context_item) {
   auto result = ReserveSpace(context_item.tokens);
   if (result != SpaceReservationResult::kInsufficientSpace) {
     context_items_.emplace_back(context_item);
-    current_tokens_ += context_item.tokens;
+    evictable_tokens_ += context_item.tokens;
   }
 
   return result;
@@ -504,6 +505,10 @@ uint32_t GetMaxTokens(optimization_guide::ModelClient* model_client) {
   return result;
 }
 
+uint32_t AILanguageModel::GetTotalModelTokens() const {
+  return ::GetMaxTokens(model_client_.get());
+}
+
 // static
 base::flat_set<std::string_view>
 AILanguageModel::GetSupportedLanguageBaseCodes() {
@@ -530,7 +535,7 @@ AILanguageModel::AILanguageModel(
       context_bound_object_set_(context_bound_object_set),
       model_client_(std::move(model_client)),
       logger_(std::move(logger)) {
-  context_ = std::make_unique<Context>(GetMaxTokens(model_client_.get()));
+  context_ = std::make_unique<Context>(GetTotalModelTokens());
   // TODO(crbug.com/415808003): Should we handle crashes?
   initial_session_.reset_on_disconnect();
 
@@ -681,7 +686,7 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
   }
   uint32_t max_tokens = GetMaxTokens(model_client_.get());
   uint32_t total_tokens =
-      context_->initial_tokens() + context_->current_tokens();
+      context_->non_evictable_tokens() + context_->evictable_tokens();
   return blink::mojom::AILanguageModelInstanceInfo::New(
       max_tokens, total_tokens,
       blink::mojom::AILanguageModelSamplingParams::New(
@@ -712,23 +717,23 @@ void AILanguageModel::InitializeGetInputSizeComplete(
     return;
   }
 
-  uint32_t max_tokens = context_->max_tokens();
-  if (*token_count > max_tokens) {
-    auto quota = context_->max_tokens() - context_->current_tokens();
+  uint32_t total_model_tokens = GetTotalModelTokens();
+  if (*token_count > total_model_tokens) {
     mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
         client_remote(std::move(create_client));
     AIUtils::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(token_count.value(), quota));
+        blink::mojom::QuotaErrorInfo::New(token_count.value(),
+                                          total_model_tokens));
     return;
   }
 
   // `context_` will track how many tokens are remaining after the initial
   // prompts. The initial prompts cannot be evicted.
-  auto initial_tokens = *token_count;
-  context_ = std::make_unique<Context>(max_tokens - initial_tokens);
-  context_->set_initial_tokens(initial_tokens);
+  auto non_evictable_tokens = *token_count;
+  context_ = std::make_unique<Context>(total_model_tokens);
+  context_->set_non_evictable_tokens(non_evictable_tokens);
 
   if (input) {
     if (logger_ && logger_->ShouldEnableDebugLogs()) {
@@ -736,7 +741,7 @@ void AILanguageModel::InitializeGetInputSizeComplete(
           optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
           logger_.get())
           << "Adding initial context to the model of "
-          << base::NumberToString(initial_tokens) << " tokens:\n"
+          << base::NumberToString(non_evictable_tokens) << " tokens:\n"
           << optimization_guide::OnDeviceInputToString(*input);
     }
     auto safety_input = CreateStringMessage(*input);
@@ -855,7 +860,7 @@ void AILanguageModel::PromptGetInputSizeComplete(
 
   auto space_reserved = context_->ReserveSpace(*token_count);
   if (space_reserved == Context::SpaceReservationResult::kInsufficientSpace) {
-    auto quota = context_->max_tokens() - context_->current_tokens();
+    auto quota = context_->GetAvailableTokens();
     prompt_state_->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
         blink::mojom::QuotaErrorInfo::New(token_count.value(), quota));
@@ -871,9 +876,9 @@ void AILanguageModel::PromptGetInputSizeComplete(
   // the previous state if a prompt is cancelled.
   mojo::PendingRemote<on_device_model::mojom::Session> session;
   current_session_->Clone(session.InitWithNewPipeAndPassReceiver());
-  prompt_state_->AppendAndGenerate(std::move(session),
-                                   context_->available_tokens() - *token_count,
-                                   std::move(on_complete));
+  prompt_state_->AppendAndGenerate(
+      std::move(session), context_->GetAvailableTokens() - *token_count,
+      std::move(on_complete));
 }
 
 void AILanguageModel::OnPromptOutputComplete() {
@@ -931,7 +936,7 @@ void AILanguageModel::OnPromptOutputComplete() {
     current_session_->Append(MakeAppendOptions(std::move(model_output)), {});
   }
   uint32_t total_tokens =
-      context_->initial_tokens() + context_->current_tokens();
+      context_->non_evictable_tokens() + context_->evictable_tokens();
   responder->OnCompletion(
       blink::mojom::ModelExecutionContextInfo::New(total_tokens));
   if (model_client_) {
