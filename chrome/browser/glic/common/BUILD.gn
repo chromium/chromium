@@ -13,6 +13,7 @@ source_set("common") {
     "//base",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window",
     "//components/tabs:public",
   ]
 
@@ -24,7 +25,6 @@ source_set("common") {
     deps += [
       "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
-      "//chrome/browser/ui/browser_window/public/android:java_enum_srcjar",
       "//chrome/browser/ui/tabs:tabs_public",
       "//content/public/browser",
     ]
@@ -34,7 +34,6 @@ source_set("common") {
       "glic_tab_observer_impl.h",
     ]
     deps += [
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",
@@ -43,19 +42,25 @@ source_set("common") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "glic_tab_observer_browsertest.cc" ]
-    deps = [
-      ":common",
-      "//base",
-      "//chrome/browser",
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "glic_tab_observer_browsertest.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/tabs:tab_list_interface",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//content/test:test_support",
+  ]
+  if (!is_android) {
+    deps += [
       "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//components/tabs:public",
-      "//content/test:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
     ]
   }
 }

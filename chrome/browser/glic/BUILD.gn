@@ -491,11 +491,12 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  if (!is_android) {
+    sources += [
       "glic_browsertest.cc",
       "glic_metrics_browsertest.cc",
       "glic_net_log_browsertest.cc",
@@ -510,7 +511,10 @@ if (!is_android) {
       "service/glic_instance_coordinator_browsertest.cc",
       "widget/application_hotkey_delegate_browsertest.cc",
     ]
-    deps = [
+  }
+  deps = [ "//chrome/browser/glic/common:browser_tests" ]
+  if (!is_android) {
+    deps += [
       ":glic",
       ":impl",
       "//base/test:test_support",
@@ -553,20 +557,24 @@ if (!is_android) {
       "//ui/base:ozone_buildflags",
       "//ui/events:test_support",
     ]
-    if (is_chromeos) {
-      deps += [ "//components/account_id:test_support" ]
-    }
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
-
-    # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+  if (is_chromeos) {
+    deps += [ "//components/account_id:test_support" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 
+  if (!is_android) {
+    data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
+  }
+
+  # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

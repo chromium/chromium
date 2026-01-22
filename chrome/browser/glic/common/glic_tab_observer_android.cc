@@ -28,6 +28,33 @@ TabCreationType ToTypeCreationType(TabModel::TabLaunchType type) {
   }
 }
 
+class GlicTabObserverAndroid::TabContentObserver
+    : public content::WebContentsObserver {
+ public:
+  TabContentObserver(GlicTabObserverAndroid* owner, TabAndroid* tab)
+      : content::WebContentsObserver(tab->web_contents()),
+        owner_(owner),
+        tab_(tab) {}
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    owner_->OnTabChanged(tab_);
+  }
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    owner_->OnTabChanged(tab_);
+  }
+  void TitleWasSet(content::NavigationEntry* entry) override {
+    owner_->OnTabChanged(tab_);
+  }
+  void DidStopLoading() override { owner_->OnTabChanged(tab_); }
+
+ private:
+  raw_ptr<GlicTabObserverAndroid> owner_;
+  raw_ptr<TabAndroid> tab_;
+};
+
 GlicTabObserverAndroid::GlicTabObserverAndroid(Profile* profile,
                                                EventCallback callback)
     : profile_(profile), callback_(std::move(callback)) {
@@ -35,6 +62,45 @@ GlicTabObserverAndroid::GlicTabObserverAndroid(Profile* profile,
     OnTabModelAdded(model);
   }
   TabModelList::AddObserver(this);
+}
+
+void GlicTabObserverAndroid::OnTabChanged(TabAndroid* tab) {
+  callback_.Run(TabMutationEvent{});
+}
+
+void GlicTabObserverAndroid::StartObservingTab(TabAndroid* tab) {
+  if (!observed_tabs_.IsObservingSource(tab)) {
+    observed_tabs_.AddObservation(tab);
+  }
+
+  content::WebContents* web_contents = tab->web_contents();
+  // `web_contents` may be null if a tab has been frozen in the
+  // background. It can also be null temporarily during reparenting.
+  // We will get called via `OnInitWebContents` when it becomes available.
+  if (!web_contents) {
+    return;
+  }
+
+  // If we are already observing the correct WebContents, do nothing.
+  if (auto it = tab_observers_.find(tab); it != tab_observers_.end()) {
+    if (it->second->web_contents() == web_contents) {
+      return;
+    }
+  }
+
+  // Create or replace the observer.
+  tab_observers_[tab] = std::make_unique<TabContentObserver>(this, tab);
+}
+
+void GlicTabObserverAndroid::StopObservingTab(TabAndroid* tab) {
+  tab_observers_.erase(tab);
+  if (observed_tabs_.IsObservingSource(tab)) {
+    observed_tabs_.RemoveObservation(tab);
+  }
+}
+
+void GlicTabObserverAndroid::OnInitWebContents(TabAndroid* tab) {
+  StartObservingTab(tab);
 }
 
 GlicTabObserverAndroid::~GlicTabObserverAndroid() {
@@ -51,6 +117,10 @@ void GlicTabObserverAndroid::OnTabModelAdded(TabModel* model) {
   if (active_contents) {
     last_active_tab_map_[model] = TabAndroid::FromWebContents(active_contents);
   }
+
+  for (int i = 0; i < model->GetTabCount(); ++i) {
+    StartObservingTab(model->GetTabAt(i));
+  }
 }
 
 void GlicTabObserverAndroid::OnTabModelRemoved(TabModel* model) {
@@ -62,6 +132,7 @@ void GlicTabObserverAndroid::OnTabModelRemoved(TabModel* model) {
 
 void GlicTabObserverAndroid::DidAddTab(TabAndroid* tab,
                                        TabModel::TabLaunchType type) {
+  StartObservingTab(tab);
   TabModel* tab_model = TabModelList::GetTabModelForTabAndroid(tab);
   CHECK(tab_model);
 
@@ -85,7 +156,13 @@ void GlicTabObserverAndroid::DidSelectTab(TabAndroid* tab,
   }
 }
 
+void GlicTabObserverAndroid::TabClosureCommitted(TabAndroid* tab) {
+  ResetLastActiveTab(TabModelList::GetTabModelForTabAndroid(tab));
+  callback_.Run(TabMutationEvent{});
+}
+
 void GlicTabObserverAndroid::TabRemoved(TabAndroid* tab) {
+  StopObservingTab(tab);
   ResetLastActiveTab(TabModelList::GetTabModelForTabAndroid(tab));
   callback_.Run(TabMutationEvent{});
 }

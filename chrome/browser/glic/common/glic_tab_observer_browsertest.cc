@@ -4,17 +4,34 @@
 
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#endif
 
 // Test versions of event structs that use WeakPtrs.
 // The GlicTabEvent structs guarantee pointer validity only for the duration of
@@ -47,7 +64,7 @@ TestGlicTabEvent ConvertToTestEvent(const GlicTabEvent& event) {
   } else if (std::holds_alternative<TabMutationEvent>(event)) {
     return TabMutationEvent{};
   }
-  return TabMutationEvent{};  // Should not be reached
+  return TabMutationEvent{};
 }
 
 class GlicTabEventCollector {
@@ -94,6 +111,18 @@ class GlicTabEventCollector {
     return nullptr;
   }
 
+  const TestTabActivationEvent* WaitForActivation() {
+    WaitForEvent(base::BindRepeating([](const TestGlicTabEvent& event) {
+      return std::holds_alternative<TestTabActivationEvent>(event);
+    }));
+    for (auto& event : base::Reversed(events_)) {
+      if (const auto* a = std::get_if<TestTabActivationEvent>(&event)) {
+        return a;
+      }
+    }
+    return nullptr;
+  }
+
   void WaitForMutation() {
     WaitForEvent(base::BindRepeating([](const TestGlicTabEvent& event) {
       return std::holds_alternative<TabMutationEvent>(event);
@@ -111,45 +140,108 @@ class GlicTabEventCollector {
   base::test::TestFuture<void> condition_met_signal_;
 };
 
-class GlicTabObserverBrowserTest : public InProcessBrowserTest {
+class GlicTabObserverBrowserTest : public PlatformBrowserTest {
  public:
-  GlicTabObserverBrowserTest() = default;
+  GlicTabObserverBrowserTest() {
+#if BUILDFLAG(IS_ANDROID)
+    feature_list_.InitAndEnableFeature(chrome::android::kDisableInstanceLimit);
+#endif
+  }
   ~GlicTabObserverBrowserTest() override = default;
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+#if BUILDFLAG(IS_ANDROID)
+    command_line->AppendSwitch(switches::kForceDesktopAndroid);
+#endif
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(GetProfile());
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  TabListInterface* CreateIncognitoTabList() {
+    Profile* incognito_profile =
+        GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
+                                            *incognito_profile, false);
+    base::test::TestFuture<BrowserWindowInterface*> future;
+    CreateBrowserWindow(std::move(create_params), future.GetCallback());
+    return TabListInterface::From(future.Get());
+  }
+#endif
+
+  tabs::TabInterface* CreateTab() {
+    tabs::TabInterface* new_tab =
+        GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+    GetTabListInterface()->ActivateTab(new_tab->GetHandle());
+    return new_tab;
+  }
+
+  void NavigateTab(tabs::TabInterface* tab, const GURL& url) {
+    content::OpenURLParams params(url, content::Referrer(),
+                                  WindowOpenDisposition::CURRENT_TAB,
+                                  ui::PAGE_TRANSITION_TYPED,
+                                  /*is_renderer_initiated=*/false);
+    tab->GetContents()->OpenURL(params, base::DoNothing());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabCreation) {
-  GlicTabEventCollector collector(browser()->profile());
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(b/477918431): Flaky on non-desktop Android.
+  if (!base::android::device_info::is_desktop()) {
+    GTEST_SKIP() << "Skipping on non-desktop Android";
+  }
+#endif
+  GlicTabEventCollector collector(GetProfile());
 
   // Initial tab verification
-  tabs::TabInterface* initial_tab = browser()->GetActiveTabInterface();
+  tabs::TabInterface* initial_tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(initial_tab);
 
   // Open Tab 2
-  chrome::NewTab(browser());
+  tabs::TabInterface* second_tab = CreateTab();
   const TestTabCreationEvent* creation = collector.WaitForCreation();
   ASSERT_TRUE(creation);
   EXPECT_NE(creation->new_tab, nullptr);
   EXPECT_EQ(creation->old_tab.get(), initial_tab);
-  EXPECT_EQ(creation->new_tab.get(), browser()->GetActiveTabInterface());
+  EXPECT_EQ(creation->new_tab.get(), second_tab);
 
   // Clear events to ensure we wait for the NEXT creation.
   collector.ClearEvents();
 
   // Open Tab 3
-  tabs::TabInterface* second_tab = browser()->GetActiveTabInterface();
-  chrome::NewTab(browser());
+  tabs::TabInterface* third_tab = CreateTab();
   creation = collector.WaitForCreation();
   ASSERT_TRUE(creation);
   EXPECT_NE(creation->new_tab, nullptr);
   EXPECT_EQ(creation->old_tab.get(), second_tab);
-  EXPECT_EQ(creation->new_tab.get(), browser()->GetActiveTabInterface());
+  EXPECT_EQ(creation->new_tab.get(), third_tab);
 }
 
+// TODO: See if we can create a multi-window test on android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
                        ObservesTabCreationInNewWindow) {
-  GlicTabEventCollector collector(browser()->profile());
+  GlicTabEventCollector collector(GetProfile());
 
-  chrome::NewEmptyWindow(browser()->profile());
+  BrowserWindowCreateParams create_params(BrowserWindowInterface::TYPE_NORMAL,
+                                          *GetProfile(), false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_window = future.Get();
+  ASSERT_TRUE(new_window);
+
+  TabListInterface* new_tab_list = TabListInterface::From(new_window);
+  ASSERT_TRUE(new_tab_list);
+  new_tab_list->OpenTab(GURL("about:blank"), -1);
 
   const TestTabCreationEvent* creation = collector.WaitForCreation();
   ASSERT_TRUE(creation);
@@ -158,38 +250,46 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest,
                        DoesNotObserveTabCreationInDifferentProfile) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  GlicTabEventCollector collector(browser()->profile());
+  TabListInterface* incognito_tab_list = CreateIncognitoTabList();
+  GlicTabEventCollector collector(GetProfile());
 
   // Create tab in incognito. Should NOT trigger event.
-  chrome::NewTab(incognito_browser);
+  tabs::TabInterface* incognito_tab =
+      incognito_tab_list->OpenTab(GURL("about:blank"), -1);
 
   // Create tab in regular profile. Should trigger event.
-  chrome::NewTab(browser());
+  tabs::TabInterface* regular_tab = CreateTab();
 
   const TestTabCreationEvent* creation = collector.WaitForCreation();
   ASSERT_TRUE(creation);
   EXPECT_EQ(creation->creation_type, TabCreationType::kUserInitiated);
-  EXPECT_EQ(creation->new_tab.get(), browser()->GetActiveTabInterface());
+  EXPECT_EQ(creation->new_tab.get(), regular_tab);
 
   // Verify none of the events were for the incognito browser.
   for (const auto& event : collector.events()) {
     if (const auto* c = std::get_if<TestTabCreationEvent>(&event)) {
-      EXPECT_NE(c->new_tab.get(), incognito_browser->GetActiveTabInterface());
+      EXPECT_NE(c->new_tab.get(), incognito_tab);
     }
   }
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabMutation) {
-  GlicTabEventCollector collector(browser()->profile());
+  GlicTabEventCollector collector(GetProfile());
 
   // Create a tab so we can close it.
-  chrome::NewTab(browser());
+  tabs::TabInterface* tab_to_close = CreateTab();
   collector.WaitForCreation();
+
+  // Create another tab to keep the browser alive.
+  CreateTab();
+  collector.WaitForCreation();
+
   collector.ClearEvents();
 
   // Close the tab. This should trigger a TabMutationEvent.
-  chrome::CloseTab(browser());
+  GetTabListInterface()->CloseTab(tab_to_close->GetHandle());
+
   collector.WaitForMutation();
 
   // If we got here, we successfully observed a mutation.
@@ -204,31 +304,29 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabMutation) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabMove) {
-  GlicTabEventCollector collector(browser()->profile());
+  GlicTabEventCollector collector(GetProfile());
 
   // Create two tabs so we can move one.
-  chrome::NewTab(browser());
-  collector.WaitForCreation();
-  collector.ClearEvents();
+  CreateTab();
+  tabs::TabInterface* tab_to_move = CreateTab();
+  // tabs: [0 (initial), 1, 2]
 
-  chrome::NewTab(browser());
-  collector.WaitForCreation();
-  collector.ClearEvents();
+  // Move tab at index 2 to index 0.
+  GetTabListInterface()->MoveTab(tab_to_move->GetHandle(), 0);
 
-  // Move the active tab to the first position.
-  browser()->tab_strip_model()->MoveWebContentsAt(2, 0, false);
   collector.WaitForMutation();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabStripMerge) {
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  GlicTabEventCollector collector(browser()->profile());
+  Browser* browser2 = CreateBrowser(GetProfile());
+  GlicTabEventCollector collector(GetProfile());
 
   std::unique_ptr<content::WebContents> contents =
       browser2->tab_strip_model()->DetachWebContentsAtForInsertion(0);
 
   browser()->tab_strip_model()->InsertWebContentsAt(0, std::move(contents),
-                                                    AddTabTypes::ADD_NONE);
+                                                    AddTabTypes::ADD_ACTIVE);
 
   // We expect both insertion and likely some mutations from the detach/insert.
   collector.WaitForCreation();
@@ -250,46 +348,39 @@ IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabStripMerge) {
   EXPECT_TRUE(found_removal);
   EXPECT_TRUE(found_insertion);
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabNavigation) {
-  GlicTabEventCollector collector(browser()->profile());
+  GlicTabEventCollector collector(GetProfile());
+
+  // Create and activate a tab to ensure we have a valid active tab to navigate.
+  tabs::TabInterface* tab = CreateTab();
+  collector.WaitForCreation();
+  collector.ClearEvents();
 
   // Navigate. This should trigger updates (e.g. loading state change).
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateTab(tab, GURL("about:blank"));
 
+  // We expect *some* mutation event (loading state, etc.)
   collector.WaitForMutation();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabObserverBrowserTest, ObservesTabActivation) {
-  GlicTabEventCollector collector(browser()->profile());
+  GlicTabEventCollector collector(GetProfile());
+  tabs::TabInterface* initial_tab = GetTabListInterface()->GetActiveTab();
 
   // Create a tab so we can switch to it.
-  chrome::NewTab(browser());
+  tabs::TabInterface* second_tab = CreateTab();
   const TestTabCreationEvent* creation = collector.WaitForCreation();
   ASSERT_TRUE(creation);
-  tabs::TabInterface* second_tab = creation->new_tab.get();
+  EXPECT_EQ(creation->new_tab.get(), second_tab);
   collector.ClearEvents();
 
-  // Switch back to the first tab (index 0).
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  // Switch back to the first tab.
+  GetTabListInterface()->ActivateTab(initial_tab->GetHandle());
 
-  // Wait for activation event.
-  collector.WaitForEvent(base::BindRepeating([](const TestGlicTabEvent& event) {
-    return std::holds_alternative<TestTabActivationEvent>(event);
-  }));
-
-  const TestTabActivationEvent* activation = nullptr;
-  for (const auto& event : collector.events()) {
-    if (const auto* a = std::get_if<TestTabActivationEvent>(&event)) {
-      activation = a;
-      break;
-    }
-  }
-
+  const TestTabActivationEvent* activation = collector.WaitForActivation();
   ASSERT_TRUE(activation);
-  EXPECT_EQ(activation->new_active_tab.get(),
-            browser()->GetActiveTabInterface());
+  EXPECT_EQ(activation->new_active_tab.get(), initial_tab);
   EXPECT_EQ(activation->old_active_tab.get(), second_tab);
 }

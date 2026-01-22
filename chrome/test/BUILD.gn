@@ -1838,9 +1838,7 @@ source_set("platform_browser_tests") {
       ]
     }
     if (enable_guest_view) {
-      deps += [
-        "//components/guest_view/browser",
-      ]
+      deps += [ "//components/guest_view/browser" ]
     }
     if (!is_android || enable_desktop_android_extensions) {
       sources +=
@@ -1962,6 +1960,7 @@ if (is_android) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/glic:browser_tests",
       "//chrome/browser/history",
       "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/metrics:test_support",
