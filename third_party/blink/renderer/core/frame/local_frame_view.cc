@@ -961,13 +961,11 @@ gfx::SizeF LocalFrameView::LargeViewportSizeForViewportUnits() const {
     int viewport_width = frame_->GetPage()->GetVisualViewport().Size().width();
     if (frame_->IsOutermostMainFrame() && layout_size.width() &&
         viewport_width) {
-      // LINT.IfChange(LargeViewportSizeForViewportUnits)
       float layout_to_viewport_width_scale_factor =
           viewport_width / layout_size.width();
       layout_size.Enlarge(0, (browser_controls.TotalHeight() -
                               browser_controls.TotalMinHeight()) /
                                  layout_to_viewport_width_scale_factor);
-      // LINT.ThenChange(//content/public/test/android/dom_utils.cc:GetTopControlsShrinkBlinkHeight)
     }
   }
 
