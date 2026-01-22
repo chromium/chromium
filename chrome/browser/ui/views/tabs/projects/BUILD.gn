@@ -15,6 +15,8 @@ source_set("projects") {
     "projects_panel_tab_groups_view.h",
     "projects_panel_thread_item_view.cc",
     "projects_panel_thread_item_view.h",
+    "projects_panel_utils.cc",
+    "projects_panel_utils.h",
     "projects_panel_view.cc",
     "projects_panel_view.h",
   ]

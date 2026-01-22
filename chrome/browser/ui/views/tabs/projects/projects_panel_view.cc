@@ -80,7 +80,6 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
   // available.
   threads_scroll_view_->SetContents(
       std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
-  threads_scroll_view_->SetUseContentsPreferredSize(true);
   threads_scroll_view_->SetBackgroundColor(std::nullopt);
   threads_scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
