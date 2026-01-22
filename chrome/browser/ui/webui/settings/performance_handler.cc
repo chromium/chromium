@@ -19,6 +19,7 @@
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -87,10 +88,9 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
         return true;
       });
 
-  std::unordered_set<std::string> added_hosts;
+  absl::flat_hash_set<std::string> added_hosts;
   for (auto& [last_active_time, host] : last_active_time_host_pairs) {
-    if (!added_hosts.contains(host)) {
-      added_hosts.insert(host);
+    if (bool newly_inserted = added_hosts.insert(host).second; newly_inserted) {
       hosts.Append(host);
     }
   }
