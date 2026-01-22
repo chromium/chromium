@@ -588,7 +588,7 @@ static constexpr char kGetAssertionViaButtonClickImmediateUvPreferred[] = R"(
   document.body.innerHTML = '<button id="testButton"">Get Assertion</button>';
   function triggerGetAssertion() {
     navigator.credentials.get({
-      mediation: "immediate",
+      uiMode: "immediate",
       publicKey: {
         challenge: new Uint8Array([0]),
         timeout: 10000,

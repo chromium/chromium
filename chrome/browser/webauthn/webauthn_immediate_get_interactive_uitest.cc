@@ -64,15 +64,15 @@ const DeepQuery kMessage{"#message-container"};
 }  // namespace
 
 using Fixture = InteractiveBrowserTestMixin<EnclaveAuthenticatorTestBase>;
-class WebAuthnImmediateMediationTest : public Fixture {
+class WebAuthnImmediateGetTest : public Fixture {
  public:
-  WebAuthnImmediateMediationTest() {
+  WebAuthnImmediateGetTest() {
     feature_list_.InitWithFeatures(
         {device::kWebAuthnImmediateGet},
         {device::kWebAuthnImmediateRequestRateLimit});
   }
 
-  ~WebAuthnImmediateMediationTest() override = default;
+  ~WebAuthnImmediateGetTest() override = default;
 
  protected:
   GURL GetHttpsURL(const std::string& hostname = kHostname,
@@ -126,12 +126,12 @@ class WebAuthnImmediateMediationTest : public Fixture {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        ImmediateMediationNotAllowedNoCredentials) {
   RunTestSequence(GetNotAllowedSteps());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        ImmediateMediationNotAllowedIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::BrowserActivationWaiter(incognito_browser).WaitForActivation();
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
       GetNotAllowedSteps());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        ImmediateMediationPasswordOnly) {
   AddPassword(kUsername, kPassword);
   RunTestSequence(
@@ -150,18 +150,18 @@ IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
       WaitForElementVisible(kTabId, kSuccess));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnImmediateMediationTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnImmediateGetTest,
                        ImmediateMediationPasswordOnlyNotAllowed) {
   RunTestSequence(GetStepsUntilButtonClick(kGetImmediatePasswordOnlyButton),
                   WaitForElementVisible(kTabId, kError),
                   WaitForElementWithText(kTabId, kMessage, "NotAllowedError"));
 }
 
-class WebAuthnImmediateMediationWithBootstrappedEnclaveTest
-    : public WebAuthnImmediateMediationTest {
+class WebAuthnImmediateGetWithBootstrappedEnclaveTest
+    : public WebAuthnImmediateGetTest {
  protected:
   void SetUpOnMainThread() override {
-    WebAuthnImmediateMediationTest::SetUpOnMainThread();
+    WebAuthnImmediateGetTest::SetUpOnMainThread();
     SimulateSuccessfulGpmPinCreation("123456");
   }
 
@@ -205,19 +205,18 @@ class WebAuthnImmediateMediationWithBootstrappedEnclaveTest
 
 // TODO(crbug.com/422074323): Re-enable this test suite in ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest \
-  DISABLED_WebAuthnImmediateMediationWithBootstrappedEnclaveTest
+#define MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest \
+  DISABLED_WebAuthnImmediateGetWithBootstrappedEnclaveTest
 
-class DISABLED_WebAuthnImmediateMediationWithBootstrappedEnclaveTest
-    : public WebAuthnImmediateMediationWithBootstrappedEnclaveTest {};
+class DISABLED_WebAuthnImmediateGetWithBootstrappedEnclaveTest
+    : public WebAuthnImmediateGetWithBootstrappedEnclaveTest {};
 #else
-#define MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest \
-  WebAuthnImmediateMediationWithBootstrappedEnclaveTest
+#define MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest \
+  WebAuthnImmediateGetWithBootstrappedEnclaveTest
 #endif
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    SinglePasskeyDiscouragedUv) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       SinglePasskeyDiscouragedUv) {
   AddTestPasskeyToModel();
   RunTestSequence(
       GetStepsUntilButtonClick(kGetImmediateButton),
@@ -226,9 +225,8 @@ IN_PROC_BROWSER_TEST_F(
       WaitForElementVisible(kTabId, kSuccess));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    SinglePasskeyUvRequired) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       SinglePasskeyUvRequired) {
   AddTestPasskeyToModel();
   RunTestSequence(
       GetStepsUntilButtonClick(kGetImmediateUvRequiredButton),
@@ -238,16 +236,14 @@ IN_PROC_BROWSER_TEST_F(
   // TODO(crbug.com/422074323): Add more steps to complete the UV flow.
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    ImmediateMediationPassword) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       ImmediateMediationPassword) {
   AddPassword(kUsername, kPassword);
   RunTestSequence(GetNotAllowedSteps());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    ImmediateMediationPasswordAndPasskey) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       ImmediateMediationPasswordAndPasskey) {
   AddPassword(kUsername, kPassword);
   AddTestPasskeyToModel();
   RunTestSequence(
@@ -257,9 +253,8 @@ IN_PROC_BROWSER_TEST_F(
       WaitForElementVisible(kTabId, kSuccess));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    ImmediateMediationTwoPasskeys) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       ImmediateMediationTwoPasskeys) {
   // Add a first passkey.
   auto cred_id1 = base::RandBytesAsVector(16);
   AddPasskey(kUser1, cred_id1);
@@ -288,9 +283,8 @@ IN_PROC_BROWSER_TEST_F(
       WaitForElementWithText(kTabId, kMessage, cred_id2_base64));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebAuthnImmediateMediationWithBootstrappedEnclaveTest,
-    ImmediateMediationPasswordAndPasskeySameName) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebAuthnImmediateGetWithBootstrappedEnclaveTest,
+                       ImmediateMediationPasswordAndPasskeySameName) {
   AddPassword(kUser1, kPassword);
   AddTestPasskeyToModel();
   RunTestSequence(

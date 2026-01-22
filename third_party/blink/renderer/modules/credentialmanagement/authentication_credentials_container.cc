@@ -1046,12 +1046,10 @@ const char* validateGetPublicKeyCredentialPRFExtension(
   return nullptr;
 }
 
-void EmitImmediateMediationUseCounters(
-    ExecutionContext* context,
-    const CredentialRequestOptions* options) {
-  CHECK(options->hasMediation() &&
-        options->mediation() ==
-            V8CredentialMediationRequirement::Enum::kImmediate);
+void EmitImmediateUiModeUseCounters(ExecutionContext* context,
+                                    const CredentialRequestOptions* options) {
+  CHECK(options->hasUiMode() &&
+        options->uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate);
   if (options->hasPublicKey() && options->password()) {
     UseCounter::Count(
         context,
@@ -1068,11 +1066,7 @@ void EmitImmediateMediationUseCounters(
 
 bool IsImmediateGetRequest(const ExecutionContext& context,
                            const CredentialRequestOptions& options) {
-  if (options.mediation() ==
-      V8CredentialMediationRequirement::Enum::kImmediate) {
-    return true;
-  }
-  if (RuntimeEnabledFeatures::WebAuthenticationUiModeEnabled(&context) &&
+  if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(&context) &&
       options.hasUiMode() &&
       options.uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate) {
     return true;
@@ -1525,27 +1519,21 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
   if (IsImmediateGetRequest(*context, *options)) {
-    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
-      if (options->password()) {
-        if (RuntimeEnabledFeatures::
-                AuthenticatorPasswordsOnlyImmediateRequestsEnabled(context)) {
-          ForwardRequestToAuthenticator(script_state, resolver, options);
-          return promise;
-        }
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "Immediate mediation is not yet implemented for requests that do "
-            "not accept PublicKeyCredential. An Immediate request for "
-            "passwords must also include a request for passkeys."));
-      } else {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "Immediate mediation is not supported for this credential type"));
+    if (options->password()) {
+      if (RuntimeEnabledFeatures::
+              AuthenticatorPasswordsOnlyImmediateRequestsEnabled(context)) {
+        ForwardRequestToAuthenticator(script_state, resolver, options);
+        return promise;
       }
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Immediate mediation is not yet implemented for requests that do "
+          "not accept PublicKeyCredential. An Immediate request for "
+          "passwords must also include a request for passkeys."));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation not implemented"));
+          "Immediate mediation is not supported for this credential type"));
     }
     return promise;
   }
@@ -1566,7 +1554,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       requirement = CredentialMediationRequirement::kRequired;
       break;
     case V8CredentialMediationRequirement::Enum::kConditional:
-    case V8CredentialMediationRequirement::Enum::kImmediate:
       NOTREACHED();
   }
 
@@ -2060,15 +2047,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
     mediation = Mediation::CONDITIONAL;
   } else if (IsImmediateGetRequest(*context, *options)) {
-    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
-      mediation = Mediation::IMMEDIATE;
-      EmitImmediateMediationUseCounters(context, options);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation not implemented"));
-      return;
-    }
+    mediation = Mediation::IMMEDIATE;
+    EmitImmediateUiModeUseCounters(context, options);
   }
   if (mediation == Mediation::IMMEDIATE) {
     if (options->hasPublicKey() &&
@@ -2381,8 +2361,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     case V8CredentialMediationRequirement::Enum::kOptional:
       mediation_requirement = CredentialMediationRequirement::kOptional;
       break;
-    case V8CredentialMediationRequirement::Enum::kImmediate:
-      NOTREACHED();
   }
 
   if (identity_options.hasMediation()) {

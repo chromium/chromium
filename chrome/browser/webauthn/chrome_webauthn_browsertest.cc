@@ -1543,7 +1543,7 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
  protected:
   static constexpr std::string_view kRequestWithPasswordTemplate = R"(
     navigator.credentials.get({
-    mediation: 'immediate',
+    uiMode: 'immediate',
     password: $1,
     publicKey: {
       challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
@@ -1554,7 +1554,7 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
 
   static constexpr std::string_view kRequestWithAllowlistTemplate = R"(
     navigator.credentials.get({
-    mediation: 'immediate',
+    uiMode: 'immediate',
     publicKey: {
       challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
       allowCredentials: [$1],

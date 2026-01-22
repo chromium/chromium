@@ -6,7 +6,7 @@
     <script>
       function getImmediate() {
         navigator.credentials.get({
-          mediation: 'immediate',
+          uiMode: 'immediate',
           publicKey: {
             challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
             timeout: 30000,
@@ -23,7 +23,7 @@
       }
       function getImmediateUvDiscouraged() {
         navigator.credentials.get({
-          mediation: 'immediate',
+          uiMode: 'immediate',
           publicKey: {
             challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
             timeout: 30000,
@@ -40,7 +40,7 @@
       }
       function getImmediateUvRequired() {
         navigator.credentials.get({
-          mediation: 'immediate',
+          uiMode: 'immediate',
           publicKey: {
             challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
             timeout: 30000,
@@ -57,7 +57,7 @@
       }
       function getImmediatePasswordOnly() {
         navigator.credentials.get({
-          mediation: 'immediate',
+          uiMode: 'immediate',
           password: true,
         }).then(cred => {
             document.getElementById('success-message').style.display = 'block';
