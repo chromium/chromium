@@ -97,6 +97,9 @@ class ValuablesDataManager : public KeyedService,
  private:
   friend class ValuablesDataManagerTestApi;
 
+  base::optional_ref<LoyaltyCard> GetMutableLoyaltyCardById(
+      const ValuableId& id);
+
   // Handler method called when `pending_query_` finishes.
   void OnDataRetrieved(WebDataServiceBase::Handle handle,
                        std::unique_ptr<WDTypedResult> result);

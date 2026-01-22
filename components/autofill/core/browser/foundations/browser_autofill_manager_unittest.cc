@@ -2682,9 +2682,8 @@ TEST_F(BrowserAutofillManagerTestValuables,
   autofill_manager().LogAndRecordLoyaltyCardFill(loyalty_card, form.global_id(),
                                                  form.fields()[0].global_id());
   WaitUntilWebDataServiceHelperIdle();
-  test_api(valuables_data()).LoadLoyaltyCards();
-  WaitUntilWebDataServiceHelperIdle();
 
+  ASSERT_EQ(valuables_data().GetLoyaltyCards().size(), 1u);
   EXPECT_EQ(ValuableMetadata(loyalty_card.id(), base::Time::Now(), 1),
             valuables_data().GetLoyaltyCards()[0].metadata());
 }
