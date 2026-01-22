@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.LeakCanaryChecker.EnableLeakChecks;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
 @Batch(Batch.PER_CLASS)
 @EnableLeakChecks
 public class PublicTransitLeakTest {
@@ -74,6 +77,8 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
+    // For some reason, this test is flaky on desktop.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void searchActivityTest() {
         var page = mChromeTabbedActivityTestRule.startOnBlankPage();
         var activity = mChromeTabbedActivityTestRule.getActivity();
