@@ -3014,9 +3014,6 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(crbug.com/40267312): Add test for end result on a non-synthetic
-// multi-page PDF.
-
 using PdfOcrTest = PdfAccessibilityTreeTest;
 
 TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {
