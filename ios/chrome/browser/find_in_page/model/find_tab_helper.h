@@ -41,6 +41,8 @@ class FindTabHelper final : public web::WebStateObserver,
   void StopFinding();
   FindInPageModel* GetFindResult() const;
   bool CurrentPageSupportsFindInPage() const;
+  // Returns true if the Find UI is active in this WebState. If `this` is a
+  // tab inside a WebStateList, see `IsFindNavigatorVisibleInTab` instead.
   bool IsFindUIActive() const;
   void SetFindUIActive(bool active);
   void PersistSearchTerm();

@@ -11,6 +11,8 @@ source_set("model") {
     "find_in_page_model.h",
     "find_in_page_model.mm",
     "find_in_page_response_delegate.h",
+    "find_in_page_util.h",
+    "find_in_page_util.mm",
     "find_tab_helper.h",
     "find_tab_helper.mm",
   ]
@@ -20,6 +22,7 @@ source_set("model") {
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",

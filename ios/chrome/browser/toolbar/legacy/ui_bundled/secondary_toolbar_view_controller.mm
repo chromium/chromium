@@ -229,6 +229,13 @@
     } else {
       visibleKeyboardHeight =
           [self keyboardHeightInWindowFromNotification:notification];
+      // If the Find navigator is visible and the toolbar is constrained to the
+      // keyboard, then add room for the collapsed toolbar to be visible above
+      // the keyboard.
+      if (findNavigatorVisible) {
+        visibleKeyboardHeight += ToolbarCollapsedHeight(
+            self.traitCollection.preferredContentSizeCategory);
+      }
     }
   }
 

@@ -54,6 +54,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/features",
@@ -112,7 +113,6 @@ source_set("coordinator") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
-    "//ios/web/public/find_in_page",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]

@@ -17,7 +17,6 @@ include_rules = [
   "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h",
-  "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
   "+ios/chrome/browser/intelligence/features/features.h",
 ]

@@ -18,6 +18,7 @@ include_rules = [
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled",
+  "+ios/chrome/browser/find_in_page/model/find_in_page_util.h",
   "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h",
   "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h",
   "+ios/chrome/browser/omnibox/ui",

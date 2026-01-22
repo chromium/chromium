@@ -8,13 +8,13 @@
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer_bridge.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/secondary_toolbar_consumer.h"
-#import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -87,9 +87,7 @@
 
 - (BOOL)isFindNavigatorVisibleForWebContent {
   if (_webStateList && _webStateList->GetActiveWebState()) {
-    return _webStateList->GetActiveWebState()
-        ->GetFindInteraction()
-        .isFindNavigatorVisible;
+    return IsFindNavigatorVisibleInTab(_webStateList->GetActiveWebState());
   }
   return NO;
 }
