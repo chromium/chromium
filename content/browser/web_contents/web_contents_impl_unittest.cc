@@ -228,7 +228,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
   MOCK_METHOD4(RegisterProtocolHandler,
                void(RenderFrameHost*, const std::string&, const GURL&, bool));
   MOCK_METHOD(void, NavigationStateChanged, (WebContents*, InvalidateTypes));
-
+  MOCK_METHOD(bool,
+              PreHandleGestureEvent,
+              (WebContents*, const blink::WebGestureEvent&));
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       RenderFrameHost*) override {
     return security_level_;
@@ -3772,6 +3774,47 @@ TEST_F(WebContentsImplTest, IsLoadingExcludingAdFrames) {
   ad_frame_navigation->Commit();
   EXPECT_FALSE(contents()->IsLoading());
   EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+}
+
+TEST_F(WebContentsImplTest, SetIgnoreZoomGestures) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  // Setup Gesture Events
+  blink::WebGestureEvent pinch_event(
+      blink::WebInputEvent::Type::kGesturePinchUpdate,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchpad);
+
+  blink::WebGestureEvent double_tap_event(
+      blink::WebInputEvent::Type::kGestureDoubleTap,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchscreen);
+
+  blink::WebGestureEvent scroll_event(
+      blink::WebInputEvent::Type::kGestureScrollUpdate,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchscreen);
+
+  // Default case. Zoom gesture events are not ignored.
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .WillRepeatedly(::testing::Return(false));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(pinch_event));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(double_tap_event));
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Only pinch and Double Tab gestures should be ignored.
+  contents()->SetIgnoreZoomGestures(true);
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .Times(0);
+  EXPECT_TRUE(contents()->PreHandleGestureEvent(pinch_event));
+  EXPECT_TRUE(contents()->PreHandleGestureEvent(double_tap_event));
+
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .WillOnce(::testing::Return(false));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(scroll_event));
 }
 
 }  // namespace content
