@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -130,7 +129,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mNtpLoadingSupplier;
-    private final BrowserControlsStateProvider mBrowserControls;
+    private final BrowserControlsVisibilityManager mBrowserControls;
     private final TopControlsStacker mTopControlsStacker;
 
     private MonotonicObservableSupplier<Integer> mTabCountSupplier;
@@ -140,6 +139,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
     private final int mIndexOfLocationBarInToolbar;
     private int mLayerYOffset = UNSPECIFIED_TOOLBAR_OFFSET;
+    private boolean mIsHairlineVisible = true;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -942,10 +942,10 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             return;
         }
 
-        // TODO(crbug.com/417238089): This may be better placed in the hairline view itself.
+        // TODO(crbug.com/448641122): This may be better placed in the hairline view itself.
         // If this layer is at the bottom of the stacker, the hairline should be visible.
-        boolean isToolbarAtTheBottom = mTopControlsStacker.isLayerAtBottom(getTopControlType());
-        mToolbarLayout.setHairlineVisibility(isToolbarAtTheBottom);
+        mIsHairlineVisible = mTopControlsStacker.isLayerAtBottom(getTopControlType());
+        mToolbarLayout.setHairlineVisibility(mIsHairlineVisible);
     }
 
     @Override
@@ -1006,10 +1006,26 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         }
 
         int captureHeight = mControlContainer.getToolbarCaptureHeight();
+
+        // The |diff| is the offset we need to move the toolbar scene layer upward to have the
+        // Toolbar show at the correct spot. The current math here is to reduce the capture size
+        // with toolbar height and hairline height.
         int diff =
                 captureHeight
                         - mControlContainer.getToolbarHeight()
                         - mControlContainer.getToolbarHairlineHeight();
-        assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff);
+
+        // As toolbar hairline is part of the capture, there are times we need to hide the hairline
+        // (e.g. When browser controls are forced hidden) to avoid the capture showing up.
+        // We want to shift the scene layer upward by a little so the hairline is not revealed.
+        // This is not a perfect fix since hairline might still cover the content when scene layer
+        // is fully scrolled off.
+        // TODO(crbug.com/448641122): Let hairline layer owns the adjustment logic.
+        int hairlineAdjustment = 0;
+        if (mBrowserControls.isVisibilityForced() && mIsHairlineVisible) {
+            hairlineAdjustment = -mControlContainer.getToolbarHairlineHeight();
+        }
+
+        assertNonNull(mOverlayCoordinator).setYOffset(mLayerYOffset - diff + hairlineAdjustment);
     }
 }
