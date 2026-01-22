@@ -41484,6 +41484,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtection.SiteExceptionAdded">
+  <obsolete>Deprecated 01/2026 because the project was discontinued.</obsolete>
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -41493,6 +41494,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtection.SiteExceptionRemoved">
+  <obsolete>Deprecated 01/2026 because the project was discontinued.</obsolete>
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>

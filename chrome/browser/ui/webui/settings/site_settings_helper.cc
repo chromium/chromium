@@ -164,7 +164,6 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SPEAKER_SELECTION, "speaker-selection"},
     {ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen"},
     {ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock"},
-    {ContentSettingsType::TRACKING_PROTECTION, "tracking-protection"},
     {ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, "top-level-storage-access"},
     {ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation"},
     {ContentSettingsType::SMART_CARD_GUARD, "smart-card-readers"},
@@ -865,9 +864,8 @@ base::Value::Dict GetExceptionForPage(
   exception.Set(kSetting, setting_string);
 
   // Cookie exception types may have an expiration that should be shown.
-  if ((content_type == ContentSettingsType::COOKIES ||
-       content_type == ContentSettingsType::TRACKING_PROTECTION) &&
-      !expiration.is_null() && !incognito) {
+  if (content_type == ContentSettingsType::COOKIES && !expiration.is_null() &&
+      !incognito) {
     exception.Set(kDescription, GetExpirationDescription(expiration));
   }
 

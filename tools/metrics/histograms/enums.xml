@@ -2464,7 +2464,7 @@ Called by update_net_error_codes.py.-->
   <int value="120" label="Keyboard lock"/>
   <int value="121" label="Pointer lock"/>
   <int value="122" label="Abusive notification site permissions"/>
-  <int value="123" label="Tracking Protection"/>
+  <int value="123" label="(Obsolete) Tracking Protection"/>
   <int value="124" label="(Obsolete) Top-level 3PCD Origin Trial"/>
   <int value="125" label="Display Media System Audio"/>
   <int value="126" label="Javascript optimizer"/>

@@ -157,14 +157,6 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;
     }
-    // Tracking protection content setting should be inherited in incognito.
-    if (info->website_settings_info()->type() ==
-            ContentSettingsType::TRACKING_PROTECTION &&
-        info->GetInitialDefaultSetting() == CONTENT_SETTING_BLOCK) {
-      EXPECT_EQ(info->incognito_behavior(),
-                ContentSettingsInfo::INHERIT_IN_INCOGNITO);
-      continue;
-    }
 
     if (info->incognito_behavior() ==
         ContentSettingsInfo::INHERIT_IN_INCOGNITO) {

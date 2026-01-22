@@ -183,7 +183,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
       case ContentSettingsType::DIRECT_SOCKETS:
       case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
-      case ContentSettingsType::TRACKING_PROTECTION:
       case ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO:
       case ContentSettingsType::JAVASCRIPT_OPTIMIZER:
       case ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL:

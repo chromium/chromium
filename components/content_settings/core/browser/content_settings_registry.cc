@@ -752,19 +752,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(
-      ContentSettingsType::TRACKING_PROTECTION, "tracking-protection",
-      CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::SYNCABLE,
-      /*allowlisted_primary_schemes=*/{kChromeUIScheme, kChromeDevToolsScheme},
-      /*valid_settings=*/
-      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-      WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE,
-      WebsiteSettingsRegistry::DESKTOP |
-          WebsiteSettingsRegistry::PLATFORM_ANDROID |
-          WebsiteSettingsRegistry::PLATFORM_IOS,
-      ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-      PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
   // This setting is only available to WebUI pages and should be set through
   // WebUIAllowlist.
   Register(ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO,

@@ -56,7 +56,6 @@ export enum ContentSettingsTypes {
   SMART_CARD_READERS = 'smart-card-readers',
   SOUND = 'sound',
   STORAGE_ACCESS = 'storage-access',
-  TRACKING_PROTECTION = 'tracking-protection',
   TOP_LEVEL_STORAGE_ACCESS = 'top-level-storage-access',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',

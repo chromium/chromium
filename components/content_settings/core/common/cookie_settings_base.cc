@@ -189,7 +189,6 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-          ContentSettingsType::TRACKING_PROTECTION,
           ContentSettingsType::LEGACY_COOKIE_SCOPE,
       });
   return kInstance;

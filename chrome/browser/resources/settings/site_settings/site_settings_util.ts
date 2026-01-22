@@ -109,7 +109,6 @@ export function getLocalizationStringForContentType(
     case ContentSettingsTypes.PERFORMANCE:
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:
     case ContentSettingsTypes.SITE_DATA:
-    case ContentSettingsTypes.TRACKING_PROTECTION:
     case ContentSettingsTypes.OFFER_WRITING_HELP:
     case ContentSettingsTypes.SMART_CARD_READERS:
       return null;

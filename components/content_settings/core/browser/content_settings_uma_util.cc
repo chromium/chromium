@@ -141,7 +141,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::KEYBOARD_LOCK, 120},
     {ContentSettingsType::POINTER_LOCK, 121},
     {ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, 122},
-    {ContentSettingsType::TRACKING_PROTECTION, 123},
+    // Removed TRACKING_PROTECTION in M146.
     // Removed TOP_LEVEL_TPCD_ORIGIN_TRIAL in M143.
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, 125},
     {ContentSettingsType::JAVASCRIPT_OPTIMIZER, 126},

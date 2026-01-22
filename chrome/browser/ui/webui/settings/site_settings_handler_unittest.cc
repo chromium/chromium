@@ -1026,9 +1026,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   const std::string_view kCookies =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::COOKIES);
-  const std::string_view kTrackingProtection =
-      site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::TRACKING_PROTECTION);
   const std::string_view kStorageAccess =
       site_settings::ContentSettingsTypeToGroupName(
           ContentSettingsType::STORAGE_ACCESS);
@@ -2447,33 +2444,6 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
                 ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
             static_cast<int64_t>(permissions::PermissionAction::REVOKED));
-}
-
-TEST_F(SiteSettingsHandlerTest, IncrementsTrackingProtectionMetrics) {
-  constexpr char kOrigin[] = "https://www.test.com:443";
-  base::UserActionTester user_actions;
-
-  base::Value::List set_args;
-  set_args.Append(kOrigin);        // Primary pattern.
-  set_args.Append(std::string());  // Secondary pattern.
-  set_args.Append(kTrackingProtection);
-  set_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_ALLOW));
-  set_args.Append(false);  // Incognito
-  handler()->HandleSetCategoryPermissionForPattern(set_args);
-  EXPECT_EQ(user_actions.GetActionCount(
-                "Settings.TrackingProtection.SiteExceptionAdded"),
-            1);
-
-  base::Value::List reset_args;
-  reset_args.Append(kOrigin);        // Primary pattern.
-  reset_args.Append(std::string());  // Secondary pattern.
-  reset_args.Append(kTrackingProtection);
-  reset_args.Append(false);  // Incognito
-  handler()->HandleResetCategoryPermissionForPattern(reset_args);
-  EXPECT_EQ(user_actions.GetActionCount(
-                "Settings.TrackingProtection.SiteExceptionRemoved"),
-            1);
 }
 
 // TODO(crbug.com/40688152): Test flakes on TSAN and ASAN.
@@ -6648,29 +6618,6 @@ TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {
         kContentSettingTypeHistogram,
         content_settings_uma_util::ContentSettingTypeToHistogramValue(
             ContentSettingsType::COOKIES),
-        1 /* expected_count */);
-  }
-
-  {
-    base::Value::List set_args;
-    set_args.Append("*");                        // Primary pattern.
-    set_args.Append("https://[*.]blocked.com");  // Secondary pattern.
-    set_args.Append(kTrackingProtection);
-    set_args.Append(
-        content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
-    set_args.Append(false);  // Incognito.
-
-    handler()->HandleSetCategoryPermissionForPattern(set_args);
-    ASSERT_EQ(4U, web_ui()->call_data().size());
-
-    tester.ExpectBucketCount(
-        kScopeTypeHistogram,
-        ContentSettingsPattern::Scope::kWithDomainAndPortWildcard,
-        1 /* expected_count */);
-    tester.ExpectBucketCount(
-        kContentSettingTypeHistogram,
-        content_settings_uma_util::ContentSettingTypeToHistogramValue(
-            ContentSettingsType::TRACKING_PROTECTION),
         1 /* expected_count */);
   }
 }

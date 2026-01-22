@@ -256,7 +256,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 8>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 7>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -489,10 +489,6 @@ class CookieSettingsBase {
   bool IsAllowedBySandboxValue(const GURL& url,
                                const GURL& first_party_url,
                                net::CookieSettingOverrides overrides) const;
-
-  IsAllowedWithMetadata IsAllowedByTrackingProtectionSetting(
-      const GURL& url,
-      const GURL& first_party_url) const;
 
   bool IsAllowedBy3pcdHeuristicsGrantsSettings(
       const GURL& url,

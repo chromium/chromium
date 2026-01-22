@@ -80,6 +80,8 @@ constexpr char kBug364820109AlreadyWorkedAroundPref[] =
     "profile.did_work_around_bug_364820109_exceptions";
 constexpr char kLocalNetworkAccessMigrateExceptionsPref[] =
     "profile.content_settings.exceptions.has_migrated_local_network_access";
+constexpr char kObsoleteTrackingProtectionExceptionsPref[] =
+    "profile.content_settings.exceptions.tracking_protection";
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -125,6 +127,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(
       kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoleteTrackingProtectionExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
   registry->RegisterBooleanPref(kLocalNetworkAccessMigrateExceptionsPref,
@@ -458,6 +461,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
+  prefs_->ClearPref(kObsoleteTrackingProtectionExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
