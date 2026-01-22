@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -351,13 +352,9 @@ public class PopupCreator implements PopupIntentCreator {
                         + " [px]");
 
         final int totalTopControlsHeightPx =
-                predictBrowserTopControlsTotalHeightPx(targetDisplayContext);
-        Log.v(
-                TAG,
-                "getPopupInsetsForecast: totalTopControlsHeightPx = "
-                        + totalTopControlsHeightPx
-                        + " px");
-
+                predictBrowserTopControlsTotalHeightBelowTopInsetPx(
+                        targetDisplayContext,
+                        Math.round(windowInsetsOnSourceDisplay.top * densityFactor));
         final Insets totalInsets =
                 Insets.add(
                         forecastedWindowInsetsOnTargetDisplay,
@@ -368,10 +365,29 @@ public class PopupCreator implements PopupIntentCreator {
     }
 
     /**
-     * Returns a prediction of overall height in pixels of browser-owned UI elements of a popup
-     * spawned on display with given context.
+     * Returns the height in pixels of browser-owned popup UI elements visible below the top system
+     * inset. For layouts that draw behind the status bar, this value represents the UI overflow
+     * height; for standard layouts, it represents the full control container height.
      */
-    private static int predictBrowserTopControlsTotalHeightPx(Context targetDisplayContext) {
+    private static int predictBrowserTopControlsTotalHeightBelowTopInsetPx(
+            Context targetDisplayContext, int topInsetPx) {
+        // Without edge-to-edge drawing the caption bar is precisely the top inset.
+        int captionBarOverflowOverTopInsetPx = 0;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)) {
+            final int customTabsE2EHeaderHeightPx =
+                    DesktopPopupHeaderUtils.getFinalHeaderHeightPx(
+                            targetDisplayContext, topInsetPx);
+            Log.v(
+                    TAG,
+                    "predictBrowserTopControlsTotalHeightPx: customTabsE2EHeaderHeightPx = "
+                            + customTabsE2EHeaderHeightPx
+                            + " px");
+            Log.v(
+                    TAG,
+                    "predictBrowserTopControlsTotalHeightPx: topInsetPx = " + topInsetPx + " px");
+            captionBarOverflowOverTopInsetPx = customTabsE2EHeaderHeightPx - topInsetPx;
+        }
+
         final int customTabsHeaderHeightPx =
                 targetDisplayContext
                         .getResources()
@@ -382,6 +398,11 @@ public class PopupCreator implements PopupIntentCreator {
                         .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         Log.v(
                 TAG,
+                "predictBrowserTopControlsTotalHeightPx: captionBarOverflowOverTopInsetPx = "
+                        + captionBarOverflowOverTopInsetPx
+                        + " px");
+        Log.v(
+                TAG,
                 "predictBrowserTopControlsTotalHeightPx: customTabsHeaderHeightPx = "
                         + customTabsHeaderHeightPx
                         + " px");
@@ -390,7 +411,16 @@ public class PopupCreator implements PopupIntentCreator {
                 "predictBrowserTopControlsTotalHeightPx: toolbarHairlineHeightPx = "
                         + toolbarHairlineHeightPx
                         + " px");
-        return customTabsHeaderHeightPx + toolbarHairlineHeightPx;
+        final int totalTopControlsHeightPx =
+                captionBarOverflowOverTopInsetPx
+                        + customTabsHeaderHeightPx
+                        + toolbarHairlineHeightPx;
+        Log.v(
+                TAG,
+                "predictBrowserTopControlsTotalHeightPx: totalTopControlsHeightPx = "
+                        + totalTopControlsHeightPx
+                        + " px");
+        return totalTopControlsHeightPx;
     }
 
     /**

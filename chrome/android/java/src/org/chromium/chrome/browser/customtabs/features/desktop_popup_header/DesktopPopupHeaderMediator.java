@@ -86,17 +86,10 @@ class DesktopPopupHeaderMediator implements DesktopWindowStateManager.AppHeaderO
         mDesktopWindowStateManager.updateForegroundColor(bgColor);
         mModel.set(DesktopPopupHeaderProperties.BACKGROUND_COLOR, bgColor);
 
-        final int minimumHeaderHeightPx =
-                Math.max(
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.custom_tabs_popup_title_bar_min_height),
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.custom_tabs_popup_title_bar_text_height));
-        final int finalHeaderHeightPx =
-                Math.max(minimumHeaderHeightPx, newState.getAppHeaderHeight());
-        mModel.set(DesktopPopupHeaderProperties.HEADER_HEIGHT_PX, finalHeaderHeightPx);
+        mModel.set(
+                DesktopPopupHeaderProperties.HEADER_HEIGHT_PX,
+                DesktopPopupHeaderUtils.getFinalHeaderHeightPx(
+                        mContext, newState.getAppHeaderHeight()));
 
         mModel.set(
                 DesktopPopupHeaderProperties.TITLE_SPACING,

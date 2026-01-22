@@ -93,6 +93,8 @@ public class PopupCreatorUnitTest {
     private static final Insets LAST_RAW_WINDOW_INSETS = Insets.of(12, 34, 56, 78);
     private static final int CUSTOM_TABS_CONTROL_CONTAINER_HEIGHT = 20;
     private static final int TOOLBAR_HAIRLINE_HEIGHT = 9;
+    private static final int CUSTOM_TABS_POPUP_TITLE_BAR_MIN_HEIGHT = 62;
+    private static final int CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT = 75;
 
     @Before
     public void setup() {
@@ -129,6 +131,12 @@ public class PopupCreatorUnitTest {
         doReturn(TOOLBAR_HAIRLINE_HEIGHT)
                 .when(mResources)
                 .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        doReturn(CUSTOM_TABS_POPUP_TITLE_BAR_MIN_HEIGHT)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
+        doReturn(CUSTOM_TABS_POPUP_TITLE_BAR_TEXT_HEIGHT)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
 
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         doAnswer(
@@ -371,9 +379,15 @@ public class PopupCreatorUnitTest {
     }
 
     @Test
-    public void testPopupInsetsForecastUseExpectedValues() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValues_standardUiMode() {
         PopupCreator.setInsetsForecastForTesting(null);
 
+        /* Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
@@ -381,9 +395,16 @@ public class PopupCreatorUnitTest {
     }
 
     @Test
-    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_standardUiMode() {
         PopupCreator.setInsetsForecastForTesting(null);
 
+        /* Pixel values of insets are scaled by the density quotient between displays.
+         * Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
         Assert.assertEquals(
                 "The insets returned are invalid",
                 Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
@@ -391,7 +412,94 @@ public class PopupCreatorUnitTest {
     }
 
     @Test
-    public void testPopupOnExternalDisplay() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValues_E2EUiMode() {
+        PopupCreator.setInsetsForecastForTesting(null);
+
+        /* Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
+        Assert.assertEquals(
+                "The insets returned are invalid",
+                Insets.of(0, 0, -(12 + 56), -(75 + 20 + 9 + 78)),
+                PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode() {
+        PopupCreator.setInsetsForecastForTesting(null);
+
+        /* Pixel values of insets are scaled by the density quotient between displays.
+         * Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(popup header height + CCT toolbar height + hairline height + bottom inset)) */
+        Assert.assertEquals(
+                "The insets returned are invalid",
+                Insets.of(0, 0, -(24 + 112), -(75 + 20 + 9 + 156)),
+                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+    }
+
+    /**
+     * In this test case the minimal height of popup header is smaller than the top inset. The popup
+     * header height should match the top inset height.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValues_E2EUiMode_smallHeader() {
+        PopupCreator.setInsetsForecastForTesting(null);
+        doReturn(10)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
+        doReturn(10)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
+
+        /* Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
+        Assert.assertEquals(
+                "The insets returned are invalid",
+                Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
+                PopupCreator.getPopupInsetsForecast(mWindow, mDisplay));
+    }
+
+    /**
+     * In this test case the minimal height of popup header is smaller than the top inset. The popup
+     * header height should match the top inset height.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode_smallHeader() {
+        PopupCreator.setInsetsForecastForTesting(null);
+        doReturn(10)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_min_height);
+        doReturn(10)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.custom_tabs_popup_title_bar_text_height);
+
+        /* Pixel values of insets are scaled by the density quotient between displays.
+         * Insets.of(
+         *     0,
+         *     0,
+         *     -(left inset + right inset),
+         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
+        Assert.assertEquals(
+                "The insets returned are invalid",
+                Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
+                PopupCreator.getPopupInsetsForecast(mWindow, mExternalDisplay));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupOnExternalDisplay_standardUiMode() {
         final WindowFeatures windowFeatures =
                 new WindowFeatures(-390, -1350, 300, 400); // left, top, width, height
         final Rect windowBounds = new Rect(-390, -1350, -90, -950); // left, top, right, bottom
@@ -409,6 +517,36 @@ public class PopupCreatorUnitTest {
                         0,
                         (300 + 12 + 56) * 2,
                         (400 + 34 + 78) * 2 + 20 + 9); // left, top, right, bottom
+        Assert.assertEquals(
+                "The launch display ID specified in ActivityOptions is incorrect",
+                EXTERNAL_DISPLAY_ID,
+                activityOptions.getLaunchDisplayId());
+        Assert.assertEquals(
+                "The launch bounds specified in ActivityOptions is incorrect",
+                targetBounds,
+                activityOptions.getLaunchBounds());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
+    public void testPopupOnExternalDisplay_E2EUiMode() {
+        final WindowFeatures windowFeatures =
+                new WindowFeatures(-390, -1350, 300, 400); // left, top, width, height
+        final Rect windowBounds = new Rect(-390, -1350, -90, -950); // left, top, right, bottom
+
+        doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
+
+        PopupCreator.setInsetsForecastForTesting(null);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
+
+        final Rect targetBounds =
+                new Rect(
+                        0,
+                        0,
+                        (300 + 12 + 56) * 2,
+                        (400 + 78) * 2 + 75 + 20 + 9); // left, top, right, bottom
         Assert.assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
                 EXTERNAL_DISPLAY_ID,
