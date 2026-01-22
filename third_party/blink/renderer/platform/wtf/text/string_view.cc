@@ -403,6 +403,16 @@ StringView StringView::substr(wtf_size_t offset, wtf_size_t len) const {
   return StringView(*this, offset, std::min(len, length() - offset));
 }
 
+void StringView::remove_prefix(wtf_size_t len) {
+  CHECK_LE(len, length());
+  *this = substr(len);
+}
+
+void StringView::remove_suffix(wtf_size_t len) {
+  CHECK_LE(len, length());
+  *this = substr(0, length() - len);
+}
+
 StringView StringView::StripWhiteSpace() const {
   return VisitCharacters(*this, [&](auto chars) {
     const auto [start, len] = internal::StrippedMatchedCharactersRange(

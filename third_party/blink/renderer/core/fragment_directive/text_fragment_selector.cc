@@ -21,27 +21,26 @@ String EscapeSelectorSpecialCharacters(const String& target_text) {
 
 // Used after parsing out individual terms from the full string microsyntax to
 // tell if the resulting string contains only valid characters.
-bool IsValidTerm(const String& term) {
+bool IsValidTerm(const StringView& term) {
   // Should only be called on terms after splitting on ',' and '&', which are
   // also invalid chars.
-  DCHECK_EQ(term.find(','), kNotFound);
-  DCHECK_EQ(term.find('&'), kNotFound);
+  DCHECK(!term.contains(','));
+  DCHECK(!term.contains('&'));
 
   if (term.empty())
     return false;
 
-  wtf_size_t hyphen_pos = term.find('-');
-  return hyphen_pos == kNotFound;
+  return !term.contains('-');
 }
 
-bool IsPrefix(const String& term) {
+bool IsPrefix(const StringView& term) {
   if (term.empty())
     return false;
 
   return term[term.length() - 1] == '-';
 }
 
-bool IsSuffix(const String& term) {
+bool IsSuffix(const StringView& term) {
   if (term.empty())
     return false;
 
@@ -51,29 +50,28 @@ bool IsSuffix(const String& term) {
 }  // namespace
 
 TextFragmentSelector TextFragmentSelector::FromTextDirective(
-    const String& directive) {
+    const StringView& directive) {
   DEFINE_STATIC_LOCAL(const TextFragmentSelector, kInvalidSelector, (kInvalid));
   SelectorType type;
-  String start;
-  String end;
-  String prefix;
-  String suffix;
+  StringView start;
+  StringView end;
+  StringView prefix;
+  StringView suffix;
 
-  DCHECK_EQ(directive.find('&'), kNotFound);
+  DCHECK(!directive.contains('&'));
 
   if (HasInvalidURLEscapeSequences(directive)) {
     return kInvalidSelector;
   }
 
-  Vector<String> terms;
-  directive.Split(",", true, terms);
+  Vector<StringView> terms = directive.Split(',');
 
   if (terms.empty() || terms.size() > 4)
     return kInvalidSelector;
 
   if (IsPrefix(terms.front())) {
     prefix = terms.front();
-    prefix = prefix.Left(prefix.length() - 1);
+    prefix.remove_suffix(1);
     terms.erase(terms.begin());
 
     if (!IsValidTerm(prefix) || terms.empty())
@@ -82,7 +80,7 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
 
   if (IsSuffix(terms.back())) {
     suffix = terms.back();
-    suffix = suffix.Right(suffix.length() - 1);
+    suffix.remove_prefix(1);
     terms.pop_back();
 
     if (!IsValidTerm(suffix) || terms.empty())

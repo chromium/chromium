@@ -759,6 +759,44 @@ TEST(StringViewTest, Substr) {
   EXPECT_EQ(u"b", view16.substr(1, 1));
 }
 
+TEST(StringViewTest, RemovePrefix) {
+  auto apply_and_return = [](StringView view, wtf_size_t len) {
+    view.remove_prefix(len);
+    return view;
+  };
+  EXPECT_TRUE(apply_and_return(StringView(), 0).IsNull());
+  EXPECT_EQ("", apply_and_return(StringView(""), 0));
+
+  EXPECT_EQ("abc", apply_and_return(StringView("abc"), 0));
+  EXPECT_EQ("bc", apply_and_return(StringView("abc"), 1));
+  EXPECT_EQ("c", apply_and_return(StringView("abc"), 2));
+  EXPECT_EQ("", apply_and_return(StringView("abc"), 3));
+
+  EXPECT_EQ(u"abc", apply_and_return(StringView(u"abc"), 0));
+  EXPECT_EQ(u"bc", apply_and_return(StringView(u"abc"), 1));
+  EXPECT_EQ(u"c", apply_and_return(StringView(u"abc"), 2));
+  EXPECT_EQ(u"", apply_and_return(StringView(u"abc"), 3));
+}
+
+TEST(StringViewTest, RemoveSuffix) {
+  auto apply_and_return = [](StringView view, wtf_size_t len) {
+    view.remove_suffix(len);
+    return view;
+  };
+  EXPECT_TRUE(apply_and_return(StringView(), 0).IsNull());
+  EXPECT_EQ("", apply_and_return(StringView(""), 0));
+
+  EXPECT_EQ("abc", apply_and_return(StringView("abc"), 0));
+  EXPECT_EQ("ab", apply_and_return(StringView("abc"), 1));
+  EXPECT_EQ("a", apply_and_return(StringView("abc"), 2));
+  EXPECT_EQ("", apply_and_return(StringView("abc"), 3));
+
+  EXPECT_EQ(u"abc", apply_and_return(StringView(u"abc"), 0));
+  EXPECT_EQ(u"ab", apply_and_return(StringView(u"abc"), 1));
+  EXPECT_EQ(u"a", apply_and_return(StringView(u"abc"), 2));
+  EXPECT_EQ(u"", apply_and_return(StringView(u"abc"), 3));
+}
+
 TEST(StringViewTest, StripWhiteSpace) {
   StringView expected("Hello  world");
   EXPECT_EQ(expected, StringView("Hello  world").StripWhiteSpace());

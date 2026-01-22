@@ -317,6 +317,16 @@ class WTF_EXPORT StringView {
   // `StringView(*this, offset, len)`.
   StringView substr(wtf_size_t offset, wtf_size_t len = kNotFound) const;
 
+  // Removes the first `len` characters from this view by advancing the start
+  // address and reducing the `length()`.
+  // If `len` is greater than `length()`, this function crashes.
+  void remove_prefix(wtf_size_t len);
+
+  // Removes the last `len` characters from this view by reducing the
+  // `length()`.
+  // If `len` is greater than `length()`, this function crashes.
+  void remove_suffix(wtf_size_t len);
+
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
   // as U+2000 and U+3000.

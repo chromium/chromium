@@ -790,7 +790,7 @@ String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
   return escaped;
 }
 
-bool HasInvalidURLEscapeSequences(const String& string) {
+bool HasInvalidURLEscapeSequences(const StringView& string) {
   StringUtf8Adaptor string_utf8(string);
   return url::HasInvalidURLEscapeSequences(string_utf8.AsStringView());
 }
