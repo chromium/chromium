@@ -11952,14 +11952,14 @@
             "platforms": [
                 "mac",
                 "windows",
-                "linux"
+                "linux",
+                "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20251023",
+                    "name": "Enabled_20260106",
                     "enable_features": [
-                        "GlicShareImage",
-                        "SvgFallBackToContainerSize"
+                        "GlicShareImage"
                     ]
                 }
             ]
