@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
@@ -80,6 +81,15 @@ ExtensionsMenuEntryView* GetAsMenuEntry(views::View* view) {
 }
 
 }  // namespace
+
+// A view property key used to store the extension ID on the "requests access"
+// menu entries. This allows identifying the specific extension associated with
+// a view, primarily for testing purposes.
+struct ExtensionIdWrapper {
+  std::string id;
+};
+DEFINE_UI_CLASS_PROPERTY_TYPE(ExtensionIdWrapper*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ExtensionIdWrapper, kExtensionIdKey)
 
 // Base class for a container inside the extensions menu.
 class SectionContainer : public views::BoxLayoutView {
@@ -242,6 +252,8 @@ void ExtensionsMenuMainPageView::AddExtensionRequestingAccess(
   auto item =
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetProperty(kExtensionIdKey,
+                       ExtensionIdWrapper{request.extension_id})
           .SetProperty(views::kMarginsKey,
                        gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
           .AddChildren(
@@ -288,7 +300,6 @@ void ExtensionsMenuMainPageView::AddExtensionRequestingAccess(
                                    0, related_control_horizontal_margin, 0, 0)))
           .Build();
 
-  requests_entries_.insert({request.extension_id, item.get()});
   requests_entries_view_->AddChildViewAt(std::move(item), index);
 }
 
@@ -320,26 +331,12 @@ void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
   CHECK_LT(static_cast<size_t>(index),
            requests_entries_view_->children().size());
 
-  // Retrieve the view at the specific index (Source of truth: ViewModel order).
-  views::View* view_at_index = requests_entries_view_->children().at(index);
-
-  // Retrieve the view mapped to the ID (Source of truth: Internal Map).
-  auto iter = requests_entries_.find(id);
-  CHECK(iter != requests_entries_.end());
-  views::View* view_from_map = iter->second;
-
-  // Safety Check: Ensure the view at the index is the same as the view for the
-  // ID.
-  CHECK_EQ(view_at_index, view_from_map);
-
-  // Remove the view and update the map.
-  requests_entries_view_->RemoveChildViewT(view_at_index);
-  requests_entries_.erase(iter);
+  views::View* request_view = requests_entries_view_->children().at(index);
+  requests_entries_view_->RemoveChildViewT(request_view);
 }
 
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
   requests_entries_view_->RemoveAllChildViews();
-  requests_entries_.clear();
 }
 
 void ExtensionsMenuMainPageView::SetOptionalSectionVisibility(
@@ -351,7 +348,8 @@ void ExtensionsMenuMainPageView::SetOptionalSectionVisibility(
       break;
     case ExtensionsMenuViewModel::OptionalSection::kHostAccessRequests:
       reload_section_->SetVisible(false);
-      requests_section_->SetVisible(!requests_entries_.empty());
+      requests_section_->SetVisible(
+          !requests_entries_view_->children().empty());
       break;
     case ExtensionsMenuViewModel::OptionalSection::kNone:
       reload_section_->SetVisible(false);
@@ -396,9 +394,12 @@ std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
   CHECK_IS_TEST();
   std::vector<extensions::ExtensionId> extensions;
-  extensions.reserve(requests_entries_.size());
-  for (const auto& entry : requests_entries_) {
-    extensions.push_back(entry.first);
+  extensions.reserve(requests_entries_view_->children().size());
+
+  for (views::View* view : requests_entries_view_->children()) {
+    const ExtensionIdWrapper* id_wrapper = view->GetProperty(kExtensionIdKey);
+    CHECK(id_wrapper);
+    extensions.push_back(id_wrapper->id);
   }
   return extensions;
 }
@@ -407,13 +408,14 @@ views::View*
 ExtensionsMenuMainPageView::GetExtensionRequestingAccessEntryForTesting(
     const extensions::ExtensionId& extension_id) {
   CHECK_IS_TEST();
-  return GetExtensionRequestEntry(extension_id);
-}
 
-views::View* ExtensionsMenuMainPageView::GetExtensionRequestEntry(
-    const extensions::ExtensionId& extension_id) const {
-  auto iter = requests_entries_.find(extension_id);
-  return iter == requests_entries_.end() ? nullptr : iter->second;
+  for (views::View* view : requests_entries_view_->children()) {
+    const ExtensionIdWrapper* id_wrapper = view->GetProperty(kExtensionIdKey);
+    if (id_wrapper && id_wrapper->id == extension_id) {
+      return view;
+    }
+  }
+  return nullptr;
 }
 
 views::Builder<views::FlexLayoutView>

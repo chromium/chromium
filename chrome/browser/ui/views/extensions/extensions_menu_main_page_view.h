@@ -95,10 +95,6 @@ class ExtensionsMenuMainPageView : public views::View {
       const extensions::ExtensionId& extension_id);
 
  private:
-  // Returns the request entry for `extension_id` if existent.
-  views::View* GetExtensionRequestEntry(
-      const extensions::ExtensionId& extension_id) const;
-
   // Returns the header builder, which contains information about the site.
   [[nodiscard]] views::Builder<views::FlexLayoutView> CreateHeaderBuilder(
       gfx::Insets margins,
@@ -141,10 +137,6 @@ class ExtensionsMenuMainPageView : public views::View {
   raw_ptr<views::View> requests_section_;
   // View that holds the requests entries in `requests_section_`.
   raw_ptr<views::View> requests_entries_view_;
-  // A collection of all the requests entries in `requests_section_`. This is
-  // separated for easy insertion and removal of requests entries.
-  std::map<extensions::ExtensionId, raw_ptr<views::View, CtnExperimental>>
-      requests_entries_;
 
   // Menu entries section. The children are guaranteed to only be
   // ExtensionsMenuEntryView.
