@@ -310,13 +310,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
                 createMultiColumnTitleUpdater();
-                if (ChromeFeatureList.sSearchInSettings.isEnabled()) createSearchCoordinator();
             } else {
                 mTitleUpdater = new TitleUpdater();
                 fragmentManager.registerFragmentLifecycleCallbacks(
                         mTitleUpdater, /* recursive= */ true);
-                createSearchCoordinator();
             }
+            if (ChromeFeatureList.sSearchInSettings.isEnabled()) createSearchCoordinator();
         }
 
         setStatusBarColor();
