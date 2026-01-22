@@ -61,10 +61,11 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
  * There are multiple different coordinate system for the "timestamp" of the
  * waveform used in this component:
  * (1) Time (in seconds). Each second contains `barsPerSecond` bars.
- * (2) Index of the "bar" in the waveform, starting from 0.
+ * (2) Index of the "bar" in the waveform, starting from 0 to `waveformSize`.
+ * Note that `waveformSize` index is used to mark the end of the waveform.
  * (3) The x coordinate that is rendered in the SVG. Time 0 always corresponds
- *     to x = 0, and the viewBox of the whole SVG is set to show around the
- *     current time.
+ * to x = 0, and the viewBox of the whole SVG is set to show around the current
+ * time.
  *
  * `timestampToBarIndex` converts from (1) to (2), `getBarX` converts from
  * (2) to (3), and `xCoordinateToRoughIdx` converts from (3) to (2).
@@ -77,16 +78,20 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
  * rendered x coordinate (3) and doesn't corresponds to actual slice of audio
  * samples.
  */
-function timestampToBarIndex(seconds: number, barsPerSecond: number): number {
-  return Math.floor(seconds * barsPerSecond);
+function timestampToBarIndex(
+  seconds: number,
+  barsPerSecond: number,
+  waveformSize: number,
+): number {
+  return Math.min(Math.floor(seconds * barsPerSecond), waveformSize);
 }
 
 function getBarX(barIdx: number): number {
   return barIdx * (BAR_WIDTH + BAR_GAP);
 }
 
-function xCoordinateToRoughIdx(x: number): number {
-  return Math.floor(x / (BAR_WIDTH + BAR_GAP));
+function xCoordinateToRoughIdx(x: number, waveformSize: number): number {
+  return Math.min(Math.floor(x / (BAR_WIDTH + BAR_GAP)), waveformSize);
 }
 
 /**
@@ -278,6 +283,7 @@ export class AudioWaveform extends ReactiveLitElement {
     return timestampToBarIndex(
       this.currentTimeSignal.value,
       this.barsPerSecond,
+      this.values.length,
     );
   });
 
@@ -320,9 +326,16 @@ export class AudioWaveform extends ReactiveLitElement {
       // The timestamps should be increasing.
       assert(startMs <= endMs);
 
-      const startBarIdx =
-        timestampToBarIndex(startMs / 1000, this.barsPerSecond);
-      const endBarIdx = timestampToBarIndex(endMs / 1000, this.barsPerSecond);
+      const startBarIdx = timestampToBarIndex(
+        startMs / 1000,
+        this.barsPerSecond,
+        this.values.length,
+      );
+      const endBarIdx = timestampToBarIndex(
+        endMs / 1000,
+        this.barsPerSecond,
+        this.values.length,
+      );
       assert(
         ranges.length === 0 ||
           assertExists(ranges.at(-1)).endBarIdx <= startBarIdx,
@@ -582,9 +595,10 @@ export class AudioWaveform extends ReactiveLitElement {
     // directly calculate the part that needs to be rendered instead. To
     // simplify the logic we calculate the rough range and just extend it a bit
     // to make sure we covers the whole range.
-    const startIdx = Math.max(xCoordinateToRoughIdx(viewBox.x) - 5, 0);
+    const startIdx =
+      Math.max(xCoordinateToRoughIdx(viewBox.x, this.values.length) - 5, 0);
     const endIdx = Math.min(
-      xCoordinateToRoughIdx(viewBox.x + viewBox.width) + 5,
+      xCoordinateToRoughIdx(viewBox.x + viewBox.width, this.values.length) + 5,
       this.values.length - 1,
     );
 
