@@ -1321,6 +1321,7 @@ void inspector_function_call_event::Data(
     ExecutionContext* context,
     const v8::Local<v8::Function>& function) {
   auto dict = std::move(trace_context).WriteDictionary();
+
   if (LocalFrame* frame = FrameForExecutionContext(context))
     dict.Add("frame", IdentifiersFactory::FrameId(frame));
 
@@ -1348,6 +1349,7 @@ void inspector_function_call_event::Data(
   dict.Add("columnNumber", location->ColumnNumber());
   uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
   dict.Add("sampleTraceId", sample_trace_id);
+  v8::CpuProfiler::CollectSample(context->GetIsolate(), sample_trace_id);
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
