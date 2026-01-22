@@ -1248,8 +1248,12 @@ AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::Run() {
     return RespondNow(WithArguments(true));
   }
 
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  message = l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VIEWING_REAUTH);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   authenticator_->AuthenticateWithMessage(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_VIEWING_REAUTH),
+      message,
       base::BindOnce(
           &AutofillPrivateAuthenticateUserBeforeViewingEntityDataFunction::
               OnReauthCompleted,
@@ -1291,8 +1295,13 @@ AutofillPrivateToggleAutofillAiReauthRequirementFunction::Run() {
     return RespondNow(NoArguments());
   }
 
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  message =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   authenticator_->AuthenticateWithMessage(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT),
+      message,
       base::BindOnce(&AutofillPrivateToggleAutofillAiReauthRequirementFunction::
                          OnReauthCompleted,
                      this));

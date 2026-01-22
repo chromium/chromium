@@ -825,9 +825,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                       entity->type()),
                   manager_->client().GetAppLocale(),
                   CHECK_DEREF(manager_->client().GetPrefs()))) {
+            std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+            const std::u16string origin =
+                base::UTF8ToUTF16(autofill_field->origin().host());
+            message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH,
+                                                 origin);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
             MaybeAuthenticateBeforeFilling(
-                l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH),
-                "Autofill.Ai.ReauthToFill",
+                message, "Autofill.Ai.ReauthToFill",
                 base::BindOnce(
                     [](base::WeakPtr<BrowserAutofillManager> manager,
                        mojom::ActionPersistence action_persistence,
