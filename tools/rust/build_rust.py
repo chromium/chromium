@@ -668,6 +668,12 @@ def GitApplyCherryPicks():
     GitCherryPick(RUST_SRC_DIR, '5435e8188ce1bf0912b3a98a54e316e391d3ca27',
                   'https://github.com/rust-lang/rust.git')
 
+    # TODO(crbug.com/477565811): Remove once the outline atomics situation is
+    # resolved. This cherry-picks
+    # https://github.com/zmodem/rust/commit/b01caa5309eb7d47bbd2a0b4ae63f7d065be1963
+    GitCherryPick(RUST_SRC_DIR, 'b01caa5309eb7d47bbd2a0b4ae63f7d065be1963',
+                  'https://github.com/zmodem/rust.git', 'zmodem')
+
     print('Finished applying cherry-picks.')
 
 
