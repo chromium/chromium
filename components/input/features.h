@@ -56,9 +56,6 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kRendererHangWatcherDelay);
 //    events and "looks ahead" at the next event to improve prediction.
 // 2. It generates a synthetic scroll event if the queue is empty, keeping
 //    scrolling smooth even if input events are missed.
-// This feature depends on kRefactorCompositorThreadEventQueue being enabled
-// to function correctly, as the refactored event queue logic is necessary
-// for the new predictor input mapping and synthetic event generation.
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE(kUpdateScrollPredictorInputMapping);
 COMPONENT_EXPORT(INPUT)
