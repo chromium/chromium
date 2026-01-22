@@ -301,6 +301,11 @@ class ComposeboxQueryController
 
     // Whether or not the request has been sent.
     bool request_sent_ = false;
+
+    // Whether or not the interaction request details have been attached to
+    // a vsint param in a search query url / postmessage. This should only
+    // occur once per interaction request.
+    bool interaction_details_used_in_vsint_ = false;
   };
 
   // Returns a mutable pointer to allow internal modifications.
