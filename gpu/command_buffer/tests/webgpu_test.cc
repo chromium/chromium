@@ -195,6 +195,13 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
       wgpu::CallbackMode::WaitAnyOnly,
       [](wgpu::QueueWorkDoneStatus, wgpu::StringView) {})};
 
+  WaitForFutureCompletion(device, wait_info);
+}
+
+void WebGPUTest::WaitForFutureCompletion(wgpu::Device device,
+                                         wgpu::FutureWaitInfo wait_info) {
+  // Perform a busy loop acting as an event loop checking for the Future to be
+  // completed.
   while (!wait_info.completed) {
     instance_.WaitAny(1, &wait_info, 0);
     webgpu()->FlushCommands();

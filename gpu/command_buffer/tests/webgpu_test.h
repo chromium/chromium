@@ -67,6 +67,8 @@ class WebGPUTest : public testing::Test {
 
   void RunPendingTasks();
   void WaitForCompletion(wgpu::Device device);
+  void WaitForFutureCompletion(wgpu::Device device,
+                               wgpu::FutureWaitInfo wait_info);
   void PollUntilIdle();
 
   wgpu::Device GetNewDevice(
