@@ -10,17 +10,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter, TabInfo} from '../action_chips.mojom-webui.js';
+import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
 import {ActionChipsApiProxyImpl} from './action_chips_proxy.js';
-
-namespace ActionChipsConstants {
-  export const EMPTY_QUERY_STRING = '';
-}  // namespace
 
 // Records a click metric for the given action chip type.
 function recordClick(chipType: ChipType) {
@@ -167,11 +163,9 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected onCreateImageClick_() {
+  protected onCreateImageClick_(chip: ActionChip) {
     recordClick(ChipType.kImage);
-    this.onActionChipClick_(
-        ActionChipsConstants.EMPTY_QUERY_STRING, [],
-        ComposeboxMode.CREATE_IMAGE);
+    this.onActionChipClick_(chip.suggestion, [], ComposeboxMode.CREATE_IMAGE);
   }
 
   protected onDeepDiveClick_(chip: ActionChip) {
@@ -188,15 +182,14 @@ export class ActionChipsElement extends CrLitElement {
         chip.suggestion, [deepDiveTabInfo], ComposeboxMode.DEFAULT);
   }
 
-  protected onDeepSearchClick_() {
+  protected onDeepSearchClick_(chip: ActionChip) {
     recordClick(ChipType.kDeepSearch);
-    this.onActionChipClick_(
-        ActionChipsConstants.EMPTY_QUERY_STRING, [],
-        ComposeboxMode.DEEP_SEARCH);
+    this.onActionChipClick_(chip.suggestion, [], ComposeboxMode.DEEP_SEARCH);
   }
 
-  protected onTabContextClick_(tab: TabInfo) {
+  protected onTabContextClick_(chip: ActionChip) {
     recordClick(ChipType.kRecentTab);
+    const tab = chip.tab!;
     const recentTabInfo: TabUpload = {
       tabId: tab.tabId,
       url: tab.url,
@@ -205,20 +198,19 @@ export class ActionChipsElement extends CrLitElement {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
     this.onActionChipClick_(
-        ActionChipsConstants.EMPTY_QUERY_STRING, [recentTabInfo],
-        ComposeboxMode.DEFAULT);
+        chip.suggestion, [recentTabInfo], ComposeboxMode.DEFAULT);
   }
 
   protected handleClick_(chip: ActionChip): void {
     switch (chip.type) {
       case ChipType.kImage:
-        this.onCreateImageClick_();
+        this.onCreateImageClick_(chip);
         break;
       case ChipType.kDeepSearch:
-        this.onDeepSearchClick_();
+        this.onDeepSearchClick_(chip);
         break;
       case ChipType.kRecentTab:
-        this.onTabContextClick_(chip.tab!);
+        this.onTabContextClick_(chip);
         break;
       case ChipType.kDeepDive:
         this.onDeepDiveClick_(chip);
@@ -259,7 +251,7 @@ export class ActionChipsElement extends CrLitElement {
     }
     const url = new URL(chip.tab.url.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.suggestion} - ${domain}`;
+    return `${chip.subtitle} - ${domain}`;
   }
 
   protected isDeepDiveChip_(chip: ActionChip) {

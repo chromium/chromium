@@ -40,7 +40,7 @@ export function getHtml(this: ActionChipsElement) {
               class="chip-body">
                 ${this.showDashSimplifiedUI_(chip)
                     ? ' - '
-                    : ''}${chip.suggestion}
+                    : ''}${chip.subtitle}
             </span>
           </div>
           ${this.showDismissalUI_ ? html`

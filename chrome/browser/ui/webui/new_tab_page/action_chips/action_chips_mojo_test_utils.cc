@@ -29,6 +29,7 @@ void PrintTo(const TabInfoPtr& tab, std::ostream* os) {
 void PrintTo(const ActionChip& chip, std::ostream* os) {
   *os << "ActionChip{\n"
       << "  title: \"" << chip.title << "\",\n"
+      << "  subtitle: \"" << chip.subtitle << "\",\n"
       << "  suggestion: \"" << chip.suggestion << "\",\n"
       << "  type: " << chip.type << ",\n"
       << "  tab_info: ";
