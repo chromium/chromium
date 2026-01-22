@@ -10,6 +10,23 @@
 
 namespace blink {
 
+namespace {
+
+String GetToolErrorMessage(WebDocument::ScriptToolError error) {
+  switch (error) {
+    case WebDocument::ScriptToolError::kInvalidToolName:
+      return "Tool was not executed due to invalid name.";
+    case WebDocument::ScriptToolError::kInvalidInputArguments:
+      return "Tool was not executed due to invalid input arguments.";
+    case WebDocument::ScriptToolError::kToolInvocationFailed:
+      return "Tool was executed but the invocation failed. For example, the "
+             "script function threw an error.";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 ModelContextTesting::ModelContextTesting(ModelContext* model_context)
     : model_context_(model_context) {}
 
@@ -47,7 +64,8 @@ ScriptPromise<IDLString> ModelContextTesting::executeTool(
           resolver->Resolve(result.value());
         } else {
           resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kUnknownError, "Error executing tool."));
+              DOMExceptionCode::kUnknownError,
+              GetToolErrorMessage(result.error())));
         }
       };
 
