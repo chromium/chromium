@@ -147,8 +147,7 @@ suite('NewTabFooterAppTest', () => {
       // Arrange.
       const managementNotice: ManagementNotice = {
         text: 'Managed by your organization',
-        customBitmapDataUrl:
-            {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        customBitmapDataUrl: 'chrome://resources/images/chrome_logo_dark.svg',
       };
 
       // Act.
@@ -187,8 +186,7 @@ suite('NewTabFooterAppTest', () => {
       // Arrange.
       const managementNoticeWithCustomLogo: ManagementNotice = {
         text: 'Managed by your organization',
-        customBitmapDataUrl:
-            {url: 'chrome://resources/images/chrome_logo_dark.svg'},
+        customBitmapDataUrl: 'chrome://resources/images/chrome_logo_dark.svg',
       };
 
       // Act.
@@ -455,7 +453,7 @@ suite('NewTabFooterAppTest', () => {
       // Arrange with empty attribution URL.
       let backgroundAttribution: BackgroundAttribution = {
         name: 'background image name',
-        url: {url: ''},
+        url: '',
       };
 
       // Act.
@@ -475,7 +473,7 @@ suite('NewTabFooterAppTest', () => {
       // Arrange with a non-empty URL.
       backgroundAttribution = {
         name: 'background image name',
-        url: {url: 'https://info.com'},
+        url: 'https://info.com',
       };
 
       // Act.
@@ -498,7 +496,7 @@ suite('NewTabFooterAppTest', () => {
       const attributionUrl = 'https://info.com';
       const backgroundAttribution: BackgroundAttribution = {
         name: 'background image name',
-        url: {url: attributionUrl},
+        url: attributionUrl,
       };
       callbackRouter.setBackgroundAttribution(backgroundAttribution);
       await callbackRouter.$.flushForTesting();
@@ -510,8 +508,7 @@ suite('NewTabFooterAppTest', () => {
 
       // Assert.
       assertEquals(1, handler.getCallCount('openUrlInCurrentTab'));
-      assertEquals(
-          attributionUrl, handler.getArgs('openUrlInCurrentTab')[0].url);
+      assertEquals(attributionUrl, handler.getArgs('openUrlInCurrentTab')[0]);
     });
   });
 });

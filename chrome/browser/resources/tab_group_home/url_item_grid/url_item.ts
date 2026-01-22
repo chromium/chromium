@@ -46,7 +46,7 @@ export class UrlItemElement extends CrLitElement {
     };
   }
 
-  accessor item: UrlItem = {id: -1, title: '', url: {url: ''}};
+  accessor item: UrlItem = {id: -1, title: '', url: ''};
   protected accessor faviconImageSet_: string = '';
 
   override connectedCallback() {
@@ -61,7 +61,7 @@ export class UrlItemElement extends CrLitElement {
 
     if (changedProperties.has('item')) {
       this.faviconImageSet_ = getFaviconForPageURL(
-          this.item.url.url, /*isSyncedUrlForHistoryUi=*/ false);
+          this.item.url, /*isSyncedUrlForHistoryUi=*/ false);
     }
   }
 

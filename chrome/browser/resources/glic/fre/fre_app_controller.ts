@@ -156,9 +156,8 @@ export class FreAppController {
             e.preventDefault();
             chrome.metricsPrivate.recordUserAction(
                 'Glic.Fre.DisabledByAdminPanelLinkClicked');
-            this.freHandler.validateAndOpenLinkInNewTab({
-              url: (e.target as HTMLAnchorElement).href,
-            });
+            this.freHandler.validateAndOpenLinkInNewTab(
+                (e.target as HTMLAnchorElement).href);
             e.stopPropagation();
           });
 
@@ -216,9 +215,7 @@ export class FreAppController {
 
   onNewWindow(e: any) {
     e.preventDefault();
-    this.freHandler.validateAndOpenLinkInNewTab({
-      url: e.targetUrl,
-    });
+    this.freHandler.validateAndOpenLinkInNewTab(e.targetUrl);
     e.stopPropagation();
   }
 

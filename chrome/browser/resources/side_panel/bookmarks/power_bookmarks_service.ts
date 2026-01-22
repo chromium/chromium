@@ -557,7 +557,7 @@ export class PowerBookmarksService {
       return;
     }
 
-    const url: Url = {url: bookmark.url};
+    const url: Url = bookmark.url;
 
     // Fetch the representative image for this page, if possible.
     this.activeImageServiceRequestCount_++;
@@ -575,7 +575,7 @@ export class PowerBookmarksService {
 
     // If there is no result, cache an empty URL because we are unlikely to get
     // a different result in the same session.
-    this.delegate_.setImageUrl(bookmark, result ? result.imageUrl.url : '');
+    this.delegate_.setImageUrl(bookmark, result ? result.imageUrl : '');
     this.bookmarksWithCachedImages_.add(bookmark.id.toString());
 
     if (this.inactiveImageServiceRequests_.size > 0) {

@@ -10,15 +10,16 @@ export function getHtml(this: UrlVisitElement) {
   return html`
 <div id="header" @click="${this.onClick_}" @auxclick="${this.onClick_}"
     @keydown="${this.onKeydown_}" @contextmenu="${this.onContextMenu_}">
-  <a id="link-container" href="${this.visit?.normalizedUrl.url || nothing}">
+  <a id="link-container" href="${this.visit?.normalizedUrl || nothing}">
     <page-favicon id="icon" .url="${this.visit?.normalizedUrl}"
         .isKnownToSync="${this.visit?.isKnownToSync || false}">
     </page-favicon>
     <div id="page-info">
       <div id="title-and-annotations">
         <span id="title" class="truncate"></span>
-        ${this.computeAnnotations_().map(
-            item => html`<span class="annotation">${item}</span>`)}
+        ${
+      this.computeAnnotations_().map(
+          item => html`<span class="annotation">${item}</span>`)}
       </div>
       <span id="url" class="truncate"></span>
       <span id="debug-info" ?hidden="${!this.computeDebugInfo_()}">
@@ -39,12 +40,14 @@ export function getHtml(this: UrlVisitElement) {
   </div>
 </div>
 
-${this.renderActionMenu_ ? html`
+${
+      this.renderActionMenu_ ? html`
     <cr-action-menu role-description="${this.i18n('actionMenuDescription')}">
       <button id="removeSelfButton" class="dropdown-item"
           ?hidden="${!this.allowDeletingHistory_}"
           @click="${this.onRemoveSelfButtonClick_}">
         ${this.i18n('removeFromHistory')}
       </button>
-    </cr-action-menu>` : ''}`;
+    </cr-action-menu>` :
+                               ''}`;
 }

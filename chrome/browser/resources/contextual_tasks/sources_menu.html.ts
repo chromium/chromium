@@ -25,7 +25,7 @@ export function getHtml(this: SourcesMenuElement) {
           </div>
           <div class="tab-info">
             <div class="tab-title">${item.title}</div>
-            <div class="tab-url">${this.getHostname_(item.url.url)}</div>
+            <div class="tab-url">${this.getHostname_(item.url)}</div>
           </div>
         </button>
       `)}

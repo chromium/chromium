@@ -21,7 +21,7 @@ suite('RecentTabChipTest', function() {
   const MOCK_TAB_INFO: TabInfo = {
     tabId: 1,
     title: 'Tab 1',
-    url: {url: 'https://tab1.com'},
+    url: 'https://tab1.com',
     showInCurrentTabChip: false,
     showInPreviousTabChip: true,
     lastActive: {internalValue: 1n},

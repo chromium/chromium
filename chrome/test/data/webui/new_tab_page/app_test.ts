@@ -343,7 +343,7 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
       const theme = createTheme();
       theme.backgroundImage = createBackgroundImage('https://foo.com');
-      theme.backgroundImage.attributionUrl = {url: 'chrome://theme/foo'};
+      theme.backgroundImage.attributionUrl = 'chrome://theme/foo';
 
       // Act.
       callbackRouterRemote.setTheme(theme);
@@ -381,7 +381,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
       assertEquals(
           'https://img.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
+          (await backgroundManager.whenCalled('setBackgroundImage')).url);
       assertTrue(!!app.$.logo.theme?.backgroundColor);
     });
 
@@ -390,7 +390,7 @@ suite('NewTabPageAppTest', () => {
       const theme = createTheme();
       theme.backgroundImageAttribution1 = 'foo';
       theme.backgroundImageAttribution2 = 'bar';
-      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+      theme.backgroundImageAttributionUrl = 'https://info.com';
 
       // Act.
       callbackRouterRemote.setTheme(theme);
@@ -2042,7 +2042,7 @@ suite('NewTabPageAppTest', () => {
       const theme = createTheme();
       theme.backgroundImageAttribution1 = 'foo';
       theme.backgroundImageAttribution2 = 'bar';
-      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+      theme.backgroundImageAttributionUrl = 'https://info.com';
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
 
@@ -2158,7 +2158,7 @@ suite('NewTabPageAppTest', () => {
       const fakeTab: TabInfo = {
         tabId: 1,
         title: 'Test Title',
-        url: {url: 'https://example.com/test'},
+        url: 'https://example.com/test',
         lastActiveTime: {internalValue: BigInt(12345)},
       };
       actionChipsPageRemote =
@@ -2339,7 +2339,7 @@ suite('NewTabPageAppTest', () => {
             tab: {
               tabId: 1,
               title: 'Test Title',
-              url: {url: 'https://example.com/test'},
+              url: 'https://example.com/test',
               lastActiveTime: {internalValue: BigInt(0)},
             },
           }]);

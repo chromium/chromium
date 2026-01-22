@@ -97,7 +97,7 @@ function createAutocompleteMatch(modifiers: Partial<AutocompleteMatch> = {}):
     allowedToBeDefaultMatch: false,
     isSearchType: true,
     contents: 'a suggestion',
-    destinationUrl: {url: `https://google.com/search?q=a+suggestion`},
+    destinationUrl: `https://google.com/search?q=a+suggestion`,
     fillIntoEdit: 'a suggestion',
     type: 'search-suggest',
 
@@ -114,7 +114,7 @@ function createAutocompleteMatch(modifiers: Partial<AutocompleteMatch> = {}):
     descriptionClass: [{offset: 0, style: 0}],
     inlineAutocompletion: '',
     iconPath: '',
-    iconUrl: {url: ''},
+    iconUrl: '',
     imageDominantColor: '',
     imageUrl: '',
     isNoncannedAimSuggestion: false,
@@ -241,7 +241,7 @@ suite('ContextualTasksComposeboxTest', () => {
       createAutocompleteMatch({
         allowedToBeDefaultMatch: true,
         contents: testQuery,
-        destinationUrl: {url: `https://google.com/search?q=${testQuery}`},
+        destinationUrl: `https://google.com/search?q=${testQuery}`,
         type: 'search-what-you-typed',
         fillIntoEdit: testQuery,
       }),
@@ -451,7 +451,7 @@ suite('ContextualTasksComposeboxTest', () => {
     const [matchIndex, url] =
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
     assertEquals(0, matchIndex);
-    assertEquals(`https://google.com/search?q=${TEST_QUERY}`, url.url);
+    assertEquals(`https://google.com/search?q=${TEST_QUERY}`, url);
     mockTimer.tick(0);
 
     assertEquals(

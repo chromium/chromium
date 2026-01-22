@@ -267,7 +267,7 @@ function fakeDeviceInfo(num: number): UsbDeviceInfo {
     manufacturerName: 'test',
     productName: null,
     serialNumber: null,
-    webusbLandingPage: {url: 'http://google.com'},
+    webusbLandingPage: 'http://google.com',
     activeConfiguration: 1,
     configurations: [],
   };

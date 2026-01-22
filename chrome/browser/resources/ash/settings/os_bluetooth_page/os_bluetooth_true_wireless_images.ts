@@ -113,13 +113,13 @@ export class SettingsBluetoothTrueWirelessImagesElement extends
       device: BluetoothDeviceProperties, batteryType: BatteryType): string {
     switch (batteryType) {
       case BatteryType.DEFAULT:
-        return device.imageInfo!.defaultImageUrl!.url;
+        return device.imageInfo!.defaultImageUrl!;
       case BatteryType.LEFT_BUD:
-        return device.imageInfo!.trueWirelessImages!.leftBudImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.leftBudImageUrl;
       case BatteryType.CASE:
-        return device.imageInfo!.trueWirelessImages!.caseImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.caseImageUrl;
       case BatteryType.RIGHT_BUD:
-        return device.imageInfo!.trueWirelessImages!.rightBudImageUrl.url;
+        return device.imageInfo!.trueWirelessImages!.rightBudImageUrl;
       default:
         assertNotReached();
     }

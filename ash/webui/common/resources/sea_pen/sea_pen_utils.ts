@@ -13,14 +13,13 @@ import type {SeaPenTemplateChip, SeaPenTemplateId} from './sea_pen_generated.moj
 
 // Returns true if `maybeUrl` is a valid Url.
 export function isUrl(maybeUrl: unknown): maybeUrl is Url {
-  return !!maybeUrl && typeof maybeUrl === 'object' && 'url' in maybeUrl &&
-      typeof maybeUrl.url === 'string';
+  return !!maybeUrl && (typeof maybeUrl === 'string');
 }
 
 // Returns true if `maybeDataUrl` is a Url that contains a base64 encoded image.
 export function isImageDataUrl(maybeDataUrl: Url): boolean {
-  return maybeDataUrl.url.startsWith('data:image/png;base64') ||
-      maybeDataUrl.url.startsWith('data:image/jpeg;base64');
+  return maybeDataUrl.startsWith('data:image/png;base64') ||
+      maybeDataUrl.startsWith('data:image/jpeg;base64');
 }
 
 // SeaPenImageId must always be a positive

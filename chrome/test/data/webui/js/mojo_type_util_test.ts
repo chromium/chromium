@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {String16Converter} from 'chrome://resources/mojo/mojo/public/mojom/base/string16_converter.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -62,19 +61,5 @@ suite('MojoTypeUtilTest', () => {
     s = 'hhh' +
         '🇺🇳'.repeat(9000);
     assertEquals(s, converter.convertImpl(converter.data(s)));
-  });
-
-  test('Can convert strings to mojo Urls', () => {
-    assertDeepEquals(stringToMojoUrl(''), {url: ''});
-    assertDeepEquals(
-        stringToMojoUrl('https://chromium.org'), {url: 'https://chromium.org'});
-    assertDeepEquals(
-        stringToMojoUrl('https://user:pass@example.test'),
-        {url: 'https://user:pass@example.test'});
-    assertDeepEquals(
-        stringToMojoUrl('http://insecure.test'), {url: 'http://insecure.test'});
-    assertDeepEquals(
-        stringToMojoUrl('file:///home/test/test.pdf'),
-        {url: 'file:///home/test/test.pdf'});
   });
 });

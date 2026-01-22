@@ -65,9 +65,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
         title: 'Album 0',
         photoCount: 0,
-        preview: {
-          url: createSvgDataUrl('svg-0'),
-        },
+        preview: createSvgDataUrl('svg-0'),
         timestamp: {internalValue: BigInt(`13318040939308000`)},
         isShared: false,
       },
@@ -75,9 +73,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
         title: 'Album 1',
         photoCount: 1,
-        preview: {
-          url: createSvgDataUrl('svg-1'),
-        },
+        preview: createSvgDataUrl('svg-1'),
         timestamp: {internalValue: BigInt(`13318040939307000`)},
         isShared: false,
       },
@@ -85,9 +81,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
         title: 'Album 2',
         photoCount: 2,
-        preview: {
-          url: createSvgDataUrl('svg-2'),
-        },
+        preview: createSvgDataUrl('svg-2'),
         timestamp: {internalValue: BigInt(`13318040939306000`)},
         isShared: false,
       },
@@ -115,7 +109,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // The wallpaper controller is expected to impose max resolution.
-    albums.forEach(album => album.preview.url += '=s512');
+    albums.forEach(album => album.preview += '=s512');
 
     // Verify that the expected |albums| are rendered.
     const albumEls =
@@ -194,7 +188,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
           id: `id-${i}`,
           title: `title-${i}`,
           photoCount: 1,
-          preview: {url: createSvgDataUrl(`svg-${i}`)},
+          preview: createSvgDataUrl(`svg-${i}`),
           timestamp: {internalValue: BigInt(`${photosCount - i}`)},
           isShared: false,
         }));
@@ -278,7 +272,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
             id: `id-${nextAlbumId}`,
             title: `title-${nextAlbumId}`,
             photoCount: 1,
-            preview: {url: `url-${nextAlbumId++}`},
+            preview: `url-${nextAlbumId++}`,
             timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
             isShared: false,
           };
@@ -306,7 +300,7 @@ suite('GooglePhotosAlbumsElementTest', function() {
             id: `id-${nextAlbumId}`,
             title: `title-${nextAlbumId}`,
             photoCount: 1,
-            preview: {url: `url-${nextAlbumId++}`},
+            preview: `url-${nextAlbumId++}`,
             timestamp: {internalValue: BigInt(`${nextAlbumId}`)},
             isShared: false,
           };

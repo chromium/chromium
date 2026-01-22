@@ -203,7 +203,7 @@ export class LocalImagesElement extends WithPersonalizationStore {
     const data = imageData[getPathOrSymbol(image)];
     // Return a "fail" url that will not load.
     if (!isUrl(data) || !isImageDataUrl(data)) {
-      return {url: ''};
+      return '';
     }
     return data;
   }

@@ -70,8 +70,8 @@ suite('SiteEngagement', function() {
 
     let {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
-    info = info.filter(i => i.origin.url !== APP_URL);
-    assertEquals(firstRow.origin.textContent, info[0]!.origin.url);
+    info = info.filter(i => i.origin !== APP_URL);
+    assertEquals(firstRow.origin.textContent, info[0]!.origin);
     assertEquals(50, info[0]!.baseScore);
   });
 
@@ -82,7 +82,7 @@ suite('SiteEngagement', function() {
     showWebUiPagesCheckbox.click();
     const {info} =
         await app.engagementDetailsProvider.getSiteEngagementDetails();
-    assertTrue(info.some(i => i.origin.url === APP_URL));
+    assertTrue(info.some(i => i.origin === APP_URL));
     assertDeepEquals(
         [EXAMPLE_URL_1, EXAMPLE_URL_2, APP_URL].toSorted(),
         getCells().map(c => c.origin.textContent).toSorted());

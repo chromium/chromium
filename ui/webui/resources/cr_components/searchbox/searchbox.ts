@@ -733,7 +733,7 @@ export class SearchboxElement extends SearchboxElementBase implements
 
     if (this.selectedMatch_ && !this.selectedMatch_.isSearchType) {
       e.clipboardData!.setData(
-          'text/plain', this.selectedMatch_.destinationUrl.url);
+          'text/plain', this.selectedMatch_.destinationUrl);
       e.preventDefault();
       if (e.type === 'cut') {
         this.updateInput_({text: '', inline: ''});

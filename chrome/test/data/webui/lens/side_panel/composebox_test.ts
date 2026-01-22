@@ -68,11 +68,11 @@ suite('Composebox', () => {
       contentsClass: [{offset: 0, style: 0}],
       description: '',
       descriptionClass: [{offset: 0, style: 0}],
-      destinationUrl: {url: ''},
+      destinationUrl: '',
       inlineAutocompletion: '',
       fillIntoEdit: '',
       iconPath: '',
-      iconUrl: {url: ''},
+      iconUrl: '',
       imageDominantColor: '',
       imageUrl: '',
       isNoncannedAimSuggestion: false,
@@ -106,7 +106,7 @@ suite('Composebox', () => {
         createAutocompleteMatch(), {
           isSearchType: true,
           contents: 'hello world',
-          destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+          destinationUrl: 'https://www.google.com/search?q=hello+world',
           fillIntoEdit: 'hello world',
           type: 'search-suggest',
         },
@@ -578,7 +578,7 @@ suite('Composebox', () => {
     const matches = [createSearchMatch({
       fillIntoEdit: query,
       destinationUrl:
-          {url: `https://www.google.com/search?q=${query.replace(/ /g, '+')}`},
+          `https://www.google.com/search?q=${query.replace(/ /g, '+')}`,
       allowedToBeDefaultMatch: true,
     })];
     searchboxCallbackRouterRemote.autocompleteResultChanged(
@@ -599,7 +599,7 @@ suite('Composebox', () => {
         await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
     assertEquals(matchIndex, 0);
     assertEquals(
-        url.url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);
+        url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);
   });
 
   test('SubmitButtonNoopWhenDisabled', async () => {

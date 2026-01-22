@@ -43,7 +43,7 @@ suite('AppTest', () => {
     const testCollection: BackgroundCollection = {
       id: 'test',
       label: 'test',
-      previewImageUrl: {url: 'https://test.jpg'},
+      previewImageUrl: 'https://test.jpg',
       imageVerified: false,
     };
 

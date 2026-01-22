@@ -29,7 +29,7 @@ export function getHtml(this: ReadingListAppElement) {
         @viewport-filled="${this.updateFocusedItem_}"
         .restoreFocusElement="${this.focusedItem_}"
         .template="${
-      (item: ReadLaterEntry, index: number) => !item.url.url ? html`
+      (item: ReadLaterEntry, index: number) => !item.url ? html`
       <sp-heading compact hide-back-button>
         <h2 slot="heading">${item.title}</h2>
         <cr-icon-button slot="buttons"
@@ -41,8 +41,8 @@ export function getHtml(this: ReadingListAppElement) {
         </cr-icon-button>
       </sp-heading>
     ` :
-                                                               html`
-      <reading-list-item data-url="${item.url.url}" data-index="${index}"
+                                                           html`
+      <reading-list-item data-url="${item.url}" data-index="${index}"
           @focus="${this.onItemFocus_}"
           aria-label="${this.ariaLabel_(item)}" class="unread-item"
           .data="${item}" ?button-ripples="${this.buttonRipples}">

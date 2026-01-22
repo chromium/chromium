@@ -57,7 +57,7 @@ export class BookmarkElement extends CrLitElement {
     // getFaviconForPageURL, given a page URL, will construct a
     // chrome://favicon2/ URL that will request the icon from our local
     // cache considering sizes, resolution, etc.
-    return getFaviconForPageURL(this.data.pageUrlForFavicon.url, false);
+    return getFaviconForPageURL(this.data.pageUrlForFavicon, false);
   }
 }
 

@@ -41,6 +41,19 @@ mojom("url_mojom_gurl") {
     },
   ]
 
+  ts_typemaps = [
+    {
+      source = "url_converter.ts"
+      types = [
+        {
+          converter = "UrlConverter"
+          mojom = "url.mojom.Url"
+          ts = "string"
+        },
+      ]
+    },
+  ]
+
   webui_module_path = "chrome://resources/mojo/url/mojom"
 
   # Legacy JS bindings are needed for Blink regardless of platform.

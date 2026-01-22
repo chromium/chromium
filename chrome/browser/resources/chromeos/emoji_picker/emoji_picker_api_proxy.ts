@@ -104,9 +104,7 @@ export class EmojiPickerApiProxy {
   }
 
   openHelpCentreArticle(): void {
-    this.newWindowProxy.openUrl({
-      url: HELP_CENTRE_URL,
-    });
+    this.newWindowProxy.openUrl(HELP_CENTRE_URL);
   }
 
   getInitialCategory(): Promise<{category: Category}> {

@@ -183,7 +183,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     }
     const data = recentImageData[recentImage];
     if (!isUrl(data?.url) || !isImageDataUrl(data.url)) {
-      return {url: ''};
+      return '';
     }
     return data.url;
   }

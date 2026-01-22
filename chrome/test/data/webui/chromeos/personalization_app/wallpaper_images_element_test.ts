@@ -104,14 +104,14 @@ suite('WallpaperImagesElementTest', function() {
           attribution: ['Image 0-1'],
           type: OnlineImageType.kUnknown,
           unitId: BigInt(1),
-          url: {url: 'https://id_0-1/'},
+          url: 'https://id_0-1/',
         },
         {
           assetId: BigInt(2),
           attribution: ['Image 0-2'],
           type: OnlineImageType.kUnknown,
           unitId: BigInt(2),
-          url: {url: 'https://id_0-2/'},
+          url: 'https://id_0-2/',
         },
       ],
       'id_1': [
@@ -120,14 +120,14 @@ suite('WallpaperImagesElementTest', function() {
           attribution: ['Image 1-10'],
           type: OnlineImageType.kUnknown,
           unitId: BigInt(10),
-          url: {url: 'https://id_1-10/'},
+          url: 'https://id_1-10/',
         },
         {
           assetId: BigInt(20),
           attribution: ['Image 1-20'],
           type: OnlineImageType.kUnknown,
           unitId: BigInt(20),
-          url: {url: 'https://id_1-20/'},
+          url: 'https://id_1-20/',
         },
       ],
     };
@@ -173,28 +173,28 @@ suite('WallpaperImagesElementTest', function() {
           attribution: ['Light Image 0-1'],
           type: OnlineImageType.kLight,
           unitId: BigInt(1),
-          url: {url: 'https://id_0-1/'},
+          url: 'https://id_0-1/',
         },
         {
           assetId: BigInt(2),
           attribution: ['Dark Image 0-2'],
           type: OnlineImageType.kDark,
           unitId: BigInt(1),
-          url: {url: 'https://id_0-2/'},
+          url: 'https://id_0-2/',
         },
         {
           assetId: BigInt(3),
           attribution: ['Morning Image 0-3'],
           type: OnlineImageType.kMorning,
           unitId: BigInt(1),
-          url: {url: 'https://id_0-3/'},
+          url: 'https://id_0-3/',
         },
         {
           assetId: BigInt(4),
           attribution: ['Late Afternoon Image 0-4'],
           type: OnlineImageType.kLateAfternoon,
           unitId: BigInt(1),
-          url: {url: 'https://id_0-4/'},
+          url: 'https://id_0-4/',
         },
       ],
     };
@@ -216,10 +216,10 @@ suite('WallpaperImagesElementTest', function() {
 
     assertDeepEquals(
         [
-          {url: 'https://id_0-1/'},
-          {url: 'https://id_0-2/'},
-          {url: 'https://id_0-3/'},
-          {url: 'https://id_0-4/'},
+          'https://id_0-1/',
+          'https://id_0-2/',
+          'https://id_0-3/',
+          'https://id_0-4/',
         ],
         elements[0]!.src, 'time of day image has four variant urls');
     assertTrue(
@@ -236,35 +236,35 @@ suite('WallpaperImagesElementTest', function() {
               attribution: ['Late Afternoon Image 0-0'],
               type: OnlineImageType.kPreview,
               unitId: BigInt(1),
-              url: {url: 'https://id_0-0/'},
+              url: 'https://id_0-0/',
             },
             {
               assetId: BigInt(1),
               attribution: ['Light Image 0-1'],
               type: OnlineImageType.kLight,
               unitId: BigInt(1),
-              url: {url: 'https://id_0-1/'},
+              url: 'https://id_0-1/',
             },
             {
               assetId: BigInt(2),
               attribution: ['Dark Image 0-2'],
               type: OnlineImageType.kDark,
               unitId: BigInt(1),
-              url: {url: 'https://id_0-2/'},
+              url: 'https://id_0-2/',
             },
             {
               assetId: BigInt(3),
               attribution: ['Morning Image 0-3'],
               type: OnlineImageType.kMorning,
               unitId: BigInt(1),
-              url: {url: 'https://id_0-3/'},
+              url: 'https://id_0-3/',
             },
             {
               assetId: BigInt(4),
               attribution: ['Late Afternoon Image 0-4'],
               type: OnlineImageType.kLateAfternoon,
               unitId: BigInt(1),
-              url: {url: 'https://id_0-4/'},
+              url: 'https://id_0-4/',
             },
           ],
         };
@@ -286,7 +286,7 @@ suite('WallpaperImagesElementTest', function() {
 
         assertDeepEquals(
             [
-              {url: 'https://id_0-0/'},
+              'https://id_0-0/',
             ],
             elements[0]!.src, 'preview image has only one url');
       });
@@ -306,19 +306,20 @@ suite('WallpaperImagesElementTest', function() {
 
     assertDeepEquals(
         [
-          {url: 'https://images.googleusercontent.com/1'},
-          {url: 'https://images.googleusercontent.com/0'},
+          'https://images.googleusercontent.com/1',
+          'https://images.googleusercontent.com/0',
         ],
         elements[0]?.src, 'dark/light mode image has dark light variant urls');
 
     assertEquals(
         OnlineImageType.kLight,
-        wallpaperProvider.images!
-            .find(image => image.url.url.endsWith('.com/1'))!.type,
+        wallpaperProvider.images!.find(
+                                     image =>
+                                         image.url.endsWith('.com/1'))!.type,
         'light image is first');
 
     assertDeepEquals(
-        [{url: 'https://images.googleusercontent.com/2'}], elements[1]?.src,
+        ['https://images.googleusercontent.com/2'], elements[1]?.src,
         'image 2 does not have dark light mode variants');
   });
 

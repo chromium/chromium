@@ -236,7 +236,7 @@ export class ShoppingListElement extends PolymerElement {
       itemA: BookmarkProductInfo, itemB: BookmarkProductInfo) {
     // Only compare the user-visible properties.
     if (itemA.info.title !== itemB.info.title ||
-        itemA.info.imageUrl.url !== itemB.info.imageUrl.url ||
+        itemA.info.imageUrl !== itemB.info.imageUrl ||
         itemA.info.currentPrice !== itemB.info.currentPrice ||
         itemA.info.previousPrice !== itemB.info.previousPrice) {
       return false;
@@ -255,7 +255,7 @@ export class ShoppingListElement extends PolymerElement {
   }
 
   private onImageLoadError_(event: DomRepeatEvent<BookmarkProductInfo>) {
-    this.set('productInfos.' + event.model.index + '.info.imageUrl.url', '');
+    this.set('productInfos.' + event.model.index + '.info.imageUrl', '');
     chrome.metricsPrivate.recordBoolean(
         'Commerce.PriceTracking.SidePanelImageLoad', false);
   }

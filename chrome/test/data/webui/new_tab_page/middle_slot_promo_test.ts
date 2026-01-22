@@ -45,35 +45,33 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
   function createPromo() {
     return {
       id: '7',
-      logUrl: {
-        url:
-            'https://www.google.com/gen_204?ei=AsDMYoL9DtzVkPIP19ScaA&cad=i&id=19030295&ogprm=up&ct=16&prid=243',
-      },
+      logUrl:
+          'https://www.google.com/gen_204?ei=AsDMYoL9DtzVkPIP19ScaA&cad=i&id=19030295&ogprm=up&ct=16&prid=243',
       middleSlotParts: [
-        {image: {imageUrl: {url: 'https://image'}, target: {url: ''}}},
+        {image: {imageUrl: 'https://image', target: ''}},
         {
           image: {
-            imageUrl: {url: 'https://image'},
-            target: {url: 'https://link'},
+            imageUrl: 'https://image',
+            target: 'https://link',
           },
         },
         {
           image: {
-            imageUrl: {url: 'https://image'},
-            target: {url: 'command:123'},
+            imageUrl: 'https://image',
+            target: 'command:123',
           },
         },
         {text: {text: 'text', color: 'red'}},
         {
           link: {
-            url: {url: 'https://link'},
+            url: 'https://link',
             text: 'link',
             color: 'green',
           },
         },
         {
           link: {
-            url: {url: 'command:123'},
+            url: 'command:123',
             text: 'command',
             color: 'blue',
           },

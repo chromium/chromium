@@ -54,7 +54,7 @@ export function installMock<T extends object>(
 
 export function createBackgroundImage(url: string): BackgroundImage {
   return {
-    url: {url},
+    url: url,
     url2x: null,
     attributionUrl: null,
     size: null,

@@ -56,11 +56,10 @@ suite('AppListTest', () => {
         {
           appType: AppType.kWebApp,
           id: 'ahfgeienlihckogmohjhadlkjgocpleb',
-          startUrl: {url: 'https://test.google.com/testapp1'},
+          startUrl: 'https://test.google.com/testapp1',
           name: 'Test App 1',
-          iconUrl: {
-            url: 'chrome://app-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
-          },
+          iconUrl: 'chrome://app-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
+
           mayShowRunOnOsLoginMode: true,
           mayToggleRunOnOsLoginMode: true,
           runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
@@ -72,11 +71,10 @@ suite('AppListTest', () => {
         {
           appType: AppType.kWebApp,
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
-          startUrl: {url: 'https://test.google.com/testapp2'},
+          startUrl: 'https://test.google.com/testapp2',
           name: 'Test App 2',
-          iconUrl: {
-            url: 'chrome://app-icon/ahfgeienlihckogmotestdlkjgocpleb/128/1',
-          },
+          iconUrl: 'chrome://app-icon/ahfgeienlihckogmotestdlkjgocpleb/128/1',
+
           mayShowRunOnOsLoginMode: false,
           mayToggleRunOnOsLoginMode: false,
           runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
@@ -91,11 +89,10 @@ suite('AppListTest', () => {
     testAppInfo = {
       appType: AppType.kWebApp,
       id: 'mmfbcljfglbokpmkimbfghdkjmjhdgbg',
-      startUrl: {url: 'https://test.google.com/testapp3'},
+      startUrl: 'https://test.google.com/testapp3',
       name: 'A Test App 3',
-      iconUrl: {
-        url: 'chrome://app-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
-      },
+      iconUrl: 'chrome://app-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
+
       mayShowRunOnOsLoginMode: false,
       mayToggleRunOnOsLoginMode: false,
       runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
@@ -107,29 +104,27 @@ suite('AppListTest', () => {
     deprecatedAppInfo = {
       appType: AppType.kDeprecatedChromeApp,
       id: 'mplpmdejoamenolpcojgegminhcnmibo',
-      startUrl: {url: 'https://test.google.com/deprecated_app'},
+      startUrl: 'https://test.google.com/deprecated_app',
       name: 'Deprecated App',
-      iconUrl: {
-        url: 'chrome://extension-icon/mplpmdejoamenolpcojgegminhcnmibo/128/1',
-      },
+      iconUrl: 'chrome://extension-icon/mplpmdejoamenolpcojgegminhcnmibo/128/1',
+
       mayShowRunOnOsLoginMode: false,
       mayToggleRunOnOsLoginMode: false,
       runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
       isLocallyInstalled: true,
       openInWindow: true,
       mayUninstall: true,
-      storePageUrl: {
-        url: '',
-      },
+      storePageUrl: '',
+
     };
     isolatedWebAppInfo = {
       appType: AppType.kIsolatedWebApp,
       id: 'bfeileggdikbmggaogebloieaiejgdie',
-      startUrl: {url: 'isolated-app://amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai'},
+      startUrl:
+          'isolated-app://amoiebz32b7o24tilu257xne2yf3nkblkploanxzm7ebeglseqpfeaacai',
       name: 'IWA',
-      iconUrl: {
-        url: 'chrome://app-icon/bfeileggdikbmggaogebloieaiejgdie/128/1',
-      },
+      iconUrl: 'chrome://app-icon/bfeileggdikbmggaogebloieaiejgdie/128/1',
+
       mayShowRunOnOsLoginMode: true,
       mayToggleRunOnOsLoginMode: true,
       runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
@@ -166,7 +161,7 @@ suite('AppListTest', () => {
     assertEquals(
         appItems[0]!.shadowRoot.querySelector<HTMLImageElement>(
                                    '#iconImage')!.src,
-        apps.appList[0]!.iconUrl.url);
+        apps.appList[0]!.iconUrl);
 
     assertEquals(
         appItems[1]!.shadowRoot.querySelector('#textContainer')!.textContent,
@@ -174,7 +169,7 @@ suite('AppListTest', () => {
     assertEquals(
         appItems[1]!.shadowRoot.querySelector<HTMLImageElement>(
                                    '#iconImage')!.src,
-        apps.appList[1]!.iconUrl.url + '?grayscale=true');
+        apps.appList[1]!.iconUrl + '?grayscale=true');
   });
 
   test('add/remove app', async () => {
@@ -445,7 +440,7 @@ suite('AppListTest', () => {
 
     assertEquals(
         appItem.shadowRoot.querySelector<HTMLImageElement>('#iconImage')!.src,
-        apps.appList[1]!.iconUrl.url + '?grayscale=true');
+        apps.appList[1]!.iconUrl + '?grayscale=true');
 
     assertEquals(appItem.ariaLabel, 'Test App 2 (not locally installed)');
 
@@ -474,7 +469,7 @@ suite('AppListTest', () => {
     await callbackRouterRemote.$.flushForTesting();
     assertEquals(
         appItem.shadowRoot.querySelector<HTMLImageElement>('#iconImage')!.src,
-        apps.appList[1]!.iconUrl.url);
+        apps.appList[1]!.iconUrl);
 
     assertEquals(appItem.ariaLabel, 'Test App 2');
 

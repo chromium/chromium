@@ -4,7 +4,6 @@
 
 import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
-import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -95,7 +94,7 @@ suite('manager tests', function() {
                                        fileName: 'file name',
                                        state: State.kComplete,
                                        sinceString: 'Today',
-                                       url: stringToMojoUrl('a'.repeat(1000)),
+                                       url: 'a'.repeat(1000),
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
@@ -142,7 +141,7 @@ suite('manager tests', function() {
                                        fileName: 'file name',
                                        state: State.kComplete,
                                        sinceString: 'Today',
-                                       url: stringToMojoUrl('a'.repeat(1000)),
+                                       url: 'a'.repeat(1000),
                                      })]);
     await callbackRouterRemote.$.flushForTesting();
 
@@ -361,7 +360,7 @@ suite('manager tests', function() {
           dangerType: DangerType.kDangerousFile,
           state: State.kDangerous,
           isDangerous: true,
-          url: stringToMojoUrl('http://evil.com'),
+          url: 'http://evil.com',
           id: 'dangerousdownload2',
         });
         callbackRouterRemote.insertItems(

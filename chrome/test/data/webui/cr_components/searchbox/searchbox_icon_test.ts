@@ -95,7 +95,7 @@ suite('CrComponentsSearchboxIconTest', () => {
           const match = createAutocompleteMatch();
           match.isSearchType = false;
           match.type = HISTORY_URL;
-          match.destinationUrl.url = 'http://www.fake-url-no-favicon.com/';
+          match.destinationUrl = 'http://www.fake-url-no-favicon.com/';
           icon.match = match;
 
           await microtasksFinished();
@@ -109,7 +109,7 @@ suite('CrComponentsSearchboxIconTest', () => {
 
           const faviconImageUrl = new URL(faviconImage.getAttribute('src')!);
           assertFaviconUrl(
-              faviconImageUrl, match.destinationUrl.url,
+              faviconImageUrl, match.destinationUrl,
               /* scaleFactor= */ 1, isTopChromeSearchbox);
 
           const srcset = faviconImage.getAttribute('srcset');
@@ -122,7 +122,7 @@ suite('CrComponentsSearchboxIconTest', () => {
             assertTrue(!!src);
             assertTrue(!!scaleFactor);
             assertFaviconUrl(
-                new URL(src), match.destinationUrl.url,
+                new URL(src), match.destinationUrl,
                 /* scaleFactor= */ i + 1, isTopChromeSearchbox);
             assertEquals(scaleFactor, `${i + 1}x`);
           }
@@ -133,7 +133,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     const match = createAutocompleteMatch();
     match.isSearchType = false;
     match.type = HISTORY_URL;
-    match.destinationUrl.url = 'http://www.example.com/';
+    match.destinationUrl = 'http://www.example.com/';
     match.iconPath = 'globe.svg';
     icon.match = match;
 
@@ -150,7 +150,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     const src = faviconImage.getAttribute('src');
     assertTrue(!!src);
     assertFaviconUrl(
-        new URL(src), match.destinationUrl.url, /* scaleFactor= */ 1,
+        new URL(src), match.destinationUrl, /* scaleFactor= */ 1,
         /* isTopChromeSearchbox= */ false);
 
     assertTrue(isVisible(vectorIcon));
@@ -168,7 +168,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     const match = createAutocompleteMatch();
     match.isSearchType = false;
     match.type = HISTORY_URL;
-    match.destinationUrl.url = 'http://www.example.com/';
+    match.destinationUrl = 'http://www.example.com/';
     match.iconPath = 'globe.svg';
     icon.match = match;
 
@@ -185,7 +185,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     const src = faviconImage.getAttribute('src');
     assertTrue(!!src);
     assertFaviconUrl(
-        new URL(src), match.destinationUrl.url, /* scaleFactor= */ 1,
+        new URL(src), match.destinationUrl, /* scaleFactor= */ 1,
         /* isTopChromeSearchbox= */ false);
 
     assertTrue(isVisible(vectorIcon));

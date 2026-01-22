@@ -170,8 +170,7 @@ export class HistoryClustersAppElement extends CrLitElement {
     e.preventDefault();
     const historyEmbeddingsItem = e.detail;
     BrowserProxyImpl.getInstance().handler.removeVisitByUrlAndTime(
-        {url: historyEmbeddingsItem.url.url},
-        historyEmbeddingsItem.lastUrlVisitTimestamp);
+        historyEmbeddingsItem.url, historyEmbeddingsItem.lastUrlVisitTimestamp);
   }
 
   /**

@@ -37,7 +37,7 @@ ${this.filteredLogEntries_.map((item, index) => html`
       </div>
       <div class="timestamp">${this.formatTime_(item.startTime)}</div>
     </div>
-    <div class="log-entry-row log-url">${item.formUrl.url}</div>
+    <div class="log-entry-row log-url">${item.formUrl}</div>
   </div>
 `)}`;
   // clang-format on

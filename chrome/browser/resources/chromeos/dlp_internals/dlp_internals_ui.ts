@@ -130,7 +130,7 @@ class DlpInternalsUi extends PolymerElement {
     if (source.url === null) {
       this.clipboardSourceUrl_ = 'undefined';
     } else {
-      this.clipboardSourceUrl_ = source.url.url;
+      this.clipboardSourceUrl_ = source.url;
     }
   }
 

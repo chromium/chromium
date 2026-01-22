@@ -61,7 +61,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.onTabClick_}">
-            <cr-composebox-tab-favicon .url="${tab.url.url}">
+            <cr-composebox-tab-favicon .url="${tab.url}">
             </cr-composebox-tab-favicon>
             <span class="tab-title">${tab.title}</span>
             ${this.enableMultiTabSelection_ ? html`

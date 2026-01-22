@@ -136,7 +136,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'submitQuery',
     ]);
 
-    this.url_ = {url};
+    this.url_ = url;
     this.page_ = page;
   }
 

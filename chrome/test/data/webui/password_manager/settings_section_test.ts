@@ -54,10 +54,10 @@ function createActorLoginPermission(
     domainInfo: {
       humanReadableName: domainName,
       signonRealm: `https://${domainName}`,
-      url: {url: `https://${domainName}`},
+      url: `https://${domainName}`,
     },
     username,
-    faviconUrl: {url: `https://${domainName}/favicon.ico`},
+    faviconUrl: `https://${domainName}/favicon.ico`,
   };
 }
 

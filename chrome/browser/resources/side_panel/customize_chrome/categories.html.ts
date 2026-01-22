@@ -62,7 +62,7 @@ export function getHtml(this: CategoriesElement) {
             ?checked="${this.isCollectionSelected_(item.id)}">
           <div class="image-container">
             <img is="cr-auto-img" data-index="${index}"
-                auto-src="${item.previewImageUrl.url}"
+                auto-src="${item.previewImageUrl}"
                 draggable="false"
                 @load="${this.onPreviewImageLoad_}"
                 @error="${this.onPreviewImageError_}">

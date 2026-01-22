@@ -27,7 +27,6 @@ copy("copy_for_tsc") {
     "$root_gen_dir/ash/webui/system_apps/public/js/message_pipe.js",
     "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/index.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/local_search_service/public/mojom/types.mojom-webui.ts",
-    "//ui/webui/resources/js/mojo_type_util.ts",
     "browser_proxy.ts",
     "message_types.ts",
     "receiver.ts",

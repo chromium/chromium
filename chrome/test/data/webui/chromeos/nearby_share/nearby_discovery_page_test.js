@@ -233,9 +233,7 @@ suite('DiscoveryPageTest', function() {
           (nextId++).toString(16).padStart(16, '0').toUpperCase(),
       name,
       type: ShareTargetType.kPhone,
-      imageUrl: {
-        url: 'testImageURL',
-      },
+      imageUrl: 'testImageURL',
       payloadPreview: {
         description: '',
         fileCount: 0,

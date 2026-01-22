@@ -68,7 +68,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     if (!this.file?.url) {
       return null;
     }
-    const link = new URL(this.file.url.url);
+    const link = new URL(this.file.url);
     return (link.host + link.pathname).replace(/\/$/, '');
   }
 }

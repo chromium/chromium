@@ -17,19 +17,19 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
   thumbnails: SeaPenThumbnail[] = [
     {
       id: 1,
-      image: {url: 'https://sea-pen-images.googleusercontent.com/1'},
+      image: 'https://sea-pen-images.googleusercontent.com/1',
     },
     {
       id: 2,
-      image: {url: 'https://sea-pen-images.googleusercontent.com/2'},
+      image: 'https://sea-pen-images.googleusercontent.com/2',
     },
     {
       id: 3,
-      image: {url: 'https://sea-pen-images.googleusercontent.com/3'},
+      image: 'https://sea-pen-images.googleusercontent.com/3',
     },
     {
       id: 4,
-      image: {url: 'https://sea-pen-images.googleusercontent.com/4'},
+      image: 'https://sea-pen-images.googleusercontent.com/4',
     },
   ];
 
@@ -77,15 +77,15 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   recentImageData: Record<string, RecentSeaPenThumbnailData|null> = {
     111: {
-      url: {url: 'data:image/jpeg;base64,image111data'},
+      url: 'data:image/jpeg;base64,image111data',
       imageInfo: null,
     },
     222: {
-      url: {url: 'data:image/jpeg;base64,image222data'},
+      url: 'data:image/jpeg;base64,image222data',
       imageInfo: this.recentImageInfo2,
     },
     333: {
-      url: {url: 'data:image/jpeg;base64,image333data'},
+      url: 'data:image/jpeg;base64,image333data',
       imageInfo: this.recentImageInfo3,
     },
   };

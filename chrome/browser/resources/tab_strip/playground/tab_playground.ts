@@ -120,7 +120,7 @@ export class TabElement extends CustomElement {
     if (tab.networkState === NetworkState.kWaiting) {
       this.faviconEl_.style.backgroundImage = 'none';
     } else if (tab.favicon) {
-      this.faviconEl_.style.backgroundImage = `url(${tab.favicon.dataUrl.url})`;
+      this.faviconEl_.style.backgroundImage = `url(${tab.favicon.dataUrl})`;
     } else {
       this.faviconEl_.style.backgroundImage = getFavicon('');
     }

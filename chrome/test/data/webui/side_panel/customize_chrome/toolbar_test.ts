@@ -41,7 +41,7 @@ suite('CustomizerToolbarTest', () => {
             pinned: true,
             hasEnterpriseControlledPinnedState: false,
             category: CategoryId.kNavigation,
-            iconUrl: {url: 'https://example.com/foo_1.png'},
+            iconUrl: 'https://example.com/foo_1.png',
           },
           {
             id: ActionId.kShowPasswordManager,
@@ -49,7 +49,7 @@ suite('CustomizerToolbarTest', () => {
             pinned: false,
             hasEnterpriseControlledPinnedState: false,
             category: CategoryId.kYourChrome,
-            iconUrl: {url: 'https://example.com/foo_1.png'},
+            iconUrl: 'https://example.com/foo_1.png',
           },
         ],
         [

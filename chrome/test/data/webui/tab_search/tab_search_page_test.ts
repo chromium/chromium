@@ -222,7 +222,7 @@ suite('TabSearchAppTest', () => {
   test('Click on tab item triggers actions', async () => {
     const tabData = createTab({
       title: 'Google',
-      url: {url: 'https://www.google.com'},
+      url: 'https://www.google.com',
       lastActiveTimeTicks: {internalValue: BigInt(4)},
     });
     await setupTest(createProfileData({
@@ -251,7 +251,7 @@ suite('TabSearchAppTest', () => {
     const tabData: RecentlyClosedTab = {
       tabId: 100,
       title: 'PayPal',
-      url: {url: 'https://www.paypal.com'},
+      url: 'https://www.paypal.com',
       lastActiveElapsedText: '',
       lastActiveTime: {internalValue: BigInt(11)},
       groupId: null,
@@ -264,7 +264,7 @@ suite('TabSearchAppTest', () => {
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: [createTab({
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
           lastActiveTimeTicks: {internalValue: BigInt(4)},
         })],
       }],
@@ -301,7 +301,7 @@ suite('TabSearchAppTest', () => {
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: [createTab({
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
           lastActiveTimeTicks: {internalValue: BigInt(4)},
         })],
       }],
@@ -455,7 +455,7 @@ suite('TabSearchAppTest', () => {
         tabSearchPage.$.tabsList.querySelector<TabSearchItemElement>(
             'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
-    assertEquals('https://www.google.com', tabSearchItem.data.tab.url.url);
+    assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
     const updatedTab: Tab = createTab({
       lastActiveTimeTicks: {internalValue: BigInt(5)},
     });
@@ -471,7 +471,7 @@ suite('TabSearchAppTest', () => {
     tabSearchItem =
         tabSearchPage.$.tabsList.querySelector('tab-search-item[id="1"]')!;
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
-    assertEquals(updatedTab.url.url, tabSearchItem.data.tab.url.url);
+    assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('www.example.com', tabSearchItem.data.hostname);
   });
 
@@ -541,7 +541,7 @@ suite('TabSearchAppTest', () => {
         groupId: null,
         tabId: 3,
         title: `SampleTab`,
-        url: {url: 'https://www.sampletab.com'},
+        url: 'https://www.sampletab.com',
         lastActiveTime: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',
       }],
@@ -673,14 +673,14 @@ suite('TabSearchAppTest', () => {
         index: 0,
         tabId: 1,
         title: 'Google',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
       }),
       createTab({
         index: 1,
         tabId: 2,
         title: 'Bing',
-        url: {url: 'https://www.bing.com'},
+        url: 'https://www.bing.com',
         lastActiveTimeTicks: {internalValue: BigInt(5)},
         active: true,
         visible: true,
@@ -689,7 +689,7 @@ suite('TabSearchAppTest', () => {
         index: 2,
         tabId: 3,
         title: 'Gmail',
-        url: {url: 'https://www.gmail.com'},
+        url: 'https://www.gmail.com',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
         active: false,
         visible: true,
@@ -698,7 +698,7 @@ suite('TabSearchAppTest', () => {
         index: 3,
         tabId: 4,
         title: 'Yahoo',
-        url: {url: 'https://www.yahoo.com'},
+        url: 'https://www.yahoo.com',
         lastActiveTimeTicks: {internalValue: BigInt(3)},
       }),
     ];
@@ -721,7 +721,7 @@ suite('TabSearchAppTest', () => {
       createTab({
         groupId: token,
         title: 'Google',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
       }),
     ];
@@ -854,7 +854,7 @@ suite('TabSearchAppTest', () => {
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: [createTab({
           title: 'My file',
-          url: {url: 'file:///home'},
+          url: 'file:///home',
           lastActiveTimeTicks: {internalValue: BigInt(4)},
         })],
       }],
@@ -873,7 +873,7 @@ suite('TabSearchAppTest', () => {
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: [createTab({
           title: 'My blob',
-          url: {url: 'blob:null/foo'},
+          url: 'blob:null/foo',
           lastActiveTimeTicks: {internalValue: BigInt(4)},
         })],
       }],

@@ -64,7 +64,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         && this.accountInfo_ ? html`
         <div class="profile-row">
           <img id="profile-icon" class="profile-icon"
-              src="${this.accountInfo_.accountImageSrc.url}">
+              src="${this.accountInfo_.accountImageSrc}">
           <div class="account-info-container">
             <div id="account-name" class="account-name">
               ${this.accountInfo_.name}</div>
@@ -79,7 +79,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
         <div class="image-container">
           <img class="sync-history-promo-avatar-illustration" alt="">
           <img id="sign-in-pending-avatar" class="avatar"
-              src="${this.accountInfo_.accountImageSrc.url}" alt="">
+              src="${this.accountInfo_.accountImageSrc}" alt="">
         </div>
         <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
 
@@ -103,7 +103,7 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
           <div class="image-container">
             <img class="sync-history-promo-avatar-illustration" alt="">
             <img id="signed-in-avatar" class="avatar"
-                src="${this.accountInfo_.accountImageSrc.url}" alt="">
+                src="${this.accountInfo_.accountImageSrc}" alt="">
           </div>
           <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
           <div id="signed-in-sync-history-promo-desc"

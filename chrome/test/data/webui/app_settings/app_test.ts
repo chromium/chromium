@@ -47,7 +47,7 @@ suite('AppSettingsAppTest', () => {
         isManaged: false,
         userVisibleTypes: 'TXT',
         userVisibleTypesLabel: 'Supported type: TXT',
-        learnMoreUrl: {url: 'https://google.com/'},
+        learnMoreUrl: 'https://google.com/',
       },
       installSource: InstallSource.kUnknown,
       appSize: '',

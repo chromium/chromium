@@ -80,8 +80,7 @@ export function hasAnyDetailedBatteryInfo(device: BluetoothDeviceProperties): bo
  * Returns true if the device contains the default image URL.
  */
 export function hasDefaultImage(device: BluetoothDeviceProperties): boolean {
-  return !!device && !!device.imageInfo && !!device.imageInfo.defaultImageUrl &&
-      !!device.imageInfo.defaultImageUrl.url;
+  return !!device && !!device.imageInfo && !!device.imageInfo.defaultImageUrl;
 }
 
 /**
@@ -102,9 +101,6 @@ export function hasTrueWirelessImages(device: BluetoothDeviceProperties): boolea
   const leftBudImageUrl = trueWirelessImages.leftBudImageUrl;
   const rightBudImageUrl = trueWirelessImages.rightBudImageUrl;
   const caseImageUrl = trueWirelessImages.caseImageUrl;
-  if (!leftBudImageUrl || !rightBudImageUrl || !caseImageUrl) {
-    return false;
-  }
 
-  return !!leftBudImageUrl.url && !!rightBudImageUrl.url && !!caseImageUrl.url;
+  return !!leftBudImageUrl && !!rightBudImageUrl && !!caseImageUrl;
 }

@@ -38,8 +38,7 @@ suite('DeclutterPageTest', () => {
   function createStaleTabs(count: number): Tab[] {
     const tabList: Tab[] = [];
     for (let i = 0; i < count; i++) {
-      tabList.push(
-          createTab({title: 'Tab ' + i, url: {url: 'https://tab.com/'}}));
+      tabList.push(createTab({title: 'Tab ' + i, url: 'https://tab.com/'}));
     }
     return tabList;
   }
@@ -51,7 +50,7 @@ suite('DeclutterPageTest', () => {
       const url = 'https://tab.com/' + i;
       const tabList: Tab[] = [];
       for (let j = 0; j < duplicateCount; j++) {
-        tabList.push(createTab({title: 'Tab ' + j, url: {url: url}}));
+        tabList.push(createTab({title: 'Tab ' + j, url: url}));
       }
       tabMap[url] = tabList;
     }

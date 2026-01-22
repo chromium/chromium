@@ -176,7 +176,7 @@ suite('WallpaperCollectionsElementTest', function() {
     assertTrue(!!localTile, 'local tile is present');
 
     assertDeepEquals(
-        [{url: 'chrome://personalization/images/no_images.svg'}], localTile.src,
+        ['chrome://personalization/images/no_images.svg'], localTile.src,
         'no local images present');
 
     assertEquals(
@@ -195,7 +195,7 @@ suite('WallpaperCollectionsElementTest', function() {
   test('displays 1 image when default thumbnail exists', async () => {
     personalizationStore.data.wallpaper.local.images = [kDefaultImageSymbol];
     personalizationStore.data.wallpaper.local.data = {
-      [kDefaultImageSymbol]: {url: 'data:image/png;base64,qqqq'},
+      [kDefaultImageSymbol]: 'data:image/png;base64,qqqq',
     };
 
     wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
@@ -208,7 +208,7 @@ suite('WallpaperCollectionsElementTest', function() {
     assertTrue(!!localTile, 'local tile is present');
 
     assertDeepEquals(
-        [{url: 'data:image/png;base64,qqqq'}], localTile.src,
+        ['data:image/png;base64,qqqq'], localTile.src,
         'default image thumbnail present');
   });
 
@@ -216,9 +216,9 @@ suite('WallpaperCollectionsElementTest', function() {
     personalizationStore.data.wallpaper.local.images =
         [kDefaultImageSymbol, {path: '/asdf'}, {path: '/qwer'}];
     personalizationStore.data.wallpaper.local.data = {
-      [kDefaultImageSymbol]: {url: 'data:image/png;base64,qqqq'},
-      '/asdf': {url: 'data:image/png;base64,asdf'},
-      '/qwer': {url: 'data:image/png;base64,qwer'},
+      [kDefaultImageSymbol]: 'data:image/png;base64,qqqq',
+      '/asdf': 'data:image/png;base64,asdf',
+      '/qwer': 'data:image/png;base64,qwer',
     };
     personalizationStore.data.wallpaper.loading.local.data = {
       [kDefaultImageSymbol]: false,
@@ -237,9 +237,9 @@ suite('WallpaperCollectionsElementTest', function() {
 
     assertDeepEquals(
         [
-          {url: 'data:image/png;base64,qqqq'},
-          {url: 'data:image/png;base64,asdf'},
-          {url: 'data:image/png;base64,qwer'},
+          'data:image/png;base64,qqqq',
+          'data:image/png;base64,asdf',
+          'data:image/png;base64,qwer',
         ],
         localTile.src, 'all three images are displayed');
   });
@@ -295,13 +295,13 @@ suite('WallpaperCollectionsElementTest', function() {
         id: 'asdf',
         name: 'asdf name',
         descriptionContent: 'asdf description',
-        previews: [{url: createSvgDataUrl('asdf')}],
+        previews: [createSvgDataUrl('asdf')],
       },
       {
         id: 'qwerty',
         name: 'qwerty name',
         descriptionContent: '',
-        previews: [{url: createSvgDataUrl('qwerty')}],
+        previews: [createSvgDataUrl('qwerty')],
       },
     ]);
     personalizationStore.data.wallpaper.backdrop.collections =
@@ -355,9 +355,7 @@ suite('WallpaperCollectionsElementTest', function() {
       // Local tile loads.
       personalizationStore.data.wallpaper.local.images = [kDefaultImageSymbol];
       personalizationStore.data.wallpaper.local.data = {
-        [kDefaultImageSymbol]: {
-          url: createSvgDataUrl(kDefaultImageSymbol.toString()),
-        },
+        [kDefaultImageSymbol]: createSvgDataUrl(kDefaultImageSymbol.toString()),
       };
       personalizationStore.data.wallpaper.loading.local.images = false;
       personalizationStore.data.wallpaper.loading.local
@@ -428,7 +426,7 @@ suite('WallpaperCollectionsElementTest', function() {
                                    id: `generated_collection_${i}`,
                                    name: `Generated Collection ${i}`,
                                    descriptionContent: '',
-                                   previews: [{url: createSvgDataUrl(`${i}`)}],
+                                   previews: [createSvgDataUrl(`${i}`)],
                                  }));
     wallpaperProvider.setCollections([
       ...wallpaperProvider.collections!,

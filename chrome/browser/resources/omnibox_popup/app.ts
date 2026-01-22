@@ -323,7 +323,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     // so strip both input and url from the recent tab chip.
     return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
         (input?.length === 0 ||
-         this.stripUrl_(input) === this.stripUrl_(recentTabForChip?.url.url));
+         this.stripUrl_(input) === this.stripUrl_(recentTabForChip?.url));
   }
 
   private stripUrl_(url: string|undefined): string {

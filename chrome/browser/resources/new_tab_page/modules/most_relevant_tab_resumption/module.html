@@ -11,7 +11,7 @@
 </ntp-module-header>
 <div id="urlVisits">
   ${this.getVisibleUrlVisits_().map((item, index) => html`
-    <a class="url-visit" href="${item.url.url}"
+    <a class="url-visit" href="${item.url}"
         @click="${this.onUrlVisitClick_}" data-index="${index}"
         title="${item.title}">
       <div id="hoverLayer"></div>

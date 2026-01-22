@@ -92,7 +92,7 @@ suite('TopToolbarTest', () => {
     assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
 
     topToolbar.attachedTabs =
-        [{tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}}];
+        [{tabId: 1, title: 'Tab 1', url: 'https://example.com'}];
     await microtasksFinished();
 
     // After attaching a tab, the sources button should be visible and contain
@@ -102,7 +102,7 @@ suite('TopToolbarTest', () => {
   });
 
   test('handles sources menu interactions', async () => {
-    const tab = {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com'}};
+    const tab = {tabId: 1, title: 'Tab 1', url: 'https://example.com'};
     topToolbar.attachedTabs = [tab];
     await microtasksFinished();
 
@@ -141,7 +141,7 @@ suite('TopToolbarTest', () => {
   test('handles file sources menu interactions', async () => {
     const file = {
       name: 'Sample Document',
-      url: {url: 'https://example/sample.pdf'},
+      url: 'https://example/sample.pdf',
     };
     topToolbar.attachedFiles = [file];
     await microtasksFinished();
@@ -246,9 +246,9 @@ suite('TopToolbarTest', () => {
     assertTrue(!!sourcesButton);
 
     topToolbar.attachedTabs = [
-      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
-      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
-      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
+      {tabId: 1, title: 'Tab 1', url: 'https://example.com/1'},
+      {tabId: 2, title: 'Tab 2', url: 'https://example.com/2'},
+      {tabId: 3, title: 'Tab 3', url: 'https://example.com/3'},
     ];
     await microtasksFinished();
 
@@ -265,10 +265,10 @@ suite('TopToolbarTest', () => {
     assertTrue(!!sourcesButton);
 
     topToolbar.attachedTabs = [
-      {tabId: 1, title: 'Tab 1', url: {url: 'https://example.com/1'}},
-      {tabId: 2, title: 'Tab 2', url: {url: 'https://example.com/2'}},
-      {tabId: 3, title: 'Tab 3', url: {url: 'https://example.com/3'}},
-      {tabId: 4, title: 'Tab 4', url: {url: 'https://example.com/4'}},
+      {tabId: 1, title: 'Tab 1', url: 'https://example.com/1'},
+      {tabId: 2, title: 'Tab 2', url: 'https://example.com/2'},
+      {tabId: 3, title: 'Tab 3', url: 'https://example.com/3'},
+      {tabId: 4, title: 'Tab 4', url: 'https://example.com/4'},
     ];
     await microtasksFinished();
 

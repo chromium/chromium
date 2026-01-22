@@ -18,7 +18,7 @@ suite('NewTabPageDoodleShareDialogFocusTest', () => {
 
   test('clicking copy copies URL', async () => {
     // Arrange.
-    doodleShareDialog.url = {url: 'https://bar.com'};
+    doodleShareDialog.url = 'https://bar.com';
 
     // Act.
     doodleShareDialog.$.copyButton.click();

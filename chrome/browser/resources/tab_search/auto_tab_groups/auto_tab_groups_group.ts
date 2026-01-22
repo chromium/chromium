@@ -125,7 +125,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     return this.tabs.map(
         tab => new TabData(
             tab, TabItemType.OPEN_TAB,
-            new URL(normalizeURL(tab.url.url)).hostname));
+            new URL(normalizeURL(tab.url)).hostname));
   }
 
   protected getTabIndex_(index: number): number {

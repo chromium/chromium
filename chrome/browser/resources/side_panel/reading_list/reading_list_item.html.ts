@@ -14,7 +14,7 @@ export function getHtml(this: ReadingListItemElement) {
     description="${this.data.displayUrl}"
     reverse-elide-description
     description-meta="${this.data.displayTimeSinceUpdate}"
-    url="${this.data.url.url}">
+    url="${this.data.url}">
   <cr-icon-button slot="suffix" id="updateStatusButton" disable-ripple
       aria-label="${this.getUpdateStatusButtonTooltip_(
           '$i18n{tooltipMarkAsUnread}', '$i18n{tooltipMarkAsRead}')}"

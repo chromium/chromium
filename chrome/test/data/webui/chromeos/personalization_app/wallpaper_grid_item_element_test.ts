@@ -5,7 +5,6 @@
 import 'chrome://personalization/strings.m.js';
 
 import {WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -48,7 +47,7 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('displays single image', async () => {
-    const src: Url = {url: createSvgDataUrl('svg-test')};
+    const src = createSvgDataUrl('svg-test');
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItemElement, {src});
@@ -67,7 +66,7 @@ suite('WallpaperGridItemElementTest', function() {
 
     // Verify state. Note that |img| is shown as |imageSrc| has already loaded.
     assertEquals(
-        src.url, img?.getAttribute('auto-src'), 'auto-src set to correct url');
+        src, img?.getAttribute('auto-src'), 'auto-src set to correct url');
     assertEquals(
         'true', img?.getAttribute('aria-hidden'), 'img is always aria-hidden');
     assertEquals(
@@ -78,9 +77,9 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('forwards is-google-photos argument', async () => {
-    const src: Url[] = [
-      {url: createSvgDataUrl('0')},
-      {url: createSvgDataUrl('1')},
+    const src: string[] = [
+      createSvgDataUrl('0'),
+      createSvgDataUrl('1'),
     ];
 
     wallpaperGridItemElement = initElement(WallpaperGridItemElement, {src});
@@ -107,7 +106,7 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('updates to new image', async () => {
-    const src: Url = {url: createSvgDataUrl('svg-test')};
+    const src = createSvgDataUrl('svg-test');
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItemElement, {src});
@@ -122,7 +121,7 @@ suite('WallpaperGridItemElementTest', function() {
     const img = images[0];
 
     // Update state. Note that |img| is hidden as |imageSrc| hasn't yet loaded.
-    const newSrc: Url = {url: src.url.replace('red', 'blue')};
+    const newSrc = src.replace('red', 'blue');
     wallpaperGridItemElement.src = newSrc;
     assertTrue(
         wallpaperGridItemElement.hasAttribute('placeholder'),
@@ -133,17 +132,17 @@ suite('WallpaperGridItemElementTest', function() {
     // dom-repeat takes another render to finalize setting new url.
     await waitAfterNextRender(
         wallpaperGridItemElement.shadowRoot!.querySelector('dom-repeat')!);
-    assertEquals(img?.getAttribute('auto-src'), newSrc.url, 'new url is set');
+    assertEquals(img?.getAttribute('auto-src'), newSrc, 'new url is set');
   });
 
   test('does not set placeholder if new image src is identical', async () => {
-    const src: Url = {url: createSvgDataUrl('svg-test')};
+    const src = createSvgDataUrl('svg-test');
     wallpaperGridItemElement = initElement(WallpaperGridItemElement, {src});
     assertTrue(wallpaperGridItemElement.hasAttribute('placeholder'));
     await waitAfterNextRender(wallpaperGridItemElement);
     assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
 
-    const newSrc: Url = {url: src.url};
+    const newSrc = src;
     wallpaperGridItemElement.src = newSrc;
     assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
     await waitAfterNextRender(wallpaperGridItemElement);
@@ -151,10 +150,10 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('displays first two images', async () => {
-    const src: Url[] = [
-      {url: createSvgDataUrl('svg-0')},
-      {url: createSvgDataUrl('svg-1')},
-      {url: createSvgDataUrl('not-shown')},
+    const src: string[] = [
+      createSvgDataUrl('svg-0'),
+      createSvgDataUrl('svg-1'),
+      createSvgDataUrl('not-shown'),
     ];
 
     // Initialize |wallpaperGridItemElement|.
@@ -166,14 +165,14 @@ suite('WallpaperGridItemElementTest', function() {
 
     images.forEach((img, index) => {
       assertEquals(
-          src[index]?.url, img.getAttribute('auto-src'),
+          src[index], img.getAttribute('auto-src'),
           `url matches at index ${index}`);
     });
   });
 
   test('displays primary text', async () => {
     const primaryText = 'foo';
-    const src = {url: createSvgDataUrl('0')};
+    const src = createSvgDataUrl('0');
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement =
@@ -193,7 +192,7 @@ suite('WallpaperGridItemElementTest', function() {
 
   test('displays secondary text', async () => {
     const secondaryText = 'foo';
-    const src = {url: createSvgDataUrl('0')};
+    const src = createSvgDataUrl('0');
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement =
@@ -239,7 +238,7 @@ suite('WallpaperGridItemElementTest', function() {
         'placeholder attribute is set');
 
     // Supply a src to make the image load.
-    wallpaperGridItemElement.src = {url: createSvgDataUrl('test')};
+    wallpaperGridItemElement.src = createSvgDataUrl('test');
     await waitAfterNextRender(wallpaperGridItemElement);
 
     assertEquals(
@@ -285,8 +284,7 @@ suite('WallpaperGridItemElementTest', function() {
   });
 
   test('collage shows up to four images', async () => {
-    const src: Url[] =
-        [0, 1, 2, 3, 4, 5].map(i => ({url: createSvgDataUrl(`${i}`)}));
+    const src: string[] = [0, 1, 2, 3, 4, 5].map(i => createSvgDataUrl(`${i}`));
     wallpaperGridItemElement = initElement(WallpaperGridItemElement, {src});
     await waitAfterNextRender(wallpaperGridItemElement);
 
@@ -301,15 +299,14 @@ suite('WallpaperGridItemElementTest', function() {
         wallpaperGridItemElement.shadowRoot!.querySelectorAll('img'));
     assertEquals(4, images.length, 'collage shows 4 images');
     assertDeepEquals(
-        src.slice(0, 4).map(({url}) => url), images.map(img => img.src),
+        src.slice(0, 4), images.map(img => img.src),
         'first four image urls are shown');
   });
 
   test('shows an info icon for infoText', async () => {
-
     wallpaperGridItemElement = initElement(
         WallpaperGridItemElement,
-        {infoText: 'some text', src: {url: createSvgDataUrl('test')}});
+        {infoText: 'some text', src: createSvgDataUrl('test')});
     await waitAfterNextRender(wallpaperGridItemElement);
 
     assertEquals(
@@ -321,7 +318,7 @@ suite('WallpaperGridItemElementTest', function() {
   test('no info icon if infoText is empty string', async () => {
     wallpaperGridItemElement = initElement(
         WallpaperGridItemElement,
-        {infoText: '', src: {url: createSvgDataUrl('test')}});
+        {infoText: '', src: createSvgDataUrl('test')});
     await waitAfterNextRender(wallpaperGridItemElement);
 
     assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
@@ -350,7 +347,7 @@ suite('WallpaperGridItemElementTest', function() {
         null, wallpaperGridItemElement.shadowRoot!.getElementById('infoIcon'),
         'no info text shown if placeholder');
 
-    wallpaperGridItemElement.src = {url: createSvgDataUrl('testing')};
+    wallpaperGridItemElement.src = createSvgDataUrl('testing');
     await waitAfterNextRender(wallpaperGridItemElement);
 
     assertEquals(

@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 
 export function getHtml(this: ContextualActionMenuElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}">
@@ -20,7 +21,7 @@ export function getHtml(this: ContextualActionMenuElement) {
               ?disabled="${this.isTabDisabled_(tab)}"
               @pointerenter="${this.onTabPointerenter_}"
               @click="${this.onTabClick_}">
-            <cr-composebox-tab-favicon .url="${tab.url.url}">
+            <cr-composebox-tab-favicon .url="${tab.url}">
             </cr-composebox-tab-favicon>
             <span class="tab-title">${tab.title}</span>
             ${this.enableMultiTabSelection_ ? html`
@@ -54,4 +55,5 @@ export function getHtml(this: ContextualActionMenuElement) {
     </button>`: ''}
   </cr-action-menu>
 <!--_html_template_end_-->`;
+// clang-format on
 }

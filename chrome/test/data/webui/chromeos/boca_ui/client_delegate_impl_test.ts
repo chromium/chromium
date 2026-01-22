@@ -19,21 +19,21 @@ class MockRemoteHandler extends PageHandlerRemote {
             {
               id: 1,
               title: 'title1',
-              url: {url: 'http://foo1'},
-              favicon: {url: 'dataurl1'},
+              url: 'http://foo1',
+              favicon: 'dataurl1',
             },
             {
               title: 'title2',
-              url: {url: 'http://foo2'},
-              favicon: {url: 'dataurl2'},
+              url: 'http://foo2',
+              favicon: 'dataurl2',
             },
           ],
         },
         {
           tabList: [{
             title: 'title3',
-            url: {url: 'http://foo3'},
-            favicon: {url: 'dataurl3'},
+            url: 'http://foo3',
+            favicon: 'dataurl3',
           }],
         },
       ] as Window[],
@@ -52,8 +52,8 @@ class MockRemoteHandler extends PageHandlerRemote {
     id;
     return Promise.resolve({
       students: [
-        {id: '1', name: 'cat', email: 'email1', photoUrl: {url: 'cdn1'}},
-        {id: '2', name: 'dog', email: 'email2', photoUrl: {url: 'cdn2'}},
+        {id: '1', name: 'cat', email: 'email1', photoUrl: 'cdn1'},
+        {id: '2', name: 'dog', email: 'email2', photoUrl: 'cdn2'},
       ],
     });
   }
@@ -64,7 +64,7 @@ class MockRemoteHandler extends PageHandlerRemote {
       assignments: [
         {
           title: 'assignment-title1',
-          url: {url: 'url1'},
+          url: 'url1',
           lastUpdateTime: new Date(1000000),
           materials: [
             {title: 'material-title-1', type: 0},
@@ -74,7 +74,7 @@ class MockRemoteHandler extends PageHandlerRemote {
         },
         {
           title: 'assignment-title2',
-          url: {url: 'url2'},
+          url: 'url2',
           lastUpdateTime: new Date(2000000),
           materials: [
             {title: 'material-title-3', type: 2},
@@ -99,13 +99,13 @@ class MockRemoteHandler extends PageHandlerRemote {
               id: '1',
               name: 'cat',
               email: 'cat@gmail.com',
-              photoUrl: {url: 'cdn1'},
+              photoUrl: 'cdn1',
             },
             {
               id: '2',
               name: 'dog',
               email: 'dog@gmail.com',
-              photoUrl: {url: 'cdn2'},
+              photoUrl: 'cdn2',
             },
           ],
           studentsJoinViaCode: [],
@@ -119,18 +119,18 @@ class MockRemoteHandler extends PageHandlerRemote {
               {
                 tab: {
                   id: null,
-                  url: {url: 'http://google.com/'},
+                  url: 'http://google.com/',
                   title: 'google',
-                  favicon: {url: 'data/image'},
+                  favicon: 'data/image',
                 },
                 navigationType: 0,
               },
               {
                 tab: {
                   id: null,
-                  url: {url: 'http://youtube.com/'},
+                  url: 'http://youtube.com/',
                   title: 'youtube',
-                  favicon: {url: 'data/image'},
+                  favicon: 'data/image',
                 },
                 navigationType: 1,
               },
@@ -159,7 +159,7 @@ class MockRemoteHandler extends PageHandlerRemote {
               id: '0',
               name: 'teacher',
               email: 'teacher@gmail.com',
-              photoUrl: {url: 'cdn0'},
+              photoUrl: 'cdn0',
             },
             accessCode: 'testCode',
             students: [
@@ -167,20 +167,20 @@ class MockRemoteHandler extends PageHandlerRemote {
                 id: '1',
                 name: 'cat',
                 email: 'cat@gmail.com',
-                photoUrl: {url: 'cdn1'},
+                photoUrl: 'cdn1',
               },
               {
                 id: '2',
                 name: 'dog',
                 email: 'dog@gmail.com',
-                photoUrl: {url: 'cdn2'},
+                photoUrl: 'cdn2',
               },
             ],
             studentsJoinViaCode: [{
               id: '3',
               name: 'cat1',
               email: 'cat1@gmail.com',
-              photoUrl: {url: 'cdn3'},
+              photoUrl: 'cdn3',
             }],
             onTaskConfig: {
               isLocked: true,
@@ -189,18 +189,18 @@ class MockRemoteHandler extends PageHandlerRemote {
                 {
                   tab: {
                     id: 1,
-                    url: {url: 'http://google.com/'},
+                    url: 'http://google.com/',
                     title: 'google',
-                    favicon: {url: 'data/image'},
+                    favicon: 'data/image',
                   },
                   navigationType: 0,
                 },
                 {
                   tab: {
                     id: null,
-                    url: {url: 'http://youtube.com/'},
+                    url: 'http://youtube.com/',
                     title: 'youtube',
-                    favicon: {url: 'data/image'},
+                    favicon: 'data/image',
                   },
                   navigationType: 1,
                 },
@@ -228,18 +228,18 @@ class MockRemoteHandler extends PageHandlerRemote {
             {
               tab: {
                 id: null,
-                url: {url: 'http://google.com/'},
+                url: 'http://google.com/',
                 title: 'google',
-                favicon: {url: 'data/image'},
+                favicon: 'data/image',
               },
               navigationType: 0,
             },
             {
               tab: {
                 id: null,
-                url: {url: 'http://youtube.com/'},
+                url: 'http://youtube.com/',
                 title: 'youtube',
-                favicon: {url: 'data/image'},
+                favicon: 'data/image',
               },
               navigationType: 1,
             },
@@ -285,13 +285,13 @@ class MockRemoteHandler extends PageHandlerRemote {
             id: '1',
             name: 'cat',
             email: 'cat@gmail.com',
-            photoUrl: {url: 'cdn1'},
+            photoUrl: 'cdn1',
           },
           {
             id: '2',
             name: 'dog',
             email: 'dog@gmail.com',
-            photoUrl: {url: 'cdn2'},
+            photoUrl: 'cdn2',
           },
         ],
         students);
@@ -598,7 +598,7 @@ suite('ClientDelegateTest', function() {
             id: '0',
             name: 'teacher',
             email: 'teacher@gmail.com',
-            photoUrl: {url: 'cdn0'},
+            photoUrl: 'cdn0',
           },
           accessCode: null,
           captionConfig: {

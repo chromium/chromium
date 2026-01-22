@@ -503,7 +503,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.dialogSource_ === TileSource.ENTERPRISE_SHORTCUTS) {
       return false;
     }
-    return (this.tiles_ || []).some(({url: {url}}, index) => {
+    return (this.tiles_ || []).some(({url}, index) => {
       if (index === this.actionMenuTargetIndex_) {
         return false;
       }
@@ -725,7 +725,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     faviconUrl.searchParams.set('size', '24');
     faviconUrl.searchParams.set('scaleFactor', '1x');
     faviconUrl.searchParams.set('showFallbackMonogram', '');
-    faviconUrl.searchParams.set('pageUrl', url.url);
+    faviconUrl.searchParams.set('pageUrl', url);
     return faviconUrl.href;
   }
 
@@ -928,7 +928,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.dialogTitle_ =
         loadTimeData.getString(isReadonly ? 'viewLinkTitle' : 'editLinkTitle');
     this.dialogTileTitle_ = tile.title;
-    this.dialogTileUrl_ = tile.url.url;
+    this.dialogTileUrl_ = tile.url;
     this.dialogTileUrlInvalid_ = false;
     this.$.dialog.showModal();
   }
@@ -952,7 +952,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.$.dialog.close();
       return;
     }
-    const newUrl = {url: normalizeUrl(this.dialogTileUrl_)!.href};
+    const newUrl = normalizeUrl(this.dialogTileUrl_)!.href;
     this.$.dialog.close();
     let newTitle = this.dialogTileTitle_.trim();
     if (newTitle.length === 0) {
@@ -966,7 +966,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
           TileSource.TOP_SITES);
     } else {
       const oldTile = this.tiles_[this.actionMenuTargetIndex_]!;
-      if (oldTile.url.url !== newUrl.url || oldTile.title !== newTitle) {
+      if (oldTile.url !== newUrl || oldTile.title !== newTitle) {
         const {success} = await this.pageHandler_.updateMostVisitedTile(
             oldTile, newUrl, newTitle);
         this.toast_(

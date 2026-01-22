@@ -164,11 +164,11 @@ export function urlToClient(url: Url|null): string|undefined {
   if (url === null) {
     return undefined;
   }
-  return url.url;
+  return url;
 }
 
 export function urlFromClient(url: string): Url {
-  return {url};
+  return url;
 }
 
 export function originToClient(origin: Origin): string;

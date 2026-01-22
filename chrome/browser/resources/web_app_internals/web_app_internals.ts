@@ -137,7 +137,7 @@ async function iwaDevProxyInstall() {
 
   setDevInstallMessageText(`Installing IWA: ${iwaDevProxyInstallUrl.value}...`);
 
-  const location: Url = {url: iwaDevProxyInstallUrl.value};
+  const location: Url = iwaDevProxyInstallUrl.value;
 
   const result: InstallIsolatedWebAppResult =
       (await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location))
@@ -204,7 +204,7 @@ async function iwaDevFetchUpdateManifest() {
   setDevInstallMessageText(
       `Fetching the update manifest at ${iwaDevUpdateManifestUrl.value}...`);
 
-  const updateManifestUrl: Url = {url: iwaDevUpdateManifestUrl.value};
+  const updateManifestUrl: Url = iwaDevUpdateManifestUrl.value;
 
   const result: ParseUpdateManifestFromUrlResult =
       (await webAppInternalsHandler.parseUpdateManifestFromUrl(
@@ -269,8 +269,8 @@ async function iwaDevFetchUpdateManifest() {
     const selectedVersion = select.value;
     iwaDevUpdateManifestDialog.close();
 
-    setDevInstallMessageText(`Installing version ${selectedVersion} from ${
-        updateManifestUrl.url}...`);
+    setDevInstallMessageText(
+        `Installing version ${selectedVersion} from ${updateManifestUrl}...`);
     const selectedVersionEntry: VersionEntry|null =
         versions.find(
             versionEntry => versionEntry.version === selectedVersion) ||
@@ -278,7 +278,7 @@ async function iwaDevFetchUpdateManifest() {
 
     if (!selectedVersionEntry) {
       setDevInstallMessageText(`Installing version ${selectedVersion} from ${
-          updateManifestUrl.url} failed: no such version`);
+          updateManifestUrl} failed: no such version`);
       return;
     }
 
@@ -295,10 +295,10 @@ async function iwaDevFetchUpdateManifest() {
         })).result;
     if (installResult.success) {
       setDevInstallMessageText(`Installing version ${selectedVersion} from ${
-          updateManifestUrl.url}: success!`);
+          updateManifestUrl}: success!`);
     } else {
       setDevInstallMessageText(`Installing version ${selectedVersion} from ${
-          updateManifestUrl.url} failed: ${installResult.error}`);
+          updateManifestUrl} failed: ${installResult.error}`);
     }
 
     refreshDevModeAppList();
@@ -495,7 +495,7 @@ function describeIsolatedWebApp(
   if (updateInfo) {
     const pinnedVersionValue =
         updateInfo.pinnedVersion ? updateInfo.pinnedVersion : '-';
-    updateMsg += ` ${updateInfo.updateManifestUrl.url} ( update_channel: ${
+    updateMsg += ` ${updateInfo.updateManifestUrl} ( update_channel: ${
         updateInfo.updateChannel} | pinned_version: ${
         pinnedVersionValue} | allow_downgrades: ${updateInfo.allowDowngrades})`;
   } else {

@@ -142,7 +142,7 @@ suite('HistoryAppTest', function() {
     historyEmbeddings.dispatchEvent(new CustomEvent('more-from-site-click', {
       detail: {
         title: 'Google',
-        url: {url: 'http://google.com'},
+        url: 'http://google.com',
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
         sourcePassage: 'Google description',
@@ -165,7 +165,7 @@ suite('HistoryAppTest', function() {
     historyEmbeddings.dispatchEvent(new CustomEvent('remove-item-click', {
       detail: {
         title: 'Google',
-        url: {url: 'http://google.com'},
+        url: 'http://google.com',
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
         sourcePassage: 'Google description',

@@ -154,10 +154,6 @@ export class ModuleElement extends ModuleElementBase {
     return this.tabGroups.slice(0, MAX_TAB_GROUPS);
   }
 
-  protected getFaviconUrls_(objects: Array<{url: string}>): string[] {
-    return objects.map(obj => obj.url);
-  }
-
   protected onDisableButtonClick_() {
     this.fire('disable-module', {
       message: this.i18n('modulesTabGroupsDisableToastMessage'),

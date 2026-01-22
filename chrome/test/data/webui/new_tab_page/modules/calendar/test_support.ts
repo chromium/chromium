@@ -21,8 +21,8 @@ export function createAttachments(
     attachments.push(Object.assign(
         {
           title: `Attachment ${i}`,
-          iconUrl: {url: `https://foo.com/attachment${i}`},
-          resourceUrl: {url: `https://foo.com/attachmet${i}`},
+          iconUrl: `https://foo.com/attachment${i}`,
+          resourceUrl: `https://foo.com/attachmet${i}`,
         },
         overrides));
   }
@@ -36,10 +36,10 @@ export function createEvent(
         title: `Test Event ${index}`,
         startTime: {internalValue: 1230000000000n * BigInt(index)},
         endTime: {internalValue: 1230000000000n * BigInt(index)},
-        url: {url: `https://foo.com/${index}`},
+        url: `https://foo.com/${index}`,
         location: `Location ${index}`,
         attachments: createAttachments(3),
-        conferenceUrl: {url: `https://foo.com/conference${index}`},
+        conferenceUrl: `https://foo.com/conference${index}`,
         isAccepted: true,
         hasOtherAttendee: true,
       },

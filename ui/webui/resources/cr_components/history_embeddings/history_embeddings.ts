@@ -280,7 +280,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     if (!this.answerSource_) {
       return undefined;
     }
-    const sourceUrl = new URL(this.answerSource_.url.url);
+    const sourceUrl = new URL(this.answerSource_.url);
     const textDirectives = this.answerSource_.answerData?.answerTextDirectives;
     if (textDirectives && textDirectives.length > 0) {
       // Only the first directive is used for now until there's a way to show
@@ -294,7 +294,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   protected getFavicon_(item: SearchResultItem|undefined): string {
     return getFaviconForPageURL(
-        item?.url.url || '', /*isSyncedUrlForHistoryUi=*/ true);
+        item?.url || '', /*isSyncedUrlForHistoryUi=*/ true);
   }
 
   protected getHeadingText_(): string {

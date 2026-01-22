@@ -23,7 +23,7 @@ function createWindowData() {
         createTab({
           tabId: 3,
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
           visible: true,
         }),
         createTab({
@@ -31,7 +31,7 @@ function createWindowData() {
           index: 1,
           tabId: ACTIVE_TAB_ID,
           title: 'Split View New Tab Page',
-          url: {url: 'chrome://tab-search.top-chrome/split_new_tab_page.html'},
+          url: 'chrome://tab-search.top-chrome/split_new_tab_page.html',
           visible: true,
         }),
         createTab({
@@ -40,21 +40,21 @@ function createWindowData() {
           lastActiveTimeTicks: {internalValue: BigInt(2)},
           tabId: 6,
           title: 'Facebook',
-          url: {url: 'https://www.facebook.com'},
+          url: 'https://www.facebook.com',
         }),
         createTab({
           index: 4,
           lastActiveTimeTicks: {internalValue: BigInt(7)},
           tabId: 7,
           title: 'Expedia',
-          url: {url: 'https://www.expedia.com'},
+          url: 'https://www.expedia.com',
         }),
         createTab({
           index: 5,
           lastActiveTimeTicks: {internalValue: BigInt(8)},
           tabId: 8,
           title: 'Wikipedia',
-          url: {url: 'https://en.wikipedia.org'},
+          url: 'https://en.wikipedia.org',
         }),
       ],
     },
@@ -67,7 +67,7 @@ function createWindowData() {
           active: true,
           tabId: 4,
           title: 'Apple',
-          url: {url: 'https://www.apple.com/'},
+          url: 'https://www.apple.com/',
         }),
       ],
     },
@@ -124,21 +124,21 @@ suite('SplitNewTabPageTest', () => {
           lastActiveTimeTicks: {internalValue: BigInt(10)},
           tabId: 8,
           title: '',
-          url: {url: 'about:blank'},
+          url: 'about:blank',
         }),
         createTab({
           index: 7,
           lastActiveTimeTicks: {internalValue: BigInt(11)},
           tabId: 9,
           title: 'file.jpg',
-          url: {url: 'file://file.jpg'},
+          url: 'file://file.jpg',
         }),
         createTab({
           index: 8,
           lastActiveTimeTicks: {internalValue: BigInt(12)},
           tabId: 10,
           title: 'Data',
-          url: {url: 'blob://data'},
+          url: 'blob://data',
         }),
     );
     testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
@@ -238,7 +238,7 @@ suite('SplitNewTabPageTest', () => {
       index: 6,
       tabId: 12,
       title: 'YouTube',
-      url: {url: 'https://www.youtube.com'},
+      url: 'https://www.youtube.com',
     }));
     testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
       windows: windowData,

@@ -98,7 +98,7 @@ suite('PersonalizationRouterElementTest', function() {
       id: 'aaa',
       isShared: true,
       photoCount: 5,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: 0n},
       title: 'fake album',
     };
@@ -109,7 +109,7 @@ suite('PersonalizationRouterElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     };
     wallpaperProvider.setGooglePhotosSharedAlbums([sharedAlbum]);

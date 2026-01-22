@@ -17,8 +17,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestChromeUrlsBrowserProxy} from './test_chrome_urls_browser_proxy.js';
 
 suite('ChromeUrlsAppTest', function() {
-  const commandUrls: Url[] =
-      [{url: 'chrome://kill/'}, {url: 'chrome://crash/'}];
+  const commandUrls: Url[] = ['chrome://kill/', 'chrome://crash/'];
 
   let app: ChromeUrlsAppElement;
   let browserProxy: TestChromeUrlsBrowserProxy;
@@ -77,9 +76,9 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Fetches and displays URL list', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://chrome-urls/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
+      {url: 'chrome://chrome-urls/', enabled: true, internal: false},
+      {url: 'chrome://settings/', enabled: true, internal: false},
+      {url: 'chrome://bookmarks/', enabled: false, internal: false},
     ];
     await finishSetup(webuiUrls);
 
@@ -94,7 +93,7 @@ suite('ChromeUrlsAppTest', function() {
     for (let i = 0; i < commandItems.length; i++) {
       const item = commandItems[i]!;
       assertFalse(!!item.querySelector('a'));
-      assertEquals(commandUrls[i]!.url, item.textContent + '/');
+      assertEquals(commandUrls[i]!, item.textContent + '/');
     }
 
     assertHeadings(false);
@@ -102,10 +101,10 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Correctly displays internal URLs when disabled', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://chrome-urls/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+      {url: 'chrome://chrome-urls/', enabled: true, internal: false},
+      {url: 'chrome://settings/', enabled: true, internal: false},
+      {url: 'chrome://bookmarks/', enabled: false, internal: false},
+      {url: 'chrome://webui-gallery/', enabled: true, internal: true},
     ];
     await finishSetup(webuiUrls);
 
@@ -130,10 +129,10 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Correctly displays internal URLs when enabled', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://chrome-urls/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+      {url: 'chrome://chrome-urls/', enabled: true, internal: false},
+      {url: 'chrome://settings/', enabled: true, internal: false},
+      {url: 'chrome://bookmarks/', enabled: false, internal: false},
+      {url: 'chrome://webui-gallery/', enabled: true, internal: true},
     ];
     await finishSetup(webuiUrls, /*internalDebuggingUisEnabled=*/ true);
 
@@ -160,9 +159,9 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Toggle debug UIs enabled', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+      {url: 'chrome://settings/', enabled: true, internal: false},
+      {url: 'chrome://bookmarks/', enabled: false, internal: false},
+      {url: 'chrome://webui-gallery/', enabled: true, internal: true},
     ];
     await finishSetup(webuiUrls);
 
@@ -212,7 +211,7 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Enable debug UI redirects', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://webui-gallery/'}, enabled: false, internal: true},
+      {url: 'chrome://webui-gallery/', enabled: false, internal: true},
     ];
     await finishSetup(webuiUrls);
 
@@ -233,7 +232,7 @@ suite('ChromeUrlsAppTest', function() {
 
   test('Enable debug UI bad host', async () => {
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://webui-gallery/'}, enabled: false, internal: true},
+      {url: 'chrome://webui-gallery/', enabled: false, internal: true},
     ];
     await finishSetup(webuiUrls);
 
@@ -265,20 +264,20 @@ suite('ChromeUrlsAppTest', function() {
     window.history.replaceState({}, '', `/#${INTERNAL_DEBUG_PAGES_HASH}`);
     window.dispatchEvent(new CustomEvent('popstate'));
     const webuiUrls: WebuiUrlInfo[] = [
-      {url: {url: 'chrome://settings/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://extensions/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://downloads/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://print/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://history/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://new-tab-page/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://whats-new/'}, enabled: true, internal: false},
-      {url: {url: 'chrome://bookmarks/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://test-1/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://test-2/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://test-3/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://test-4/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://test-5/'}, enabled: false, internal: false},
-      {url: {url: 'chrome://webui-gallery/'}, enabled: true, internal: true},
+      {url: 'chrome://settings/', enabled: true, internal: false},
+      {url: 'chrome://extensions/', enabled: true, internal: false},
+      {url: 'chrome://downloads/', enabled: true, internal: false},
+      {url: 'chrome://print/', enabled: true, internal: false},
+      {url: 'chrome://history/', enabled: true, internal: false},
+      {url: 'chrome://new-tab-page/', enabled: true, internal: false},
+      {url: 'chrome://whats-new/', enabled: true, internal: false},
+      {url: 'chrome://bookmarks/', enabled: false, internal: false},
+      {url: 'chrome://test-1/', enabled: false, internal: false},
+      {url: 'chrome://test-2/', enabled: false, internal: false},
+      {url: 'chrome://test-3/', enabled: false, internal: false},
+      {url: 'chrome://test-4/', enabled: false, internal: false},
+      {url: 'chrome://test-5/', enabled: false, internal: false},
+      {url: 'chrome://webui-gallery/', enabled: true, internal: true},
     ];
     await finishSetup(webuiUrls);
 

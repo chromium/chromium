@@ -106,7 +106,7 @@ export class ScannerFeedbackAppElement extends I18nMixin
   constructor() {
     super();
     FEEDBACK_INFO_PROMISE.then(feedbackInfo => {
-      this.screenshotUrl = feedbackInfo.screenshotUrl?.url ?? '';
+      this.screenshotUrl = feedbackInfo.screenshotUrl ?? '';
     });
   }
 

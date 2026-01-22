@@ -31,7 +31,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
   test('setting title, url shows title, url', async () => {
     // Act.
     doodleShareDialog.title = 'foo';
-    doodleShareDialog.url = {url: 'https://bar.com'};
+    doodleShareDialog.url = 'https://bar.com';
     await microtasksFinished();
 
     // Assert.
@@ -60,7 +60,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
     test(`clicking ${label} opens ${label}`, async () => {
       // Arrange.
       doodleShareDialog.title = 'foo';
-      doodleShareDialog.url = {url: 'https://bar.com'};
+      doodleShareDialog.url = 'https://bar.com';
 
       // Act.
       doodleShareDialog.shadowRoot.querySelector<HTMLElement>(
@@ -75,7 +75,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
   test(`clicking email navigates to email`, async () => {
     // Arrange.
     doodleShareDialog.title = 'foo';
-    doodleShareDialog.url = {url: 'https://bar.com'};
+    doodleShareDialog.url = 'https://bar.com';
 
     // Act.
     doodleShareDialog.$.emailButton.click();

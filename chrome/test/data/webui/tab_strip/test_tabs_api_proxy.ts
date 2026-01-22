@@ -27,7 +27,7 @@ export function createTab(override?: Partial<Tab>): Tab {
         showIcon: false,
         groupId: null,
         title: '',
-        url: {url: 'about:blank'},
+        url: 'about:blank',
       },
       override || {});
 }

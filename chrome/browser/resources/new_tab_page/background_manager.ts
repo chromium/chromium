@@ -91,9 +91,9 @@ export class BackgroundManager {
   setBackgroundImage(image: BackgroundImage) {
     const url =
         new URL('chrome-untrusted://new-tab-page/custom_background_image');
-    url.searchParams.append('url', image.url.url);
+    url.searchParams.append('url', image.url);
     if (image.url2x) {
-      url.searchParams.append('url2x', image.url2x.url);
+      url.searchParams.append('url2x', image.url2x);
     }
     if (image.size) {
       url.searchParams.append('size', image.size);

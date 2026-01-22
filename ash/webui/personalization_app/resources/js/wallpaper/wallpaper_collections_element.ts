@@ -149,7 +149,7 @@ function getGooglePhotosTile(enablementState: GooglePhotosEnablementState):
     id: kGooglePhotosCollectionId,
     name: loadTimeData.getString('googlePhotosLabel'),
     type: TileType.IMAGE_GOOGLE_PHOTOS,
-    preview: [{url: 'chrome://personalization/images/google_photos.svg'}],
+    preview: ['chrome://personalization/images/google_photos.svg'],
   };
 }
 
@@ -194,7 +194,7 @@ function getLocalTile(
       disabled: true,
       id: kLocalCollectionId,
       name: loadTimeData.getString('myImagesLabel'),
-      preview: [{url: 'chrome://personalization/images/no_images.svg'}],
+      preview: ['chrome://personalization/images/no_images.svg'],
       type: TileType.IMAGE_LOCAL,
     };
   }
@@ -240,10 +240,9 @@ function getSeaPenPromptingTile(): SeaPenPromptingTile {
     id: kSeaPenPromptingId,
     name: 'Sea Pen Prompting',
     type: TileType.SEA_PEN_PROMPTING,
-    preview: [{
-      url:
-          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_freeform.jpg',
-    }],
+    preview: [
+      'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_freeform.jpg',
+    ],
   };
 }
 
@@ -253,10 +252,9 @@ function getSeaPenTemplatesTile(): SeaPenTemplatesTile {
     id: kSeaPenId,
     name: 'Sea Pen',
     type: TileType.SEA_PEN_TEMPLATES,
-    preview: [{
-      url:
-          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
-    }],
+    preview: [
+      'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+    ],
   };
 }
 

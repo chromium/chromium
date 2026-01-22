@@ -1,13 +1,13 @@
 <div id="files">
   ${this.files.map((item, index) => html`
-    <a class="file" href="${item.itemUrl.url}" data-index="${index}"
+    <a class="file" href="${item.itemUrl}" data-index="${index}"
         @click="${this.onFileClick_}" title="${item.title}">
       <div id="hover-layer"></div>
       <div class="icon-container">
         <img is="cr-auto-img"
             class="file-icon"
             draggable="false"
-            .autoSrc="${item.iconUrl.url}">
+            .autoSrc="${item.iconUrl}">
       </div>
       <div class="file-info">
         <div class="file-title">${item.title}</div>

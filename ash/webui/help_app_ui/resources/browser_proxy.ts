@@ -48,9 +48,9 @@ function toUrl(url: string|object): Url {
   // TODO(b/279132899): Figure out why `url` is an empty object when it should
   // have been an empty string.
   if (url === '' || typeof (url) !== 'string') {
-    return {url: ''};
+    return '';
   }
-  return {url};
+  return url;
 }
 
 const TITLE_ID = 'title';

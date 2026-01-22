@@ -111,7 +111,7 @@ suite('TabSearchMediaTabsTest', () => {
         index: 0,
         tabId: 1,
         title: 'Meet',
-        url: {url: 'https://meet.google.com/'},
+        url: 'https://meet.google.com/',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
       }),
       createTab({
@@ -121,7 +121,7 @@ suite('TabSearchMediaTabsTest', () => {
         index: 1,
         tabId: 2,
         title: 'Youtube',
-        url: {url: 'https://youtube.com/'},
+        url: 'https://youtube.com/',
         lastActiveTimeTicks: {internalValue: BigInt(3)},
       }),
       createTab({
@@ -130,7 +130,7 @@ suite('TabSearchMediaTabsTest', () => {
         index: 2,
         tabId: 3,
         title: 'Google',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(5)},
       }),
       createTab({
@@ -139,7 +139,7 @@ suite('TabSearchMediaTabsTest', () => {
         index: 3,
         tabId: 4,
         title: 'Example',
-        url: {url: 'https://www.example.com'},
+        url: 'https://www.example.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
       }),
     ];

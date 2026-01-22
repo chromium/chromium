@@ -237,7 +237,7 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   protected getMostRecentTabFaviconUrl_(chip: ActionChip) {
-    return chip.tab ? this.getFaviconUrl_(chip.tab.url.url) : '';
+    return chip.tab ? this.getFaviconUrl_(chip.tab.url) : '';
   }
 
   private onActionChipClick_(
@@ -249,7 +249,7 @@ export class ActionChipsElement extends CrLitElement {
     if (!chip.tab) {
       return '';
     }
-    const url = new URL(chip.tab.url.url);
+    const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
     return `${chip.subtitle} - ${domain}`;
   }
@@ -274,7 +274,7 @@ export class ActionChipsElement extends CrLitElement {
     }
 
     const tabTitle = chip.tab.title;
-    const url = new URL(chip.tab.url.url);
+    const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
 
     if (this.isRecentTabChip_(chip)) {

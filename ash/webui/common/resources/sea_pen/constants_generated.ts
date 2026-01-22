@@ -20,10 +20,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           'seaPenTemplateGlowscapes',
           `<${SeaPenTemplateChip.kGlowscapesLandscape}>`,
           `<${SeaPenTemplateChip.kGlowscapesFeature}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kGlowscapesLandscape,
@@ -115,10 +114,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           `<${SeaPenTemplateChip.kDreamscapesObject}>`,
           `<${SeaPenTemplateChip.kDreamscapesMaterial}>`,
           `<${SeaPenTemplateChip.kDreamscapesColors}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kDreamscapesObject,
@@ -409,10 +407,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       text: loadTimeData.getStringF(
           'seaPenTemplateTerrain', `<${SeaPenTemplateChip.kTerrainFeature}>`,
           `<${SeaPenTemplateChip.kTerrainColor}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kTerrainFeature,
@@ -593,10 +590,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       text: loadTimeData.getStringF(
           'seaPenTemplateSurreal', `<${SeaPenTemplateChip.kSurrealLandscape}>`,
           `<${SeaPenTemplateChip.kSurrealSubject}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_surreal.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_surreal.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kSurrealLandscape,
@@ -686,10 +682,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       text: loadTimeData.getStringF(
           'seaPenTemplateArt', `<${SeaPenTemplateChip.kArtFeature}>`,
           `<${SeaPenTemplateChip.kArtMovement}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kArtFeature,
@@ -910,10 +905,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       text: loadTimeData.getStringF(
           'seaPenTemplateLetters', `<${SeaPenTemplateChip.kLettersColor}>`,
           `<${SeaPenTemplateChip.kLettersLetter}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_letters.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_letters.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kLettersColor,
@@ -1151,10 +1145,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
           `<${SeaPenTemplateChip.kCharactersColor}>`,
           `<${SeaPenTemplateChip.kCharactersSubjects}>`,
           `<${SeaPenTemplateChip.kCharactersBackground}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kCharactersColor,
@@ -1718,10 +1711,9 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
       text: loadTimeData.getStringF(
           'seaPenTemplateFlower', `<${SeaPenTemplateChip.kFlowerColor}>`,
           `<${SeaPenTemplateChip.kFlowerType}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_flower.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_flower.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kFlowerColor,
@@ -1864,10 +1856,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundSimple',
           `<${SeaPenTemplateChip.kVcBackgroundSimpleStyle}>`,
           `<${SeaPenTemplateChip.kVcBackgroundSimpleTone}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_simple.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_simple.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundSimpleStyle,
@@ -1937,10 +1928,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundOffice',
           `<${SeaPenTemplateChip.kVcBackgroundOfficeStyle}>`,
           `<${SeaPenTemplateChip.kVcBackgroundOfficeColor}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_office.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_office.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundOfficeStyle,
@@ -2017,10 +2007,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundTerrainVc',
           `<${SeaPenTemplateChip.kVcBackgroundTerrainFeature}>`,
           `<${SeaPenTemplateChip.kVcBackgroundTerrainColor}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain_vc.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain_vc.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundTerrainFeature,
@@ -2217,10 +2206,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundCafe',
           `<${SeaPenTemplateChip.kVcBackgroundCafeStyle}>`,
           `<${SeaPenTemplateChip.kVcBackgroundCafeType}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_cafe.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_cafe.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundCafeStyle,
@@ -2311,10 +2299,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundArt',
           `<${SeaPenTemplateChip.kVcBackgroundArtFeature}>`,
           `<${SeaPenTemplateChip.kVcBackgroundArtMovement}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundArtFeature,
@@ -2576,10 +2563,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           `<${SeaPenTemplateChip.kVcBackgroundDreamscapesObject}>`,
           `<${SeaPenTemplateChip.kVcBackgroundDreamscapesMaterial}>`,
           `<${SeaPenTemplateChip.kVcBackgroundDreamscapesColors}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes_vc.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes_vc.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundDreamscapesObject,
@@ -2913,10 +2899,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           `<${SeaPenTemplateChip.kVcBackgroundCharactersColor}>`,
           `<${SeaPenTemplateChip.kVcBackgroundCharactersSubjects}>`,
           `<${SeaPenTemplateChip.kVcBackgroundCharactersBackground}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundCharactersColor,
@@ -3513,10 +3498,9 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
           'seaPenTemplateVcBackgroundGlowscapes',
           `<${SeaPenTemplateChip.kVcBackgroundGlowscapesLandscape}>`,
           `<${SeaPenTemplateChip.kVcBackgroundGlowscapesFeature}>`),
-      preview: [{
-        url:
-            'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
-      }],
+      preview: [
+        'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
+      ],
       options: new Map([
         [
           SeaPenTemplateChip.kVcBackgroundGlowscapesLandscape,

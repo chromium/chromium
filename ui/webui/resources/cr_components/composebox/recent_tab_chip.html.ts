@@ -19,7 +19,7 @@ export function getHtml(this: RecentTabChipElement) {
     <div class="button-content">
       <cr-composebox-tab-favicon
           class="favicon"
-          .url="${this.recentTab.url?.url}">
+          .url="${this.recentTab.url}">
       </cr-composebox-tab-favicon>
       <span class="recent-tab-button-text">
         ${this.recentTab.showInCurrentTabChip ? this.i18n('askAboutThisPage') :

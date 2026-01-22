@@ -32,7 +32,7 @@ suite('ContextMenuEntrypoint', () => {
     for (let i = 1; i <= count; i++) {
       tabs.push({
         title: `Tab ${i}`,
-        url: {url: `https://www.google.com/${i}`},
+        url: `https://www.google.com/${i}`,
         tabId: i,
         showInCurrentTabChip: false,
         showInPreviousTabChip: true,
@@ -100,7 +100,7 @@ suite('ContextMenuEntrypoint', () => {
         entrypoint.tabSuggestions = [
           {
             title: 'Tab 1',
-            url: {url: 'https://www.google.com'},
+            url: 'https://www.google.com',
             tabId: 1,
             showInCurrentTabChip: false,
             showInPreviousTabChip: true,
@@ -108,7 +108,7 @@ suite('ContextMenuEntrypoint', () => {
           },
           {
             title: 'Tab 2',
-            url: {url: 'https://www.google.com'},
+            url: 'https://www.google.com',
             tabId: 2,
             showInCurrentTabChip: false,
             showInPreviousTabChip: true,
@@ -140,7 +140,7 @@ suite('ContextMenuEntrypoint', () => {
     entrypoint.tabSuggestions = [
       {
         title: 'Tab 1',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         tabId: 1,
         showInCurrentTabChip: false,
         showInPreviousTabChip: true,
@@ -148,7 +148,7 @@ suite('ContextMenuEntrypoint', () => {
       },
       {
         title: 'Tab 2',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         tabId: 2,
         showInCurrentTabChip: false,
         showInPreviousTabChip: true,

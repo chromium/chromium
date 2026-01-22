@@ -63,7 +63,7 @@ suite('CrComponentsMostVisitedFocusTest', () => {
       return {
         title: char,
         titleDirection: TextDirection.LEFT_TO_RIGHT,
-        url: {url: `https://${char}/`},
+        url: `https://${char}/`,
         source: i,
         titleSource: i,
         isQueryTile: false,

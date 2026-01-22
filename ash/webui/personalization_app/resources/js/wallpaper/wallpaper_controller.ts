@@ -73,7 +73,7 @@ async function fetchAllImagesForCollections(
  * large enough to cover a grid item but not significantly more so.
  */
 function appendMaxResolutionSuffix(value: Url): Url {
-  return {...value, url: value.url + '=s512'};
+  return value + '=s512';
 }
 
 /**
@@ -272,7 +272,7 @@ export async function getDefaultImageThumbnail(
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadDefaultImageThubmnailAction());
   const {data} = await provider.getDefaultImageThumbnail();
-  if (data.url.length === 0) {
+  if (data.length === 0) {
     console.error('Failed to load default image thumbnail');
   }
   store.dispatch(action.setDefaultImageThumbnailAction(data));

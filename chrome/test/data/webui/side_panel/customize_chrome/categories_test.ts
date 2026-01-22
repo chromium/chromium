@@ -32,7 +32,7 @@ function createTestCollections(length: number): BackgroundCollection[] {
     testCollections.push({
       id: `${i}`,
       label: `collection_${i}`,
-      previewImageUrl: {url: `https://collection-${i}.jpg`},
+      previewImageUrl: `https://collection-${i}.jpg`,
       imageVerified: false,
     });
   }
@@ -56,7 +56,7 @@ suite('CategoriesTest', () => {
           'getReplacementCollectionPreviewImage', (collectionId: string) => {
             if (shouldReplaceBrokenImages) {
               return Promise.resolve({
-                previewImageUrl: {url: `https://replaced-${collectionId}.jpg`},
+                previewImageUrl: `https://replaced-${collectionId}.jpg`,
               });
             } else {
               return Promise.resolve(null);

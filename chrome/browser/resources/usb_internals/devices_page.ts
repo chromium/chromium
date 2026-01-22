@@ -244,11 +244,11 @@ function renderDeviceTree(device: UsbDeviceInfo, root: CrTreeElement) {
 
   if (device.webusbLandingPage) {
     const urlItem =
-        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage.url}`);
+        customTreeItem(`WebUSB Landing Page: ${device.webusbLandingPage}`);
     root.add(urlItem);
 
     urlItem.labelElement.addEventListener(
-        'click', () => window.open(device.webusbLandingPage!.url, '_blank'));
+        'click', () => window.open(device.webusbLandingPage!, '_blank'));
   }
 
   root.add(

@@ -1,4 +1,4 @@
-<a id="header" href="${this.event.url.url}" @click="${this.recordHeaderClick_}"
+<a id="header" href="${this.event.url}" @click="${this.recordHeaderClick_}"
     title="${this.event.title}">
   <div id="hoverContainer"></div>
   <span id="startTime">${this.formattedStartTime_}</span>
@@ -20,7 +20,7 @@ ${this.expanded ? html`
           <cr-chip data-index="${index}" @click="${this.openAttachment_}"
               chip-role="link" class="attachment" title="${item.title}"
               ?disabled="${this.isAttachmentDisabled_(index)}">
-            <img is="cr-auto-img" auto-src="${item.iconUrl.url}" alt="">
+            <img is="cr-auto-img" auto-src="${item.iconUrl}" alt="">
             <div class="attachment-text">${item.title}</div>
           </cr-chip>
         `)}

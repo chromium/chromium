@@ -52,9 +52,9 @@ export class TestUrlItemDelegate extends TestBrowserProxy implements
 suite('GridRendering', function() {
   // Define initialItems here so it's accessible to all test cases
   const DEFAULT_INITIAL_ITEMS: UrlItem[] = [
-    {id: 0, title: 'Google', url: {url: 'https://www.google.com'}},
-    {id: 1, title: 'Wikipedia', url: {url: 'https://www.wikipedia.org'}},
-    {id: 2, title: 'Lit Documentation', url: {url: 'https://lit.dev'}},
+    {id: 0, title: 'Google', url: 'https://www.google.com'},
+    {id: 1, title: 'Wikipedia', url: 'https://www.wikipedia.org'},
+    {id: 2, title: 'Lit Documentation', url: 'https://lit.dev'},
   ];
 
   let gridElement: UrlItemGrid;
@@ -77,7 +77,7 @@ suite('GridRendering', function() {
 
   test('grid renders newly added item at correct index', async function() {
     const newItem:
-        UrlItem = {id: 3, title: 'example', url: {url: 'https://example.com'}};
+        UrlItem = {id: 3, title: 'example', url: 'https://example.com'};
     const newIndex = 1;
 
     // Simulate the delegate dispatching an ITEM_ADDED event. The grid component

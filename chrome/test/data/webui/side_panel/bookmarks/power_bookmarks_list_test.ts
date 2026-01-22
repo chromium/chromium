@@ -130,7 +130,7 @@ suite('General', () => {
     PageImageServiceBrowserProxy.setInstance(
         new PageImageServiceBrowserProxy(imageServiceHandler));
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
-      result: {imageUrl: {url: 'https://example.com/image.png'}},
+      result: {imageUrl: 'https://example.com/image.png'},
     }));
 
     loadTimeData.overrideValues({
@@ -1045,8 +1045,8 @@ suite('General', () => {
           title: 'Product Baz',
           clusterTitle: 'Product Cluster Baz',
           domain: 'baz.com',
-          imageUrl: {url: 'https://baz.com/image'},
-          productUrl: {url: 'https://baz.com/product'},
+          imageUrl: 'https://baz.com/image',
+          productUrl: 'https://baz.com/product',
           currentPrice: '$56',
           previousPrice: '$78',
           clusterId: BigInt(12345),

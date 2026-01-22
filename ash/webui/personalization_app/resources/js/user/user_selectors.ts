@@ -48,9 +48,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
       bytes = new Uint8Array(buffer);
     }
 
-    const result = {
-      url: URL.createObjectURL(new Blob([bytes], {type: 'image/png'})),
-    };
+    const result = URL.createObjectURL(new Blob([bytes], {type: 'image/png'}));
     objectUrlCache.set(value, result);
     return result;
 
@@ -64,9 +62,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
  * The placeholder url is used as the user image url for invalid or unknown
  * urls.
  */
-const placeHolderUrl = {
-  url: AVATAR_PLACEHOLDER_URL,
-};
+const placeHolderUrl = AVATAR_PLACEHOLDER_URL;
 
 /**
  * Derive a user image |Url| from |PersonalizationState|. Return a |Url| rather

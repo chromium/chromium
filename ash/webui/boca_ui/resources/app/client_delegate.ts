@@ -82,29 +82,26 @@ export function getSessionConfigMojomToUI(session: Config|
       id: session.teacher.id,
       name: session.teacher.name,
       email: session.teacher.email,
-      photoUrl: session.teacher.photoUrl ? session.teacher.photoUrl.url :
-                                           undefined,
+      photoUrl: session.teacher.photoUrl ?? undefined,
     } :
                                undefined,
-    students:
-        session.students.map((item: IdentityMojom) => {
+    students: session.students.map((item: IdentityMojom) => {
+      return {
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        photoUrl: item.photoUrl ?? undefined,
+      };
+    }),
+    studentsJoinViaCode:
+        session.studentsJoinViaCode.map((item: IdentityMojom) => {
           return {
             id: item.id,
             name: item.name,
             email: item.email,
-            photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
+            photoUrl: item.photoUrl ?? undefined,
           };
         }),
-    studentsJoinViaCode:
-        session.studentsJoinViaCode.map(
-            (item: IdentityMojom) => {
-              return {
-                id: item.id,
-                name: item.name,
-                email: item.email,
-                photoUrl: item.photoUrl ? item.photoUrl.url : undefined,
-              };
-            }),
     onTaskConfig: {
       isLocked: session.onTaskConfig.isLocked,
       isPaused: session.onTaskConfig.isPaused,
@@ -112,9 +109,9 @@ export function getSessionConfigMojomToUI(session: Config|
         return {
           tab: {
             id: item.tab.id ? item.tab.id : undefined,
-            url: item.tab.url.url,
+            url: item.tab.url,
             title: item.tab.title,
-            favicon: item.tab.favicon.url,
+            favicon: item.tab.favicon,
           },
           navigationType: item.navigationType.valueOf(),
         };
@@ -154,8 +151,8 @@ export class ClientDelegateFactory {
               return {
                 id: tab.id ? tab.id : undefined,
                 title: tab.title,
-                url: tab.url.url,
-                favicon: tab.favicon.url,
+                url: tab.url,
+                favicon: tab.favicon,
               };
             }),
           };
@@ -178,7 +175,7 @@ export class ClientDelegateFactory {
             id: student.id,
             name: student.name,
             email: student.email,
-            photoUrl: student.photoUrl ? student.photoUrl.url : undefined,
+            photoUrl: student.photoUrl ? student.photoUrl : undefined,
           };
         });
       },
@@ -187,7 +184,7 @@ export class ClientDelegateFactory {
         return result.assignments.map((assignment: AssignmentMojom) => {
           return {
             title: assignment.title,
-            url: assignment.url.url,
+            url: assignment.url,
             lastUpdateTime: assignment.lastUpdateTime,
             materials: assignment.materials.map((material: MaterialMojom) => {
               return {title: material.title, type: material.type.valueOf()};
@@ -211,7 +208,7 @@ export class ClientDelegateFactory {
               id: item.id,
               name: item.name,
               email: item.email,
-              photoUrl: item.photoUrl ? {url: item.photoUrl} : null,
+              photoUrl: item.photoUrl ? item.photoUrl : null,
             };
           }),
           onTaskConfig: {
@@ -222,9 +219,9 @@ export class ClientDelegateFactory {
                   return {
                     tab: {
                       id: null,
-                      url: {url: item.tab.url},
+                      url: item.tab.url,
                       title: item.tab.title,
-                      favicon: {url: item.tab.favicon},
+                      favicon: item.tab.favicon,
                     },
                     navigationType: item.navigationType.valueOf(),
                   };
@@ -273,7 +270,7 @@ export class ClientDelegateFactory {
                 id: item.id,
                 name: item.name,
                 email: item.email,
-                photoUrl: item.photoUrl ? {url: item.photoUrl} : null,
+                photoUrl: item.photoUrl ? item.photoUrl : null,
               };
             }));
         return !resultHasError(result);
@@ -287,9 +284,9 @@ export class ClientDelegateFactory {
                 return {
                   tab: {
                     id: null,
-                    url: {url: item.tab.url},
+                    url: item.tab.url,
                     title: item.tab.title,
-                    favicon: {url: item.tab.favicon},
+                    favicon: item.tab.favicon,
                   },
                   navigationType: item.navigationType.valueOf(),
                 };
@@ -367,7 +364,7 @@ export class ClientDelegateFactory {
           id: student.id,
           name: student.name,
           email: student.email,
-          photoUrl: student.photoUrl ? {url: student.photoUrl} : null
+          photoUrl: student.photoUrl ? student.photoUrl : null
         };
         return (await pageHandler.presentStudentScreen(
                     studentMojom, receiverId))

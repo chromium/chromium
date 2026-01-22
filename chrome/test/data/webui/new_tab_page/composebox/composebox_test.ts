@@ -124,11 +124,11 @@ suite('NewTabPageComposeboxTest', () => {
       contentsClass: [{offset: 0, style: 0}],
       description: '',
       descriptionClass: [{offset: 0, style: 0}],
-      destinationUrl: {url: ''},
+      destinationUrl: '',
       inlineAutocompletion: '',
       fillIntoEdit: '',
       iconPath: '',
-      iconUrl: {url: ''},
+      iconUrl: '',
       imageDominantColor: '',
       imageUrl: '',
       isNoncannedAimSuggestion: false,
@@ -162,7 +162,7 @@ suite('NewTabPageComposeboxTest', () => {
         createAutocompleteMatch(), {
           isSearchType: true,
           contents: 'hello world',
-          destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+          destinationUrl: 'https://www.google.com/search?q=hello+world',
           fillIntoEdit: 'hello world',
           type: 'search-suggest',
         },
@@ -1852,7 +1852,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(!!matchEl);
 
     const matchIndex = 0;
-    const destinationUrl = {url: 'http://google.com'};
+    const destinationUrl = 'http://google.com';
     matchEl.matchIndex = matchIndex;
     matchEl.match.destinationUrl = destinationUrl;
 

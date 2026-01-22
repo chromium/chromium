@@ -65,7 +65,7 @@ async function addTiles(
     return {
       title: char,
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://${char}/`},
+      url: `https://${char}/`,
       source: i,
       titleSource: i,
       isQueryTile: false,
@@ -257,7 +257,7 @@ suite('ShowAddButton', () => {
           return {
             title: char,
             titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: {url: `https://${char}/`},
+            url: `https://${char}/`,
             source: i % 2 === 0 ? TileSource.TOP_SITES :
                                   TileSource.CUSTOM_LINKS,
             titleSource: i,
@@ -278,7 +278,7 @@ suite('ShowAddButton', () => {
           return {
             title: char,
             titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: {url: `https://${char}/`},
+            url: `https://${char}/`,
             source: TileSource.ENTERPRISE_SHORTCUTS,
             titleSource: i,
             isQueryTile: false,
@@ -911,7 +911,7 @@ suite('LoggingAndUpdates', () => {
     assertDeepEquals(tiles[0], {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://a/'},
+      url: 'https://a/',
       source: 0,
       titleSource: 0,
       isQueryTile: false,
@@ -921,7 +921,7 @@ suite('LoggingAndUpdates', () => {
     assertDeepEquals(tiles[1], {
       title: 'b',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://b/'},
+      url: 'https://b/',
       source: 1,
       titleSource: 1,
       isQueryTile: false,
@@ -947,7 +947,7 @@ suite('LoggingAndUpdates', () => {
     assertDeepEquals(tile, {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://a/'},
+      url: 'https://a/',
       source: 0,
       titleSource: 0,
       isQueryTile: false,
@@ -1100,7 +1100,7 @@ suite('Modification', () => {
       await Promise.all([inputName.updateComplete, inputUrl.updateComplete]);
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
-      const [{url}, title] = await addCalled;
+      const [url, title] = await addCalled;
       assertEquals('name', title);
       assertEquals('https://url/', url);
     });
@@ -1118,7 +1118,7 @@ suite('Modification', () => {
       await inputUrl.updateComplete;
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
-      const [{url}, _title] = await addCalled;
+      const [url, _title] = await addCalled;
       assertEquals('https://url/', url);
     });
 
@@ -1232,7 +1232,7 @@ suite('Modification', () => {
       await inputUrl.updateComplete;
       saveButton.click();
       const [_url, newUrl, _newTitle] = await updateCalled;
-      assertEquals('https://updated-url/', newUrl.url);
+      assertEquals('https://updated-url/', newUrl);
     });
 
     test('toast shown when tile editted', async () => {
@@ -1272,7 +1272,7 @@ suite('Modification', () => {
       await inputUrl.updateComplete;
       saveButton.click();
       const [_url, newUrl, _newTitle] = await updateCalled;
-      assertEquals('https://updated-url/', newUrl.url);
+      assertEquals('https://updated-url/', newUrl);
     });
 
     test('shortcut already exists', async () => {
@@ -1299,7 +1299,7 @@ suite('Modification', () => {
                 {
                   title: 'e1',
                   titleDirection: TextDirection.LEFT_TO_RIGHT,
-                  url: {url: `https://e1/`},
+                  url: `https://e1/`,
                   source: TileSource.ENTERPRISE_SHORTCUTS,
                   titleSource: 0,
                   isQueryTile: false,
@@ -1309,7 +1309,7 @@ suite('Modification', () => {
                 {
                   title: 'c1',
                   titleDirection: TextDirection.LEFT_TO_RIGHT,
-                  url: {url: `https://e1/`},
+                  url: `https://e1/`,
                   source: TileSource.CUSTOM_LINKS,
                   titleSource: 1,
                   isQueryTile: false,
@@ -1370,7 +1370,7 @@ suite('Modification', () => {
             {
               title: 'e1',
               titleDirection: TextDirection.LEFT_TO_RIGHT,
-              url: {url: `https://e1/`},
+              url: `https://e1/`,
               source: TileSource.ENTERPRISE_SHORTCUTS,
               titleSource: 0,
               isQueryTile: false,
@@ -1380,7 +1380,7 @@ suite('Modification', () => {
             {
               title: 'c1',
               titleDirection: TextDirection.LEFT_TO_RIGHT,
-              url: {url: `https://c1/`},
+              url: `https://c1/`,
               source: TileSource.CUSTOM_LINKS,
               titleSource: 1,
               isQueryTile: false,
@@ -1412,7 +1412,7 @@ suite('Modification', () => {
       const updateCalled = handler.whenCalled('updateMostVisitedTile');
       saveButton.click();
       const [_oldTile, newUrl, _newTitle] = await updateCalled;
-      assertEquals('https://e1/', newUrl.url);
+      assertEquals('https://e1/', newUrl);
       assertFalse(mostVisited.$.dialog.open);
     });
   });
@@ -1431,7 +1431,7 @@ suite('Modification', () => {
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
     assertFalse(actionMenu.open);
-    assertEquals('https://b/', (await deleteCalled).url.url);
+    assertEquals('https://b/', (await deleteCalled).url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1444,7 +1444,7 @@ suite('Modification', () => {
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://search-url/'},
+      url: 'https://search-url/',
       source: 0,
       titleSource: 0,
       isQueryTile: true,
@@ -1459,7 +1459,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://search-url/', (await deleteCalled).url.url);
+    assertEquals('https://search-url/', (await deleteCalled).url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1473,7 +1473,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://a/', (await deleteCalled).url.url);
+    assertEquals('https://a/', (await deleteCalled).url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are visible.
     assertTrue(isVisible($$(mostVisited, '#undo')));
@@ -1485,7 +1485,7 @@ suite('Modification', () => {
         [{
           title: 'title',
           titleDirection: TextDirection.LEFT_TO_RIGHT,
-          url: {url: 'https://search-url/'},
+          url: 'https://search-url/',
           source: 0,
           titleSource: 0,
           isQueryTile: true,
@@ -1498,7 +1498,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     removeButton.click();
-    assertEquals('https://search-url/', (await deleteCalled).url.url);
+    assertEquals('https://search-url/', (await deleteCalled).url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
     // Toast buttons are not visible.
     assertFalse(isVisible($$(mostVisited, '#undo')));
@@ -1517,7 +1517,7 @@ suite('Modification', () => {
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
     assertFalse(mostVisited.$.toastManager.isToastOpen);
     keydown(tile, 'Delete');
-    assertEquals('https://a/', (await deleteCalled).url.url);
+    assertEquals('https://a/', (await deleteCalled).url);
     assertTrue(mostVisited.$.toastManager.isToastOpen);
   });
 
@@ -1640,7 +1640,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     }));
     await mostVisited.updateComplete;
     const [tile, newPos] = await reorderCalled;
-    assertEquals('https://a/', tile.url.url);
+    assertEquals('https://a/', tile.url);
     assertEquals(1, newPos);
     const [newFirst, newSecond] = queryTiles();
     assertEquals('https://b/', newFirst!.querySelector('a')!.href);
@@ -1673,7 +1673,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     }));
     await mostVisited.updateComplete;
     const [tile, newPos] = await reorderCalled;
-    assertEquals('https://b/', tile.url.url);
+    assertEquals('https://b/', tile.url);
     assertEquals(0, newPos);
     const [newFirst, newSecond] = queryTiles();
     assertEquals('https://b/', newFirst!.querySelector('a')!.href);
@@ -1714,7 +1714,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'e1',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://e1/`},
+      url: `https://e1/`,
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1724,7 +1724,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink1 = {
       title: 'c1',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://c1/`},
+      url: `https://c1/`,
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -1734,7 +1734,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink2 = {
       title: 'c2',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://c2/`},
+      url: `https://c2/`,
       source: TileSource.CUSTOM_LINKS,
       titleSource: 2,
       isQueryTile: false,
@@ -1772,7 +1772,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     await mostVisited.updateComplete;
 
     const [tile, newPos] = await reorderCalled;
-    assertEquals('https://c1/', tile.url.url);
+    assertEquals('https://c1/', tile.url);
     // Expected new position: original index of c1 in custom group (0) + 1
     // (because it moved past c2 in the custom group).
     // The dropIndex is 2, but there is 1 enterprise shortcut, so 2 - 1 = 1.
@@ -1788,7 +1788,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://a/`},
+      url: `https://a/`,
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1798,7 +1798,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink = {
       title: 'b',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://b/`},
+      url: `https://b/`,
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -1842,7 +1842,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const enterpriseShortcut = {
       title: 'a',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://a/`},
+      url: `https://a/`,
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: 0,
       isQueryTile: false,
@@ -1852,7 +1852,7 @@ function createDragAndDropSuite(singleRow: boolean, reflowOnOverflow: boolean) {
     const customLink = {
       title: 'b',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://b/`},
+      url: `https://b/`,
       source: TileSource.CUSTOM_LINKS,
       titleSource: 1,
       isQueryTile: false,
@@ -1913,7 +1913,7 @@ suite('Theming', () => {
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.RIGHT_TO_LEFT,
-      url: {url: 'https://url/'},
+      url: 'https://url/',
       source: 0,
       titleSource: 0,
       isQueryTile: false,
@@ -1929,7 +1929,7 @@ suite('Theming', () => {
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: 'https://url/'},
+      url: 'https://url/',
       source: 0,
       titleSource: 0,
       isQueryTile: false,
@@ -2030,7 +2030,7 @@ suite('EnterpriseShortcuts', () => {
     return {
       title: char,
       titleDirection: TextDirection.LEFT_TO_RIGHT,
-      url: {url: `https://${char}/`},
+      url: `https://${char}/`,
       source: TileSource.ENTERPRISE_SHORTCUTS,
       titleSource: i,
       isQueryTile: false,
@@ -2132,7 +2132,7 @@ suite('EnterpriseShortcuts', () => {
           {
             title: 'c',
             titleDirection: TextDirection.LEFT_TO_RIGHT,
-            url: {url: `https://c/`},
+            url: `https://c/`,
             source: TileSource.CUSTOM_LINKS,
             titleSource: 1,
             isQueryTile: false,

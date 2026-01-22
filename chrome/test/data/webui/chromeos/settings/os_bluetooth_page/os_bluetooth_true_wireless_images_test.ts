@@ -62,7 +62,7 @@ suite('<os-settings-bluetooth-true-wireless-images>', () => {
   }
 
   async function setTrueWirelessImages(): Promise<void> {
-    const fakeUrl = {url: 'fake_image'};
+    const fakeUrl = 'fake_image';
     const trueWireless = {
       leftBudImageUrl: fakeUrl,
       caseImageUrl: fakeUrl,

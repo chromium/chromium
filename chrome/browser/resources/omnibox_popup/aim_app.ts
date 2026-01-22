@@ -165,7 +165,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   private onLinkClick_(e: Event) {
     e.preventDefault();
     const href = (e.currentTarget as HTMLAnchorElement).href;
-    this.pageHandler_.navigateCurrentTab({url: href});
+    this.pageHandler_.navigateCurrentTab(href);
   }
 }
 

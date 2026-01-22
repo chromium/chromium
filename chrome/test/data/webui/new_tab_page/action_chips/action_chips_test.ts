@@ -43,7 +43,7 @@ suite('NewTabPageActionChipsTest', () => {
           suggestion: 'Suggestion for recent tab',
           tab: {
             tabId: 1,
-            url: {url: 'https://example.com/test'},
+            url: 'https://example.com/test',
             title: 'Example Tab',
             lastActiveTime: {internalValue: BigInt(12345)},
           },
@@ -113,7 +113,7 @@ suite('NewTabPageActionChipsTest', () => {
     const fakeTab: TabInfo = {
       tabId: 1,
       title: 'Test Title',
-      url: {url: 'https://example.com/test'},
+      url: 'https://example.com/test',
       lastActiveTime: {internalValue: BigInt(12345)},
     };
     await initializeChips({
@@ -157,7 +157,7 @@ suite('NewTabPageActionChipsTest', () => {
         subtitle: 'Subtitle for recent tab',
         suggestion: 'Suggestion for recent tab',
         tab: {
-          url: {url: 'https://example.com'},
+          url: 'https://example.com',
           tabId: 0,
           title: 'Example Tab',
           lastActiveTime: {internalValue: BigInt(0)},
@@ -177,7 +177,7 @@ suite('NewTabPageActionChipsTest', () => {
         subtitle: 'Subtitle for deep dive',
         suggestion: 'Suggestion for deep dive',
         tab: {
-          url: {url: 'https://example.com'},
+          url: 'https://example.com',
           tabId: 0,
           title: 'Example Tab',
           lastActiveTime: {internalValue: BigInt(0)},
@@ -267,7 +267,7 @@ suite('NewTabPageActionChipsTest', () => {
           subtitle: 'Subtitle for deep dive',
           suggestion: 'Suggestion for deep dive',
           tab: {
-            url: {url: 'https://example.com'},
+            url: 'https://example.com',
             tabId: 0,
             title: 'Example Tab',
             lastActiveTime: {internalValue: BigInt(0)},

@@ -481,7 +481,7 @@ export class WhatsNewAppElement extends CrLitElement {
 
     WhatsNewProxyImpl.getInstance()
         .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
-        .then(({url}: {url: Url}) => this.handleUrlResult_(url.url));
+        .then(({url}: {url: Url}) => this.handleUrlResult_(url));
   }
 
   override disconnectedCallback() {

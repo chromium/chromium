@@ -150,13 +150,13 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     // POST request body, use a utility function to load the webview.
     if (this.cellularMetadata.paymentPostData) {
       postDeviceDataToWebview(
-          portalWebview, this.cellularMetadata.paymentUrl.url,
+          portalWebview, this.cellularMetadata.paymentUrl,
           this.cellularMetadata.paymentPostData);
       return;
     }
 
     // Otherwise, use a normal GET request by specifying the "src".
-    portalWebview.src = this.cellularMetadata.paymentUrl.url;
+    portalWebview.src = this.cellularMetadata.paymentUrl;
   }
 
   private resetPage_(): void {
@@ -189,7 +189,7 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     const contentWindow = portalWebview.contentWindow;
     assert(!!contentWindow);
     contentWindow.postMessage(
-        {msg: 'loadedInWebview'}, this.cellularMetadata!.paymentUrl?.url);
+        {msg: 'loadedInWebview'}, this.cellularMetadata!.paymentUrl);
   }
 
   private onMessageReceived_(event: MessageEvent) {
@@ -210,7 +210,7 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
             IMEI: this.cellularMetadata!.imei,
             MDN: this.cellularMetadata!.mdn,
           },
-          this.cellularMetadata!.paymentUrl?.url);
+          this.cellularMetadata!.paymentUrl);
       return;
     }
 

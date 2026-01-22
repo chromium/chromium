@@ -122,7 +122,7 @@ suite('Personalization app controller', () => {
       title: '',
       photoCount: 0,
       isShared: false,
-      preview: {url: 'bar.com'},
+      preview: 'bar.com',
       timestamp: {internalValue: BigInt(0)},
     };
 
@@ -131,7 +131,7 @@ suite('Personalization app controller', () => {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     }];
 
@@ -148,8 +148,8 @@ suite('Personalization app controller', () => {
         wallpaperProvider, personalizationStore, album.id);
 
     // The wallpaper controller is expected to impose max resolution.
-    album.preview.url += '=s512';
-    photos.forEach(photo => photo.url.url += '=s512');
+    album.preview += '=s512';
+    photos.forEach(photo => photo.url += '=s512');
 
     assertDeepEquals(
         [
@@ -260,12 +260,12 @@ suite('Personalization app controller', () => {
           {
             name: 'set_local_image_data',
             id: 'LocalImage0.png',
-            data: {url: 'data:image/png;base64,localimage0data'},
+            data: 'data:image/png;base64,localimage0data',
           },
           {
             name: 'set_local_image_data',
             id: 'LocalImage1.png',
-            data: {url: 'data:image/png;base64,localimage1data'},
+            data: 'data:image/png;base64,localimage1data',
           },
         ],
         personalizationStore.actions);
@@ -321,9 +321,7 @@ suite('Personalization app controller', () => {
                 {path: 'LocalImage1.png'},
               ],
               data: {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
               },
             },
             'wallpaper.loading.local': {
@@ -339,12 +337,8 @@ suite('Personalization app controller', () => {
                 {path: 'LocalImage1.png'},
               ],
               data: {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
-                'LocalImage1.png': {
-                  url: 'data:image/png;base64,localimage1data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
+                'LocalImage1.png': 'data:image/png;base64,localimage1data',
               },
             },
             'wallpaper.loading.local': {
@@ -384,12 +378,8 @@ suite('Personalization app controller', () => {
             'wallpaper.local': {
               images: [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}],
               data: {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
-                'LocalImage1.png': {
-                  url: 'data:image/png;base64,localimage1data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
+                'LocalImage1.png': 'data:image/png;base64,localimage1data',
               },
             },
             'wallpaper.loading.local': {
@@ -403,9 +393,7 @@ suite('Personalization app controller', () => {
             'wallpaper.local': {
               images: [{path: 'LocalImage0.png'}],
               data: {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
               },
             },
             'wallpaper.loading.local':
@@ -430,7 +418,7 @@ suite('Personalization app controller', () => {
 
     wallpaperProvider.localImageData = {
       ...wallpaperProvider.localImageData,
-      'NewPath.png': {url: 'data:image/png;base64,newpath'},
+      'NewPath.png': 'data:image/png;base64,newpath',
     };
 
     await fetchLocalData(wallpaperProvider, personalizationStore);
@@ -453,7 +441,7 @@ suite('Personalization app controller', () => {
           {
             name: 'set_local_image_data',
             id: 'NewPath.png',
-            data: {url: 'data:image/png;base64,newpath'},
+            data: 'data:image/png;base64,newpath',
           },
         ],
         personalizationStore.actions,
@@ -469,12 +457,8 @@ suite('Personalization app controller', () => {
                 {'path': 'LocalImage1.png'},
               ],
               'data': {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
-                'LocalImage1.png': {
-                  url: 'data:image/png;base64,localimage1data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
+                'LocalImage1.png': 'data:image/png;base64,localimage1data',
               },
             },
             'wallpaper.loading.local': {
@@ -487,9 +471,7 @@ suite('Personalization app controller', () => {
             'wallpaper.local': {
               'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
               'data': {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
               },
             },
             'wallpaper.loading.local': {
@@ -502,9 +484,7 @@ suite('Personalization app controller', () => {
             'wallpaper.local': {
               'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
               'data': {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
               },
             },
             'wallpaper.loading.local': {
@@ -517,10 +497,8 @@ suite('Personalization app controller', () => {
             'wallpaper.local': {
               'images': [{'path': 'LocalImage0.png'}, {'path': 'NewPath.png'}],
               'data': {
-                'LocalImage0.png': {
-                  url: 'data:image/png;base64,localimage0data',
-                },
-                'NewPath.png': {url: 'data:image/png;base64,newpath'},
+                'LocalImage0.png': 'data:image/png;base64,localimage0data',
+                'NewPath.png': 'data:image/png;base64,newpath',
               },
             },
             'wallpaper.loading.local': {
@@ -535,7 +513,7 @@ suite('Personalization app controller', () => {
 
   test('clears local images when fetching new image list fails', async () => {
     // No default image on this device.
-    wallpaperProvider.defaultImageThumbnail = {url: ''};
+    wallpaperProvider.defaultImageThumbnail = '';
     await getDefaultImageThumbnail(wallpaperProvider, personalizationStore);
     await fetchLocalData(wallpaperProvider, personalizationStore);
 
@@ -549,8 +527,7 @@ suite('Personalization app controller', () => {
         JSON.stringify({}),
         JSON.stringify(personalizationStore.data.wallpaper.local.data));
     assertDeepEquals(
-        {url: ''},
-        personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
+        '', personalizationStore.data.wallpaper.local.data[kDefaultImageSymbol],
         'default image still present but set to empty url');
     assertEquals(
         JSON.stringify({}),
@@ -957,7 +934,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
           dedupKey: dedupKey === undefined ? null : dedupKey,
           name: 'foo',
           date: '',
-          url: {url: 'foo.com'},
+          url: 'foo.com',
           location: 'home',
         };
         // Reset the history of actions and prior states, but keep the current
@@ -1007,7 +984,7 @@ suite('updates default image', () => {
         [
           {name: 'begin_load_default_image'},
           {
-            thumbnail: {url: 'data:image/png;base64,default_image_thumbnail'},
+            thumbnail: 'data:image/png;base64,default_image_thumbnail',
             name: 'set_default_image',
           },
         ],
@@ -1089,7 +1066,7 @@ suite('daily refresh loading', () => {
       title: '',
       photoCount: 0,
       isShared: false,
-      preview: {url: 'bar.com'},
+      preview: 'bar.com',
       timestamp: {internalValue: BigInt(0)},
     };
 
@@ -1099,7 +1076,7 @@ suite('daily refresh loading', () => {
         dedupKey: 'google-photos-photo-0',
         name: 'photo 0',
         date: '',
-        url: {url: ''},
+        url: '',
         location: 'home',
       },
       {
@@ -1107,7 +1084,7 @@ suite('daily refresh loading', () => {
         dedupKey: 'google-photos-photo-1',
         name: 'photo 1',
         date: '',
-        url: {url: ''},
+        url: '',
         location: 'home',
       },
     ];

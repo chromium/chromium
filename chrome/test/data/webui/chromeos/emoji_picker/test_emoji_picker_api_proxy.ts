@@ -27,15 +27,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '1',
             contentDescription: 'Left 1',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -50,15 +44,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '2',
             contentDescription: 'Right 1',
             url: {
-              full: {
-                url: this.oneByOneGif,
-              },
-              preview: {
-                url: this.oneByOneGif,
-              },
-              previewImage: {
-                url: this.oneByOneGif,
-              },
+              full: this.oneByOneGif,
+              preview: this.oneByOneGif,
+              previewImage: this.oneByOneGif,
             },
             previewSize: {
               width: 1,
@@ -73,15 +61,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '3',
             contentDescription: 'Right 2',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -96,15 +78,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '4',
             contentDescription: 'Left 2',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -119,15 +95,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '5',
             contentDescription: 'Right 3',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -142,15 +112,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '6',
             contentDescription: 'Left 3',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -172,15 +136,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '7',
             contentDescription: 'Right 4',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -195,15 +153,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '8',
             contentDescription: 'Left 4',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -218,15 +170,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '9',
             contentDescription: 'Right 5',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -241,15 +187,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '10',
             contentDescription: 'Left 5',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -264,15 +204,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '11',
             contentDescription: 'Right 6',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -287,15 +221,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
             id: '12',
             contentDescription: 'Left 6',
             url: {
-              full: {
-                url: this.oneByTwoGif,
-              },
-              preview: {
-                url: this.oneByTwoGif,
-              },
-              previewImage: {
-                url: this.oneByTwoGif,
-              },
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
+              previewImage: this.oneByTwoGif,
             },
             previewSize: {
               width: 1,
@@ -377,9 +305,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
         {
           id: '1',
           url: {
-            full: {url: this.oneByOneGif},
-            preview: {url: this.oneByOneGif},
-            previewImage: {url: this.oneByOneGif},
+            full: this.oneByOneGif,
+            preview: this.oneByOneGif,
+            previewImage: this.oneByOneGif,
           },
           previewSize: {
             width: 1,
@@ -390,9 +318,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
         {
           id: '2',
           url: {
-            full: {url: this.oneByTwoGif},
-            preview: {url: this.oneByTwoGif},
-            previewImage: {url: this.oneByTwoGif},
+            full: this.oneByTwoGif,
+            preview: this.oneByTwoGif,
+            previewImage: this.oneByTwoGif,
           },
           previewSize: {
             width: 1,
@@ -403,9 +331,9 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
         {
           id: '4',
           url: {
-            full: {url: this.oneByTwoGif},
-            preview: {url: this.oneByTwoGif},
-            previewImage: {url: this.oneByTwoGif},
+            full: this.oneByTwoGif,
+            preview: this.oneByTwoGif,
+            previewImage: this.oneByTwoGif,
           },
           previewSize: {
             width: 1,

@@ -95,11 +95,11 @@ export class SuggestRequestElement extends CrLitElement {
   private computePageClassification_(): string {
     assert(this.request);
 
-    if (!this.request.url.url) {
+    if (!this.request.url) {
       return '';
     }
     // Find pgcl value in request url.
-    const url = new URL(this.request.url.url);
+    const url = new URL(this.request.url);
     const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
     // If no pgcl value in request, set pgcl to empty
     if (queryMatches === null || !queryMatches.groups) {
@@ -155,7 +155,7 @@ export class SuggestRequestElement extends CrLitElement {
     }
 
     try {
-      const url = new URL(this.request.url.url);
+      const url = new URL(this.request.url);
       const queryMatches = url.search.match(/(q|delq)=[^&]*/);
       return url.pathname + '?' + (queryMatches ? queryMatches[0] : '');
     } catch (e) {

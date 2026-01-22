@@ -164,10 +164,10 @@ function frameToTreeItem(frame: FrameInfo, parentProcessId: number = -1):
     itemLabel += ', unlocked';
   }
   if (frame.siteInstance.siteUrl) {
-    itemLabel += `, site:${frame.siteInstance.siteUrl.url}`;
+    itemLabel += `, site:${frame.siteInstance.siteUrl}`;
   }
   if (frame.siteInstance.processLockUrl) {
-    itemLabel += `, lock:${frame.siteInstance.processLockUrl.url}`;
+    itemLabel += `, lock:${frame.siteInstance.processLockUrl}`;
   }
   if (frame.siteInstance.requiresOriginKeyedProcess) {
     itemLabel += ', origin-keyed';
@@ -191,7 +191,7 @@ function frameToTreeItem(frame: FrameInfo, parentProcessId: number = -1):
     itemLabel += `, partition:${frame.siteInstance.storagePartition}`;
   }
   if (frame.lastCommittedUrl) {
-    itemLabel += ` | url: ${frame.lastCommittedUrl.url}`;
+    itemLabel += ` | url: ${frame.lastCommittedUrl}`;
   }
 
   const item = document.createElement('cr-tree-item');

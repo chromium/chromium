@@ -86,7 +86,7 @@ export class AppManagementFileHandlingItemElement extends
 
   private getLearnMoreLinkUrl_(app: App): string {
     if (app && app.fileHandlingState && app.fileHandlingState.learnMoreUrl) {
-      return app.fileHandlingState.learnMoreUrl.url;
+      return app.fileHandlingState.learnMoreUrl;
     }
     return '';
   }

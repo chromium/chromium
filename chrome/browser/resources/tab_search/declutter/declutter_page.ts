@@ -283,7 +283,7 @@ export class DeclutterPageElement extends CrLitElement {
 
   private tabDataFromTab_(tab: Tab): TabData {
     return new TabData(
-        tab, TabItemType.OPEN_TAB, new URL(normalizeURL(tab.url.url)).hostname);
+        tab, TabItemType.OPEN_TAB, new URL(normalizeURL(tab.url)).hostname);
   }
 }
 

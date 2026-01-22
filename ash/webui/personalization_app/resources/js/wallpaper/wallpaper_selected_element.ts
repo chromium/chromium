@@ -535,12 +535,12 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
   }
 
   private computeActionUrl_(image: CurrentWallpaper|null): string|null {
-    if (!image?.actionUrl?.url) {
+    if (!image?.actionUrl) {
       return null;
     }
 
     try {
-      return sanitizeInnerHtml(image.actionUrl.url).toString();
+      return sanitizeInnerHtml(image.actionUrl).toString();
     } catch (e) {
       console.warn('cannot display learn more link', e);
       return null;

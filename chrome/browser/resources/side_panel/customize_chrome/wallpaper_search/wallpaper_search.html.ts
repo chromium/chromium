@@ -193,7 +193,7 @@ ${this.inspirationCardEnabled_ ? html`
                 <customize-chrome-check-mark-wrapper class="image-check-mark"
                     ?checked="${this.isBackgroundSelected_(item.id)}">
                   <div class="image-container">
-                    <img is="cr-auto-img" .autoSrc="${item.thumbnailUrl.url}">
+                    <img is="cr-auto-img" .autoSrc="${item.thumbnailUrl}">
                   </div>
                 </customize-chrome-check-mark-wrapper>
               </div>

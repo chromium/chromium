@@ -35,13 +35,13 @@ function createBrowserProxy() {
 
 function getTestVisit(rawData?: RawVisitData): URLVisit {
   const rawVisitData: RawVisitData = rawData || {
-    url: {url: ''},
+    url: '',
     visitTime: {internalValue: BigInt(0)},
   };
 
   return {
     visitId: BigInt(1),
-    normalizedUrl: {url: 'https://www.google.com'},
+    normalizedUrl: 'https://www.google.com',
     urlForDisplay: 'https://www.google.com',
     pageTitle: '',
     titleMatchPositions: [],
@@ -190,7 +190,7 @@ suite('HistoryClustersTest', () => {
 
     const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0]);
     assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 
@@ -222,7 +222,7 @@ suite('HistoryClustersTest', () => {
     // Navigates to the first match is selected.
     const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0]);
     assertEquals(true, openHistoryUrlArgs[1].shiftKey);
     assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
@@ -237,7 +237,7 @@ suite('HistoryClustersTest', () => {
     // Set a result for the image handler to pass back to the favicon component,
     // so it doesn't throw a console error.
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
-      result: {imageUrl: {url: 'https://example.com/image.png'}},
+      result: {imageUrl: 'https://example.com/image.png'},
     }));
 
     const cluster = clustersElement.$.clusters.querySelector('history-cluster');
@@ -263,20 +263,20 @@ suite('HistoryClustersTest', () => {
     assertTrue(!!icon);
     const imageUrl = icon.getImageUrlForTesting();
     assertTrue(!!imageUrl);
-    assertEquals('https://example.com/image.png', imageUrl.url);
+    assertEquals('https://example.com/image.png', imageUrl);
 
     // Verify that the icon's image can be cleared.
     imageServiceHandler.reset();
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
       result: null,
     }));
-    icon.url = {url: 'https://something-different.com'};
+    icon.url = 'https://something-different.com';
     const [newClientId, newPageUrl] =
         await imageServiceHandler.whenCalled('getPageImageUrl');
     await microtasksFinished();
     assertEquals(PageImageServiceClientId.Journeys, newClientId);
     assertTrue(!!newPageUrl);
-    assertEquals('https://something-different.com', newPageUrl.url);
+    assertEquals('https://something-different.com', newPageUrl);
     assertTrue(!icon.getImageUrlForTesting());
   });
 
@@ -411,13 +411,13 @@ suite('HistoryClustersFocusTest', () => {
   // can predicatably scroll to a certain px value before the end and have the
   // average item height, which is used to compute scroll height, not change.
   const visit1 = getTestVisit(
-      {url: {url: 'www.chromium.org'}, visitTime: {internalValue: BigInt(1)}});
+      {url: 'www.chromium.org', visitTime: {internalValue: BigInt(1)}});
   const visit2 = getTestVisit({
-    url: {url: 'chrome://extensions'},
+    url: 'chrome://extensions',
     visitTime: {internalValue: BigInt(2)},
   });
   const visit3 = getTestVisit(
-      {url: {url: 'chrome://settings'}, visitTime: {internalValue: BigInt(3)}});
+      {url: 'chrome://settings', visitTime: {internalValue: BigInt(3)}});
   const cluster1: Cluster = getTestCluster(BigInt(111), [visit1]);
   const cluster2: Cluster = getTestCluster(BigInt(222), [visit2]);
   const cluster3: Cluster = getTestCluster(BigInt(333), [visit3]);

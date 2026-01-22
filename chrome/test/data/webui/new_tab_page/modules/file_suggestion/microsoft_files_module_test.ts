@@ -44,8 +44,8 @@ suite('MicrosoftFilesModule', () => {
         justificationText: 'Trending in your organization',
         title: `Document ${i}`,
         id: `${i}`,
-        iconUrl: {url: 'https://foo.com/'},
-        itemUrl: {url: `https://foo.com/${i}`},
+        iconUrl: 'https://foo.com/',
+        itemUrl: `https://foo.com/${i}`,
         recommendationType: RecommendationType.kUsed,
       });
     }

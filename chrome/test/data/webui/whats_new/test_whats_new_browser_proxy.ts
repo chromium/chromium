@@ -43,7 +43,7 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordNextButtonClick',
     ]);
 
-    this.url_ = {url};
+    this.url_ = url;
   }
 
   getServerUrl() {

@@ -32,7 +32,7 @@ function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
       createAutocompleteMatch(), {
         isSearchType: true,
         contents: 'hello world',
-        destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+        destinationUrl: 'https://www.google.com/search?q=hello+world',
         fillIntoEdit: 'hello world',
         type: 'search-suggest',
       },
@@ -236,7 +236,7 @@ suite('AppTest', function() {
       const tabInfo = {
         tabId: 1,
         title: 'Tab 1',
-        url: {url: 'https://www.google.com/search?q=foo'},
+        url: 'https://www.google.com/search?q=foo',
         showInPreviousTabChip: true,
       };
       testProxy.handler.setResultFor(

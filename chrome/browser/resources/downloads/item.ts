@@ -1093,7 +1093,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return;
     }
     let copied = true;
-    navigator.clipboard.writeText(this.data.url.url)
+    navigator.clipboard.writeText(this.data.url)
         .catch(error => {
           console.error('Unable to copy to clipboard:', error);
           copied = false;
@@ -1208,7 +1208,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     if (copied) {
       const pieces = loadTimeData.getSubstitutedStringPieces(
                          loadTimeData.getString('toastCopiedDownloadLink'),
-                         this.data.url.url) as unknown as
+                         this.data.url) as unknown as
           Array<{collapsible: boolean, value: string, arg: string}>;
       pieces.forEach(p => {
         p.collapsible = !!p.arg;

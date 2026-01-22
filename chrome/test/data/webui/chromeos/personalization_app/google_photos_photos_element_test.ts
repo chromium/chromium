@@ -103,7 +103,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '1',
         name: '1',
         date: 'First row',
-        url: {url: createSvgDataUrl('1')},
+        url: createSvgDataUrl('1'),
         location: '1',
       },
       // Second row.
@@ -112,7 +112,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '2',
         name: '2',
         date: 'Second row',
-        url: {url: createSvgDataUrl('2')},
+        url: createSvgDataUrl('2'),
         location: '2',
       },
       {
@@ -120,7 +120,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '3',
         name: '3',
         date: 'Second row',
-        url: {url: createSvgDataUrl('3')},
+        url: createSvgDataUrl('3'),
         location: '3',
       },
       // Third row.
@@ -129,7 +129,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '4',
         name: '4',
         date: 'Third row',
-        url: {url: createSvgDataUrl('4')},
+        url: createSvgDataUrl('4'),
         location: '4',
       },
     ];
@@ -275,7 +275,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
         name: 'foo',
         date: 'Wednesday, February 16, 2022',
-        url: {url: createSvgDataUrl('svg-0')},
+        url: createSvgDataUrl('svg-0'),
         location: null,
       },
       // Section of photos with one location.
@@ -284,7 +284,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
         name: 'bar',
         date: 'Friday, November 12, 2021',
-        url: {url: createSvgDataUrl('svg-1')},
+        url: createSvgDataUrl('svg-1'),
         location: 'home1',
       },
       {
@@ -292,7 +292,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
         name: 'baz',
         date: 'Friday, November 12, 2021',
-        url: {url: createSvgDataUrl('svg-2')},
+        url: createSvgDataUrl('svg-2'),
         location: 'home1',
       },
       // Section of photos with different locations.
@@ -301,7 +301,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
         name: 'bare',
         date: 'Friday, July 16, 2021',
-        url: {url: createSvgDataUrl('svg-3')},
+        url: createSvgDataUrl('svg-3'),
         location: 'home2',
       },
       {
@@ -309,7 +309,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
         name: 'baze',
         date: 'Friday, July 16, 2021',
-        url: {url: createSvgDataUrl('svg-4')},
+        url: createSvgDataUrl('svg-4'),
         location: 'home3',
       },
     ];
@@ -337,9 +337,6 @@ suite('GooglePhotosPhotosElementTest', function() {
     await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);
     await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
     await waitAfterNextRender(googlePhotosPhotosElement);
-
-    // The wallpaper controller is expected to impose max resolution.
-    photos.forEach(photo => photo.url.url += '=s512');
 
     // Verify that the number of rendered row-info and |photos| is as expected.
     assertEquals(querySelectorAll(photoRowInfo)!.length, sections.length);
@@ -379,7 +376,8 @@ suite('GooglePhotosPhotosElementTest', function() {
           const photoEl = rowEl!.querySelector<WallpaperGridItemElement>(
               `${photoSelector}:nth-of-type(${photoIndex + 1})`);
           assertTrue(!!photoEl);
-          assertDeepEquals(photoEl.src, photo.url);
+          // The wallpaper controller is expected to impose max resolution.
+          assertEquals(photoEl.src, photo.url + '=s512');
           assertEquals(photoEl.primaryText, undefined);
           assertEquals(photoEl.secondaryText, undefined);
         });
@@ -395,7 +393,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home1',
     };
 
@@ -404,7 +402,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
       name: 'bar',
       date: '',
-      url: {url: 'bar.com'},
+      url: 'bar.com',
       location: 'home2',
     };
 
@@ -413,7 +411,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       dedupKey: anotherPhoto.dedupKey,
       name: 'baz',
       date: '',
-      url: {url: 'baz.com'},
+      url: 'baz.com',
       location: 'home3',
     };
 
@@ -426,9 +424,9 @@ suite('GooglePhotosPhotosElementTest', function() {
     await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
 
     // The wallpaper controller is expected to impose max resolution.
-    photo.url.url += '=s512';
-    anotherPhoto.url.url += '=s512';
-    yetAnotherPhoto.url.url += '=s512';
+    photo.url += '=s512';
+    anotherPhoto.url += '=s512';
+    yetAnotherPhoto.url += '=s512';
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -533,15 +531,15 @@ suite('GooglePhotosPhotosElementTest', function() {
   test('displays placeholders until photos are present', async () => {
     // Prepare Google Photos data.
     const photosCount = 5;
-    const photos: GooglePhotosPhoto[] = Array.from(
-        {length: photosCount}, (_, i) => ({
-                                 id: `id-${i}`,
-                                 dedupKey: `dedupKey-${i}`,
-                                 name: `name-${i}`,
-                                 date: '',
-                                 url: {url: createSvgDataUrl(`url-${i}`)},
-                                 location: `location-${i}`,
-                               }));
+    const photos: GooglePhotosPhoto[] =
+        Array.from({length: photosCount}, (_, i) => ({
+                                            id: `id-${i}`,
+                                            dedupKey: `dedupKey-${i}`,
+                                            name: `name-${i}`,
+                                            date: '',
+                                            url: createSvgDataUrl(`url-${i}`),
+                                            location: `location-${i}`,
+                                          }));
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -617,7 +615,7 @@ suite('GooglePhotosPhotosElementTest', function() {
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: '',
-            url: {url: createSvgDataUrl(`url-${nextPhotoId}`)},
+            url: createSvgDataUrl(`url-${nextPhotoId}`),
             location: `location-${nextPhotoId++}`,
           };
         }));
@@ -645,7 +643,7 @@ suite('GooglePhotosPhotosElementTest', function() {
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: '',
-            url: {url: `url-${nextPhotoId}`},
+            url: `url-${nextPhotoId}`,
             location: `location-${nextPhotoId++}`,
           };
         }));
@@ -767,7 +765,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     };
 
@@ -779,7 +777,7 @@ suite('GooglePhotosPhotosElementTest', function() {
     await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
 
     // The wallpaper controller is expected to impose max resolution.
-    photo.url.url += '=s512';
+    photo.url += '=s512';
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -823,7 +821,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
         name: 'bare',
         date: 'Friday, July 16, 2021',
-        url: {url: createSvgDataUrl('svg-3')},
+        url: createSvgDataUrl('svg-3'),
         location: 'home2',
       },
       {
@@ -831,7 +829,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
         name: 'baze',
         date: 'Friday, July 16, 2021',
-        url: {url: createSvgDataUrl('svg-4')},
+        url: createSvgDataUrl('svg-4'),
         location: 'home3',
       },
     ];

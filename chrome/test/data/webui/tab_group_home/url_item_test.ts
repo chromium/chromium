@@ -16,7 +16,7 @@ suite('UrlItemElementTest', () => {
   const sampleItem: UrlItem = {
     id: 123,
     title: 'Test Title',
-    url: {url: 'https://www.example.com'},
+    url: 'https://www.example.com',
   };
 
   setup(() => {
@@ -34,7 +34,7 @@ suite('UrlItemElementTest', () => {
 
     const faviconElement = urlItemElement.$.favicon;
     assertEquals(
-        getFaviconForPageURL(sampleItem.url.url, false),
+        getFaviconForPageURL(sampleItem.url, false),
         faviconElement.style.backgroundImage);
   });
 

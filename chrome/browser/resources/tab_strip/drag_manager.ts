@@ -53,7 +53,7 @@ function getDefaultTabData(): Tab {
     shouldHideThrobber: false,
     showIcon: true,
     title: '',
-    url: {url: ''},
+    url: '',
     faviconUrl: null,
     activeFaviconUrl: null,
     groupId: null,

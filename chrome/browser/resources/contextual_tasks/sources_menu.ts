@@ -82,7 +82,7 @@ export class SourcesMenuElement extends CrLitElement {
   }
 
   protected faviconUrl_(tab: Tab): string {
-    return getFaviconForPageURL(tab.url.url, false);
+    return getFaviconForPageURL(tab.url, false);
   }
 
   protected getHostname_(url: string): string {

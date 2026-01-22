@@ -150,7 +150,7 @@ function getProvider(): TrackProviderInterface {
 
 // Post a track play request to the iframe.
 function postPlayRequest(track: TrackDefinition) {
-  if (!track.mediaUrl.url) {
+  if (!track.mediaUrl) {
     // If there is no valid URL, then there's no point in continuing.
     getProvider().reportPlayerError();
     return;
@@ -164,8 +164,8 @@ function postPlayRequest(track: TrackDefinition) {
         {
           cmd: 'play',
           arg: {
-            mediaUrl: track.mediaUrl.url,
-            thumbnailUrl: track.thumbnailUrl.url,
+            mediaUrl: track.mediaUrl,
+            thumbnailUrl: track.thumbnailUrl,
             title: track.title,
             artist: track.artist,
           },

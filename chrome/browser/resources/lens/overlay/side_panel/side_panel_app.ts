@@ -546,7 +546,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   private loadResultsInFrame(resultsUrl: Url) {
-    const url = new URL(resultsUrl.url);
+    const url = new URL(resultsUrl);
     const resultsBoundingRect = this.getResults().getBoundingClientRect();
     if (resultsBoundingRect.width > 0) {
       url.searchParams.set(

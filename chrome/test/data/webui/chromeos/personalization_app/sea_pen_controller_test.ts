@@ -51,7 +51,7 @@ suite('SeaPen reducers', () => {
         const recentImageId = seaPenProvider.recentImageIds[1] as number;
 
         await selectSeaPenThumbnail(
-            {image: {url: ''}, id: recentImageId}, seaPenProvider, seaPenStore);
+            {image: '', id: recentImageId}, seaPenProvider, seaPenStore);
 
         assertDeepEquals(
             [
@@ -189,7 +189,7 @@ suite('SeaPen reducers', () => {
     personalizationStore.data.wallpaper.seaPen.currentSelected = 123;
 
     const promise = selectSeaPenThumbnail(
-        {image: {url: ''}, id: 456}, seaPenProvider, seaPenStore);
+        {image: '', id: 456}, seaPenProvider, seaPenStore);
 
     assertDeepEquals(
         {image: true, attribution: true},
@@ -212,8 +212,8 @@ suite('SeaPen reducers', () => {
     assertDeepEquals(
         [
           beginLoadSelectedImageAction(),
-          beginSelectSeaPenThumbnailAction({image: {url: ''}, id: 456}),
-          endSelectSeaPenThumbnailAction({image: {url: ''}, id: 456}, false),
+          beginSelectSeaPenThumbnailAction({image: '', id: 456}),
+          endSelectSeaPenThumbnailAction({image: '', id: 456}, false),
           setFullscreenStateAction(FullscreenPreviewState.OFF),
           setSeaPenFullscreenStateAction(FullscreenPreviewState.OFF),
           setSelectedRecentSeaPenImageAction(123),
@@ -273,7 +273,7 @@ suite('SeaPen reducers', () => {
     seaPenProvider.selectSeaPenThumbnailResponse =
         Promise.resolve({success: false});
 
-    const thumbnail = {image: {url: ''}, id: 456};
+    const thumbnail = {image: '', id: 456};
     await selectSeaPenThumbnail(thumbnail, seaPenProvider, seaPenStore);
 
     assertDeepEquals(

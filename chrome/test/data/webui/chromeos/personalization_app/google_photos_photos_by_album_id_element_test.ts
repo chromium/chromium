@@ -56,7 +56,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
               id: '1',
               title: 'foo',
               photoCount: 1,
-              preview: {url: 'foo.com'},
+              preview: 'foo.com',
               timestamp: {internalValue: BigInt('1')},
               isShared: false,
             };
@@ -123,7 +123,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       photoCount: 2,
       // Use svg data urls so that img on-load event fires and removes the
       // placeholder attribute.
-      preview: {url: createSvgDataUrl('svg-1')},
+      preview: createSvgDataUrl('svg-1'),
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     };
@@ -132,7 +132,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '2',
       title: 'bar',
       photoCount: 1,
-      preview: {url: createSvgDataUrl('svg-2')},
+      preview: createSvgDataUrl('svg-2'),
       timestamp: {internalValue: BigInt('2')},
       isShared: false,
     };
@@ -144,7 +144,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
           name: 'foo',
           date: '',
-          url: {url: createSvgDataUrl('svg-3')},
+          url: createSvgDataUrl('svg-3'),
           location: 'home1',
         },
         {
@@ -152,7 +152,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
           name: 'bar',
           date: '',
-          url: {url: createSvgDataUrl('svg-4')},
+          url: createSvgDataUrl('svg-4'),
           location: 'home2',
         },
       ],
@@ -162,7 +162,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
           dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
           name: 'baz',
           date: '',
-          url: {url: createSvgDataUrl('svg-5')},
+          url: createSvgDataUrl('svg-5'),
           location: 'home3',
         },
       ],
@@ -278,7 +278,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '1',
       title: '',
       photoCount: 2,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     };
@@ -288,7 +288,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home1',
     };
 
@@ -297,7 +297,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
       name: 'bar',
       date: '',
-      url: {url: 'bar.com'},
+      url: 'bar.com',
       location: 'home2',
     };
 
@@ -306,7 +306,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       dedupKey: photo.dedupKey,
       name: 'baz',
       date: '',
-      url: {url: 'baz.com'},
+      url: 'baz.com',
       location: 'home3',
     };
 
@@ -323,10 +323,10 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
     await fetchGooglePhotosPhotos(wallpaperProvider, personalizationStore);
 
     // The wallpaper controller is expected to impose max resolution.
-    album.preview.url += '=s512';
-    photo.url.url += '=s512';
-    anotherPhoto.url.url += '=s512';
-    yetAnotherPhoto.url.url += '=s512';
+    album.preview += '=s512';
+    photo.url += '=s512';
+    anotherPhoto.url += '=s512';
+    yetAnotherPhoto.url += '=s512';
 
     // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =
@@ -456,19 +456,19 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '1',
       title: '',
       photoCount: photosCount,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     };
-    const photos: GooglePhotosPhoto[] = Array.from(
-        {length: photosCount}, (_, i) => ({
-                                 id: `id-${i}`,
-                                 dedupKey: `dedupKey-${i}`,
-                                 name: `name-${i}`,
-                                 date: '',
-                                 url: {url: createSvgDataUrl(`svg-${i}`)},
-                                 location: `location-${i}`,
-                               }));
+    const photos: GooglePhotosPhoto[] =
+        Array.from({length: photosCount}, (_, i) => ({
+                                            id: `id-${i}`,
+                                            dedupKey: `dedupKey-${i}`,
+                                            name: `name-${i}`,
+                                            date: '',
+                                            url: createSvgDataUrl(`svg-${i}`),
+                                            location: `location-${i}`,
+                                          }));
 
     // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =
@@ -555,7 +555,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '1',
       title: '',
       photoCount: photosCount,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     };
@@ -572,7 +572,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: '',
-            url: {url: `url-${nextPhotoId}`},
+            url: `url-${nextPhotoId}`,
             location: `location-${nextPhotoId++}`,
           };
         }));
@@ -612,7 +612,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
             dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: '',
-            url: {url: `url-${nextPhotoId}`},
+            url: `url-${nextPhotoId}`,
             location: `location-${nextPhotoId++}`,
           };
         }));
@@ -667,7 +667,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       title: '',
       photoCount: 0,
       isShared: false,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt(0)},
     };
 
@@ -711,7 +711,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       id: '1',
       title: 'foo',
       photoCount: 1,
-      preview: {url: 'foo.com'},
+      preview: 'foo.com',
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     };
@@ -721,7 +721,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     };
 

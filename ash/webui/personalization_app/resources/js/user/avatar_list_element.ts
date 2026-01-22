@@ -188,11 +188,11 @@ export class AvatarListElement extends WithPersonalizationStore {
         icon: 'personalization:folder',
         title: this.i18n('chooseAFile'),
       });
-      if (profileImage && profileImage.url) {
+      if (profileImage) {
         options.push({
           id: OptionId.PROFILE_IMAGE,
           class: 'image-container',
-          imgSrc: profileImage.url,
+          imgSrc: profileImage,
           icon: 'personalization-shared:circle-checkmark',
           title: this.i18n('googleProfilePhoto'),
         });
@@ -201,7 +201,7 @@ export class AvatarListElement extends WithPersonalizationStore {
         options.push({
           id: OptionId.LAST_EXTERNAL_IMAGE,
           class: 'image-container',
-          imgSrc: lastExternalUserImageUrl.url,
+          imgSrc: lastExternalUserImageUrl,
           icon: 'personalization-shared:circle-checkmark',
           title: this.i18n('lastExternalImageTitle'),
         });
@@ -212,7 +212,7 @@ export class AvatarListElement extends WithPersonalizationStore {
         options.push({
           id: `defaultUserImage-${defaultImage.index}`,
           class: 'image-container',
-          imgSrc: defaultImage.url.url,
+          imgSrc: defaultImage.url,
           icon: 'personalization-shared:circle-checkmark',
           title: defaultImage.title,
           defaultImageIndex: defaultImage.index,
@@ -247,8 +247,8 @@ export class AvatarListElement extends WithPersonalizationStore {
   }
 
   private onLastExternalUserImageUrlChanged_(_: Url|null, old: Url|null) {
-    if (old && old.url && old.url.startsWith('blob:')) {
-      URL.revokeObjectURL(old.url);
+    if (old && old.startsWith('blob:')) {
+      URL.revokeObjectURL(old);
     }
   }
 

@@ -404,7 +404,7 @@ class ChromeHelperImpl extends ChromeHelper {
   }
 
   override openUrlInBrowser(url: string): void {
-    this.remote.openUrlInBrowser({url: url});
+    this.remote.openUrlInBrowser(url);
   }
 
   private async checkReturn(

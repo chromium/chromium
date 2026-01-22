@@ -62,7 +62,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       accountInfo: {
         name: 'Test User',
         email: 'test@google.com',
-        accountImageSrc: {url: 'http://example.com/image.png'},
+        accountImageSrc: 'http://example.com/image.png',
       },
     }));
 

@@ -226,7 +226,7 @@ export class ThemesElement extends ThemesElementBase {
   protected isThemeSelected_(url: string): boolean {
     return !!this.theme_ && !this.theme_.thirdPartyThemeInfo &&
         !!this.theme_.backgroundImage &&
-        this.theme_?.backgroundImage.url.url === url &&
+        this.theme_?.backgroundImage.url === url &&
         !this.isRefreshToggleChecked_;
   }
 }

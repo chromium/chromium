@@ -26,7 +26,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
     const mockResults: SearchResultItem[] = [
       {
         title: 'Google',
-        url: {url: 'http://google.com'},
+        url: 'http://google.com',
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
         shortDateTime: 'Sept 2, 2022',
@@ -37,7 +37,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       },
       {
         title: 'Youtube',
-        url: {url: 'http://youtube.com'},
+        url: 'http://youtube.com',
         urlForDisplay: 'youtube.com',
         relativeTime: '4 hours ago',
         shortDateTime: 'Sept 2, 2022',
@@ -335,7 +335,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
 
       const resultWithAnswer = {
         title: 'Website with answer',
-        url: {url: 'http://answer.com'},
+        url: 'http://answer.com',
         urlForDisplay: 'Answer.com',
         relativeTime: '2 months ago',
         shortDateTime: 'Sept 2, 2022',
@@ -850,7 +850,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       // Make the result at index 1 the result corresponding to the answer.
       const resultWithAnswer = {
         title: 'Website with answer',
-        url: {url: 'http://answer.com'},
+        url: 'http://answer.com',
         urlForDisplay: 'Answer.com',
         relativeTime: '2 months ago',
         shortDateTime: 'Sept 2, 2022',
@@ -895,7 +895,7 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       function sendAnswerWithTextDirectives(directives: string[] = []) {
         const resultWithAnswer = {
           title: 'Website with answer',
-          url: {url: 'http://answer.com'},
+          url: 'http://answer.com',
           urlForDisplay: 'Answer.com',
           relativeTime: '2 months ago',
           shortDateTime: 'Jan 2, 2022',
@@ -948,10 +948,10 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
           '.result-url-and-favicon  .favicon');
       assertEquals(2, favicons.length);
       assertEquals(
-          getFaviconForPageURL(mockResults[0]!.url.url, true),
+          getFaviconForPageURL(mockResults[0]!.url, true),
           favicons[0]!.style.backgroundImage);
       assertEquals(
-          getFaviconForPageURL(mockResults[1]!.url.url, true),
+          getFaviconForPageURL(mockResults[1]!.url, true),
           favicons[1]!.style.backgroundImage);
     });
 

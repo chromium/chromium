@@ -25,13 +25,13 @@ function createBrowserProxy() {
 
 function getTestCluster(): Cluster {
   const rawVisitData: RawVisitData = {
-    url: {url: ''},
+    url: '',
     visitTime: {internalValue: BigInt(0)},
   };
 
   const urlVisit1: URLVisit = {
     visitId: BigInt(1),
-    normalizedUrl: {url: 'https://www.google.com'},
+    normalizedUrl: 'https://www.google.com',
     urlForDisplay: 'https://www.google.com',
     pageTitle: '',
     titleMatchPositions: [],
@@ -47,7 +47,7 @@ function getTestCluster(): Cluster {
 
   const urlVisit2: URLVisit = {
     visitId: BigInt(2),
-    normalizedUrl: {url: 'https://www.example.com'},
+    normalizedUrl: 'https://www.example.com',
     urlForDisplay: 'https://www.example.com',
     pageTitle: '',
     titleMatchPositions: [],
@@ -63,11 +63,11 @@ function getTestCluster(): Cluster {
 
   const relatedSearch1 = {
     query: 'abc',
-    url: {url: 'https://www.google.com'},
+    url: 'https://www.google.com',
   };
   const relatedSearch2 = {
     query: 'example',
-    url: {url: 'https://www.example.com'},
+    url: 'https://www.example.com',
   };
 
   return {
@@ -143,6 +143,6 @@ suite('cluster element', () => {
 
     queries[0]!.$.searchQueryLink.click();
     const params = await handler.whenCalled('openHistoryUrl');
-    assertEquals('https://www.google.com', params[0].url);
+    assertEquals('https://www.google.com', params[0]);
   });
 });

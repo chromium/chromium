@@ -30,7 +30,7 @@ suite('CrComponentsRealboxMatchTest', () => {
 
   test('MousedownEventsAreSentToHandler', async () => {
     const matchIndex = 2;
-    const destinationUrl = {url: 'http://google.com'};
+    const destinationUrl = 'http://google.com';
     matchEl.matchIndex = matchIndex;
     matchEl.match.destinationUrl = destinationUrl;
 
@@ -43,7 +43,7 @@ suite('CrComponentsRealboxMatchTest', () => {
 
   test('ClickNavigates', async () => {
     const matchIndex = 1;
-    const destinationUrl = {url: 'http://google.com'};
+    const destinationUrl = 'http://google.com';
     matchEl.matchIndex = matchIndex;
     matchEl.match.destinationUrl = destinationUrl;
 
@@ -119,7 +119,7 @@ suite('CrComponentsRealboxMatchTest', () => {
 
   test('DeleteButtonRemovesMatch', async () => {
     const matchIndex = 1;
-    const destinationUrl = {url: 'http://google.com'};
+    const destinationUrl = 'http://google.com';
     matchEl.matchIndex = matchIndex;
     matchEl.match.destinationUrl = destinationUrl;
 

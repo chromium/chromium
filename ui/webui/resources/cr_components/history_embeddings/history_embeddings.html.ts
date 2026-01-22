@@ -32,7 +32,7 @@ ${!this.enableAnswers_ ? html`
       <div>
         <div class="result-items">
           ${this.searchResult_?.items.map((item, index) => html`
-            <cr-url-list-item url="${item.url.url}" title="${item.title}"
+            <cr-url-list-item url="${item.url}" title="${item.title}"
                 description="${item.urlForDisplay}"
                 @click="${this.onResultClick_}" @auxclick="${this.onResultClick_}"
                 data-index="${index}" @contextmenu="${this.onResultContextMenu_}"
@@ -123,7 +123,7 @@ ${this.enableAnswers_ ? html`
       <div class="result-items">
         ${this.searchResult_?.items.map((item, index) => html`
           ${this.enableImages_ ? html`
-            <a class="result-item" href="${item.url.url}" target="_blank"
+            <a class="result-item" href="${item.url}" target="_blank"
                 @click="${this.onResultClick_}" @auxclick="${this.onResultClick_}"
                 data-index="${index}" @contextmenu="${this.onResultContextMenu_}">
               <div class="result-image">
@@ -150,7 +150,7 @@ ${this.enableAnswers_ ? html`
               </cr-icon-button>
             </a>
           ` : html`
-            <cr-url-list-item url="${item.url.url}" title="${item.title}"
+            <cr-url-list-item url="${item.url}" title="${item.title}"
                 description="${item.urlForDisplay}"
                 @click="${this.onResultClick_}" @auxclick="${this.onResultClick_}"
                 @contextmenu="${this.onResultContextMenu_}"

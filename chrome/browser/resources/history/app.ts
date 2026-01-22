@@ -807,14 +807,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
     const historyEmbeddingsItem = e.detail;
     this.fire_(
         'change-query',
-        {search: 'host:' + new URL(historyEmbeddingsItem.url.url).hostname});
+        {search: 'host:' + new URL(historyEmbeddingsItem.url).hostname});
   }
 
   protected onHistoryEmbeddingsItemRemoveClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     const historyEmbeddingsItem = e.detail;
     this.pageHandler_.removeVisits([{
-      url: historyEmbeddingsItem.url.url,
+      url: historyEmbeddingsItem.url,
       timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
     }]);
   }

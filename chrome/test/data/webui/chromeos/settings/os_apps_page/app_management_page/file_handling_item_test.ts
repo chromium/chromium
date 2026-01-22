@@ -24,7 +24,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     isManaged: false,
     userVisibleTypes: 'TXT',
     userVisibleTypesLabel: 'Supported type: TXT',
-    learnMoreUrl: {url: 'https://google.com/'},
+    learnMoreUrl: 'https://google.com/',
   };
 
   setup(async function() {
@@ -82,6 +82,6 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertTrue(!!learnMore);
     const link = learnMore.shadowRoot!.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!link);
-    assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!.url);
+    assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!);
   });
 });

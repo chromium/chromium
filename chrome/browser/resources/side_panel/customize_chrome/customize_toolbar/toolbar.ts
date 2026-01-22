@@ -118,8 +118,7 @@ export class ToolbarElement extends ToolbarElementBase {
   private populateUi_() {
     this.handler_.listActions().then(({actions}) => {
       this.actions_ = actions;
-      assert(this.actions_.every(
-          action => action.iconUrl.url.startsWith('data:')));
+      assert(this.actions_.every(action => action.iconUrl.startsWith('data:')));
     });
 
     this.handler_.listCategories().then(({categories}) => {

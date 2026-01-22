@@ -21,7 +21,7 @@ export function getHtml(this: MostVisitedElement) {
       @mouseenter="${this.onTileHover_}" @mouseleave="${this.onTileExit_}"
       @mousedown="${this.onTileMouseDown_}" @keydown="${this.onTileKeyDown_}"
       draggable="true" data-index="${index}">
-      <a href="${item.url.url}" aria-label="${item.title}"
+      <a href="${item.url}" aria-label="${item.title}"
           draggable="false">
       </a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"

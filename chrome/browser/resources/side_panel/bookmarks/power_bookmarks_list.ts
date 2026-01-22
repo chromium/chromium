@@ -557,7 +557,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   getProductImageUrl(bookmark: BookmarksTreeNode): string {
     const bookmarkProductInfo = this.availableProductInfos_.get(bookmark.id);
     if (bookmarkProductInfo) {
-      return bookmarkProductInfo.info.imageUrl.url;
+      return bookmarkProductInfo.info.imageUrl;
     } else {
       return '';
     }
@@ -763,14 +763,14 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private setAvailableProductInfo_(productInfo: BookmarkProductInfo) {
     const bookmarkId = productInfo.bookmarkId.toString();
     this.availableProductInfos_.set(bookmarkId, productInfo);
-    if (productInfo.info.imageUrl.url === '') {
+    if (productInfo.info.imageUrl === '') {
       return;
     }
     const bookmark = this.bookmarksService_.findBookmarkWithId(bookmarkId)!;
     if (!bookmark) {
       return;
     }
-    this.setImageUrl(bookmark, productInfo.info.imageUrl.url);
+    this.setImageUrl(bookmark, productInfo.info.imageUrl);
   }
 
   /**

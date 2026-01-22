@@ -813,9 +813,7 @@ export class AppElement extends AppElementBase {
   }
 
   private computeBackgroundImageAttributionUrl_(): string {
-    return this.theme_ && this.theme_.backgroundImageAttributionUrl ?
-        this.theme_.backgroundImageAttributionUrl.url :
-        '';
+    return this.theme_ && this.theme_.backgroundImageAttributionUrl || '';
   }
 
   private computeRealboxShown_(): boolean {

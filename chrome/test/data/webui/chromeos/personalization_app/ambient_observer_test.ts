@@ -58,7 +58,7 @@ suite('AmbientObserverTest', function() {
         title: 'Recent Highlights title',
         description: 'Recent Highlights description',
         topicSource: TopicSource.kGooglePhotos,
-        url: {url: 'asdf'},
+        url: 'asdf',
       },
       {
         id: 'abcdef',
@@ -67,7 +67,7 @@ suite('AmbientObserverTest', function() {
         title: 'Another album',
         description: 'Another album description',
         topicSource: TopicSource.kGooglePhotos,
-        url: {url: 'qwerty'},
+        url: 'qwerty',
       },
     ];
     personalizationStore.data.ambient.albums = initialAlbums;
@@ -77,15 +77,11 @@ suite('AmbientObserverTest', function() {
     ambientProvider.ambientObserverRemote!.onAlbumsChanged([
       {
         ...initialAlbums[0]!,
-        url: {
-          url: 'new-recent-highlights-url',
-        },
+        url: 'new-recent-highlights-url',
       },
       {
         ...initialAlbums[1]!,
-        url: {
-          url: 'new-regular-album-url',
-        },
+        url: 'new-regular-album-url',
       },
     ]);
 
@@ -94,9 +90,9 @@ suite('AmbientObserverTest', function() {
 
     assertEquals('RecentHighlights', albums[0]!.id);
     assertEquals(
-        'asdf', albums[0]!.url.url, 'kept original url for recent highlights');
+        'asdf', albums[0]!.url, 'kept original url for recent highlights');
     assertEquals(
-        'new-regular-album-url', albums[1]!.url.url,
+        'new-regular-album-url', albums[1]!.url,
         'used updated regular album url');
   });
 });
@@ -137,7 +133,7 @@ suite('GooglePhotosPreviewLoadPerformance', () => {
         'still true because no previews stored yet');
 
     personalizationStore.data.ambient.previews = [
-      {url: 'asdf'},
+      'asdf',
     ];
     ambientProvider.ambientObserverRemote!.onPreviewsFetched([]);
     personalizationStore.expectAction(AmbientActionName.SET_PREVIEWS);
@@ -148,7 +144,7 @@ suite('GooglePhotosPreviewLoadPerformance', () => {
   test('sets to false after receiving preview images', async () => {
     personalizationStore.data.ambient.previews = [];
     ambientProvider.ambientObserverRemote!.onPreviewsFetched([
-      {url: 'asdf'},
+      'asdf',
     ]);
     personalizationStore.expectAction(AmbientActionName.SET_PREVIEWS);
     await personalizationStore.waitForAction(AmbientActionName.SET_PREVIEWS);

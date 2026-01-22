@@ -184,7 +184,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       title: 'Album 0',
       photoCount: 0,
       isShared: false,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt(0)},
     };
 

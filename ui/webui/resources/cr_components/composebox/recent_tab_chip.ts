@@ -52,7 +52,7 @@ export class RecentTabChipElement extends RecentTabChipBase {
     if (!this.recentTab) {
       return '';
     }
-    const url = new URL(this.recentTab.url.url);
+    const url = new URL(this.recentTab.url);
     const domain = url.hostname.replace(/^www\./, '');
     // Escape the title and domain as they are passed as arguments to i18n(),
     // which uses `parseHtmlSubset` to sanitize the localized string. If the

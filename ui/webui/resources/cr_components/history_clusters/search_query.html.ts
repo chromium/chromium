@@ -9,7 +9,7 @@ import type {SearchQueryElement} from './search_query.js';
 export function getHtml(this: SearchQueryElement) {
   return html`
 <a id="searchQueryLink" class="pill pill-icon-start"
-    href="${this.searchQuery?.url.url || nothing}"
+    href="${this.searchQuery?.url || nothing}"
     @click="${this.onClick_}" @auxclick="${this.onAuxClick_}"
     @keydown="${this.onKeydown_}">
   <div id="hover-layer"></div>

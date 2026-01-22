@@ -25,7 +25,7 @@ export function getHtml(this: TopToolbarElement) {
   </div>
   <div class="top-toolbar-action-buttons">
     <contextual-tasks-favicon-group id="sources"
-        .urls="${this.attachedTabs.map(t => t.url.url)}"
+        .urls="${this.attachedTabs.map(t => t.url)}"
         title="Sources" @click="${this.onSourcesClick_}"
         ?hidden="${!this.shouldShowSourcesMenuButton_()}">
     </contextual-tasks-favicon-group>

@@ -116,7 +116,7 @@ function addMemberToGroup(member: GroupMember, group: HTMLUListElement) {
   appendTextChildToList(member.displayName, memberItem);
   appendTextChildToList(member.email, memberItem);
   appendTextChildToList(roleTypeToString(member.role), memberItem);
-  appendTextChildToList(member.avatarUrl.url, memberItem);
+  appendTextChildToList(member.avatarUrl, memberItem);
   appendTextChildToList(member.givenName, memberItem);
   memberlistItem.appendChild(memberItem);
   group.appendChild(memberlistItem);

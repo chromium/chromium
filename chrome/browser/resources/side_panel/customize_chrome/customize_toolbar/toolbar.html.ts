@@ -44,7 +44,7 @@ export function getHtml(this: ToolbarElement) {
           class="toggle-container choose-icons-row-container choose-icons-row"
           @click="${this.getActionToggleHandler_(action.id, !action.pinned)}"
         >
-          <img class="toggle-icon" src="${action.iconUrl.url}"
+          <img class="toggle-icon" src="${action.iconUrl}"
               aria-hidden="true"></img>
           <div class="toggle-title">${action.displayName}</div>
           <cr-toggle @change="${
@@ -56,7 +56,7 @@ export function getHtml(this: ToolbarElement) {
       ` :
                               html`
         <div class="choose-icons-row-container choose-icons-row">
-          <img class="toggle-icon" src="${action.iconUrl.url}"
+          <img class="toggle-icon" src="${action.iconUrl}"
               aria-hidden="true"></img>
           <div class="toggle-title">${action.displayName}</div>
           <div class="enterprise-enabled-text"

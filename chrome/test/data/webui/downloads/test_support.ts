@@ -4,7 +4,6 @@
 
 import type {IconLoader, MojomData, PageHandlerInterface, PageRemote} from 'chrome://downloads/downloads.js';
 import {DangerType, PageCallbackRouter, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
-import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestDownloadsProxy {
@@ -152,7 +151,7 @@ export function createDownload(config?: Partial<MojomData>): MojomData {
         tailoredWarningType:
             TailoredWarningType.kNoApplicableTailoredWarningType,
         total: -1,
-        url: stringToMojoUrl('http://permission.site'),
+        url: 'http://permission.site',
         displayInitiatorOrigin: 'http://permission.site',
         safeBrowsingState: SafeBrowsingState.kStandardProtection,
         hasSafeBrowsingVerdict: true,

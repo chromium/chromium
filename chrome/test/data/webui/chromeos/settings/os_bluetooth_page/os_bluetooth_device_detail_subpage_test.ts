@@ -197,7 +197,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         AudioOutputCapability.kCapableOfAudioOutput,
         /*opt_deviceType=*/ DeviceType.kMouse,
         /*opt_isBlockedByPolicy=*/ true);
-    const fakeUrl = {url: 'fake_image'};
+    const fakeUrl = 'fake_image';
 
     device.deviceProperties.imageInfo = {
       trueWirelessImages: {
@@ -205,10 +205,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         caseImageUrl: fakeUrl,
         rightBudImageUrl: fakeUrl,
       },
-      defaultImageUrl: {url: ''},
+      defaultImageUrl: '',
     };
-      device.deviceProperties.batteryInfo = {
-        ...getDefaultDeviceBatteryInfo(),
+    device.deviceProperties.batteryInfo = {
+      ...getDefaultDeviceBatteryInfo(),
       leftBudInfo: {batteryPercentage: 90},
     };
 
@@ -237,18 +237,18 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
         AudioOutputCapability.kCapableOfAudioOutput,
         /*opt_deviceType=*/ DeviceType.kMouse,
         /*opt_isBlockedByPolicy=*/ true);
-    const fakeUrl = {url: 'fake_image'};
+    const fakeUrl = 'fake_image';
     // Emulate missing the right bud image.
     device.deviceProperties.imageInfo = {
       trueWirelessImages: {
         leftBudImageUrl: fakeUrl,
-        rightBudImageUrl: {url: ''},
+        rightBudImageUrl: '',
         caseImageUrl: fakeUrl,
       },
-      defaultImageUrl: {url: ''},
+      defaultImageUrl: '',
     };
-      device.deviceProperties.batteryInfo = {
-        ...getDefaultDeviceBatteryInfo(),
+    device.deviceProperties.batteryInfo = {
+      ...getDefaultDeviceBatteryInfo(),
       leftBudInfo: {batteryPercentage: 90},
     };
 

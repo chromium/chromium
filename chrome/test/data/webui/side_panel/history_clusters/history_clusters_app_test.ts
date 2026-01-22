@@ -130,7 +130,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     const embeddingsComponent = await forceEmbeddingsComponent();
     const mockItem = {
       title: 'Google',
-      url: {url: 'http://google.com'},
+      url: 'http://google.com',
       urlForDisplay: 'google.com',
       relativeTime: '2 hours ago',
       shortDateTime: 'Sept 2, 2022',
@@ -160,7 +160,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     const embeddingsComponent = await forceEmbeddingsComponent();
     const mockItem = {
       title: 'Google',
-      url: {url: 'http://google.com'},
+      url: 'http://google.com',
       urlForDisplay: 'google.com',
       relativeTime: '2 hours ago',
       shortDateTime: 'Sept 2, 2022',
@@ -187,7 +187,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     embeddingsComponent.dispatchEvent(new CustomEvent('remove-item-click', {
       detail: {
         title: 'Google',
-        url: {url: 'http://google.com'},
+        url: 'http://google.com',
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
         sourcePassage: 'Google description',
@@ -196,7 +196,7 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     }));
     const removeVisitArgs =
         await clustersHandler.whenCalled('removeVisitByUrlAndTime');
-    assertDeepEquals({url: 'http://google.com'}, removeVisitArgs[0]);
+    assertDeepEquals('http://google.com', removeVisitArgs[0]);
     assertEquals(1000, removeVisitArgs[1]);
   });
 

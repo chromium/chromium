@@ -27,7 +27,7 @@ export function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
         contentsClass: [{offset: 0, style: 0}],
         description: 'Google search',
         descriptionClass: [{offset: 0, style: 4}],
-        destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+        destinationUrl: 'https://www.google.com/search?q=hello+world',
         fillIntoEdit: 'hello world',
         type: 'search-what-you-typed',
       },

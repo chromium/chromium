@@ -90,7 +90,7 @@ export class UsbInternalsAppElement extends HTMLElement {
     for (const device of response.devices) {
       td[0]!.textContent = device.name;
       td[1]!.textContent = device.serialNumber;
-      td[2]!.textContent = device.landingPage.url;
+      td[2]!.textContent = device.landingPage;
 
       const clone = document.importNode(rowTemplate.content, true);
 

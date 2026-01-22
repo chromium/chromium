@@ -338,10 +338,9 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
 
     if (strictQuery('#pageUrlCheckbox', this.shadowRoot, CrCheckboxElement)
             .checked) {
-      report.feedbackContext.pageUrl = {
-        url: strictQuery('#pageUrlText', this.shadowRoot, HTMLElement)
-                 .textContent.trim(),
-      };
+      report.feedbackContext.pageUrl =
+          strictQuery('#pageUrlText', this.shadowRoot, HTMLElement)
+              .textContent.trim();
     }
 
     if (this.feedbackContext.extraDiagnostics &&
