@@ -5994,5 +5994,49 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
         self.assertCountEqual(expected_warnings, warnings)
 
 
+class CheckNoMojomDataViewIncludesTest(unittest.TestCase):
+
+    def testPositive(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo.cc', ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(
+            'Do not #include <...>.mojom-data-view.h; #include <...>.mojom-shared.h instead.',
+            results[0].message)
+
+    def testNegative(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo.cc', ['#include "foo.mojom-shared.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testTraitsExcluded(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo_traits.cc',
+                             ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testSpecificFileExcluded(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('services/network/url_loader.cc',
+                             ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
     unittest.main()

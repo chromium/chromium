@@ -7297,6 +7297,41 @@ def CheckStableMojomChanges(input_api, output_api):
     return []
 
 
+def CheckNoMojomDataViewIncludes(input_api, output_api):
+    """Checks that .mojom-data-view.h is not included."""
+    problems = []
+
+    # Exclude files containing 'traits' and specific files.
+    def FileFilter(affected_file):
+        path = affected_file.LocalPath()
+        if 'traits' in path:
+            return False
+        if path in [
+                'services/network/url_loader.cc',
+                'services/on_device_model/public/cpp/model_assets.h'
+        ]:
+            return False
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r'.*\.cc$', r'.*\.h$'])
+
+    include_pattern = input_api.re.compile(
+        r'#include\s+.*\.mojom-data-view\.h"')
+
+    for f in input_api.AffectedSourceFiles(FileFilter):
+        for line_num, line in f.ChangedContents():
+            if include_pattern.search(line):
+                problems.append('%s:%d\n    %s' %
+                                (f.LocalPath(), line_num, line.strip()))
+
+    if problems:
+        return [
+            output_api.PresubmitError(
+                'Do not #include <...>.mojom-data-view.h; '
+                '#include <...>.mojom-shared.h instead.', problems)
+        ]
+    return []
+
+
 def CheckDeprecationOfPreferences(input_api, output_api):
     """Removing a preference should come with a deprecation."""
 
