@@ -795,7 +795,7 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
   const Element* focusgroup_owner =
       FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(&element);
   if (!focusgroup_owner) {
-    // Not in a focusgroup.
+    // Not participating in a focusgroup.
     return false;
   }
 

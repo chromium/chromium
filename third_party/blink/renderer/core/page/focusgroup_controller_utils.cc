@@ -362,6 +362,12 @@ Element* FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(
     return nullptr;
   }
 
+  // An element with focusgroup="none" is opted out of focusgroup management.
+  // It should not be considered a focusgroup item.
+  if (element->GetFocusgroupData().behavior == FocusgroupBehavior::kOptOut) {
+    return nullptr;
+  }
+
   return focusgroup::FindFocusgroupOwner(element);
 }
 
