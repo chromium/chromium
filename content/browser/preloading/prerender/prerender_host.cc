@@ -841,8 +841,6 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
 
   // There should be no ongoing main-frame navigation during activation.
-  // TODO(crbug.com/40174232): Make sure sub-frame navigations are
-  // fine.
   CHECK(!GetFrameTree()->root()->HasNavigation());
 
   // Before the root's current_frame_host is cleared, collect the subframes of
