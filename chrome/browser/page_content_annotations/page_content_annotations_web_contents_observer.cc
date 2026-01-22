@@ -65,7 +65,8 @@ PageContentAnnotationsWebContentsObserver::GetAnnotatedPageContentRequest() {
   if (should_enable) {
     if (!annotated_page_content_request_) {
       annotated_page_content_request_ = AnnotatedPageContentRequest::Create(
-          web_contents(), fetch_page_context_callback_, get_tab_id_callback_);
+          web_contents(), *page_content_extraction_service_,
+          fetch_page_context_callback_, get_tab_id_callback_);
     }
   } else {
     annotated_page_content_request_.reset();

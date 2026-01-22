@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -19,6 +20,8 @@ class PageContextEligibility;
 }  // namespace optimization_guide
 
 namespace page_content_annotations {
+
+class PageContentExtractionService;
 
 using FetchPageContextCallback =
     base::RepeatingCallback<void(content::WebContents&,
@@ -35,11 +38,13 @@ class AnnotatedPageContentRequest {
  public:
   static std::unique_ptr<AnnotatedPageContentRequest> Create(
       content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
       FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
   AnnotatedPageContentRequest(
       content::WebContents* web_contents,
+      PageContentExtractionService& page_content_extraction_service,
       blink::mojom::AIPageContentOptionsPtr request,
       FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
@@ -89,6 +94,7 @@ class AnnotatedPageContentRequest {
   void OnPageContextEligibilityAPILoaded(
       optimization_guide::PageContextEligibility* page_context_eligibility);
 
+  raw_ref<PageContentExtractionService> page_content_extraction_service_;
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
   const raw_ptr<content::WebContents> web_contents_;
   const blink::mojom::AIPageContentOptionsPtr request_;

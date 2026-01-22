@@ -12,9 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
@@ -59,6 +57,7 @@ void RecordPdfPageCountMetrics(
 std::unique_ptr<AnnotatedPageContentRequest>
 AnnotatedPageContentRequest::Create(
     content::WebContents* web_contents,
+    PageContentExtractionService& page_content_extraction_service,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback) {
   auto request = blink::mojom::AIPageContentOptions::New();
@@ -71,16 +70,18 @@ AnnotatedPageContentRequest::Create(
       IsAnnotatedPageContentOnCriticalPath();
 
   return std::make_unique<AnnotatedPageContentRequest>(
-      web_contents, std::move(request), std::move(fetch_page_context_callback),
-      std::move(get_tab_id_callback));
+      web_contents, page_content_extraction_service, std::move(request),
+      std::move(fetch_page_context_callback), std::move(get_tab_id_callback));
 }
 
 AnnotatedPageContentRequest::AnnotatedPageContentRequest(
     content::WebContents* web_contents,
+    PageContentExtractionService& page_content_extraction_service,
     blink::mojom::AIPageContentOptionsPtr request,
     FetchPageContextCallback fetch_page_context_callback,
     GetTabIdCallback get_tab_id_callback)
-    : web_contents_(web_contents),
+    : page_content_extraction_service_(page_content_extraction_service),
+      web_contents_(web_contents),
       request_(std::move(request)),
       delay_(features::GetAnnotatedPageContentCaptureDelay()),
       include_inner_text_(
@@ -190,14 +191,8 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
   // Drop pending extraction request for the previous page, if any.
   weak_factory_.InvalidateWeakPtrs();
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto* page_content_extraction_service =
-      PageContentExtractionServiceFactory::GetForProfile(profile);
-  if (page_content_extraction_service) {
-    page_content_extraction_service->OnNewNavigation(
-        get_tab_id_callback_.Run(web_contents_), web_contents_);
-  }
+  page_content_extraction_service_->OnNewNavigation(
+      get_tab_id_callback_.Run(web_contents_), web_contents_);
 }
 
 void AnnotatedPageContentRequest::MaybeScheduleExtraction() {
@@ -316,11 +311,7 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
   auto page_content_result =
       std::move(result.value()->annotated_page_content_result);
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto* page_content_extraction_service =
-      PageContentExtractionServiceFactory::GetForProfile(profile);
-  page_content_extraction_service->OnPageContentExtracted(
+  page_content_extraction_service_->OnPageContentExtracted(
       web_contents_->GetPrimaryPage(), page_content_result->proto,
       screenshot_data, get_tab_id_callback_.Run(web_contents_));
 
@@ -398,14 +389,8 @@ void AnnotatedPageContentRequest::OnVisibilityChanged(
     return;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto* page_content_extraction_service =
-      PageContentExtractionServiceFactory::GetForProfile(profile);
-  if (page_content_extraction_service) {
-    page_content_extraction_service->OnVisibilityChanged(
-        get_tab_id_callback_.Run(web_contents_), web_contents_, visibility);
-  }
+  page_content_extraction_service_->OnVisibilityChanged(
+      get_tab_id_callback_.Run(web_contents_), web_contents_, visibility);
 
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
   bool trigger_on_hide =
