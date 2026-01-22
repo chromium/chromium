@@ -232,8 +232,7 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kIneligible;
   }
 
-  if (enablement.not_consented &&
-      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+  if (enablement.not_consented && !IsTrustFirstOnboardingEnabled()) {
     return mojom::ProfileReadyState::kIneligible;
   }
 
@@ -275,6 +274,11 @@ void GlicEnabling::OnGlicSettingsPolicyChanged() {
 bool GlicEnabling::IsUnifiedFreEnabled(Profile* profile) {
   return IsMultiInstanceEnabled() &&
          base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen);
+}
+
+bool GlicEnabling::IsTrustFirstOnboardingEnabled() {
+  return IsMultiInstanceEnabled() &&
+         base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
 }
 
 bool GlicEnabling::IsMultiInstanceEnabledByFlags() {

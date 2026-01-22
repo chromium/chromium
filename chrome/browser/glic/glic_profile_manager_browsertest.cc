@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -433,8 +434,10 @@ class GlicProfileManagerDidSelectProfileTest
  public:
   GlicProfileManagerDidSelectProfileTest() {
     if (IsTrustFREOnboardingEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kGlicTrustFirstOnboarding);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
+           mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
+          {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           features::kGlicTrustFirstOnboarding);

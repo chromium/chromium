@@ -99,6 +99,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether the FRE screen is displayed in the same window as the chat app.
   static bool IsUnifiedFreEnabled(Profile* profile);
 
+  // Whether the Trust-First Onboarding flow should be shown.
+  static bool IsTrustFirstOnboardingEnabled();
+
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
   // sure that IsMultiInstanceEnabled() should not be used instead.

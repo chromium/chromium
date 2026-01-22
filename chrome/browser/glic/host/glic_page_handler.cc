@@ -830,7 +830,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (GlicEnabling::IsMultiInstanceEnabled()) {
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
-    if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+    if (GlicEnabling::IsTrustFirstOnboardingEnabled()) {
       int arm = features::kGlicTrustFirstOnboardingArmParam.Get();
       if (arm == 1) {
         state->host_capabilities.push_back(
@@ -866,7 +866,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi);
     state->enable_trust_first_onboarding =
-        base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
+        GlicEnabling::IsTrustFirstOnboardingEnabled();
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);
 

@@ -91,7 +91,7 @@ void GlicFreController::Shutdown() {
 }
 
 bool GlicFreController::ShouldShowFreDialog() {
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled()) {
     return false;
   }
   // If the given profile has not previously completed the FRE and is eligible,

@@ -568,7 +568,7 @@ void GlicMetrics::OnRecordUseCounter(uint16_t counter) {
 
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled() &&
       !enabling_->HasConsentedForProfile(profile_)) {
     OnTrustFirstOnboardingShown();
   }

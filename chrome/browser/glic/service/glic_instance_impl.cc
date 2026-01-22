@@ -91,7 +91,7 @@ EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
 }
 
 bool IsTrustFirstOnboardingPending(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+  return GlicEnabling::IsTrustFirstOnboardingEnabled() &&
          !GlicEnabling::HasConsentedForProfile(profile);
 }
 }  // namespace
@@ -344,7 +344,7 @@ void GlicInstanceImpl::Close(EmbedderKey key) {
   if (!embedder) {
     return;
   }
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled()) {
     service_->metrics()->OnTrustFirstOnboardingDismissed();
   }
   instance_metrics_.OnClose();
@@ -354,7 +354,7 @@ void GlicInstanceImpl::Close(EmbedderKey key) {
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               bool prevent_close,
                               glic::mojom::InvocationSource source) {
-  if (base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+  if (GlicEnabling::IsTrustFirstOnboardingEnabled() &&
       !service_->enabling().HasConsentedForProfile(profile_)) {
     service_->metrics()->OnTrustFirstOnboardingShown();
   }
