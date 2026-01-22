@@ -67,6 +67,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -171,23 +172,68 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testIsNtpThemeCustomizationEnabled() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
+        assertTrue(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
+
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        assertFalse(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testIsNtpThemeCustomizationEnabled_flagDisabled() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
+        assertFalse(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetAndSetNtpBackgroundImageType() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
         assertEquals(
-                NtpBackgroundImageType.DEFAULT,
-                NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
+                NtpBackgroundImageType.DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
 
         @NtpBackgroundImageType int imageType = IMAGE_FROM_DISK;
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(imageType);
 
-        assertEquals(
-                imageType, NtpCustomizationUtils.getNtpBackgroundImageTypeFromSharedPreference());
+        assertEquals(imageType, NtpCustomizationUtils.getNtpBackgroundImageType());
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetAndSetNtpBackgroundImageType_flagDisabled() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(IMAGE_FROM_DISK);
+
+        assertEquals(DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
+    }
+
+    @Test
+    public void testGetAndSetNtpBackgroundImageType_diabledByPolicy() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+
+        @NtpBackgroundImageType int imageType = IMAGE_FROM_DISK;
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(imageType);
 
         assertEquals(DEFAULT, NtpCustomizationUtils.getNtpBackgroundImageType());
     }

@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -85,6 +86,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private Profile mProfile;
     @Mock private NtpCustomizationConfigManager mConfigManager;
+    @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
@@ -100,6 +102,9 @@ public class NtpCustomizationMediatorUnitTest {
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedFeatures.setFakePrefsForTest(mPrefService);
         NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
+        NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
+
         mMediator =
                 new NtpCustomizationMediator(
                         mContext,
@@ -404,6 +409,18 @@ public class NtpCustomizationMediatorUnitTest {
 
         assertFalse(FeedFeatures.isFeedEnabled(mProfile));
         assertEquals(List.of(NTP_CARDS, THEME), mMediator.buildListContent());
+    }
+
+    @Test
+    public void testBuildListContent_themeDisabledByPolicy() {
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+        assertTrue(FeedFeatures.isFeedEnabled(mProfile));
+        assertEquals(List.of(MVT, NTP_CARDS, FEED, THEME), mMediator.buildListContent());
+
+        // Disable NtpCustomBackgroundEnabled by policy.
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        assertEquals(List.of(MVT, NTP_CARDS, FEED), mMediator.buildListContent());
     }
 
     @Test

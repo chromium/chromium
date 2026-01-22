@@ -186,7 +186,9 @@ public class NtpCustomizationCoordinator {
             }
             mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
             mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
-            mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
+            if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+                mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
+            }
             mMediator.renderListContent();
         }
     }

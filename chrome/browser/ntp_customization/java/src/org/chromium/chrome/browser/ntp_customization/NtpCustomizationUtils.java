@@ -76,6 +76,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -265,6 +266,12 @@ public class NtpCustomizationUtils {
         }
     }
 
+    /** Returns whether custom Ntp's background theme is enabled. */
+    public static boolean isNtpThemeCustomizationEnabled() {
+        return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
+                && NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
+    }
+
     /**
      * Returns the customized primary color if set, null otherwise.
      *
@@ -273,9 +280,7 @@ public class NtpCustomizationUtils {
      */
     public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor(
             Context context, boolean checkDailyRefresh) {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
-
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
+        @NtpBackgroundImageType int imageType = getNtpBackgroundImageType();
         if (imageType == NtpBackgroundImageType.DEFAULT) {
             return null;
         }
@@ -402,7 +407,8 @@ public class NtpCustomizationUtils {
      * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
      */
     public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
+                || !NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled()) {
             return NtpBackgroundImageType.DEFAULT;
         }
 

@@ -311,7 +311,7 @@ public class NtpCustomizationMediator {
         if (FeedFeatures.isFeedEnabled(mProfile)) {
             content.add(FEED);
         }
-        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             content.add(THEME);
         }
         return content;

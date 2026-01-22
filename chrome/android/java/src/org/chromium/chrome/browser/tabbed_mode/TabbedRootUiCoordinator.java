@@ -128,6 +128,7 @@ import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
@@ -1104,6 +1105,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mWindowAndroid, isTablet);
         if (isNewTabPageCustomizationV2Enabled) {
             mNtpSyncedThemeManager = new NtpSyncedThemeManager(mActivity, originalProfile);
+            NtpCustomizationPolicyManager.getInstance()
+                    .onFinishNativeInitialization(currentlySelectedProfile);
         }
     }
 
