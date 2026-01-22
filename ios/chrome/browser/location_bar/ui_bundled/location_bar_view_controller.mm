@@ -888,6 +888,20 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     }
   }
 
+  // Used to easily trigger the Assistant sheet during development.
+  if (IsAssistantSheetEnabled()) {
+    UIAction* assistantAction =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI)
+                            image:DefaultSymbolWithPointSize(
+                                      kMagicStackSymbol, kSymbolActionPointSize)
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf.dispatcher showAssistant];
+                          }];
+    [menuElements addObject:assistantAction];
+  }
+
   // Show Top or Bottom Address Bar action.
   if (IsBottomOmniboxAvailable() && IsSplitToolbarMode(self)) {
     NSString* title = nil;
