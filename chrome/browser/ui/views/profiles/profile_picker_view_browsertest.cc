@@ -3251,7 +3251,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
   FinishDiceSignIn(profile_being_created, kEmail, "Joe", kNoHostedDomainFound,
                    false, should_have_primary_account);
-  if (!base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     BrowserWindowInterface* const new_browser = browser_waiter.Wait();
     WaitForLoadStop(GURL("chrome://newtab/"),
                     new_browser->GetTabStripModel()->GetActiveWebContents());

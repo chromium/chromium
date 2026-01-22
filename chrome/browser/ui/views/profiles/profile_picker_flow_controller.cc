@@ -23,6 +23,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_hats_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -49,7 +50,9 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -664,6 +667,45 @@ void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
       PostHostClearedCallback(base::BindOnce(&ShowLocalProfileCustomization,
                                              profile_picked_time_on_startup_)),
       /*is_continue_callback=*/false);
+}
+
+void ProfilePickerFlowController::ShowSigninError(Profile* profile,
+                                                  const SigninUIError& error) {
+  CHECK_EQ(Step::kAccountSelection, current_step());
+  CHECK(!error.IsOk());
+
+  if (signin_util::IsForceSigninEnabled() &&
+      error.type() ==
+          SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
+    host()->Reset(StepSwitchFinishedCallback(
+        base::BindOnce(&ProfilePickerWebContentsHost::ShowSigninErrorDialog,
+                       base::Unretained(host()),
+                       ForceSigninUIError::SigninPatternNotMatching(
+                           base::UTF16ToUTF8(error.email())))));
+    return;
+  }
+
+  if (error.type() ==
+      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    GURL profile_switch_url(chrome::kChromeUIProfilePickerUrl);
+    profile_switch_url = profile_switch_url.Resolve("profile-switch");
+    // Appends the `profile_path` to be retrieved in the web page.
+    profile_switch_url =
+        net::AppendQueryParameter(profile_switch_url, "profileSwitchPath",
+                                  base::ToString(error.another_profile_path()));
+
+    host()->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(switches::kSupportErrorsInProfilePicker)) {
+    // Display the signin error in the profile picker's error dialog.
+    host()->Reset(StepSwitchFinishedCallback(
+        base::BindOnce(&ProfilePickerWebContentsHost::ShowSigninErrorDialog,
+                       base::Unretained(host()), error)));
+  } else {
+    HandleSigninErrorInBrowser(profile, error);
+  }
 }
 
 void ProfilePickerFlowController::PickProfile(

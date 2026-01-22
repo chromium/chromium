@@ -46,6 +46,7 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
       const base::FilePath& profile_path,
       ProfilePicker::ProfilePickingArgs args,
       base::OnceCallback<void(bool)> pick_profile_complete_callback) override;
+  void ShowSigninError(Profile* profile, const SigninUIError& error) override;
 
  protected:
   // ProfileManagementFlowControllerImpl

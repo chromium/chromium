@@ -63,15 +63,14 @@ void ProfileManagementFlowControllerImpl::
         ProfileManagementStepController::CreateForSignIn(
             host(),
             std::make_unique<ProfilePickerSignInProvider>(
-                host(), access_point, initial_email, std::move(profile_path)),
-            base::BindOnce(
-                &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
-                // Binding as Unretained as `this`
-                // outlives the step controllers.
-                base::Unretained(this)),
-            base::BindOnce(
-                &ProfileManagementFlowControllerImpl::HandleSigninError,
-                base::Unretained(this))));
+                host(), /*delegate=*/this, access_point, initial_email,
+                /*signin_finished_callback=*/
+                base::BindOnce(
+                    &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
+                    // Binding as Unretained as `this`
+                    // outlives the step controllers.
+                    base::Unretained(this)),
+                std::move(profile_path))));
   }
 
   auto pop_back_step = current_step();
@@ -146,9 +145,8 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   UnregisterStep(Step::kAccountSelection);
 }
 
-void ProfileManagementFlowControllerImpl::HandleSigninError(
+void ProfileManagementFlowControllerImpl::HandleSigninErrorInBrowser(
     Profile* profile,
-    content::WebContents* contents,
     const SigninUIError& error) {
   CHECK_EQ(Step::kAccountSelection, current_step());
   CHECK(!error.IsOk());
