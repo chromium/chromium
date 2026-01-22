@@ -1742,10 +1742,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
                                             webView:self.webView];
   newContext->SetHasCommitted(!isSameDocumentNavigation);
   self.webStateImpl->OnNavigationFinished(newContext.get());
-  // TODO(crbug.com/41359661): It is OK, but very brittle, to call
-  // `didFinishNavigation:` here because the gating condition is mutually
-  // exclusive with the condition below. Refactor this method after
-  // deprecating self.navigationHandler.pendingNavigationInfo.
+  // It is OK, but very brittle, to call `didFinishNavigation:` here because the
+  // gating condition is mutually exclusive with the condition below. A planned
+  // refactoring was abandoned. See crbug.com/41359661 for context.
   if (newContext->GetWKNavigationType() == WKNavigationTypeBackForward) {
     [self didFinishNavigation:newContext.get()];
   }
