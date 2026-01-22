@@ -224,6 +224,7 @@ import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -1342,14 +1343,46 @@ public class RootUiCoordinator
         mMessageContainerObserver =
                 new MessageContainerObserver() {
                     @Override
-                    public void onShowMessageContainer() {
+                    public void onShowMessageContainer(int viewId, Rect rect) {
                         if (mPageZoomBarCoordinator != null) {
                             mPageZoomBarCoordinator.hide();
+                        }
+
+                        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+                        if (tabModelSelector == null) {
+                            return;
+                        }
+
+                        Tab tab = tabModelSelector.getCurrentTab();
+                        if (tab == null) {
+                            return;
+                        }
+
+                        WebContentsAccessibility wcax =
+                                WebContentsAccessibility.fromWebContents(tab.getWebContents());
+                        if (wcax != null) {
+                            wcax.setOccludingRect(rect, viewId);
                         }
                     }
 
                     @Override
-                    public void onHideMessageContainer() {}
+                    public void onHideMessageContainer(int viewId) {
+                        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+                        if (tabModelSelector == null) {
+                            return;
+                        }
+
+                        Tab tab = tabModelSelector.getCurrentTab();
+                        if (tab == null) {
+                            return;
+                        }
+
+                        WebContentsAccessibility wcax =
+                                WebContentsAccessibility.fromWebContents(tab.getWebContents());
+                        if (wcax != null) {
+                            wcax.setOccludingRect(null, viewId);
+                        }
+                    }
                 };
         mMessageContainerCoordinator.addObserver(mMessageContainerObserver);
         mMessageDispatcher =

@@ -4,14 +4,24 @@
 
 package org.chromium.chrome.browser.messages;
 
+import android.graphics.Rect;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** An interface for notifications about the state of the message container */
 @NullMarked
 public interface MessageContainerObserver {
-    /** A notification that the message container has been shown */
-    void onShowMessageContainer();
+    /**
+     * A notification that the message container has been shown.
+     *
+     * @param bounds The message container view rect.
+     */
+    void onShowMessageContainer(int viewId, Rect rect);
 
-    /** A notification that the message container has been hidden */
-    void onHideMessageContainer();
+    /**
+     * A notification that the message container has been hidden.
+     *
+     * @param viewId The ID of the message container view.
+     */
+    void onHideMessageContainer(int viewId);
 }
