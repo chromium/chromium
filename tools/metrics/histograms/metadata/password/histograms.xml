@@ -3896,7 +3896,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
-    enum="PasswordFormHadUsernameField" expires_after="2026-03-01">
+    enum="PasswordFormHadUsernameField" expires_after="2026-06-01">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -4107,17 +4107,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     The time in milliseconds it takes to fill and submit the change password
     form. The metric is recorded from the moment the form is found until the
     flow produces an outcome.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.TimesReceivedFillDataForForm" units="count"
-    expires_after="2026-03-01">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    How many times the browser sent fill data for the given form to the
-    renderer. Recorded only for forms, for which the data was sent at least
-    once. Recorded when the form dissapears (e.g. upon page navigation).
   </summary>
 </histogram>
 

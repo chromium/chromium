@@ -1910,15 +1910,10 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   all_autofilled_elements_.clear();
   field_renderer_id_to_submit_ = FieldRendererId();
   suggestion_banned_fields_.clear();
+  times_received_fill_data_.clear();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
-
-  for (const auto& [_, times_received_data] : times_received_fill_data_) {
-    base::UmaHistogramCounts100("PasswordManager.TimesReceivedFillDataForForm",
-                                times_received_data);
-  }
-  times_received_fill_data_.clear();
 }
 
 void PasswordAutofillAgent::InformBrowserAboutUserInput(
