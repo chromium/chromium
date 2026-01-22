@@ -287,8 +287,7 @@ BASE_FEATURE(kGlicActorUiTaskIconV2, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the task nudge UI fixes are enabled.
 BASE_FEATURE(kGlicActorUiTaskNudgeUiFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the global task indicator and related features are enabled.
-BASE_FEATURE(kGlicActorUiGlobalTaskIndicator,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorUiGlobalTaskIndicator, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether we ignore users preference of reduced motion enabled and
 // still show the tab indicator spinner. No-op if kGlicActorUiTabIndicator is
 // disabled.
