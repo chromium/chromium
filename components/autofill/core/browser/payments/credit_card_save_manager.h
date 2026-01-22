@@ -415,10 +415,9 @@ class CreditCardSaveManager {
   // The parsed lines from the legal message returned from GetUploadDetails.
   LegalMessageLines legal_message_lines_;
 
-  mutable std::unique_ptr<CreditCardSaveStrikeDatabase>
-      credit_card_save_strike_database_;
+  std::optional<CreditCardSaveStrikeDatabase> credit_card_save_strike_database_;
 
-  std::unique_ptr<CvcStorageStrikeDatabase> cvc_storage_strike_database_;
+  std::optional<CvcStorageStrikeDatabase> cvc_storage_strike_database_;
 
   // Profiles that are only preliminarily imported. Those profiles are used
   // during a card import to determine the name and country for storing a new
