@@ -73,6 +73,8 @@ void NetworkServiceDevToolsObserver::OnRawRequest(
     const net::CookieAccessResultList& request_cookie_list,
     std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
     base::TimeTicks timestamp,
+    std::vector<network::mojom::DeviceBoundSessionWithUsagePtr>
+        device_bound_session_usages,
     network::mojom::ClientSecurityStatePtr security_state,
     network::mojom::OtherPartitionInfoPtr other_partition_info,
     const std::optional<base::UnguessableToken>&
@@ -80,10 +82,11 @@ void NetworkServiceDevToolsObserver::OnRawRequest(
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
-  DispatchToAgents(
-      host, &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
-      devtools_request_id, request_cookie_list, request_headers, timestamp,
-      security_state, other_partition_info, applied_network_conditions_id);
+  DispatchToAgents(host,
+                   &protocol::NetworkHandler::OnRequestWillBeSentExtraInfo,
+                   devtools_request_id, request_cookie_list, request_headers,
+                   timestamp, device_bound_session_usages, security_state,
+                   other_partition_info, applied_network_conditions_id);
 }
 
 void NetworkServiceDevToolsObserver::OnRawResponse(

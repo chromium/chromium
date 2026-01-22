@@ -39,6 +39,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const net::CookieAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::TimeTicks timestamp,
+      std::vector<network::mojom::DeviceBoundSessionWithUsagePtr>
+          device_bound_session_usages,
       network::mojom::ClientSecurityStatePtr client_security_state,
       network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition,
       const std::optional<base::UnguessableToken>&

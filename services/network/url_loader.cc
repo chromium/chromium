@@ -2213,9 +2213,22 @@ void URLLoader::DispatchOnRawRequest(
     }
   }
 
+  std::vector<mojom::DeviceBoundSessionWithUsagePtr>
+      device_bound_session_usages;
+  device_bound_session_usages.reserve(
+      url_request_->device_bound_session_usage().size());
+  for (const auto& [session_key, usage] :
+       url_request_->device_bound_session_usage()) {
+    auto entry = mojom::DeviceBoundSessionWithUsage::New();
+    entry->session_key = session_key;
+    entry->usage = static_cast<network::mojom::DeviceBoundSessionUsage>(usage);
+    device_bound_session_usages.push_back(std::move(entry));
+  }
+
   devtools_observer_->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
+      std::move(device_bound_session_usages),
       private_network_access_interceptor_.CloneClientSecurityState(),
       std::move(other_partition_info),
       std::move(applied_network_conditions_id));

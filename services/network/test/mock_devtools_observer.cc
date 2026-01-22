@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,8 @@ void MockDevToolsObserver::OnRawRequest(
     const net::CookieAccessResultList& cookies_with_access_result,
     std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
     const base::TimeTicks timestamp,
+    std::vector<network::mojom::DeviceBoundSessionWithUsagePtr>
+        device_bound_session_usages,
     network::mojom::ClientSecurityStatePtr client_security_state,
     network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition,
     const std::optional<base::UnguessableToken>&

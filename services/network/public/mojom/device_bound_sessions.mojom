@@ -57,6 +57,13 @@ enum DeviceBoundSessionUsage {
 
 // LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
 
+struct DeviceBoundSessionWithUsage {
+  // Key of session that was used.
+  DeviceBoundSessionKey session_key;
+  // What kind of usage the session had.
+  DeviceBoundSessionUsage usage;
+};
+
 // LINT.IfChange(DeviceBoundSessionDeletionReason)
 enum DeviceBoundSessionDeletionReason {
   kExpired = 0,  // Session was not used for too long.
