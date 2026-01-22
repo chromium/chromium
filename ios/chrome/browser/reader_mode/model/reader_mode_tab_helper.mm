@@ -260,6 +260,10 @@ void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     ReaderModeContentTabHelper* reader_mode_content_tab_helper) {
+  // The blur overlay will be removed on Reading Mode animation completion,
+  // remove the precautionary timeout.
+  reader_mode_blur_timer_.Stop();
+
   reader_mode_web_state_content_loaded_ = true;
   for (auto& observer : observers_) {
     observer.ReaderModeWebStateDidLoadContent(this,
@@ -435,6 +439,12 @@ void ReaderModeTabHelper::CreateReaderModeContent(
             base::CallbackToBlock(
                 base::BindOnce(&ReaderModeTabHelper::CompleteDistillation,
                                weak_ptr_factory_.GetWeakPtr(), access_point))];
+    // If Reading Mode distillation has not completed by the expected timeout,
+    // remove the blur overlay to avoid blocking the app UI.
+    reader_mode_blur_timer_.Start(
+        FROM_HERE, base::Seconds(0),
+        base::BindOnce(&ReaderModeTabHelper::HideBlurOverlay,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     CompleteDistillation(access_point);
   }
@@ -459,6 +469,7 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
   distiller_viewer_.reset();
 
   // Remove blur effect on the web page if available.
+  reader_mode_blur_timer_.Stop();
   [reader_mode_handler_ hideReaderModeBlurOverlay];
 
   // Remove the Reader Mode infobar if it exists.
@@ -556,6 +567,10 @@ void ReaderModeTabHelper::ApplyLanguageSettingsFromSource() {
                                        /*auto_translate=*/true,
                                        /*triggered_from_menu=*/true);
   }
+}
+
+void ReaderModeTabHelper::HideBlurOverlay() {
+  [reader_mode_handler_ hideReaderModeBlurOverlay];
 }
 
 void ReaderModeTabHelper::CompleteDistillation(
