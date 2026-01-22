@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
 #include <algorithm>
+#include <memory>
+#include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -26,6 +29,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -240,12 +244,23 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
       extension->id(), preference_name, histogram_name, std::move(show_params));
 }
 
-std::optional<ExtensionSettingsOverriddenDialog::Params>
-GetSearchOverriddenParams(Profile* profile) {
+void GetSearchOverriddenParamsThenRun(
+    content::WebContents* web_contents,
+    base::OnceCallback<
+        void(std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>)>
+        done_callback) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    std::move(done_callback).Run(nullptr);
+    return;
+  }
+
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
   if (!extension) {
-    return std::nullopt;
+    std::move(done_callback).Run(nullptr);
+    return;
   }
 
   // For historical reasons, the search override preference is the same as the
@@ -282,7 +297,8 @@ GetSearchOverriddenParams(Profile* profile) {
   // as crazy as using filesystem: URLs as a search engine.
   if (!secondary_search.origin.is_empty() &&
       secondary_search.origin == search_url.DeprecatedGetOriginAsURL()) {
-    return std::nullopt;
+    std::move(done_callback).Run(nullptr);
+    return;
   }
 
   // Format the URL for display.
@@ -328,8 +344,12 @@ GetSearchOverriddenParams(Profile* profile) {
 
   SettingsOverriddenDialogController::ShowParams show_params(
       std::move(dialog_title), std::move(dialog_message), icon);
-  return ExtensionSettingsOverriddenDialog::Params(
+  auto params = std::make_unique<ExtensionSettingsOverriddenDialog::Params>(
       extension->id(), preference_name, histogram_name, std::move(show_params));
+
+  // Invoke the supplied callback. In the future, this will permit resources to
+  // be fetched before invoking the callback.
+  std::move(done_callback).Run(std::move(params));
 }
 
 }  // namespace settings_overridden_params
