@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//tools/grit/grit_rule.gni")
+
+assert(enable_guest_view)
+
+static_library("slim_web_view") {
+  sources = [
+    "slim_web_view_guest.cc",
+    "slim_web_view_guest.h",
+  ]
+
+  deps = [
+    ":strings",
+    "//components/guest_view/browser",
+    "//content/public/browser",
+  ]
+}
+
+grit_strings("strings") {
+  source = "strings/slim_web_view_strings.grd"
+  outputs = [ "grit/slim_web_view_strings.h" ]
+  output_prefix = "slim_web_view_strings_"
+}

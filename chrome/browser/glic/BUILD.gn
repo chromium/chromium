@@ -381,6 +381,10 @@ source_set("impl") {
 
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
+
+    if (!enable_extensions_core) {
+      deps += [ "//components/guest_view/browser/slim_web_view" ]
+    }
   }
 
   if (is_mac) {

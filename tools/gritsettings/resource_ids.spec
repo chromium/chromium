@@ -1099,6 +1099,9 @@
   "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd": {
     "messages": [7100],
   },
+  "components/guest_view/browser/slim_web_view/strings/slim_web_view_strings.grd": {
+    "messages": [7110],
+  },
   "components/headless/command_handler/headless_command.grd": {
     "includes": [7120],
   },
