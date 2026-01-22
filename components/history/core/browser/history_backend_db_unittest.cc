@@ -22,7 +22,6 @@
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <unordered_set>
 
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -50,6 +49,7 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace history {
 namespace {
@@ -587,7 +587,7 @@ TEST_F(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     {
       sql::Statement s(db.GetUniqueStatement("SELECT guid, id from downloads"));
-      std::unordered_set<std::string> guids;
+      absl::flat_hash_set<std::string> guids;
       while (s.Step()) {
         std::string guid = s.ColumnString(0);
         uint32_t id = static_cast<uint32_t>(s.ColumnInt64(1));
