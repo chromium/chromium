@@ -220,13 +220,23 @@ class PLATFORM_EXPORT PendingLayer {
   // The rects are in the space of property_tree_state.
   PaintChunkSubset chunks_;
   TraceablePropertyTreeState property_tree_state_;
+  // Contains non-composited hit_test_data.scroll_translation of PaintChunks.
+  // This is a vector instead of a set because the size is small vs the cost of
+  // hashing.
   HeapVector<Member<const TransformPaintPropertyNode>>
       non_composited_scroll_translations_;
   gfx::RectF bounds_;
   gfx::RectF rect_known_to_be_opaque_;
+  // If not kNotFound, this is the index of the chunk that makes this layer
+  // solid color. The solid color chunk must be the last drawable chunk and
+  // must draw a solid color that fully covers this pending layer.
   wtf_size_t solid_color_chunk_index_ = kNotFound;
   gfx::Vector2dF offset_of_decomposited_transforms_;
+  // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
+  // UsesSolidColorLayer() is true.
   scoped_refptr<cc::Layer> cc_layer_;
+  // This is set to non-null after layerization if ChunkRequiresOwnLayer() and
+  // UsesSolidColorLayer() are false.
   Member<ContentLayerClientImpl> content_layer_client_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
@@ -237,18 +247,6 @@ class PLATFORM_EXPORT PendingLayer {
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   bool has_decomposited_blend_mode_ = false;
-  // If not kNotFound, this is the index of the chunk that makes this layer
-  // solid color. The solid color chunk must be the last drawable chunk and
-  // must draw a solid color that fully covers this pending layer.
-
-  // Contains non-composited hit_test_data.scroll_translation of PaintChunks.
-  // This is a vector instead of a set because the size is small vs the cost of
-  // hashing.
-
-  // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
-  // UsesSolidColorLayer() is true.
-  // This is set to non-null after layerization if ChunkRequiresOwnLayer() and
-  // UsesSolidColorLayer() are false.
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PendingLayer&);
