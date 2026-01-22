@@ -93,241 +93,191 @@ IOSPasskeyClient::RequestInfo ValidRequestInfo() {
   return {kFrameId, kRequestId};
 }
 
-base::Value::Dict BuildRequestParamsDict(
-    bool has_request_dict,
-    const std::string* challenge,
-    bool has_conditional,
-    bool has_rp_entity_dict,
-    const std::string* rp_id,
-    bool has_user_entity_dict,
-    const std::string* user_id,
-    const std::string* credential_list_name,
-    const std::string* credential_type,
-    const std::string* credential_id,
-    bool has_extensions,
-    const std::string* prf_input1,
-    const std::string* prf_input2,
-    const std::string* per_credential_id,
-    const std::string* per_credential_prf_input1,
-    const std::string* per_credential_prf_input2) {
-  base::Value::Dict request_params_dict;
+// Convenience structure to have default values for tested request parameters.
+struct TestRequestParams {
+  // Request parameters.
+  bool has_request_dict = true;
+  std::optional<std::string> challenge = kBase64url;
+  bool has_conditional = true;
 
-  // Common request parameters dictionary.
-  if (has_request_dict) {
-    base::Value::Dict request_dict;
+  // Relying Party Entity parameters.
+  bool has_rp_entity_dict = true;
+  std::optional<std::string> rp_id = kBase64url;
 
-    if (challenge) {
-      request_dict.Set(kChallenge, *challenge);
-    }
+  // User Entity parameters.
+  bool has_user_entity_dict = true;
+  std::optional<std::string> user_id = kBase64url;
 
-    if (has_conditional) {
-      request_dict.Set(kIsConditional, false);
-    }
+  // Credential list (allow or exclude) parameters.
+  std::optional<std::string> credential_list_name;
+  std::optional<std::string> credential_type = device::kPublicKey;
+  std::optional<std::string> credential_id = kBase64url;
 
-    request_params_dict.Set(kRequest, std::move(request_dict));
+  // Extension parameters.
+  bool has_extensions = true;
+  std::optional<std::string> prf_input1;
+  std::optional<std::string> prf_input2;
+  std::optional<std::string> per_credential_id;
+  std::optional<std::string> per_credential_prf_input1;
+  std::optional<std::string> per_credential_prf_input2;
+
+  // Sets up the object so that per credential PRF can be used.
+  void EnablePerCredentialPRF() {
+    credential_list_name = kAllowCredentials;
+    per_credential_id = kBase64url;
   }
 
-  // Relying party entity dictionary.
-  if (has_rp_entity_dict) {
-    base::Value::Dict rp_entity_dict;
+  // Builds a dictionary based on the structure's parameters.
+  base::Value::Dict BuildDict() const {
+    base::Value::Dict request_params_dict;
 
-    if (rp_id) {
-      rp_entity_dict.Set(kId, *rp_id);
-    }
+    // Common request parameters dictionary.
+    if (has_request_dict) {
+      base::Value::Dict request_dict;
 
-    request_params_dict.Set(kRpEntity, std::move(rp_entity_dict));
-  }
-
-  // User entity dictionary.
-  if (has_user_entity_dict) {
-    base::Value::Dict user_entity_dict;
-
-    if (user_id) {
-      user_entity_dict.Set(kId, *user_id);
-    }
-
-    request_params_dict.Set(kUserEntity, std::move(user_entity_dict));
-  }
-
-  if (credential_list_name) {
-    base::Value::Dict credential_dict;
-
-    if (credential_type) {
-      credential_dict.Set(kType, *credential_type);
-    }
-
-    if (credential_id) {
-      credential_dict.Set(kId, *credential_id);
-    }
-
-    request_params_dict.Set(
-        *credential_list_name,
-        base::Value::List().Append(std::move(credential_dict)));
-  }
-
-  if (has_extensions) {
-    base::Value::Dict extensions_dict;
-
-    base::Value::Dict prf_dict;
-
-    if (prf_input1 || prf_input2) {
-      base::Value::Dict prf_eval;
-
-      if (prf_input1) {
-        prf_eval.Set(device::kExtensionPRFFirst, *prf_input1);
-      }
-      if (prf_input2) {
-        prf_eval.Set(device::kExtensionPRFSecond, *prf_input2);
+      if (challenge.has_value()) {
+        request_dict.Set(kChallenge, *challenge);
       }
 
-      prf_dict.Set(device::kExtensionPRFEval, std::move(prf_eval));
+      if (has_conditional) {
+        request_dict.Set(kIsConditional, false);
+      }
+
+      request_params_dict.Set(kRequest, std::move(request_dict));
     }
 
-    if (per_credential_id) {
-      base::Value::Dict prf_eval_by_credential;
+    // Relying party entity dictionary.
+    if (has_rp_entity_dict) {
+      base::Value::Dict rp_entity_dict;
 
-      base::Value::Dict prf_eval;
-      if (per_credential_prf_input1 || per_credential_prf_input2) {
-        if (per_credential_prf_input1) {
-          prf_eval.Set(device::kExtensionPRFFirst, *per_credential_prf_input1);
+      if (rp_id.has_value()) {
+        rp_entity_dict.Set(kId, *rp_id);
+      }
+
+      request_params_dict.Set(kRpEntity, std::move(rp_entity_dict));
+    }
+
+    // User entity dictionary.
+    if (has_user_entity_dict) {
+      base::Value::Dict user_entity_dict;
+
+      if (user_id.has_value()) {
+        user_entity_dict.Set(kId, *user_id);
+      }
+
+      request_params_dict.Set(kUserEntity, std::move(user_entity_dict));
+    }
+
+    if (credential_list_name.has_value()) {
+      base::Value::Dict credential_dict;
+
+      if (credential_type.has_value()) {
+        credential_dict.Set(kType, *credential_type);
+      }
+
+      if (credential_id.has_value()) {
+        credential_dict.Set(kId, *credential_id);
+      }
+
+      request_params_dict.Set(
+          *credential_list_name,
+          base::Value::List().Append(std::move(credential_dict)));
+    }
+
+    if (has_extensions) {
+      base::Value::Dict extensions_dict;
+
+      base::Value::Dict prf_dict;
+
+      bool has_prf_input = prf_input1.has_value() || prf_input2.has_value();
+      if (has_prf_input) {
+        base::Value::Dict prf_eval;
+
+        if (prf_input1.has_value()) {
+          prf_eval.Set(device::kExtensionPRFFirst, *prf_input1);
         }
-        if (per_credential_prf_input2) {
-          prf_eval.Set(device::kExtensionPRFSecond, *per_credential_prf_input2);
+        if (prf_input2.has_value()) {
+          prf_eval.Set(device::kExtensionPRFSecond, *prf_input2);
         }
+
+        prf_dict.Set(device::kExtensionPRFEval, std::move(prf_eval));
       }
 
-      prf_eval_by_credential.Set(*per_credential_id, std::move(prf_eval));
+      bool has_prf_per_credential = per_credential_id.has_value();
+      if (has_prf_per_credential) {
+        base::Value::Dict prf_eval_by_credential;
 
-      prf_dict.Set(device::kExtensionPRFEvalByCredential,
-                   std::move(prf_eval_by_credential));
+        base::Value::Dict prf_eval;
+        if (per_credential_prf_input1.has_value() ||
+            per_credential_prf_input2.has_value()) {
+          if (per_credential_prf_input1.has_value()) {
+            prf_eval.Set(device::kExtensionPRFFirst,
+                         *per_credential_prf_input1);
+          }
+          if (per_credential_prf_input2.has_value()) {
+            prf_eval.Set(device::kExtensionPRFSecond,
+                         *per_credential_prf_input2);
+          }
+        }
+
+        prf_eval_by_credential.Set(*per_credential_id, std::move(prf_eval));
+
+        prf_dict.Set(device::kExtensionPRFEvalByCredential,
+                     std::move(prf_eval_by_credential));
+      }
+
+      if (has_prf_input || has_prf_per_credential) {
+        extensions_dict.Set(device::kExtensionPRF, std::move(prf_dict));
+      }
+
+      request_params_dict.Set(kExtensions, std::move(extensions_dict));
     }
 
-    extensions_dict.Set(device::kExtensionPRF, std::move(prf_dict));
-
-    request_params_dict.Set(kExtensions, std::move(extensions_dict));
+    return request_params_dict;
   }
 
-  return request_params_dict;
-}
+  // Verifies that this structure's parameters produces the desired parsing
+  // error on assertion requests.
+  void VerifyAssertionError(PasskeysParsingError error) {
+    auto assertion_request_params =
+        BuildAssertionRequestParams(ValidRequestInfo(), BuildDict());
+    ASSERT_FALSE(assertion_request_params.has_value());
+    ASSERT_EQ(assertion_request_params.error(), error);
+  }
 
-base::Value::Dict BuildRequestParamsDictNoExtensions(
-    bool has_request_dict,
-    const std::string* challenge,
-    bool has_conditional,
-    bool has_rp_entity_dict,
-    const std::string* rp_id,
-    bool has_user_entity_dict,
-    const std::string* user_id,
-    const std::string* credential_list_name,
-    const std::string* credential_type,
-    const std::string* credential_id) {
-  return BuildRequestParamsDict(has_request_dict, challenge, has_conditional,
-                                has_rp_entity_dict, rp_id, has_user_entity_dict,
-                                user_id, credential_list_name, credential_type,
-                                credential_id, /*has_extensions=*/true, nullptr,
-                                nullptr, nullptr, nullptr, nullptr);
-}
+  // Verifies that this structure's parameters produces the desired parsing
+  // error on registration requests.
+  void VerifyRegistrationError(PasskeysParsingError error) {
+    auto registration_request_params =
+        BuildRegistrationRequestParams(ValidRequestInfo(), BuildDict());
+    ASSERT_FALSE(registration_request_params.has_value());
+    ASSERT_EQ(registration_request_params.error(), error);
+  }
 
-base::Value::Dict BuildRequestParamsDictForRequest(bool has_request_dict,
-                                                   const std::string* challenge,
-                                                   bool has_conditional) {
-  return BuildRequestParamsDictNoExtensions(
-      has_request_dict, challenge, has_conditional,
-      /*has_rp_entity_dict=*/false, nullptr, /*has_user_entity_dict=*/false,
-      nullptr, nullptr, nullptr, nullptr);
-}
+  // Verifies that this structure's parameters produces the desired parsing
+  // error on both assertion and registration requests.
+  void VerifyError(PasskeysParsingError error) {
+    VerifyAssertionError(error);
+    VerifyRegistrationError(error);
+  }
 
-base::Value::Dict BuildRequestParamsDictForRp(bool has_rp_entity_dict,
-                                              const std::string* rp_id) {
-  return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
-      has_rp_entity_dict, rp_id, /*has_user_entity_dict=*/false, nullptr,
-      nullptr, nullptr, nullptr);
-}
+  // Verifies that this structure's parameters produces the desired credential
+  // list related parsing error on both assertion and registration requests.
+  void VerifyCredentialListError(PasskeysParsingError error) {
+    credential_list_name = kExcludeCredentials;
+    VerifyRegistrationError(error);
 
-base::Value::Dict BuildRequestParamsDictForUser(bool has_user_entity_dict,
-                                                const std::string* user_id) {
-  return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
-      /*has_rp_entity_dict=*/true, &kBase64url, has_user_entity_dict, user_id,
-      nullptr, nullptr, nullptr);
-}
+    credential_list_name = kAllowCredentials;
+    VerifyAssertionError(error);
+  }
+};
 
-base::Value::Dict BuildRequestParamsDictForCredentials(
-    const std::string* credential_list_name,
-    const std::string* credential_type,
-    const std::string* credential_id) {
-  return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
-      /*has_rp_entity_dict=*/true, &kBase64url, /*has_user_entity_dict=*/true,
-      &kBase64url, credential_list_name, credential_type, credential_id);
-}
-
-base::Value::Dict BuildRequestParamsDictForExtensions(
-    bool has_extensions,
-    bool for_creation,
-    const std::string* prf_input1,
-    const std::string* prf_input2,
-    const std::string* per_credential_id,
-    const std::string* per_credential_prf_input1,
-    const std::string* per_credential_prf_input2) {
-  const std::string public_key = device::kPublicKey;
-  return BuildRequestParamsDict(
-      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
-      /*has_rp_entity_dict=*/true, &kBase64url, /*has_user_entity_dict=*/true,
-      &kBase64url, for_creation ? &kExcludeCredentials : &kAllowCredentials,
-      &public_key, &kBase64url, has_extensions, prf_input1, prf_input2,
-      per_credential_id, per_credential_prf_input1, per_credential_prf_input2);
-}
-
-// Verifies that we get the desired RequestInfo parsing error.
+// Verifies that the dictionary produces the desired RequestInfo parsing error.
 void VerifyRequestInfoError(const base::Value::Dict& dict,
                             PasskeysParsingError error) {
   auto request_info = BuildRequestInfo(dict);
   ASSERT_FALSE(request_info.has_value());
   ASSERT_EQ(request_info.error(), error);
-}
-
-// Verifies that we get the desired parsing error on assertion requests.
-void VerifyAssertionRequestParamsError(const base::Value::Dict& dict,
-                                       PasskeysParsingError error) {
-  auto assertion_request_params =
-      BuildAssertionRequestParams(ValidRequestInfo(), dict);
-  ASSERT_FALSE(assertion_request_params.has_value());
-  ASSERT_EQ(assertion_request_params.error(), error);
-}
-
-// Verifies that we get the desired parsing error on registration requests.
-void VerifyRegistrationRequestParamsError(const base::Value::Dict& dict,
-                                          PasskeysParsingError error) {
-  auto registration_request_params =
-      BuildRegistrationRequestParams(ValidRequestInfo(), dict);
-  ASSERT_FALSE(registration_request_params.has_value());
-  ASSERT_EQ(registration_request_params.error(), error);
-}
-
-// Verifies that we get the desired parsing error on both assertion and
-// registration requests.
-void VerifyRequestParamsError(const base::Value::Dict& dict,
-                              PasskeysParsingError error) {
-  VerifyAssertionRequestParamsError(dict, error);
-  VerifyRegistrationRequestParamsError(dict, error);
-}
-
-// Verifies that we get the desired credential ID parsing error on both
-// assertion and registration requests.
-void VerifyRequestCredentialIdError(const std::string* credential_id,
-                                    PasskeysParsingError error) {
-  const std::string public_key = device::kPublicKey;
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForCredentials(&kExcludeCredentials, &public_key,
-                                           credential_id),
-      error);
-
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForCredentials(&kAllowCredentials, &public_key,
-                                           credential_id),
-      error);
 }
 
 }  // namespace
@@ -358,280 +308,286 @@ TEST_F(PasskeyRequestParserTest, EmptyRequestId) {
 
 // Tests that an error is returned on a missing request.
 TEST_F(PasskeyRequestParserTest, MissingRequest) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/false, nullptr,
-                                       /*has_conditional=*/true),
-      PasskeysParsingError::kMissingRequest);
+  TestRequestParams params;
+  params.has_request_dict = false;
+
+  params.VerifyError(PasskeysParsingError::kMissingRequest);
 }
 
 // Tests that an error is returned on a missing challenge.
 TEST_F(PasskeyRequestParserTest, MissingChallenge) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, nullptr,
-                                       /*has_conditional=*/true),
-      PasskeysParsingError::kMissingChallenge);
+  TestRequestParams params;
+  params.challenge = std::nullopt;
+
+  params.VerifyError(PasskeysParsingError::kMissingChallenge);
 }
 
 // Tests that an error is returned on an empty challenge.
 TEST_F(PasskeyRequestParserTest, EmptyChallenge) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, &kEmpty,
-                                       /*has_conditional=*/true),
-      PasskeysParsingError::kEmptyChallenge);
+  TestRequestParams params;
+  params.challenge = kEmpty;
+
+  params.VerifyError(PasskeysParsingError::kEmptyChallenge);
 }
 
 // Tests that an error is returned on a malformed challenge.
 TEST_F(PasskeyRequestParserTest, MalformedChallenge) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(
-          /*has_request_dict=*/true, &kNotBase64url, /*has_conditional=*/true),
-      PasskeysParsingError::kMalformedChallenge);
+  TestRequestParams params;
+  params.challenge = kNotBase64url;
+
+  params.VerifyError(PasskeysParsingError::kMalformedChallenge);
 }
 
 // Tests that an error is returned on a missing conditional setting.
 TEST_F(PasskeyRequestParserTest, MissingConditional) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(
-          /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/false),
-      PasskeysParsingError::kMissingConditional);
+  TestRequestParams params;
+  params.has_conditional = false;
+
+  params.VerifyError(PasskeysParsingError::kMissingConditional);
 }
 
 // Tests that an error is returned on a missing rp entity.
 TEST_F(PasskeyRequestParserTest, MissingRpEntity) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/false, nullptr),
-      PasskeysParsingError::kMissingRpEntity);
+  TestRequestParams params;
+  params.has_rp_entity_dict = false;
+
+  params.VerifyError(PasskeysParsingError::kMissingRpEntity);
 }
 
 // Tests that an error is returned on a missing rp id.
 TEST_F(PasskeyRequestParserTest, MissingRpId) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/true, nullptr),
-      PasskeysParsingError::kMissingRpId);
+  TestRequestParams params;
+  params.rp_id = std::nullopt;
+
+  params.VerifyError(PasskeysParsingError::kMissingRpId);
 }
 
 // Tests that an error is returned on an empty rp id.
 TEST_F(PasskeyRequestParserTest, EmptyRpId) {
-  VerifyRequestParamsError(
-      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/true, &kEmpty),
-      PasskeysParsingError::kEmptyRpId);
+  TestRequestParams params;
+  params.rp_id = kEmpty;
+
+  params.VerifyError(PasskeysParsingError::kEmptyRpId);
 }
 
 // Tests that an error is returned on a missing user entity.
 TEST_F(PasskeyRequestParserTest, MissingUserEntity) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/false, nullptr),
-      PasskeysParsingError::kMissingUserEntity);
+  TestRequestParams params;
+  params.has_user_entity_dict = false;
+
+  params.VerifyRegistrationError(PasskeysParsingError::kMissingUserEntity);
 }
 
 // Tests that an error is returned on a missing user id.
 TEST_F(PasskeyRequestParserTest, MissingUserId) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true, nullptr),
-      PasskeysParsingError::kMissingUserId);
+  TestRequestParams params;
+  params.user_id = std::nullopt;
+
+  params.VerifyRegistrationError(PasskeysParsingError::kMissingUserId);
 }
 
 // Tests that an error is returned on an empty user id.
 TEST_F(PasskeyRequestParserTest, EmptyUserId) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true, &kEmpty),
-      PasskeysParsingError::kEmptyUserId);
+  TestRequestParams params;
+  params.user_id = kEmpty;
+
+  params.VerifyRegistrationError(PasskeysParsingError::kEmptyUserId);
 }
 
 // Tests that an error is returned on a malformed user id.
 TEST_F(PasskeyRequestParserTest, MalformedUserId) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForUser(/*has_user_entity_dict=*/true,
-                                    &kNotBase64url),
-      PasskeysParsingError::kMalformedUserId);
+  TestRequestParams params;
+  params.user_id = kNotBase64url;
+
+  params.VerifyRegistrationError(PasskeysParsingError::kMalformedUserId);
 }
 
 // Tests that an error is returned on a missing credential type.
 TEST_F(PasskeyRequestParserTest, MissingCredentialType) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForCredentials(&kExcludeCredentials, nullptr,
-                                           nullptr),
-      PasskeysParsingError::kMissingCredentialType);
+  TestRequestParams params;
+  params.credential_type = std::nullopt;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForCredentials(&kAllowCredentials, nullptr,
-                                           nullptr),
+  params.VerifyCredentialListError(
       PasskeysParsingError::kMissingCredentialType);
 }
 
 // Tests that an error is returned on a missing credential id.
 TEST_F(PasskeyRequestParserTest, MissingCredentialId) {
-  VerifyRequestCredentialIdError(nullptr,
-                                 PasskeysParsingError::kMissingCredentialId);
+  TestRequestParams params;
+  params.credential_id = std::nullopt;
+
+  params.VerifyCredentialListError(PasskeysParsingError::kMissingCredentialId);
 }
 
 // Tests that an error is returned on an empty credential id.
 TEST_F(PasskeyRequestParserTest, EmptyCredentialId) {
-  VerifyRequestCredentialIdError(&kEmpty,
-                                 PasskeysParsingError::kEmptyCredentialId);
+  TestRequestParams params;
+  params.credential_id = kEmpty;
+
+  params.VerifyCredentialListError(PasskeysParsingError::kEmptyCredentialId);
 }
 
 // Tests that an error is returned on a malformed credential id.
 TEST_F(PasskeyRequestParserTest, MalformedCredentialId) {
-  VerifyRequestCredentialIdError(&kNotBase64url,
-                                 PasskeysParsingError::kMalformedCredentialId);
+  TestRequestParams params;
+  params.credential_id = kNotBase64url;
+
+  params.VerifyCredentialListError(
+      PasskeysParsingError::kMalformedCredentialId);
 }
 
 TEST_F(PasskeyRequestParserTest, MissingExtensions) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/false, /*for_creation=*/false, nullptr, nullptr,
-          nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMissingExtensions);
+  TestRequestParams params;
+  params.has_extensions = false;
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/false, /*for_creation=*/true, nullptr, nullptr,
-          nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMissingExtensions);
+  params.VerifyError(PasskeysParsingError::kMissingExtensions);
 }
 
 TEST_F(PasskeyRequestParserTest, EvalByCredentialOnCreate) {
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, &kBase64url,
-          &kBase64url, &kBase64url, &kBase64url, &kBase64url),
+  TestRequestParams params;
+  params.per_credential_id = kBase64url;
+
+  params.VerifyRegistrationError(
       PasskeysParsingError::kEvalByCredentialOnCreate);
 }
 
 TEST_F(PasskeyRequestParserTest, MissingEvalByCredential) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &kBase64url, &kEmpty, nullptr, nullptr),
-      PasskeysParsingError::kMissingEvalByCredential);
+  TestRequestParams params;
+  params.per_credential_id = kEmpty;
+
+  params.VerifyAssertionError(PasskeysParsingError::kMissingEvalByCredential);
 }
 
 TEST_F(PasskeyRequestParserTest, MalformedEvalByCredential) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, nullptr, nullptr,
-          &kNotBase64url, &kBase64url, nullptr),
-      PasskeysParsingError::kMalformedEvalByCredential);
+  TestRequestParams params;
+  params.per_credential_id = kNotBase64url;
+
+  params.VerifyAssertionError(PasskeysParsingError::kMalformedEvalByCredential);
 }
 
 TEST_F(PasskeyRequestParserTest, EvalByCredentialNotAllowed) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &kBase64url, &kBase64url_2, &kBase64url, &kBase64url),
+  TestRequestParams params;
+  params.credential_list_name = kAllowCredentials;
+  params.per_credential_id = kBase64url_2;
+
+  params.VerifyAssertionError(
       PasskeysParsingError::kEvalByCredentialNotAllowed);
 }
 
 TEST_F(PasskeyRequestParserTest, MissingFirstPRFInput) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, nullptr, &kBase64url,
-          nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMissingFirstPRFInput);
+  // Verify both assertion and registration for missing first PRF input.
+  {
+    TestRequestParams params;
+    params.prf_input2 = kBase64url;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, nullptr, nullptr,
-          &kBase64url, nullptr, &kBase64url),
-      PasskeysParsingError::kMissingFirstPRFInput);
+    params.VerifyError(PasskeysParsingError::kMissingFirstPRFInput);
+  }
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, nullptr, &kBase64url,
-          nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMissingFirstPRFInput);
+  // Verify assertion only for missing per credential first PRF input (per
+  // credential not allowed on registration requests).
+  {
+    TestRequestParams params;
+    params.EnablePerCredentialPRF();
+    params.per_credential_prf_input2 = kBase64url;
+
+    params.VerifyAssertionError(PasskeysParsingError::kMissingFirstPRFInput);
+  }
 }
 
 TEST_F(PasskeyRequestParserTest, MalformedFirstPRFInput) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kNotBase64url,
-          nullptr, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMalformedFirstPRFInput);
+  // Verify both assertion and registration for malformed first PRF input.
+  {
+    TestRequestParams params;
+    params.prf_input1 = kNotBase64url;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, nullptr, nullptr,
-          &kBase64url, &kNotBase64url, nullptr),
-      PasskeysParsingError::kMalformedFirstPRFInput);
+    params.VerifyError(PasskeysParsingError::kMalformedFirstPRFInput);
+  }
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, &kNotBase64url,
-          nullptr, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMalformedFirstPRFInput);
+  // Verify assertion only for malformed per credential first PRF input (per
+  // credential not allowed on registration requests).
+  {
+    TestRequestParams params;
+    params.EnablePerCredentialPRF();
+    params.per_credential_prf_input1 = kNotBase64url;
+
+    params.VerifyAssertionError(PasskeysParsingError::kMalformedFirstPRFInput);
+  }
 }
 
 TEST_F(PasskeyRequestParserTest, MalformedSecondPRFInput) {
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &kNotBase64url, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMalformedSecondPRFInput);
+  // Verify both assertion and registration for malformed second PRF input.
+  {
+    TestRequestParams params;
+    params.prf_input1 = kBase64url;
+    params.prf_input2 = kNotBase64url;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, nullptr, nullptr,
-          &kBase64url, &kBase64url, &kNotBase64url),
-      PasskeysParsingError::kMalformedSecondPRFInput);
+    params.VerifyError(PasskeysParsingError::kMalformedSecondPRFInput);
+  }
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, &kBase64url,
-          &kNotBase64url, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kMalformedSecondPRFInput);
+  // Verify assertion only for malformed per credential second PRF input (per
+  // credential not allowed on registration requests).
+  {
+    TestRequestParams params;
+    params.EnablePerCredentialPRF();
+    params.per_credential_prf_input1 = kBase64url;
+    params.per_credential_prf_input2 = kNotBase64url;
+
+    params.VerifyAssertionError(PasskeysParsingError::kMalformedSecondPRFInput);
+  }
 }
 
 TEST_F(PasskeyRequestParserTest, PRFInputTooLarge) {
   const std::string tooLarge64(BuildLargeBase64String());
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, &tooLarge64,
-          &kBase64url, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kPRFInputTooLarge);
+  // Verify both assertion and registration for large first PRF input.
+  {
+    TestRequestParams params;
+    params.prf_input1 = tooLarge64;
 
-  VerifyRegistrationRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/true, &kBase64url,
-          &tooLarge64, nullptr, nullptr, nullptr),
-      PasskeysParsingError::kPRFInputTooLarge);
+    params.VerifyError(PasskeysParsingError::kPRFInputTooLarge);
+  }
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &tooLarge64,
-          &kBase64url, &kBase64url, &kBase64url, &kBase64url),
-      PasskeysParsingError::kPRFInputTooLarge);
+  // Verify both assertion and registration for large second PRF input.
+  {
+    TestRequestParams params;
+    params.prf_input1 = kBase64url;
+    params.prf_input2 = tooLarge64;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &tooLarge64, &kBase64url, &kBase64url, &kBase64url),
-      PasskeysParsingError::kPRFInputTooLarge);
+    params.VerifyError(PasskeysParsingError::kPRFInputTooLarge);
+  }
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &kBase64url, &kBase64url, &tooLarge64, &kBase64url),
-      PasskeysParsingError::kPRFInputTooLarge);
+  // Verify assertion only for large per credential first PRF input (per
+  // credential not allowed on registration requests).
+  {
+    TestRequestParams params;
+    params.EnablePerCredentialPRF();
+    params.per_credential_prf_input1 = tooLarge64;
 
-  VerifyAssertionRequestParamsError(
-      BuildRequestParamsDictForExtensions(
-          /*has_extensions=*/true, /*for_creation=*/false, &kBase64url,
-          &kBase64url, &kBase64url, &kBase64url, &tooLarge64),
-      PasskeysParsingError::kPRFInputTooLarge);
+    params.VerifyAssertionError(PasskeysParsingError::kPRFInputTooLarge);
+  }
+
+  // Verify assertion only for large per credential second PRF input (per
+  // credential not allowed on registration requests).
+  {
+    TestRequestParams params;
+    params.EnablePerCredentialPRF();
+    params.per_credential_prf_input1 = kBase64url;
+    params.per_credential_prf_input2 = tooLarge64;
+
+    params.VerifyAssertionError(PasskeysParsingError::kPRFInputTooLarge);
+  }
 }
 
 TEST_F(PasskeyRequestParserTest, NoError) {
-  auto assertion_request_params = BuildAssertionRequestParams(
-      ValidRequestInfo(),
-      BuildRequestParamsDictForRp(/*has_rp_entity_dict=*/true, &kBase64url));
+  TestRequestParams params;
+  base::Value::Dict dict = params.BuildDict();
+
+  auto assertion_request_params =
+      BuildAssertionRequestParams(ValidRequestInfo(), dict);
   ASSERT_TRUE(assertion_request_params.has_value());
 
-  auto registration_request_params = BuildRegistrationRequestParams(
-      ValidRequestInfo(), BuildRequestParamsDictForUser(
-                              /*has_user_entity_dict=*/true, &kBase64url));
+  auto registration_request_params =
+      BuildRegistrationRequestParams(ValidRequestInfo(), dict);
   ASSERT_TRUE(registration_request_params.has_value());
 }
 
