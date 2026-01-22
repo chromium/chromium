@@ -616,8 +616,10 @@ void BwgBrowserAgent::PresentFloatyWithState(
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);
   gemini_tab_helper->SetBwgUiShowing(true);
-  last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
-  is_floaty_invoked_ = true;
+  if (IsGeminiCopresenceEnabled()) {
+    last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
+    is_floaty_invoked_ = true;
+  }
 }
 
 UIImage* BwgBrowserAgent::FetchPageFavicon() {
