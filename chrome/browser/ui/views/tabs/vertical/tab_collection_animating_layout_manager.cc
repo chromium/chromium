@@ -29,6 +29,18 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
 
 }  // namespace
 
+bool TabCollectionAnimatingLayoutManager::Delegate::IsViewDragging(
+    const views::View& child_view) const {
+  return false;
+}
+
+bool TabCollectionAnimatingLayoutManager::Delegate::ShouldSnapToTarget(
+    const views::View& child_view) const {
+  return false;
+}
+
+void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
+
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     std::unique_ptr<LayoutManagerBase> target_layout_manager,
     Delegate* delegate,
@@ -245,7 +257,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       // Snap visibility to target.
       interpolated_child.visible = target_child.visible;
     } else if (!delegate_ ||
-               !delegate_->IsViewDragging(*target_child.child_view)) {
+               (!delegate_->IsViewDragging(*target_child.child_view) &&
+                !delegate_->ShouldSnapToTarget(*target_child.child_view))) {
       // Added child.
       // Animate-in new Views from empty bounds.
       gfx::Rect* previous_container_bounds =
@@ -266,7 +279,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
             value, initial_bounds, target_child.bounds);
       }
     } else {
-      // Snap new children to target bounds in the case of drag-and-drop.
+      // This branch results in new children being snapped to target bounds
+      // (e.g. drag-and-drop or split-tabs which explicitly requires no animated
+      // transition).
     }
     result.child_layouts.push_back(interpolated_child);
   }

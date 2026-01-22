@@ -28,8 +28,9 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
 
   class Delegate {
    public:
-    virtual bool IsViewDragging(const views::View& child_view) const = 0;
-    virtual void OnAnimationEnded() {}
+    virtual bool IsViewDragging(const views::View& child_view) const;
+    virtual bool ShouldSnapToTarget(const views::View& child_view) const;
+    virtual void OnAnimationEnded();
 
    protected:
     virtual ~Delegate() = default;

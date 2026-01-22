@@ -23,6 +23,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kTabVerticalPadding = 2;
@@ -57,7 +58,8 @@ VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
       collection_node_(collection_node),
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
-              std::make_unique<views::DelegatingLayoutManager>(this)))) {
+              std::make_unique<views::DelegatingLayoutManager>(this),
+              this))) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<VerticalUnpinnedTabContainerViewTargeter>(this)));
 
@@ -128,6 +130,11 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
 bool VerticalUnpinnedTabContainerView::IsViewDragging(
     const views::View& child_view) const {
   return GetDragHandler().IsViewDragging(child_view);
+}
+
+bool VerticalUnpinnedTabContainerView::ShouldSnapToTarget(
+    const views::View& child_view) const {
+  return views::IsViewClass<VerticalSplitTabView>(&child_view);
 }
 
 void VerticalUnpinnedTabContainerView::ResetCollectionNode() {
