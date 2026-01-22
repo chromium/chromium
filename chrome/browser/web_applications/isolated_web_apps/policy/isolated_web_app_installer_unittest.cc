@@ -20,6 +20,8 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
@@ -78,6 +80,8 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
         session_type_(session_type) {}
 
   void SetUp() override {
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
     IsolatedWebAppTest::SetUp();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -87,6 +91,9 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
           std::make_unique<profiles::testing::ScopedTestManagedGuestSession>();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    data_provider_.Update(
+        [](auto& update) { update.AddToManagedAllowlist({kBundleId}); });
   }
 
   // When multiple IWAs are created for the same `bundle_id` with different
@@ -195,6 +202,9 @@ class IwaInstallerBaseTest : public IsolatedWebAppTest {
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 class IwaInstallerTest : public IwaInstallerBaseTest,

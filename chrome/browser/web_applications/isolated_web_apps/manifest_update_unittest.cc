@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
@@ -103,10 +105,11 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
 
  protected:
   void SetUp() override {
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
     IsolatedWebAppTest::SetUp();
     provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -119,6 +122,10 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   // it in the test server, configures policy to force install it, and waits
   // until it is installed.
   void InstallInitialTestIwa(ManifestBuilder manifest = ManifestBuilder()) {
+    data_provider_.Update([&](auto& update) {
+      update.AddToManagedAllowlist(TestIwaWebBundleId());
+    });
+
     test_update_server().AddBundle(
         CreateBundle(CHECK_DEREF(profile()), manifest.SetVersion("1.0.0")),
         {{StableChannel()}});
@@ -154,6 +161,9 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
 
     ASSERT_THAT(TestIwa(), HasVersion("2.0.0"));
   }
+
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 TEST_F(ManifestUpdateTest, DisplayOverride) {

@@ -4,16 +4,10 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 
-#include "base/files/file_util.h"
-#include "base/json/json_writer.h"
-#include "base/one_shot_event.h"
-#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
-#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
@@ -21,120 +15,11 @@
 #include "content/public/common/content_features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace web_app {
-
-namespace {
-using Component = component_updater::IwaKeyDistributionComponentInstallerPolicy;
-using ComponentRegistration = component_updater::ComponentRegistration;
-
-using ::testing::DoAll;
-using ::testing::Eq;
-using ::testing::Field;
-using ::testing::Return;
-using ::testing::ReturnRef;
-
-constexpr std::string_view kIwaKeyDistributionComponentId =
-    "iebhnlpddlcpcfpfalldikcoeakpeoah";
-
-std::unique_ptr<base::ScopedTempDir> CreateIwaComponentDir(
-    const base::Version& version,
-    const IwaKeyDistribution& component_data,
-    bool is_preloaded) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  auto dir = std::make_unique<base::ScopedTempDir>();
-  CHECK(dir->CreateUniqueTempDir());
-
-  auto manifest = base::Value::Dict()
-                      .Set("manifest_version", 1)
-                      .Set("name", Component::kManifestName)
-                      .Set("version", version.GetString());
-  if (is_preloaded) {
-    manifest.Set("is_preloaded", true);
-  }
-
-  CHECK(
-      base::WriteFile(dir->GetPath().Append(FILE_PATH_LITERAL("manifest.json")),
-                      *base::WriteJson(manifest)));
-  CHECK(base::WriteFile(dir->GetPath().Append(Component::kDataFileName),
-                        component_data.SerializeAsString()));
-
-  return dir;
-}
-
-}  // namespace
-
-class IsolatedWebAppTest::IwaComponentWrapper {
- public:
-  IwaComponentWrapper() {
-    auto cus = std::make_unique<
-        testing::NiceMock<component_updater::MockComponentUpdateService>>();
-    cus_ = cus.get();
-    TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
-
-    ON_CALL(*cus_, GetOnDemandUpdater)
-        .WillByDefault(ReturnRef(on_demand_updater()));
-    ON_CALL(*cus_, RegisterComponent(Field(&ComponentRegistration::app_id,
-                                           Eq(kIwaKeyDistributionComponentId))))
-        .WillByDefault(DoAll(
-            [&](const ComponentRegistration& component) {
-              CHECK(!on_component_registered_.is_signaled())
-                  << " Component registration is supposed to only happen once.";
-              installer_ = component.installer;
-              on_component_registered_.Signal();
-            },
-            Return(true)));
-    component_updater::RegisterIwaKeyDistributionComponent(cus_);
-  }
-
-  void InstallComponentAsync(const base::Version& version,
-                             const IwaKeyDistribution& component_data,
-                             bool is_preloaded) {
-    auto component_dir_path =
-        WriteIwaComponentData(version, component_data, is_preloaded);
-    on_component_registered_.Post(
-        FROM_HERE, base::BindLambdaForTesting([&, component_dir_path] {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(&update_client::CrxInstaller::Install, installer_,
-                             component_dir_path,
-                             /*public_key=*/"", /*install_params=*/nullptr,
-                             base::DoNothing(), base::DoNothing()));
-        }));
-  }
-
-  MockOnDemandUpdater& on_demand_updater() { return on_demand_updater_; }
-
- private:
-  base::FilePath WriteIwaComponentData(const base::Version& version,
-                                       const IwaKeyDistribution& component_data,
-                                       bool is_preloaded) {
-    CHECK(!component_dirs_.contains(version))
-        << " There's already an installed component with version " << version;
-    std::unique_ptr<base::ScopedTempDir> dir =
-        CreateIwaComponentDir(version, component_data, is_preloaded);
-    auto path = dir->GetPath();
-    component_dirs_[version] = std::move(dir);
-    return path;
-  }
-
-  // Owned by `g_browser_process`.
-  raw_ptr<component_updater::MockComponentUpdateService> cus_ = nullptr;
-
-  // `on_demand_updater_` is defined as StrictMock to prevent situations where
-  // `OnDemandUpdate()` is dispatched to an empty implementation; this is only a
-  // likely case if the initial component data is marked as preloaded by the
-  // inheriting test suite.
-  testing::StrictMock<MockOnDemandUpdater> on_demand_updater_;
-
-  base::OneShotEvent on_component_registered_;
-  scoped_refptr<update_client::CrxInstaller> installer_;
-
-  base::flat_map<base::Version, std::unique_ptr<base::ScopedTempDir>>
-      component_dirs_;
-};
-
-MockOnDemandUpdater::MockOnDemandUpdater() = default;
-MockOnDemandUpdater::~MockOnDemandUpdater() = default;
 
 IsolatedWebAppTest::~IsolatedWebAppTest() = default;
 
@@ -153,32 +38,12 @@ network::TestURLLoaderFactory& IsolatedWebAppTest::url_loader_factory() {
 IwaTestServerConfigurator& IsolatedWebAppTest::test_update_server() {
   return test_update_server_;
 }
-MockOnDemandUpdater& IsolatedWebAppTest::on_demand_updater() {
-  return component_wrapper_->on_demand_updater();
-}
-
-void IsolatedWebAppTest::InstallComponentAsync(
-    const base::Version& version,
-    const IwaKeyDistribution& component_data) {
-  component_wrapper_->InstallComponentAsync(version, component_data,
-                                            /*is_preloaded=*/false);
-}
 
 void IsolatedWebAppTest::SetUp() {
   ASSERT_TRUE(profile_manager_.SetUp());
   profile_ = profile_manager_.CreateTestingProfile(
       TestingProfile::kDefaultProfileUserName, /*testing_factories=*/{},
       url_loader_factory_.GetSafeWeakWrapper());
-
-  component_wrapper_ = std::make_unique<IwaComponentWrapper>();
-  component_wrapper_->InstallComponentAsync(GetIwaComponentVersion(),
-                                            GetIwaComponentData(),
-                                            IsIwaComponentPreloaded());
-
-  // Do not require allowlisting app to install/update in normal tests.
-  // Do not skip checks only when interaction with allowlist is tested.
-  IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-      .SkipManagedAllowlistChecksForTesting(true);
 }
 
 void IsolatedWebAppTest::TearDown() {
@@ -202,13 +67,10 @@ void IsolatedWebAppTest::TearDown() {
     task_environment().FastForwardBy(TestTimeouts::tiny_timeout());
   }
 
-  component_wrapper_.reset();
   os_integration_test_override_.reset();
 
   profile_ = nullptr;
   profile_manager_.DeleteAllTestingProfiles();
-
-  IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();
 
   env_.reset();
 }
@@ -230,18 +92,6 @@ IsolatedWebAppTest::IsolatedWebAppTest(
     enabled_features.push_back(features::kIsolatedWebAppDevMode);
   }
   features_.InitWithFeatures(enabled_features, {});
-}
-
-base::Version IsolatedWebAppTest::GetIwaComponentVersion() const {
-  return base::Version("1.0.0");
-}
-
-IwaKeyDistribution IsolatedWebAppTest::GetIwaComponentData() const {
-  return IwaKeyDistribution();
-}
-
-bool IsolatedWebAppTest::IsIwaComponentPreloaded() const {
-  return false;
 }
 
 }  // namespace web_app
