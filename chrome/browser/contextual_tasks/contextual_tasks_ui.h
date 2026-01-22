@@ -39,18 +39,12 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class BrowserWindowInterface;
-class GoogleServiceAuthError;
 
 namespace content {
 struct OpenURLParams;
 class BrowserContext;
 class WebContentsObserver;
 }  // namespace content
-
-namespace signin {
-class AccessTokenFetcher;
-struct AccessTokenInfo;
-}  // namespace signin
 
 namespace contextual_tasks {
 class ContextualTasksSidePanelCoordinator;
@@ -231,18 +225,8 @@ class ContextualTasksUI
   // Returns whether the active tab context suggestion is showing.
   bool IsActiveTabContextSuggestionShowing() const;
 
-  // Returns whether an OAuth token request is pending to verify behavior in
-  // tests.
-  bool IsAccessTokenRequestPendingForTesting() const {
-    return !!oauth_token_fetcher_;
-  }
-
  private:
-  void RequestOAuthToken();
-  void OnOAuthTokenReceived(GoogleServiceAuthError error,
-                            signin::AccessTokenInfo access_token_info);
-
-  // A an observer specifically to watch for the creation of the hosted remote
+  // An observer specifically to watch for the creation of the hosted remote
   // page. This is attached to the WebContents for the WebUI and notifies the
   // WebUI when an inner WebContents is created. The expectation is that there
   // is only ever one inner WebContents at a time.
@@ -280,25 +264,10 @@ class ContextualTasksUI
   contextual_tasks::ContextualTasksSidePanelCoordinator*
   GetSidePanelCoordinator();
 
-  // The OAuth token fetcher is used to fetch the OAuth token for the signed in
-  // user. This is used to authenticate the user when making requests in the
-  // embedded page.
-  std::unique_ptr<signin::AccessTokenFetcher> oauth_token_fetcher_;
-
-  // A timer used to refresh the OAuth token before it expires.
-  base::OneShotTimer token_refresh_timer_;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
-
   std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
-
-  // Backoff entry used to control the retry logic for the OAuth token request.
-  net::BackoffEntry request_access_token_backoff_;
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_handler_factory_receiver_{this};

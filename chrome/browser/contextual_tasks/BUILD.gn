@@ -161,6 +161,8 @@ if (!is_android) {
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui_service.cc",
       "contextual_tasks_ui_service_factory.cc",
+      "contextual_tasks_url_loader_factory_interceptor.cc",
+      "contextual_tasks_url_loader_factory_interceptor.h",
       "entry_point_eligibility_manager.cc",
     ]
 

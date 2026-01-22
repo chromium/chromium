@@ -102,7 +102,7 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+    const threadUrl = new URL(appElement.getThreadUrlForTesting());
 
     assertEquals(threadId, threadUrl.searchParams.get('mtid'));
     assertEquals(turnId, threadUrl.searchParams.get('mstk'));
@@ -124,7 +124,7 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+    const threadUrl = new URL(appElement.getThreadUrlForTesting());
 
     assertEquals(threadId, threadUrl.searchParams.get('mtid'));
     assertEquals(turnId, threadUrl.searchParams.get('mstk'));
@@ -142,7 +142,7 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-    const threadUrl = new URL(appElement.getPendingUrlForTesting());
+    const threadUrl = new URL(appElement.getThreadUrlForTesting());
 
     // The param to open history should have been added to the initial thread
     // URL.
@@ -178,51 +178,13 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(!!appElement.shadowRoot.querySelector('top-toolbar'));
   });
 
-  test('thread url pending until oauth token', async () => {
+  test('thread url set immediately', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
     const app = document.createElement('contextual-tasks-app');
     document.body.appendChild(app);
 
-    await proxy.handler.whenCalled('getThreadUrl');
-
-    const webview = app.shadowRoot.querySelector('webview');
-    assertTrue(!!webview);
-    assertFalse(!!webview.getAttribute('src'));
-
-    const token = 'test_token';
-    proxy.callbackRouterRemote.setOAuthToken(token);
-    await proxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    assertEquals(fixtureUrl, webview.getAttribute('src'));
-  });
-
-  test('thread url set immediately if oauth token available', async () => {
-    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
-    BrowserProxyImpl.setInstance(proxy);
-
-    // Delay getThreadUrl to simulate token arriving first.
-    let resolveThreadUrl: (val: any) => void;
-    const threadUrlPromise = new Promise<any>((resolve) => {
-      resolveThreadUrl = resolve;
-    });
-    proxy.handler.getThreadUrl = () => {
-      proxy.handler.methodCalled('getThreadUrl');
-      return threadUrlPromise;
-    };
-
-    const app = document.createElement('contextual-tasks-app');
-    document.body.appendChild(app);
-
-    // Send token.
-    const token = 'test_token';
-    proxy.callbackRouterRemote.setOAuthToken(token);
-    await proxy.callbackRouterRemote.$.flushForTesting();
-
-    // Resolve URL.
-    resolveThreadUrl!({url: {url: fixtureUrl}});
     await proxy.handler.whenCalled('getThreadUrl');
     await microtasksFinished();
 

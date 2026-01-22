@@ -509,6 +509,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
@@ -6390,6 +6391,12 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
         request_initiator, type, factory_builder);
   }
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks::MaybeInterceptURLLoaderFactory(frame, factory_builder);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // WARNING: This must be the last interceptor in the chain as the proxying
   // URLLoaderFactory installed by this needs to be the one actually sending

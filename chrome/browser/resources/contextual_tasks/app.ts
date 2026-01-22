@@ -146,9 +146,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
   private listenerIds_: number[] = [];
-  // The OAuth token to use for embedded page requests. Null if not yet set.
-  // Can be empty if the user is not signed in or the token couldn't be fetched.
-  private oauthToken_: string|null = null;
   private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
   private forcedEmbeddedPageHost =
@@ -198,10 +195,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.onContextUpdated.addListener((tabs: Tab[]) => {
         this.contextTabs_ = tabs;
       }),
-      callbackRouter.setOAuthToken.addListener((oauthToken: string) => {
-        this.oauthToken_ = oauthToken;
-        this.maybeLoadPendingUrl_();
-      }),
+
       // TODO(crbug.com/474359572): Rename this to be more descriptive of what
       // it actually does.
       callbackRouter.hideInput.addListener(() => {
@@ -282,8 +276,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
-    this.$.threadFrame.request.onBeforeSendHeaders.removeListener(
-        this.onBeforeSendHeaders);
     this.$.threadFrame.request.onBeforeRequest.removeListener(
         this.onBeforeRequest);
   }
@@ -330,11 +322,8 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private maybeLoadPendingUrl_() {
     // If all the data needed to make the initial request is available, load the
-    // pending URL. If the OAuth token is empty, that signifies that the user is
-    // not signed in, so the URL can still be loaded. If the OAuth token is
-    // null, and therefore not yet set, do not load the URL.
-    if (this.pendingUrl_ && this.commonSearchParams_ &&
-        this.oauthToken_ != null) {
+    // pending URL.
+    if (this.pendingUrl_ && this.commonSearchParams_) {
       this.$.threadFrame.src = this.pendingUrl_;
       this.pendingUrl_ = '';
     }
@@ -359,16 +348,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private setupWebviewRequestOverrides() {
-    // Setup the webview request overrides to add the OAuth token to the request
-    // headers.
-    this.$.threadFrame.request.onBeforeSendHeaders.addListener(
-        this.onBeforeSendHeaders, {
-          // These should be valid values from web_request.d.ts.
-          types: 'main_frame,xmlhttprequest,websocket'.split(',') as any,
-          urls: ['<all_urls>'],
-        },
-        ['blocking', 'requestHeaders', 'extraHeaders']);
-
     this.$.threadFrame.request.onBeforeRequest.addListener(
         this.onBeforeRequest, {
           types: ['main_frame'] as any,
@@ -424,22 +403,8 @@ export class ContextualTasksAppElement extends CrLitElement {
             return {};
           };
 
-  private onBeforeSendHeaders:
-      ChromeEventFunctionType<typeof chrome.webRequest.onBeforeSendHeaders> =
-          (details): chrome.webRequest.BlockingResponse => {
-            // Return a promise that will be resolved with the new request
-            // headers. This will block the request until the OAuth token is
-            // fetched.
-            const requestHeaders = details.requestHeaders || [];
-            requestHeaders.push({
-              'name': 'Authorization',
-              'value': `Bearer ${this.oauthToken_}`,
-            });
-            return {requestHeaders};
-          };
-
-  getPendingUrlForTesting() {
-    return this.pendingUrl_;
+  getThreadUrlForTesting() {
+    return this.$.threadFrame.src;
   }
 }
 

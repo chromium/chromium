@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -13,6 +14,11 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
@@ -111,12 +117,26 @@ MATCHER_P(OpenURLParamsHasUrl, expected_url, "") {
 
 class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
  public:
+  explicit ContextualTasksUiServiceTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : content::RenderViewHostTestHarness(time_source) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    // IdentityTestEnvironment must be created after the TaskEnvironment.
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+
     profile_ = std::make_unique<TestingProfile>();
     contextual_tasks_service_ = std::make_unique<MockContextualTasksService>();
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
         contextual_tasks_service_.get());
+
+    // Create a real service for testing non-mocked methods like GetAccessToken.
+    // We pass the IdentityManager from the test environment.
+    real_service_ = std::make_unique<ContextualTasksUiService>(
+        profile_.get(), contextual_tasks_service_.get(),
+        identity_test_env_->identity_manager());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
@@ -134,8 +154,10 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    real_service_ = nullptr;
     service_for_nav_ = nullptr;
     contextual_tasks_service_ = nullptr;
+    identity_test_env_.reset();
     profile_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -146,9 +168,84 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
 
  protected:
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
+  std::unique_ptr<ContextualTasksUiService> real_service_;
   std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
 };
+
+class ContextualTasksUiServiceTestParameterized
+    : public ContextualTasksUiServiceTest,
+      public testing::WithParamInterface<
+          base::test::TaskEnvironment::TimeSource> {
+ public:
+  ContextualTasksUiServiceTestParameterized()
+      : ContextualTasksUiServiceTest(GetParam()) {}
+};
+
+TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_Success) {
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+  EXPECT_EQ(token_future.Get(), "access_token");
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+  EXPECT_EQ(token_future.Get(), "");
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       GetAccessToken_TransientError_Retries) {
+  if (GetParam() == base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    GTEST_SKIP() << "Retries won't work on SYSTEM_TIME";
+  }
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  // First request fails with a transient error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  // The service should retry. We need to fast forward time to trigger the
+  // retry. The backoff policy has an initial delay of 500ms.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+
+  // Second request succeeds.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  EXPECT_EQ(token_future.Get(), "access_token");
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       GetAccessToken_PersistentError) {
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  // First request fails with a persistent error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // The service should NOT retry.
+  EXPECT_EQ(token_future.Get(), "");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksUiServiceTestParameterized,
+    testing::Values(base::test::TaskEnvironment::TimeSource::SYSTEM_TIME,
+                    base::test::TaskEnvironment::TimeSource::MOCK_TIME));
 
 TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
   GURL url("http://?a=12345");
