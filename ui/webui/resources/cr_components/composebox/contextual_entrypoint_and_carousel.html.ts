@@ -98,6 +98,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ? contextMenu : ''}
+    <div part="carousel-container">
     ${this.showFileCarousel_ ? html`
       <cr-composebox-file-carousel
         part="cr-composebox-file-carousel"

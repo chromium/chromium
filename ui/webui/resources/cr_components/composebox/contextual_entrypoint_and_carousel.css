@@ -35,6 +35,10 @@
   flex-wrap: nowrap;
 }
 
+:host([is-omnibox-in-compact-mode_]) .context-menu-container {
+  min-height: 0;
+}
+
 .context-menu-container > * {
   flex-shrink: 0;
 }
