@@ -69,7 +69,7 @@ enum class PermissionPredictionSource {
   kNoCpssModel = 0,
   kOnDeviceCpssV1Model = 1,
   kServerSideCpssV3Model = 2,
-  kOnDeviceAiv1AndServerSideModel = 3,
+  // kOnDeviceAiv1AndServerSideModel = 3, (Deprecated)
   kOnDeviceAiv3AndServerSideModel = 4,
   kOnDeviceAiv4AndServerSideModel = 5,
 
@@ -102,7 +102,7 @@ enum class PredictionModelType {
   kUnknown = 0,
   kServerSideCpssV3Model = 1,
   kOnDeviceCpssV1Model = 2,
-  kOnDeviceAiV1Model = 3,
+  // kOnDeviceAiV1Model = 3, (Deprecated)
   kOnDeviceAiV3Model = 4,
   kOnDeviceAiV4Model = 5,
 

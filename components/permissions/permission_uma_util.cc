@@ -1789,15 +1789,14 @@ std::string PermissionUmaUtil::GetPredictionModelString(
       return "PredictionService";
     case PredictionModelType::kOnDeviceCpssV1Model:
       return "OnDevicePredictionService";
-    case PredictionModelType::kOnDeviceAiV1Model:
-      return "AIv1";
     case PredictionModelType::kOnDeviceAiV3Model:
       return "AIv3";
     case PredictionModelType::kOnDeviceAiV4Model:
       return "AIv4";
-    default:
+    case PredictionModelType::kUnknown:
       NOTREACHED();
   }
+  NOTREACHED();
 }
 
 // static
@@ -2321,8 +2320,6 @@ void PermissionUmaUtil::RecordPermissionRequestRelevance(
     PermissionRequestRelevance permission_request_relevance,
     PredictionModelType model_type) {
   switch (model_type) {
-    case permissions::PredictionModelType::kOnDeviceAiV1Model:
-      [[fallthrough]];
     case permissions::PredictionModelType::kOnDeviceAiV3Model:
       [[fallthrough]];
     case permissions::PredictionModelType::kOnDeviceAiV4Model: {
@@ -2404,9 +2401,8 @@ void PermissionUmaUtil::RecordPredictionModelInquireTime(
 void PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
     PredictionModelType model_type,
     bool success) {
-  // Only AIv1 and AIv4 models use the rendered text as input.
-  DCHECK(model_type == PredictionModelType::kOnDeviceAiV1Model ||
-         model_type == PredictionModelType::kOnDeviceAiV4Model);
+  // Only AIv4 models use the rendered text as input.
+  DCHECK(model_type == PredictionModelType::kOnDeviceAiV4Model);
 
   std::string success_histogram_name =
       base::StrCat({"Permissions.", GetPredictionModelString(model_type),

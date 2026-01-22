@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No CPSS model"/>
   <int value="1" label="CPSSv1 model"/>
   <int value="2" label="CPSSv3 model"/>
-  <int value="3" label="AIv1 model"/>
+  <int value="3" label="(Obsolete) AIv1 model"/>
   <int value="4" label="AIv3 model"/>
   <int value="5" label="AIv4 model"/>
 </enum>

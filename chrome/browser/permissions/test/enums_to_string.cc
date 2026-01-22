@@ -16,8 +16,6 @@ std::string_view ToString(
   static constexpr auto map =
       base::MakeFixedFlatMap<PredictionSource, std::string_view>(
           {{PredictionSource::kServerSideCpssV3Model, "ServerSideCpssV3Model"},
-           {PredictionSource::kOnDeviceAiv1AndServerSideModel,
-            "OnDeviceAiv1AndServerSideModel"},
            {PredictionSource::kOnDeviceAiv3AndServerSideModel,
             "OnDeviceAiv3AndServerSideModel"},
            {PredictionSource::kOnDeviceCpssV1Model, "OnDeviceCpssV1Model"},

@@ -236,7 +236,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PredictionModels) -->
 
 <variants name="PredictionModels">
-  <variant name="AIv1"/>
   <variant name="AIv3"/>
   <variant name="AIv4"/>
   <variant name="OnDevicePredictionService"/>
@@ -269,13 +268,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDisposition) -->
 
 <variants name="RelevanceOutputPredictionModels">
-  <variant name="AIv1"/>
   <variant name="AIv3"/>
   <variant name="AIv4"/>
 </variants>
 
 <variants name="RenderedTextBasedPredictionModels">
-  <variant name="AIv1"/>
   <variant name="AIv4"/>
 </variants>
 
