@@ -3781,7 +3781,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSlow) {
   socket_factory()->AddSocketDataProvider(&data1);
   // Second attempt succeeds.
   SequencedSocketData data2;
-  data2.set_connect_data(MockConnect(ASYNC, OK));
+  MockConnectCompleter connect_completer2;
+  data2.set_connect_data(MockConnect(&connect_completer2));
   socket_factory()->AddSocketDataProvider(&data2);
 
   int rv = preconnector.Preconnect(pool());
@@ -3793,7 +3794,20 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSlow) {
                          .add_v4("192.0.2.1")
                          .endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_EQ(pool()
+                .GetGroupForTesting(preconnector.GetStreamKey())
+                ->attempt_manager()
+                ->TotalTcpBasedAttemptCount(),
+            1u);
 
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_EQ(pool()
+                .GetGroupForTesting(preconnector.GetStreamKey())
+                ->attempt_manager()
+                ->TotalTcpBasedAttemptCount(),
+            2u);
+
+  connect_completer2.Complete(OK);
   preconnector.WaitForResult();
   EXPECT_THAT(*preconnector.result(), IsOk());
 }

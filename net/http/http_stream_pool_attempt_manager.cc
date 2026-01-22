@@ -1597,10 +1597,15 @@ HttpStreamPool::AttemptManager::CalculateRequiredTcpBasedAttemptForPreconnect()
     const {
   const size_t max_preconnect_count = CalculateMaxPreconnectCount();
   // Required preconnect count is treated as zero when the maximum preconnect
-  // count is less than or equals to the active stream socket count. This
-  // behavior is for compatibility with the non-HEv3 code path. See
+  // count is less than or equals to the active non-slow stream socket count.
+  // This behavior is for compatibility with the non-HEv3 code path. See
   // TransportClientSocketPool::RequestSockets().
-  if (max_preconnect_count <= group_->ActiveStreamSocketCount()) {
+  // TODO(crbug.com/457478038): Update this logic when we migrate to the new
+  // Attempt class.
+  size_t active_non_slow_count = group_->HandedOutStreamSocketCount() +
+                                 group_->IdleStreamSocketCount() +
+                                 NonSlowTcpBasedAttemptCount();
+  if (max_preconnect_count <= active_non_slow_count) {
     return 0;
   }
   return max_preconnect_count;
