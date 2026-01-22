@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -280,16 +281,9 @@ glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab) {
 
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
     is_active_in_window = tab && tab->IsActivated();
-    // This code may be reached during the dragging of the tab out into a new
-    // window. In that case the BrowserWindowInterface would be null, but we
-    // cannot call GetBrowserWindowInterface to check for null. So we resort to
-    // null checking the underlying tab strip.
-    // TODO(crbug.com/456445100): Determine a better way to safely call this.
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-    is_window_active = tab &&
-                       static_cast<tabs::TabModel*>(tab)->owning_model() &&
-                       tab->GetBrowserWindowInterface()->IsActive();
-#endif
+    is_window_active = tab->GetBrowserWindowInterface()
+                           ? IsActive(tab->GetBrowserWindowInterface())
+                           : false;
   }
   return glic::mojom::TabData::New(
       GetTabId(web_contents),

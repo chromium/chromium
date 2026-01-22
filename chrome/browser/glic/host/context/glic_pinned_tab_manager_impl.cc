@@ -10,8 +10,10 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -80,6 +82,12 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
       last_origin_ =
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     }
+    did_become_visible_subscription_ =
+        tab_->RegisterDidBecomeVisible(base::BindRepeating(
+            &PinnedTabObserver::OnDidBecomeVisible, base::Unretained(this)));
+    will_become_hidden_subscription_ =
+        tab_->RegisterWillBecomeHidden(base::BindRepeating(
+            &PinnedTabObserver::OnWillBecomeHidden, base::Unretained(this)));
   }
   ~PinnedTabObserver() override { ClearObservation(); }
 
@@ -96,13 +104,32 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
     }
   }
 
-  void OnVisibilityChanged(content::Visibility visibility) override {
-    bool was_observable = IsObservable();
-    is_foreground_ = IsForeground(visibility);
-    if (was_observable != IsObservable()) {
-      UpdateTabDataAndSend(
-          {{TabDataChangeCause::kVisibility}, CreateTabData(tab_)});
+  void OnDidBecomeVisible(tabs::TabInterface* tab) {
+    if (is_foreground_) {
+      return;
     }
+    is_foreground_ = true;
+    UpdateTabDataAndSend(
+        {{TabDataChangeCause::kVisibility}, CreateTabData(tab_)});
+  }
+
+  void OnWillBecomeHidden(tabs::TabInterface* tab) {
+    if (!is_foreground_) {
+      return;
+    }
+    is_foreground_ = false;
+    // Post a task so that the update call happens after the tab is hidden. This
+    // ensures that TabInterface::IsActivated() returns the right value.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<PinnedTabObserver> self) {
+              if (self) {
+                self->UpdateTabDataAndSend({{TabDataChangeCause::kVisibility},
+                                            CreateTabData(self->tab_)});
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DidFinishNavigation(
@@ -189,12 +216,16 @@ class GlicPinnedTabManagerImpl::PinnedTabObserver
 
   base::CallbackListSubscription will_discard_contents_subscription_;
   base::CallbackListSubscription on_destroy_subscription_;
+  base::CallbackListSubscription did_become_visible_subscription_;
+  base::CallbackListSubscription will_become_hidden_subscription_;
 
   bool is_foreground_ = false;
   bool is_audible_ = false;
   url::Origin last_origin_;
 
   std::unique_ptr<TabDataObserver> tab_data_observer_;
+
+  base::WeakPtrFactory<PinnedTabObserver> weak_ptr_factory_{this};
 };
 
 GlicPinnedTabManagerImpl::PinnedTabEntry::PinnedTabEntry(
