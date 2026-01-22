@@ -164,6 +164,7 @@ class flat_tree {
   explicit flat_tree(const key_compare& comp);
 
   template <class InputIterator>
+    requires(std::input_iterator<InputIterator>)
   flat_tree(InputIterator first,
             InputIterator last,
             const key_compare& comp = key_compare());
@@ -177,6 +178,7 @@ class flat_tree {
             const key_compare& comp = key_compare());
 
   template <class InputIterator>
+    requires(std::input_iterator<InputIterator>)
   flat_tree(sorted_unique_t,
             InputIterator first,
             InputIterator last,
@@ -543,6 +545,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <class InputIterator>
+  requires(std::input_iterator<InputIterator>)
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     InputIterator first,
     InputIterator last,
@@ -575,6 +578,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <class InputIterator>
+  requires(std::input_iterator<InputIterator>)
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     InputIterator first,

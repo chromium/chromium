@@ -452,6 +452,7 @@ class small_map {
 
   // Invalidates iterators.
   template <class InputIterator>
+    requires(std::input_iterator<InputIterator>)
   constexpr void insert(InputIterator f, InputIterator l) {
     while (f != l) {
       insert(*f);
