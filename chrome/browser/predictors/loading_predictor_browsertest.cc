@@ -3275,4 +3275,123 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
       dns_prefetch_url.GetHost(), network_anonymization_key));
 }
 
+class ConnectionAllowlistLoadingPredictorBrowserTest
+    : public LoadingPredictorBrowserTest {
+ public:
+  ConnectionAllowlistLoadingPredictorBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        network::features::kConnectionAllowlists);
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&ConnectionAllowlistLoadingPredictorBrowserTest::
+                                HandleMainFrameRequest));
+    ASSERT_TRUE(preconnecting_test_server_.InitializeAndListen());
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse> HandleMainFrameRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/connection-allowlist") {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("Connection-Allowlist", "(http://a.test)");
+    return http_response;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that DNS prefetch fails when requests to the host are prevented by the
+// connection allowlist.
+// TODO(crbug.com/447954811): This test only applies to DNS prefetch initiated
+// by a <link>, and does not test HTTP 103 Early Hints headers. Once we
+// resolve how to handle them in
+// https://github.com/WICG/connection-allowlists/issues/3, we can add the
+// appropriate test as well.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
+                       ConnectionAllowlistDnsPrefetchFails) {
+  // Navigate the main frame to a page with a connection allowlist.
+  const GURL main_url =
+      embedded_test_server()->GetURL("a.test", "/connection-allowlist");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  GURL dns_prefetch_url("http://b.test");
+
+  content::RenderFrameHost* main_frame_rfh = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
+  // Add a link element that does a DNS prefetch.
+  EXPECT_TRUE(ExecJs(main_frame_rfh, content::JsReplace(R"(
+            var link_element = document.createElement('link');
+            link_element.href = $1;
+            link_element.rel = 'dns-prefetch';
+            document.body.appendChild(link_element);
+          )",
+                                                        dns_prefetch_url)));
+
+  net::NetworkAnonymizationKey network_anonymization_key =
+      main_frame_rfh->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+  // The observer should observe a DNS prefetch which is cancelled.
+  preconnect_manager_observer()->WaitUntilHostLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key);
+
+  // The host is looked up, but the lookup is eventually cancelled because
+  // `dns_prefetch_url` does not match the allowlist.
+  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+  EXPECT_FALSE(preconnect_manager_observer()->HostFound(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+}
+
+// Verify that DNS prefetch succeeds when requests to the host are allowed by
+// connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
+                       ConnectionAllowlistDnsPrefetchSucceeds) {
+  // Navigate the main frame to a page with a connection allowlist.
+  const GURL main_url =
+      embedded_test_server()->GetURL("a.test", "/connection-allowlist");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // This URL is allowed by the Connection-Allowlist header.
+  GURL dns_prefetch_url("http://a.test");
+
+  content::RenderFrameHost* main_frame_rfh = browser()
+                                                 ->tab_strip_model()
+                                                 ->GetActiveWebContents()
+                                                 ->GetPrimaryMainFrame();
+  // Add a link element that does a DNS prefetch.
+  EXPECT_TRUE(ExecJs(main_frame_rfh, content::JsReplace(R"(
+            var link_element = document.createElement('link');
+            link_element.href = $1;
+            link_element.rel = 'dns-prefetch';
+            document.body.appendChild(link_element);
+          )",
+                                                        dns_prefetch_url)));
+
+  net::NetworkAnonymizationKey network_anonymization_key =
+      main_frame_rfh->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+  // The observer should observe a DNS prefetch.
+  preconnect_manager_observer()->WaitUntilHostLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key);
+
+  // The host is looked up successfully because dns_prefetch_url is in the
+  // connection allowlist.
+  EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+  EXPECT_TRUE(preconnect_manager_observer()->HostFound(
+      dns_prefetch_url.GetHost(), network_anonymization_key));
+}
+
 }  // namespace predictors

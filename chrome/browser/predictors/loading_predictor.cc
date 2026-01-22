@@ -435,7 +435,8 @@ bool LoadingPredictor::HandleHintByOrigin(const GURL& url,
     preconnect_manager()->StartPreresolveHost(
         url, network_anonymization_key,
         kLoadingPredictorPreconnectTrafficAnnotation,
-        /*storage_partition_config=*/nullptr);
+        /*storage_partition_config=*/nullptr,
+        /*network_restrictions_id=*/std::nullopt);
     return true;
   }
 

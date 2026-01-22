@@ -59,9 +59,12 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
   for (const auto& url : urls) {
     gurls.emplace_back(url.GetURL());
   }
+  std::optional<base::UnguessableToken> network_restrictions_id =
+      render_frame_host->GetNetworkRestrictionsID();
   preconnect_manager_->StartPreresolveHosts(
       gurls, GetPendingNetworkAnonymizationKey(render_frame_host),
-      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr);
+      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr,
+      network_restrictions_id);
 }
 
 void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,

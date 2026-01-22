@@ -553,6 +553,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // it will no longer be needed.
   virtual net::IsolationInfo GetPendingIsolationInfoForSubresources() = 0;
 
+  // Returns the network restrictions ID which the network service uses to block
+  // requests originating from this document. If there is a pending commit, the
+  // identifier for that commit will be used. Otherwise, the identifier for
+  // the last committed navigation will be used.
+  virtual std::optional<base::UnguessableToken> GetNetworkRestrictionsID() = 0;
+
   // Returns the associated widget's native view.
   virtual gfx::NativeView GetNativeView() = 0;
 

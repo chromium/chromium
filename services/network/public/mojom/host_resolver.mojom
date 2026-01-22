@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/host_resolver_endpoint_result.mojom";
 import "services/network/public/mojom/ip_address.mojom";
@@ -272,6 +273,12 @@ struct ResolveHostParameters {
 
   // Specifies the purpose of the request.
   Purpose purpose = Purpose.kUnspecified;
+
+  // Identifier for network requests that the network service may block via the
+  // Connection Allowlist API. Defaults to empty, meaning no DNS requests will
+  // be blocked. See https://github.com/WICG/connection-allowlists for more
+  // info on the Connection Allowlist API.
+  mojo_base.mojom.UnguessableToken? network_restrictions_id;
 };
 
 // Response interface used to receive notifications from

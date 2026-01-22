@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
+#include "base/types/optional_ref.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/host_port_pair.h"
@@ -26,6 +27,7 @@ namespace content {
 ResolveHostClientImpl::ResolveHostClientImpl(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
+    base::optional_ref<const base::UnguessableToken> network_restrictions_id,
     ResolveHostCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
@@ -37,6 +39,8 @@ ResolveHostClientImpl::ResolveHostClientImpl(
   parameters->is_speculative = true;
   parameters->purpose =
       network::mojom::ResolveHostParameters::Purpose::kPreconnect;
+  parameters->network_restrictions_id =
+      network_restrictions_id.CopyAsOptional();
   resolve_host_start_time_ = base::TimeTicks::Now();
   // Intentionally using a SchemeHostPort. Resolving http:// scheme host will
   // fail when a HTTPS resource record exists due to DNS-based scheme upgrade

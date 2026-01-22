@@ -506,6 +506,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const net::NetworkIsolationKey& GetNetworkIsolationKey() override;
   const net::IsolationInfo& GetIsolationInfoForSubresources() override;
   net::IsolationInfo GetPendingIsolationInfoForSubresources() override;
+  std::optional<base::UnguessableToken> GetNetworkRestrictionsID() override;
   gfx::NativeView GetNativeView() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
@@ -3244,12 +3245,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // revocation can only happen when network access has been disabled for this
   // fenced frame tree as well as for all of its descendant fenced frame trees.
   void CalculateUntrustedNetworkStatus();
-
-  // Returns the network restrictions ID which the network service uses to block
-  // requests originating from this document. If there is a pending commit, the
-  // identifier for that commit will be used. Otherwise, the identifier for
-  // the last committed navigation will be used.
-  std::optional<base::UnguessableToken> GetNetworkRestrictionsID();
 
   // Find the frame that triggered the beforeunload handler to run in this
   // frame, which might be the frame itself or its ancestor.  This will

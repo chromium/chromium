@@ -1988,13 +1988,27 @@ void NetworkContext::ResolveHost(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
-  // Dns request is disallowed if network access is disabled for the nonce.
-  if (network_anonymization_key.GetNonce().has_value() &&
+  // Dns request is disallowed if network access is disabled for the partition
+  // nonce or the network_restrictions_id.
+  // TODO(crbug.com/447954811): For Connection Allowlist DNS lookups, define a
+  // less-strict mechanism that matches against the host portion of the URL.
+  GURL url = host->is_host_port_pair()
+                 ? url::SchemeHostPort(url::kHttpsScheme,
+                                       host->get_host_port_pair().host(),
+                                       host->get_host_port_pair().port())
+                       .GetURL()
+                 : host->get_scheme_host_port().GetURL();
+  bool is_network_disallowed_for_nonce =
+      network_anonymization_key.GetNonce().has_value() &&
       !IsNetworkForNonceAndUrlAllowed(
-          /*nonce=*/network_anonymization_key.GetNonce().value(),
-          /*url=*/host->is_host_port_pair()
-              ? GURL(host->get_host_port_pair().ToString())
-              : host->get_scheme_host_port().GetURL())) {
+          network_anonymization_key.GetNonce().value(), url);
+  bool is_network_disallowed_for_restrictions_id =
+      (optional_parameters &&
+       optional_parameters->network_restrictions_id.has_value() &&
+       !IsNetworkForNonceAndUrlAllowed(
+           optional_parameters->network_restrictions_id.value(), url));
+  if (is_network_disallowed_for_nonce ||
+      is_network_disallowed_for_restrictions_id) {
     mojo::Remote<mojom::ResolveHostClient> remote_response_client(
         std::move(response_client));
     remote_response_client->OnComplete(
@@ -3624,7 +3638,5 @@ void NetworkContext::InitializePrefetchURLLoaderFactory() {
   CreateURLLoaderFactory(std::move(pending_receiver),
                          CreateURLLoaderFactoryParamsForPrefetch());
 }
-
-
 
 }  // namespace network

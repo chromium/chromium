@@ -973,7 +973,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHost) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
   preconnect_manager_->StartPreresolveHost(
       url, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
   mock_network_context_->CompleteHostLookup(origin.GetHost(),
                                             network_anonymization_key, net::OK);
 
@@ -981,7 +982,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHost) {
   GURL non_http_url("file:///tmp/index.html");
   preconnect_manager_->StartPreresolveHost(
       non_http_url, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
 }
 
 TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostDisabled) {
@@ -997,7 +999,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostDisabled) {
   // will raise an error if it happens.
   preconnect_manager_->StartPreresolveHost(
       url, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
 }
 
 TEST_F(PreconnectManagerImplTest, TestStartPreresolveHosts) {
@@ -1011,7 +1014,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHosts) {
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.GetHost()));
   preconnect_manager_->StartPreresolveHosts(
       {cdn, fonts}, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
   mock_network_context_->CompleteHostLookup(cdn.GetHost(),
                                             network_anonymization_key, net::OK);
   mock_network_context_->CompleteHostLookup(fonts.GetHost(),
@@ -1031,7 +1035,8 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostsDisabled) {
   // will raise an error if it happens.
   preconnect_manager_->StartPreresolveHosts(
       {cdn, fonts}, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
 }
 
 TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
@@ -1148,7 +1153,8 @@ TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {
   preconnect_manager_->StartPreresolveHost(
       detached_preresolve, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
-      /*storage_partition_config=*/nullptr);
+      /*storage_partition_config=*/nullptr,
+      /*network_restrictions_id=*/std::nullopt);
   Mock::VerifyAndClearExpectations(preconnect_manager_.get());
 
   EXPECT_CALL(*mock_network_context_,

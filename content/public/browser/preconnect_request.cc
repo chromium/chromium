@@ -9,10 +9,12 @@ namespace content {
 PreconnectRequest::PreconnectRequest(
     const url::Origin& origin,
     int num_sockets,
-    const net::NetworkAnonymizationKey& network_anonymization_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    base::optional_ref<base::UnguessableToken> network_restrictions_id)
     : origin(origin),
       num_sockets(num_sockets),
-      network_anonymization_key(network_anonymization_key) {
+      network_anonymization_key(network_anonymization_key),
+      network_restrictions_id(network_restrictions_id.CopyAsOptional()) {
   CHECK_GE(num_sockets, 0);
   CHECK(!network_anonymization_key.IsEmpty() ||
         !net::NetworkAnonymizationKey::IsPartitioningEnabled());

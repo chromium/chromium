@@ -3508,6 +3508,17 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
   return config.isolation_info();
 }
 
+std::optional<base::UnguessableToken>
+RenderFrameHostImpl::GetNetworkRestrictionsID() {
+  // TODO(crbug.com/447954811): Consider refactoring this method after
+  // RenderDocument launches, because we may not need to consider pending
+  // navigations anymore.
+  auto config =
+      SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
+          *this);
+  return config.network_restrictions_id();
+}
+
 void RenderFrameHostImpl::GetCanonicalUrl(
     base::OnceCallback<void(const std::optional<GURL>&)> callback) {
   if (IsRenderFrameLive()) {
@@ -10971,17 +10982,6 @@ void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
               ->frame_tree_node_id());
     }
   }
-}
-
-std::optional<base::UnguessableToken>
-RenderFrameHostImpl::GetNetworkRestrictionsID() {
-  // TODO(crbug.com/447954811): Consider refactoring this method after
-  // RenderDocument launches, because we may not need to consider pending
-  // navigations anymore.
-  auto config =
-      SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
-          *this);
-  return config.network_restrictions_id();
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetBeforeUnloadInitiator() {

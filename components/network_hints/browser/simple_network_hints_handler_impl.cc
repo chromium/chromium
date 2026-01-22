@@ -81,6 +81,8 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
+    resolve_host_parameters->network_restrictions_id =
+        render_frame_host->GetNetworkRestrictionsID();
     // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
     // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
