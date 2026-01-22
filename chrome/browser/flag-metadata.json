@@ -9633,6 +9633,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "web-authentication-ambient-signin",
+    "owners": [
+      "derinel@google.com",
+      "kenrb@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "web-authentication-immediate-get",
     "owners": [
       "derinel@google.com",

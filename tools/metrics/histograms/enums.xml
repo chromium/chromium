@@ -17417,6 +17417,7 @@ from previous Chrome versions.
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>
   <int value="1082054180" label="PersistentWindowBounds:disabled"/>
+  <int value="1082064896" label="WebAuthenticationAmbientSignin:enabled"/>
   <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
@@ -19872,6 +19873,7 @@ from previous Chrome versions.
   <int value="1903793531" label="FasterSplitScreenSetup:enabled"/>
   <int value="1904716652"
       label="AutofillEnableBuyNowPayLaterSyncingForKlarna:disabled"/>
+  <int value="1905035701" label="WebAuthenticationAmbientSignin:disabled"/>
   <int value="1905129994"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:enabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>

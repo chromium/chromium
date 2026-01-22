@@ -4401,6 +4401,13 @@ inline constexpr char
         "Reintroduces the hybrid passkey entry point to the Autofill dropdown "
         "menu.";
 
+inline constexpr char kWebAuthnAmbientSigninName[] =
+    "Enable Ambient sign-in for WebAuthn get requests";
+inline constexpr char kWebAuthnAmbientSigninDescription[] =
+    "Enables ambient sign-in for passkeys and passwords from a "
+    "navigator.credentials.get() request. This is similar to conditional UI "
+    "with the main difference being it does not use autofill UI.";
+
 inline constexpr char kWebAuthnImmediateGetName[] =
     "Enable immediate mediation for WebAuthn get requests";
 inline constexpr char kWebAuthnImmediateGetDescription[] =

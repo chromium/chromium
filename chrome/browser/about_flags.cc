@@ -13540,6 +13540,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnablePayNowPayLaterTabs)},
 
+    {"web-authentication-ambient-signin",
+     flag_descriptions::kWebAuthnAmbientSigninName,
+     flag_descriptions::kWebAuthnAmbientSigninDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kWebAuthnAmbientSignin)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
