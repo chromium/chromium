@@ -4852,6 +4852,12 @@ const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
     {"Force Shift Click", kAndroidTabHighlightingForceShiftClick,
      std::size(kAndroidTabHighlightingForceShiftClick), nullptr}};
 
+const FeatureEntry::FeatureParam kTabBottomSheetDontShowFusebox[] = {
+    {"dont_show_fusebox", "true"}};
+const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
+    {"Dont Show Fusebox", kTabBottomSheetDontShowFusebox,
+     std::size(kTabBottomSheetDontShowFusebox), nullptr}};
+
 const FeatureEntry::FeatureParam kAndroidPinnedTabsSearchBoxMovement[] = {
     {"search_box_movement", "true"}};
 const FeatureEntry::FeatureParam kAndroidPinnedTabsSearchBoxSquishAnimation[] =
@@ -10811,7 +10817,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-bottom-sheet", flag_descriptions::kTabBottomSheetName,
      flag_descriptions::kTabBottomSheetDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabBottomSheet)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabBottomSheet,
+                                    kTabBottomSheetVariations,
+                                    "TabBottomSheetVariations")},
 
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,

@@ -15,4 +15,8 @@ public final class TabBottomSheetUtils {
     public static boolean isTabBottomSheetEnabled() {
         return ChromeFeatureList.sTabBottomSheet.isEnabled();
     }
+
+    public static boolean shouldShowFusebox() {
+        return !ChromeFeatureList.sTabBottomSheetDontShowFusebox.getValue();
+    }
 }

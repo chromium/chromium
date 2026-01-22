@@ -51,7 +51,9 @@ public class TabBottomSheetManager implements Destroyable {
      * user.
      */
     public void tryToShowBottomSheet(
-            View toolbarView, View fuseboxView, Callback<Boolean> onBottomSheetShowAttempted) {
+            View toolbarView,
+            @Nullable View fuseboxView,
+            Callback<Boolean> onBottomSheetShowAttempted) {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             if (mTabBottomSheetCoordinator == null) {
                 mTabBottomSheetCoordinator =

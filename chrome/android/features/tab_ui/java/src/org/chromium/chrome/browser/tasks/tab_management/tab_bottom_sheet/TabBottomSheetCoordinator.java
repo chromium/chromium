@@ -49,7 +49,7 @@ public class TabBottomSheetCoordinator {
     public void showBottomSheet(
             View toolbarView,
             View webUiView,
-            View fuseboxView,
+            @Nullable View fuseboxView,
             Callback<Boolean> onBottomSheetShowAttempted) {
         if (mIsSheetCurrentlyManagedByController) {
             return;
@@ -64,7 +64,9 @@ public class TabBottomSheetCoordinator {
         // Add the views to the bottom sheet.
         toolbarContainer.addView(toolbarView);
         webUiContainer.addView(webUiView);
-        fuseboxContainer.addView(fuseboxView);
+        if (fuseboxView != null) {
+            fuseboxContainer.addView(fuseboxView);
+        }
 
         mViewBinder =
                 PropertyModelChangeProcessor.create(

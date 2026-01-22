@@ -60,23 +60,25 @@ public class TabBottomSheetSimpleManager implements Destroyable {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             mTabModel.addObserver(mTabModelObserver);
             mToolbar = new TabBottomSheetSimpleToolbar(activity);
-            mFusebox =
-                    new TabBottomSheetFusebox(
-                            activity,
-                            profileSupplier,
-                            windowAndroid,
-                            lifecycleDispatcher,
-                            CallbackUtils.emptyCallback(),
-                            snackbarManager);
+            if (TabBottomSheetUtils.shouldShowFusebox()) {
+                mFusebox =
+                        new TabBottomSheetFusebox(
+                                activity,
+                                profileSupplier,
+                                windowAndroid,
+                                lifecycleDispatcher,
+                                CallbackUtils.emptyCallback(),
+                                snackbarManager);
+            }
         }
     }
 
     /** Attempts to show the Simple Tab BottomSheet. */
     public void tryToShowBottomSheet() {
-        if (mTabBottomSheetManager != null && mToolbar != null && mFusebox != null) {
+        if (mTabBottomSheetManager != null && mToolbar != null) {
             mTabBottomSheetManager.tryToShowBottomSheet(
                     mToolbar.getToolbarView(),
-                    mFusebox.getFuseboxView(),
+                    mFusebox != null ? mFusebox.getFuseboxView() : null,
                     this::onBottomSheetShowAttempted);
         } else {
             destroy();

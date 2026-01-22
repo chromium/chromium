@@ -1848,6 +1848,9 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceShiftClick =
             sAndroidTabHighlighting.newBooleanParam("force_shift_click", false);
 
+    public static final MutableBooleanParamWithSafeDefault sTabBottomSheetDontShowFusebox =
+            sTabBottomSheet.newBooleanParam("dont_show_fusebox", false);
+
     public static final MutableBooleanParamWithSafeDefault sRobustWindowManagementBulkClose =
             sRobustWindowManagement.newBooleanParam("bulk_close", false);
 }
