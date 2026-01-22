@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/account_picker/ui_bundled",
   "+ios/chrome/browser/drive/model/manage_storage_url_util.h",
   "+ios/chrome/browser/google_one/shared/google_one_entry_point.h",
@@ -6,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/store_kit/model",
   "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

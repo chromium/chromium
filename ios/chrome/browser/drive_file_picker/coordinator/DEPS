@@ -1,10 +1,12 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/web/model/choose_file/choose_file_event.h",
   "+ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h",
   "+ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h",
   "+ios/chrome/browser/web/model/choose_file/choose_file_util.h",
-  "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/authentication/ui_bundled",
-  "+ios/chrome/browser/drive/model",
-  "+ios/chrome/browser/menu/ui_bundled",
+  # keep-sorted end
 ]
