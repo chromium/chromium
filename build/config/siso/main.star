@@ -12,6 +12,7 @@ load("./backend_config/backend.star", "backend")
 load("./blink_all.star", "blink_all")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./grit.star", "grit")
 load("./linux.star", chromium_linux = "chromium")
 load("./mac.star", chromium_mac = "chromium")
 load("./mojo.star", "mojo")
@@ -60,6 +61,7 @@ def init(ctx):
         "rules": [],
     }
     step_config = blink_all.step_config(ctx, step_config)
+    step_config = grit.step_config(ctx, step_config)
     step_config = host.step_config(ctx, step_config)
     step_config = mojo.step_config(ctx, step_config)
     step_config = rust.step_config(ctx, step_config)

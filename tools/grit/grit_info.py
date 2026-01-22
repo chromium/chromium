@@ -53,6 +53,37 @@ def GritSourceFiles():
   return sorted(files)
 
 
+def _GetInputFiles(grd, nodes, filename):
+  files = set()
+  for node in nodes:
+    with node:
+      if (node.name == 'structure' or node.name == 'skeleton'
+          or (node.name == 'file' and node.parent
+              and node.parent.name == 'translations')):
+        path = node.GetInputPath()
+        if path is not None:
+          files.add(grd.ToRealPath(path))
+
+        # If it's a flattened node, grab inlined resources too.
+        if node.name == 'structure' and node.attrs.get('flattenhtml') == 'true':
+          node.RunPreSubstitutionGatherer()
+          files.update(node.GetHtmlResourceFilenames())
+      elif node.name == 'grit':
+        first_ids_file = node.GetFirstIdsFile()
+        if first_ids_file:
+          files.add(first_ids_file)
+      elif node.name == 'include':
+        files.add(grd.ToRealPath(node.GetInputPath()))
+        # If it's a flattened node, grab inlined resources too.
+        if node.attrs.get('flattenhtml') == 'true':
+          files.update(node.GetHtmlResourceFilenames())
+      elif node.name == 'part':
+        files.add(
+            util.normpath(
+                os.path.join(os.path.dirname(filename), node.GetInputPath())))
+  return files
+
+
 def Inputs(filename, defines, ids_file, target_platform=None):
   grd = grd_reader.Parse(
       filename, debug=False, defines=defines, tags_to_ignore={'message'},
@@ -64,38 +95,30 @@ def Inputs(filename, defines, ids_file, target_platform=None):
     grd.SetOutputLanguage(lang or grd.GetSourceLanguage())
     grd.SetOutputContext(ctx)
     grd.SetFallbackToDefaultLayout(fallback)
-    for node in grd.ActiveDescendants():
-      with node:
-        if (node.name == 'structure' or node.name == 'skeleton' or
-            (node.name == 'file' and node.parent and
-             node.parent.name == 'translations')):
-          path = node.GetInputPath()
-          if path is not None:
-            files.add(grd.ToRealPath(path))
+    files.update(_GetInputFiles(grd, grd.ActiveDescendants(), filename))
 
-          # If it's a flattened node, grab inlined resources too.
-          if node.name == 'structure' and node.attrs['flattenhtml'] == 'true':
-            node.RunPreSubstitutionGatherer()
-            files.update(node.GetHtmlResourceFilenames())
-        elif node.name == 'grit':
-          first_ids_file = node.GetFirstIdsFile()
-          if first_ids_file:
-            files.add(first_ids_file)
-        elif node.name == 'include':
-          files.add(grd.ToRealPath(node.GetInputPath()))
-          # If it's a flattened node, grab inlined resources too.
-          if node.attrs['flattenhtml'] == 'true':
-            files.update(node.GetHtmlResourceFilenames())
-        elif node.name == 'part':
-          files.add(util.normpath(os.path.join(os.path.dirname(filename),
-                                               node.GetInputPath())))
+  cwd = os.getcwd()
+  return [os.path.relpath(f, cwd) for f in sorted(files)]
 
+
+def AllInputs(filename, defines, ids_file, target_platform=None):
+  grd = grd_reader.Parse(filename,
+                         debug=False,
+                         defines=defines,
+                         tags_to_ignore={'message'},
+                         first_ids_file=ids_file,
+                         target_platform=target_platform,
+                         skip_validation_checks=True)
+  files = _GetInputFiles(grd, grd.Preorder(), filename)
   cwd = os.getcwd()
   return [os.path.relpath(f, cwd) for f in sorted(files)]
 
 
 def PrintUsage():
   print('USAGE: ./grit_info.py --inputs [-D foo] [-f resource_ids] <grd-file>')
+  print(
+      '       ./grit_info.py --all-inputs [-D foo] [-f resource_ids] <grd-file>'
+  )
   print('       ./grit_info.py --outputs [-D foo] [-f resource_ids] ' +
         '<out-prefix> <grd-file>')
   print('       ./grit_info.py --help')
@@ -105,7 +128,17 @@ def DoMain(argv):
   os.environ['cwd'] = os.getcwd()
 
   parser = optparse.OptionParser()
-  parser.add_option("--inputs", action="store_true", dest="inputs")
+  parser.add_option("--inputs",
+                    action="store_true",
+                    dest="inputs",
+                    help="Determines the inputs for the given grit file for "
+                    "the specific build configuration defined by defines "
+                    "and target platform.")
+  parser.add_option("--all-inputs",
+                    action="store_true",
+                    dest="all_inputs",
+                    help="Determines all possible inputs for the given grit "
+                    "file, regardless of the build configuration.")
   parser.add_option("--outputs", action="store_true", dest="outputs")
   parser.add_option("-D", action="append", dest="defines", default=[])
   # grit build also supports '-E KEY=VALUE', support that to share command
@@ -154,6 +187,23 @@ def DoMain(argv):
     if options.allowlist_files:
       inputs.extend(options.allowlist_files)
     return '\n'.join(inputs)
+  elif options.all_inputs:
+    if len(args) != 1:
+      raise WrongNumberOfArguments("Expected 1 argument for --all-inputs")
+
+    filename = args[0]
+
+    # Here we don't add the grit source files since we already specified
+    # them in grit_rule.py and eventually we want to switch to
+    # action_with_pydeps
+    inputs = AllInputs(filename, defines, options.ids_file,
+                       options.target_platform)
+
+    output = '# Generated by running:\n'
+    output += '#   %s --all-inputs %s > %s.gritdeps\n' % (sys.argv[0], filename,
+                                                          filename)
+    output += '\n'.join(inputs)
+    return output
   elif options.outputs:
     if len(args) != 2:
       raise WrongNumberOfArguments(
@@ -167,7 +217,8 @@ def DoMain(argv):
     ]
     return '\n'.join(outputs)
   else:
-    raise WrongNumberOfArguments("Expected --inputs or --outputs.")
+    raise WrongNumberOfArguments(
+        "Expected --inputs, --all-inputs, or --outputs.")
 
 
 def main(argv):

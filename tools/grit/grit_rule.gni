@@ -21,6 +21,9 @@
 #       For "gn analyze" to be correct with this arg disabled, all inputs
 #       must be listed via |inputs|.
 #
+#   gritdeps (optional)
+#       A file containing a list of dependencies for the grit action.
+#
 #   inputs  (optional)
 #       List of additional files, required for grit to process source file.
 #
@@ -320,6 +323,11 @@ template("grit") {
     }
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
+    }
+    if (defined(invoker.gritdeps)) {
+      _gritdeps_lines = read_file(invoker.gritdeps, "list lines")
+      _gritdeps_entries = filter_exclude(_gritdeps_lines, [ "#*" ])
+      inputs += rebase_path(_gritdeps_entries, ".", "//")
     }
   }
 

@@ -1,0 +1,25 @@
+# -*- bazel-starlark -*-
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Siso configuration for grit."""
+
+load("@builtin//struct.star", "module")
+
+def __step_config(ctx, step_config):
+    step_config["rules"].extend([
+        {
+            "name": "chrome_app_generated_resources_grit",
+            # TODO(crbug.com/452240479): while we now support grit_strings
+            # actions we want to support all grit actions to run remotely and
+            # use command_prefix instead of action
+            "action": "__chrome_app_generated_resources_grit.*",
+            "remote": True,
+        },
+    ])
+    return step_config
+
+grit = module(
+    "grit",
+    step_config = __step_config,
+)
