@@ -232,12 +232,30 @@ TEST_F(AppSearchProviderTest, FuzzyAppSearchTest) {
               result == "Packaged App 2,Packaged App 1");
 }
 
-// TODO(crbug.com/454468678): Add a test fixture for tests require ArcAppTest.
+class AppSearchProviderWithArcAppsTest : public AppSearchProviderTestBase {
+ public:
+  AppSearchProviderWithArcAppsTest()
+      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {}
+  AppSearchProviderWithArcAppsTest(const AppSearchProviderWithArcAppsTest&) =
+      delete;
+  AppSearchProviderWithArcAppsTest& operator=(
+      const AppSearchProviderWithArcAppsTest&) = delete;
+  ~AppSearchProviderWithArcAppsTest() override = default;
 
-TEST_F(AppSearchProviderTest, Basic) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
+  void SetUp() override {
+    arc_app_test().PreProfileSetUp();
+    AppSearchProviderTestBase::SetUp();
+    arc_app_test().PostProfileSetUp(profile());
+  }
+
+  void TearDown() override {
+    arc_app_test().PreProfileTearDown();
+    AppSearchProviderTestBase::TearDown();
+    arc_app_test().PostProfileTearDown();
+  }
+};
+
+TEST_F(AppSearchProviderWithArcAppsTest, Basic) {
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   for (int i = 0; i < 2; i++)
     arc_apps.emplace_back(arc_app_test().fake_apps()[i]->Clone());
@@ -270,17 +288,10 @@ TEST_F(AppSearchProviderTest, Basic) {
   result = RunQuery("app2");
   EXPECT_TRUE(result == "Packaged App 2,Fake App 2" ||
               result == "Fake App 2,Packaged App 2");
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
-TEST_F(AppSearchProviderTest, NonLatinLocale) {
+TEST_F(AppSearchProviderWithArcAppsTest, NonLatinLocale) {
   base::i18n::SetICUDefaultLocale("sr");
-
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
 
   const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   AddExtension(test_app_id_1, "Тестна апликација 1",
@@ -322,17 +333,11 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
   result = RunQuery("апликација 1");
   EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
               result == "Лажна апликација 1,Тестна апликација 1");
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 
   base::i18n::SetICUDefaultLocale("en");
 }
 
-TEST_F(AppSearchProviderTest, InstallUninstallArc) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
+TEST_F(AppSearchProviderWithArcAppsTest, InstallUninstallArc) {
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
@@ -363,17 +368,9 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
 
   // Let uninstall code to clean up.
   base::RunLoop().RunUntilIdle();
-
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
-TEST_F(AppSearchProviderTest, FilterDuplicate) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
-
+TEST_F(AppSearchProviderWithArcAppsTest, FilterDuplicate) {
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile());
   ASSERT_TRUE(extension_prefs);
@@ -412,9 +409,6 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   InitializeSearchProvider();
   EXPECT_EQ(kGmailExtensionName, RunQuery(kGmailQuery));
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
 class AppSearchProviderCrostiniTest : public AppSearchProviderTestBase {
@@ -594,33 +588,28 @@ enum class TestArcAppInstallType {
 };
 
 class AppSearchProviderWithArcAppInstallType
-    : public AppSearchProviderTestBase,
+    : public AppSearchProviderWithArcAppsTest,
       public ::testing::WithParamInterface<TestArcAppInstallType> {
  public:
-  AppSearchProviderWithArcAppInstallType()
-      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {}
-
+  AppSearchProviderWithArcAppInstallType() = default;
   AppSearchProviderWithArcAppInstallType(
       const AppSearchProviderWithArcAppInstallType&) = delete;
   AppSearchProviderWithArcAppInstallType& operator=(
       const AppSearchProviderWithArcAppInstallType&) = delete;
-
   ~AppSearchProviderWithArcAppInstallType() override = default;
+
+  void SetUp() override {
+    if (GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT) {
+      ArcDefaultAppList::UseTestAppsDirectory();
+      arc_app_test().set_wait_default_apps(true);
+    }
+    AppSearchProviderWithArcAppsTest::SetUp();
+  }
 };
 
 // TODO (879413): Enable this after resolving flakiness.
 TEST_P(AppSearchProviderWithArcAppInstallType,
        DISABLED_InstallInternallyRanking) {
-  const bool default_app =
-      GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT;
-  if (default_app) {
-    ArcDefaultAppList::UseTestAppsDirectory();
-    arc_app_test().set_wait_default_apps(true);
-  }
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
-
   ArcAppListPrefs* const prefs = arc_app_test().arc_app_list_prefs();
   ASSERT_TRUE(prefs);
 
@@ -642,7 +631,7 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   }
 
   // Reinstall default app to make install time after normall app install time.
-  if (default_app) {
+  if (GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT) {
     static_cast<arc::mojom::AppHost*>(prefs)->OnPackageAppListRefreshed(
         kRankingInternalAppPackageName, {} /* apps */);
   }
@@ -651,7 +640,8 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
       AddArcApp(kRankingInternalAppName, kRankingInternalAppPackageName,
                 kRankingInternalAppActivity);
 
-  EXPECT_EQ(default_app, prefs->IsDefault(internal_app_id));
+  EXPECT_EQ(GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT,
+            prefs->IsDefault(internal_app_id));
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> normal_app =
       prefs->GetApp(normal_app_id);
@@ -675,9 +665,6 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   EXPECT_EQ(std::string(kRankingInternalAppName) + "," +
                 std::string(kRankingNormalAppName),
             RunQuery(kRankingAppQuery));
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AppSearchProviderOemAppTest, ::testing::Bool());
