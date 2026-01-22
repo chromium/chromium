@@ -21,6 +21,7 @@ IOS_PACKAGE_PATTERN = r'^ios'
 BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
 UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
+UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
 
 # Color management constants
 COLOR_SHARED_DIR = 'ios/chrome/common/ui/colors/'
@@ -535,6 +536,31 @@ def _CheckUmbrellaHeaderUsage(input_api, output_api):
         output_api.PresubmitPromptWarning(warning_message, items=errors)
     ]
 
+def _CheckNoFlakyUnitTest(input_api, output_api):
+    """ Checks that there are no tests with FLAKY_ prefix."""
+    flaky_specifier_pattern = input_api.re.compile(r'\bFLAKY_')
+
+    unittest_regex = input_api.re.compile(UNITTEST_FILE_PATTERN)
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not unittest_regex.search(f.LocalPath()):
+            continue
+        for line_num, line in f.ChangedContents():
+            if line.lstrip().startswith('//'):
+                continue
+            if flaky_specifier_pattern.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    error_message = '\n'.join([
+        'Unit tests must not be marked as FLAKY_. If a test is flaky, use '
+        'DISABLED_ instead.'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
+
+
 def CheckChange(input_api, output_api):
     results = []
     results.extend(_CheckBugInToDo(input_api, output_api))
@@ -553,6 +579,7 @@ def CheckChange(input_api, output_api):
         _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api))
     results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
     results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
+    results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):

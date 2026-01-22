@@ -381,5 +381,49 @@ def testUmbrellaHeaderUsage(self):
         self.assertTrue(any('ios/path/foo.mm:6' in e for e in errors[0].items))
         self.assertTrue(any('ios/path/foo.mm:7' in e for e in errors[0].items))
 
+class CheckNoFlakyUnitTest(unittest.TestCase):
+    """Test the _CheckNoFlakyUnitTest presubmit check."""
+
+    def testFindsFlakyTests(self):
+        bad_lines = [
+            'TEST_F(MyTest, FLAKY_MyFlakyTest) {',
+            'TEST(MyTestSuite, FLAKY_AnotherFlakyTest)',
+            '#define MAYBE_Test FLAKY_Test',
+        ]
+        good_lines = [
+            'TEST_F(MyTest, MyGoodTest) {',
+            'TEST(MyTestSuite, DISABLED_MyDisabledTest)',
+            '// This is a comment about FLAKY_ tests',
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_unittests.mm',
+                                          bad_lines + good_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_unittests.cc',
+                                          bad_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_unittest.mm',
+                                          bad_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_unittest.cc',
+                                          bad_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_egtest.mm',
+                                          bad_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckNoFlakyUnitTest(mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('error', errors[0].type)
+        self.assertTrue('ios/path/foo_unittests.mm:1' in errors[0].message)
+        self.assertTrue('ios/path/foo_unittests.mm:2' in errors[0].message)
+        self.assertTrue('ios/path/foo_unittests.mm:3' in errors[0].message)
+        self.assertTrue('ios/path/foo_unittests.cc:1' in errors[0].message)
+        self.assertTrue('ios/path/foo_unittest.mm:1' in errors[0].message)
+        self.assertTrue('ios/path/foo_unittest.cc:1' in errors[0].message)
+        self.assertFalse('ios/path/foo_unittests.mm:4' in errors[0].message)
+        self.assertFalse('ios/path/foo_unittests.mm:5' in errors[0].message)
+        self.assertFalse('ios/path/foo_unittests.mm:6' in errors[0].message)
+        # Should not find errors in _egtest.mm
+        self.assertFalse('ios/path/foo_egtest.mm' in errors[0].message)
+
+
 if __name__ == '__main__':
     unittest.main()
