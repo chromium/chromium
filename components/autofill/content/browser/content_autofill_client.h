@@ -30,9 +30,6 @@ class ContentAutofillClient
   ContentAutofillClient& operator=(const ContentAutofillClient&) = delete;
   ~ContentAutofillClient() override;
 
-  // This is null during destruction.
-  content::WebContents* web_contents() const;
-
   // Intentionally final to allow it to be called during construction (in
   // particular, transitively by members of subclasses).
   ContentAutofillDriverFactory& GetAutofillDriverFactory() final;

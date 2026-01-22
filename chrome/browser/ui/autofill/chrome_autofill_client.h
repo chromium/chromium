@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
@@ -86,7 +87,8 @@ enum class SuggestionType;
 // tests derive from it. Member functions should be final unless they need to be
 // mocked or overridden in subclasses and you have verified that they are not
 // called, directly or indirectly, from the constructor.
-class ChromeAutofillClient : public ContentAutofillClient {
+class ChromeAutofillClient : public ContentAutofillClient,
+                             public content::WebContentsObserver {
  public:
   // Creates a new ChromeAutofillClient for the given `web_contents` if no
   // ContentAutofillClient is associated with the `web_contents` yet. Otherwise,
