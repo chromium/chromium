@@ -20,6 +20,20 @@ from robo_lib import shell
 import robo_setup
 
 
+def AreGnConfigsDone(cfg):
+    # Try to get everything to build if we haven't committed the configs yet.
+    # Note that the only time we need to do this again is if some change makes
+    # different files added / deleted to the build, or if ffmpeg configure
+    # changes.  We don't need to do this if you just edit ffmpeg sources;
+    # those will be built with the tests if they've changed since last time.
+    #
+    # So, if you're just editing ffmpeg sources to get tests to pass, then you
+    # probably don't need to do this step again.
+    if cfg.force_gn_rebuild():
+        return False
+    return robo_branch.IsCommitOnThisBranch(cfg, cfg.gn_commit_title())
+
+
 def IsWorkingDirectoryClean():
     """Return true if and only if the working directory is clean."""
     return not shell.output_or_error(
@@ -230,8 +244,9 @@ def WriteConfigChangesFile(cfg):
             f.write(f'{delta}\n')
 
 
-def AddAndCommit(cfg, commit_title):
+def AddAndCommit(cfg, commit_title=None):
     """Add everything, and commit locally with |commit_title|"""
+    commit_title = commit_title or cfg.gn_commit_title()
     shell.log("Creating local commit %s" % commit_title)
     cfg.chdir_to_ffmpeg_src()
     if IsWorkingDirectoryClean():
