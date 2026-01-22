@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 @protocol BrowserProviderInterface;
 @class ProfileState;
@@ -22,7 +21,6 @@
 @interface SceneController : NSObject <SceneCommands,
                                        ConnectionInformation,
                                        SceneStateObserver,
-                                       SettingsCommands,
                                        TabOpening,
                                        WebStateListObserving>
 - (instancetype)init NS_UNAVAILABLE;

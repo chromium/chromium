@@ -85,7 +85,6 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -303,11 +302,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     _dispatcher = [[CommandDispatcher alloc] init];
     [_dispatcher startDispatchingToTarget:sceneCommandsEndpoint
                               forProtocol:@protocol(SceneCommands)];
-    // -startDispatchingToTarget:forProtocol: doesn't pick up protocols the
-    // passed protocol conforms to, so SettingsCommands is explicitly dispatched
-    // to the endpoint as well.
-    [_dispatcher startDispatchingToTarget:sceneCommandsEndpoint
-                              forProtocol:@protocol(SettingsCommands)];
 
     _regularBrowser = regularBrowser;
     _inactiveBrowser = inactiveBrowser;
@@ -1133,7 +1127,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.incognitoBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.regularBrowser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.dispatcher stopDispatchingForProtocol:@protocol(SceneCommands)];
-  [self.dispatcher stopDispatchingForProtocol:@protocol(SettingsCommands)];
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;

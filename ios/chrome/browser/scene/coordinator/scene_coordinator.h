@@ -7,31 +7,47 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 class Browser;
+@protocol BrowserProviderInterface;
 class GURL;
 enum class SafariDataImportEntryPoint;
 @protocol SafariDataImportUIHandler;
 @protocol SceneCommands;
+@class SettingsNavigationController;
 @class ShowSigninCommand;
 @class SigninCoordinator;
-@protocol TabGridCoordinatorDelegate;
+@class SceneCoordinator;
+
+namespace password_manager {
+enum class PasswordCheckReferrer;
+}  // namespace password_manager
+
+// Delegate for the SceneCoordinator.
+@protocol SceneCoordinatorDelegate <TabGridCoordinatorDelegate>
+
+// Informs the delegate that settings were dismissed (e.g. swipe).
+// Corresponds to `settingsWasDismissed`.
+- (void)sceneCoordinatorDidDismissSettings:(SceneCoordinator*)coordinator;
+
+@end
 
 // Coordinator for the scene, managing the top-level UI.
-@interface SceneCoordinator : RootCoordinator
+@interface SceneCoordinator
+    : RootCoordinator <SettingsCommands, SettingsNavigationControllerDelegate>
 
 - (instancetype)initWithSceneCommandsEndpoint:
                     (id<SceneCommands>)sceneCommandsEndpoint
-                               regularBrowser:(Browser*)regularBrowser
-                              inactiveBrowser:(Browser*)inactiveBrowser
-                             incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<TabGridCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<SceneCoordinatorDelegate> delegate;
 
 // Proxy properties for TabGridCoordinator.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
@@ -42,11 +58,23 @@ enum class SafariDataImportEntryPoint;
 // because the incognito profile is deleted.
 @property(nonatomic, assign) Browser* incognitoBrowser;
 
+// Navigation View controller for the settings.
+// TODO(crbug.com/463347803): This property is temporarily exposed to facilitate
+// migration. It should be private once the migration is complete.
+@property(nonatomic, strong)
+    SettingsNavigationController* settingsNavigationController;
+
 // Returns YES if sign-in is in progress.
 @property(nonatomic, readonly) BOOL isSigninInProgress;
 
+// Sets the main, inactive, and incognito browsers from the given provider.
+- (void)setBrowsersFromProvider:(id<BrowserProviderInterface>)provider;
+
 // YES if the Tab Grid is currently being shown.
 - (BOOL)isTabGridActive;
+
+// Returns YES if the current Tab is available to present a view controller.
+- (BOOL)isTabAvailableToPresentViewController;
 
 // Stops all child coordinators then calls `completion`. `completion` is called
 // whether or not child coordinators exist.
@@ -93,6 +121,40 @@ enum class SafariDataImportEntryPoint;
 
 // Stops the Safari Data Import coordinator.
 - (void)stopSafariDataImportCoordinator;
+
+// Stops the settings navigation controller.
+- (void)stopSettingsAnimated:(BOOL)animated
+                  completion:(ProceduralBlock)completion;
+
+// Creates the settings navigation controller for the safety check if it doesn't
+// exist.
+- (void)createSafetyCheckSettingsWithReferrer:
+    (password_manager::PasswordCheckReferrer)referrer;
+
+// Shows the settings navigation controller.
+- (void)presentSettingsFromViewController:(UIViewController*)baseViewController;
+
+// Shows the settings UI, presenting from `baseViewController` and with blue dot
+// for default browser settings if specified.
+- (void)showSettingsFromViewController:(UIViewController*)baseViewController
+              hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
+
+// Shows the Safe Browsing settings page presenting from `baseViewController`.
+- (void)showSafeBrowsingSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
+// Shows the Settings UI, presenting from `baseViewController`.
+- (void)showSettingsFromViewController:(UIViewController*)baseViewController;
+
+// Shows the settings Privacy UI.
+- (void)showPrivacySettingsFromViewController:
+    (UIViewController*)baseViewController;
+
+// Shows the Settings UI if nothing else is displayed.
+- (void)maybeShowSettingsFromViewController;
+
+// Opens the Price Tracking notifications settings UI.
+- (void)openPriceTrackingNotificationsSettings;
 
 @end
 
