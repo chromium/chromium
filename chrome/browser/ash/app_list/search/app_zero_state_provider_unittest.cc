@@ -81,6 +81,51 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
             GetSortedResultsString());
 }
 
+TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
+  InitializeSearchProvider();
+
+  extensions::ExtensionPrefs* prefs =
+      extensions::ExtensionPrefs::Get(profile());
+
+  // The order of unlaunched recommendations should be based on the install time
+  // order.
+  prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now());
+  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(0));
+  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(0));
+  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
+}
+
+TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
+  // Disable the pre-installed high-priority extensions.
+  registrar()->UninstallExtension(
+      kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(
+      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(
+      kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+
+  // Install two apps, one which is hidden and one shown in the launcher.
+  const std::string shown_app_id =
+      crx_file::id_util::GenerateId(kNormalAppName);
+  AddExtension(shown_app_id, kNormalAppName, ManifestLocation::kComponent,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
+               /*display_in_launcher=*/true);
+  registrar()->EnableExtension(shown_app_id);
+
+  const std::string hidden_app_id =
+      crx_file::id_util::GenerateId(kHiddenAppName);
+  AddExtension(hidden_app_id, kHiddenAppName, ManifestLocation::kComponent,
+               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
+               /*display_in_launcher=*/false);
+  registrar()->EnableExtension(hidden_app_id);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Only the app that is shown in launcher should be available.
+  InitializeSearchProvider();
+  EXPECT_EQ(std::string(kNormalAppName), RunZeroStateSearch());
+}
+
 TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
@@ -164,51 +209,6 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   arc_app_test().PreProfileTearDown();
   // TODO(crbug.com/454468678): This should be called after profile is deleted.
   arc_app_test().PostProfileTearDown();
-}
-
-TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
-  InitializeSearchProvider();
-
-  extensions::ExtensionPrefs* prefs =
-      extensions::ExtensionPrefs::Get(profile());
-
-  // The order of unlaunched recommendations should be based on the install time
-  // order.
-  prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now());
-  prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(0));
-  prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(0));
-  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
-}
-
-TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
-  // Disable the pre-installed high-priority extensions.
-  registrar()->UninstallExtension(
-      kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  registrar()->UninstallExtension(
-      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  registrar()->UninstallExtension(
-      kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-
-  // Install two apps, one which is hidden and one shown in the launcher.
-  const std::string shown_app_id =
-      crx_file::id_util::GenerateId(kNormalAppName);
-  AddExtension(shown_app_id, kNormalAppName, ManifestLocation::kComponent,
-               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
-               /*display_in_launcher=*/true);
-  registrar()->EnableExtension(shown_app_id);
-
-  const std::string hidden_app_id =
-      crx_file::id_util::GenerateId(kHiddenAppName);
-  AddExtension(hidden_app_id, kHiddenAppName, ManifestLocation::kComponent,
-               extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
-               /*display_in_launcher=*/false);
-  registrar()->EnableExtension(hidden_app_id);
-
-  base::RunLoop().RunUntilIdle();
-
-  // Only the app that is shown in launcher should be available.
-  InitializeSearchProvider();
-  EXPECT_EQ(std::string(kNormalAppName), RunZeroStateSearch());
 }
 
 }  // namespace app_list::test
