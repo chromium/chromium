@@ -157,24 +157,17 @@ void DelayBasedTimeSource::PostNextTickTask(base::TimeTicks now) {
                  base::subtle::DelayPolicy::kPrecise);
   } else {
     next_tick_time_ = now.SnappedToNextTick(timebase_, interval_);
-    // TODO( crbug.com/398090404 ): Remove the code in this condition as it is
-    // being superseded by the next block.
-    if (next_tick_time_ == now) {
+
+    // Some devices report vblank timings with enough variance as to confuse
+    // 'SnappedToNextTick' on the time remaining for next begin frame. This
+    // code allows for up to 'kMaxJudderAllowed' time for these values to
+    // simply be corrected to the next interval and thereby avoid an erroneous
+    // double tick. See crbug.com/398090404 for details.
+    const auto kMaxJudderAllowed = base::Microseconds(500);
+    if (now + kMaxJudderAllowed >= next_tick_time_) {
       next_tick_time_ += interval_;
     }
 
-    if (base::FeatureList::IsEnabled(
-            features::kAvoidDuplicateDelayBeginFrame)) {
-      // Some devices report vblank timings with enough variance as to confuse
-      // 'SnappedToNextTick' on the time remaining for next begin frame. This
-      // code allows for up to 'kMaxJudderAllowed' time for these values to
-      // simply be corrected to the next interval and thereby avoid an erroneous
-      // double tick. See crbug.com/398090404 for details.
-      const auto kMaxJudderAllowed = base::Microseconds(500);
-      if (now + kMaxJudderAllowed >= next_tick_time_) {
-        next_tick_time_ += interval_;
-      }
-    }
     DCHECK_GT(next_tick_time_, now);
     timer_.Start(FROM_HERE, next_tick_time_, tick_closure_,
                  base::subtle::DelayPolicy::kPrecise);
