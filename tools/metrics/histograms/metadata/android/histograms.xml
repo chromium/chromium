@@ -5477,6 +5477,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.SelectionMenu.UsedCachedMenu" enum="Boolean"
+    expires_after="2026-08-30">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records whether we were able to reuse the cached selection menu for the text
+    selection popup menu. We keep this object stored in memory for a small
+    latency gain and this histogram will help us determine whether it's worth
+    removing the caching mechanism. This histogram is logged once every time we
+    attempt to show a selection menu (each time text is selected).
+  </summary>
+</histogram>
+
 <histogram
     name="Android.ServiceTracingProxyProvider.SuccessesOutOfInitialForty"
     units="count" expires_after="2024-12-01">

@@ -1217,5 +1217,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_WEB_PERFORMANCE_METRICS_REPORTING,
                 "Enables Web Performance Metrics to be reported using"
                         + " AwWebPerformanceMetricsObserver"),
+        Flag.baseFeature(
+                ContentFeatures.NO_SELECTION_MENU_CACHING,
+                "Enables Web Performance Metrics to be reported using"
+                        + " AwWebPerformanceMetricsObserver"),
     };
 }

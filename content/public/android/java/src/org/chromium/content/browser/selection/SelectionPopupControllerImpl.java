@@ -65,6 +65,7 @@ import org.chromium.content.browser.selection.SelectActionMenuHelper.TextSelecti
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -76,6 +77,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -123,6 +125,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // selection change response will be asynchronous. 300ms should accomodate
     // most such trailing, async delays.
     private static final int SHOW_DELAY_MS = 300;
+
+    private static final String USED_CACHED_MENU_HISTOGRAM = "Android.SelectionMenu.UsedCachedMenu";
 
     // A flag to determine if we should get readback view from WindowAndroid.
     // The readback view could be the ContainerView, which WindowAndroid has no control on that.
@@ -934,6 +938,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     getSelectedText(),
                     isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT),
                     mSelectionActionMenuDelegate);
+            if (ContentFeatureMap.isEnabled(ContentFeatures.NO_SELECTION_MENU_CACHING)) {
+                return pendingMenu;
+            }
+            // Record this after the feature flag check as otherwise clients in the enabled group
+            // will skew the data.
+            RecordHistogram.recordBooleanHistogram(USED_CACHED_MENU_HISTOGRAM, false);
             mSelectionMenuCachedResult =
                     new SelectionMenuCachedResult(
                             mClassificationResult,
@@ -942,6 +952,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             getSelectedText(),
                             menuType,
                             pendingMenu);
+        } else {
+            RecordHistogram.recordBooleanHistogram(USED_CACHED_MENU_HISTOGRAM, true);
         }
 
         // Return the cached menu items for this selection.
