@@ -1445,7 +1445,13 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 }
 
 // Tests that picking a video from the photo picker logs the success metrics.
-- (void)testPhotoPickerVideoSelection {
+// TODO(crbug.com/477857213): Flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPhotoPickerVideoSelection testPhotoPickerVideoSelection
+#else
+#define MAYBE_testPhotoPickerVideoSelection FLAKY_testPhotoPickerVideoSelection
+#endif
+- (void)MAYBE_testPhotoPickerVideoSelection {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
