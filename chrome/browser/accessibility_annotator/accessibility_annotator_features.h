@@ -9,7 +9,7 @@
 
 namespace accessibility_annotator {
 
-BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
+BASE_DECLARE_FEATURE(kContentAnnotator);
 
 }  // namespace accessibility_annotator
 

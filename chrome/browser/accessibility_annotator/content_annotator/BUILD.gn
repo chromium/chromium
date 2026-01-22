@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_annotator") {
+  sources = [
+    "content_annotator_service.cc",
+    "content_annotator_service.h",
+    "content_annotator_service_factory.cc",
+    "content_annotator_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/accessibility_annotator:features",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_annotator_service_factory_unittest.cc" ]
+  deps = [
+    ":content_annotator",
+    "//base/test:test_support",
+    "//chrome/browser/accessibility_annotator:features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

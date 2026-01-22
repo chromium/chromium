@@ -6,6 +6,6 @@
 
 namespace accessibility_annotator {
 
-BASE_FEATURE(kAccessibilityAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContentAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace accessibility_annotator
