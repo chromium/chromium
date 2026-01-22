@@ -79,6 +79,7 @@ build_webui("build") {
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/js"
   ts_composite = true
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [ "../mojo:build_ts" ]
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
