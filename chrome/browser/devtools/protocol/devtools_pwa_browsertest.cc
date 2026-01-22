@@ -126,7 +126,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
 
   // For basic.html, the manifest-id equals to its start-url.
   ManifestId InstallableWebAppManifestId() const {
-    return InstallableWebAppUrl();
+    return ManifestId(InstallableWebAppUrl());
   }
 
   GURL NotInstallableWebAppUrl() const {
@@ -137,7 +137,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   // The default manifest uses the original url if it's not a web-app without
   // a manifest link.
   ManifestId NotInstallableWebAppManifestId() const {
-    return NotInstallableWebAppUrl();
+    return ManifestId(NotInstallableWebAppUrl());
   }
 
   GURL HasManifestIdWebAppUrl() const {
@@ -145,8 +145,8 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   }
 
   ManifestId HasManifestIdWebAppManifestId() const {
-    return embedded_test_server()->GetURL(
-        "/web_apps/has_manifest_id_unique_id");
+    return ManifestId(embedded_test_server()->GetURL(
+        "/web_apps/has_manifest_id_unique_id"));
   }
 
   GURL GetInstallableSiteWithManifest(std::string_view json_path) const {
@@ -180,7 +180,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
 
   void InstallFromMatchingUrlAndManifestId(
       const GURL& install_url_and_manifest_id) {
-    InstallFromUrl(install_url_and_manifest_id, install_url_and_manifest_id);
+    InstallFromUrl(ManifestId(install_url_and_manifest_id), install_url_and_manifest_id);
   }
 
   void InstallFromUrl() {
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromManifest_InvalidStartUrl) {
   ASSERT_FALSE(SendCommandSync(
       "PWA.install", base::Value::Dict{}.Set("manifestId", url.spec())));
   AssertErrorMessageContains({url.spec()});
-  ASSERT_FALSE(AppExists(url));
+  ASSERT_FALSE(AppExists(ManifestId(url)));
   ASSERT_FALSE(AppExists(ManifestId{"http://different.origin/is-invalid"}));
 }
 
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
       "PWA.install", base::Value::Dict{}.Set("manifestId", url.spec())));
   AssertErrorMessageContains(
       {url.spec(), GetInstallableSiteWithManifest("basic.json").spec()});
-  ASSERT_FALSE(AppExists(url));
+  ASSERT_FALSE(AppExists(ManifestId(url)));
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromManifest_HasManifestId) {
       base::Value::Dict{}.Set("manifestId",
                               HasManifestIdWebAppManifestId().spec())));
   ASSERT_TRUE(AppExists(HasManifestIdWebAppManifestId()));
-  ASSERT_FALSE(AppExists(HasManifestIdWebAppUrl()));
+  ASSERT_FALSE(AppExists(ManifestId(HasManifestIdWebAppUrl())));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
       base::Value::Dict{}.Set("manifestId", HasManifestIdWebAppUrl().spec())));
   AssertErrorMessageContains({HasManifestIdWebAppUrl().spec()});
   ASSERT_FALSE(AppExists(HasManifestIdWebAppManifestId()));
-  ASSERT_FALSE(AppExists(HasManifestIdWebAppUrl()));
+  ASSERT_FALSE(AppExists(ManifestId(HasManifestIdWebAppUrl())));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl) {
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
       base::Value::Dict{}
           .Set("manifestId", InstallableWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", url.spec())));
-  ASSERT_FALSE(AppExists(url));
+  ASSERT_FALSE(AppExists(ManifestId(url)));
   ASSERT_TRUE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_InconsistentAppId) {
           .Set("manifestId", url.spec())
           .Set("installUrlOrBundleUrl", InstallableWebAppUrl().spec())));
   AssertErrorMessageContains({url.spec()});
-  ASSERT_FALSE(AppExists(url));
+  ASSERT_FALSE(AppExists(ManifestId(url)));
   ASSERT_FALSE(AppExists(InstallableWebAppManifestId()));
 }
 
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_FromUrl_HasManifestId) {
           .Set("manifestId", HasManifestIdWebAppManifestId().spec())
           .Set("installUrlOrBundleUrl", HasManifestIdWebAppUrl().spec())));
   ASSERT_TRUE(AppExists(HasManifestIdWebAppManifestId()));
-  ASSERT_FALSE(AppExists(HasManifestIdWebAppUrl()));
+  ASSERT_FALSE(AppExists(ManifestId(HasManifestIdWebAppUrl())));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Install_Uninstall) {
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch) {
       "PWA.launch", base::Value::Dict{}.Set(
                         "manifestId", InstallableWebAppManifestId().spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsBelongToApp(InstallableWebAppUrl());
+  AssertActiveWebContentsBelongToApp(ManifestId(InstallableWebAppUrl()));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_ReturnsAttachableTargetId) {
@@ -744,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_InFullScreenMode) {
   ASSERT_TRUE(SendCommandSync(
       "PWA.launch", base::Value::Dict{}.Set("manifestId", url.spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsBelongToApp(url);
+  AssertActiveWebContentsBelongToApp(ManifestId(url));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl) {
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl) {
                         .Set("manifestId", InstallableWebAppManifestId().spec())
                         .Set("url", InstallableWebAppUrl().spec())));
   ASSERT_FALSE(error());
-  AssertActiveWebContentsBelongToApp(InstallableWebAppUrl());
+  AssertActiveWebContentsBelongToApp(ManifestId(InstallableWebAppUrl()));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, Launch_FromUrl_InScope) {
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp) {
   ASSERT_TRUE(AttachToLaunchFilesInAppResult());
   AssertActiveWebContentsBelongToApp(
       embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
-      web_app::GenerateAppIdFromManifestId(url));
+      web_app::GenerateAppIdFromManifestId(ManifestId(url)));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_MultipleFiles) {
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_MultipleFiles) {
   ASSERT_TRUE(AttachToLaunchFilesInAppResult());
   AssertActiveWebContentsBelongToApp(
       embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
-      web_app::GenerateAppIdFromManifestId(url));
+      web_app::GenerateAppIdFromManifestId(ManifestId(url)));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_RepeatedFiles) {
@@ -837,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_RepeatedFiles) {
   ASSERT_TRUE(AttachToLaunchFilesInAppResult());
   AssertActiveWebContentsBelongToApp(
       embedded_test_server()->GetURL("/web_apps/file_handler_action.html"),
-      web_app::GenerateAppIdFromManifestId(url));
+      web_app::GenerateAppIdFromManifestId(ManifestId(url)));
 }
 
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest, LaunchFilesInApp_MultipleTypes) {
