@@ -16,7 +16,9 @@
 #include "base/test/bind.h"
 #include "base/version_info/channel.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -227,12 +229,15 @@ bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,
     bool is_geolocation_blocked = !static_cast<bool>(toggle.state);
     // The supervised user has the geolocation blocked if the corresponding
     // content setting is blocked.
+    const content_settings::PermissionSettingsInfo* geolocation_info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            content_settings::GeolocationContentSettingsType());
     bool is_geolocation_configured =
         is_geolocation_blocked ==
-        (services.host_content_settings_map->GetDefaultContentSetting(
-             ContentSettingsType::GEOLOCATION, &provider_type) ==
-         ContentSetting::CONTENT_SETTING_BLOCK);
-
+        geolocation_info->delegate().IsBlocked(
+            services.host_content_settings_map->GetDefaultPermissionSetting(
+                content_settings::GeolocationContentSettingsType(),
+                &provider_type));
     return permission_pref_has_expected_value && is_geolocation_configured;
   }
   CHECK(toggle.type == FamilyLinkToggleType::kExtensionsToggle);

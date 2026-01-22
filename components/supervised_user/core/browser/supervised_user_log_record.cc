@@ -10,6 +10,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
@@ -132,14 +135,18 @@ std::optional<ToggleState> GetPermissionsToggleState(
   // The permissions toggle set multiple content settings. We pick one of them,
   // geolocation, to inspect here to infer the value of the toggle.
   content_settings::ProviderType provider;
-  auto content_setting = content_settings_map.GetDefaultContentSetting(
-      ContentSettingsType::GEOLOCATION, &provider);
+  const content_settings::PermissionSettingsInfo* geolocation_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings::GeolocationContentSettingsType());
+  bool is_geolocation_blocked_by_default =
+      geolocation_info->delegate().IsBlocked(
+          content_settings_map.GetDefaultContentSetting(
+              content_settings::GeolocationContentSettingsType(), &provider));
   // Note: Do not check that the ProviderType is `kSupervisedProvider`. This
   // is true only when the parent has disabled the "Permissions" FL switch.
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  bool block_geolocation =
-      content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
+  bool block_geolocation = is_geolocation_blocked_by_default;
   bool permissions_allowed_pref = pref_service.GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions);
   // Cross-check the content setting against the preference that was the former
@@ -147,9 +154,8 @@ std::optional<ToggleState> GetPermissionsToggleState(
   DCHECK(permissions_allowed_pref != block_geolocation);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  return content_setting == ContentSetting::CONTENT_SETTING_BLOCK
-             ? ToggleState::kDisabled
-             : ToggleState::kEnabled;
+  return is_geolocation_blocked_by_default ? ToggleState::kDisabled
+                                           : ToggleState::kEnabled;
 #endif  // BUILDFLAG(IS_IOS)
 }
 
