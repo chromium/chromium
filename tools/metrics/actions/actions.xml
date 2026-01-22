@@ -26854,6 +26854,15 @@ should be able to be added at any place in this file.
   <description>Reported when the BWG FRE was shown. iOS only.</description>
 </action>
 
+<action name="MobileGeminiImageRemixIPHTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Recorded when the user taps on the Gemini Image Remix IPH or its anchor to
+    trigger the feature.
+  </description>
+</action>
+
 <action name="MobileGeminiLocationSettingsBack">
   <owner>joemerramos@google.com</owner>
   <description>

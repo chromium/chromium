@@ -882,9 +882,13 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       }
       dismissAction:^(IPHDismissalReasonType reason) {
         [pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+        base::UmaHistogramEnumeration(
+            "IOS.Gemini.ImageRemix.IPH.DismissalReason", reason);
 
         if (reason == IPHDismissalReasonType::kTappedIPH ||
             reason == IPHDismissalReasonType::kTappedAnchorView) {
+          base::RecordAction(
+              base::UserMetricsAction("MobileGeminiImageRemixIPHTapped"));
           [BWGHandler
               startGeminiFlowWithEntryPoint:gemini::EntryPoint::ImageRemixIPH];
         }
