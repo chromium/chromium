@@ -83,6 +83,10 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // based on the Vertical Tab Strip's Collapse State.
   void UpdateCollapseActionItem();
 
+  // Update the Bottom Container's Action Items (kActionNewTab and
+  // kActionTabGroupsMenu) based on the Vertical Tab Strip's enabled state.
+  void UpdateBottomContainerActionItems();
+
   // SessionServiceBase::SessionServiceBaseObserver:
   void OnDestroying(SessionServiceBase* service) override;
 

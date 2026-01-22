@@ -36,6 +36,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+    pref_service_.registry()->RegisterBooleanPref(prefs::kVerticalTabsEnabled,
+                                                  true);
     controller_ = std::make_unique<tabs::VerticalTabStripStateController>(
         &mock_browser_window_interface_, &pref_service_,
         /*root_action_item=*/nullptr,
