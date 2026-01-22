@@ -29,6 +29,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_full_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
 }

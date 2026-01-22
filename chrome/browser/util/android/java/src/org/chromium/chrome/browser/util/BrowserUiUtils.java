@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.util;
 
+import android.view.KeyEvent;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 /** Deals with multiple parts of browser UI code calls. */
 @NullMarked
@@ -101,5 +104,24 @@ public class BrowserUiUtils {
         String histogramName = STARTUP_UMA_PREFIX + name;
         Log.i(TAG, "Recorded %s = %d ms", histogramName, timeDurationMs);
         RecordHistogram.recordTimesHistogram(histogramName, timeDurationMs);
+    }
+
+    /**
+     * Determines the WindowOpenDisposition based on the meta state of a key/touch event.
+     *
+     * @param metaState The meta state from the event (e.g. event.getMetaState()).
+     * @return The appropriate WindowOpenDisposition.
+     */
+    public static int getDispositionFromMetaState(int metaState) {
+        boolean isCtrlOn = (metaState & KeyEvent.META_CTRL_ON) != 0;
+        boolean isShiftOn = (metaState & KeyEvent.META_SHIFT_ON) != 0;
+        if (isCtrlOn) {
+            return isShiftOn
+                    ? WindowOpenDisposition.NEW_FOREGROUND_TAB
+                    : WindowOpenDisposition.NEW_BACKGROUND_TAB;
+        } else if (isShiftOn) {
+            return WindowOpenDisposition.NEW_WINDOW;
+        }
+        return WindowOpenDisposition.CURRENT_TAB;
     }
 }
