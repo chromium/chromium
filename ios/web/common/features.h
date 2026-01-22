@@ -113,9 +113,6 @@ bool CreateTabHelperOnlyForRealizedWebStates();
 // lazy creation. This is intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation);
 
-// Feature flag to enable BEContextMenuConfiguration.
-BASE_DECLARE_FEATURE(kEnableBEContextMenuConfiguration);
-
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
