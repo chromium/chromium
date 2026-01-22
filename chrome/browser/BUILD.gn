@@ -4222,6 +4222,8 @@ static_library("browser") {
       "webauthn/passkey_unlock_manager_factory.h",
       "webauthn/password_credential_ui_controller.cc",
       "webauthn/password_credential_ui_controller.h",
+      "webauthn/ui_readiness_barrier.cc",
+      "webauthn/ui_readiness_barrier.h",
     ]
 
     sources += [

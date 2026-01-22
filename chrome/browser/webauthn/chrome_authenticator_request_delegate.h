@@ -23,6 +23,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/password_credential_fetcher.h"
 #include "chrome/browser/webauthn/password_credential_ui_controller.h"
+#include "chrome/browser/webauthn/ui_readiness_barrier.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -63,7 +64,8 @@ class PrefRegistrySyncable;
 
 class ChromeAuthenticatorRequestDelegate
     : public content::AuthenticatorRequestClientDelegate,
-      public AuthenticatorRequestDialogModel::Observer {
+      public AuthenticatorRequestDialogModel::Observer,
+      public UiReadinessBarrier::Delegate {
  public:
   // TestObserver is an interface that observes certain events related to this
   // class for testing purposes. Only a single instance of this interface can
@@ -203,6 +205,19 @@ class ChromeAuthenticatorRequestDelegate
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnCancelRequest() override;
 
+  // UiReadinessBarrier::Delegate:
+  void ShowUI(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+      PasswordCredentialFetcher::PasswordCredentials passwords) override;
+  bool PasswordsUsable() override;
+  bool IsEnclaveActive() override;
+  bool IsEnclaveReady() override;
+  void GetGpmPasskeys(
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+      base::OnceCallback<void(
+          device::FidoRequestHandlerBase::TransportAvailabilityInfo)> callback)
+      override;
+
   void SetPasswordUIControllerForTesting(
       std::unique_ptr<PasswordCredentialUIController> controller);
   void SetPasswordFetcherForTesting(
@@ -234,22 +249,7 @@ class ChromeAuthenticatorRequestDelegate
       const device::FidoRequestHandlerBase::TransportAvailabilityInfo& data,
       const PasswordCredentialFetcher::PasswordCredentials& passwords);
 
-  // Barriers showing the UI while waiting for
-  // - password credentials,
-  // - WebAuthn credentials,
-  // - enclave readiness.
-  void TryToShowUI();
-
-  void MaybeShowUI(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
-      PasswordCredentialFetcher::PasswordCredentials passwords);
-  void FinishMaybeShowUI(
-      PasswordCredentialFetcher::PasswordCredentials passwords,
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai);
-
   std::optional<device::FidoTransportProtocol> GetLastTransportUsed() const;
-
-  void OnGPMReadyForUI() override;
 
   // ShouldPermitCableExtension returns true if the given |origin| may set a
   // caBLE extension. This extension contains website-chosen BLE pairing
@@ -258,11 +258,6 @@ class ChromeAuthenticatorRequestDelegate
 
   void OnCableEvent(device::cablev2::Event event);
 
-  // Adds GPM passkeys matching |rp_id| to |tai|.
-  void GetGpmPasskeys(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
-      base::OnceCallback<void(
-          device::FidoRequestHandlerBase::TransportAvailabilityInfo)> callback);
   void DoGetGpmPasskeys(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
       base::OnceCallback<void(
@@ -349,21 +344,12 @@ class ChromeAuthenticatorRequestDelegate
   // don't show errors on the desktop too.
   bool cable_device_ready_ = false;
 
-
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
 
   std::unique_ptr<PasswordCredentialUIController> password_ui_controller_;
   std::unique_ptr<PasswordCredentialFetcher> password_fetcher_;
 
-  // Stores the TransportAvailabilityInfo while we're waiting for the enclave
-  // state to load from the disk.
-  std::unique_ptr<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-      pending_transport_availability_info_;
-
-  // Stores the password credentials while waiting for enclave state, transport
-  // availability info to be ready.
-  std::unique_ptr<PasswordCredentialFetcher::PasswordCredentials>
-      pending_password_credentials_;
+  std::unique_ptr<UiReadinessBarrier> barrier_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
