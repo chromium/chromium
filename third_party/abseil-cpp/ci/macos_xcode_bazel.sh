@@ -61,6 +61,7 @@ ${BAZEL_BIN} test ... \
   --enable_bzlmod=true \
   --features=external_include_paths \
   --keep_going \
+  --per_file_copt=external/.*@-w \
   --show_timestamps \
   --test_env="TZDIR=${ABSEIL_ROOT}/absl/time/internal/cctz/testdata/zoneinfo" \
   --test_output=errors \

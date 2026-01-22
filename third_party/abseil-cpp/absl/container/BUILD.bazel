@@ -1349,3 +1349,46 @@ cc_binary(
         "@google_benchmark//:benchmark_main",
     ],
 )
+
+cc_library(
+    name = "chunked_queue",
+    srcs = ["internal/chunked_queue.h"],
+    hdrs = ["chunked_queue.h"],
+    deps = [
+        ":layout",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:iterator_traits_internal",
+    ],
+)
+
+cc_test(
+    name = "chunked_queue_test",
+    size = "small",
+    srcs = ["chunked_queue_test.cc"],
+    deps = [
+        ":chunked_queue",
+        ":test_allocator",
+        "//absl/base:core_headers",
+        "//absl/strings",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "chunked_queue_benchmark",
+    testonly = True,
+    srcs = ["chunked_queue_benchmark.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["benchmark"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":chunked_queue",
+        "//absl/random",
+        "//absl/status",
+        "//absl/strings:cord",
+        "@google_benchmark//:benchmark_main",
+    ],
+)

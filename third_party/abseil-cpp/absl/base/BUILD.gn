@@ -160,6 +160,7 @@ absl_source_set("base_internal") {
 
 absl_source_set("base") {
   sources = [
+    "casts.cc",
     "internal/cycleclock.cc",
     "internal/spinlock.cc",
     "internal/sysinfo.cc",
@@ -188,8 +189,6 @@ absl_source_set("base") {
     ":config",
     ":core_headers",
     ":cycleclock_internal",
-    ":dynamic_annotations",
-    ":log_severity",
     ":nullability",
     ":raw_logging_internal",
     ":spinlock_wait",
@@ -381,7 +380,7 @@ absl_test("casts_test") {
   sources = [ "casts_test.cc" ]
   deps = [
     ":base",
-    ":core_headers",
+    ":config",
   ]
 }
 

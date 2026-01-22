@@ -1202,3 +1202,38 @@ absl_cc_test(
     absl::unordered_set_modifiers_test
     GTest::gmock_main
 )
+
+absl_cc_library(
+  NAME
+    chunked_queue
+  HDRS
+    "chunked_queue.h"
+    "internal/chunked_queue.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+     absl::config
+     absl::core_headers
+     absl::iterator_traits_internal
+     absl::layout
+)
+
+absl_cc_test(
+  NAME
+    chunked_queue_test
+  SRCS
+    "chunked_queue_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::chunked_queue
+    absl::config
+    absl::core_headers
+    absl::strings
+    absl::test_allocator
+    GTest::gmock_main
+)
