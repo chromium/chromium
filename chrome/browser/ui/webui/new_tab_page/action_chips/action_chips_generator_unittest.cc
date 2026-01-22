@@ -777,14 +777,10 @@ TEST(ActionChipGeneratorTest, DeepDiveWithNewEndpoint) {
                              {}, recent_tab_title, recent_tab_subtitle,
                              recent_tab_suggestion),
             CreateSuggestion(omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION,
-                             {omnibox::SUBTYPE_AI_TOOL_ACTION,
-                              omnibox::SUBTYPE_CONTEXTUAL_SEARCH},
-                             deep_dive_title_1, deep_dive_subtitle_1,
+                             {}, deep_dive_title_1, deep_dive_subtitle_1,
                              deep_dive_suggestion_1),
             CreateSuggestion(omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION,
-                             {omnibox::SUBTYPE_AI_TOOL_ACTION,
-                              omnibox::SUBTYPE_CONTEXTUAL_SEARCH},
-                             deep_dive_title_2, deep_dive_subtitle_2,
+                             {}, deep_dive_title_2, deep_dive_subtitle_2,
                              deep_dive_suggestion_2)});
         return nullptr;
       }));

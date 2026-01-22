@@ -76,6 +76,7 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
 
   void GenerateActionChipsFromRemoteResponse(
       action_chips::mojom::TabInfoPtr tab,
+      std::optional<const omnibox::PageVertical> page_vertical,
       base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
           callback,
       action_chips::RemoteSuggestionsServiceSimple::

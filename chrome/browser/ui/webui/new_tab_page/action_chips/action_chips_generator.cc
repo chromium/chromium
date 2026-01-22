@@ -44,6 +44,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
@@ -228,15 +229,17 @@ std::vector<omnibox::ToolMode> GetAllowedTools(
   return allowed_tools;
 }
 
-std::optional<ChipType> GetChipType(omnibox::GroupId group_id,
-                                    const std::vector<int>& subtypes) {
+std::optional<ChipType> GetChipType(
+    omnibox::GroupId group_id,
+    base::optional_ref<const omnibox::PageVertical> page_vertical) {
   switch (group_id) {
     case omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION:
       return ChipType::kDeepSearch;
     case omnibox::GROUP_AI_MODE_CREATE_IMAGE_ACTION:
       return ChipType::kImage;
     case omnibox::GROUP_AI_MODE_CONTEXTUAL_SEARCH_ACTION:
-      if (std::ranges::contains(subtypes, omnibox::SUBTYPE_AI_TOOL_ACTION)) {
+      if (page_vertical.has_value() &&
+          *page_vertical == omnibox::PAGE_VERTICAL_EDU) {
         return ChipType::kDeepDive;
       }
       return ChipType::kRecentTab;
@@ -386,7 +389,7 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
           &ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse,
           this->weak_factory_.GetWeakPtr(),
           tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
-          std::move(callback)));
+          std::move(page_vertical), std::move(callback)));
 }
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromScenario(
@@ -436,6 +439,7 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     action_chips::mojom::TabInfoPtr tab,
+    std::optional<const omnibox::PageVertical> page_vertical,
     base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
         callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
@@ -464,7 +468,7 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     }
     const omnibox::GroupId group_id = *suggestion.suggestion_group_id();
     const std::optional<ChipType> chip_type =
-        GetChipType(group_id, suggestion.subtypes());
+        GetChipType(group_id, page_vertical);
 
     if (!chip_type.has_value()) {
       if (VLOG_IS_ON(1)) {
@@ -481,7 +485,10 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
     }
 
     ActionChipPtr chip = ActionChip::New();
-    chip->type = *chip_type;
+    // In the deep-dive state, the first chip needs to be a recent tab chip.
+    chip->type = chips.empty() && *chip_type == ChipType::kDeepDive
+                     ? ChipType::kRecentTab
+                     : *chip_type;
     chip->title = base::UTF16ToUTF8(suggestion.match_contents());
     chip->subtitle = base::UTF16ToUTF8(suggestion.annotation());
     chip->suggestion = base::UTF16ToUTF8(suggestion.suggestion());
