@@ -36,4 +36,9 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
   return specifics;
 }
 
+ValuableMetadata TestValuableMetadata(std::string_view id) {
+  return ValuableMetadata(ValuableId(std::string(id)),
+                          /*use_date=*/base::Time::Now(), /*use_count=*/1);
+}
+
 }  // namespace autofill

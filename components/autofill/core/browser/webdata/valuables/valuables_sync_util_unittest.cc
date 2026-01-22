@@ -165,4 +165,30 @@ TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
             base::UTF8ToUTF16(vehicle_specifics.license_plate_region()));
 }
 
+TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
+  ValuableMetadata metadata = TestValuableMetadata();
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromValuableMetadata(metadata);
+
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      entity_data->specifics.autofill_valuable_metadata();
+
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable_metadata());
+  EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
+  EXPECT_EQ(metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            specifics.last_used_date_unix_epoch_micros());
+  EXPECT_EQ(metadata.use_count, specifics.use_count());
+}
+
+TEST(ValuableMetadataSyncUtilTest, CreateSpecificsFromValuableMetadata) {
+  ValuableMetadata metadata = TestValuableMetadata();
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      CreateSpecificsFromValuableMetadata(metadata);
+
+  EXPECT_EQ(metadata.valuable_id.value(), specifics.valuable_id());
+  EXPECT_EQ(metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            specifics.last_used_date_unix_epoch_micros());
+  EXPECT_EQ(metadata.use_count, specifics.use_count());
+}
+
 }  // namespace autofill

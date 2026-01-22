@@ -71,6 +71,27 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
   return entity_data;
 }
 
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromValuableMetadata(
+    const ValuableMetadata& metadata) {
+  sync_pb::AutofillValuableMetadataSpecifics metadata_specifics =
+      CreateSpecificsFromValuableMetadata(metadata);
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_autofill_valuable_metadata() =
+      std::move(metadata_specifics);
+  return entity_data;
+}
+
+sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
+    const ValuableMetadata& metadata) {
+  sync_pb::AutofillValuableMetadataSpecifics specifics;
+  specifics.set_valuable_id(*metadata.valuable_id);
+  specifics.set_use_count(metadata.use_count);
+  specifics.set_last_used_date_unix_epoch_micros(
+      metadata.use_date.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return specifics;
+}
+
 AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
     const AutofillValuableSpecifics& specifics) {
   // LINT.IfChange(TrimAutofillValuableSpecificsDataForCaching)
