@@ -10,6 +10,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -89,11 +90,15 @@ void RootTabCollectionNode::OnChildMoved(
   TabCollectionNode* dst_parent_node =
       GetNodeForHandle(to_position.parent_handle);
 
-  bool pin_state_changed =
-      (src_parent_node->type() == TabCollectionNode::Type::PINNED &&
-       dst_parent_node->type() == TabCollectionNode::Type::UNPINNED) ||
-      (src_parent_node->type() == TabCollectionNode::Type::UNPINNED &&
-       dst_parent_node->type() == TabCollectionNode::Type::PINNED);
+  TabCollectionNode* pinned_node = GetChildNodeOfType(Type::PINNED);
+  CHECK(pinned_node);
+
+  const bool src_pinned =
+      pinned_node->GetNodeForHandle(src_parent_node->GetHandle()) != nullptr;
+  const bool dst_pinned =
+      pinned_node->GetNodeForHandle(dst_parent_node->GetHandle()) != nullptr;
+
+  bool pin_state_changed = src_pinned != dst_pinned;
 
   if (pin_state_changed) {
     // Pin state change is treated as a remove and add instead of an attach and

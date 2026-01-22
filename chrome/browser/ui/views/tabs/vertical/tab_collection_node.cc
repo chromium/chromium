@@ -190,6 +190,16 @@ const TabCollectionNode* TabCollectionNode::GetParentNodeForHandle(
   return nullptr;
 }
 
+TabCollectionNode* TabCollectionNode::GetChildNodeOfType(const Type type) {
+  if (type_ == type) {
+    return this;
+  }
+
+  const auto it = std::ranges::find_if(
+      children_, [type](const auto& child) { return child->type() == type; });
+  return it != children_.end() ? it->get() : nullptr;
+}
+
 void TabCollectionNode::AddNewChild(base::PassKey<TabCollectionNode> pass_key,
                                     tabs::ConstChildPtr node_data,
                                     size_t model_index,

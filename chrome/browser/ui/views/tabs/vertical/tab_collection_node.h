@@ -62,6 +62,10 @@ class TabCollectionNode {
   const TabCollectionNode* GetParentNodeForHandle(
       const tabs::TabCollectionNodeHandle& handle) const;
 
+  // Gets the first direct child of this node that has the associated type.
+  // Returns nullptr if no such node exists.
+  TabCollectionNode* GetChildNodeOfType(const Type type);
+
   // Creates a new child and adds it at model_index. If |perform_initialization|
   // is true, then the entire subtree of the node data will be constructed as
   // well, if not, then only the view for the child is constructed and added.
