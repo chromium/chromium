@@ -180,7 +180,7 @@ public class CookieSettings extends BaseSiteSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(CookieSettings.class.getName(), R.xml.cookie_settings);
+            new BaseSearchIndexProvider(
+                    CookieSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
