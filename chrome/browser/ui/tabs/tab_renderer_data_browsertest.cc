@@ -291,6 +291,14 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {
   TabRendererData data_crashed =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
   EXPECT_TRUE(data_crashed.is_crashed);
+
+  // The tab should not be crashed after navigating to another site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  TabRendererData data_navigation =
+      TabRendererData::FromTabInModel(tab_strip_model, 0);
+  EXPECT_FALSE(data_navigation.is_crashed);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, NetworkState) {

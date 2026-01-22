@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -61,17 +60,10 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   base::CallbackListSubscription AddTitleUpdatedCallback(
       TitleUpdatedCallbackList::CallbackType callback);
 
-  using CrashedStatusChangedCallbackList =
-      base::RepeatingCallbackList<void(bool)>;
-  base::CallbackListSubscription AddCrashedStatusChangedCallback(
-      CrashedStatusChangedCallbackList::CallbackType callback);
-
   // tabs::ContentsObservingTabFeature override:
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStopLoading() override;
   void OnVisibilityChanged(content::Visibility visiblity) override;
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override;
 #if !BUILDFLAG(IS_ANDROID)
   void PrimaryPageChanged(content::Page& page) override;
 #endif
@@ -87,12 +79,7 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
 
-  base::TerminationStatus crashed_status_ =
-      base::TERMINATION_STATUS_STILL_RUNNING;
-
   TitleUpdatedCallbackList title_change_callbacks_;
-
-  CrashedStatusChangedCallbackList crash_status_changed_callbacks_;
 
   ui::ScopedUnownedUserData<TabUIHelper> scoped_unowned_user_data_;
 };
