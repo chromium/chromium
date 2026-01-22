@@ -6970,6 +6970,8 @@ static_library("browser") {
       "enterprise/profile_management/profile_management_navigation_throttle.h",
       "enterprise/remote_commands/rotate_attestation_credential_job.cc",
       "enterprise/remote_commands/rotate_attestation_credential_job.h",
+      "enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.cc",
+      "enterprise/reporting/saas_usage/saas_usage_reporting_controller_factory.h",
       "enterprise/signals/system_signals_service_host_factory.cc",
       "enterprise/signals/system_signals_service_host_factory.h",
       "enterprise/signin/enterprise_signin_prefs.cc",
