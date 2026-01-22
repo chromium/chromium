@@ -1655,8 +1655,16 @@ def main():
           'Ignoring --enable-concurrent-adb due to --use-webview-provider')
       args.enable_concurrent_adb = False
 
-  if (getattr(args, 'coverage_on_the_fly', False)
-      and not getattr(args, 'coverage_dir', '')):
+  coverage_dir = getattr(args, 'coverage_dir', '')
+  if coverage_dir:
+    isolated_outdir = os.environ.get('ISOLATED_OUTDIR')
+    if isolated_outdir and not coverage_dir.startswith(isolated_outdir):
+      replacement = os.path.join(isolated_outdir, 'coverage')
+      logging.warning(
+          'Detected bot environment. Replacing explicit val of --coverage-dir '
+          '(%s) with magic bot val (%s).', coverage_dir, replacement)
+      args.coverage_dir = replacement
+  elif getattr(args, 'coverage_on_the_fly', False):
     parser.error('--coverage-on-the-fly requires --coverage-dir')
 
   if (getattr(args, 'debug_socket', None)
