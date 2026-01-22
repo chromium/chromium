@@ -30,6 +30,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -72,6 +74,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -88,6 +91,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -153,6 +157,8 @@ public class FeedV2NewTabPageTest {
                     .build();
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
     // observers registered in the AccountManagerFacade mock.
@@ -227,7 +233,7 @@ public class FeedV2NewTabPageTest {
     }
 
     private void openNewTabPage() {
-        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl());
         mTab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
 
@@ -442,6 +448,76 @@ public class FeedV2NewTabPageTest {
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
 
         // Check that the sign-in promo is displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void testSignInPromo_shownIfTimeElapsedSinceFirstShownIsLessThanFirstShownLimit() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Advance time, but not beyond the first time shown limit.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS - 1)
+                        * DateUtils.HOUR_IN_MILLIS);
+
+        // Open a new tab, the promo should still be shown.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void
+            testSignInPromo_hiddenIfTimeElapsedSinceFirstShownExceedsFirstShownLimitButNotResetThreshold() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Advance time beyond the first time shown limit, but not beyond the last time shown reset
+        // period.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS - 1)
+                        * DateUtils.DAY_IN_MILLIS);
+
+        // Open a new tab, the promo should not be shown.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void
+            testSignInPromo_shownIfTimeElapsedSinceFirstShownExceedsFirstShownLimitAndResetThreshold() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Advance time beyond the the first time shown limit and the last time shown reset period.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS));
+        // Open a new tab, the promo should be shown.
+        openNewTabPage();
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
 

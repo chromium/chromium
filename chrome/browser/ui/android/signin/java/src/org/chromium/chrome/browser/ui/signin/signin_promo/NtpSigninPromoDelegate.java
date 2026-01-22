@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -48,10 +49,14 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         int SIGNIN = 1;
     }
 
-    @VisibleForTesting static final int MAX_IMPRESSIONS_NTP = 5;
+    static final int MAX_IMPRESSIONS_NTP = 5;
+
     // 14 days in hours.
-    @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS = 336;
-    @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS = 336;
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
 
     /** Period for which promos are suppressed if signin is refused in FRE. */
     @VisibleForTesting static final long SUPPRESSION_PERIOD_MS = DateUtils.DAY_IN_MILLIS;
@@ -65,8 +70,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
+    // TODO(crbug.com/469775981): make this private once Seamless sign-in is launched and the class
+    // SignInPromo has been removed.
     public static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
-        final long currentTime = System.currentTimeMillis();
+        final long currentTime = TimeUtils.currentTimeMillis();
         final long resetAfterMs = NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
         final long lastShownTime =
                 ChromeSharedPreferences.getInstance()
@@ -88,6 +95,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             SigninAndHistorySyncActivityLauncher launcher,
             Runnable onPromoStateChange) {
         super(context, profile, launcher, onPromoStateChange);
+        resetNtpSyncPromoLimitsIfHiddenForTooLong();
     }
 
     @Override
@@ -179,7 +187,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     void recordImpression() {
-        final long currentTime = System.currentTimeMillis();
+        final long currentTime = TimeUtils.currentTimeMillis();
         final long lastShownTime =
                 ChromeSharedPreferences.getInstance()
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
@@ -228,7 +236,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {
         final long timeSinceFirstShownLimitMs =
                 NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;
-        final long currentTime = System.currentTimeMillis();
+        final long currentTime = TimeUtils.currentTimeMillis();
         final long firstShownTime =
                 ChromeSharedPreferences.getInstance()
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
@@ -284,7 +292,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
                 SigninPreferencesManager.getInstance()
                         .getNewTabPageSigninPromoSuppressionPeriodStart();
         if (suppressedFrom == 0) return false;
-        long currentTime = System.currentTimeMillis();
+        long currentTime = TimeUtils.currentTimeMillis();
         long suppressedTo = suppressedFrom + SUPPRESSION_PERIOD_MS;
         if (suppressedFrom <= currentTime && currentTime < suppressedTo) {
             return true;

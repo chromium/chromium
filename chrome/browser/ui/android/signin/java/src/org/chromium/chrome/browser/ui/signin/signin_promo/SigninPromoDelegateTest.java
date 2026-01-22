@@ -585,6 +585,76 @@ public class SigninPromoDelegateTest {
         assertTrue(config.shouldShowSigninSnackbar);
     }
 
+    @Test
+    public void testResetNtpSyncPromoLimitsIfHiddenForTooLong_resetsLimits() {
+        // Last promo shown time set so that the elapsed time is more than
+        // NTP_SYNC_PROMO_RESET_AFTER_DAYS.
+        long promoShownTime =
+                System.currentTimeMillis()
+                        - (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS + 1)
+                                * DateUtils.DAY_IN_MILLIS;
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, promoShownTime);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, promoShownTime);
+        String ntpPromoShowCountPreferenceName =
+                ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        SigninPreferencesManager.SigninPromoAccessPointId.NTP);
+        int promoShowCount = NtpSigninPromoDelegate.MAX_IMPRESSIONS_NTP - 1;
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ntpPromoShowCountPreferenceName, promoShowCount);
+
+        NtpSigninPromoDelegate.resetNtpSyncPromoLimitsIfHiddenForTooLong();
+
+        assertEquals(
+                0, ChromeSharedPreferences.getInstance().readInt(ntpPromoShowCountPreferenceName));
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
+    }
+
+    @Test
+    public void testResetNtpSyncPromoLimitsIfHiddenForTooLong_doesNotResetLimits() {
+        // Last promo shown time set so that the elapsed time is less than
+        // NTP_SYNC_PROMO_RESET_AFTER_DAYS.
+        long promoShownTime =
+                System.currentTimeMillis()
+                        - (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS - 1)
+                                * DateUtils.DAY_IN_MILLIS;
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, promoShownTime);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, promoShownTime);
+        String ntpPromoShowCountPreferenceName =
+                ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        SigninPreferencesManager.SigninPromoAccessPointId.NTP);
+        int promoShowCount = NtpSigninPromoDelegate.MAX_IMPRESSIONS_NTP - 1;
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ntpPromoShowCountPreferenceName, promoShowCount);
+
+        NtpSigninPromoDelegate.resetNtpSyncPromoLimitsIfHiddenForTooLong();
+
+        assertEquals(
+                promoShowCount,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(
+                                ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                        SigninPreferencesManager.SigninPromoAccessPointId.NTP)));
+        assertEquals(
+                promoShownTime,
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME));
+        assertEquals(
+                promoShownTime,
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME));
+    }
+
     private void setupDelegate(
             @SigninAccessPoint int accessPoint, @Nullable CoreAccountInfo visibleAccount) {
         mDelegate =
