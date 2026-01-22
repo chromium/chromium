@@ -32,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -50,6 +53,7 @@ import java.util.List;
 /** Unit tests for {@link SearchEngineAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
 public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -194,6 +198,19 @@ public class SearchEngineAdapterTest {
 
         List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, c2, c3));
         checkSortAndFilterOutput(templateUrls, c3, List.of(p1, c3, c1));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testSortAndFilterUnnecessaryTemplateUrl_DisableRecentSearchEngines() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, lastVisitedTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl r1 = buildMockTemplateUrl("recent1", 0, lastVisitedTime);
+        TemplateUrl r2 = buildMockTemplateUrl("recent2", 0, lastVisitedTime);
+
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, r1, r2));
+        checkSortAndFilterOutput(templateUrls, c1, List.of(p1, c1));
     }
 
     /**

@@ -327,13 +327,16 @@ public class SearchEngineAdapter extends BaseAdapter
         int recentEngineNum = 0;
         long displayTime = System.currentTimeMillis() - MAX_DISPLAY_TIME_SPAN_MS;
         Iterator<TemplateUrl> iterator = templateUrls.iterator();
+        // Recently visited search engines is disabled as site search can set more advance settings.
+        boolean shouldShowRecentSearchEngines = !OmniboxFeatures.sOmniboxSiteSearch.isEnabled();
         while (iterator.hasNext()) {
             TemplateUrl templateUrl = iterator.next();
             if (getSearchEngineSourceType(templateUrl, defaultSearchEngine)
                     != TemplateUrlSourceType.RECENT) {
                 continue;
             }
-            if (recentEngineNum < MAX_RECENT_ENGINE_NUM
+            if (shouldShowRecentSearchEngines
+                    && recentEngineNum < MAX_RECENT_ENGINE_NUM
                     && templateUrl.getLastVisitedTime() > displayTime) {
                 recentEngineNum++;
             } else {
