@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -962,13 +963,19 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
     const EnclaveManager::StoreKeysArgs& args) {
   const auto& existing = user.wrapped_security_domain_secrets();
   base::flat_map<int32_t, std::vector<uint8_t>> new_secrets;
-  for (int32_t i = args.last_key_version - args.keys.size() + 1;
-       i <= args.last_key_version; i++) {
-    if (existing.find(i) == existing.end()) {
-      new_secrets.emplace(i, args.keys[args.last_key_version - i]);
+  CHECK(args.keys.size() <= std::numeric_limits<int32_t>::max());
+
+  // Return previously unknown keys by version. Key version for the initial key
+  // was chosen at random, and increments with each new key. The caller provides
+  // all known keys, but only the version of the last one.
+  int32_t first_key_version = args.last_key_version - args.keys.size() + 1;
+  for (int32_t i = 0; i < static_cast<int32_t>(args.keys.size()); i++) {
+    int32_t current_key_version = first_key_version + i;
+    if (existing.find(current_key_version) == existing.end()) {
+      new_secrets.emplace(current_key_version,
+                          args.keys[args.keys.size() - i - 1]);
     }
   }
-
   return new_secrets;
 }
 
