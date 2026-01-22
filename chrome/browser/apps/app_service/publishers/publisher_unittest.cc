@@ -412,205 +412,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(PublisherTest, ArcAppsOnApps) {
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
-  // Install fake apps.
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
-  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
-
-  // Verify ARC apps are added to AppRegistryCache.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
-  ASSERT_TRUE(prefs);
-  for (const auto& app_id : prefs->GetAppIds()) {
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    if (app_info) {
-      VerifyApp(
-          AppType::kArc, app_id, app_info->name, Readiness::kReady,
-          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
-          app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time,
-          apps::Permissions(),
-          /*is_platform_app=*/false,
-          /*recommendable=*/true, /*searchable=*/true,
-          /*show_in_launcher=*/true, /*show_in_shelf=*/true,
-          /*show_in_search=*/true, /*show_in_management=*/true,
-          /*handles_intents=*/true,
-          /*allow_uninstall=*/app_info->ready && !app_info->sticky,
-          /*allow_close=*/true,
-          /*has_badge=*/false, /*paused=*/false,
-          /*allow_window_mode_selection=*/std::nullopt);
-    }
-  }
-  VerifyAppTypeIsInitialized(AppType::kArc);
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
-}
-
-TEST_F(PublisherTest, ArcAppsRemoveApps) {
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
-  // Install fake apps.
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
-  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
-
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
-  ASSERT_TRUE(prefs);
-  for (const auto& app_id : prefs->GetAppIds()) {
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    if (app_info) {
-      // Simulate app is removed.
-      prefs->RemoveApp(app_id);
-
-      // Verify it is marked removed on the registry cache.
-      VerifyAppIsRemoved(app_id);
-    }
-  }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
-}
-
-TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
-  // Install fake apps.
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
-  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
-
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
-  ASSERT_TRUE(prefs);
-  for (const auto& app_id : prefs->GetAppIds()) {
-    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    if (app_info) {
-      // Test OnAppLastLaunchTimeUpdated.
-      const base::Time before_time = base::Time::Now();
-      prefs->SetLastLaunchTime(app_id);
-      app_info = prefs->GetApp(app_id);
-      EXPECT_GE(app_info->last_launch_time, before_time);
-      VerifyApp(
-          AppType::kArc, app_id, app_info->name, Readiness::kReady,
-          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
-          app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
-          {}, app_info->last_launch_time, app_info->install_time,
-          MakeFakePermissions());
-    }
-  }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
-}
-
-TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
-  ArcAppTest arc_app_test;
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test.PreProfileSetUp();
-  arc_app_test.PostProfileSetUp(profile());
-
-  const auto& fake_apps = arc_app_test.fake_apps();
-  std::string package_name1 = fake_apps[0]->package_name;
-  std::string package_name2 = fake_apps[1]->package_name;
-
-  // Install fake apps.
-  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
-
-  // Set accessing Camera for `package_name1`.
-  {
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
-    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
-        ->OnPrivacyItemsChanged(std::move(privacy_items));
-
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
-                           /*accessing_camera=*/true,
-                           /*accessing_microphone=*/std::nullopt);
-  }
-
-  // Cancel accessing Camera for `package_name1`.
-  {
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
-        ->OnPrivacyItemsChanged(std::move(privacy_items));
-
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
-                           /*accessing_camera=*/false,
-                           /*accessing_microphone=*/false);
-  }
-
-  // Set accessing Camera and Microphone for `package_name1`, and accessing
-  // Camera for `package_name2`.
-  {
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::MICROPHONE, package_name1));
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
-    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
-        ->OnPrivacyItemsChanged(std::move(privacy_items));
-
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
-                           /*accessing_camera=*/true,
-                           /*accessing_microphone=*/true);
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
-                           /*accessing_camera=*/true,
-                           /*accessing_microphone=*/std::nullopt);
-  }
-
-  // Cancel accessing Microphone for `package_name1`.
-  {
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
-    privacy_items.push_back(CreateArcPrivacyItem(
-        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
-    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
-        ->OnPrivacyItemsChanged(std::move(privacy_items));
-
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
-                           /*accessing_camera=*/true,
-                           /*accessing_microphone=*/false);
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
-                           /*accessing_camera=*/true,
-                           /*accessing_microphone=*/false);
-  }
-
-  // Cancel accessing CAMERA for `package_name1` and `package_name2`.
-  {
-    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
-    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
-        ->OnPrivacyItemsChanged(std::move(privacy_items));
-
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
-                           /*accessing_camera=*/false,
-                           /*accessing_microphone=*/false);
-    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
-                           /*accessing_camera=*/false,
-                           /*accessing_microphone=*/false);
-  }
-
-  arc_app_test.PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test.PostProfileTearDown();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 TEST_F(PublisherTest, ExtensionAppsOnApps) {
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
@@ -698,5 +499,191 @@ TEST_F(PublisherTest, WebAppsOnApps) {
   VerifyIntentFilters(app_id);
   VerifyAppTypeIsInitialized(AppType::kWeb);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class PublisherArcAppsTest : public PublisherTest {
+ public:
+  PublisherArcAppsTest() = default;
+  PublisherArcAppsTest(const PublisherArcAppsTest&) = delete;
+  PublisherArcAppsTest& operator=(const PublisherArcAppsTest&) = delete;
+  ~PublisherArcAppsTest() override = default;
+
+  void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
+    PublisherTest::SetUp();
+    arc_app_test_.PostProfileSetUp(profile());
+  }
+
+  void TearDown() override {
+    arc_app_test_.PreProfileTearDown();
+    PublisherTest::TearDown();
+    arc_app_test_.PostProfileTearDown();
+  }
+
+ protected:
+  ArcAppTest arc_app_test_;
+};
+
+TEST_F(PublisherArcAppsTest, OnApps) {
+  // Install fake apps.
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
+  AddArcPackage(arc_app_test_, arc_app_test_.fake_apps());
+
+  // Verify ARC apps are added to AppRegistryCache.
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+  for (const auto& app_id : prefs->GetAppIds()) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      VerifyApp(
+          AppType::kArc, app_id, app_info->name, Readiness::kReady,
+          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
+          app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
+          {}, app_info->last_launch_time, app_info->install_time,
+          apps::Permissions(),
+          /*is_platform_app=*/false,
+          /*recommendable=*/true, /*searchable=*/true,
+          /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+          /*show_in_search=*/true, /*show_in_management=*/true,
+          /*handles_intents=*/true,
+          /*allow_uninstall=*/app_info->ready && !app_info->sticky,
+          /*allow_close=*/true,
+          /*has_badge=*/false, /*paused=*/false,
+          /*allow_window_mode_selection=*/std::nullopt);
+    }
+  }
+  VerifyAppTypeIsInitialized(AppType::kArc);
+}
+
+TEST_F(PublisherArcAppsTest, RemoveApps) {
+  // Install fake apps.
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
+  AddArcPackage(arc_app_test_, arc_app_test_.fake_apps());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+  for (const auto& app_id : prefs->GetAppIds()) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      // Simulate app is removed.
+      prefs->RemoveApp(app_id);
+
+      // Verify it is marked removed on the registry cache.
+      VerifyAppIsRemoved(app_id);
+    }
+  }
+}
+
+TEST_F(PublisherArcAppsTest, SetLaunchTime) {
+  // Install fake apps.
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
+  AddArcPackage(arc_app_test_, arc_app_test_.fake_apps());
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
+  ASSERT_TRUE(prefs);
+  for (const auto& app_id : prefs->GetAppIds()) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      // Test OnAppLastLaunchTimeUpdated.
+      const base::Time before_time = base::Time::Now();
+      prefs->SetLastLaunchTime(app_id);
+      app_info = prefs->GetApp(app_id);
+      EXPECT_GE(app_info->last_launch_time, before_time);
+      VerifyApp(
+          AppType::kArc, app_id, app_info->name, Readiness::kReady,
+          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
+          app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
+          {}, app_info->last_launch_time, app_info->install_time,
+          MakeFakePermissions());
+    }
+  }
+}
+
+TEST_F(PublisherArcAppsTest, CapabilityAccess) {
+  const auto& fake_apps = arc_app_test_.fake_apps();
+  std::string package_name1 = fake_apps[0]->package_name;
+  std::string package_name2 = fake_apps[1]->package_name;
+
+  // Install fake apps.
+  arc_app_test_.app_instance()->SendRefreshAppList(arc_app_test_.fake_apps());
+
+  // Set accessing Camera for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/std::nullopt);
+  }
+
+  // Cancel accessing Camera for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
+  }
+
+  // Set accessing Camera and Microphone for `package_name1`, and accessing
+  // Camera for `package_name2`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::MICROPHONE, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/true);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/std::nullopt);
+  }
+
+  // Cancel accessing Microphone for `package_name1`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name1));
+    privacy_items.push_back(CreateArcPrivacyItem(
+        arc::mojom::AppPermissionGroup::CAMERA, package_name2));
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/false);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/false);
+  }
+
+  // Cancel accessing CAMERA for `package_name1` and `package_name2`.
+  {
+    std::vector<arc::mojom::PrivacyItemPtr> privacy_items;
+    arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile())
+        ->OnPrivacyItemsChanged(std::move(privacy_items));
+
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps
