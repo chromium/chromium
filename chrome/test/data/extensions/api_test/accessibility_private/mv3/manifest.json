@@ -2,9 +2,23 @@
   "name": "A test extension for accessibilityPrivate API",
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEGBi/oD7Yl/Y16w3+gee/95/EUpRZ2U6c+8orV5ei+3CRsBsoXI/DPGBauZ3rWQ47aQnfoG00sXigFdJA2NhNK9OgmRA2evnsRRbjYm2BG1twpaLsgQPPus3PyczbDCvhFu8k24wzFyEtxLrfxAGBseBPb9QrCz7B4k2QgxD/CwIDAQAB",
   "version": "0.0.1",
-  "manifest_version": 3,
+  // In a real-world scenario, this would be:
+  //
+  // "manifest_version": 3,
+  // "background": {
+  //  "service_worker": "background.js"
+  // },
+  //
+  // However, doing so will cause test failures because the
+  // ModifyExtensionForServiceWorker function will fail to parse this manifest.
+  // Instead, we can keep this compliant for mv2 and the
+  // ModifyExtensionForServiceWorker will automatically convert this manifest
+  // to be compliant with mv3 when the associated tests are run as service
+  // workers.
+  "manifest_version": 2,
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": [
     "accessibilityPrivate",
