@@ -18,10 +18,7 @@ chromium-m145/try/android-cronet-arm-dbg
 chromium-m145/try/android-cronet-arm-rel
 chromium-m145/try/android-cronet-x64-dbg
 chromium-m145/try/android-cronet-x86-dbg-10-tests
-chromium-m145/try/android-desktop-arm64-compile-dbg
-chromium-m145/try/android-desktop-arm64-compile-rel
 chromium-m145/try/android-desktop-arm64-official
-chromium-m145/try/android-desktop-x64-compile-dbg
 chromium-m145/try/android-desktop-x64-official
 chromium-m145/try/android-desktop-x64-rel
 chromium-m145/try/android-official
@@ -61,7 +58,6 @@ chromium-m145/try/linux-chromeos-compile-dbg
 chromium-m145/try/linux-chromeos-dbg
 chromium-m145/try/linux-chromeos-rel
 chromium-m145/try/linux-libfuzzer-asan-rel
-chromium-m145/try/linux-official
 chromium-m145/try/linux-rel
 chromium-m145/try/linux-wayland-mutter-rel
 chromium-m145/try/linux-wayland-weston-rel
@@ -77,7 +73,6 @@ chromium-m145/try/mac12-tests
 chromium-m145/try/mac13-arm64-rel
 chromium-m145/try/mac13-tests
 chromium-m145/try/mac14-arm64-rel
-chromium-m145/try/mac14-tests
 chromium-m145/try/mac15-arm64-rel
 chromium-m145/try/mac15-x64-rel-tests
 chromium-m145/try/mac_chromium_compile_dbg_ng
