@@ -23,14 +23,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
-#include "media/base/test_helpers.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_adapter.h"
 #include "media/cdm/cdm_module.h"
@@ -45,7 +43,6 @@
 
 using ::testing::_;
 using ::testing::AllOf;
-using ::testing::An;
 using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -425,20 +422,6 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
     ASSERT_TRUE(cdm_host_proxy_);
   }
 
-  void ExpectInitializeVideoDecoder(cdm::Status status) {
-    if (GetCdmInterfaceVersion() >= 12) {
-      EXPECT_CALL(
-          *mock_library_cdm_,
-          InitializeVideoDecoder(An<const cdm::VideoDecoderConfig_3&>()))
-          .WillOnce(Return(status));
-    } else {
-      EXPECT_CALL(
-          *mock_library_cdm_,
-          InitializeVideoDecoder(An<const cdm::VideoDecoderConfig_2&>()))
-          .WillOnce(Return(status));
-    }
-  }
-
   // These are both owned by `cdm_`.
   raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
   raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
@@ -744,45 +727,6 @@ TEST_P(CdmAdapterTestWithMockCdm, ReportMetricsWithUnexpectedValue) {
   const uint32_t kInvalidMetricName = 99999999;  // Arbitrary large metric name.
   cdm_host_proxy_->ReportMetrics(
       static_cast<cdm::MetricName>(kInvalidMetricName), 12345);
-}
-
-// Test that DeinitializeDecoder cancels any pending video decoder
-// initialization callback. This prevents a CHECK failure when
-// InitializeVideoDecoder is called again after DeinitializeDecoder is called
-// while deferred initialization is pending (e.g., during config change
-// reinitialization).
-TEST_P(CdmAdapterTestWithMockCdm, DeinitializeDecoderCancelsPendingInit) {
-  CdmConfig cdm_config = GetCdmConfig();
-  InitializeWithCdmConfig(cdm_config);
-
-  auto* decryptor = cdm_->GetCdmContext()->GetDecryptor();
-  ASSERT_TRUE(decryptor);
-
-  // 1. InitializeVideoDecoder with deferred initialization.
-  ExpectInitializeVideoDecoder(cdm::kDeferredInitialization);
-
-  base::test::TestFuture<bool> first_init_result;
-  decryptor->InitializeVideoDecoder(TestVideoConfig::NormalEncrypted(),
-                                    first_init_result.GetCallback());
-
-  // Verify the callback was not called yet.
-  EXPECT_FALSE(first_init_result.IsReady());
-
-  // 2. DeinitializeDecoder should reject the pending callback.
-  EXPECT_CALL(*mock_library_cdm_, DeinitializeDecoder(cdm::kStreamTypeVideo));
-  decryptor->DeinitializeDecoder(Decryptor::kVideo);
-
-  // The pending callback should be dropped (not called).
-  EXPECT_FALSE(first_init_result.IsReady());
-
-  // 3. Verify we can initialize again immediately.
-  ExpectInitializeVideoDecoder(cdm::kSuccess);
-
-  base::test::TestFuture<bool> second_init_result;
-  decryptor->InitializeVideoDecoder(TestVideoConfig::NormalEncrypted(),
-                                    second_init_result.GetCallback());
-
-  EXPECT_TRUE(second_init_result.Get());
 }
 
 }  // namespace media

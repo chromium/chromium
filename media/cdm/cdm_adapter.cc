@@ -558,7 +558,9 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
                                         DecoderInitCB init_cb) {
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString();
   CHECK(task_runner_->BelongsToCurrentThread());
-  CHECK(!video_init_cb_, base::NotFatalUntil::M155);
+  // TODO(crbug.com/412213310): This is currently crashing on ChromeOS,
+  // when converted to a CHECK.
+  DCHECK(!video_init_cb_);
   TRACE_EVENT0("media", "CdmAdapter::InitializeVideoDecoder");
 
   // Alpha decoding is not supported by the CDM.
@@ -705,13 +707,9 @@ void CdmAdapter::DeinitializeDecoder(StreamType stream_type) {
     case Decryptor::kAudio:
       audio_samples_per_second_ = 0;
       audio_channel_layout_ = CHANNEL_LAYOUT_NONE;
-      // Drop any pending audio decoder initialization callback.
-      audio_init_cb_.Reset();
       break;
     case Decryptor::kVideo:
       aspect_ratio_ = VideoAspectRatio();
-      // Drop any pending video decoder initialization callback.
-      video_init_cb_.Reset();
       break;
   }
 }
