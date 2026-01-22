@@ -16,6 +16,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -169,6 +171,13 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
                     .show();
         } else {
             getSafeBrowsingBridge().setSafeBrowsingState(newState);
+            if (newState == SafeBrowsingState.ENHANCED_PROTECTION) {
+                ChromeSharedPreferences.getInstance()
+                        .writeBoolean(
+                                ChromePreferenceKeys
+                                        .SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
+                                true);
+            }
         }
         // This function is called when the user manually modifies their safe browsing settings via
         // the security settings page. This action indicates that the user has seen and interacted

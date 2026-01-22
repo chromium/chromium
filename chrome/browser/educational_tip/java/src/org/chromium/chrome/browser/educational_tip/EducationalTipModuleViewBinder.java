@@ -31,6 +31,8 @@ public class EducationalTipModuleViewBinder {
         } else if (EducationalTipModuleProperties.MODULE_BUTTON_STRING == propertyKey) {
             moduleView.setButtonText(
                     model.get(EducationalTipModuleProperties.MODULE_BUTTON_STRING));
+        } else if (EducationalTipModuleProperties.MARK_COMPLETED == propertyKey) {
+            moduleView.setCompleted(model.get(EducationalTipModuleProperties.MARK_COMPLETED));
         } else {
             assert false : "Unhandled property detected in EducationalTipModuleViewBinder!";
         }

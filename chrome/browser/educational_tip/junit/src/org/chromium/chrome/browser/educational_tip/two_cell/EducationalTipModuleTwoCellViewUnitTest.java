@@ -115,4 +115,77 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         ShadowLooper.idleMainLooper();
         verify(mItem2ClickListener).onClick(item2Layout);
     }
+
+    @Test
+    @SmallTest
+    public void testSetItem1Completed_True() {
+        TextView item1TitleView = mModuleView.findViewById(R.id.two_cell_item_1_title);
+        TextView item1DescriptionView = mModuleView.findViewById(R.id.two_cell_item_1_description);
+        View item1Layout = mModuleView.findViewById(R.id.two_cell_item_1);
+
+        mModuleView.setItem1Completed(true);
+
+        int disabledColor = mContext.getColor(R.color.default_text_color_disabled_list);
+        Assert.assertEquals(disabledColor, item1TitleView.getCurrentTextColor());
+        Assert.assertTrue(
+                (item1TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertEquals(disabledColor, item1DescriptionView.getCurrentTextColor());
+        Assert.assertTrue(
+                (item1DescriptionView.getPaintFlags()
+                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertFalse(item1Layout.isClickable());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem2Completed_True() {
+        TextView item2TitleView = mModuleView.findViewById(R.id.two_cell_item_2_title);
+        TextView item2DescriptionView = mModuleView.findViewById(R.id.two_cell_item_2_description);
+        View item2Layout = mModuleView.findViewById(R.id.two_cell_item_2);
+
+        mModuleView.setItem2Completed(true);
+
+        int disabledColor = mContext.getColor(R.color.default_text_color_disabled_list);
+        Assert.assertEquals(disabledColor, item2TitleView.getCurrentTextColor());
+        Assert.assertTrue(
+                (item2TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertEquals(disabledColor, item2DescriptionView.getCurrentTextColor());
+        Assert.assertTrue(
+                (item2DescriptionView.getPaintFlags()
+                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertFalse(item2Layout.isClickable());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetItem1Completed_DoesNotAffectItem2() {
+        TextView item2TitleView = mModuleView.findViewById(R.id.two_cell_item_2_title);
+        TextView item2DescriptionView = mModuleView.findViewById(R.id.two_cell_item_2_description);
+        View item2Layout = mModuleView.findViewById(R.id.two_cell_item_2);
+        // Set an onlick listener to check for clickable state.
+        item2Layout.setOnClickListener(mItem2ClickListener);
+
+        // Complete Item 1
+        mModuleView.setItem1Completed(true);
+
+        // Assert Item 2 is NOT styled as completed
+        Assert.assertNotEquals(
+                mContext.getColor(R.color.default_text_color_disabled_list),
+                item2TitleView.getCurrentTextColor());
+        Assert.assertFalse(
+                (item2TitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertNotEquals(
+                mContext.getColor(R.color.default_text_color_disabled_list),
+                item2DescriptionView.getCurrentTextColor());
+        Assert.assertFalse(
+                (item2DescriptionView.getPaintFlags()
+                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertTrue(item2Layout.isClickable());
+    }
 }

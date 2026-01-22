@@ -84,4 +84,30 @@ public class EducationalTipModuleTwoCellView extends LinearLayout {
     public void setItem2OnClickListener(OnClickListener listener) {
         mItem2Layout.setOnClickListener(listener);
     }
+
+    private void applyCompletedStyle(
+            TextView titleView, TextView descriptionView, View itemLayout, boolean isCompleted) {
+        if (isCompleted) {
+            int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
+            titleView.setTextColor(disabledColor);
+            titleView.setPaintFlags(
+                    titleView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            descriptionView.setTextColor(disabledColor);
+            descriptionView.setPaintFlags(
+                    descriptionView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+
+            // Disable clicks on the item layout
+            itemLayout.setOnClickListener(null);
+            itemLayout.setClickable(false);
+            itemLayout.setForeground(null);
+        }
+    }
+
+    public void setItem1Completed(boolean isCompleted) {
+        applyCompletedStyle(mItem1TitleView, mItem1DescriptionView, mItem1Layout, isCompleted);
+    }
+
+    public void setItem2Completed(boolean isCompleted) {
+        applyCompletedStyle(mItem2TitleView, mItem2DescriptionView, mItem2Layout, isCompleted);
+    }
 }

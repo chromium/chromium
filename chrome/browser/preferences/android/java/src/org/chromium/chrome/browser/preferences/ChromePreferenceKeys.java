@@ -899,6 +899,14 @@ public final class ChromePreferenceKeys {
     public static final String SETUP_LIST_FIRST_SHOWN_TIMESTAMP =
             "Chrome.SetupList.FirstShownTimestamp";
 
+    /** Whether the user has ever enabled Enhanced Safe Browsing */
+    public static final String SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED =
+            "Chrome.SetupList.EnhancedSafeBrowsingPromoCompleted";
+
+    /** Whether the user has ever completed the Address Bar promo from the Setup List. */
+    public static final String SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED =
+            "Chrome.SetupList.AddressBarPromoCompleted";
+
     // Tracks which GUIDs there is an active notification for.
     public static final String SEND_TAB_TO_SELF_ACTIVE_NOTIFICATIONS =
             "send_tab_to_self.notification.active";
@@ -1313,6 +1321,8 @@ public final class ChromePreferenceKeys {
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SERIAL_NOTIFICATION_IDS,
                 SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
+                SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

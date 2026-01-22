@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -33,7 +34,10 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -62,6 +66,8 @@ public class EducationalTipModuleMediatorUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncService;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private SetupListManager mSetupListManager;
+    private SharedPreferencesManager mPrefsManager;
 
     @Captor
     private ArgumentCaptor<DefaultBrowserPromoTriggerStateListener>
@@ -78,7 +84,12 @@ public class EducationalTipModuleMediatorUnitTest {
         when(mActionDelegate.getContext()).thenReturn(mContext);
         mDefaultModuleTypeForTesting = ModuleType.DEFAULT_BROWSER_PROMO;
         TrackerFactory.setTrackerForTests(mTracker);
+        mPrefsManager = ChromeSharedPreferences.getInstance();
+        mPrefsManager.removeKey(
+                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED);
+        mPrefsManager.removeKey(ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
 
         // Setup for History sync promo
         mProfileSupplier = new ObservableSupplierImpl<>();
@@ -179,6 +190,51 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
+    public void testShowSetupList_Completed() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        mPrefsManager.writeBoolean(
+                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED, true);
+
+        testShowModuleImpl(
+                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                R.string.educational_tip_enhanced_safe_browsing_title,
+                R.string.educational_tip_enhanced_safe_browsing_description,
+                R.drawable.enhanced_safe_browsing_promo_completed_logo,
+                true);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
+    public void testShowSetupList_NotCompleted() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        mPrefsManager.writeBoolean(
+                ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED, false);
+
+        testShowModuleImpl(
+                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                R.string.educational_tip_enhanced_safe_browsing_title,
+                R.string.educational_tip_enhanced_safe_browsing_description,
+                R.drawable.enhanced_safe_browsing_promo_logo,
+                false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
+    public void testShowModule_NonSetupList_IsCompletedNull() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        // ModuleType.TAB_GROUP_PROMO is not a Setup List module.
+        testShowModuleImpl(
+                ModuleType.TAB_GROUP_PROMO,
+                R.string.educational_tip_tab_group_title,
+                R.string.educational_tip_tab_group_description,
+                R.drawable.tab_group_promo_logo);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_MODULE})
     public void testOnViewCreated_DefaultBrowserPromo_TrackerInitialized_ShouldDisplay() {
         assertTrue(ChromeFeatureList.sEducationalTipModule.isEnabled());
@@ -270,6 +326,29 @@ public class EducationalTipModuleMediatorUnitTest {
                         EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
                         mContext.getString(descriptionId));
         verify(mModel).set(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, imageResource);
+        verify(mModuleDelegate).onDataReady(moduleType, mModel);
+        verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
+    }
+
+    private void testShowModuleImpl(
+            @ModuleType int moduleType,
+            int titleId,
+            int descriptionId,
+            int imageResource,
+            boolean isCompleted) {
+        mEducationalTipModuleMediator.setModuleTypeForTesting(moduleType);
+        mEducationalTipModuleMediator.showModule();
+
+        verify(mModel)
+                .set(
+                        EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING,
+                        mContext.getString(titleId));
+        verify(mModel)
+                .set(
+                        EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING,
+                        mContext.getString(descriptionId));
+        verify(mModel).set(EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, imageResource);
+        verify(mModel).set(EducationalTipModuleProperties.MARK_COMPLETED, isCompleted);
         verify(mModuleDelegate).onDataReady(moduleType, mModel);
         verify(mModuleDelegate, never()).onDataFetchFailed(moduleType);
     }

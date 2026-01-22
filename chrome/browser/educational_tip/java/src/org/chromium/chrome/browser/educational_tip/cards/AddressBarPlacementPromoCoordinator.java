@@ -10,12 +10,16 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 
 /** Coordinator for the address bar placement promo card. */
 @NullMarked
-public class AddressBarPlacementPromoCoordinator implements EducationalTipCardProvider {
+public class AddressBarPlacementPromoCoordinator
+        implements EducationalTipCardProvider, SetupListCompletable {
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
 
@@ -60,6 +64,24 @@ public class AddressBarPlacementPromoCoordinator implements EducationalTipCardPr
     public void onCardClicked() {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(mActionDelegate.getContext(), AddressBarSettingsFragment.class);
+        // Considered complete if the user clicks on the promo
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED, true);
+
         mOnModuleClickedCallback.run();
+    }
+
+    @Override
+    public boolean isComplete() {
+        boolean completed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.SETUP_LIST_ADDRESS_BAR_PROMO_COMPLETED, false);
+        return completed;
+    }
+
+    @Override
+    public @DrawableRes int getCardImageCompletedResId() {
+        return R.drawable.address_bar_placement_promo_completed_logo;
     }
 }

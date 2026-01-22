@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellProperties.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellView.java",
     "java/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellViewBinder.java",
+    "java/src/org/chromium/chrome/browser/setup_list/SetupListCompletable.java",
     "java/src/org/chromium/chrome/browser/setup_list/SetupListManager.java",
     "java/src/org/chromium/chrome/browser/setup_list/SetupListModuleUtils.java",
   ]
@@ -77,11 +78,13 @@ android_resources("java_resources") {
   sources = [
     "java/res/color-night/educational_tip_module_content_image_background_color.xml",
     "java/res/color/educational_tip_module_content_image_background_color.xml",
+    "java/res/drawable/address_bar_placement_promo_completed_logo.xml",
     "java/res/drawable/address_bar_placement_promo_logo.xml",
     "java/res/drawable/default_browser_promo_bottom_sheet_chrome_icon_background.xml",
     "java/res/drawable/default_browser_promo_bottom_sheet_circle_background.xml",
     "java/res/drawable/default_browser_promo_logo.xml",
     "java/res/drawable/educational_tip_module_content_image_background.xml",
+    "java/res/drawable/enhanced_safe_browsing_promo_completed_logo.xml",
     "java/res/drawable/enhanced_safe_browsing_promo_logo.xml",
     "java/res/drawable/history_sync_promo_logo.xml",
     "java/res/drawable/quick_delete_promo_logo.xml",
@@ -122,6 +125,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellCoordinatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellViewBinderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/two_cell/EducationalTipModuleTwoCellViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/setup_list/SetupListCompletableUnitTest.java",
     "junit/src/org/chromium/chrome/browser/setup_list/SetupListManagerUnitTest.java",
   ]
 

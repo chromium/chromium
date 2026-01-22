@@ -14,11 +14,14 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Objects;
 
 /** Mediator for the educational tip module. */
 @NullMarked
@@ -78,14 +81,25 @@ public class EducationalTipModuleMediator {
         mModel.set(
                 EducationalTipModuleProperties.MODULE_BUTTON_STRING,
                 mEducationalTipCardProvider.getCardButtonText());
-        mModel.set(
-                EducationalTipModuleProperties.MODULE_CONTENT_IMAGE,
-                mEducationalTipCardProvider.getCardImage());
+
+        // SetupListCompletable.getCompletionState() internally checks if the module is part of the
+        // Setup List and returns the appropriate icon and completion status. For non-Setup List
+        // modules, it defaults to the provider's image and isCompleted = false.
+        SetupListCompletable.CompletionState completionState =
+                SetupListCompletable.getCompletionState(
+                        Objects.requireNonNull(mEducationalTipCardProvider), mModuleType);
+        if (completionState == null) {
+            mModel.set(
+                    EducationalTipModuleProperties.MODULE_CONTENT_IMAGE,
+                    mEducationalTipCardProvider.getCardImage());
+        } else {
+            mModel.set(EducationalTipModuleProperties.MARK_COMPLETED, completionState.isCompleted);
+            mModel.set(
+                    EducationalTipModuleProperties.MODULE_CONTENT_IMAGE, completionState.iconRes);
+        }
         mModel.set(
                 EducationalTipModuleProperties.MODULE_BUTTON_ON_CLICK_LISTENER,
-                v -> {
-                    assumeNonNull(mEducationalTipCardProvider).onCardClicked();
-                });
+                v -> assumeNonNull(mEducationalTipCardProvider).onCardClicked());
 
         mModuleDelegate.onDataReady(mModuleType, mModel);
     }
