@@ -53,4 +53,10 @@ Browser* GetBrowserForTabWithCriteria(BrowserList* browser_list,
                                       WebStateSearchCriteria criteria,
                                       bool is_otr_tab);
 
+// Returns the Web State matching `criteria` from among the `browser_list`.
+// Returns `nullptr` if not found.
+web::WebState* GetWebStateForTabWithCriteria(BrowserList* browser_list,
+                                             WebStateSearchCriteria criteria,
+                                             bool is_otr_tab);
+
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_UTILS_H_

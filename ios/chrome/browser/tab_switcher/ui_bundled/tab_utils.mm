@@ -125,3 +125,23 @@ Browser* GetBrowserForTabWithCriteria(BrowserList* browser_list,
   }
   return nullptr;
 }
+
+web::WebState* GetWebStateForTabWithCriteria(BrowserList* browser_list,
+                                             WebStateSearchCriteria criteria,
+                                             bool is_otr_tab) {
+  Browser* browser =
+      GetBrowserForTabWithCriteria(browser_list, criteria, is_otr_tab);
+
+  if (!browser) {
+    return nullptr;
+  }
+
+  WebStateList* web_state_list = browser->GetWebStateList();
+  int index = GetWebStateIndex(web_state_list, criteria);
+
+  if (index != WebStateList::kInvalidIndex) {
+    return web_state_list->GetWebStateAt(index);
+  }
+
+  return nullptr;
+}
