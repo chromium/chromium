@@ -23,10 +23,8 @@ if (proprietary_codecs && !is_debug && !is_component_build) {
 
   # 64bit only:
   # Caused by "outline atomics". https://crbug.com/1272795
-  # https://crbug.com/470438845
   # cpu_model.c: init_have_lse_atomics, init_cpu_features
-  # configure_builtins.rs: RUST_LSE_INIT
-  _chrome_64only_count += 3
+  _chrome_64only_count += 2
 
   # iostream.cpp: _GLOBAL__I_000101
   _chrome_common_count += 1
