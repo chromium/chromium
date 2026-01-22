@@ -210,7 +210,10 @@ CGFloat const kChromeLogoHeight = 22;
   cell = [self layoutCell:cell
         forTableViewWidth:[self tableViewWidth]
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+      .height;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
