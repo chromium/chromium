@@ -9704,6 +9704,21 @@
             ]
         }
     ],
+    "EnableBEContextMenuConfiguration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBEContextMenuConfiguration"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableBestEffortTaskInhibitingPolicy": [
         {
             "platforms": [
