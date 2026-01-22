@@ -1035,6 +1035,9 @@ chromium-metrics-reviews@google.com.
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
 
+    While this is reported in WebView, it is not accurate on this platform,
+    please ignore.
+
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
 
@@ -1064,6 +1067,9 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
+
+    While this is reported in WebView, it is not accurate on this platform,
+    please ignore.
 
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
@@ -1118,6 +1124,9 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
+
+    While this is reported in WebView, it is not accurate on this platform,
+    please ignore.
 
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
@@ -1186,6 +1195,9 @@ chromium-metrics-reviews@google.com.
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
 
+    While this is reported in WebView, it is not accurate on this platform,
+    please ignore.
+
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
   </summary>
@@ -1215,6 +1227,9 @@ chromium-metrics-reviews@google.com.
     frames (&gt;= 100). If there are sequences with fewer frames, then these are
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
+
+    While this is reported in WebView, it is not accurate on this platform,
+    please ignore.
 
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric. It also
