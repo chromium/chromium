@@ -31,7 +31,10 @@ bool ShouldStartDistillabilityService() {
 }
 
 BASE_FEATURE(kReaderModeUseReadability,
-#if BUILDFLAG(IS_IOS)
+// iOS enabled by default as part of a launch.
+// Desktop enabled by default as part of a dogfood, it will be controlled by a
+// separate feature flag on it's launch.
+#if !BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
 
@@ -53,7 +56,7 @@ constexpr base::FeatureParam<int>
         /*default_value=*/160};
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityMinContentLength{
     &kReaderModeUseReadability, /*name=*/"min_content_length",
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
     /*default_value=*/0
 #else
     /*default_value=*/100
