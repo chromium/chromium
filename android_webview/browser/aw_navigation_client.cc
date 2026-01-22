@@ -14,6 +14,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
 
@@ -25,24 +26,39 @@ void AwNavigationClient::OnFirstContentfulPaint(
     content::Page& page,
     const base::TimeDelta& duration) {
   JNIEnv* env = AttachCurrentThread();
-  Java_AwNavigationClient_onFirstContentfulPaint(
-      env, java_ref_.get(env), page.GetJavaPage(), duration.InMilliseconds());
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj) {
+    return;
+  }
+
+  Java_AwNavigationClient_onFirstContentfulPaint(env, obj, page.GetJavaPage(),
+                                                 duration.InMilliseconds());
 }
 
 void AwNavigationClient::OnLargestContentfulPaint(
     content::Page& page,
     const base::TimeDelta& duration) {
   JNIEnv* env = AttachCurrentThread();
-  Java_AwNavigationClient_onLargestContentfulPaint(
-      env, java_ref_.get(env), page.GetJavaPage(), duration.InMilliseconds());
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj) {
+    return;
+  }
+
+  Java_AwNavigationClient_onLargestContentfulPaint(env, obj, page.GetJavaPage(),
+                                                   duration.InMilliseconds());
 }
 
 void AwNavigationClient::OnPerformanceMark(content::Page& page,
                                            std::string mark_name,
                                            const base::TimeDelta& mark_time) {
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj) {
+    return;
+  }
+
   Java_AwNavigationClient_onPerformanceMark(
-      env, java_ref_.get(env), page.GetJavaPage(),
-      ConvertUTF8ToJavaString(env, mark_name), mark_time.InMilliseconds());
+      env, obj, page.GetJavaPage(), ConvertUTF8ToJavaString(env, mark_name),
+      mark_time.InMilliseconds());
 }
 }  // namespace android_webview
