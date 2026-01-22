@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -19,17 +20,18 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() = default;
 std::unique_ptr<WebUIContentsContainer>
 GlicWebContentsWarmingPool::TakeContainer() {
   CHECK(base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
-  if (!warmed_container_) {
-    Preload();
-  }
+  EnsurePreload();
   std::unique_ptr<WebUIContentsContainer> container =
       std::move(warmed_container_);
-  Preload();
+  EnsurePreload();
   return container;
 }
 
-void GlicWebContentsWarmingPool::Preload() {
+void GlicWebContentsWarmingPool::EnsurePreload() {
   CHECK(base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
+  if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
+    warmed_container_.reset();
+  }
   if (warmed_container_) {
     return;
   }

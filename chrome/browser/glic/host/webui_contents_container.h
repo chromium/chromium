@@ -28,7 +28,7 @@ class WebUIContentsContainer : public content::WebContentsObserver {
   // Attaches this container's WebContents to the provided Host. This must be
   // called exactly once.
   void AttachToHost(Host* host);
-
+  content::WebContents* web_contents() const { return web_contents_.get(); }
   WebUIContentsContainer(const WebUIContentsContainer&) = delete;
   WebUIContentsContainer& operator=(const WebUIContentsContainer&) = delete;
 

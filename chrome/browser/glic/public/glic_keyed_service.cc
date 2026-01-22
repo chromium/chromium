@@ -751,7 +751,7 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
-    web_contents_warming_pool_->Preload();
+    web_contents_warming_pool_->EnsurePreload();
   } else {
     window_controller().Preload();
   }
