@@ -1041,7 +1041,9 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnFjordStationSetupScreenExit,
                             weak_factory_.GetWeakPtr())));
     append(std::make_unique<FjordFwUpdateScreen>(
-        oobe_ui->GetView<FjordFwUpdateScreenHandler>()->AsWeakPtr()));
+        oobe_ui->GetView<FjordFwUpdateScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnFjordFwUpdateScreenExit,
+                            weak_factory_.GetWeakPtr())));
   }
 
   return result;
@@ -2984,25 +2986,46 @@ void WizardController::OnFjordStationSetupScreenExit() {
   NOTREACHED() << "Expected a kiosk app to be available";
 }
 
+void WizardController::OnFjordFwUpdateScreenExit() {
+  MaybeNotifyFjordOobeStateManager(fjord_oobe_state::proto::FjordOobeStateInfo::
+                                       FJORD_OOBE_STATE_READY_FOR_CALIBRATION);
+  OnScreenExit(FjordFwUpdateScreenView::kScreenId, kDefaultExitReason);
+  ShowFjordStationSetupScreen();
+}
+
 bool WizardController::ExitFjordTouchControllerScreen() {
+  // TODO(b/477337635): Update to match OnFjordFwUpdateScreenExit structure
   if (current_screen()->screen_id() ==
       FjordTouchControllerScreenView::kScreenId) {
     MaybeNotifyFjordOobeStateManager(
         fjord_oobe_state::proto::FjordOobeStateInfo::
             FJORD_OOBE_STATE_ENROLLMENT_DONE);
     OnScreenExit(FjordTouchControllerScreenView::kScreenId, kDefaultExitReason);
-    ShowFjordStationSetupScreen();
+    ShowFjordFwUpdateScreen();
     return true;
   }
-  // Return true if Station setup screen is showing because this means the TC
-  // setup screen was shown before this. This ensures that if the TC goes
-  // offline and online again, it can know if the TC setup screen was exited.
-  if (current_screen()->screen_id() == FjordStationSetupScreenView::kScreenId) {
+  // Return true if Station setup screen or FW update screen is showing because
+  // this means the TC setup screen was shown before this. This ensures that if
+  // the TC goes offline and online again, it can know if the TC setup screen
+  // was exited.
+  // TODO(b/477337635): Clean this up when TC10 moves to calling
+  // GetFjordOobeState().
+  if (current_screen()->screen_id() == FjordStationSetupScreenView::kScreenId ||
+      current_screen()->screen_id() == FjordFwUpdateScreenView::kScreenId) {
     return true;
   }
 
   LOG(ERROR) << "Can't exit: Fjord touch controller screen is not showing.";
   return false;
+}
+
+bool WizardController::ShowNextFjordOobeScreen(
+    fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState new_state) {
+  if (new_state != fjord_oobe_state::proto::FjordOobeStateInfo::
+                       FJORD_OOBE_STATE_READY_FOR_CALIBRATION) {
+    return false;
+  }
+  return GetScreen<FjordFwUpdateScreen>()->ExitScreen();
 }
 
 void WizardController::OnOobeFlowFinished() {
@@ -3468,7 +3491,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == SamlConfirmPasswordView::kScreenId ||
              screen_id == LocalStateErrorScreenView::kScreenId ||
              screen_id == QuickStartView::kScreenId ||
-             screen_id == FjordStationSetupScreenView::kScreenId) {
+             screen_id == FjordStationSetupScreenView::kScreenId ||
+             screen_id == FjordFwUpdateScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

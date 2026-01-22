@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_fw_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -1431,8 +1432,7 @@ class WizardControllerFjordOOBETest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
-                       TouchControllerScreenShowsAndExitsToStationSetup) {
+IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest, FjordOobeScreenFlow) {
   WizardController* const wizard_controller =
       WizardController::default_controller();
   ScopedEnrollmentStateFetcherFactory fetcher_factory(
@@ -1467,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   EXPECT_EQ(FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
             fjord_oobe_state::proto::FjordOobeStateInfo::
                 FJORD_OOBE_STATE_ENROLLMENT_DONE);
-  CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
+  CheckCurrentScreen(FjordFwUpdateScreenView::kScreenId);
   EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_FJORD_FW_UPDATE_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_FJORD_FW_UPDATE_SCREEN_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
@@ -17,10 +18,17 @@ class FjordFwUpdateScreenView;
 class FjordFwUpdateScreen : public BaseScreen {
  public:
   using TView = FjordFwUpdateScreenView;
-  explicit FjordFwUpdateScreen(base::WeakPtr<FjordFwUpdateScreenView> view);
+  FjordFwUpdateScreen(base::WeakPtr<FjordFwUpdateScreenView> view,
+                      base::RepeatingClosure exit_callback);
   FjordFwUpdateScreen(const FjordFwUpdateScreen&) = delete;
   FjordFwUpdateScreen& operator=(const FjordFwUpdateScreen&) = delete;
   ~FjordFwUpdateScreen() override;
+
+  bool ExitScreen();
+
+  void set_exit_callback_for_testing(base::RepeatingClosure exit_callback) {
+    exit_callback_ = exit_callback;
+  }
 
  private:
   // BaseScreen
@@ -28,6 +36,7 @@ class FjordFwUpdateScreen : public BaseScreen {
   void HideImpl() override {}
 
   base::WeakPtr<FjordFwUpdateScreenView> view_;
+  base::RepeatingClosure exit_callback_;
 };
 
 }  // namespace ash
