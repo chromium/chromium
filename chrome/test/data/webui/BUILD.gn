@@ -467,6 +467,7 @@ webui_ts_library("build_ts") {
     "mock_timer_test.ts",
     "test_browser_proxy.ts",
     "test_mock.ts",
+    "test_mock_test.ts",
     "test_plural_string_proxy.ts",
     "test_util.ts",
     "test_open_window_proxy.ts",
