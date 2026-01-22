@@ -81,6 +81,9 @@ omnibox::SuggestType GetSuggestType(const std::string& type) {
   if (type == "CATEGORICAL_QUERY") {
     return omnibox::TYPE_CATEGORICAL_QUERY;
   }
+  if (type == "FUSEBOX_ACTION") {
+    return omnibox::TYPE_FUSEBOX_ACTION;
+  }
   return omnibox::TYPE_QUERY;
 }
 
