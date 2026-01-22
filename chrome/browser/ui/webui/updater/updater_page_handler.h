@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -18,6 +19,8 @@
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
 
 class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
  public:
@@ -45,6 +48,7 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
   };
 
   UpdaterPageHandler(
+      Profile* profile,
       mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver,
       mojo::PendingRemote<updater_ui::mojom::Page> page,
       scoped_refptr<Delegate> delegate = Delegate::CreateDefault());
@@ -56,9 +60,11 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
 
   void GetAllUpdaterEvents(GetAllUpdaterEventsCallback callback) override;
   void GetUpdaterStates(GetUpdaterStatesCallback callback) override;
+  void ShowUpdaterDirectory(updater_ui::mojom::UpdaterScope scope) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
+  const raw_ptr<Profile> profile_;
   mojo::Receiver<updater_ui::mojom::PageHandler> receiver_;
   mojo::Remote<updater_ui::mojom::Page> page_;
   scoped_refptr<Delegate> delegate_;

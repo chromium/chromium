@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -24,6 +25,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/updater/updater_ui.mojom-shared.h"
 #include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
 #include "chrome/browser/updater/updater.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
@@ -162,6 +166,16 @@ updater_ui::mojom::UpdaterStatePtr ToUpdaterState(
   return state;
 }
 
+[[nodiscard]] constexpr updater::UpdaterScope UpdaterScopeFromMojo(
+    updater_ui::mojom::UpdaterScope mojom_scope) {
+  switch (mojom_scope) {
+    case updater_ui::mojom::UpdaterScope::kSystem:
+      return updater::UpdaterScope::kSystem;
+    case updater_ui::mojom::UpdaterScope::kUser:
+      return updater::UpdaterScope::kUser;
+  }
+}
+
 }  // namespace
 
 scoped_refptr<UpdaterPageHandler::Delegate>
@@ -170,10 +184,12 @@ UpdaterPageHandler::Delegate::CreateDefault() {
 }
 
 UpdaterPageHandler::UpdaterPageHandler(
+    Profile* profile,
     mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver,
     mojo::PendingRemote<updater_ui::mojom::Page> page,
     scoped_refptr<Delegate> delegate)
-    : receiver_(this, std::move(receiver)),
+    : profile_(profile),
+      receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       delegate_(delegate) {}
 
@@ -288,4 +304,19 @@ void UpdaterPageHandler::GetUpdaterStates(GetUpdaterStatesCallback callback) {
           },
           std::move(callback), delegate_, *system_install_dir,
           *user_install_dir));
+}
+
+void UpdaterPageHandler::ShowUpdaterDirectory(
+    updater_ui::mojom::UpdaterScope scope) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::optional<base::FilePath> install_dir =
+      delegate_->GetInstallDirectory(UpdaterScopeFromMojo(scope));
+  if (!install_dir) {
+    return;
+  }
+
+  platform_util::OpenItem(profile_, *install_dir,
+                          platform_util::OpenItemType::OPEN_FOLDER,
+                          base::DoNothing());
 }

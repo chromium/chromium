@@ -102,6 +102,7 @@ class UpdaterPageHandlerTest : public testing::Test {
  public:
   void SetUp() override {
     handler_ = std::make_unique<UpdaterPageHandler>(
+        /*profile=*/nullptr,
         mojo::PendingReceiver<updater_ui::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), mock_delegate_);
   }

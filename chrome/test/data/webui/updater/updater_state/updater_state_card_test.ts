@@ -5,9 +5,13 @@
 import 'chrome://updater/updater_state/updater_state_card.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
+import {SCOPES} from 'chrome://updater/event_history.js';
 import {formatDateLong} from 'chrome://updater/tools.js';
 import type {UpdaterStateCardElement} from 'chrome://updater/updater_state/updater_state_card.js';
-import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {PageHandlerRemote, UpdaterScope} from 'chrome://updater/updater_ui.mojom-webui.js';
+import {assertArrayEquals, assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('UpdaterStateCardElement', () => {
@@ -82,5 +86,40 @@ suite('UpdaterStateCardElement', () => {
     // Expected rows: Scope, Version, Last Checked, Last Started, Install Path
     const rows = item.shadowRoot.querySelectorAll('.row');
     assertEquals(5, rows.length);
+  });
+
+  suite('opens installation directory when clicked', () => {
+    let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
+
+    setup(() => {
+      handler = TestMock.fromClass(PageHandlerRemote);
+      BrowserProxyImpl.getInstance().handler = handler;
+    });
+
+    SCOPES.forEach(scope => {
+      test(`for ${scope} scope`, async () => {
+        item.scope = scope;
+        item.version = '1.0.0.0';
+        item.inactiveVersions = ['0.9.0.0'];
+        item.lastChecked = new Date('2026-01-02T12:00:00');
+        item.lastStarted = new Date('2026-01-01T12:00:00');
+        item.installPath = '/home/user/updater';
+        item.policies = {
+          policiesByName: {},
+          policiesByAppId: {},
+        };
+        document.body.appendChild(item);
+        await microtasksFinished();
+
+        const link =
+            item.shadowRoot.querySelector<HTMLAnchorElement>('a.value');
+        assertTrue(!!link);
+        link.click();
+
+        assertArrayEquals(
+            [scope === 'SYSTEM' ? UpdaterScope.kSystem : UpdaterScope.kUser],
+            handler.getArgs('showUpdaterDirectory'));
+      });
+    });
   });
 });

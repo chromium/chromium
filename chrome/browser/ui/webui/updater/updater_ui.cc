@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/updater/updater_page_handler.h"
@@ -199,6 +200,6 @@ void UpdaterUI::CreatePageHandler(
     mojo::PendingRemote<updater_ui::mojom::Page> page,
     mojo::PendingReceiver<updater_ui::mojom::PageHandler> receiver) {
   CHECK(page);
-  page_handler_ = std::make_unique<UpdaterPageHandler>(std::move(receiver),
-                                                       std::move(page));
+  page_handler_ = std::make_unique<UpdaterPageHandler>(
+      Profile::FromWebUI(web_ui()), std::move(receiver), std::move(page));
 }

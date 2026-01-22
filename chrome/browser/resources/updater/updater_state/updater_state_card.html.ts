@@ -53,7 +53,10 @@ export function getHtml(this: UpdaterStateCardElement) {
   </div>
   <div class="row">
     <div class="label">$i18n{installPath}</div>
-    <div class="value">${this.installPath}</div>
+    <a class="value" href="#" @click="${this.onInstallPathClick}"
+        is="action-link" tabindex="0">
+      ${this.installPath}
+    </a>
   </div>
   ${this.inactiveVersions.length > 0 ? html`
     <div class="row">

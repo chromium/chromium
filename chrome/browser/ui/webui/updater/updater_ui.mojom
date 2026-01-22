@@ -44,6 +44,11 @@ struct GetUpdaterStatesResponse {
 
 struct GetUpdaterStatesError {};
 
+enum UpdaterScope {
+  kSystem,
+  kUser,
+};
+
 // Called from TS side of chrome://updater (Renderer -> Browser).
 interface PageHandler {
   // Retrieves the contents of all available updater history logs. Events are
@@ -56,6 +61,10 @@ interface PageHandler {
   // updater installations present on the machine.
   GetUpdaterStates()
       => result<GetUpdaterStatesResponse, GetUpdaterStatesError>;
+
+  // Opens the directory containing the updater installation on the filesystem
+  // at the requested scope. Fails silently if the directory does not exist.
+  ShowUpdaterDirectory(UpdaterScope scope);
 };
 
 // Called from C++ side of chrome://updater (Browser -> Renderer).
