@@ -1073,7 +1073,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/signin/SigninAndHistorySyncActivityLauncherImplTest.java",
       "src/org/chromium/chrome/browser/signin/SigninAndHistorySyncBundleHelperTest.java",
       "src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
-      "src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]

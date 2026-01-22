@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -141,6 +142,35 @@ public class SigninManagerIntegrationTest {
                             new CoreAccountInfo[] {TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2},
                             mIdentityManager.getAccountsWithRefreshTokens());
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testAccountListNotUpdatedWhenFetchFailsAndListIsEmpty() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        Assert.assertArrayEquals(
+                                new CoreAccountInfo[] {TestAccounts.ACCOUNT1},
+                                mIdentityManager.getAccountsWithRefreshTokens()));
+
+        // Simulate a transient system failure where the AccountManager returns 0 accounts.
+        mSigninTestRule.setAccountFetchFailed();
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        // An empty account list should be ignored to prevent accidental sign-outs (and potential
+        // data wipes).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertArrayEquals(
+                            "IdentityManager should retain the account. An empty account list is"
+                                    + " ignored when the fetch fails.",
+                            new CoreAccountInfo[] {TestAccounts.ACCOUNT1},
+                            mIdentityManager.getAccountsWithRefreshTokens());
+                });
+        assertNotNull(
+                "primary account shoudld still be set",
+                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     @Test
