@@ -732,10 +732,12 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
     const std::string& key,
     const base::FilePath& image_path) const {
   // If the picture is already loaded then use it.
-  if (cached_avatar_images_.count(key)) {
-    if (cached_avatar_images_[key].IsEmpty())
+  if (auto it = cached_avatar_images_.find(key);
+      it != cached_avatar_images_.end()) {
+    if (it->second.IsEmpty()) {
       return nullptr;
-    return &cached_avatar_images_[key];
+    }
+    return &it->second;
   }
 
   // Don't download the image if downloading is disabled for tests.
@@ -743,9 +745,11 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
     return nullptr;
 
   // If the picture is already being loaded then don't try loading it again.
-  if (cached_avatar_images_loading_[key])
+  bool& loading = cached_avatar_images_loading_[key];
+  if (loading) {
     return nullptr;
-  cached_avatar_images_loading_[key] = true;
+  }
+  loading = true;
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ReadBitmap, image_path),
@@ -988,8 +992,9 @@ void ProfileAttributesStorage::DownloadHighResAvatar(
       profiles::GetDefaultAvatarIconFileNameAtIndex(icon_index);
   DCHECK(file_name);
   // If the file is already being downloaded, don't start another download.
-  if (avatar_images_downloads_in_progress_.count(file_name))
+  if (avatar_images_downloads_in_progress_.contains(file_name)) {
     return;
+  }
 
   // Start the download for this file. The profile attributes storage takes
   // ownership of the avatar downloader, which will be deleted when the download
@@ -1121,19 +1126,21 @@ void ProfileAttributesStorage::OnAvatarPictureLoaded(
     gfx::Image image) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   cached_avatar_images_loading_[key] = false;
-  if (cached_avatar_images_.count(key)) {
-    if (!cached_avatar_images_[key].IsEmpty() || image.IsEmpty()) {
+  if (auto it = cached_avatar_images_.find(key);
+      it != cached_avatar_images_.end()) {
+    if (!it->second.IsEmpty() || image.IsEmpty()) {
       // If GAIA picture is not empty that means that it has been set with the
       // most up-to-date value while the picture was being loaded from disk.
       // If GAIA picture is empty and the image loaded from disk is also empty
       // then there is no need to update.
       return;
     }
+    it->second = std::move(image);
+  } else {
+    // Even if the image is empty (e.g. because decoding failed), place it in
+    // the cache to avoid reloading it again.
+    cached_avatar_images_.emplace(key, std::move(image));
   }
-
-  // Even if the image is empty (e.g. because decoding failed), place it in the
-  // cache to avoid reloading it again.
-  cached_avatar_images_[key] = std::move(image);
 
   NotifyOnProfileHighResAvatarLoaded(profile_path);
 }
