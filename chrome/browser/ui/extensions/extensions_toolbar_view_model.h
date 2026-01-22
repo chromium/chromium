@@ -91,6 +91,17 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
     kDefault,
   };
 
+  // Holds the information for the request access button.
+  struct RequestAccessButtonParams {
+    RequestAccessButtonParams();
+    RequestAccessButtonParams(RequestAccessButtonParams&&);
+    RequestAccessButtonParams& operator=(RequestAccessButtonParams&&);
+    ~RequestAccessButtonParams();
+
+    std::vector<extensions::ExtensionId> extension_ids;
+    std::u16string tooltip_text;
+  };
+
   ExtensionsToolbarViewModel(Delegate* delegate,
                              BrowserWindowInterface* browser,
                              ToolbarActionsModel* actions_model);
@@ -103,7 +114,7 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
 
   // Returns the view model of the action if it exists, else a nullptr.
   ToolbarActionViewModel* GetActionModelForId(
-      const ToolbarActionsModel::ActionId& action_id);
+      const ToolbarActionsModel::ActionId& action_id) const;
 
   // Move the pinned action `action_id` to `target_index`.
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
@@ -132,6 +143,13 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   // be called as a result of a user action.
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns RequestAccessButtonParams which contain information to be used in
+  // the button's tooltip.
+  RequestAccessButtonParams GetRequestAccessButtonParams(
+      content::WebContents* web_contents) const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;

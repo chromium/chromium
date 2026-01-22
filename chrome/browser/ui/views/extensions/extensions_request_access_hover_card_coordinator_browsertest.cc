@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
@@ -30,8 +31,11 @@ class ExtensionsRequestAccessHoverCardCoordinatorBrowserTest
     EXPECT_TRUE(extensions_container()->GetVisible());
 
     // Pretend an extension is requesting access.
-    std::vector<extensions::ExtensionId> extension_ids = {extension->id()};
-    request_access_button()->Update(extension_ids);
+    ExtensionsToolbarViewModel::RequestAccessButtonParams params =
+        ExtensionsToolbarViewModel::RequestAccessButtonParams();
+    params.extension_ids.push_back(extension->id());
+    params.tooltip_text = u"Test tooltip name";
+    request_access_button()->Update(params);
     request_access_button()->SetVisible(true);
 
     request_access_button()->MaybeShowHoverCard();

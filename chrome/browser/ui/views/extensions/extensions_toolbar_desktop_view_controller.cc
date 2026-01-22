@@ -136,11 +136,7 @@ void ExtensionsToolbarDesktopViewController::UpdateRequestAccessButton() {
   }
 
   auto* web_contents = extensions_container_->GetCurrentWebContents();
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
+  extensions_container_->UpdateRequestAccessButton(web_contents);
 }
 
 void ExtensionsToolbarDesktopViewController::OnTabStripModelChanged(

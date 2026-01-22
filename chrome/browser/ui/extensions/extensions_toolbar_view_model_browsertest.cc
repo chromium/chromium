@@ -6,7 +6,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_view_host.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
@@ -14,10 +16,14 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -143,8 +149,10 @@ ExtensionsToolbarViewModelBrowserTest::AddExtension(
     const std::vector<std::string>& host_permissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
+          .SetManifestVersion(3)
           .AddAPIPermissions(permissions)
           .AddHostPermissions(host_permissions)
+          .SetAction(extensions::ActionInfo::Type::kBrowser)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
   extension_registrar()->AddExtension(extension.get());
@@ -311,3 +319,80 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   toolbar_model()->OnActiveTabChanged(
       TabListInterface::From(browser_window_interface())->GetActiveTab());
 }
+
+// TODO(crbug.com/476282370): Remove ifdef when generated resource is available
+// on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that GetRequestAccessButtonParams returns empty when there are no
+// extensions requesting access.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GetRequestAccessButtonParams_NoRequests) {
+  NavigateTo("example.com");
+  auto params =
+      toolbar_model()->GetRequestAccessButtonParams(GetActiveWebContents());
+  EXPECT_TRUE(params.extension_ids.empty());
+  EXPECT_TRUE(params.tooltip_text.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
+                       GetRequestAccessButtonParams_AddAndRemoveRequests) {
+  NavigateTo("example.com");
+  auto* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  extensions::PermissionsManager* permissions_manager =
+      extensions::PermissionsManager::Get(profile());
+
+  // Add one request
+  const std::string extension_a_id =
+      crx_file::id_util::GenerateId("Extension A");
+  extensions::ExtensionPrefs::Get(profile())->SetWithholdingPermissions(
+      extension_a_id, true);
+  auto extension_a = AddExtension("Extension A", {}, {"*://example.com/*"});
+  permissions_manager->AddHostAccessRequest(web_contents, tab_id, *extension_a);
+  auto params = toolbar_model()->GetRequestAccessButtonParams(web_contents);
+  EXPECT_THAT(params.extension_ids, testing::ElementsAre(extension_a->id()));
+  EXPECT_NE(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
+  EXPECT_NE(params.tooltip_text.find(u"example.com"), std::u16string::npos);
+
+  // Add a second request
+  const std::string extension_b_id =
+      crx_file::id_util::GenerateId("Extension B");
+  extensions::ExtensionPrefs::Get(profile())->SetWithholdingPermissions(
+      extension_b_id, true);
+  auto extension_b = AddExtension("Extension B", {}, {"*://example.com/*"});
+  permissions_manager->AddHostAccessRequest(web_contents, tab_id, *extension_b);
+  params = toolbar_model()->GetRequestAccessButtonParams(web_contents);
+  EXPECT_THAT(params.extension_ids, testing::UnorderedElementsAre(
+                                        extension_a->id(), extension_b->id()));
+  EXPECT_NE(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
+  EXPECT_NE(params.tooltip_text.find(u"Extension B"), std::u16string::npos);
+
+  // Remove the request for extension A
+  permissions_manager->RemoveHostAccessRequest(tab_id, extension_a->id());
+  params = toolbar_model()->GetRequestAccessButtonParams(web_contents);
+  EXPECT_THAT(params.extension_ids, testing::ElementsAre(extension_b->id()));
+  EXPECT_EQ(params.tooltip_text.find(u"Extension A"), std::u16string::npos);
+  EXPECT_NE(params.tooltip_text.find(u"Extension B"), std::u16string::npos);
+
+  // Remove the second request to return to the initial state
+  permissions_manager->RemoveHostAccessRequest(tab_id, extension_b->id());
+  params = toolbar_model()->GetRequestAccessButtonParams(web_contents);
+  EXPECT_TRUE(params.extension_ids.empty());
+  EXPECT_TRUE(params.tooltip_text.empty());
+}
+
+// Tests that GetRequestAccessButtonParams returns empty when an extension has
+// host permissions but is not actively requesting access.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarViewModelBrowserTest,
+    GetRequestAccessButtonParams_ExtensionNotActivelyRequestingAccess) {
+  AddExtension("Test Extension", {}, {"*://example.com/*"});
+
+  NavigateTo("example.com");
+  auto params =
+      toolbar_model()->GetRequestAccessButtonParams(GetActiveWebContents());
+  EXPECT_TRUE(params.extension_ids.empty());
+  EXPECT_TRUE(params.tooltip_text.empty());
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)

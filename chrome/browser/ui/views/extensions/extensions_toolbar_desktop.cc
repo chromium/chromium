@@ -246,7 +246,6 @@ void ExtensionsToolbarDesktop::UpdateExtensionsButton(
 }
 
 void ExtensionsToolbarDesktop::UpdateRequestAccessButton(
-    extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* web_contents) {
   CHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
@@ -264,32 +263,10 @@ void ExtensionsToolbarDesktop::UpdateRequestAccessButton(
     return;
   }
 
-  // Extensions are included in the request access button only when:
-  //   - site allows customizing site access by extension
-  //   - extension added a request that has not been dismissed
-  //   - requests can be shown in the toolbar
-  std::vector<extensions::ExtensionId> extensions;
-  if (site_setting ==
-      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
-    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-    auto* permissions_manager =
-        extensions::PermissionsManager::Get(browser_->profile());
-    auto site_permissions_helper =
-        extensions::SitePermissionsHelper(browser_->profile());
+  ExtensionsToolbarViewModel::RequestAccessButtonParams button_params =
+      toolbar_view_model_->GetRequestAccessButtonParams(web_contents);
 
-    for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
-      bool has_active_request =
-          permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
-      bool can_show_access_requests_in_toolbar =
-          site_permissions_helper.ShowAccessRequestsInToolbar(action_id);
-
-      if (has_active_request && can_show_access_requests_in_toolbar) {
-        extensions.push_back(action_id);
-      }
-    }
-  }
-
-  request_access_button_->Update(extensions);
+  request_access_button_->Update(button_params);
 
   // Extensions button has left flat edge iff request access button is visible.
   // This will also update the button's background.
@@ -1020,13 +997,8 @@ void ExtensionsToolbarDesktop::UpdateControlsVisibility() {
     return;
   }
 
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-
   UpdateExtensionsButton(web_contents);
-  UpdateRequestAccessButton(site_setting, web_contents);
+  UpdateRequestAccessButton(web_contents);
 }
 
 void ExtensionsToolbarDesktop::CloseSidePanelButtonPressed() {

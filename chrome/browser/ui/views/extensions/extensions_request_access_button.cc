@@ -18,11 +18,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -72,24 +74,22 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
 ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
 void ExtensionsRequestAccessButton::Update(
-    std::vector<extensions::ExtensionId>& extension_ids) {
+    const ExtensionsToolbarViewModel::RequestAccessButtonParams&
+        request_access_button_params) {
   CHECK(!IsShowingConfirmation());
+  extension_ids_ = request_access_button_params.extension_ids;
 
-  extension_ids_ = extension_ids;
-  SetVisible(!extension_ids_.empty());
-  UpdateTooltipText();
-
-  if (extension_ids_.empty()) {
-    return;
-  }
+  SetVisible(!request_access_button_params.extension_ids.empty());
+  SetTooltipText(request_access_button_params.tooltip_text);
 
   // TODO(crbug.com/40784980): Set the label and background color without
   // borders separately to match the mocks. For now, using SetHighlight to
   // display that adds a border and highlight color in addition to the label.
   std::optional<SkColor> color;
   SetHighlight(
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
-                                    static_cast<int>(extension_ids_.size())),
+      l10n_util::GetStringFUTF16Int(
+          IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
+          static_cast<int>(request_access_button_params.extension_ids.size())),
       color);
   SetEnabled(true);
 }
@@ -138,27 +138,6 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
 
 bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
-}
-
-void ExtensionsRequestAccessButton::UpdateTooltipText() {
-  std::vector<std::u16string> tooltip_parts;
-  content::WebContents* active_contents = GetActiveWebContents();
-
-  // Active contents can be null if the window is closing.
-  if (!active_contents) {
-    SetTooltipText(std::u16string());
-    return;
-  }
-
-  tooltip_parts.push_back(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-      extensions::ui_util::GetFormattedHostForDisplay(*active_contents)));
-  for (const auto& extension_id : extension_ids_) {
-    ToolbarActionViewModel* view_model =
-        extensions_container_->GetActionForId(extension_id);
-    tooltip_parts.push_back(view_model->GetActionName());
-  }
-  SetTooltipText(base::JoinString(tooltip_parts, u"\n"));
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {

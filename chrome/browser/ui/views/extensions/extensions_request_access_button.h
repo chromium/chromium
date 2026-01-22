@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,8 +39,10 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
       const ExtensionsRequestAccessButton&) = delete;
   ~ExtensionsRequestAccessButton() override;
 
-  // Updates the button visibility and content given `extension_ids`.
-  void Update(std::vector<extensions::ExtensionId>& extension_ids);
+  // Updates the button visibility and content given
+  // `request_access_button_params`.
+  void Update(const ExtensionsToolbarViewModel::RequestAccessButtonParams&
+                  request_access_button_params);
 
   // Displays the button's hover card, if possible.
   void MaybeShowHoverCard();
@@ -72,8 +75,6 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton {
   }
 
  private:
-  void UpdateTooltipText();
-
   // Grants one-time site access to `extension_ids` and shows a confirmation
   // message on the button.
   void OnButtonPressed();

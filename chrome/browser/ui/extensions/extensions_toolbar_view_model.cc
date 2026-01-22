@@ -4,10 +4,17 @@
 
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -32,6 +39,16 @@ ExtensionsToolbarViewModel::~ExtensionsToolbarViewModel() {
   WebContentsObserver::Observe(nullptr);
 }
 
+ExtensionsToolbarViewModel::RequestAccessButtonParams::
+    RequestAccessButtonParams() = default;
+ExtensionsToolbarViewModel::RequestAccessButtonParams::
+    RequestAccessButtonParams(RequestAccessButtonParams&&) = default;
+ExtensionsToolbarViewModel::RequestAccessButtonParams&
+ExtensionsToolbarViewModel::RequestAccessButtonParams::operator=(
+    RequestAccessButtonParams&&) = default;
+ExtensionsToolbarViewModel::RequestAccessButtonParams::
+    ~RequestAccessButtonParams() = default;
+
 void ExtensionsToolbarViewModel::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -41,7 +58,7 @@ void ExtensionsToolbarViewModel::RemoveObserver(Observer* observer) {
 }
 
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionModelForId(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id) const {
   auto it = actions_.find(action_id);
   if (it == actions_.end()) {
     return nullptr;
@@ -102,8 +119,8 @@ bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
 ExtensionsToolbarViewModel::GetButtonState(
     content::WebContents* web_contents) const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  CHECK(web_contents);
+  Profile* profile = browser_->GetProfile();
   const GURL& url = web_contents->GetLastCommittedURL();
 
   if (actions_model_->IsRestrictedUrl(url)) {
@@ -132,6 +149,65 @@ void ExtensionsToolbarViewModel::ExecuteUserAction(
     ToolbarActionViewModel::InvocationSource source) {
   GetActionModelForId(action_id)->ExecuteUserAction(source);
 }
+
+// TODO(crbug.com/476282370): Remove ifdef when generated resource is available
+// on Android.
+#if !BUILDFLAG(IS_ANDROID)
+// Extensions are included in the request access button only when:
+//   - site allows customizing site access by extension
+//   - extension added a request that has not been dismissed
+//   - requests can be shown in the toolbar
+ExtensionsToolbarViewModel::RequestAccessButtonParams
+ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
+    content::WebContents* web_contents) const {
+  RequestAccessButtonParams params;
+  CHECK(web_contents);
+  Profile* profile = browser_->GetProfile();
+  extensions::PermissionsManager* permissions_manager =
+      extensions::PermissionsManager::Get(profile);
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      permissions_manager->GetUserSiteSetting(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  if (site_setting !=
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
+    return params;
+  }
+
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  extensions::SitePermissionsHelper site_permissions_helper(profile);
+
+  std::vector<std::u16string> extension_names;
+  for (const auto& action_id : actions_model_->action_ids()) {
+    bool has_active_request =
+        permissions_manager->HasActiveHostAccessRequest(tab_id, action_id);
+    bool can_show_access_requests_in_toolbar =
+        site_permissions_helper.ShowAccessRequestsInToolbar(action_id);
+
+    if (has_active_request && can_show_access_requests_in_toolbar) {
+      params.extension_ids.push_back(action_id);
+      ToolbarActionViewModel* action_model = GetActionModelForId(action_id);
+      // If an extension has an active request, it should have an action model.
+      CHECK(action_model);
+      extension_names.push_back(action_model->GetActionName());
+    }
+  }
+
+  if (params.extension_ids.empty()) {
+    return params;
+  }
+
+  std::vector<std::u16string> tooltip_parts;
+  tooltip_parts.push_back(l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents)));
+  tooltip_parts.insert(tooltip_parts.end(), extension_names.begin(),
+                       extension_names.end());
+  params.tooltip_text = base::JoinString(tooltip_parts, u"\n");
+
+  return params;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(
     const std::string& action_id) {

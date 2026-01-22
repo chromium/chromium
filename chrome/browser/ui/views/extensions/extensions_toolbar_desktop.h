@@ -106,10 +106,8 @@ class ExtensionsToolbarDesktop : public ToolbarIconContainerView,
   // Updates `extensions_button_` icon given `web_contents`.
   void UpdateExtensionsButton(content::WebContents* web_contents);
 
-  // Updates the `request_access_button_` given user `site_setting` for the
-  // current `web_contents`.
+  // Updates the `request_access_button_` given the current `web_contents`.
   void UpdateRequestAccessButton(
-      extensions::PermissionsManager::UserSiteSetting site_setting,
       content::WebContents* web_contents);
 
   // Updates the container visibility and animation as needed.
