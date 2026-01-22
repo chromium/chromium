@@ -508,8 +508,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // long it's hard to know what might break.
   if (is_audio && audio_decoder_config().codec_delay() &&
       demuxer_->start_time().is_negative()) {
+    // Note: FFmpeg doesn't seem to always use -FramesToTime(codec_delay()) as
+    // the start_time for unknown reasons, so we use the start time directly.
     buffer->set_timestamp(stream_timestamp - demuxer_->start_time());
-    DCHECK_GE(buffer->timestamp(), base::TimeDelta());
   }
 
   if (discard_padding) {
