@@ -741,6 +741,8 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didTapDefaultBrowserPromo {
+  [_magicStackRankingModel logMagicStackEngagementForType:
+                               ContentSuggestionsModuleType::kDefaultBrowser];
   DefaultBrowserMagicStackIosVariationType variation =
       GetDefaultBrowserMagicStackIosVariation();
 
