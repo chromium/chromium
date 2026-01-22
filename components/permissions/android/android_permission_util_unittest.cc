@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -61,14 +60,14 @@ class AndroidPermissionUtilTest : public content::RenderViewHostTestHarness {
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  ResolvePermissionRequestInternal(nullptr, ContentSettingsType::GEOLOCATION,
-                                   CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(nullptr,
+                                                  CONTENT_SETTING_ALLOW);
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_NoRequests) {
-  ResolvePermissionRequestInternal(
-      web_contents(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
   // Should not crash.
 }
 
@@ -77,9 +76,8 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  ResolvePermissionRequestInternal(web_contents(),
-                                   ContentSettingsType::NOTIFICATIONS,
-                                   CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -91,10 +89,10 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_MismatchType) {
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
-  AddRequest(RequestType::kGeolocation, &state);
+  AddRequest(RequestType::kNotifications, &state);
 
-  ResolvePermissionRequestInternal(
-      web_contents(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -107,10 +105,10 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Allow) {
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
-  AddRequest(RequestType::kGeolocation, &state);
+  AddRequest(RequestType::kNotifications, &state);
 
-  ResolvePermissionRequestInternal(
-      web_contents(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_BLOCK);
 
   EXPECT_FALSE(state.granted);
   EXPECT_FALSE(state.cancelled);
@@ -123,11 +121,10 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Block) {
 TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
   base::HistogramTester histogram_tester;
   MockPermissionRequest::MockPermissionRequestState state;
-  AddRequest(RequestType::kGeolocation, &state);
+  AddRequest(RequestType::kNotifications, &state);
 
-  ResolvePermissionRequestInternal(web_contents(),
-                                   ContentSettingsType::GEOLOCATION,
-                                   CONTENT_SETTING_DEFAULT);
+  internal::ResolveNotificationsPermissionRequest(web_contents(),
+                                                  CONTENT_SETTING_DEFAULT);
 
   // Default triggers Dismiss(), which calls Cancelled().
   EXPECT_TRUE(state.cancelled);
@@ -140,13 +137,12 @@ TEST_F(AndroidPermissionUtilTest, ResolvePermissionRequest_Default) {
 
 TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoManager) {
   // Pass nullptr as web_contents.
-  DismissPermissionRequestInternal(nullptr, ContentSettingsType::GEOLOCATION);
+  internal::DismissNotificationsPermissionRequest(nullptr);
   // Should not crash.
 }
 
 TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_NoRequests) {
-  DismissPermissionRequestInternal(web_contents(),
-                                   ContentSettingsType::GEOLOCATION);
+  internal::DismissNotificationsPermissionRequest(web_contents());
   // Should not crash.
 }
 
@@ -155,8 +151,7 @@ TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
   AddRequest(RequestType::kGeolocation, &state);
 
   // Call with Notifications type.
-  DismissPermissionRequestInternal(web_contents(),
-                                   ContentSettingsType::NOTIFICATIONS);
+  internal::DismissNotificationsPermissionRequest(web_contents());
 
   // Request should still be in progress and not decided.
   EXPECT_TRUE(manager_->IsRequestInProgress());
@@ -167,10 +162,9 @@ TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_MismatchType) {
 
 TEST_F(AndroidPermissionUtilTest, DismissPermissionRequest_Dismiss) {
   MockPermissionRequest::MockPermissionRequestState state;
-  AddRequest(RequestType::kGeolocation, &state);
+  AddRequest(RequestType::kNotifications, &state);
 
-  DismissPermissionRequestInternal(web_contents(),
-                                   ContentSettingsType::GEOLOCATION);
+  internal::DismissNotificationsPermissionRequest(web_contents());
 
   EXPECT_TRUE(state.cancelled);
   EXPECT_FALSE(state.granted);

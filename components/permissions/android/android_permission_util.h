@@ -22,6 +22,15 @@ class WindowAndroid;
 
 namespace permissions {
 
+namespace internal {
+
+void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           ContentSetting content_setting);
+
+void DismissNotificationsPermissionRequest(content::WebContents* web_contents);
+
+}  // namespace internal
+
 // Appends to `out` the required Android permissions associated with
 // `content_settings_type`.
 void AppendRequiredAndroidPermissionsForContentSetting(
@@ -106,14 +115,6 @@ void RequestLocationServices(content::WebContents* web_contents);
 
 // Called from tests to temporarily set system location settings enabled.
 base::AutoReset<bool> EnableSystemLocationSettingForTesting();
-
-void ResolvePermissionRequestInternal(content::WebContents* web_contents,
-                                      ContentSettingsType content_settings_type,
-                                      ContentSetting content_setting);
-
-void DismissPermissionRequestInternal(
-    content::WebContents* web_contents,
-    ContentSettingsType content_settings_type);
 
 }  // namespace permissions
 

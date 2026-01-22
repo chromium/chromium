@@ -216,9 +216,10 @@ base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
                                true);
 }
 
-void ResolvePermissionRequestInternal(content::WebContents* web_contents,
-                                      ContentSettingsType content_settings_type,
-                                      ContentSetting setting) {
+namespace internal {
+
+void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           ContentSetting setting) {
   if (!web_contents) {
     return;
   }
@@ -231,7 +232,7 @@ void ResolvePermissionRequestInternal(content::WebContents* web_contents,
   if (permission_request_manager->IsRequestInProgress() &&
       permission_request_manager->Requests().size() > 0 &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
-          content_settings_type) {
+          ContentSettingsType::NOTIFICATIONS) {
     if (setting == CONTENT_SETTING_ALLOW) {
       if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
         base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
@@ -265,9 +266,7 @@ void ResolvePermissionRequestInternal(content::WebContents* web_contents,
   }
 }
 
-void DismissPermissionRequestInternal(
-    content::WebContents* web_contents,
-    ContentSettingsType content_settings_type) {
+void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
   if (!web_contents) {
     return;
   }
@@ -280,10 +279,12 @@ void DismissPermissionRequestInternal(
   if (permission_request_manager->IsRequestInProgress() &&
       permission_request_manager->Requests().size() > 0 &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
-          content_settings_type) {
+          ContentSettingsType::NOTIFICATIONS) {
     permission_request_manager->Dismiss();
   }
 }
+
+}  // namespace internal
 
 }  // namespace permissions
 
@@ -293,27 +294,23 @@ void DismissPermissionRequestInternal(
 // we still need to dismiss the permission request as Chrome doesn't have the
 // Android OS level permission and hence the permission request is no longer
 // valid.
-static void JNI_PermissionUtil_DismissPermissionRequest(
+static void JNI_PermissionUtil_DismissNotificationsPermissionRequest(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents,
-    int32_t content_settings_type) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  permissions::DismissPermissionRequestInternal(
-      web_contents, static_cast<ContentSettingsType>(content_settings_type));
+  permissions::internal::DismissNotificationsPermissionRequest(web_contents);
 }
 
-static void JNI_PermissionUtil_ResolvePermissionRequest(
+static void JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    int32_t content_settings_type,
     int32_t content_setting) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   ContentSetting setting = static_cast<ContentSetting>(content_setting);
-  permissions::ResolvePermissionRequestInternal(
-      web_contents, static_cast<ContentSettingsType>(content_settings_type),
-      setting);
+  permissions::internal::ResolveNotificationsPermissionRequest(web_contents,
+                                                               setting);
 }
 // TODO(crbug.com/463333225): Clean this provisional function name up if
 // Clapper is launched or removed.

@@ -268,42 +268,35 @@ public class PermissionUtil {
     }
 
     /**
-     * Grants a permission if it is requested.
+     * Grants a notifications permission if it is requested.
      *
-     * This method is called when the user clicks on the "Subscribe" button in the notifications
+     * <p>This method is called when the user clicks on the "Subscribe" button in the notifications
      * permission row in PageInfo.
      */
-    public static void resolvePermissionRequest(
-            WebContents webContents,
-            @ContentSettingsType.EnumType int contentSettingsType,
-            @ContentSetting int contentSetting) {
-        PermissionUtilJni.get()
-                .resolvePermissionRequest(webContents, contentSettingsType, contentSetting);
+    public static void resolveNotificationsPermissionRequest(
+            WebContents webContents, @ContentSetting int contentSetting) {
+        PermissionUtilJni.get().resolveNotificationsPermissionRequest(webContents, contentSetting);
     }
 
     /**
-     * Dismisses a permission request.
+     * Dismisses a notifications permission request.
      *
-     * This method is called when the user clicks on the "Subscribe" button in the notifications
+     * <p>This method is called when the user clicks on the "Subscribe" button in the notifications
      * permission row in PageInfo but did not grant the Android OS level permission prompt. Despite
      * the user granted the site-level permission, we still need to dismiss the permission request
      * as Chrome doesn't have the Android OS level permission and hence the permission request is no
      * longer valid.
      */
-    public static void dismissPermissionRequest(
-            WebContents webContents, @ContentSettingsType.EnumType int contentSettingsType) {
-        PermissionUtilJni.get().dismissPermissionRequest(webContents, contentSettingsType);
+    public static void dismissNotificationsPermissionRequest(WebContents webContents) {
+        PermissionUtilJni.get().dismissNotificationsPermissionRequest(webContents);
     }
 
     @NativeMethods
     public interface Natives {
-        void resolvePermissionRequest(
-                WebContents webContents,
-                @ContentSettingsType.EnumType int contentSettingsType,
-                @ContentSetting int contentSetting);
+        void resolveNotificationsPermissionRequest(
+                WebContents webContents, @ContentSetting int contentSetting);
 
-        void dismissPermissionRequest(
-                WebContents webContents, @ContentSettingsType.EnumType int contentSettingsType);
+        void dismissNotificationsPermissionRequest(WebContents webContents);
 
         void notifyQuietIconDismissed(WebContents webContents);
     }

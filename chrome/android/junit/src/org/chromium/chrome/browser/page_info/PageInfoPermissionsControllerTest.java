@@ -118,8 +118,7 @@ public class PageInfoPermissionsControllerTest {
         mRequestDelegateCaptured.onAndroidPermissionAccepted();
 
         verify(mPermissionUtilJni)
-                .resolvePermissionRequest(
-                        mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW);
+                .resolveNotificationsPermissionRequest(mWebContents, ContentSetting.ALLOW);
         histogramWatcher.assertExpected();
     }
 
@@ -134,8 +133,7 @@ public class PageInfoPermissionsControllerTest {
 
         mRequestDelegateCaptured.onAndroidPermissionCanceled();
 
-        verify(mPermissionUtilJni)
-                .dismissPermissionRequest(mWebContents, ContentSettingsType.NOTIFICATIONS);
+        verify(mPermissionUtilJni).dismissNotificationsPermissionRequest(mWebContents);
         histogramWatcher.assertExpected();
     }
 
@@ -146,8 +144,7 @@ public class PageInfoPermissionsControllerTest {
         mController.onNotificationSubscribeClicked();
 
         verify(mPermissionUtilJni)
-                .resolvePermissionRequest(
-                        mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW);
+                .resolveNotificationsPermissionRequest(mWebContents, ContentSetting.ALLOW);
     }
 
     @Test
@@ -157,8 +154,7 @@ public class PageInfoPermissionsControllerTest {
         mController.onNotificationSubscribeClicked();
 
         verify(mPermissionUtilJni)
-                .resolvePermissionRequest(
-                        mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW);
+                .resolveNotificationsPermissionRequest(mWebContents, ContentSetting.ALLOW);
     }
 
     @Test
@@ -176,8 +172,7 @@ public class PageInfoPermissionsControllerTest {
         mController.onSubpageRemoved();
 
         verify(mPermissionUtilJni)
-                .resolvePermissionRequest(
-                        mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK);
+                .resolveNotificationsPermissionRequest(mWebContents, ContentSetting.BLOCK);
     }
 
     @Test
@@ -195,7 +190,6 @@ public class PageInfoPermissionsControllerTest {
         mController.onPermissionsReset();
 
         verify(mPermissionUtilJni)
-                .resolvePermissionRequest(
-                        mWebContents, ContentSettingsType.NOTIFICATIONS, ContentSetting.DEFAULT);
+                .resolveNotificationsPermissionRequest(mWebContents, ContentSetting.DEFAULT);
     }
 }
