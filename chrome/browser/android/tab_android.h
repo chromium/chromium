@@ -63,8 +63,10 @@ class TabAndroid : public tabs::TabInterface,
   };
 
   // Convenience method to retrieve the Tab associated with the passed
-  // WebContents.  Can return NULL.
-  static TabAndroid* FromWebContents(const content::WebContents* web_contents);
+  // WebContents. Can return nullptr.
+  static TabAndroid* FromWebContents(content::WebContents* web_contents);
+  static const TabAndroid* FromWebContents(
+      const content::WebContents* web_contents);
 
   // Returns the native TabAndroid associated with the given `handle`.
   // Returns nullptr if the `handle` is not associated with a TabAndroid.
@@ -81,7 +83,7 @@ class TabAndroid : public tabs::TabInterface,
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobjectArray>& obj_array);
 
-  // Function to attach helpers to the contentView.
+  // Function to attach helpers to the `web_contents`.
   static void AttachTabHelpers(content::WebContents* web_contents);
 
   TabAndroid(JNIEnv* env,

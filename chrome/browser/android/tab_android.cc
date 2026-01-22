@@ -99,6 +99,8 @@ BrowserWindowInterface* FindBrowserWindowInterface(SessionID window_id) {
 
 class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
  public:
+  ~TabAndroidHelper() override = default;
+
   static void SetTabForWebContents(WebContents* contents,
                                    TabAndroid* tab_android) {
     content::WebContentsUserData<TabAndroidHelper>::CreateForWebContents(
@@ -107,16 +109,26 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
         ->tab_android_ = tab_android;
   }
 
-  static TabAndroid* FromWebContents(const WebContents* contents) {
+  static TabAndroid* FromWebContents(WebContents* contents) {
     TabAndroidHelper* helper =
-        static_cast<TabAndroidHelper*>(contents->GetUserData(UserDataKey()));
-    return helper ? helper->tab_android_.get() : nullptr;
+        content::WebContentsUserData<TabAndroidHelper>::FromWebContents(
+            contents);
+    return helper ? helper->tab_android() : nullptr;
   }
 
-  explicit TabAndroidHelper(content::WebContents* web_contents)
-      : content::WebContentsUserData<TabAndroidHelper>(*web_contents) {}
+  static const TabAndroid* FromWebContents(const WebContents* contents) {
+    const TabAndroidHelper* helper =
+        content::WebContentsUserData<TabAndroidHelper>::FromWebContents(
+            contents);
+    return helper ? helper->tab_android() : nullptr;
+  }
+
+  TabAndroid* tab_android() { return tab_android_; }
+  const TabAndroid* tab_android() const { return tab_android_; }
 
  private:
+  explicit TabAndroidHelper(content::WebContents* web_contents)
+      : content::WebContentsUserData<TabAndroidHelper>(*web_contents) {}
   friend class content::WebContentsUserData<TabAndroidHelper>;
 
   raw_ptr<TabAndroid> tab_android_;
@@ -154,8 +166,13 @@ TabInterface* TabInterface::MaybeGetFromContents(
 }  // namespace tabs
 
 // static
-TabAndroid* TabAndroid::FromWebContents(
+const TabAndroid* TabAndroid::FromWebContents(
     const content::WebContents* web_contents) {
+  return TabAndroidHelper::FromWebContents(web_contents);
+}
+
+// static
+TabAndroid* TabAndroid::FromWebContents(content::WebContents* web_contents) {
   return TabAndroidHelper::FromWebContents(web_contents);
 }
 

@@ -272,9 +272,10 @@ void OfflinePageBridge::AddOfflinePageItemsToJavaList(
 // static
 std::string OfflinePageBridge::GetEncodedOriginApp(
     const content::WebContents* web_contents) {
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  if (!tab)
+  const TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+  if (!tab) {
     return "";
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_OfflinePageBridge_getEncodedOriginApp(env, tab->GetJavaObject());
 }

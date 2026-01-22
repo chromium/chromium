@@ -212,7 +212,7 @@ void AndroidLiveTabContext::CloseTab() {
 // static.
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
     const content::WebContents* contents) {
-  TabAndroid* tab_android = TabAndroid::FromWebContents(contents);
+  const TabAndroid* tab_android = TabAndroid::FromWebContents(contents);
   if (!tab_android) {
     return nullptr;
   }
