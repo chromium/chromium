@@ -373,6 +373,11 @@ const base::FeatureParam<int> kNumberPendingFramesUntilThrottle{
     &kNoCompositorFrameAcks, "pending_frames", 1};
 BASE_FEATURE(kDisplaySchedulerAsClient, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables prioritization of the BeginFrame InputClient (like
+// FlingSchedulerAndroid) so it can dispatch events before the renderer
+// receives its BeginFrame.
+BASE_FEATURE(kFlingSchedulingImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
+
 int DrawQuadSplitLimit() {
   constexpr int kDefaultDrawQuadSplitLimit = 5;
   constexpr int kMinDrawQuadSplitLimit = 1;

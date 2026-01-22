@@ -155,6 +155,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoCompositorFrameAcks);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kNumberPendingFramesUntilThrottle;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplaySchedulerAsClient);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kFlingSchedulingImprovements);
 
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 VIZ_COMMON_EXPORT bool IsRenderPassDrawQuadCullingOptimizationEnabled();

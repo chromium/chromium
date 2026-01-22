@@ -1010,7 +1010,37 @@ TEST_F(ExternalBeginFrameSourceTest, GetMissedBeginFrameArgs) {
   source_->RemoveObserver(obs_.get());
 }
 
+// Tests that an InputClient is notified before observers.
+TEST_F(ExternalBeginFrameSourceTest, InputClientNotifiedFirst) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFlingSchedulingImprovements);
 
+  using ::testing::InSequence;
+  using ::testing::SaveArg;
+
+  NiceMock<MockBeginFrameObserver> obs;
+  MockInputClient input_client;
+
+  EXPECT_CALL(*client_, OnNeedsBeginFrames(true)).Times(testing::AnyNumber());
+  EXPECT_CALL(*client_, OnNeedsBeginFrames(false)).Times(testing::AnyNumber());
+
+  source_->AddObserver(&obs);
+  source_->SetInputClient(&input_client);
+
+  {
+    BeginFrameArgs args = CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, 0, 1, 10000, 10100, 100);
+    InSequence s;
+    EXPECT_CALL(input_client, OnBeginFrameForInput(args));
+    EXPECT_CALL(obs, OnBeginFrame(args))
+        .WillOnce(SaveArg<0>(&(obs.last_begin_frame_args)));
+    source_->OnBeginFrame(args);
+  }
+
+  source_->RemoveObserver(&obs);
+  source_->SetInputClient(nullptr);
+}
 
 }  // namespace
 }  // namespace viz

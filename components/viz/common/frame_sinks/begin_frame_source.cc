@@ -175,6 +175,10 @@ void BeginFrameSource::SetSchedulerClient(SchedulerClient* scheduler_client) {
   scheduler_client_ = scheduler_client;
 }
 
+void BeginFrameSource::SetInputClient(InputClient* input_client) {
+  input_client_ = input_client;
+}
+
 bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
   if (!is_gpu_busy_) {
     DCHECK_EQ(gpu_busy_response_state_, GpuBusyThrottlingState::kIdle);
@@ -228,6 +232,13 @@ void BeginFrameSource::IssueBeginFrameToSchedulerClient(
     const BeginFrameArgs& args) {
   if (scheduler_client_) {
     scheduler_client_->OnBeginFrameForScheduling(args);
+  }
+}
+
+void BeginFrameSource::IssueBeginFrameToInputClient(
+    const BeginFrameArgs& args) {
+  if (input_client_) {
+    input_client_->OnBeginFrameForInput(args);
   }
 }
 
@@ -320,6 +331,8 @@ void BackToBackBeginFrameSource::OnTimerTick() {
       pending_observers;
   pending_observers.swap(pending_begin_frame_observers_);
   DCHECK(!pending_observers.empty());
+
+  IssueBeginFrameToInputClient(args);
   for (BeginFrameObserver* obs : pending_observers)
     FilterAndIssueBeginFrame(obs, args);
   IssueBeginFrameToSchedulerClient(args);
@@ -442,6 +455,8 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
   if (max_vrr_interval_.has_value()) {
     vrr_tick_count_++;
   }
+
+  IssueBeginFrameToInputClient(last_begin_frame_args_);
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
       observers_);
   for (BeginFrameObserver* obs : observers) {
@@ -585,6 +600,8 @@ void ExternalBeginFrameSource::OnBeginFrame(const BeginFrameArgs& args) {
   }
 
   last_begin_frame_args_ = args;
+
+  IssueBeginFrameToInputClient(args);
   base::flat_set<raw_ptr<BeginFrameObserver, CtnExperimental>> observers(
       observers_);
 

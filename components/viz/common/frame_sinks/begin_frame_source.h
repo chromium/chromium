@@ -146,6 +146,16 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     virtual void OnBeginFrameForScheduling(const BeginFrameArgs& args) = 0;
   };
 
+  // The `InputClient` will be notified of the `BeginFrame` before any
+  // `BeginFrameObservers` have been notified. This is used for prioritizing
+  // input handling (e.g. flings) to minimize latency. Only one `InputClient`
+  // can be registered at a time.
+  class VIZ_COMMON_EXPORT InputClient {
+   public:
+    virtual ~InputClient() = default;
+    virtual void OnBeginFrameForInput(const BeginFrameArgs& args) = 0;
+  };
+
   BeginFrameSource();
 
   class VIZ_COMMON_EXPORT BeginFrameArgsGenerator {
@@ -205,6 +215,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   void SetIsGpuBusy(bool busy);
 
   void SetSchedulerClient(SchedulerClient* scheduler_client);
+  void SetInputClient(InputClient* input_client);
 
   // BeginFrameObservers use DidFinishFrame to provide back pressure to a frame
   // source about frame processing (rather than toggling SetNeedsBeginFrames
@@ -249,6 +260,10 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // subclasses only after having first called all observers.
   void IssueBeginFrameToSchedulerClient(const BeginFrameArgs& args);
 
+  // Notify the `InputClient` of the `BeginFrame`. This is to be called by
+  // subclasses before notifying any observers.
+  void IssueBeginFrameToInputClient(const BeginFrameArgs& args);
+
  private:
   // The higher 32 bits are used for a process restart id that changes if a
   // process allocating BeginFrameSources has been restarted. The lower 32 bits
@@ -282,6 +297,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   int frames_since_last_recording_ = 0;
 #endif
   raw_ptr<SchedulerClient> scheduler_client_ = nullptr;
+  raw_ptr<InputClient> input_client_ = nullptr;
 };
 
 // A BeginFrameSource that does nothing.
