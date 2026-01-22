@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/ntp/ui_bundled",
   "+third_party/material_color_utilities/src/cpp",
-  "+ios/chrome/browser/content_suggestions",
+  # keep-sorted end
 ]

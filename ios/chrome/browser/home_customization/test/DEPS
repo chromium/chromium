@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/themes",
+  # keep-sorted end
 ]

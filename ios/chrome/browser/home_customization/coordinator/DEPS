@@ -1,13 +1,15 @@
 include_rules = [
+  # keep-sorted start
   "+components/themes",
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/content_suggestions/set_up_list",
   "+ios/chrome/browser/discover_feed/model",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/image_fetcher",
+  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/shared/metrics",
   "+ios/chrome/browser/ntp/ui_bundled",
-  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/url_loading/model",
   "+third_party/material_color_utilities/src/cpp",
+  # keep-sorted end
 ]

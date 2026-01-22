@@ -1,4 +1,6 @@
 include_rules = [
-  "+components/themes",
+  # keep-sorted start
   "+components/application_locale_storage",
+  "+components/themes",
+  # keep-sorted end
 ]
