@@ -21,6 +21,7 @@ static_library("video_conference") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    "//ash",
     "//base",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/media/webrtc",

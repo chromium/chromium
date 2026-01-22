@@ -5,6 +5,7 @@
 #include "ash/system/privacy/privacy_indicators_controller.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
@@ -30,6 +31,15 @@ namespace ash {
 namespace {
 
 PrivacyIndicatorsController* g_controller_instance = nullptr;
+
+// This is a stop gap solution. Fix the Video Control panel to show microphone
+// only, and remove this.
+inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
+
+bool ShouldUsePrivacyIndicators(std::string_view app_id) {
+  // TODO: Check URL instead.
+  return !features::IsVideoConferenceEnabled() || app_id == kChromeUIGlicURL;
+}
 
 // Create a notification with the customized metadata for privacy indicators.
 std::unique_ptr<message_center::Notification>
@@ -102,7 +112,7 @@ void ModifyPrivacyIndicatorsNotification(
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
-  if (features::IsVideoConferenceEnabled()) {
+  if (!ShouldUsePrivacyIndicators(app_id)) {
     return;
   }
 
@@ -126,12 +136,14 @@ void ModifyPrivacyIndicatorsNotification(
 }
 
 // Updates the `PrivacyIndicatorsTrayItemView` across all status area widgets.
-void UpdatePrivacyIndicatorsView(bool is_camera_used,
+void UpdatePrivacyIndicatorsView(std::string_view app_id,
+                                 std::optional<std::u16string> app_name,
+                                 bool is_camera_used,
                                  bool is_microphone_used,
                                  bool is_new_app,
                                  bool was_camera_in_use,
                                  bool was_microphone_in_use) {
-  if (features::IsVideoConferenceEnabled()) {
+  if (!ShouldUsePrivacyIndicators(app_id)) {
     return;
   }
 
@@ -347,8 +359,9 @@ void PrivacyIndicatorsController::TriggerPrivacyIndicators(
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
-  UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used, is_new_app,
-                              was_camera_in_use, was_microphone_in_use);
+  UpdatePrivacyIndicatorsView(app_id, app_name, is_camera_used,
+                              is_microphone_used, is_new_app, was_camera_in_use,
+                              was_microphone_in_use);
 }
 
 void PrivacyIndicatorsController::OnCameraHWPrivacySwitchStateChanged(
