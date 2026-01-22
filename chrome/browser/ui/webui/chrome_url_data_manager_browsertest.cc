@@ -454,9 +454,6 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40250441): Add CrOS-only WebUI URLs here as TrustedTypes
-    // are deployed to more WebUIs.
-
     "chrome://accessory-update",
     "chrome://account-manager-error",
     "chrome://account-migration-welcome",
