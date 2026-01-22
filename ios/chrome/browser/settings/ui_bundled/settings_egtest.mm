@@ -116,19 +116,6 @@ id<GREYMatcher> SafariImportButton() {
   [super tearDownHelper];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  if ([self isRunningTest:@selector
-            (testSafariImportButtonHiddenWhenAllBlocked)] ||
-      [self isRunningTest:@selector
-            (testSafariImportButtonVisibleWhenSomeBlocked)]) {
-    config.features_enabled.push_back(kImportPasswordsFromSafari);
-  }
-
-  return config;
-}
-
 // Performs the steps to clear browsing data. Must be called on the
 // Clear Browsing Data settings screen, after having selected the data types
 // scheduled for removal.

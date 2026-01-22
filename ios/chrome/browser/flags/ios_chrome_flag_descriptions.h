@@ -519,9 +519,6 @@ extern const char kIOSWebContextMenuNewTitleDescription[];
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
-extern const char kImportPasswordsFromSafariName[];
-extern const char kImportPasswordsFromSafariDescription[];
-
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 

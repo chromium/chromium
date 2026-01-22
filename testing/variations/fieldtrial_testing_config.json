@@ -14360,21 +14360,6 @@
             ]
         }
     ],
-    "IOSSafariImportWorkflow": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "ImportPasswordsFromSafari"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSaveToPhotosImprovements": [
         {
             "platforms": [

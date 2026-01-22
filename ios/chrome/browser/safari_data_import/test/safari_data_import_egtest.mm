@@ -55,7 +55,6 @@ NSString* const kInvalidPasswordUsername = @"Superman";
 /// the Safari import feature by default. No other behavior is overridden.
 - (AppLaunchConfiguration)appConfigurationNoOverrideBehavior {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kImportPasswordsFromSafari);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
