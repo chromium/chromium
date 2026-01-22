@@ -159,7 +159,7 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentStartGeminiFlow) {
   base::Value::Dict result;
   result.Set("currentNodeInnerText", "Example Text");
   fake_main_frame_->AddJsResultForFunctionCall(
-      new base::Value(std::move(result)),
+      std::make_unique<base::Value>(std::move(result)).release(),
       "pageContextExtractor.extractPageContext");
 
   // Set the BWG tab helper as backgrounded and assert.
@@ -283,4 +283,44 @@ TEST_F(BwgBrowserAgentTest, TestActiveWebStateChanged) {
   // observing the second one.
   EXPECT_FALSE(helper1->HasObserver(agent));
   EXPECT_TRUE(helper2->HasObserver(agent));
+}
+
+// Tests that OnGeminiViewStateExpanded triggers page context generation.
+TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
+  // Set a valid URL.
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+
+  // Add a fake JS result for page context extraction.
+  base::Value::Dict result;
+  result.Set("currentNodeInnerText", "Example Text");
+  fake_main_frame_->AddJsResultForFunctionCall(
+      std::make_unique<base::Value>(std::move(result)).release(),
+      "pageContextExtractor.extractPageContext");
+
+  // Create a protocol mock to intercept the delegate call.
+  id mock_delegate = OCMProtocolMock(@protocol(SnapshotGeneratorDelegate));
+
+  // Set the mock as the delegate.
+  SnapshotTabHelper::FromWebState(web_state_)->SetDelegate(mock_delegate);
+
+  // Expect the snapshot delegate to be notified.
+  auto delegate_called = std::make_shared<bool>(false);
+  [[[mock_delegate expect] andDo:^(NSInvocation*) {
+    *delegate_called = true;
+  }] willUpdateSnapshotWithWebStateInfo:[OCMArg any]];
+
+  // Stub the canTakeSnapshot method to return YES.
+  OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
+      .andReturn(YES);
+
+  // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
+  web_state_->WasShown();
+
+  bwg_browser_agent_->OnGeminiViewStateExpanded();
+
+  // Wait for the delegate method to be called.
+  ASSERT_TRUE(
+      base::test::RunUntil([delegate_called]() { return *delegate_called; }));
+
+  [mock_delegate verify];
 }
