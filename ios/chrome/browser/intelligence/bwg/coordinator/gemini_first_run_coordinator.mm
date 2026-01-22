@@ -177,14 +177,9 @@
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 
-  // TODO(crbug.com/468386318): Remove animation background logic since it won't
-  // be needed for the FRE.
   BwgTabHelper* BWGTabHelper = [self activeWebStateGeminiTabHelper];
-  BOOL shouldAnimatePresentation =
-      BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : YES;
-
   [self.baseViewController presentViewController:_viewController
-                                        animated:shouldAnimatePresentation
+                                        animated:YES
                                       completion:^{
                                         // Record FRE was shown.
                                         RecordFREShown();
