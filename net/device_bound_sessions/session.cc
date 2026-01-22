@@ -277,10 +277,11 @@ SessionDisplay Session::ToDisplay() const {
 }
 
 bool Session::IsInScope(DbscRequest& request) {
-  if (SchemefulSite(request.url()) == SchemefulSite(this->origin()) &&
-      request.device_bound_session_usage() <
-          SessionUsage::kSiteMatchNotInScope) {
-    request.set_device_bound_session_usage(SessionUsage::kSiteMatchNotInScope);
+  SchemefulSite session_site = SchemefulSite(this->origin());
+  SessionKey session_key{session_site, id()};
+  if (SchemefulSite(request.url()) == session_site) {
+    MaybeIncreaseSessionUsage(session_key, request,
+                              SessionUsage::kSiteMatchNotInScope);
   }
 
   if (!IncludesUrl(request.url())) {
@@ -288,11 +289,8 @@ bool Session::IsInScope(DbscRequest& request) {
     return false;
   }
 
-  if (request.device_bound_session_usage() <
-      SessionUsage::kInScopeRefreshNotYetNeeded) {
-    request.set_device_bound_session_usage(
-        SessionUsage::kInScopeRefreshNotYetNeeded);
-  }
+  MaybeIncreaseSessionUsage(session_key, request,
+                            SessionUsage::kInScopeRefreshNotYetNeeded);
 
   request.net_log().AddEvent(
       net::NetLogEventType::DBSC_REQUEST, [&](NetLogCaptureMode capture_mode) {
@@ -315,11 +313,8 @@ bool Session::IsInScope(DbscRequest& request) {
       });
 
   if (!AllowedToInitiateRefresh(request.initiator())) {
-    if (request.device_bound_session_usage() <
-        SessionUsage::kInScopeRefreshNotAllowed) {
-      request.set_device_bound_session_usage(
-          SessionUsage::kInScopeRefreshNotAllowed);
-    }
+    MaybeIncreaseSessionUsage(session_key, request,
+                              SessionUsage::kInScopeRefreshNotAllowed);
     request.net_log().AddEvent(
         net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
         [&](NetLogCaptureMode capture_mode) {
@@ -336,7 +331,8 @@ bool Session::IsInScope(DbscRequest& request) {
 
 base::TimeDelta Session::MinimumBoundCookieLifetime(
     DbscRequest& request,
-    const FirstPartySetMetadata& first_party_set_metadata) {
+    const FirstPartySetMetadata& first_party_set_metadata,
+    const SessionKey& session_key) {
   // TODO(crbug.com/438783631): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
@@ -421,7 +417,7 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
           });
 
       // There's an unsatisfied craving. Defer the request.
-      request.set_device_bound_session_usage(SessionUsage::kDeferred);
+      MaybeIncreaseSessionUsage(session_key, request, SessionUsage::kDeferred);
       return base::TimeDelta();
     }
   }

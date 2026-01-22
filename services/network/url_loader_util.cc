@@ -764,9 +764,15 @@ mojom::URLResponseHeadPtr BuildResponseHead(
       response_info.unused_since_prefetch;
   response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
   response->did_use_server_http_auth = response_info.did_use_server_http_auth;
+  auto max_usage =
+      net::device_bound_sessions::SessionUsage::kNoSiteMatchNotInScope;
+  for (const auto& [key, usage] : url_request.device_bound_session_usage()) {
+    if (usage > max_usage) {
+      max_usage = usage;
+    }
+  }
   response->device_bound_session_usage =
-      static_cast<network::mojom::DeviceBoundSessionUsage>(
-          url_request.device_bound_session_usage());
+      static_cast<network::mojom::DeviceBoundSessionUsage>(max_usage);
 
   // IsInclude() true means the cookie was sent.
   response->was_cookie_in_request = std::ranges::any_of(

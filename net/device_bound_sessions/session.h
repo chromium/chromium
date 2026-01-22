@@ -74,7 +74,8 @@ class NET_EXPORT Session {
   // will be `base::TimeDelta::Max()`
   base::TimeDelta MinimumBoundCookieLifetime(
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata);
+      const FirstPartySetMetadata& first_party_set_metadata,
+      const SessionKey& session_key);
 
   const Id& id() const { return id_; }
 

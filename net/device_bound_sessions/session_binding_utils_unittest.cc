@@ -225,4 +225,46 @@ TEST(SessionBindingUtilsTest, TestIsSecureUrl) {
   }
 }
 
+TEST(SessionBindingUtilsTest, TestMaybeIncreaseSessionUsage) {
+  struct Request {
+    const base::flat_map<SessionKey, SessionUsage>& device_bound_session_usage()
+        const {
+      return usage_map;
+    }
+    void set_device_bound_session_usage(const SessionKey& key,
+                                        SessionUsage usage) {
+      usage_map[key] = usage;
+    }
+    base::flat_map<SessionKey, SessionUsage> usage_map;
+  };
+
+  Request request;
+  auto key1 = SessionKey{SchemefulSite(GURL("https://example.com")),
+                         Session::Id("session1")};
+  auto key2 = SessionKey{SchemefulSite(GURL("https://example.com")),
+                         Session::Id("session2")};
+
+  // Initialize map entry for key1.
+  MaybeIncreaseSessionUsage(key1, request, SessionUsage::kSiteMatchNotInScope);
+  EXPECT_EQ(request.usage_map[key1], SessionUsage::kSiteMatchNotInScope);
+  // Increase to kDeferred.
+  MaybeIncreaseSessionUsage(key1, request, SessionUsage::kDeferred);
+  EXPECT_EQ(request.usage_map[key1], SessionUsage::kDeferred);
+  // Fail to increase to kInScopeRefreshNotAllowed.
+  MaybeIncreaseSessionUsage(key1, request,
+                            SessionUsage::kInScopeRefreshNotAllowed);
+  EXPECT_EQ(request.usage_map[key1], SessionUsage::kDeferred);
+
+  // Initialize map entry for key2.
+  MaybeIncreaseSessionUsage(key2, request,
+                            SessionUsage::kInScopeRefreshNotYetNeeded);
+  EXPECT_EQ(request.usage_map[key1], SessionUsage::kDeferred);
+  EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotYetNeeded);
+  // Increase to kInScopeRefreshNotAllowed for key2.
+  MaybeIncreaseSessionUsage(key2, request,
+                            SessionUsage::kInScopeRefreshNotAllowed);
+  EXPECT_EQ(request.usage_map[key1], SessionUsage::kDeferred);
+  EXPECT_EQ(request.usage_map[key2], SessionUsage::kInScopeRefreshNotAllowed);
+}
+
 }  // namespace net::device_bound_sessions

@@ -9,9 +9,12 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/net_export.h"
+#include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_usage.h"
 
 class GURL;
 
@@ -44,6 +47,24 @@ std::optional<std::string> NET_EXPORT AppendSignatureToHeaderAndPayload(
 // Returns true if `url`'s scheme is cryptographic or if it's localhost. This
 // uses the same definition of secure connections that cookies use.
 bool NET_EXPORT IsSecure(const GURL& url);
+
+// If `request` does not have a session usage listed for `session_key`, or if
+// that session usage is smaller than `new_usage`, then `new_usage` will be set
+// as the new session usage for `session_key`.
+template <typename DbscRequestType>
+void MaybeIncreaseSessionUsage(const SessionKey& session_key,
+                               DbscRequestType& request,
+                               SessionUsage new_usage) {
+  const base::flat_map<device_bound_sessions::SessionKey,
+                       device_bound_sessions::SessionUsage>& usage_map =
+      request.device_bound_session_usage();
+  auto it = usage_map.find(session_key);
+  SessionUsage current_usage =
+      (it == usage_map.end()) ? SessionUsage::kUnknown : it->second;
+  if (current_usage < new_usage) {
+    request.set_device_bound_session_usage(session_key, new_usage);
+  }
+}
 
 }  // namespace net::device_bound_sessions
 

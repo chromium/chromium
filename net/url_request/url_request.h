@@ -958,14 +958,17 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
         allows_device_bound_session_registration;
   }
 
-  // Whether this request was in the scope of any device-bound session,
-  // even if it did not need to be deferred.
-  device_bound_sessions::SessionUsage device_bound_session_usage() const {
+  // Whether this request was in the scope of any device-bound session for this
+  // request's site, even if it did not need to be deferred.
+  const base::flat_map<device_bound_sessions::SessionKey,
+                       device_bound_sessions::SessionUsage>&
+  device_bound_session_usage() const {
     return device_bound_session_usage_;
   }
   void set_device_bound_session_usage(
+      const device_bound_sessions::SessionKey& key,
       device_bound_sessions::SessionUsage usage) {
-    device_bound_session_usage_ = usage;
+    device_bound_session_usage_[key] = usage;
   }
 
   // Returns all the device-bound sessions that have deferred this
@@ -1273,9 +1276,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Whether the request is allowed to register new device-bound sessions
   bool allows_device_bound_session_registration_ = false;
-  // How existing device-bound sessions interacted with this request
-  device_bound_sessions::SessionUsage device_bound_session_usage_ =
-      device_bound_sessions::SessionUsage::kUnknown;
+  // How existing device-bound sessions for the request's site interacted with
+  // this request.
+  base::flat_map<device_bound_sessions::SessionKey,
+                 device_bound_sessions::SessionUsage>
+      device_bound_session_usage_;
   // Which device-bound sessions have deferred this request, and the
   // result of that refresh.
   base::flat_map<device_bound_sessions::SessionKey,

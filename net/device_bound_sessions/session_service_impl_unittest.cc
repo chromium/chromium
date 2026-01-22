@@ -2241,19 +2241,22 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
       context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
+  EXPECT_EQ(request->device_bound_session_usage().size(), 0);
 
   HttpRequestHeaders extra_headers;
   DbscRequest dbsc_request(request.get());
   service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
 
-  EXPECT_EQ(request->device_bound_session_usage(),
-            SessionUsage::kNoSiteMatchNotInScope);
+  EXPECT_EQ(request->device_bound_session_usage().size(), 0);
 
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   service().ShouldDefer(dbsc_request, &extra_headers, FirstPartySetMetadata());
 
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
+  SessionKey session_key{SchemefulSite(kTestRefreshUrl),
+                         Session::Id(kSessionId)};
+  EXPECT_EQ(request->device_bound_session_usage().size(), 1);
+  EXPECT_EQ(request->device_bound_session_usage().at(session_key),
+            SessionUsage::kDeferred);
 }
 
 }  // namespace
@@ -2519,7 +2522,7 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
       service().ShouldDefer(dbsc_request, &extra_headers,
                             FirstPartySetMetadata());
 
-  EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
+  EXPECT_EQ(request->device_bound_session_usage().size(), 0);
 }
 
 TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
@@ -2779,7 +2782,9 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
       service().ShouldDefer(*dbsc_request, &extra_headers,
                             FirstPartySetMetadata());
   ASSERT_FALSE(maybe_deferral);
-  EXPECT_EQ(request->device_bound_session_usage(),
+  SessionKey session_key{site, Session::Id(kSessionId)};
+  EXPECT_EQ(request->device_bound_session_usage().size(), 1);
+  EXPECT_EQ(request->device_bound_session_usage().at(session_key),
             SessionUsage::kInScopeProactiveRefreshAttempted);
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
@@ -2928,7 +2933,9 @@ TEST_F(SessionServiceImplTest, DeferringRefreshBlocksProactive) {
 
   EXPECT_EQ(tracker.num_pending_refreshes(), 1);
 
-  EXPECT_EQ(request->device_bound_session_usage(),
+  SessionKey session_key{site, Session::Id(kSessionId)};
+  EXPECT_EQ(request->device_bound_session_usage().size(), 1);
+  EXPECT_EQ(request->device_bound_session_usage().at(session_key),
             SessionUsage::kInScopeProactiveRefreshNotPossible);
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt",
@@ -3039,7 +3046,9 @@ TEST_F(SessionServiceImplTest, NoProactiveRefreshNeededYet) {
       service().ShouldDefer(*dbsc_request, &extra_headers,
                             FirstPartySetMetadata());
   ASSERT_FALSE(maybe_deferral);
-  EXPECT_EQ(request->device_bound_session_usage(),
+  SessionKey session_key{site, Session::Id(kSessionId)};
+  EXPECT_EQ(request->device_bound_session_usage().size(), 1);
+  EXPECT_EQ(request->device_bound_session_usage().at(session_key),
             SessionUsage::kInScopeRefreshNotYetNeeded);
 }
 

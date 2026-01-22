@@ -981,9 +981,15 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
+    auto max_usage =
+        device_bound_sessions::SessionUsage::kNoSiteMatchNotInScope;
+    for (const auto& [key, usage] : request_->device_bound_session_usage()) {
+      if (usage > max_usage) {
+        max_usage = usage;
+      }
+    }
     base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RequestDeferralDecision3",
-        request_->device_bound_session_usage());
+        "Net.DeviceBoundSessions.RequestDeferralDecision3", max_usage);
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(
           "Net.DeviceBoundSessions.TotalRequestDeferredDuration",

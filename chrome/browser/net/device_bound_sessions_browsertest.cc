@@ -342,6 +342,74 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest, DeferredLogs) {
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
+                       OneSessionDeferredOneNot) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  // Create session 1.
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(NavigateToUrl(GetURL("/resource_triggered_dbsc_registration")));
+    ASSERT_TRUE(future.Wait());
+  }
+  // Create session 2.
+  {
+    base::test::TestFuture<SessionAccess> future;
+    DeviceBoundSessionAccessObserver observer(
+        web_contents, future.GetRepeatingCallback<const SessionAccess&>());
+    ASSERT_TRUE(
+        NavigateToUrl(GetURL("/resource_triggered_dbsc_registration?session_id="
+                             "session2&cookie_name=cookie2")));
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Set up proactive refresh for session 2.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "cookieStore.set({name: 'cookie2', value: 'abcdef0123', expires: "
+      "Date.now() + 60000, sameSite: 'none', secure: true})"));
+  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+  // We get a proactive refresh attempted log.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      /*sample=*/net::device_bound_sessions::SessionUsage::kDeferred,
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      /*sample=*/
+      net::device_bound_sessions::SessionUsage::
+          kInScopeProactiveRefreshAttempted,
+      /*expected_count=*/1);
+
+  // Set up proactive refresh for session 2 and force a deferred refresh for
+  // session 1.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "cookieStore.set({name: 'cookie2', value: 'abcdef0123', expires: "
+      "Date.now() + 60000, sameSite: 'none', secure: true})"));
+  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+  // We get a deferred log but no additional proactive refresh log because the
+  // deferred log takes precedence.
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      /*sample=*/net::device_bound_sessions::SessionUsage::kDeferred,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Net.DeviceBoundSessions.RequestDeferralDecision3",
+      /*sample=*/
+      net::device_bound_sessions::SessionUsage::
+          kInScopeProactiveRefreshAttempted,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
                        RefreshWithoutResigningMultipleTimes) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
