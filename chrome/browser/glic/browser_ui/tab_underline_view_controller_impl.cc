@@ -354,16 +354,9 @@ void TabUnderlineViewControllerImpl::UpdateUnderlineView(
       }
       break;
     case UpdateUnderlineReason::kContextualTask_TabInContext:
-      if (!underline_view_->IsShowing()) {
-        ShowAndAnimateUnderline(/*triggered_by_glic=*/false);
-      }
+      ShowAndAnimateUnderline(/*triggered_by_glic=*/false);
       break;
     case UpdateUnderlineReason::kContextualTask_TabNotInContext:
-      // TODO(crbug.com/467739947): Consider reenabling hide animation.
-      // If the underline is currently being shown due to a Glic side panel,
-      // ignore reset signals from contextual tasks as the backend sends reset
-      // signals much more frequently (e.g. for every tab switch event) even
-      // though contextual tasks side panel isn't open.
       HideUnderline(/*triggered_by_glic=*/false);
       break;
   }
@@ -384,6 +377,8 @@ void TabUnderlineViewControllerImpl::HideUnderline(bool triggered_by_glic) {
     return;
   }
 
+  // TODO(crbug.com/467739947): Consider reenabling hide animation for
+  // contextual tasks.
   if (!triggered_by_glic ||
       base::FeatureList::IsEnabled(features::kGlicDisableUnderlineAnimations)) {
     underline_view_->StopShowing();
