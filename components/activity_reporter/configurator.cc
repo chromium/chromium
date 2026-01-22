@@ -19,6 +19,7 @@
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
 #include "components/activity_reporter/constants.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/network.h"
@@ -219,12 +220,9 @@ ActivityReporterConfigurator::GetProtocolHandlerFactory() const {
 std::optional<bool> ActivityReporterConfigurator::IsMachineExternallyManaged()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsManagedOrEnterpriseDevice();
-#else
-  // TODO(crbug.com/454662418): Return a real value.
-  return std::nullopt;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  policy::PlatformManagementService* service =
+      policy::PlatformManagementService::GetInstance();
+  return service && service->IsManaged();
 }
 
 update_client::UpdaterStateProvider
