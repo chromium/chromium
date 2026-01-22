@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
@@ -106,8 +107,10 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
         // bytecode, both from WebUI and from open web sites, to max_bytes. The
         // larger portion by far should be reserved for open web sites.
         const int kMaxWebUIPercent = 2;
-        max_bytes_webui_js = std::min(max_bytes * kMaxWebUIPercent / 100,
-                                      disk_cache::kMaxWebUICodeCacheSize);
+        max_bytes_webui_js =
+            std::min(base::saturated_cast<int>(static_cast<int64_t>(max_bytes) *
+                                               kMaxWebUIPercent / 100),
+                     disk_cache::kMaxWebUICodeCacheSize);
 
         // The rest is left over for open web JS.
         max_bytes_js = max_bytes - max_bytes_webui_js;
