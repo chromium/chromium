@@ -38,23 +38,22 @@ class GroupedNotificationList {
 
   void AddGroupedNotification(const std::string& notification_id,
                               const std::string& parent_id) {
-    if (!notifications_in_parent_map_.contains(parent_id)) {
-      notifications_in_parent_map_[parent_id] = {};
-    }
+    auto it = notifications_in_parent_map_.try_emplace(parent_id).first;
 
     child_parent_map_[notification_id] = parent_id;
 
     if (notification_id != parent_id) {
-      notifications_in_parent_map_[parent_id].insert(notification_id);
+      it->second.insert(notification_id);
     }
   }
 
   // Remove a single child notification from a grouped notification.
   void RemoveGroupedChildNotification(const std::string& notification_id) {
-    DCHECK(child_parent_map_.contains(notification_id));
-    const std::string& parent_id = child_parent_map_[notification_id];
+    auto it = child_parent_map_.find(notification_id);
+    DCHECK(it != child_parent_map_.end());
+    const std::string& parent_id = it->second;
     notifications_in_parent_map_[parent_id].erase(notification_id);
-    child_parent_map_.erase(notification_id);
+    child_parent_map_.erase(it);
   }
 
   // Clear the entire grouped notification with `parent_id`
