@@ -2591,6 +2591,8 @@ export enum InvocationSource {
   SHARED_IMAGE = 13,
   // From the handoff button.
   HANDOFF_BUTTON = 14,
+  // From invoking skills.
+  SKILLS = 15,
 }
 
 ///////////////////////////////////////////////

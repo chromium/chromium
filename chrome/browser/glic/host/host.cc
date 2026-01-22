@@ -212,6 +212,12 @@ void Host::NotifyActorTaskListRowClicked(int32_t task_id) {
   }
 }
 
+void Host::NotifySkillToInvokeChanged(mojom::SkillPtr skill) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->NotifySkillToInvokeChanged(std::move(skill));
+  }
+}
+
 void Host::Close() {
   delegate_->ClosePanel();
 }

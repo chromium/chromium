@@ -1808,6 +1808,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyActorTaskListRowClicked(task_id);
   }
 
+  void NotifySkillToInvokeChanged(mojom::SkillPtr skill) override {
+    web_client_->NotifySkillToInvokeChanged(std::move(skill));
+  }
+
   // BrowserAttachmentObserver implementation.
   void CanAttachToBrowserChanged(bool can_attach) override {
     NotifyCanAttachChanged();

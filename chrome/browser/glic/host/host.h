@@ -396,6 +396,8 @@ class Host : public GlicSharingManagerProvider {
 
   void NotifyActorTaskListRowClicked(int32_t task_id);
 
+  void NotifySkillToInvokeChanged(mojom::SkillPtr skill);
+
  private:
   friend class HostManager;
 

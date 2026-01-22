@@ -488,6 +488,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="From the actor task icon"/>
   <int value="13" label="User shared an image"/>
   <int value="14" label="From the handoff button"/>
+  <int value="15" label="From invoking skills"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -650,6 +651,10 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="Handoff button, attached, audio mode."/>
   <int value="55" label="Handoff button, detached, text mode."/>
   <int value="56" label="Handoff button, detached, audio mode."/>
+  <int value="57" label="skills, attached, text mode."/>
+  <int value="58" label="skills, attached, audio mode."/>
+  <int value="59" label="skills, detached, text mode."/>
+  <int value="60" label="skills, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->
