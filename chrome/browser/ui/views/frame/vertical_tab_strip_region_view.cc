@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
@@ -148,13 +147,6 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
   return top_button_container_;
-}
-
-gfx::Size VerticalTabStripRegionView::GetMinimumSize() const {
-  auto min_size = TabStripRegionView::GetMinimumSize();
-  min_size.set_width(state_controller_->IsCollapsed() ? kCollapsedWidth
-                                                      : kUncollapsedMinWidth);
-  return min_size;
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
