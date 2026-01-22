@@ -28,7 +28,8 @@ class ScopedMockUnexportableKeyProvider {
 
   MockUnexportableKeyProvider& mock() { return mock_provider_; }
 
-  void AddNextGeneratedKey(std::unique_ptr<crypto::UnexportableSigningKey> key);
+  crypto::UnexportableSigningKey* AddNextGeneratedKey(
+      std::unique_ptr<crypto::UnexportableSigningKey> key);
 
  private:
   MockUnexportableKeyProvider mock_provider_;

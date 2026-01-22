@@ -74,14 +74,26 @@ class MockTrackingUnexportableKeyProvider
     });
   }
 
-  std::optional<size_t> DeleteSigningKeysSlowly(
+  std::optional<size_t> DeleteWrappedKeysSlowly(
       base::span<const base::span<const uint8_t>> wrapped_keys) override {
     if (StatefulUnexportableKeyProvider* stateful_key_provider =
             key_provider_->AsStatefulUnexportableKeyProvider()) {
-      stateful_key_provider->DeleteSigningKeysSlowly(wrapped_keys);
+      stateful_key_provider->DeleteWrappedKeysSlowly(wrapped_keys);
     }
     return std::ranges::count_if(wrapped_keys, [&](auto key) {
-      return keys_.erase(ToVector(key)) != 0;
+      return keys_.erase(base::ToVector(key)) != 0;
+    });
+  }
+
+  std::optional<size_t> DeleteSigningKeysSlowly(
+      base::span<const StatefulUnexportableSigningKey* const> signing_keys)
+      override {
+    if (StatefulUnexportableKeyProvider* stateful_key_provider =
+            key_provider_->AsStatefulUnexportableKeyProvider()) {
+      stateful_key_provider->DeleteSigningKeysSlowly(signing_keys);
+    }
+    return std::ranges::count_if(signing_keys, [&](auto* key) {
+      return keys_.erase(key->GetWrappedKey()) != 0;
     });
   }
 

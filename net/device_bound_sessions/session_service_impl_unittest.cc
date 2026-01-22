@@ -2581,9 +2581,13 @@ TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
       std::move(session2);
 
   // Finish loading the sessions, and wait for the stale key to be deleted.
-  EXPECT_CALL(mock_key_provider,
-              DeleteSigningKeysSlowly(ElementsAre(kStaleWrappedKey)))
-      .WillOnce(Return(1));
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly)
+      .WillOnce([&](auto keys) {
+        auto wrapped_keys = base::ToVector(
+            keys, [](auto* key) { return key->GetWrappedKey(); });
+        EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
+        return wrapped_keys.size();
+      });
 
   FinishLoadingSessions(std::move(session_map));
   // Advance time to allow StartGarbageCollection to run.

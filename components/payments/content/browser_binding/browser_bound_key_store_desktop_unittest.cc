@@ -131,7 +131,7 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
 
 TEST_F(BrowserBoundKeyStoreDesktopTest, DeleteBrowserBoundKey) {
   EXPECT_CALL(*key_provider(),
-              DeleteSigningKeysSlowly(ElementsAre(kCredentialId)));
+              DeleteWrappedKeysSlowly(ElementsAre(kCredentialId)));
   key_store()->DeleteBrowserBoundKey(kCredentialId);
 }
 
@@ -139,7 +139,7 @@ TEST_F(BrowserBoundKeyStoreDesktopTest, DeleteBrowserBoundKey_NullKeyProvider) {
   scoped_refptr<BrowserBoundKeyStore> key_store =
       base::MakeRefCounted<BrowserBoundKeyStoreDesktop>(nullptr);
 
-  EXPECT_CALL(*key_provider(), DeleteSigningKeysSlowly).Times(0);
+  EXPECT_CALL(*key_provider(), DeleteWrappedKeysSlowly).Times(0);
   key_store->DeleteBrowserBoundKey(kCredentialId);
 }
 

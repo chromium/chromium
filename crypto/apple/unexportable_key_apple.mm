@@ -17,6 +17,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,9 +25,11 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_policy.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -36,6 +39,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "base/types/cxx26_projected_value_t.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "crypto/apple/keychain_util.h"
@@ -91,13 +95,59 @@ void LogKeychainOperationError(
                                              : errSecCoreFoundationUnknown);
 }
 
+// Helper to extract the application tag from a dictionary of key attributes.
+std::string GetApplicationTag(CFDictionaryRef key_attributes) {
+  // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
+  // CFDataRef for new ones, hence querying both.
+  if (CFStringRef str = base::apple::GetValueFromDictionary<CFStringRef>(
+          key_attributes, kSecAttrApplicationTag)) {
+    return base::SysCFStringRefToUTF8(str);
+  }
+
+  if (CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
+          key_attributes, kSecAttrApplicationTag)) {
+    return std::string(base::as_string_view(base::apple::CFDataToSpan(data)));
+  }
+
+  return "";
+}
+
+// Helper to extract the application label from a dictionary of key attributes.
+base::span<const uint8_t> GetApplicationLabel(
+    CFDictionaryRef key_attributes LIFETIME_BOUND) {
+  return base::apple::CFDataToSpan(
+      base::apple::GetValueFromDictionary<CFDataRef>(key_attributes,
+                                                     kSecAttrApplicationLabel));
+}
+
+// Helper to construct a absl::flat_hash_set from a range and an optional
+// projection. Like `base::ToVector`, but for `absl::flat_hash_set`.
+template <
+    typename R,
+    typename Proj = std::identity,
+    typename T = base::projected_value_t<std::ranges::iterator_t<R>, Proj>>
+absl::flat_hash_set<T> ToFlatHashSet(R&& range, Proj proj = {}) {
+  absl::flat_hash_set<T> set;
+  set.reserve(range.size());
+  std::ranges::transform(std::forward<R>(range), std::inserter(set, set.end()),
+                         std::move(proj));
+  return set;
+}
+
+// Options struct for `FindUnexportableKeys`.
+struct FindUnexportableKeysOptions {
+  NSString* access_group = nullptr;
+  std::string_view application_tag_prefix;
+  base::raw_span<const uint8_t> wrapped_key;
+  LAContext* lacontext = nullptr;
+};
+
 // Returns a vector of keychain items matching the given attributes or an
 // OSStatus error code in case of failure.
 base::expected<std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>,
                OSStatus>
-FindUnexportableKeys(NSString* access_group,
-                     base::span<const uint8_t> wrapped_key = {},
-                     LAContext* lacontext = nullptr) {
+FindUnexportableKeys(FindUnexportableKeysOptions options) {
+  auto [access_group, application_tag_prefix, wrapped_key, lacontext] = options;
   NSMutableDictionary* query = [NSMutableDictionary dictionaryWithDictionary:@{
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
     CFToNSPtrCast(kSecAttrKeyType) :
@@ -147,46 +197,13 @@ FindUnexportableKeys(NSString* access_group,
       items.emplace_back(dict, base::scoped_policy::RETAIN);
     }
   }
+
+  // Perform prefix matching on the application tag.
+  std::erase_if(items, [&](auto& item) {
+    return !GetApplicationTag(item.get()).starts_with(application_tag_prefix);
+  });
+
   return items;
-}
-
-std::string GetApplicationTag(CFDictionaryRef key_attributes) {
-  // kSecAttrApplicationTag can be CFStringRef for legacy credentials and
-  // CFDataRef for new ones, hence querying both.
-  if (CFStringRef str = base::apple::GetValueFromDictionary<CFStringRef>(
-          key_attributes, kSecAttrApplicationTag)) {
-    return base::SysCFStringRefToUTF8(str);
-  }
-
-  if (CFDataRef data = base::apple::GetValueFromDictionary<CFDataRef>(
-          key_attributes, kSecAttrApplicationTag)) {
-    return std::string(base::as_string_view(base::apple::CFDataToSpan(data)));
-  }
-
-  return "";
-}
-
-enum class ApplicationTagMatching {
-  kEquals,
-  kStartsWith,
-};
-
-size_t FilterKeysByApplicationTag(
-    std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>>& keys,
-    std::string_view application_tag,
-    ApplicationTagMatching matching) {
-  auto key_matches = [&](const auto& key) {
-    const std::string key_tag = GetApplicationTag(key.get());
-    switch (matching) {
-      case ApplicationTagMatching::kEquals:
-        return key_tag == application_tag;
-      case ApplicationTagMatching::kStartsWith:
-        return key_tag.starts_with(application_tag);
-    }
-  };
-
-  // Remove keys that don't match `application_tag` according to `matching`.
-  return std::erase_if(keys, std::not_fn(key_matches));
 }
 
 // Deletes a key from the key chain specified by `key_attributes`. Returns
@@ -253,10 +270,7 @@ class UnexportableSigningKeyApple : public StatefulUnexportableSigningKey {
   UnexportableSigningKeyApple(base::apple::ScopedCFTypeRef<SecKeyRef> key,
                               CFDictionaryRef key_attributes)
       : key_(std::move(key)),
-        application_label_(base::ToVector(base::apple::CFDataToSpan(
-            base::apple::GetValueFromDictionary<CFDataRef>(
-                key_attributes,
-                kSecAttrApplicationLabel)))),
+        application_label_(base::ToVector(GetApplicationLabel(key_attributes))),
         application_tag_(GetApplicationTag(key_attributes)),
         creation_time_(GetCreationTimeFromAttributes(key_attributes)) {
     base::apple::ScopedCFTypeRef<SecKeyRef> public_key(
@@ -468,8 +482,11 @@ UnexportableKeyProviderApple::FromWrappedSigningKeySlowly(
 
   ASSIGN_OR_RETURN(
       std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> key_dicts,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_, wrapped_key,
-                           lacontext),
+      FindUnexportableKeys({
+          .access_group = objc_storage_->keychain_access_group_,
+          .wrapped_key = wrapped_key,
+          .lacontext = lacontext,
+      }),
       [](OSStatus status) {
         LogKeychainOperationError(TPMOperation::kWrappedKeyExport, status);
         return nullptr;
@@ -526,12 +543,12 @@ UnexportableKeyProviderApple::GetAllSigningKeysSlowly() {
 
   ASSIGN_OR_RETURN(
       std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_),
+      FindUnexportableKeys({
+          .access_group = objc_storage_->keychain_access_group_,
+          .application_tag_prefix =
+              base::SysNSStringToUTF8(objc_storage_->application_tag_),
+      }),
       [](OSStatus) { return std::nullopt; });
-
-  FilterKeysByApplicationTag(
-      keys, base::SysNSStringToUTF8(objc_storage_->application_tag_),
-      ApplicationTagMatching::kStartsWith);
 
   return base::ToVector(
       keys, [](const auto& key) -> std::unique_ptr<UnexportableSigningKey> {
@@ -539,47 +556,67 @@ UnexportableKeyProviderApple::GetAllSigningKeysSlowly() {
       });
 }
 
-std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
+std::optional<size_t> UnexportableKeyProviderApple::DeleteWrappedKeysSlowly(
     base::span<const base::span<const uint8_t>> wrapped_keys) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  // Short-circuit for empty and single-element spans.
-  //
-  // NOTE: While we could also repeatedly call DeleteSigningKeySlowlyImpl() in
-  // the multi-key case, each of these calls would involve an OS call to the
-  // keychain. This is likely less efficient than a single keychain query and
-  // then processing the results in-memory.
-  switch (wrapped_keys.size()) {
-    case 0:
-      return 0;
-    case 1:
-      return DeleteSigningKeySlowlyImpl(wrapped_keys.front());
+  if (wrapped_keys.empty()) {
+    return 0;
   }
 
   ASSIGN_OR_RETURN(
       std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_),
+      FindUnexportableKeys({
+          .access_group = objc_storage_->keychain_access_group_,
+          .application_tag_prefix =
+              base::SysNSStringToUTF8(objc_storage_->application_tag_),
+      }),
       [](OSStatus status) {
         LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
         return std::nullopt;
       });
 
-  FilterKeysByApplicationTag(
-      keys, base::SysNSStringToUTF8(objc_storage_->application_tag_),
-      ApplicationTagMatching::kStartsWith);
+  const auto keys_to_delete = ToFlatHashSet(wrapped_keys);
+  std::erase_if(keys, [&](const auto& key) {
+    return !keys_to_delete.contains(GetApplicationLabel(key.get()));
+  });
 
-  if (keys.empty()) {
+  return std::ranges::count_if(
+      keys, [&](const auto& key) { return DeleteKey(key.get()); });
+}
+
+std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeysSlowly(
+    base::span<const StatefulUnexportableSigningKey* const> signing_keys) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  if (signing_keys.empty()) {
     return 0;
   }
 
-  // Remove all keys that don't match any of the provided wrapped keys.
-  const absl::flat_hash_set<base::span<const uint8_t>> keys_to_delete(
-      wrapped_keys.begin(), wrapped_keys.end());
+  ASSIGN_OR_RETURN(
+      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
+      FindUnexportableKeys({
+          .access_group = objc_storage_->keychain_access_group_,
+          .application_tag_prefix =
+              base::SysNSStringToUTF8(objc_storage_->application_tag_),
+      }),
+      [](OSStatus status) {
+        LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
+        return std::nullopt;
+      });
+
+  const auto keys_and_tags_to_delete =
+      ToFlatHashSet(signing_keys, [](const auto* key) {
+        return std::pair{key->GetWrappedKey(), key->GetKeyTag()};
+      });
+
   std::erase_if(keys, [&](const auto& key) {
-    return !keys_to_delete.contains(base::apple::CFDataToSpan(
-        base::apple::GetValueFromDictionary<CFDataRef>(
-            key.get(), kSecAttrApplicationLabel)));
+    return !keys_and_tags_to_delete.contains({
+        base::ToVector(GetApplicationLabel(key.get())),
+        GetApplicationTag(key.get()),
+    });
   });
 
   return std::ranges::count_if(
@@ -591,46 +628,29 @@ UnexportableKeyProviderApple::DeleteAllSigningKeysSlowly() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
+  const std::string application_tag_prefix =
+      base::SysNSStringToUTF8(objc_storage_->application_tag_);
   ASSIGN_OR_RETURN(
       std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_),
+      FindUnexportableKeys({
+          .access_group = objc_storage_->keychain_access_group_,
+          .application_tag_prefix = application_tag_prefix,
+      }),
       [](OSStatus status) {
         LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
         return std::nullopt;
       });
 
-  const std::string application_tag =
-      base::SysNSStringToUTF8(objc_storage_->application_tag_);
-  FilterKeysByApplicationTag(keys, application_tag,
-                             // As a safeguard, don't perform prefix matching if
-                             // the application_tag used in the query was empty.
-                             application_tag.empty()
-                                 ? ApplicationTagMatching::kEquals
-                                 : ApplicationTagMatching::kStartsWith);
+  // As a safeguard, don't perform prefix matching if the application_tag_prefix
+  // used in the query was empty.
+  if (application_tag_prefix.empty()) {
+    std::erase_if(keys, [](const auto& key) {
+      return !GetApplicationTag(key.get()).empty();
+    });
+  }
 
   return std::ranges::count_if(
       keys, [&](const auto& key) { return DeleteKey(key.get()); });
-}
-
-std::optional<size_t> UnexportableKeyProviderApple::DeleteSigningKeySlowlyImpl(
-    base::span<const uint8_t> wrapped_key) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  ASSIGN_OR_RETURN(
-      std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> keys,
-      FindUnexportableKeys(objc_storage_->keychain_access_group_, wrapped_key),
-      [](OSStatus status) {
-        LogKeychainOperationError(TPMOperation::kKeyDeletion, status);
-        return std::nullopt;
-      });
-
-  FilterKeysByApplicationTag(
-      keys, base::SysNSStringToUTF8(objc_storage_->application_tag_),
-      ApplicationTagMatching::kStartsWith);
-
-  return std::ranges::count_if(
-      keys, [](const auto& key) { return DeleteKey(key.get()); });
 }
 
 std::unique_ptr<UnexportableKeyProviderApple> GetUnexportableKeyProviderApple(

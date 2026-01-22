@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_TASK_MANAGER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_TASK_MANAGER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -119,7 +122,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   void DeleteSigningKeysSlowlyAsync(
       BackgroundTaskOrigin origin,
       crypto::UnexportableKeyProvider::Config config,
-      std::vector<std::vector<uint8_t>> wrapped_keys,
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> signing_keys,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback);
 

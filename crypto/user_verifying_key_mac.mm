@@ -154,7 +154,7 @@ bool DoDeleteKey(std::vector<uint8_t> wrapped_key,
   StatefulUnexportableKeyProvider* stateful_key_provider =
       key_provider->AsStatefulUnexportableKeyProvider();
   return !stateful_key_provider ||
-         stateful_key_provider->DeleteSigningKeysSlowly({wrapped_key})
+         stateful_key_provider->DeleteWrappedKeysSlowly({wrapped_key})
              .value_or(0);
 }
 

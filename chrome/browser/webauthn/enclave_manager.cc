@@ -4298,7 +4298,7 @@ void EnclaveManager::ClearRegistration() {
             if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
                     provider ? provider->AsStatefulUnexportableKeyProvider()
                              : nullptr) {
-              stateful_provider->DeleteSigningKeysSlowly(
+              stateful_provider->DeleteWrappedKeysSlowly(
                   {wrapped_identity_private_key});
             }
           },

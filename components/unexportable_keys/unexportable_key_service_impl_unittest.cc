@@ -4,6 +4,8 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <variant>
 
@@ -769,10 +771,20 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteKeys) {
+  ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
   // Generate some keys.
-  constexpr size_t kKeysToGenerate = 3;
+  constexpr uint8_t kKeysToGenerate = 3;
+  std::vector<crypto::UnexportableSigningKey*> raw_keys;
   std::vector<UnexportableKeyId> key_ids;
-  for (size_t i = 0; i < kKeysToGenerate; ++i) {
+  for (uint8_t i = 0; i < kKeysToGenerate; ++i) {
+    // Provide a unique wrapped key, so that the keys get unique key ids.
+    auto mock_key = std::make_unique<MockUnexportableKey>();
+    ON_CALL(*mock_key, GetWrappedKey).WillByDefault(Return(std::vector{i}));
+
+    raw_keys.push_back(
+        scoped_provider.AddNextGeneratedKey(std::move(mock_key)));
     base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
     service().GenerateSigningKeySlowlyAsync(
         kAcceptableAlgorithms, kTaskPriority, generate_future.GetCallback());
@@ -787,7 +799,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeys) {
   }
 
   // Delete all keys.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeysSlowly)
+  EXPECT_CALL(scoped_provider.mock(),
+              DeleteSigningKeysSlowly(ElementsAreArray(raw_keys)))
       .WillOnce(Return(kKeysToGenerate));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -804,7 +817,12 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeys) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteKeysWithNonExistingKey) {
+  ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
   // Generate a key.
+  auto* raw_key = scoped_provider.AddNextGeneratedKey(
+      std::make_unique<MockUnexportableKey>());
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -818,9 +836,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysWithNonExistingKey) {
   std::vector<UnexportableKeyId> key_ids_to_delete = {key_id, fake_key_id};
 
   // Delete the keys. Only the existing key will be passed to the provider.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(),
-              DeleteSigningKeysSlowly(
-                  ElementsAre(service().GetWrappedKey(key_id).value())))
+  EXPECT_CALL(scoped_provider.mock(),
+              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(1));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -851,7 +868,12 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysOnlyNonExistingKeys) {
 }
 
 TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
+  ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
   // Generate a key.
+  auto* raw_key = scoped_provider.AddNextGeneratedKey(
+      std::make_unique<MockUnexportableKey>());
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -862,7 +884,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
   ASSERT_OK(service().GetWrappedKey(key_id));
 
   // Try to delete the key.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeysSlowly)
+  EXPECT_CALL(scoped_provider.mock(),
+              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(std::nullopt));
 
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
@@ -879,7 +902,13 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
 
 TEST_F(UnexportableKeyServiceImplTest,
        DeleteKeysSlowlyAsyncCallbackIsDroppedOnServiceDestruction) {
+  ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
   // Generate a key.
+  auto* raw_key = scoped_provider.AddNextGeneratedKey(
+      std::make_unique<MockUnexportableKey>());
+
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           generate_future.GetCallback());
@@ -887,7 +916,8 @@ TEST_F(UnexportableKeyServiceImplTest,
   ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
 
   // Delete the key.
-  EXPECT_CALL(SwitchToMockKeyProvider().mock(), DeleteSigningKeysSlowly)
+  EXPECT_CALL(scoped_provider.mock(),
+              DeleteSigningKeysSlowly(ElementsAre(raw_key)))
       .WillOnce(Return(1));
   base::test::TestFuture<ServiceErrorOr<size_t>> delete_future;
   service().DeleteKeysSlowlyAsync({key_id}, kTaskPriority,

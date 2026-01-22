@@ -99,9 +99,10 @@ ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
   g_mock_provider = nullptr;
 }
 
-void ScopedMockUnexportableKeyProvider::AddNextGeneratedKey(
+crypto::UnexportableSigningKey*
+ScopedMockUnexportableKeyProvider::AddNextGeneratedKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key) {
-  next_generated_keys_.push(std::move(key));
+  return next_generated_keys_.emplace(std::move(key)).get();
 }
 
 }  // namespace unexportable_keys

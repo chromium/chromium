@@ -178,7 +178,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   crypto::StatefulUnexportableKeyProvider* stateful_provider =
       provider->AsStatefulUnexportableKeyProvider();
   EXPECT_TRUE(stateful_provider == nullptr ||
-              stateful_provider->DeleteSigningKeysSlowly({wrapped}));
+              stateful_provider->DeleteWrappedKeysSlowly({wrapped}));
 }
 
 #if BUILDFLAG(IS_WIN)

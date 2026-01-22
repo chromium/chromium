@@ -225,23 +225,21 @@ void UnexportableKeyServiceImpl::DeleteKeysSlowlyAsync(
         return ExtractKeyFromMaps(key_id);
       });
 
-  // Collect the wrapped keys of the keys that were successfully deleted.
+  // Collect the keys that were successfully deleted.
   std::erase_if(keys_or_errors, [](auto& k) { return !k.has_value(); });
-  auto wrapped_keys = base::ToVector(
-      keys_or_errors, [](auto& key) { return (*key)->key().GetWrappedKey(); });
+  std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> signing_keys =
+      base::ToVector(keys_or_errors, [](auto& key) { return *std::move(key); });
 
   // If no keys were deleted, return an error.
-  if (wrapped_keys.empty()) {
+  if (signing_keys.empty()) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
 
   // The type expected by the callback
   using ArgType = ServiceErrorOr<size_t>;
-  // TODO(crbug.com/476925548): Don't just pass the wrapped keys, but the whole
-  // keys, i.e. including the key tags.
   task_manager_->DeleteSigningKeysSlowlyAsync(
-      task_origin_, config_, std::move(wrapped_keys), priority,
+      task_origin_, config_, std::move(signing_keys), priority,
       base::BindOnce(&UnexportableKeyServiceImpl::RunCallbackIfAlive<ArgType>,
                      service_weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));

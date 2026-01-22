@@ -87,7 +87,7 @@ class DeleteKeysTask
  public:
   DeleteKeysTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
-      std::vector<std::vector<uint8_t>> wrapped_keys,
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>> signing_keys,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(DeleteKeysTask::ReturnType, size_t)> callback);
 };
