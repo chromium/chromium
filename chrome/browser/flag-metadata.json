@@ -2167,6 +2167,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "devtools-protocol-monitor",
+    "owners": [
+      "wolfi@google.com"
+    ],
+    // This flag does not expire because it allows users/testers/developers
+    // to watch the CDP traffic between DevTools and Chromium for debugging purposes.
+    "expiry_milestone": -1
+  },
+  {
     "name": "devtools-pwa-handler",
     "owners": [ "mohamedaomar@google.com" ],
     "expiry_milestone": 200

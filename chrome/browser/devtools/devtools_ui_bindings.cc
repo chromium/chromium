@@ -2125,6 +2125,12 @@ base::Value::Dict DevToolsUIBindings::GetHostConfigDictionary(
   response_dict.Set("devToolsConsoleInsightsTeasers",
                     std::move(console_insights_teasers_dict));
 
+  response_dict.Set("devToolsProtocolMonitor",
+                    base::Value::Dict().Set(
+                        "enabled", GetFeatureStateForDevTools(
+                                       ::features::kDevToolsProtocolMonitor,
+                                       enabled_by_flags, disabled_by_flags)));
+
   return response_dict;
 }
 

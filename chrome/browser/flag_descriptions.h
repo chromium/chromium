@@ -1582,6 +1582,12 @@ inline constexpr char kDevToolsLiveEditDescription[] =
     "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
     "edits to the target page live.";
 
+inline constexpr char kDevToolsProtocolMonitorName[] =
+    "Enable protocol monitor in DevTools";
+inline constexpr char kDevToolsProtocolMonitorDescription[] =
+    "Enables the protocol monitor panel, which displays the Chrome DevTools "
+    "Protocol (CDP) traffic between DevTools and the browser.";
+
 inline constexpr char kDesktopPWAsBorderlessName[] = "Desktop PWA Borderless";
 inline constexpr char kDesktopPWAsBorderlessDescription[] =
     "Enable web app manifests to declare borderless mode as a display "

@@ -12221,6 +12221,7 @@ from previous Chrome versions.
       label="ShowRelatedWebsiteSetsPermissionGrants:enabled"/>
   <int value="-730917842"
       label="NtpMostRelevantTabResumptionModuleLocal:enabled"/>
+  <int value="-730658379" label="DevToolsProtocolMonitor:enabled"/>
   <int value="-730596576" label="ReaderModeDevEntryPoint:disabled"/>
   <int value="-729456213" label="BluetoothBtsnoopInternals:enabled"/>
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
@@ -18530,6 +18531,7 @@ from previous Chrome versions.
   <int value="1450865360" label="webrtc-hw-encoding:enabled"/>
   <int value="1451065780" label="MediaFoundationClearRendering:enabled"/>
   <int value="1451075792" label="MiniOriginBar:disabled"/>
+  <int value="1451108950" label="DevToolsProtocolMonitor:disabled"/>
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"

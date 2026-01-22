@@ -13525,6 +13525,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnAmbientSigninDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kWebAuthnAmbientSignin)},
 
+    {"devtools-protocol-monitor",
+     flag_descriptions::kDevToolsProtocolMonitorName,
+     flag_descriptions::kDevToolsProtocolMonitorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsProtocolMonitor)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -28,6 +28,7 @@
   "chrome-labs",
   "cws-info-fast-check",
   "dcheck-is-fatal",
+  "devtools-protocol-monitor",
   "disable-accelerated-2d-canvas",
   "disable-accelerated-mjpeg-decode",
   "disable-accelerated-video-decode",

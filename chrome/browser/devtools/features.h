@@ -128,6 +128,8 @@ extern const base::FeatureParam<bool>
 
 BASE_DECLARE_FEATURE(kDevToolsAiAssistanceV2);
 
+BASE_DECLARE_FEATURE(kDevToolsProtocolMonitor);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
