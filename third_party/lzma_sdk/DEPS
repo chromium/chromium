@@ -6,4 +6,5 @@ include_rules = [
   "+base",
   "+build",
   "+testing",
+  "+third_party/libdmg-hfsplus",
 ]

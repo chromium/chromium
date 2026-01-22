@@ -105,6 +105,9 @@ source_set("dmg_library") {
         ":common",
         ":hfs_library",
         "//third_party/zlib",
+        "//third_party/lzma_sdk",
+        "//third_party/lzma_sdk:lzma_sdk_xz",
+        "//third_party/lzma_sdk/google:seven_zip_c_buf_stream",
     ]
 
     libs = [ "bz2" ]
