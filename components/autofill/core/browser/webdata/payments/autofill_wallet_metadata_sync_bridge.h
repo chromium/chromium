@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -21,6 +20,7 @@
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 struct EntityData;
@@ -114,7 +114,7 @@ class AutofillWalletMetadataSyncBridge
   // |storage_keys_set| is not set, it returns all data entries. Otherwise, it
   // returns only entries with storage key in |storage_keys_set|.
   std::unique_ptr<syncer::DataBatch> GetDataImpl(
-      std::optional<std::unordered_set<std::string>> storage_keys_set);
+      std::optional<absl::flat_hash_set<std::string>> storage_keys_set);
 
   // Uploads local data that is not part of |entity_data| sent from the server
   // during initial MergeFullSyncData().
