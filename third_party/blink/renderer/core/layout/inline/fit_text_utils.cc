@@ -35,8 +35,10 @@ bool ScaleLine(bool is_grow,
                std::optional<float> limit,
                LineInfo& line_info) {
   bool should_scale_line_height = false;
+  LayoutUnit inline_size = line_info.TextIndent();
   for (auto& item : *line_info.MutableResults()) {
     if (item.item->Type() != InlineItem::kText) {
+      inline_size += item.inline_size;
       continue;
     }
     if (!item.fit_text_scale) {
@@ -57,7 +59,9 @@ bool ScaleLine(bool is_grow,
     if (item.fit_text_scale->scale != 1.0f) {
       should_scale_line_height = true;
     }
+    inline_size += item.inline_size * item.fit_text_scale->scale;
   }
+  line_info.SetWidth(line_info.AvailableWidth(), inline_size);
   return !is_scaled_inline_only && should_scale_line_height;
 }
 
@@ -443,6 +447,8 @@ bool LineFitter::FitLine(float scale_factor,
           }
         }
       }
+      line_info_.SetWidth(line_info_.AvailableWidth(),
+                          line_info_.ComputeWidth());
       return true;
     }
 
