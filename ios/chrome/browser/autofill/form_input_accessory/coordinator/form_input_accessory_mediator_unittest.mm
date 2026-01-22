@@ -461,8 +461,16 @@ TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
 //   `keyboardWillShow`.
 // - `kAutofillThrottleOptionalSuggestionRefresh` has a chance to work
 //   only when kSuppressKeyboardWillShowSuggestionRefresh is disabled.
+// TODO(crbug.com/477866475): Flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed \
+  keyboardWillShowRefresh_NotThrottledOrSuppressed
+#else
+#define MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed \
+  DISABLED_keyboardWillShowRefresh_NotThrottledOrSuppressed
+#endif
 TEST_F(FormInputAccessoryMediatorTest,
-       keyboardWillShowRefresh_NotThrottledOrSuppressed) {
+       MAYBE_keyboardWillShowRefresh_NotThrottledOrSuppressed) {
   base::test::ScopedFeatureList scoped_featurelist;
   scoped_featurelist.InitWithFeatures(
       /*enabled_features=*/{},
@@ -490,7 +498,16 @@ TEST_F(FormInputAccessoryMediatorTest,
 
 // Tests that suggestion refreshes triggered by keyboardWillShow are throttled
 // when only kAutofillThrottleOptionalSuggestionRefresh is enabled.
-TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Throttled) {
+// TODO(crbug.com/477866475): Flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_keyboardWillShowRefresh_Throttled \
+  keyboardWillShowRefresh_Throttled
+#else
+#define MAYBE_keyboardWillShowRefresh_Throttled \
+  DISABLED_keyboardWillShowRefresh_Throttled
+#endif
+TEST_F(FormInputAccessoryMediatorTest,
+       MAYBE_keyboardWillShowRefresh_Throttled) {
   base::test::ScopedFeatureList scoped_featurelist;
   scoped_featurelist.InitWithFeatures(
       /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
@@ -524,8 +541,16 @@ TEST_F(FormInputAccessoryMediatorTest, keyboardWillShowRefresh_Throttled) {
 
 // Tests that suggestion refreshes triggered by keyboardWillShow restarts the
 // delay when throttled.
+// TODO(crbug.com/477866475): Flaky on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_keyboardWillShowRefresh_Throttled_RollingOver \
+  keyboardWillShowRefresh_Throttled_RollingOver
+#else
+#define MAYBE_keyboardWillShowRefresh_Throttled_RollingOver \
+  DISABLED_keyboardWillShowRefresh_Throttled_RollingOver
+#endif
 TEST_F(FormInputAccessoryMediatorTest,
-       keyboardWillShowRefresh_Throttled_RollingOver) {
+       MAYBE_keyboardWillShowRefresh_Throttled_RollingOver) {
   base::test::ScopedFeatureList scoped_featurelist;
   scoped_featurelist.InitWithFeatures(
       /*enabled_features=*/{kAutofillThrottleOptionalSuggestionRefresh},
