@@ -8,26 +8,17 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-mojom("mojo_bindings") {
-  sources = [ "webui_toolbar.mojom" ]
-  webui_module_path = "/"
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//ui/base/mojom:ui_base_types",
-    "//ui/gfx/geometry/mojom",
-  ]
-}
-
 source_set("webui_toolbar") {
   sources = [
-    "webui_toolbar_page_handler.h",
+    "browser_controls_service.h",
     "webui_toolbar_ui.h",
   ]
   public_deps = [
-    ":mojo_bindings",
     "//chrome/browser/ui/webui/metrics_reporter",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:constants",
+    "//components/browser_apis/browser_controls:mojom",
+    "//components/browser_apis/browser_controls:mojom_data_model",
     "//content/public/browser",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//ui/webui/tracked_element",
@@ -37,12 +28,11 @@ source_set("webui_toolbar") {
 
 source_set("impl") {
   sources = [
-    "webui_toolbar_page_handler.cc",
+    "browser_controls_service.cc",
     "webui_toolbar_ui.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
-    ":mojo_bindings",
     ":webui_toolbar",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
@@ -54,6 +44,8 @@ source_set("impl") {
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
+    "//components/browser_apis/browser_controls:mojom",
+    "//components/browser_apis/browser_controls:mojom_data_model",
     "//content/public/browser",
     "//ui/views",
     "//ui/webui",
@@ -62,7 +54,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "webui_toolbar_page_handler_unittest.cc",
+    "browser_controls_service_unittest.cc",
     "webui_toolbar_test_utils.cc",
     "webui_toolbar_test_utils.h",
     "webui_toolbar_ui_unittest.cc",
@@ -76,6 +68,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter:test_support",
     "//chrome/test:test_support",
+    "//components/browser_apis/browser_controls:mojom",
+    "//components/browser_apis/browser_controls:mojom_data_model",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -7,7 +7,7 @@
 MockReloadButtonPage::MockReloadButtonPage() = default;
 MockReloadButtonPage::~MockReloadButtonPage() = default;
 
-mojo::PendingRemote<webui_toolbar::mojom::Page>
+mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
 MockReloadButtonPage::BindAndGetRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }

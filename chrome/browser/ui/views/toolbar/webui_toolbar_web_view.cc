@@ -131,7 +131,7 @@ void WebUIToolbarWebView::AddedToWidget() {
 }
 
 void WebUIToolbarWebView::HandleContextMenu(
-    webui_toolbar::mojom::ContextMenuType menu_type,
+    browser_controls_api::mojom::ContextMenuType menu_type,
     gfx::Point viewport_coordinate_css_pixels,
     ui::mojom::MenuSourceType source) {
   CHECK(web_view_);
@@ -147,9 +147,11 @@ void WebUIToolbarWebView::HandleContextMenu(
           .OffsetFromOrigin();
 
   switch (menu_type) {
-    case webui_toolbar::mojom::ContextMenuType::kReload:
+    case browser_controls_api::mojom::ContextMenuType::kReload:
       reload_control_.HandleContextMenu(GetWidget(), screen_location, source);
       break;
+    case browser_controls_api::mojom::ContextMenuType::kUnspecified:
+      NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
   }
 }
 

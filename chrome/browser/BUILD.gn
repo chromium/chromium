@@ -4396,7 +4396,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/webui_toolbar",
-      "//chrome/browser/ui/webui/webui_toolbar:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
       "//chrome/browser/ui/webui_browser",

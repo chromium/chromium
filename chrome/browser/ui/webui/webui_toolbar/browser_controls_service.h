@@ -1,14 +1,14 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_BROWSER_CONTROLS_SERVICE_H_
+#define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_BROWSER_CONTROLS_SERVICE_H_
 
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,37 +22,44 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
+class BrowserControlsService
+    : public browser_controls_api::mojom::BrowserControlsService {
  public:
-  class WebUIToolbarDelegate {
+  class BrowserControlsServiceDelegate {
    public:
     virtual void HandleContextMenu(
-        webui_toolbar::mojom::ContextMenuType menu_type,
+        browser_controls_api::mojom::ContextMenuType menu_type,
         gfx::Point viewport_coordinate_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
     virtual void OnPageInitialized() = 0;
   };
 
-  WebUIToolbarPageHandler(
-      mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
-      mojo::PendingRemote<webui_toolbar::mojom::Page> page,
+  BrowserControlsService(
+      mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
+          service,
+      mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+          observer,
       content::WebContents* web_contents,
       CommandUpdater* command_updater,
-      WebUIToolbarDelegate* web_view);
+      BrowserControlsServiceDelegate* delegate);
 
-  WebUIToolbarPageHandler(const WebUIToolbarPageHandler&) = delete;
-  WebUIToolbarPageHandler& operator=(const WebUIToolbarPageHandler&) = delete;
+  BrowserControlsService(const BrowserControlsService&) = delete;
+  BrowserControlsService& operator=(const BrowserControlsService&) = delete;
 
-  ~WebUIToolbarPageHandler() override;
+  ~BrowserControlsService() override;
 
-  void SetReloadButtonState(bool is_loading, bool is_menu_enabled);
+  void OnDevToolsStatusChanged(
+      browser_controls_api::mojom::DevToolsState state);
+  void OnNavigationStatusChanged(
+      browser_controls_api::mojom::NavigationState state);
 
-  // webui_toolbar::mojom::PageHandler:
-  void Reload(bool ignore_cache,
-              const std::vector<webui_toolbar::mojom::ClickDispositionFlag>&
-                  flags) override;
-  void StopReload() override;
-  void ShowContextMenu(webui_toolbar::mojom::ContextMenuType menu_type,
+  // browser_controls_api::mojom::BrowserControlsService:
+  void ReloadFromClick(
+      bool bypass_cache,
+      const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+          click_flags) override;
+  void StopLoad() override;
+  void ShowContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
                        const gfx::Point& viewport_coordinate_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
@@ -63,7 +70,7 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
   // This method fetches the reporter from the MetricsReporterService associated
   // with `web_contents_` each time it is called. This is necessary because the
   // MetricsReporterService lifetime is tied to `web_contents_`, which can be
-  // destroyed earlier than this WebUIToolbarPageHandler.
+  // destroyed earlier than this BrowserControlsService.
   MetricsReporter* GetMetricsReporter();
 
   // Callback for `MetricsReporter::Measure()`. Records the resulting
@@ -72,18 +79,18 @@ class WebUIToolbarPageHandler : public webui_toolbar::mojom::PageHandler {
                                    const std::string& start_mark,
                                    base::TimeDelta duration);
 
-  mojo::Receiver<webui_toolbar::mojom::PageHandler> receiver_;
-  mojo::Remote<webui_toolbar::mojom::Page> page_;
+  mojo::Receiver<browser_controls_api::mojom::BrowserControlsService> service_;
+  mojo::Remote<browser_controls_api::mojom::BrowserControlsObserver> observer_;
 
   // Not owned.
   const raw_ptr<content::WebContents> web_contents_;
   // Not owned.
   const raw_ptr<CommandUpdater> command_updater_;
 
-  raw_ptr<WebUIToolbarDelegate> delegate_;
+  raw_ptr<BrowserControlsServiceDelegate> delegate_;
 
   // Must be the last member.
-  base::WeakPtrFactory<WebUIToolbarPageHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserControlsService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_BROWSER_CONTROLS_SERVICE_H_

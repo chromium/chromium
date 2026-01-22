@@ -95,6 +95,12 @@ void WebUIReloadControl::ExecuteCommand(int command_id, int event_flags) {
 void WebUIReloadControl::SetReloadButtonUIState() {
   auto* webui_toolbar_ui = webui_toolbar_web_view_->GetWebUIToolbarUI();
   CHECK(webui_toolbar_ui);
-  webui_toolbar_ui->SetReloadButtonState(
-      /*is_loading=*/mode_ == ReloadControl::Mode::kStop, is_menu_enabled_);
+  webui_toolbar_ui->OnNavigationStatusChanged(
+      (mode_ == ReloadControl::Mode::kStop)
+          ? browser_controls_api::mojom::NavigationState::kLoading
+          : browser_controls_api::mojom::NavigationState::kNotLoading);
+  webui_toolbar_ui->OnDevToolsStatusChanged(
+      is_menu_enabled_
+          ? browser_controls_api::mojom::DevToolsState::kConnected
+          : browser_controls_api::mojom::DevToolsState::kDisconnected);
 }

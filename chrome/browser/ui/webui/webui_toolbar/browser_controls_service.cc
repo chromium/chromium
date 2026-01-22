@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
+#include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 
 #include <string>
 #include <utility>
@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -30,10 +30,10 @@
 
 namespace {
 // Measurement marks.
-constexpr char kChangeVisibleModeToReloadStartMark[] =
-    "ReloadButton.ChangeVisibleModeToReload.Start";
-constexpr char kChangeVisibleModeToStopStartMark[] =
-    "ReloadButton.ChangeVisibleModeToStop.Start";
+constexpr char kChangeVisibleModeToLoadingStartMark[] =
+    "BrowserControls.ChangeVisibleModeToLoading.Start";
+constexpr char kChangeVisibleModeToNotLoadingStartMark[] =
+    "BrowserControls.ChangeVisibleModeToNotLoading.Start";
 constexpr char kInputMouseReleaseStartMark[] =
     "ReloadButton.Input.MouseRelease.Start";
 
@@ -44,8 +44,9 @@ constexpr char kInputToStopMouseReleaseHistogram[] =
     "InitialWebUI.ReloadButton.InputToStop.MouseRelease";
 
 int ToUIEventFlags(
-    const std::vector<webui_toolbar::mojom::ClickDispositionFlag>& flags) {
-  using webui_toolbar::mojom::ClickDispositionFlag;
+    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+        flags) {
+  using browser_controls_api::mojom::ClickDispositionFlag;
   int event_flags = 0;
   for (auto& flag : flags) {
     switch (flag) {
@@ -57,11 +58,12 @@ int ToUIEventFlags(
         event_flags |= ui::EF_ALT_DOWN;
         break;
       }
-
       case ClickDispositionFlag::kMetaKeyDown: {
         event_flags |= ui::EF_COMMAND_DOWN;
         break;
       }
+      case ClickDispositionFlag::kUnspecified:
+        NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
     }
   }
   return event_flags;
@@ -69,14 +71,16 @@ int ToUIEventFlags(
 
 }  // namespace
 
-WebUIToolbarPageHandler::WebUIToolbarPageHandler(
-    mojo::PendingReceiver<webui_toolbar::mojom::PageHandler> receiver,
-    mojo::PendingRemote<webui_toolbar::mojom::Page> page,
+BrowserControlsService::BrowserControlsService(
+    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
+        service,
+    mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+        observer,
     content::WebContents* web_contents,
     CommandUpdater* command_updater,
-    WebUIToolbarDelegate* delegate)
-    : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
+    BrowserControlsServiceDelegate* delegate)
+    : service_(this, std::move(service)),
+      observer_(std::move(observer)),
       web_contents_(web_contents),
       command_updater_(command_updater),
       delegate_(delegate) {
@@ -84,20 +88,21 @@ WebUIToolbarPageHandler::WebUIToolbarPageHandler(
   CHECK(command_updater_);
 }
 
-WebUIToolbarPageHandler::~WebUIToolbarPageHandler() = default;
+BrowserControlsService::~BrowserControlsService() = default;
 
-MetricsReporter* WebUIToolbarPageHandler::GetMetricsReporter() {
+MetricsReporter* BrowserControlsService::GetMetricsReporter() {
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_contents_);
   return service ? service->metrics_reporter() : nullptr;
 }
 
-void WebUIToolbarPageHandler::Reload(
-    bool ignore_cache,
-    const std::vector<webui_toolbar::mojom::ClickDispositionFlag>& flags) {
+void BrowserControlsService::ReloadFromClick(
+    bool bypass_cache,
+    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
+        click_flags) {
   command_updater_->ExecuteCommandWithDisposition(
-      ignore_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
-      ui::DispositionFromEventFlags(ToUIEventFlags(flags)));
+      bypass_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
+      ui::DispositionFromEventFlags(ToUIEventFlags(click_flags)));
 
   // Gets the current time immediately after executing the command.
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -110,14 +115,14 @@ void WebUIToolbarPageHandler::Reload(
   // MouseRelease
   metrics_reporter->Measure(
       kInputMouseReleaseStartMark, now,
-      base::BindOnce(&WebUIToolbarPageHandler::OnMeasureResultAndClearMark,
+      base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
                      kInputToReloadMouseReleaseHistogram,
                      kInputMouseReleaseStartMark));
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void WebUIToolbarPageHandler::StopReload() {
+void BrowserControlsService::StopLoad() {
   command_updater_->ExecuteCommandWithDisposition(
       IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
   // Gets the current time immediately after executing the command.
@@ -131,15 +136,15 @@ void WebUIToolbarPageHandler::StopReload() {
   // MouseRelease
   metrics_reporter->Measure(
       kInputMouseReleaseStartMark, now,
-      base::BindOnce(&WebUIToolbarPageHandler::OnMeasureResultAndClearMark,
+      base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
                      kInputToStopMouseReleaseHistogram,
                      kInputMouseReleaseStartMark));
   // TODO(crbug.com/448794588): Handle KeyPress events.
 }
 
-void WebUIToolbarPageHandler::ShowContextMenu(
-    webui_toolbar::mojom::ContextMenuType menu_type,
+void BrowserControlsService::ShowContextMenu(
+    browser_controls_api::mojom::ContextMenuType menu_type,
     const gfx::Point& viewport_coordinate_css_pixels,
     ui::mojom::MenuSourceType source) {
   if (delegate_) {
@@ -148,26 +153,34 @@ void WebUIToolbarPageHandler::ShowContextMenu(
   }
 }
 
-void WebUIToolbarPageHandler::OnPageInitialized() {
+void BrowserControlsService::OnPageInitialized() {
   if (delegate_) {
     delegate_->OnPageInitialized();
   }
 }
 
-void WebUIToolbarPageHandler::SetReloadButtonState(bool is_loading,
-                                                   bool is_menu_enabled) {
-  if (auto* metrics_reporter = GetMetricsReporter()) {
-    auto* mark = is_loading ? kChangeVisibleModeToStopStartMark
-                            : kChangeVisibleModeToReloadStartMark;
-    metrics_reporter->Mark(mark);
-  }
-
-  if (page_) {
-    page_->SetReloadButtonState(is_loading, is_menu_enabled);
+void BrowserControlsService::OnDevToolsStatusChanged(
+    browser_controls_api::mojom::DevToolsState state) {
+  if (observer_) {
+    observer_->OnDevToolsStatusChanged(state);
   }
 }
 
-void WebUIToolbarPageHandler::OnMeasureResultAndClearMark(
+void BrowserControlsService::OnNavigationStatusChanged(
+    browser_controls_api::mojom::NavigationState state) {
+  if (auto* metrics_reporter = GetMetricsReporter()) {
+    auto* mark = state == browser_controls_api::mojom::NavigationState::kLoading
+                     ? kChangeVisibleModeToLoadingStartMark
+                     : kChangeVisibleModeToNotLoadingStartMark;
+    metrics_reporter->Mark(mark);
+  }
+
+  if (observer_) {
+    observer_->OnNavigationStatusChanged(state);
+  }
+}
+
+void BrowserControlsService::OnMeasureResultAndClearMark(
     const std::string& histogram_name,
     const std::string& start_mark,
     base::TimeDelta duration) {

@@ -1,0 +1,60 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module browser_controls_api.mojom;
+
+import "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// BrowserControlsFactory is used by the WebUI page to bootstrap communication
+// to/from the browser process.
+interface BrowserControlsFactory {
+  // The WebUI calls this method when the page is first initialized.
+  // It binds a pending_remote for the observer and a pending_receiver for the
+  // service.
+  CreateBrowserControls(
+      pending_remote<BrowserControlsObserver> observer,
+      pending_receiver<BrowserControlsService> service);
+};
+
+// Called from C++ side of chrome://webui-toolbar.top-chrome
+// (Browser -> Renderer)
+interface BrowserControlsObserver {
+  // Sets the dev tools state in the renderer, the renderer is expected to
+  // make UI changes accordingly.
+  OnDevToolsStatusChanged(DevToolsState state);
+
+  // Sets the navigation loading state in the renderer, the renderer is
+  // expected to make UI changes accordingly.
+  OnNavigationStatusChanged(NavigationState state);
+};
+
+// BrowserControlsService defines methods to be called from the WebUI to the
+// browser-side. This interface consolidates various browser control actions.
+interface BrowserControlsService {
+  // Stops the current page from loading. If the page is not in a loading
+  // state, it is a no-op.
+  StopLoad();
+
+  // Displays the context menu with the provided menu type at the provided
+  // offset in CSS pixels relative to the WebUIToolbarWebView's viewport origin.
+  // The source indicates what triggered showing this menu (mouse, keyboard,
+  // etc).
+  ShowContextMenu(ContextMenuType menu_type,
+                  gfx.mojom.Point viewport_coordinate_css_pixels,
+                  ui.mojom.MenuSourceType source);
+
+  // Called when the page finishes initialization.
+  OnPageInitialized();
+
+  // Reloads the current page. If the page is already in a loading state,
+  // it will trigger another reload, and abort the previous one.
+  // If `bypass_cache` is set to true, the page will be reloaded while
+  // ignoring the HTTP cache.
+  // `click_flags` contains the list of flag information about the click that
+  // might affect the reload logic (e.g. whether it's clicked through the
+  // middle mouse button, or whether the alt key is pressed).
+  ReloadFromClick(bool bypass_cache, array<ClickDispositionFlag> click_flags);
+};

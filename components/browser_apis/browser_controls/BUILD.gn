@@ -1,0 +1,34 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Generate Mojo bindings for browser_controls_api_data_model.mojom.
+mojom("mojom_data_model") {
+  sources = [ "browser_controls_api_data_model.mojom" ]
+
+  # Generate TypeScript bindings for WebUI.
+  webui_module_path = "/"
+}
+
+# Generate Mojo bindings for browser_controls.mojom.
+mojom("mojom") {
+  sources = [ "browser_controls_api.mojom" ]
+
+  # Dependencies on other mojom targets.
+  public_deps = [
+    ":mojom_data_model",
+    "//mojo/public/mojom/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  # Generate TypeScript bindings for WebUI.
+  webui_module_path = "/"
+}
+
+source_set("unit_tests") {
+  testonly = true
+}

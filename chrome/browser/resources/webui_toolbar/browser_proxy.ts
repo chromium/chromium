@@ -4,14 +4,19 @@
 
 import '//resources/js/cr.js';
 
-import {ClickDispositionFlag, ContextMenuType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './webui_toolbar.mojom-webui.js';
-import type {PageHandlerInterface} from './webui_toolbar.mojom-webui.js';
+import {
+  BrowserControlsFactory,
+  BrowserControlsObserverCallbackRouter,
+  BrowserControlsServiceRemote,
+} from './browser_controls_api.mojom-webui.js';
+import type {BrowserControlsServiceInterface} from './browser_controls_api.mojom-webui.js';
+import {ClickDispositionFlag, ContextMenuType, DevToolsState, NavigationState} from './browser_controls_api_data_model.mojom-webui.js';
 
-export {ClickDispositionFlag, ContextMenuType};
+export {ClickDispositionFlag, ContextMenuType, DevToolsState, NavigationState};
 
 export interface BrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: PageHandlerInterface;
+  callbackRouter: BrowserControlsObserverCallbackRouter;
+  handler: BrowserControlsServiceInterface;
 
   /**
    * Records a value in a histogram.
@@ -24,15 +29,16 @@ export interface BrowserProxy {
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: PageHandlerInterface;
+  callbackRouter: BrowserControlsObserverCallbackRouter;
+  handler: BrowserControlsServiceInterface;
 
   private constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler = new PageHandlerRemote();
-    PageHandlerFactory.getRemote().createPageHandler(
+    this.callbackRouter = new BrowserControlsObserverCallbackRouter();
+    this.handler = new BrowserControlsServiceRemote();
+    BrowserControlsFactory.getRemote().createBrowserControls(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+        (this.handler as BrowserControlsServiceRemote)
+            .$.bindNewPipeAndPassReceiver());
   }
 
   /**

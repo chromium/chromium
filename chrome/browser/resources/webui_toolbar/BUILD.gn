@@ -57,8 +57,13 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/webui_toolbar:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [
+    "//components/browser_apis/browser_controls:mojom_data_model_ts__generator",
+    "//components/browser_apis/browser_controls:mojom_ts__generator",
+  ]
 
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/components/browser_apis/browser_controls/browser_controls_api.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/browser_controls/browser_controls_api_data_model.mojom-webui.ts",
+  ]
 }

@@ -198,6 +198,7 @@ test("components_unittests") {
     "//components/bookmarks/browser:unit_tests",
     "//components/bookmarks/managed:unit_tests",
     "//components/breadcrumbs/core:unit_tests",
+    "//components/browser_apis/browser_controls:unit_tests",
     "//components/browser_apis/tab_strip:unit_tests",
     "//components/browser_sync:unit_tests",
     "//components/browsing_data/core:unit_tests",

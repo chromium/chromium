@@ -6,14 +6,16 @@
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
 
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar.mojom.h"
+#include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 
-// Mock implementation of the webui_toolbar::mojom::Page interface.
-class MockReloadButtonPage : public webui_toolbar::mojom::Page {
+// Mock implementation of the
+// browser_controls_api::mojom::BrowserControlsObserver interface.
+class MockReloadButtonPage
+    : public browser_controls_api::mojom::BrowserControlsObserver {
  public:
   MockReloadButtonPage();
   ~MockReloadButtonPage() override;
@@ -22,18 +24,24 @@ class MockReloadButtonPage : public webui_toolbar::mojom::Page {
   MockReloadButtonPage& operator=(const MockReloadButtonPage&) = delete;
 
   // Returns a PendingRemote to this mock implementation.
-  mojo::PendingRemote<webui_toolbar::mojom::Page> BindAndGetRemote();
+  mojo::PendingRemote<browser_controls_api::mojom::BrowserControlsObserver>
+  BindAndGetRemote();
 
   void FlushForTesting();
 
-  // webui_toolbar::mojom::Page:
+  // browser_controls_api::mojom::BrowserControlsObserver:
   MOCK_METHOD(void,
-              SetReloadButtonState,
-              (bool is_loading, bool is_menu_enabled),
+              OnDevToolsStatusChanged,
+              (browser_controls_api::mojom::DevToolsState state),
+              (override));
+  MOCK_METHOD(void,
+              OnNavigationStatusChanged,
+              (browser_controls_api::mojom::NavigationState state),
               (override));
 
  private:
-  mojo::Receiver<webui_toolbar::mojom::Page> receiver_{this};
+  mojo::Receiver<browser_controls_api::mojom::BrowserControlsObserver>
+      receiver_{this};
 };
 
 // Mock implementation of CommandUpdater for testing.

@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_page_handler.h"
+#include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -27,7 +27,7 @@ class WebView;
 class WebUIToolbarWebView
     : public views::View,
       public content::WebContentsObserver,
-      public WebUIToolbarPageHandler::WebUIToolbarDelegate {
+      public BrowserControlsService::BrowserControlsServiceDelegate {
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
@@ -39,8 +39,8 @@ class WebUIToolbarWebView
 
   ReloadControl* GetReloadControl();
 
-  // WebUIToolbarPageHandler::WebUIToolbarDelegate:
-  void HandleContextMenu(webui_toolbar::mojom::ContextMenuType menu_type,
+  // BrowserControlsService::BrowserControlsServiceDelegate:
+  void HandleContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
