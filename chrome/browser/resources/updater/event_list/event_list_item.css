@@ -11,8 +11,6 @@
 
 :host {
   --event-type-background-color: var(--google-blue-50);
-  --event-error-icon-color: var(--google-red-700);
-  --event-error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
   --event-success-icon-color: var(--google-green-700);
   --event-success-background-color: color-mix(in srgb, var(--google-green-500) 4%, white);
 
@@ -23,15 +21,13 @@
 @media (prefers-color-scheme: dark) {
   :host {
     --event-type-background-color: var(--google-blue-900);
-    --event-error-icon-color: var(--cr-fallback-color-error);
-    --event-error-background-color: color-mix(in srgb, var(--google-red-500) 10%, black);
     --event-success-icon-color: var(--google-green-700);
     --event-success-background-color: color-mix(in srgb, var(--google-green-500) 10%, black);
   }
 }
 
 :host([status=error]) {
-  background-color: var(--event-error-background-color);
+  background-color: var(--error-background-color);
 }
 
 :host([status=success]) {
@@ -111,7 +107,7 @@ cr-expand-button {
 }
 
 .event-description-icon-column cr-icon[icon='cr:warning'] {
-  --iron-icon-fill-color: var(--event-error-icon-color);
+  --iron-icon-fill-color: var(--error-icon-color);
 }
 
 .event-description {

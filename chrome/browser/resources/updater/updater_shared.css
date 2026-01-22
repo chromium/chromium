@@ -10,6 +10,8 @@
 
 html {
   --code-background-color: var(--google-grey-100);
+  --error-icon-color: var(--google-red-700);
+  --error-background-color: color-mix(in srgb, var(--google-red-500) 4%, white);
 }
 
 @media (prefers-color-scheme: dark) {

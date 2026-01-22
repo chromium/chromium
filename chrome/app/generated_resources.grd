@@ -19968,6 +19968,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_LAST_STARTED_LABEL" desc="A label for a timestamp indicating the last time the Chrome Updater performed its periodic tasks.">
         Last Periodic Task Run:
       </message>
+      <message name="IDS_UPDATER_NO_UPDATER_FOUND" desc="A message indicating that Chrome's updater does not appear to be installed on the user's machine.">
+        No updater installations could be found.
+      </message>
       <message name="IDS_UPDATER_NEVER" desc="Text indicating that that an action has never happened. For instance, this is used in place of a timestamp to indicate that an instance of the Chrome Updater has never checked for any updates.">
         Never
       </message>
@@ -20006,6 +20009,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_UPDATER_QUALIFICATION_SUCCEEDED" desc="Summary of an event in which the Chrome Updater's self-check succeeded, indicating that the program is working as intended and should manage updates for Chrome">
         Self test succeeded
+      </message>
+      <message name="IDS_UPDATER_QUERY_FAILED" desc="An error message indicating that Chrome's updater's state could not be queried.">
+        Failed to query the updater state.
       </message>
       <message name="IDS_UPDATER_REMOVE_FILTER" desc="Accessibility label for the button that removes a specific filter chip.">
         Remove filter

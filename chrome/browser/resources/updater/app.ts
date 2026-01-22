@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './event_list/event_list.js';
+import './updater_state/updater_state.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
