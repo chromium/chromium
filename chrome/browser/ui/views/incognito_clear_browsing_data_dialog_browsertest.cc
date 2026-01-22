@@ -27,7 +27,10 @@ namespace {
 class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
  public:
   void OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type type) {
-    incognito_browser_ = CreateIncognitoBrowser(GetProfile());
+    if (!incognito_browser_) {
+      incognito_browser_ = CreateIncognitoBrowser(GetProfile());
+    }
+
     auto* coordinator = GetCoordinator();
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(incognito_browser_);
@@ -195,6 +198,39 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestGotItButton) {
 
   GetDialogView()->AcceptDialog();
   destroyed_waiter.Wait();
+
+  ASSERT_FALSE(GetCoordinator()->IsShowing());
+  ASSERT_FALSE(GetDialogView());
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, ShowTwice) {
+  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
+                 kHistoryDisclaimerBubble);
+  auto* const first_incognito_cbd_dialog_view = GetDialogView();
+  EXPECT_TRUE(first_incognito_cbd_dialog_view);
+
+  // `view_tracker_for_first_view` is used to check if
+  // `first_incognito_cbd_dialog_view` has been released.
+  views::ViewTracker view_tracker_for_first_view(
+      first_incognito_cbd_dialog_view);
+
+  // Show again with the same type.
+  OpenDialog(IncognitoClearBrowsingDataDialogInterface::Type::
+                 kHistoryDisclaimerBubble);
+  const auto* const second_incognito_cbd_dialog_view = GetDialogView();
+  EXPECT_TRUE(second_incognito_cbd_dialog_view);
+
+  // Two views should not be the same.
+  EXPECT_NE(first_incognito_cbd_dialog_view, second_incognito_cbd_dialog_view);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(GetDialogWidget());
+
+  GetDialogView()->AcceptDialog();
+  destroyed_waiter.Wait();
+
+  // `first_incognito_cbd_dialog_view` should already have been released when
+  // the second dialog is created.
+  EXPECT_FALSE(view_tracker_for_first_view.view());
 
   ASSERT_FALSE(GetCoordinator()->IsShowing());
   ASSERT_FALSE(GetDialogView());
