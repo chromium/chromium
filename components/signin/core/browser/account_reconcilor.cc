@@ -36,7 +36,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -96,9 +95,7 @@ bool IsAnyAccountInErrorState(
 void MaybeMigrateClearOnExit(SigninClient& client,
                              signin::IdentityManager& identity_manager) {
   PrefService& prefs = *client.GetPrefs();
-  if (!client.AreSigninCookiesDeletedOnExit() &&
-      signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(identity_manager,
-                                                               prefs)) {
+  if (!client.AreSigninCookiesDeletedOnExit()) {
     prefs.SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
   }
 }
@@ -206,8 +203,6 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MaybeMigrateClearOnExit(*client_, *identity_manager_);
-
-  pref_observer_.Init(client_->GetPrefs());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
@@ -288,12 +283,6 @@ void AccountReconcilor::RegisterWithIdentityManager() {
   }
 
   identity_manager_observer_.Observe(identity_manager_);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  pref_observer_.Add(
-      prefs::kExplicitBrowserSignin,
-      base::BindRepeating(&MaybeMigrateClearOnExit, std::ref(*client_),
-                          std::ref(*identity_manager_)));
-#endif
   registered_with_identity_manager_ = true;
 }
 
@@ -303,9 +292,6 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
     return;
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  pref_observer_.RemoveAll();
-#endif
   identity_manager_observer_.Reset();
   registered_with_identity_manager_ = false;
 }
@@ -369,9 +355,6 @@ void AccountReconcilor::OnContentSettingChanged(
 void AccountReconcilor::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Perform the "clear on exit" migration if applicable.
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-
   if (event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     VLOG(1) << "AccountReconcilor::OnPrimaryAccountChanged";

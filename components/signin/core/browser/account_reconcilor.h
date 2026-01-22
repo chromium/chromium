@@ -21,7 +21,6 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/account_reconcilor_throttler.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -458,10 +457,6 @@ class AccountReconcilor
 
   // The SigninClient associated with this reconcilor.
   raw_ptr<SigninClient> client_;
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  PrefChangeRegistrar pref_observer_;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On Ash, this is a pointer to `AccountManagerFacadeImpl`.

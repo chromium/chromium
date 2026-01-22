@@ -70,17 +70,6 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
       username, prefs->GetString(prefs::kGoogleServicesUsernamePattern));
 }
 
-bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-    signin::IdentityManager& manager,
-    PrefService& prefs) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  return !manager.HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
-         prefs.GetBoolean(prefs::kExplicitBrowserSignin);
-#else
-  return false;
-#endif
-}
-
 base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {

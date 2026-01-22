@@ -91,29 +91,6 @@ class IdentityUtilsTest : public testing::Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(IdentityUtilsTest, AreGoogleCookiesRebuiltAfterClearingWhenSignedIn) {
-  // Signed out.
-  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-      *identity_manager(), *pref_service()));
-  // Implicit signin.
-  MakePrimaryAccountAvailable();
-  SetExplicitBrowserSigninPref(false);
-  EXPECT_FALSE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-      *identity_manager(), *pref_service()));
-  // Explicit signin.
-  SetExplicitBrowserSigninPref(true);
-  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-      *identity_manager(), *pref_service()));
-  // Sync.
-  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-      ConsentLevel::kSync, signin_metrics::AccessPoint::kSettings);
-  EXPECT_TRUE(AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-      *identity_manager(), *pref_service()));
-}
-#endif
-
 TEST_F(IdentityUtilsIsUsernameAllowedTest, EmptyPatterns) {
   prefs()->SetString(prefs::kGoogleServicesUsernamePattern, "");
   EXPECT_TRUE(IsUsernameAllowedByPatternFromPrefs(prefs(), kUsername));

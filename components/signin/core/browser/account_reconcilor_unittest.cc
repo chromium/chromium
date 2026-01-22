@@ -1513,28 +1513,6 @@ TEST_F(AccountReconcilorDiceTest,
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationImplicitSignin) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  pref_service()->ClearPref(prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Implicit signin is not auto-migrated.
-  content_settings::Observer* reconcilor = GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Changing cookie settings should not trigger the migration.
-  reconcilor->OnContentSettingChanged(
-      /*primary_pattern=*/ContentSettingsPattern(),
-      /*secondary_pattern=*/ContentSettingsPattern(),
-      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
 TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationSignedOut) {
   ASSERT_FALSE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
@@ -1572,16 +1550,8 @@ TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationExplicitPref) {
       prefs::kCookieClearOnExitMigrationNoticeComplete));
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       kFakeEmail, signin::ConsentLevel::kSignin);
-  pref_service()->ClearPref(prefs::kExplicitBrowserSignin);
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  // Implicit signin is not auto-migrated.
   GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Make the signin explicit, this triggers the migration.
-  pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, true);
   EXPECT_TRUE(pref_service()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
 }

@@ -23,14 +23,6 @@ class IdentityManager;
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username);
 
-// Returns true if the Google account cookies are automatically rebuilt after
-// being cleared from settings, when the user is signed in.
-// Note: this can return true even if the user is not signed in. This function
-// reflects whether the cookie setting has this new behavior (as opposed to the
-// old behavior where cookies were never rebuilt).
-bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(IdentityManager& manager,
-                                                      PrefService& prefs);
-
 // Returns all accounts for which Chrome should keep account-keyed preferences.
 // These are the accounts in the cookie (signed in or signed out) plus the
 // primary account.
