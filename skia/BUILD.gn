@@ -1142,6 +1142,7 @@ test("skia_unittests") {
     "ext/image_operations_unittest.cc",
     "ext/platform_canvas_unittest.cc",
     "ext/recursive_gaussian_convolution_unittest.cc",
+    "ext/rgba_to_yuva_unittests.cc",
     "ext/skcolorspace_primaries_unittest.cc",
     "ext/skcolorspace_trfn_unittest.cc",
     "ext/skia_memory_dump_provider_unittest.cc",
