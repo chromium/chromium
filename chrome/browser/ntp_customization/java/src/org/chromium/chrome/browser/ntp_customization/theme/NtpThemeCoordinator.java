@@ -207,14 +207,19 @@ public class NtpThemeCoordinator {
         mNtpThemeBottomSheetView.destroy();
         if (mUploadPreviewCoordinator != null) {
             mUploadPreviewCoordinator.destroy();
+            mUploadPreviewCoordinator = null;
         }
         if (mNtpThemeCollectionsCoordinator != null) {
             mNtpThemeCollectionsCoordinator.destroy();
+            mNtpThemeCollectionsCoordinator = null;
         }
         if (mNtpChromeColorsCoordinator != null) {
             mNtpChromeColorsCoordinator.destroy();
+            mNtpChromeColorsCoordinator = null;
         }
         mNtpThemeCollectionManager.destroy();
+        mNtpThemeCollectionsCoordinator = null;
+
         mCallbackController.destroy();
     }
 

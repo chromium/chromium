@@ -55,8 +55,6 @@ import org.chromium.ui.base.ViewUtils;
 @NullMarked
 public class CropImageView extends AppCompatImageView {
     private final Matrix mCurrentMatrix;
-    private final ScaleGestureDetector mScaleDetector;
-    private final GestureDetector mGestureDetector;
     private final float[] mMatrixValues;
     private final int mInitialOrientation;
     private final BackgroundImageInfo mImageInfo;
@@ -66,6 +64,8 @@ public class CropImageView extends AppCompatImageView {
     private boolean mIsScrolled;
     private boolean mIsScreenRotated;
     private @Nullable Bitmap mBitmap;
+    private @Nullable ScaleGestureDetector mScaleDetector;
+    private @Nullable GestureDetector mGestureDetector;
 
     public CropImageView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -146,7 +146,11 @@ public class CropImageView extends AppCompatImageView {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        assertNonNull(mBitmap);
+        // This view will not handle touch events if the image is missing or the view is currently
+        // being destroyed.
+        if (mBitmap == null || mScaleDetector == null || mGestureDetector == null) {
+            return false;
+        }
 
         mScaleDetector.onTouchEvent(event);
         mGestureDetector.onTouchEvent(event);
@@ -346,6 +350,13 @@ public class CropImageView extends AppCompatImageView {
             mIsScrolled = true;
             return true;
         }
+    }
+
+    public void destroy() {
+        mBitmap = null;
+        setImageDrawable(null);
+        mScaleDetector = null;
+        mGestureDetector = null;
     }
 
     /**

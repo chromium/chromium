@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getSearchBoxTwoSideMargin;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_BITMAP;
@@ -29,6 +30,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,11 +59,11 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     private final ChromeDialog mDialog;
     private final int mToolBarHeight;
     private final boolean mShouldShowLogoAndSearchBox;
-    private final View.OnLayoutChangeListener mLayoutChangeListener;
-    private final UploadImagePreviewLayout mPreviewLayout;
-    private CropImageView mCropImageView;
     private final Activity mActivity;
     private final UiConfig mUiConfig;
+    private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
+    private @Nullable UploadImagePreviewLayout mPreviewLayout;
+    private @Nullable CropImageView mCropImageView;
 
     /**
      * The type of user interactions with the Upload Image Preview dialog.
@@ -144,9 +146,6 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
                     onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, mDialog);
-                    NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
-                            PreviewInteractionType.SAVE);
-                    recordPreviewInteractionsMetric();
                 });
 
         mPreviewPropertyModel.set(
@@ -194,6 +193,12 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     }
 
     private void updateSearchBoxWidthPreview() {
+        // Guards against rare cases where a layout update occurs after the bottom sheet has already
+        // initiated the destruction of the crop view.
+        if (mCropImageView == null) {
+            return;
+        }
+
         // 1. Computes the padding added to the feed section.
         Resources resources = mActivity.getResources();
         int totalFeedPaddingPerSide =
@@ -222,6 +227,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
      * metrics are not recorded to avoid double counting.
      */
     private void recordPreviewInteractionsMetric() {
+        assumeNonNull(mCropImageView);
         boolean isScaled = mCropImageView.getIsScaled();
         boolean isScrolled = mCropImageView.getIsScrolled();
         boolean isScreenRotated = mCropImageView.getIsScreenRotated();
@@ -312,7 +318,13 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         mPreviewPropertyModel.set(NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER, null);
         if (mPreviewLayout != null && mLayoutChangeListener != null) {
             mPreviewLayout.removeOnLayoutChangeListener(mLayoutChangeListener);
+            mLayoutChangeListener = null;
         }
+        if (mCropImageView != null) {
+            mCropImageView.destroy();
+            mCropImageView = null;
+        }
+        mPreviewLayout = null;
         mDialog.destroy();
     }
 
@@ -327,6 +339,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     @VisibleForTesting
     void onSaveButtonClicked(
             Bitmap bitmap, Callback<Boolean> onBottomSheetClickedCallback, ChromeDialog dialog) {
+        assumeNonNull(mCropImageView);
         // 1. Gets the matrices (source of truth or calculated estimate)
         Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
         Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
@@ -341,6 +354,11 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                         portraitMatrix, landscapeMatrix, portraitSize, landscapeSize);
 
         NtpCustomizationConfigManager.getInstance().onUploadedImageSelected(bitmap, info);
+
+        // Records metrics before the callback closes the bottom sheet.
+        NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                PreviewInteractionType.SAVE);
+        recordPreviewInteractionsMetric();
 
         onBottomSheetClickedCallback.onResult(true);
         dialog.dismiss();

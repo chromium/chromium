@@ -228,6 +228,7 @@ public class ChromeDialog extends ComponentDialog {
         }
         if (mInsetObserver != null && mWindowInsetsConsumer != null) {
             mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
+            mWindowInsetsConsumer = null;
         }
     }
 }
