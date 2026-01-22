@@ -33,6 +33,7 @@ source_set("ai") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/ai:ai_model_download_progress_manager",
     "//chrome/browser/ai:ai_utils",
     "//chrome/browser/optimization_guide",
@@ -44,9 +45,6 @@ source_set("ai") {
   ]
   if (enable_glic) {
     public_deps += [ "//chrome/browser/glic" ]
-  }
-  if (!is_android) {
-    public_deps += [ "//chrome/browser/actor" ]
   }
 }
 

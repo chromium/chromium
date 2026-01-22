@@ -68,6 +68,7 @@ source_set("permissions") {
   deps = [
     ":permissions_proto",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/app_mode",
     "//chrome/browser/background_fetch",
     "//chrome/browser/background_sync",
@@ -182,10 +183,7 @@ source_set("permissions") {
   }
 
   if (!is_android) {
-    deps += [
-      "//chrome/browser/actor",
-      "//chrome/browser/ui/permission_bubble",
-    ]
+    deps += [ "//chrome/browser/ui/permission_bubble" ]
   }
 
   if (safe_browsing_mode != 0) {

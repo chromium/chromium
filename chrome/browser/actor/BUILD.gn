@@ -7,6 +7,7 @@ import("//chrome/common/features.gni")
 source_set("actor") {
   public = [
     "actor_features.h",
+    "actor_keyed_service.h",
     "actor_metrics.h",
     "actor_policy_checker.h",
     "actor_switches.h",
@@ -38,6 +39,7 @@ source_set("actor") {
     "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles",
+    "//chrome/browser/search",
     "//chrome/browser/subscription_eligibility",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
@@ -57,9 +59,9 @@ source_set("actor") {
       ":browser_tests",
     ]
     public += [
-      "actor_keyed_service.h",
       "actor_keyed_service_factory.h",
       "actor_navigation_throttle.h",
+      "actor_util.h",
       "aggregated_journal_file_serializer.h",
       "aggregated_journal_in_memory_serializer.h",
       "aggregated_journal_serializer.h",
@@ -78,7 +80,6 @@ source_set("actor") {
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui:states",
       "//chrome/browser/password_manager/actor_login:service",
-      "//chrome/browser/search",
       "//content/public/browser",
       "//content/public/common:buildflags",
     ]
@@ -88,6 +89,7 @@ source_set("actor") {
 source_set("impl") {
   sources = [
     "actor_features.cc",
+    "actor_keyed_service.cc",
     "actor_metrics.cc",
     "actor_policy_checker.cc",
     "actor_switches.cc",
@@ -150,7 +152,6 @@ source_set("impl") {
     sources += [
       "action_tracker_for_metrics.cc",
       "action_tracker_for_metrics.h",
-      "actor_keyed_service.cc",
       "actor_keyed_service_factory.cc",
       "actor_navigation_throttle.cc",
       "aggregated_journal_file_serializer.cc",

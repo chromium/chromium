@@ -179,6 +179,7 @@ source_set("impl") {
     ":autofill",
     ":autofill_ai_ui_utils_impl",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/autofill",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
@@ -257,7 +258,6 @@ source_set("impl") {
     deps += [
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
-      "//chrome/browser/actor",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/feedback",
       "//chrome/browser/profiles:profile_util",

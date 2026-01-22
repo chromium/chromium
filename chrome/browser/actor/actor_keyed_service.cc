@@ -30,11 +30,6 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -49,12 +44,20 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
 namespace {
 void RunLater(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               std::move(task));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 void OnCreateActorTabComplete(
     actor::ActorTask& task,
     actor::ActorKeyedService::CreateActorTabCallback callback,
@@ -83,6 +86,7 @@ void OnCreateActorTabComplete(
     std::move(callback).Run(tab);
   }
 }
+#endif
 
 }  // namespace
 
@@ -143,7 +147,7 @@ void ActorKeyedService::SetActorUiStateManagerForTesting(
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
   if (auto* tab_interface =
-          tabs::TabModel::MaybeGetFromContents(web_contents)) {
+          tabs::TabInterface::MaybeGetFromContents(web_contents)) {
     // There should only be one active task per tab.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
       if (actor_task->IsActingOnTab(tab_interface->GetHandle())) {
@@ -176,6 +180,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     return;
   }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   BrowserWindowInterface* window_for_new_tab = nullptr;
   tabs::TabInterface* initiator_tab = initiator_tab_handle.Get();
 
@@ -273,6 +278,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
   // navigating to about:blank it probably doesn't matter in practice.
   OnCreateActorTabComplete(*task, std::move(callback), journal_,
                            tabs::TabInterface::GetFromContents(contents));
+#endif
 }
 
 base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
