@@ -1,16 +1,18 @@
 include_rules = [
-  "+ios/chrome/browser/net/model",
+  # keep-sorted start
   "+ios/chrome/browser/app_launcher/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/download/model",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/itunes_urls/model",
+  "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/ntp/model",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tabs/model",
-  "+ios/chrome/browser/ntp/model",
-  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/web/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

@@ -1,7 +1,9 @@
 include_rules = [
+  # keep-sorted start
   "+components/page_image_service",
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sync/model",
+  # keep-sorted end
 ]

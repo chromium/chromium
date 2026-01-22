@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/infobars/ui_bundled/coordinators",
   "+ios/chrome/browser/infobars/ui_bundled/modals",
   "+ios/chrome/browser/infobars/ui_bundled/presentation",
+  # keep-sorted end
 ]

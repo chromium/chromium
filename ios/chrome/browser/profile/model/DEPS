@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/language_detection/model",
   "+ios/chrome/browser/net/model",
@@ -7,6 +8,7 @@ include_rules = [
   "+ios/chrome/browser/profile_metrics/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

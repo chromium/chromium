@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/javascript_dialogs/core",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

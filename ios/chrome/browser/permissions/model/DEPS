@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/geolocation/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/overlays/model/public",
+  # keep-sorted end
 ]

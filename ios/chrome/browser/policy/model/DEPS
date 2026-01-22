@@ -1,12 +1,14 @@
 include_rules = [
-  "+ios/chrome/browser/enterprise/identifiers",
-  "+ios/chrome/browser/policy_url_blocking/model",
-  "+ios/chrome/browser/signin/model",
+  # keep-sorted start
   "+components/collaboration/public/pref_names.h",
   "+components/contextual_search/pref_names.h",
   "+components/contextual_search/search_content_sharing_policy_handler.h",
   "+components/lens",
   "+components/themes",
+  "+ios/chrome/browser/enterprise/identifiers",
+  "+ios/chrome/browser/policy_url_blocking/model",
+  "+ios/chrome/browser/signin/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

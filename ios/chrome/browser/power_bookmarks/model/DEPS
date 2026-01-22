@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/keyed_service",
   "+components/power_bookmarks",
   "+ios/chrome/browser/bookmarks/model",
+  # keep-sorted end
 ]
