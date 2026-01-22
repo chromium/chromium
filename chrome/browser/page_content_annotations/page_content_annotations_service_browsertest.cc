@@ -675,6 +675,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   EXPECT_TRUE(
       PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents(),
+          *PageContentAnnotationsServiceFactory::GetForProfile(
+              browser()->profile()),
+          PageContentExtractionServiceFactory::GetForProfile(
+              browser()->profile()),
           base::BindRepeating(&page_content_annotations::FetchPageContext),
           base::BindRepeating(&MakeTabId))
           ->content_visibility_score()

@@ -8,10 +8,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
-#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -44,31 +41,26 @@ HistoryVisit CreateHistoryVisitFromWebContents(
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
+        PageContentAnnotationsService& page_content_annotations_service,
+        PageContentExtractionService* page_content_extraction_service,
         FetchPageContextCallback fetch_page_context_callback,
         GetTabIdCallback get_tab_id_callback)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
+      page_content_annotations_service_(page_content_annotations_service),
+      page_content_extraction_service_(page_content_extraction_service),
       fetch_page_context_callback_(std::move(fetch_page_context_callback)),
       get_tab_id_callback_(std::move(get_tab_id_callback)) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  page_content_annotations_service_ =
-      PageContentAnnotationsServiceFactory::GetForProfile(profile);
-  CHECK(page_content_annotations_service_);
   page_content_annotations_service_->AddObserver(
       AnnotationType::kContentVisibility, this);
 }
 
 AnnotatedPageContentRequest*
 PageContentAnnotationsWebContentsObserver::GetAnnotatedPageContentRequest() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* page_content_extraction_service =
-      PageContentExtractionServiceFactory::GetForProfile(profile);
   bool should_enable =
-      page_content_extraction_service &&
-      page_content_extraction_service->ShouldEnablePageContentExtraction();
+      page_content_extraction_service_ &&
+      page_content_extraction_service_->ShouldEnablePageContentExtraction();
 
   if (should_enable) {
     if (!annotated_page_content_request_) {

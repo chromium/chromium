@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
@@ -24,6 +25,7 @@ namespace page_content_annotations {
 
 class AnnotatedPageContentRequest;
 class PageContentAnnotationsService;
+class PageContentExtractionService;
 
 // This class is used to dispatch page content to the
 // PageContentAnnotationsService to be annotated.
@@ -46,8 +48,10 @@ class PageContentAnnotationsWebContentsObserver
     return content_visibility_score_;
   }
 
-  explicit PageContentAnnotationsWebContentsObserver(
+  PageContentAnnotationsWebContentsObserver(
       content::WebContents* web_contents,
+      PageContentAnnotationsService& page_content_annotations_service,
+      PageContentExtractionService* page_content_extraction_service,
       FetchPageContextCallback fetch_page_context_callback,
       GetTabIdCallback get_tab_id_callback);
 
@@ -83,8 +87,9 @@ class PageContentAnnotationsWebContentsObserver
 
   std::unique_ptr<AnnotatedPageContentRequest> annotated_page_content_request_;
 
-  // Not owned. Guaranteed to outlive |this|.
-  raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
+  raw_ref<PageContentAnnotationsService> page_content_annotations_service_;
+
+  raw_ptr<PageContentExtractionService> page_content_extraction_service_;
 
   // The client of continuous_search::mojom::SearchResultExtractor
   // interface used for extracting data from the main frame of Google SRP

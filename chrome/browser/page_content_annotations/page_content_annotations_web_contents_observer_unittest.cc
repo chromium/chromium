@@ -22,6 +22,7 @@
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
@@ -220,6 +221,8 @@ class PageContentAnnotationsWebContentsObserverTest
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(),
+        *PageContentAnnotationsServiceFactory::GetForProfile(profile()),
+        PageContentExtractionServiceFactory::GetForProfile(profile()),
         // Passing DoNothing() since fetching the page context is not required
         // in the tests below.
         base::DoNothing(), base::BindRepeating(&MakeTabId));
