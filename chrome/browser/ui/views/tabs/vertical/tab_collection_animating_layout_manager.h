@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -82,6 +84,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   void OnInstalled(views::View* host) override;
 
  private:
+  // Sets `starting_layout_` and `target_layout_` respectively. Clients must
+  // set these via the below helpers to ensure `start_view_bounds_map_` and
+  // `target_view_set_` reflect the current layout state.
+  void SetStartingLayout(const views::ProposedLayout& starting_layout);
+  void SetTargetLayout(const views::ProposedLayout& target_layout);
+
   // Recalculates the target layout and starts/updates animation if necessary.
   // Note: Layout change (e.g. child added/removed) requires recalculation.
   // However we don't need to call `RecalculateTarget()`  in `OnLayoutChanged()`
@@ -114,6 +122,12 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   views::ProposedLayout starting_layout_;  // State at start of animation.
   views::ProposedLayout target_layout_;    // Goal state.
   views::ProposedLayout current_layout_;   // Current interpolated state.
+
+  // Precomputed sets and maps for starting and target layouts for fast
+  // lookup. Updated in `SetStartingLayout()` and `SetTargetLayout()`.
+  using StartViewBoundsMap = base::flat_map<raw_ptr<views::View>, gfx::Rect>;
+  StartViewBoundsMap start_view_bounds_map_;
+  base::flat_set<raw_ptr<views::View>> target_view_set_;
 
   // Where in the animation the last layout recalculation happened.
   double starting_offset_ = 0.0;

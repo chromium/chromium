@@ -131,7 +131,7 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
     current_offset_ = 1.0;
     starting_offset_ = 0.0;
     current_layout_ = target_layout_;
-    starting_layout_ = target_layout_;
+    SetStartingLayout(target_layout_);
     ApplyLayout(target_layout_);
     RemoveNonAnimatingPendingDeleteViews();
     ClearViewAnimationMetadata();
@@ -141,6 +141,44 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
 void TabCollectionAnimatingLayoutManager::OnInstalled(views::View* host) {
   LayoutManagerBase::OnInstalled(host);
   RecalculateTarget();
+}
+
+void TabCollectionAnimatingLayoutManager::SetStartingLayout(
+    const views::ProposedLayout& starting_layout) {
+  starting_layout_ = starting_layout;
+
+  // Create a set of current child views for fast lookup. This is necessary
+  // as `starting_layout_` may contain Views already removed from the View tree
+  // and destroyed.
+  std::vector<const views::View*> child_views;
+  child_views.reserve(host_view()->children().size());
+  std::ranges::transform(
+      host_view()->children(), std::back_inserter(child_views),
+      [](const auto& child_view) { return child_view.get(); });
+  base::flat_set<const views::View*> child_view_set(std::move(child_views));
+
+  // Map view pointers to their starting bounds.
+  std::vector<StartViewBoundsMap::value_type> start_bounds_pairs;
+  start_bounds_pairs.reserve(starting_layout_.child_layouts.size());
+  for (const views::ChildLayout& layout : starting_layout_.child_layouts) {
+    if (child_view_set.contains(layout.child_view.get())) {
+      start_bounds_pairs.emplace_back(layout.child_view.get(), layout.bounds);
+    }
+  }
+  start_view_bounds_map_ = StartViewBoundsMap(std::move(start_bounds_pairs));
+}
+
+void TabCollectionAnimatingLayoutManager::SetTargetLayout(
+    const views::ProposedLayout& target_layout) {
+  target_layout_ = target_layout;
+
+  std::vector<raw_ptr<views::View>> target_views;
+  target_views.reserve(target_layout_.child_layouts.size());
+  std::ranges::transform(
+      target_layout_.child_layouts, std::back_inserter(target_views),
+      [](const auto& layout) { return layout.child_view.get(); });
+  target_view_set_ =
+      base::flat_set<raw_ptr<views::View>>(std::move(target_views));
 }
 
 void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
@@ -162,15 +200,15 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   // snap to target for horizontal bounds changes.
   if (!current_layout_.host_size.IsEmpty() &&
       (current_layout_.host_size.width() != new_target.host_size.width())) {
-    target_layout_ = new_target;
     current_layout_ = new_target;
-    starting_layout_ = new_target;
+    SetStartingLayout(new_target);
+    SetTargetLayout(new_target);
     starting_offset_ = 0.0;
     current_offset_ = 1.0;
     return;
   }
 
-  target_layout_ = new_target;
+  SetTargetLayout(new_target);
 
   // If we haven't actually rendered a frame yet keep the original
   // starting_layout.
@@ -183,7 +221,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
   if (current_offset_ > kResetAnimationThreshold) {
     // We are far enough along that we should start a "fresh" animation
     // from 0% to avoid awkward slow-downs at the end of the curve.
-    starting_layout_ = current_layout_;
+    SetStartingLayout(current_layout_);
     starting_offset_ = 0.0;
     current_offset_ = 0.0;
     animation_.Reset(0.0);
@@ -191,7 +229,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     // We are still early in the animation. Simply update the starting offset.
     // The timer remains running and we just calculate a new slope in
     // LayoutImpl.
-    starting_layout_ = current_layout_;
+    SetStartingLayout(current_layout_);
     starting_offset_ = current_offset_;
   }
 
@@ -203,7 +241,7 @@ void TabCollectionAnimatingLayoutManager::RecalculateTarget() {
 void TabCollectionAnimatingLayoutManager::ResetToTargetLayout() {
   RecalculateTarget();
   animation_.Reset(0.0);
-  starting_layout_ = target_layout_;
+  SetStartingLayout(target_layout_);
   current_layout_ = target_layout_;
   InvalidateHost(/*mark_layouts_changed=*/false);
 }
@@ -236,20 +274,11 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
   // animation.
   result.host_size = target_layout_.host_size;
 
-  // Map view pointers to their starting bounds for fast lookup
-  std::vector<std::pair<const views::View*, gfx::Rect>> start_bounds_pairs;
-  start_bounds_pairs.reserve(starting_layout_.child_layouts.size());
-  for (const views::ChildLayout& layout : starting_layout_.child_layouts) {
-    start_bounds_pairs.emplace_back(layout.child_view.get(), layout.bounds);
-  }
-  base::flat_map<const views::View*, gfx::Rect> start_bounds_map(
-      std::move(start_bounds_pairs));
-
   for (const auto& target_child : target_layout_.child_layouts) {
     views::ChildLayout interpolated_child = target_child;
-    auto it = start_bounds_map.find(target_child.child_view);
+    auto it = start_view_bounds_map_.find(target_child.child_view);
 
-    if (it != start_bounds_map.end()) {
+    if (it != start_view_bounds_map_.end()) {
       // Moved child.
       // Interpolate between start and target bounds.
       interpolated_child.bounds =
@@ -286,18 +315,10 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     result.child_layouts.push_back(interpolated_child);
   }
 
-  // Create a set of current child views for fast lookup.
-  std::vector<const views::View*> child_views;
-  child_views.reserve(host_view()->children().size());
-  std::ranges::transform(
-      host_view()->children(), std::back_inserter(child_views),
-      [](const auto& child_view) { return child_view.get(); });
-  base::flat_set<const views::View*> child_view_set(std::move(child_views));
-
   for (const auto& start_child : starting_layout_.child_layouts) {
     // Animate-out only pending delete views that were present in the previous
     // layout.
-    if (child_view_set.contains(start_child.child_view) &&
+    if (start_view_bounds_map_.contains(start_child.child_view) &&
         start_child.child_view->GetProperty(kPendingDeletion)) {
       // Removed child.
       // Pending delete Views will remain in the Views hierarchy until they are
