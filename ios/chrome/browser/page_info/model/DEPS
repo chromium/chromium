@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/page_info/core",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/search_engines/model",
+  # keep-sorted end
 ]
