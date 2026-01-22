@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
 
 namespace extensions {
 
-ScopedExtensionUpdaterKeepAlive::~ScopedExtensionUpdaterKeepAlive() = default;
+ScopedBrowserContextKeepAlive::~ScopedBrowserContextKeepAlive() = default;
 
 }  // namespace extensions

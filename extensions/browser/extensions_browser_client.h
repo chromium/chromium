@@ -109,7 +109,7 @@ class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
 class SafeBrowsingDelegate;
-class ScopedExtensionUpdaterKeepAlive;
+class ScopedBrowserContextKeepAlive;
 class ScriptExecutor;
 class SitePermissionsHelper;
 class UserScriptListener;
@@ -403,10 +403,10 @@ class ExtensionsBrowserClient {
   virtual scoped_refptr<update_client::Configurator>
   CreateUpdateClientConfigurator(content::BrowserContext* context);
 
-  // Returns a new ScopedExtensionUpdaterKeepAlive, or nullptr if the embedder
+  // Returns a new ScopedBrowserContextKeepAlive, or nullptr if the embedder
   // does not support keeping the context alive while the updater is running.
-  virtual std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
-  CreateUpdaterKeepAlive(content::BrowserContext* context);
+  virtual std::unique_ptr<ScopedBrowserContextKeepAlive> CreateUpdaterKeepAlive(
+      content::BrowserContext* context);
 
   // Returns true if activity logging is enabled for the given `context`.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);

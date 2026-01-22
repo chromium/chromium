@@ -48,7 +48,7 @@ class ExtensionCache;
 class ExtensionsAPIClient;
 class ProcessManagerDelegate;
 class SafeBrowsingDelegate;
-class ScopedExtensionUpdaterKeepAlive;
+class ScopedBrowserContextKeepAlive;
 class UserScriptListener;
 
 // Implementation of BrowserClient for Chrome, which includes
@@ -190,7 +190,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       scoped_refptr<update_client::Configurator>) override;
   scoped_refptr<update_client::Configurator> CreateUpdateClientConfigurator(
       content::BrowserContext* context) override;
-  std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
+  std::unique_ptr<ScopedBrowserContextKeepAlive> CreateUpdaterKeepAlive(
       content::BrowserContext* context) override;
   bool IsActivityLoggingEnabled(content::BrowserContext* context) override;
   void GetTabAndWindowIdForWebContents(content::WebContents* web_contents,

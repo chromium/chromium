@@ -588,12 +588,12 @@ source_set("extensions") {
     "//components/vector_icons",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/browser:keepalive",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/forced_extensions",
     "//extensions/browser/updater",
-    "//extensions/browser/updater:keepalive",
     "//extensions/common",
     "//extensions/strings",
     "//google_apis/common:request_util",
@@ -1707,9 +1707,9 @@ source_set("chrome_extensions_browser_client") {
     "//components/proxy_config",
     "//components/sessions",
     "//components/update_client",
+    "//extensions/browser:keepalive",
     "//extensions/browser/api/content_settings",
     "//extensions/browser/updater",
-    "//extensions/browser/updater:keepalive",
   ]
 
   if (enable_desktop_android_extensions) {

@@ -20,7 +20,7 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_assets_manager.h"
 #include "extensions/browser/extension_error.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -70,7 +70,7 @@ ExtensionsBrowserClient::CreateUpdateClientConfigurator(
   return scoped_refptr<update_client::Configurator>(nullptr);
 }
 
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+std::unique_ptr<ScopedBrowserContextKeepAlive>
 ExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
   return nullptr;

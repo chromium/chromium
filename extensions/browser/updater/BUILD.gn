@@ -41,7 +41,6 @@ source_set("updater") {
   ]
 
   deps = [
-    ":keepalive",
     "//base",
     "//components/crx_file",
     "//components/keyed_service/content",
@@ -49,17 +48,11 @@ source_set("updater") {
     "//components/update_client",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser:keepalive",
     "//extensions/browser/install",
     "//extensions/common",
     "//extensions/strings",
     "//services/data_decoder/public/cpp",
-  ]
-}
-
-source_set("keepalive") {
-  sources = [
-    "scoped_extension_updater_keep_alive.cc",
-    "scoped_extension_updater_keep_alive.h",
   ]
 }
 

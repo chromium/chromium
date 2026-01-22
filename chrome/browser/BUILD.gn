@@ -7920,7 +7920,7 @@ static_library("browser") {
 
     deps += [
       "//chrome/browser/extensions",
-      "//extensions/browser/updater:keepalive",
+      "//extensions/browser:keepalive",
     ]
 
     # Circular dependency due to some utility function in

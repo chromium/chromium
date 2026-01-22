@@ -622,13 +622,13 @@ source_set("browser_sources") {
     "//content/public/common",
     "//content/public/common:buildflags",
     "//extensions:extensions_browser_resources",
+    "//extensions/browser:keepalive",
     "//extensions/browser/api:extensions_api_client",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/api/storage:settings_observer",
     "//extensions/browser/api/system_display:display_info_provider",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common/api",
@@ -829,6 +829,13 @@ source_set("browser_sources") {
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
+  ]
+}
+
+source_set("keepalive") {
+  sources = [
+    "scoped_extension_keep_alive.cc",
+    "scoped_extension_keep_alive.h",
   ]
 }
 

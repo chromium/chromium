@@ -28,9 +28,9 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_update_data.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
@@ -85,10 +85,11 @@ void UpdateService::SendUninstallPing(const std::string& id,
                                       int reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(update_client_);
+
   update_client::CrxComponent crx;
   crx.app_id = id;
   crx.version = version;
-  // A ScopedExtensionUpdaterKeepAlive is bound into the callback to keep the
+  // A ScopedBrowserContextKeepAlive is bound into the callback to keep the
   // context alive throughout the operation.
   update_client_->SendPing(
       crx,
@@ -96,7 +97,7 @@ void UpdateService::SendUninstallPing(const std::string& id,
        .result = update_client::protocol_request::kEventResultSuccess,
        .error_code = 0,
        .extra_code1 = reason},
-      base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,
+      base::BindOnce([](std::unique_ptr<ScopedBrowserContextKeepAlive>,
                         update_client::Error) {},
                      ExtensionsBrowserClient::Get()->CreateUpdaterKeepAlive(
                          browser_context_)));

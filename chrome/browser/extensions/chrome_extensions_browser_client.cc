@@ -100,8 +100,8 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager_delegate.h"
 #include "extensions/browser/safe_browsing_delegate.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
 #include "extensions/browser/unpacked_installer.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
@@ -143,16 +143,20 @@ constexpr std::string_view kJsonUrlPath = "/service/update2/json";
 // new chrome update.
 bool g_did_chrome_update_for_testing = false;
 
-class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
+class ChromeScopedBrowserContextKeepAlive
+    : public ScopedBrowserContextKeepAlive {
  public:
-  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
-      : profile_keep_alive_(profile, origin) {}
-  UpdaterKeepAlive(const UpdaterKeepAlive&) = delete;
-  UpdaterKeepAlive& operator=(const UpdaterKeepAlive&) = delete;
-  ~UpdaterKeepAlive() override = default;
+  explicit ChromeScopedBrowserContextKeepAlive(
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive)
+      : profile_keep_alive_(std::move(profile_keep_alive)) {}
+  ChromeScopedBrowserContextKeepAlive(
+      const ChromeScopedBrowserContextKeepAlive&) = delete;
+  ChromeScopedBrowserContextKeepAlive& operator=(
+      const ChromeScopedBrowserContextKeepAlive&) = delete;
+  ~ChromeScopedBrowserContextKeepAlive() override = default;
 
  private:
-  ScopedProfileKeepAlive profile_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
@@ -630,12 +634,18 @@ ChromeExtensionsBrowserClient::CreateUpdateClientConfigurator(
   return ChromeUpdateClientConfig::Create(context, override_url);
 }
 
-std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+std::unique_ptr<ScopedBrowserContextKeepAlive>
 ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
-  return std::make_unique<UpdaterKeepAlive>(
+  auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
       Profile::FromBrowserContext(context),
       ProfileKeepAliveOrigin::kExtensionUpdater);
+  if (!profile_keep_alive) {
+    return nullptr;
+  }
+
+  return std::make_unique<ChromeScopedBrowserContextKeepAlive>(
+      std::move(profile_keep_alive));
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(
