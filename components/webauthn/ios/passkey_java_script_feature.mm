@@ -128,6 +128,14 @@ ReadLogEventType(const std::string& event,
   return std::nullopt;
 }
 
+bool ValidateFeatureUsage(const PasskeyRequestParams& request_params) {
+  if (request_params.IsConditional()) {
+    return base::FeatureList::IsEnabled(kIOSPasskeyConditionalLoginWithShim);
+  } else {
+    return base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim);
+  }
+}
+
 }  // namespace
 
 PasskeyJavaScriptFeature::AttestationData::AttestationData(
@@ -297,6 +305,12 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
       return;
     }
 
+    if (!ValidateFeatureUsage(*assertion_request_params)) {
+      // TODO(460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      return;
+    }
+
     passkey_tab_helper->HandleGetRequestedEvent(
         std::move(*assertion_request_params));
   } else {  // is_handle_create_request_event
@@ -306,6 +320,12 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     auto registration_request_params =
         BuildRegistrationRequestParams(std::move(*request_info), dict);
     if (!registration_request_params.has_value()) {
+      // TODO(460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info));
+      return;
+    }
+
+    if (!ValidateFeatureUsage(*registration_request_params)) {
       // TODO(460485333): Log the error.
       passkey_tab_helper->DeferToRenderer(std::move(*request_info));
       return;

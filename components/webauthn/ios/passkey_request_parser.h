@@ -24,6 +24,7 @@ enum class PasskeysParsingError {
   kMissingRpEntity,
   kMissingRpId,
   kEmptyRpId,
+  kMissingConditional,
   kMissingUserEntity,
   kMissingUserId,
   kEmptyUserId,

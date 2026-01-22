@@ -44,6 +44,7 @@ constexpr std::string kAllowCredentials = "allowCredentials";
 
 // Member of the "request" dictionary.
 constexpr std::string kChallenge = "challenge";
+constexpr std::string kIsConditional = "isConditional";
 
 // Common members of the "rpEntity" and "userEntity" dictionaries.
 constexpr std::string kId = "id";
@@ -95,6 +96,7 @@ IOSPasskeyClient::RequestInfo ValidRequestInfo() {
 base::Value::Dict BuildRequestParamsDict(
     bool has_request_dict,
     const std::string* challenge,
+    bool has_conditional,
     bool has_rp_entity_dict,
     const std::string* rp_id,
     bool has_user_entity_dict,
@@ -116,6 +118,10 @@ base::Value::Dict BuildRequestParamsDict(
 
     if (challenge) {
       request_dict.Set(kChallenge, *challenge);
+    }
+
+    if (has_conditional) {
+      request_dict.Set(kIsConditional, false);
     }
 
     request_params_dict.Set(kRequest, std::move(request_dict));
@@ -207,6 +213,7 @@ base::Value::Dict BuildRequestParamsDict(
 base::Value::Dict BuildRequestParamsDictNoExtensions(
     bool has_request_dict,
     const std::string* challenge,
+    bool has_conditional,
     bool has_rp_entity_dict,
     const std::string* rp_id,
     bool has_user_entity_dict,
@@ -214,33 +221,36 @@ base::Value::Dict BuildRequestParamsDictNoExtensions(
     const std::string* credential_list_name,
     const std::string* credential_type,
     const std::string* credential_id) {
-  return BuildRequestParamsDict(has_request_dict, challenge, has_rp_entity_dict,
-                                rp_id, has_user_entity_dict, user_id,
-                                credential_list_name, credential_type,
+  return BuildRequestParamsDict(has_request_dict, challenge, has_conditional,
+                                has_rp_entity_dict, rp_id, has_user_entity_dict,
+                                user_id, credential_list_name, credential_type,
                                 credential_id, /*has_extensions=*/true, nullptr,
                                 nullptr, nullptr, nullptr, nullptr);
 }
 
-base::Value::Dict BuildRequestParamsDictForRequest(
-    bool has_request_dict,
-    const std::string* challenge) {
+base::Value::Dict BuildRequestParamsDictForRequest(bool has_request_dict,
+                                                   const std::string* challenge,
+                                                   bool has_conditional) {
   return BuildRequestParamsDictNoExtensions(
-      has_request_dict, challenge, /*has_rp_entity_dict=*/false, nullptr,
-      /*has_user_entity_dict=*/false, nullptr, nullptr, nullptr, nullptr);
+      has_request_dict, challenge, has_conditional,
+      /*has_rp_entity_dict=*/false, nullptr, /*has_user_entity_dict=*/false,
+      nullptr, nullptr, nullptr, nullptr);
 }
 
 base::Value::Dict BuildRequestParamsDictForRp(bool has_rp_entity_dict,
                                               const std::string* rp_id) {
   return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, has_rp_entity_dict, rp_id,
-      /*has_user_entity_dict=*/false, nullptr, nullptr, nullptr, nullptr);
+      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
+      has_rp_entity_dict, rp_id, /*has_user_entity_dict=*/false, nullptr,
+      nullptr, nullptr, nullptr);
 }
 
 base::Value::Dict BuildRequestParamsDictForUser(bool has_user_entity_dict,
                                                 const std::string* user_id) {
   return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, /*has_rp_entity_dict=*/true,
-      &kBase64url, has_user_entity_dict, user_id, nullptr, nullptr, nullptr);
+      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
+      /*has_rp_entity_dict=*/true, &kBase64url, has_user_entity_dict, user_id,
+      nullptr, nullptr, nullptr);
 }
 
 base::Value::Dict BuildRequestParamsDictForCredentials(
@@ -248,9 +258,9 @@ base::Value::Dict BuildRequestParamsDictForCredentials(
     const std::string* credential_type,
     const std::string* credential_id) {
   return BuildRequestParamsDictNoExtensions(
-      /*has_request_dict=*/true, &kBase64url, /*has_rp_entity_dict=*/true,
-      &kBase64url, /*has_user_entity_dict=*/true, &kBase64url,
-      credential_list_name, credential_type, credential_id);
+      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
+      /*has_rp_entity_dict=*/true, &kBase64url, /*has_user_entity_dict=*/true,
+      &kBase64url, credential_list_name, credential_type, credential_id);
 }
 
 base::Value::Dict BuildRequestParamsDictForExtensions(
@@ -263,11 +273,11 @@ base::Value::Dict BuildRequestParamsDictForExtensions(
     const std::string* per_credential_prf_input2) {
   const std::string public_key = device::kPublicKey;
   return BuildRequestParamsDict(
-      /*has_request_dict=*/true, &kBase64url, /*has_rp_entity_dict=*/true,
-      &kBase64url, /*has_user_entity_dict=*/true, &kBase64url,
-      for_creation ? &kExcludeCredentials : &kAllowCredentials, &public_key,
-      &kBase64url, has_extensions, prf_input1, prf_input2, per_credential_id,
-      per_credential_prf_input1, per_credential_prf_input2);
+      /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/true,
+      /*has_rp_entity_dict=*/true, &kBase64url, /*has_user_entity_dict=*/true,
+      &kBase64url, for_creation ? &kExcludeCredentials : &kAllowCredentials,
+      &public_key, &kBase64url, has_extensions, prf_input1, prf_input2,
+      per_credential_id, per_credential_prf_input1, per_credential_prf_input2);
 }
 
 // Verifies that we get the desired RequestInfo parsing error.
@@ -349,29 +359,41 @@ TEST_F(PasskeyRequestParserTest, EmptyRequestId) {
 // Tests that an error is returned on a missing request.
 TEST_F(PasskeyRequestParserTest, MissingRequest) {
   VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/false, nullptr),
+      BuildRequestParamsDictForRequest(/*has_request_dict=*/false, nullptr,
+                                       /*has_conditional=*/true),
       PasskeysParsingError::kMissingRequest);
 }
 
 // Tests that an error is returned on a missing challenge.
 TEST_F(PasskeyRequestParserTest, MissingChallenge) {
   VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, nullptr),
+      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, nullptr,
+                                       /*has_conditional=*/true),
       PasskeysParsingError::kMissingChallenge);
 }
 
 // Tests that an error is returned on an empty challenge.
 TEST_F(PasskeyRequestParserTest, EmptyChallenge) {
   VerifyRequestParamsError(
-      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, &kEmpty),
+      BuildRequestParamsDictForRequest(/*has_request_dict=*/true, &kEmpty,
+                                       /*has_conditional=*/true),
       PasskeysParsingError::kEmptyChallenge);
 }
 
 // Tests that an error is returned on a malformed challenge.
 TEST_F(PasskeyRequestParserTest, MalformedChallenge) {
-  VerifyRequestParamsError(BuildRequestParamsDictForRequest(
-                               /*has_request_dict=*/true, &kNotBase64url),
-                           PasskeysParsingError::kMalformedChallenge);
+  VerifyRequestParamsError(
+      BuildRequestParamsDictForRequest(
+          /*has_request_dict=*/true, &kNotBase64url, /*has_conditional=*/true),
+      PasskeysParsingError::kMalformedChallenge);
+}
+
+// Tests that an error is returned on a missing conditional setting.
+TEST_F(PasskeyRequestParserTest, MissingConditional) {
+  VerifyRequestParamsError(
+      BuildRequestParamsDictForRequest(
+          /*has_request_dict=*/true, &kBase64url, /*has_conditional=*/false),
+      PasskeysParsingError::kMissingConditional);
 }
 
 // Tests that an error is returned on a missing rp entity.

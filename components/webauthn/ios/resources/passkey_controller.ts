@@ -62,11 +62,9 @@ function isConditionalMediation(
 }
 
 // Returns whether passkey requests should be handled directly in the browser.
-function shouldHandlePasskeyRequests(
-    options: CredentialRequestOptions|CredentialCreationOptions): boolean {
-  return isConditionalMediation(options) ?
-      shouldHandleConditionalPasskeyRequests() :
-      shouldHandleModalPasskeyRequests();
+function shouldHandlePasskeyRequests(isConditional: boolean): boolean {
+  return isConditional ? shouldHandleConditionalPasskeyRequests() :
+                         shouldHandleModalPasskeyRequests();
 }
 
 // Returns whether a Credential is a PublicKeyCredential upon successful
@@ -205,11 +203,13 @@ function extractRelyingPartyEntity(options: Options): RelyingPartyEntity {
 interface RequestInformation {
   challenge: string;
   userVerification: string;
+  isConditional: boolean;
   extensions: AuthenticationExtensionsClientInputs|undefined;
 }
 
 // Returns a dictionary of this request's information.
-function extractRequestInformation(options: Options): RequestInformation {
+function extractRequestInformation(
+    options: Options, isConditional: boolean): RequestInformation {
   let uvRequirement: UserVerificationRequirement|undefined;
   if (isCreationOptions(options)) {
     uvRequirement = options.authenticatorSelection?.userVerification;
@@ -220,6 +220,7 @@ function extractRequestInformation(options: Options): RequestInformation {
   return {
     'challenge': bufferSourceToBase64URL(options.challenge),
     'userVerification': uvRequirement ?? 'unknown',
+    'isConditional': isConditional,
     'extensions': options.extensions,
   };
 }
@@ -543,8 +544,8 @@ function createPassthroughAssertionRequest(
 
 // Creates a registration request from the provided parameters.
 function createRegistrationRequest(
-    publicKeyOptions: PublicKeyCredentialCreationOptions):
-    Promise<Credential|null> {
+    publicKeyOptions: PublicKeyCredentialCreationOptions,
+    isConditional: boolean): Promise<Credential|null> {
   const deferredPromise =
       new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
 
@@ -552,7 +553,7 @@ function createRegistrationRequest(
     'event': 'handleCreateRequest',
     'frameId': gCrWeb.getFrameId(),
     'requestId': deferredPromise.id,
-    'request': extractRequestInformation(publicKeyOptions),
+    'request': extractRequestInformation(publicKeyOptions, isConditional),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'userEntity': extractUserEntity(publicKeyOptions.user),
     'excludeCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
@@ -565,8 +566,8 @@ function createRegistrationRequest(
 
 // Creates an assertion request from the provided parameters.
 function createAssertionRequest(
-    publicKeyOptions: PublicKeyCredentialRequestOptions):
-    Promise<Credential|null> {
+    publicKeyOptions: PublicKeyCredentialRequestOptions,
+    isConditional: boolean): Promise<Credential|null> {
   const deferredPromise =
       new DeferredPublicKeyCredentialPromise(publicKeyOptions.timeout);
 
@@ -574,7 +575,7 @@ function createAssertionRequest(
     'event': 'handleGetRequest',
     'frameId': gCrWeb.getFrameId(),
     'requestId': deferredPromise.id,
-    'request': extractRequestInformation(publicKeyOptions),
+    'request': extractRequestInformation(publicKeyOptions, isConditional),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),
     'allowCredentials': publicKeyCredentialDescriptorAsSerializedDescriptors(
         publicKeyOptions.allowCredentials),
@@ -594,15 +595,19 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.get(options);
     }
 
-    if (shouldHandlePasskeyRequests(options) && options.publicKey.challenge) {
-      return createAssertionRequest(options.publicKey).then(result => {
-        if (isValidCredential(result)) {
-          // TODO(crbug.com/460485333): Notification message of success here?
-          return result;
-        }
+    const isConditional: boolean = isConditionalMediation(options);
+    if (shouldHandlePasskeyRequests(isConditional) &&
+        options.publicKey.challenge) {
+      return createAssertionRequest(options.publicKey, isConditional)
+          .then(result => {
+            if (isValidCredential(result)) {
+              // TODO(crbug.com/460485333): Notification message of success
+              // here?
+              return result;
+            }
 
-        return createPassthroughAssertionRequest(options);
-      });
+            return createPassthroughAssertionRequest(options);
+          });
     } else {
       return createPassthroughAssertionRequest(options);
     }
@@ -614,16 +619,20 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.create(options);
     }
 
-    if (shouldHandlePasskeyRequests(options) && options.publicKey.challenge &&
-        options.publicKey.user && options.publicKey.user.id) {
-      return createRegistrationRequest(options.publicKey).then(result => {
-        if (isValidCredential(result)) {
-          // TODO(crbug.com/460485333): Notification message of success here?
-          return result;
-        }
+    const isConditional: boolean = isConditionalMediation(options);
+    if (shouldHandlePasskeyRequests(isConditional) &&
+        options.publicKey.challenge && options.publicKey.user &&
+        options.publicKey.user.id) {
+      return createRegistrationRequest(options.publicKey, isConditional)
+          .then(result => {
+            if (isValidCredential(result)) {
+              // TODO(crbug.com/460485333): Notification message of success
+              // here?
+              return result;
+            }
 
-        return createPassthroughRegistrationRequest(options);
-      });
+            return createPassthroughRegistrationRequest(options);
+          });
     } else {
       return createPassthroughRegistrationRequest(options);
     }

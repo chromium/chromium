@@ -32,6 +32,7 @@ constexpr char kAllowCredentials[] = "allowCredentials";
 // Members of the "request" dictionary.
 constexpr char kChallenge[] = "challenge";
 constexpr char kUserVerification[] = "userVerification";
+constexpr char kIsConditional[] = "isConditional";
 
 // Common members of the "rpEntity" and "userEntity" dictionaries.
 constexpr char kId[] = "id";
@@ -349,6 +350,11 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
     return base::unexpected(challenge.error());
   }
 
+  std::optional<bool> isConditional = request_dict->FindBool(kIsConditional);
+  if (!isConditional.has_value()) {
+    return base::unexpected(PasskeysParsingError::kMissingConditional);
+  }
+
   const base::Value::Dict* rp_entity_dict = dict.FindDict(kRpEntity);
   if (!rp_entity_dict) {
     return base::unexpected(PasskeysParsingError::kMissingRpEntity);
@@ -374,7 +380,7 @@ base::expected<PasskeyRequestParams, PasskeysParsingError> BuildRequestParams(
                               std::move(*challenge),
                               ToUserVerificationRequirement(
                                   request_dict->FindString(kUserVerification)),
-                              std::move(*extension_data));
+                              *isConditional, std::move(*extension_data));
 }
 
 }  // namespace

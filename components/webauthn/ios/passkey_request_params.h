@@ -40,6 +40,7 @@ class PasskeyRequestParams {
                        device::PublicKeyCredentialRpEntity rp_entity,
                        std::vector<uint8_t> challenge,
                        device::UserVerificationRequirement user_verification,
+                       bool is_conditional,
                        PasskeyExtensionData extension_data);
   PasskeyRequestParams(PasskeyRequestParams&& other);
   ~PasskeyRequestParams();
@@ -63,6 +64,9 @@ class PasskeyRequestParams {
   bool ShouldPerformUserVerification(
       bool is_biometric_authentication_enabled) const;
 
+  // Returns whether the request is a conditional request (as opposed to modal).
+  bool IsConditional() const;
+
   // Returns the extensions input data for passkey creation.
   passkey_model_utils::ExtensionInputData ExtensionInputForCreation() const;
 
@@ -80,6 +84,8 @@ class PasskeyRequestParams {
   const std::vector<uint8_t> challenge_;
   // The passkey request's user verification preference.
   const device::UserVerificationRequirement user_verification_;
+  // Whether this is a conditional request (as opposed to a modal request).
+  const bool is_conditional_ = false;
   // Extension data, including the PRF extension.
   const PasskeyExtensionData extension_data_;
 };
