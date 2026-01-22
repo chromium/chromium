@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
@@ -1383,9 +1384,9 @@ void ProfileManager::RemoveKeepAlive(Profile* profile,
     VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") called before the Profile was added to the "
             << "ProfileManager. The keepalive was not removed.";
-    // DumpWithoutCrashing turned off for a couple milestones until we fix the
+    // DumpWithoutCrashing turned off for the Stable channel until we fix the
     // root cause, due to the high volume of reports. See crbug.com/368360956.
-    if (version_info::GetMajorVersionNumberAsInt() >= 144) {
+    if (chrome::GetChannel() != version_info::Channel::STABLE) {
       // TODO(crbug.com/368360956): Not incrementing the refcount will cause
       // `profile` to get destroyed too early. Remove or convert to a CHECK()
       // once the root cause is fixed.
