@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 include_rules = [
+  # keep-sorted start
   "+components/collaboration/public",
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/test_support",
@@ -16,7 +17,8 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/tabs_search/model",
   "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+  "+ios/chrome/browser/tabs_search/model",
   "+ios/chrome/browser/url_loading/model",
+  # keep-sorted end
 ]
