@@ -284,6 +284,7 @@ def ProcessCommonOptions(args):
   # Color warnings only when showing INFO logs (otherwise they do not need to
   # be distinguished).
   color_warnings = args.verbose_count > 0
+  logging_utils.InitColorama()
   handler = logging_utils.ColorStreamHandler(color_warnings=color_warnings)
   handler.setFormatter(run_tests_helper.CustomFormatter())
   logging.getLogger().addHandler(handler)

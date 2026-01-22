@@ -19,6 +19,15 @@ FORE = colorama.Fore
 STYLE = colorama.Style
 
 
+def InitColorama():
+  # NO_COLOR is a common way of disabling colors in terminal apps.
+  colorama.init(strip=bool(os.environ.get('NO_COLOR')))
+
+
+def Colorize(text, style=''):
+  return style + text + colorama.Style.RESET_ALL
+
+
 class _ColorFormatter(logging.Formatter):
   # pylint does not see members added dynamically in the constructor.
   # pylint: disable=no-member
@@ -42,8 +51,11 @@ class _ColorFormatter(logging.Formatter):
 
   def Colorize(self, message, log_level):
     try:
-      return (''.join(self.color_map[log_level]) + message +
-              colorama.Style.RESET_ALL)
+      colors = ''.join(self.color_map[log_level])
+      if not colors or not message:
+        return message
+      # Color only the log level char.
+      return Colorize(message[0], colors) + message[1:]
     except KeyError:
       return message
 
