@@ -59,7 +59,8 @@ std::optional<Thread> ContextualTask::GetThread() const {
   return thread_;
 }
 
-UrlResource::UrlResource(const GURL& url) : url(url) {}
+UrlResource::UrlResource(const GURL& url, ResourceType resource_type)
+    : url(url), resource_type(resource_type) {}
 UrlResource::UrlResource(const base::Uuid& url_id, const GURL& url)
     : url_id(url_id), url(url) {}
 UrlResource::UrlResource(const UrlResource& other) = default;

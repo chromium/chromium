@@ -49,7 +49,8 @@ void PendingContextDecorator::DecorateContext(
     }
 
     // Construct a new UrlAttachment for each FileInfo with a URL.
-    UrlAttachment attachment(file_info->tab_url.value());
+    UrlAttachment attachment(file_info->tab_url.value(),
+                             ResourceType::kWebpage);
     auto& decorator_data = GetMutableUrlAttachmentDecoratorData(attachment);
 
     // Copy over the tab title if it exists.

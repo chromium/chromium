@@ -130,8 +130,10 @@ TEST(ContextualTaskTest, SetUrlResourcesFromServer) {
   ContextualTask task(task_id);
 
   // Add some initial resources
-  task.AddUrlResource(UrlResource(GURL("https://initial1.com")));
-  task.AddUrlResource(UrlResource(GURL("https://initial2.com")));
+  task.AddUrlResource(
+      UrlResource(GURL("https://initial1.com"), ResourceType::kWebpage));
+  task.AddUrlResource(
+      UrlResource(GURL("https://initial2.com"), ResourceType::kWebpage));
   EXPECT_EQ(2u, task.GetUrlResources().size());
 
   // Set new resources

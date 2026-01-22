@@ -1051,16 +1051,18 @@ TEST_F(ContextualTasksServiceImplTest, SetUrlResourcesFromServer) {
   in1.title = "New Title 1";  // Changed
 
   // 2. Update res2 (Match by Context ID)
-  UrlResource in2(GURL("https://example.com/2"));  // No ID
+  UrlResource in2(GURL("https://example.com/2"),
+                  ResourceType::kWebpage);  // No ID
   in2.context_id = 12345;
   // Missing title, should copy "Old Title 2"
 
   // 3. Update res3 (Match by URL)
-  UrlResource in3(GURL("https://example.com/3"));  // No ID, No Context ID
+  UrlResource in3(GURL("https://example.com/3"),
+                  ResourceType::kWebpage);  // No ID, No Context ID
   // Missing title, should copy "Old Title 3"
 
   // 4. New resource (Added)
-  UrlResource in5(GURL("https://example.com/5"));
+  UrlResource in5(GURL("https://example.com/5"), ResourceType::kWebpage);
   in5.title = "New Title 5";
 
   std::vector<UrlResource> incoming_resources = {in1, in2, in3, in5};
