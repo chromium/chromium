@@ -94,7 +94,7 @@ default-features = false
 features = ["bmp"]
 
 [dependencies.jxl]
-version = "0.2.2"
+version = "0.3.0"
 features = ["all-simd"]
 
 [dependencies.llguidance]

@@ -92,7 +92,7 @@ component("image_decoders") {
       "jxl/jxl_image_decoder.cc",
       "jxl/jxl_image_decoder.h",
     ]
-    deps += [ "//third_party/rust/jxl/v0_2/wrapper:jxl_rs" ]
+    deps += [ "//third_party/rust/jxl/v0_3/wrapper:jxl_rs" ]
   }
 }
 
@@ -135,7 +135,7 @@ source_set("unit_tests") {
 
   if (enable_jxl_decoder) {
     sources += [ "jxl/jxl_image_decoder_test.cc" ]
-    deps += [ "//third_party/rust/jxl/v0_2/wrapper:jxl_rs" ]
+    deps += [ "//third_party/rust/jxl/v0_3/wrapper:jxl_rs" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

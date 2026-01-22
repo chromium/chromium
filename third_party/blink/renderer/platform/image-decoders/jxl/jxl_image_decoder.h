@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/rust/jxl/v0_2/wrapper/lib.rs.h"
+#include "third_party/rust/jxl/v0_3/wrapper/lib.rs.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace blink {

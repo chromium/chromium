@@ -1,0 +1,27 @@
+[package]
+name = "jxl_simd"
+description = "High performance Rust implementation of a JPEG XL decoder - SIMD support code"
+version = "0.3.0"
+readme = "../README.md"
+keywords = ["jpeg-xl", "simd"]
+categories = ["multimedia::images"]
+authors = ["Luca Versari <veluca93@gmail.com>"]
+repository = "https://github.com/libjxl/jxl-rs"
+edition = "2024"
+license = "BSD-3-Clause"
+
+[dependencies]
+
+[dev-dependencies]
+arbtest = "0.3.2"
+paste = "1.0.15"
+
+[features]
+all-simd = ["sse42", "avx", "avx512", "neon"]
+sse42 = []
+avx = ["sse42"]
+avx512 = ["avx"]
+neon = []
+
+[lints]
+workspace = true
