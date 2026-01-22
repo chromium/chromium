@@ -568,7 +568,13 @@ void BrowserURLLoaderThrottle::MaybeTransferAsyncChecker() {
         pending_async_checks_ > 0);
   }
   if (pending_async_checks_ > 0) {
-    async_check_tracker_->TransferUrlChecker(std::move(async_sb_checker_));
+    bool is_async_check_tracker_alive = !!async_check_tracker_;
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.BrowserThrottle.IsAsyncCheckTrackerAliveOnTransfer",
+        is_async_check_tracker_alive);
+    if (is_async_check_tracker_alive) {
+      async_check_tracker_->TransferUrlChecker(std::move(async_sb_checker_));
+    }
   }
 }
 

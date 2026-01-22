@@ -387,6 +387,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SafeBrowsing.BrowserThrottle.IsAsyncCheckTrackerAliveOnTransfer"
+    enum="BooleanAvailable" expires_after="2026-07-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the async check tracker is alive when the async checker is
+    about to be transferred from the browser throttle to the tracker. Only
+    logged when async check is eligible for this URL loader. The majority of the
+    time the tracker should be alive, this metric is used to detect if the
+    tracker is destroyed unexpectedly (i.e. the throttle outlives the tracker).
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2026-05-24">
   <owner>xinghuilu@chromium.org</owner>

@@ -940,6 +940,10 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest, VerifyDefer_AsyncNotDeferred) {
   EXPECT_FALSE(defer);
   // Async check is transferred to the tracker.
   EXPECT_EQ(async_check_tracker_->PendingCheckersSizeForTesting(), 1u);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckTrackerAliveOnTransfer",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 
   // Async check completed afterwards doesn't cause a crash.
   EXPECT_FALSE(async_url_checker_.WasInvalidated());
@@ -1225,6 +1229,30 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
 
   defer = CallWillProcessResponse();
   EXPECT_TRUE(defer);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
+       VerifyNoCrashWhenTrackerDestroyed) {
+  SetUpTest();
+  AddSyncCallbackInfo(/*should_proceed=*/true,
+                      /*should_delay_callback=*/false);
+  AddAsyncCallbackInfo(
+      /*should_proceed=*/true,
+      /*should_delay_callback=*/true);
+
+  CallWillStartRequest();
+
+  // Destroy the tracker.
+  async_check_tracker_.reset();
+
+  // This calls WillProcessResponse, which calls MaybeTransferAsyncChecker.
+  // This should not crash.
+  CallWillProcessResponse();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.BrowserThrottle.IsAsyncCheckTrackerAliveOnTransfer",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace safe_browsing
