@@ -1,14 +1,15 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/search_engines/model",
-  "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/authentication/ui_bundled",
-  "+ios/chrome/browser/content_suggestions",
-  "+ios/chrome/browser/lens/ui_bundled",
+  "+ios/chrome/browser/settings/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/settings/model",
+  # keep-sorted end
 ]
