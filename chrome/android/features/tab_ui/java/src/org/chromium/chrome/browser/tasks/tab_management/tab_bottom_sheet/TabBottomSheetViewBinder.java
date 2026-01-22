@@ -4,11 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
 
-import static org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetProperties.FUSEBOX_ENABLED;
 import static org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet.TabBottomSheetProperties.FUSEBOX_OFFSET;
 
 import android.view.View;
-import android.widget.EditText;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -26,10 +24,7 @@ public class TabBottomSheetViewBinder {
      * @param propertyKey The {@link PropertyKey} that changed.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (FUSEBOX_ENABLED == propertyKey) {
-            EditText fuseboxEditText = view.findViewById(R.id.fusebox_edit_text);
-            fuseboxEditText.setEnabled(model.get(FUSEBOX_ENABLED));
-        } else if (FUSEBOX_OFFSET == propertyKey) {
+        if (FUSEBOX_OFFSET == propertyKey) {
             View fuseboxContainer = view.findViewById(R.id.fusebox_container);
             float offset = -(view.getHeight() - model.get(FUSEBOX_OFFSET));
             fuseboxContainer.setTranslationY(offset);

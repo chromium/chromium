@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,10 +35,8 @@ public class TabBottomSheetCoordinator {
     private boolean mIsSheetCurrentlyManagedByController;
 
     /**
-     * Constructor.
-     *
      * @param context The Android {@link Context}.
-     * @param bottomSheetController The system {@link BottomSheetController}.
+     * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      */
     public TabBottomSheetCoordinator(Context context, BottomSheetController bottomSheetController) {
         mContext = context;
@@ -47,42 +46,44 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Shows the bottom sheet. */
-    public void showBottomSheet(View toolbarView, View webUiView) {
+    public void showBottomSheet(
+            View toolbarView,
+            View webUiView,
+            View fuseboxView,
+            Callback<Boolean> onBottomSheetShowAttempted) {
         if (mIsSheetCurrentlyManagedByController) {
             return;
         }
-
-        setModelProperties();
 
         // Build the bottom sheet.
         mContentView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
         ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
         ViewGroup webUiContainer = mContentView.findViewById(R.id.web_ui_container);
+        ViewGroup fuseboxContainer = mContentView.findViewById(R.id.fusebox_container);
 
+        // Add the views to the bottom sheet.
         toolbarContainer.addView(toolbarView);
         webUiContainer.addView(webUiView);
+        fuseboxContainer.addView(fuseboxView);
 
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
         mSheetContent = new TabBottomSheetContent(mContentView);
-        mSheetObserver = buildBottomSheetObserver();
 
         if (mBottomSheetController.requestShowContent(mSheetContent, true)) {
+            mSheetObserver = buildBottomSheetObserver(onBottomSheetShowAttempted);
             mBottomSheetController.addObserver(mSheetObserver);
             mIsSheetCurrentlyManagedByController = true;
         } else {
-            // This happens when either
-            // 1) if the sheet content is null
-            // 2) The bottom sheet is null
-            // 3) If its being shown, or is in queue but not currently shown
-            // 4) If a sheet of higher priority came up
+            // This happens when either.
+            // 1) If the sheet content is null.
+            // 2) The bottom sheet is null.
+            // 3) If its being shown, or is in queue but not currently shown.
+            // 4) If a sheet of higher priority came up.
+            onBottomSheetShowAttempted.onResult(false);
             cleanupSheetResources();
         }
-    }
-
-    private void setModelProperties() {
-        mModel.set(TabBottomSheetProperties.FUSEBOX_ENABLED, true);
     }
 
     // Cleanup methods.
@@ -110,8 +111,14 @@ public class TabBottomSheetCoordinator {
     }
 
     // Observer methods.
-    private BottomSheetObserver buildBottomSheetObserver() {
+    private BottomSheetObserver buildBottomSheetObserver(
+            Callback<Boolean> onBottomSheetShowAttempted) {
         return new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetOpened(@StateChangeReason int reason) {
+                onBottomSheetShowAttempted.onResult(true);
+            }
+
             @Override
             public void onSheetClosed(@StateChangeReason int reason) {
                 destroy();

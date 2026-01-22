@@ -13,12 +13,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public class TabBottomSheetProperties {
     // Fusebox Properties
-    public static final WritableObjectPropertyKey<Boolean> FUSEBOX_ENABLED =
-            new WritableObjectPropertyKey<>("fusebox_enabled");
     public static final WritableObjectPropertyKey<Float> FUSEBOX_OFFSET =
             new WritableObjectPropertyKey<>("fusebox_offset");
 
-    public static final PropertyKey[] ALL_KEYS = {FUSEBOX_ENABLED, FUSEBOX_OFFSET};
+    public static final PropertyKey[] ALL_KEYS = {FUSEBOX_OFFSET};
 
     /**
      * Creates a default model structure. Listeners will be populated by the Coordinator.

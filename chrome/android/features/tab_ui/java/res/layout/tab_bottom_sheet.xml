@@ -5,13 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <!-- TODO (crbug.com/474583728) Replace hardcoded strings -->
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="HardcodedText"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <!-- Handle Bar -->
     <ImageView
@@ -20,65 +21,29 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="7dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/toolbar_container"
         android:contentDescription="Handle"
         android:src="@drawable/drag_handlebar"
         app:tint="@macro/drag_handle_color"/>
 
-    <!-- Toolbar container -->
+    <!-- Toolbar Container -->
     <FrameLayout
         android:id="@+id/toolbar_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/handle_bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/web_ui_container" />
+        android:layout_height="wrap_content" />
 
     <!-- Web UI Container -->
     <FrameLayout
         android:id="@+id/web_ui_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="5dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/fusebox_container"/>
+        android:layout_weight="1"
+        android:padding="5dp" />
 
-    <!-- Fusebox for text input -->
-    <LinearLayout
+    <!-- Fusebox Container -->
+    <FrameLayout
         android:id="@+id/fusebox_container"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintTop_toBottomOf="@id/web_ui_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="8dp">
+        android:layout_height="wrap_content"
+        android:padding="5dp" />
 
-        <EditText
-            android:id="@+id/fusebox_edit_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="text"
-            android:autofillHints="notApplicable"
-            android:hint="hint"
-            android:singleLine="true" />
-
-        <ImageButton
-            android:id="@+id/fusebox_send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_send"
-            android:contentDescription="Send" />
-
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

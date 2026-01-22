@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.tasks.tab_management.tab_bottom_sheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
+import android.app.Activity;
+import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,7 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Manager class for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetManager implements Destroyable {
-    private final Context mContext;
+    private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;
     private @Nullable TabBottomSheetWebUi mWebUi;
     private @Nullable TabBottomSheetCoordinator mTabBottomSheetCoordinator;
@@ -26,17 +29,19 @@ public class TabBottomSheetManager implements Destroyable {
     /**
      * Constructor.
      *
-     * @param context The Android Context.
-     * @param bottomSheetController The BottomSheetController for showing the promo.
+     * @param activity The current {@link Activity} instance.
+     * @param profileSupplier A supplier for the current {@link Profile}.
+     * @param windowAndroid The {@link WindowAndroid} for managing window-level operations.
+     * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      */
     public TabBottomSheetManager(
-            Context context,
-            Profile profile,
+            Activity activity,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
-        mContext = context;
+        mActivity = activity;
         mBottomSheetController = bottomSheetController;
-        mWebUi = new TabBottomSheetWebUi(context, profile, windowAndroid);
+        mWebUi = new TabBottomSheetWebUi(activity, profileSupplier.get(), windowAndroid);
     }
 
     /**
@@ -45,15 +50,19 @@ public class TabBottomSheetManager implements Destroyable {
      * conditions are met, it will attempt to instantiate and display the promo bottom sheet to the
      * user.
      */
-    public void tryToShowBottomSheet(TabBottomSheetToolbar tabBottomSheetToolbar) {
+    public void tryToShowBottomSheet(
+            View toolbarView, View fuseboxView, Callback<Boolean> onBottomSheetShowAttempted) {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
             if (mTabBottomSheetCoordinator == null) {
                 mTabBottomSheetCoordinator =
-                        new TabBottomSheetCoordinator(mContext, mBottomSheetController);
+                        new TabBottomSheetCoordinator(mActivity, mBottomSheetController);
             }
             assumeNonNull(mWebUi).initialize();
             mTabBottomSheetCoordinator.showBottomSheet(
-                    tabBottomSheetToolbar, assumeNonNull(mWebUi.getWebUiView()));
+                    toolbarView,
+                    assumeNonNull(mWebUi.getWebUiView()),
+                    fuseboxView,
+                    onBottomSheetShowAttempted);
         } else {
             destroy();
         }
