@@ -126,6 +126,7 @@ public class TabStripTopControlLayerUnitTest {
 
     @Test
     public void testNotStartingTransitionBeforeTabStripInitialized() {
+        BrowserControlsUtils.setsSyncMinHeightWithTotalHeightForTesting(false);
         // Recreate the stacker without setting the tab strip.
         mTabStripTopControlLayer =
                 new TabStripTopControlLayer(
