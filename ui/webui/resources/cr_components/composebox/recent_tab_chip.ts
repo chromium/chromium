@@ -9,6 +9,7 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -53,7 +54,11 @@ export class RecentTabChipElement extends RecentTabChipBase {
     }
     const url = new URL(this.recentTab.url.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${this.recentTab.title} - ${domain}`;
+    // Escape the title and domain as they are passed as arguments to i18n(),
+    // which uses `parseHtmlSubset` to sanitize the localized string. If the
+    // title contains restricted HTML tags (like <style>), parseHtmlSubset will
+    // throw an error.
+    return `${htmlEscape(this.recentTab.title)} - ${htmlEscape(domain)}`;
   }
 
   protected addTabContext_(e: Event) {
