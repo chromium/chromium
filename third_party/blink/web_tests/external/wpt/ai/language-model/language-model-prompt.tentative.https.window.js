@@ -70,4 +70,4 @@ promise_test(async t => {
   const promptString = kTestPrompt.repeat(session.inputQuota);
   const requested = await session.measureInputUsage(promptString);
   await promise_rejects_quotaexceedederror(t, session.prompt(promptString), requested, session.inputQuota);
-}, 'Test that prompt input exeeding the total quota rejects');
+}, 'Test that prompt input exceeding the total quota rejects');

@@ -44,6 +44,9 @@ features:
 - name: text-stroke-fill
   files:
   - highlight-styling-003.html
+- name: get-computed-style
+  files:
+  - get-computed-style-crash.html
 - name: selection
   files:
   - active-selection-*

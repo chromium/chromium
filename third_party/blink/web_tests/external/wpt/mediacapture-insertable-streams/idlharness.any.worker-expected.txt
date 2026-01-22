@@ -1,4 +1,16 @@
 This is a testharness.js-based test.
+[FAIL] MediaStreamTrackHandle interface: existence and properties of interface object
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
+[FAIL] MediaStreamTrackHandle interface object length
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
+[FAIL] MediaStreamTrackHandle interface object name
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
+[FAIL] MediaStreamTrackHandle interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
+[FAIL] MediaStreamTrackHandle interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
+[FAIL] MediaStreamTrackHandle interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "MediaStreamTrackHandle" expected property "MediaStreamTrackHandle" missing
 [FAIL] MediaStreamTrackProcessor interface: existence and properties of interface object
   assert_own_property: self does not have own property "MediaStreamTrackProcessor" expected property "MediaStreamTrackProcessor" missing
 [FAIL] MediaStreamTrackProcessor interface object length
