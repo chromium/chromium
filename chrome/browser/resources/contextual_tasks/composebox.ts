@@ -102,6 +102,8 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
   private userDismissedTooltip_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
   private tooltipImpressionTimer_: number|null = null;
+  private composeboxShowZps: boolean =
+      loadTimeData.getBoolean('composeboxShowZps');
   private readonly tooltipImpressionDelay_: number =
       loadTimeData.getInteger('composeboxShowOnboardingTooltipImpressionDelay');
 
@@ -186,6 +188,14 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         this.composeboxHeight_ = composebox.offsetHeight;
       });
       this.resizeObserver_.observe(composebox);
+    }
+    // Get zero state autocomplete matches. If `composeboxShowZps` is true
+    // then an autocomplete request will already be being made by
+    // cr-composebox and therefore this isn't needed here. We currently
+    // aren't showing ZPS in all cases (i.e. for context) which is why
+    // this is currently needed.
+    if (this.isZeroState && !this.composeboxShowZps) {
+      composebox.queryAutocomplete(/*clearMatches=*/ false);
     }
   }
 

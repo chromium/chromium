@@ -1456,6 +1456,14 @@ std::string TemplateURLRef::HandleReplacements(
 #endif
             break;
           case RequestSource::NTP_COMPOSEBOX: {
+            // Co-browsing composebox uses a different client since its zps
+            // behave differently.
+            if (search_terms_args.page_classification ==
+                metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX) {
+              HandleReplacement(std::string(), "chrome-cobrowse-compose",
+                                replacement, &url);
+              break;
+            }
             // RequestSource::NTP_COMPOSEBOX will use "chrome-omni" for delayed
             // context uploads. TODO(crbug.com/460858102) Figure out how to
             // support delayed uploads using "chrome-compose."

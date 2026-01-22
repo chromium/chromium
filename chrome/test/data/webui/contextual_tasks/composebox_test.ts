@@ -1600,4 +1600,39 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertEquals(0, composebox.$.context.files_.size);
   });
+
+  test('queries autocomplete on load when isZeroState is true', async () => {
+    // Clear the body and reset the mock to test a fresh instance.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mockSearchboxPageHandler.reset();
+
+    loadTimeData.overrideValues({composeboxShowZps: false});
+
+    const app = document.createElement('contextual-tasks-app') as unknown as
+        MockContextualTasksAppElement;
+    app.isZeroState_ = true;
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+  });
+
+  test(
+      'does not query autocomplete on load when isZeroState is false',
+      async () => {
+        // Clear the body and reset the mock to test a fresh instance.
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        mockSearchboxPageHandler.reset();
+
+        loadTimeData.overrideValues({composeboxShowZps: false});
+
+        const app = document.createElement('contextual-tasks-app') as unknown as
+            MockContextualTasksAppElement;
+        app.isZeroState_ = false;
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        assertEquals(
+            0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
+      });
 });
