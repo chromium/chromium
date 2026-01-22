@@ -486,9 +486,10 @@ chrome.test.runTests([
         445 - 2 * MIN_TEXTBOX_SIZE_PX,
         initEvent.detail.annotation.textBoxRect.locationX);
     // y doesn't need adjusted in this case, since we're far enough from the
-    // bottom boundary of the page.
+    // bottom boundary of the page. y is always offset by half the text height.
     chrome.test.assertEq(
-        400, initEvent.detail.annotation.textBoxRect.locationY);
+        400 - manager.getCurrentTextAttributes().size / 2,
+        initEvent.detail.annotation.textBoxRect.locationY);
     chrome.test.assertEq(
         2 * MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.width);
 
@@ -540,7 +541,9 @@ chrome.test.runTests([
       chrome.test.assertEq(
           MIN_TEXTBOX_SIZE_PX, initData.annotation.textBoxRect.height);
       chrome.test.assertEq(x, initData.annotation.textBoxRect.locationX);
-      chrome.test.assertEq(y, initData.annotation.textBoxRect.locationY);
+      chrome.test.assertEq(
+          y - manager.getCurrentTextAttributes().size / 2,
+          initData.annotation.textBoxRect.locationY);
       chrome.test.assertEq(
           DEFAULT_TEXTBOX_WIDTH, initData.annotation.textBoxRect.width);
       chrome.test.assertEq(0, initData.annotation.pageIndex);

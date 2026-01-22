@@ -153,6 +153,7 @@ export class Ink2Manager extends EventTarget {
     assert(this.isTextInitializationComplete());
     assert(this.viewport_);
 
+    const isMouse = !!location;
     const page = location ? this.viewport_.getPageAtPoint(location) :
                             this.viewport_.getMostVisiblePage();
     if (page === -1) {
@@ -207,6 +208,16 @@ export class Ink2Manager extends EventTarget {
 
     // Clamp any new annotation to the page.
     if (!existing) {
+      // Adjust the location for a new annotation click so that the center of
+      // the first line of text will align with the center of the cursor,
+      // instead of the top left corner of the text aligning with the center of
+      // the cursor. This does not apply for annotations created with the
+      // keyboard.
+      if (isMouse) {
+        location.y =
+            location.y - this.attributes_.size * this.viewport_.getZoom() / 2;
+      }
+
       const minWidth = 2 * MIN_TEXTBOX_SIZE_PX;
       if (pageDimensions.width < minWidth ||
           pageDimensions.height < newBoxHeight) {
