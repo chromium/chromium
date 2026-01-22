@@ -389,6 +389,7 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     const content::MediaStreamRequest& request,
     const DesktopMediaID& media_id,
     content::MediaResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (web_contents->GetLastCommittedURL().GetScheme() !=
       content::kChromeUIScheme) {
     std::move(callback).Run(blink::mojom::StreamDevicesSet(),
@@ -397,9 +398,6 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     return;
   }
 
-  // base::Unretained(this) is safe because DisplayMediaAccessHandler is owned
-  // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
-  // destroyed when the browser process terminates.
   GetDevicesForDesktopCapture(
       web_contents, media_id, request.video_type, request.audio_type,
       request.security_origin, media_id.audio_share, request.disable_local_echo,
@@ -409,7 +407,7 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
       base::BindOnce(
           &DisplayMediaAccessHandler::
               OnDesktopCaptureDevicesObtainedAfterBypassMediaSelectionDialog,
-          base::Unretained(this), web_contents->GetWeakPtr(), request,
+          weak_factory_.GetWeakPtr(), web_contents->GetWeakPtr(), request,
           std::move(callback)));
 }
 
