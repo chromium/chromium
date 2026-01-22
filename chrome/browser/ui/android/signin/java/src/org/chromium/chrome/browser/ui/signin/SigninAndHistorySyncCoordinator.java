@@ -26,6 +26,8 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
+import java.util.Objects;
+
 /**
  * Interface for coordinators responsible of showing the correct sub-component of the sign-in and
  * history opt-in flow.
@@ -58,6 +60,29 @@ public abstract class SigninAndHistorySyncCoordinator {
         /** Default non-completion state, user canceled the sign-in flow, or an error occurred. */
         public static Result aborted() {
             return new Result(false, false);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hasSignedIn, hasOptedInHistorySync);
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (obj instanceof Result result) {
+                return hasSignedIn == result.hasSignedIn
+                        && hasOptedInHistorySync == result.hasOptedInHistorySync;
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{ hasSignedIn: "
+                    + hasSignedIn
+                    + ", hasOptedInHistorySync: "
+                    + hasOptedInHistorySync
+                    + '}';
         }
     }
 
