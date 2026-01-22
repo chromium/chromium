@@ -2538,6 +2538,7 @@ _GENERIC_PYDEPS_FILES = [
     'tools/binary_size/sizes.pydeps',
     'tools/binary_size/supersize.pydeps',
     'tools/cygprofile/generate_orderfile.pydeps',
+    'tools/grit/grit.pydeps',
     "tools/metrics/histograms/generate_allowlist_from_histograms_file.pydeps",
     'tools/perf/process_perf_results.pydeps',
     'tools/pgo/generate_profile.pydeps',
