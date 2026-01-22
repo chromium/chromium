@@ -130,8 +130,6 @@ class FormEventLoggerBase {
   virtual void LogFormSubmitted(const FormStructure& form);
 
   // Only used for UKM backward compatibility since it depends on IsCreditCard.
-  // TODO (crbug.com/925913): Remove IsCreditCard from UKM logs amd replace with
-  // |form_type_name_|.
   virtual void LogUkmInteractedWithForm(FormSignature form_signature) = 0;
 
   virtual void OnSuggestionsShownOnce(const FormStructure& form) {}
