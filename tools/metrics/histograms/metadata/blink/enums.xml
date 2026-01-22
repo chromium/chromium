@@ -5431,12 +5431,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4882" label="ViewportSegments"/>
   <int value="4883" label="PrivateNetworkAccessWebSocketConnected"/>
   <int value="4884" label="WebAppTitle"/>
-  <int value="4885" label="DOMSubtreeModifiedEventFired"/>
-  <int value="4886" label="DOMNodeInsertedEventFired"/>
-  <int value="4887" label="DOMNodeRemovedEventFired"/>
-  <int value="4888" label="DOMNodeRemovedFromDocumentEventFired"/>
-  <int value="4889" label="DOMNodeInsertedIntoDocumentEventFired"/>
-  <int value="4890" label="DOMCharacterDataModifiedEventFired"/>
+  <int value="4885" label="OBSOLETE_DOMSubtreeModifiedEventFired"/>
+  <int value="4886" label="OBSOLETE_DOMNodeInsertedEventFired"/>
+  <int value="4887" label="OBSOLETE_DOMNodeRemovedEventFired"/>
+  <int value="4888" label="OBSOLETE_DOMNodeRemovedFromDocumentEventFired"/>
+  <int value="4889" label="OBSOLETE_DOMNodeInsertedIntoDocumentEventFired"/>
+  <int value="4890" label="OBSOLETE_DOMCharacterDataModifiedEventFired"/>
   <int value="4891" label="OBSOLETE_AnyMutationEventFired"/>
   <int value="4892" label="OBSOLETE_AnyMutationEventListenerAdded"/>
   <int value="4893"
