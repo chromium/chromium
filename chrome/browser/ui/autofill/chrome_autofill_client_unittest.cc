@@ -119,7 +119,9 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       (override));
   MOCK_METHOD(void, HideSaveCardBubble, (), (override));
 };
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockAutofillFieldPromoController : public AutofillFieldPromoController {
  public:
   ~MockAutofillFieldPromoController() override = default;
@@ -136,8 +138,6 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
       : ChromeAutofillClient(web_contents) {}
   ~TestChromeAutofillClient() override = default;
-
-  void ResetContents() { Observe(nullptr); }
 };
 
 class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
@@ -393,18 +393,6 @@ TEST_F(ChromeAutofillClientTest,
   PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
   EXPECT_EQ(client()->GetPlusAddressDelegate(), nullptr);
-}
-
-// Ensure that, when web contents are destroyed, `GetStrikeDatabase` will
-// return nullptr.
-TEST_F(ChromeAutofillClientTest, GetStrikeDatabase_NoWebContents) {
-  TestChromeAutofillClient autofill_client =
-      TestChromeAutofillClient(web_contents());
-  ASSERT_TRUE(autofill_client.GetStrikeDatabase());
-  autofill_client.ResetContents();
-
-  ASSERT_FALSE(autofill_client.web_contents());
-  EXPECT_FALSE(autofill_client.GetStrikeDatabase());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

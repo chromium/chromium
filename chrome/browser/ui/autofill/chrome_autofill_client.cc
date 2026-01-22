@@ -666,10 +666,6 @@ ChromeAutofillClient::GetPaymentsAutofillClient() {
 }
 
 strike_database::StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {
-  if (!web_contents()) {
-    return nullptr;
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   // No need to return a StrikeDatabase in incognito mode. It is primarily
