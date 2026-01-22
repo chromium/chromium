@@ -61,6 +61,7 @@ class CanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProviderBitmap;
 class CanvasResourceProviderSharedImage;
+class CanvasResourceProviderSharedImageNon2D;
 class MemoryManagedPaintCanvas;
 class OffscreenCanvasRenderingContext2D;
 class StaticBitmapImage;
@@ -152,6 +153,18 @@ class PLATFORM_EXPORT CanvasResourceProvider
                             RasterMode raster_mode,
                             gpu::SharedImageUsageSet shared_image_usage_flags,
                             Delegate* delegate = nullptr);
+
+  static std::unique_ptr<CanvasResourceProviderSharedImageNon2D>
+  CreateSharedImageProviderNon2D(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      Delegate* delegate = nullptr);
 
   static std::unique_ptr<CanvasResourceProviderSharedImage>
   CreateWebGPUImageProvider(
@@ -289,6 +302,18 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
  private:
   friend class FlushForImageListener;
+
+  template <class T>
+  static std::unique_ptr<T> CreateSharedImageProviderBase(
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      SkAlphaType alpha_type,
+      const gfx::ColorSpace& color_space,
+      ShouldInitialize initialize_provider,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      RasterMode raster_mode,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      Delegate* delegate = nullptr);
 
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
 
@@ -631,6 +656,23 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool notified_context_lost_ = false;
   base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
       this};
+};
+
+// * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
+// * by non-Canvas2D clients.
+class PLATFORM_EXPORT CanvasResourceProviderSharedImageNon2D
+    : public CanvasResourceProviderSharedImage {
+ public:
+  CanvasResourceProviderSharedImageNon2D(
+      gfx::Size,
+      viz::SharedImageFormat,
+      SkAlphaType,
+      const gfx::ColorSpace&,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+      bool is_accelerated,
+      gpu::SharedImageUsageSet shared_image_usage_flags,
+      Delegate*);
+  ~CanvasResourceProviderSharedImageNon2D() override = default;
 };
 
 }  // namespace blink

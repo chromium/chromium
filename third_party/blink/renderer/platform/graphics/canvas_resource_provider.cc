@@ -1142,6 +1142,40 @@ CanvasResourceProvider::CreateSharedImageProvider(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate) {
+  return CreateSharedImageProviderBase<CanvasResourceProviderSharedImage>(
+      size, format, alpha_type, color_space, should_initialize,
+      context_provider_wrapper, raster_mode, shared_image_usage_flags,
+      delegate);
+}
+
+std::unique_ptr<CanvasResourceProviderSharedImageNon2D>
+CanvasResourceProvider::CreateSharedImageProviderNon2D(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    RasterMode raster_mode,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    Delegate* delegate) {
+  return CreateSharedImageProviderBase<CanvasResourceProviderSharedImageNon2D>(
+      size, format, alpha_type, color_space, should_initialize,
+      context_provider_wrapper, raster_mode, shared_image_usage_flags,
+      delegate);
+}
+
+template <class T>
+std::unique_ptr<T> CanvasResourceProvider::CreateSharedImageProviderBase(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    ShouldInitialize should_initialize,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    RasterMode raster_mode,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    Delegate* delegate) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1240,9 +1274,9 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 #endif
 
-  auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      size, format, alpha_type, color_space, context_provider_wrapper,
-      is_accelerated, shared_image_usage_flags, delegate);
+  auto provider = std::make_unique<T>(size, format, alpha_type, color_space,
+                                      context_provider_wrapper, is_accelerated,
+                                      shared_image_usage_flags, delegate);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)
@@ -1673,6 +1707,24 @@ void CanvasResourceProviderSharedImage::NotifyGpuContextLostTask(
     std::move(provider)->delegate_->NotifyGpuContextLost();
   }
 }
+
+CanvasResourceProviderSharedImageNon2D::CanvasResourceProviderSharedImageNon2D(
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    const gfx::ColorSpace& color_space,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
+    bool is_accelerated,
+    gpu::SharedImageUsageSet shared_image_usage_flags,
+    Delegate* delegate)
+    : CanvasResourceProviderSharedImage(size,
+                                        format,
+                                        alpha_type,
+                                        color_space,
+                                        context_provider_wrapper,
+                                        is_accelerated,
+                                        shared_image_usage_flags,
+                                        delegate) {}
 
 bool CanvasResourceProvider::UnacceleratedWritePixels(
     const SkImageInfo& orig_info,
