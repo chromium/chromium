@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -286,7 +287,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
+      ntp_realbox::IsNtpRealboxNextEnabled(profile_) &&
+          base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("wallpaperSearchEnabled", wallpaper_search_enabled);
   source->AddBoolean(
       "wallpaperSearchInspirationCardEnabled",
@@ -305,18 +307,15 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
   bool action_chips_eligible =
-      ntp_features::kNtpNextShowSimplificationUIParam.Get()
-          ? aim_eligibility_service &&
-                (aim_eligibility_service->IsDeepSearchEligible() ||
-                 aim_eligibility_service->IsCreateImagesEligible())
-          : aim_eligibility_service &&
-                aim_eligibility_service->IsDeepSearchEligible() &&
-                aim_eligibility_service->IsCreateImagesEligible();
-  bool show_tools =
-      action_chips_eligible &&
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
-          profile_->GetPrefs());
-  source->AddBoolean("aimPolicyEnabled", show_tools);
+          profile_->GetPrefs()) &&
+      (ntp_features::kNtpNextShowSimplificationUIParam.Get()
+           ? (aim_eligibility_service->IsDeepSearchEligible() ||
+              aim_eligibility_service->IsCreateImagesEligible())
+           : (aim_eligibility_service->IsDeepSearchEligible() &&
+              aim_eligibility_service->IsCreateImagesEligible()));
+  source->AddBoolean("aimPolicyEnabled", action_chips_eligible);
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
