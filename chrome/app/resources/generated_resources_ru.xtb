@@ -7478,7 +7478,7 @@
 <translation id="6130807998512240230">Управление телефоном, Обмен с окружением</translation>
 <translation id="6130887916931372608">Клавиша</translation>
 <translation id="6131511889181741773">Кляксы</translation>
-<translation id="6132188132833716741">⇥ Нажмите Tab, а затем Ввод, чтобы активировать режим ИИ</translation>
+<translation id="6132188132833716741">⇥ Нажмите Tab, а затем Ввод, чтобы включить режим ИИ</translation>
 <translation id="6132251717264923430">Кнопка закреплена</translation>
 <translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
 <translation id="6134418895482326458">Скрыть нижний колонтитул страницы быстрого доступа</translation>
@@ -10818,7 +10818,7 @@
 <translation id="8413795581997394485">Защита от сайтов, расширений и скачиваемых файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через сервер обеспечения конфиденциальности, который скрывает ваш IP-адрес. Если сайт делает что-то подозрительное, передается полный URL и части контента со страницы.</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="8415120635186642416">Введите любой запрос</translation>
+<translation id="8415120635186642416">Исследуйте любую тему</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (чехол)</translation>
 <translation id="8417065541337558100">Предварительный просмотр изображения с вашей камеры</translation>
 <translation id="8417548266957501132">Пароль родителя</translation>

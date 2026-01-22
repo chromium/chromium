@@ -1058,7 +1058,7 @@
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691924980723297736">Предупреждение</translation>
 <translation id="2696385693639654606">Chrome Enterprise Core позволяет управлять из облака правилами браузера, приложениями и расширениями.</translation>
-<translation id="2697248912349197812">Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="2697248912349197812">Задайте вопрос: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступно подменю. Чтобы открыть дополнительные варианты, нажмите <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Лицевой стороной вниз</translation>
 <translation id="2702592986366989640">Недорогой вариант</translation>
@@ -1547,7 +1547,7 @@
 <translation id="351522771072578657">Вы сейчас находитесь в меню</translation>
 <translation id="3517264445792388751">Использование файловой системы отключено администратором.</translation>
 <translation id="3518941727116570328">Обработка нескольких объектов</translation>
-<translation id="3519670528214225835">Задайте вопрос <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3519670528214225835">Задайте вопрос: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3525130752944427905">10 x 14 дюймов</translation>
 <translation id="3525435918300186947">Разрешить управлять MIDI-устройствами и перепрограммировать их?</translation>
 <translation id="3527181387426738155">Музыка и аудио</translation>
@@ -2285,7 +2285,7 @@
 <translation id="469028408546145398">Кнопка "Закрыть окна в режиме инкогнито". Нажмите ее, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="4691093235373904540">Кровельные работы</translation>
 <translation id="4692623383562244444">Поисковые системы</translation>
-<translation id="4695702626068620848"><ph name="KEYWORD" /> – Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Задайте вопрос: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Спортивные единоборства</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
@@ -2542,7 +2542,7 @@
 <translation id="5097099694988056070">статистические данные устройства, например об использовании процессора или оперативной памяти;</translation>
 <translation id="5097468150760963273">27 x 39 дюймов</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Нажмите Tab, а затем Ввод, чтобы активировать режим ИИ</translation>
+<translation id="5102512728737175215">Нажмите Tab, а затем Ввод, чтобы включить режим ИИ</translation>
 <translation id="510644072453496781">Картон (торцевой)</translation>
 <translation id="5106648964679263509">Введены данные виртуальной карты сервиса "<ph name="BNPL_ISSUER_NAME" />"</translation>
 <translation id="5108567515277121477">Карта постоянного клиента</translation>
@@ -2873,7 +2873,7 @@
 <translation id="5624120631404540903">Настройки паролей</translation>
 <translation id="5628060911499153873">Сохраните свои данные, чтобы быстрее выполнять действия в продуктах Google. Ваша информация сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Не удалось применить настройки политики</translation>
-<translation id="5630981295558454585">Кнопка "Спросите Google об этой странице". Нажмите, чтобы задать Google вопрос об этой странице.</translation>
+<translation id="5630981295558454585">Кнопка "Спросить Google об этой странице". Нажмите, чтобы задать Google вопрос об этой странице.</translation>
 <translation id="5631439013527180824">Токен устройства недействителен</translation>
 <translation id="5632485077360054581">Показать</translation>
 <translation id="563324245173044180">Мошеннический контент заблокирован</translation>

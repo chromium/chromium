@@ -1900,7 +1900,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2270668657177045040">Сайт жана анын субдомендери түзмөгүңүзгө кайсы тиешелүү веб колдонмолор орнотулганын көрө алат.</translation>
 <translation id="2271452184061378400">Өтмөк топтору ушул жерде сакталат</translation>
 <translation id="2271986192355138465">Веб-колдонмолорду орнотконду үйрөнүп алыңыз</translation>
-<translation id="2272430695183451567">0 которгуч дайындалды</translation>
+<translation id="2272430695183451567">0 которгуч коюлду</translation>
 <translation id="2272570998639520080">Мартини бокалы</translation>
 <translation id="2273119997271134996">Видео-оюкчаны туташтырууда ката кетти</translation>
 <translation id="2274840746523584236">Chromebook'ту кубаттаңыз</translation>
@@ -4293,7 +4293,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3887764720741098847">Сакталган маалымат</translation>
 <translation id="3888501106166145415">Байланышкан Wi-Fi тармактары</translation>
 <translation id="3890064827463908288">Wi-Fi Sync функциясын колдонуу үчүн Chrome шайкештирүүнү күйгүзүңүз</translation>
-<translation id="389313931326656921">“Кийинки” аракети үчүн которгучту дайындоо</translation>
+<translation id="389313931326656921">“Кийинки” деген аракетке которгуч коюу</translation>
 <translation id="3893268973182382220">Бул панель азыр жүктөлбөй жатат</translation>
 <translation id="3893536212201235195">Атайын мүмкүнчүлүктөр параметрлериңизди окуп, өзгөртүңүз</translation>
 <translation id="3893630138897523026">ChromeVox (айтылуучу жооп пикир)</translation>
@@ -8915,7 +8915,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7121438501124788993">Иштеп чыгуучу режими</translation>
 <translation id="7121728544325372695">Акылдуу тирелер</translation>
 <translation id="7123030151043029868">Бир нече файлды автоматтык түрдө жүктөп ала алат</translation>
-<translation id="7124013154139278147">“Мурунку” аракети үчүн которгучту дайындоо</translation>
+<translation id="7124013154139278147">“Мурунку” деген аракетке которгуч коюу</translation>
 <translation id="7124712201233930202">Уюмуңуздун саясаттарында коюлган талаптар аткарылган жок</translation>
 <translation id="7125148293026877011">Crostini'ни жок кылуу</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>

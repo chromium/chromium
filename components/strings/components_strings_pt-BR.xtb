@@ -2286,7 +2286,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="469028408546145398">Botão "Fechar janelas anônimas". Ative para fechar todas as janelas anônimas abertas</translation>
 <translation id="4691093235373904540">Serviços de telhadista</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
-<translation id="4695702626068620848"><ph name="KEYWORD" /> - Perguntar ao <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" />: perguntar ao <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Lutas</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>

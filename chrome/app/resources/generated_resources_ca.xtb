@@ -5202,7 +5202,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4538417792467843292">Suprimeix la paraula</translation>
 <translation id="4538792345715658285">Instal·lat per una política empresarial</translation>
 <translation id="4540409690203718935">No es pot accedir al gestor de contrasenyes de Google. Torna-ho a provar d'aquí a uns quants minuts.</translation>
-<translation id="4540780316273593836">S'ha produït un error</translation>
+<translation id="4540780316273593836">Hi ha hagut un error</translation>
 <translation id="4541123282641193691">No s'ha pogut verificar el teu compte. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="4541396589393395475">La teva organització ha desactivat aquesta funció</translation>
 <translation id="4541505619120536051">Obre sempre</translation>
@@ -11622,7 +11622,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8968527460726243404">Escriptor d'imatges del sistema ChromeOS</translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
 <translation id="8968906873893164556">Tria el compte que vulguis utilitzar per a la configuració</translation>
-<translation id="8970887620466824814">S'ha produït un error.</translation>
+<translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Consulteu amb l'administrador de xarxa per assegurar-vos que el tallafoc no estigui bloquejant les baixades dels servidors de Google.</translation>
 <translation id="8973263196882835828">&amp;Activa Subtítols instantanis</translation>
