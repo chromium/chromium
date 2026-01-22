@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
@@ -212,6 +213,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
         EXPECT_EQ(GURL(chrome::kChromeUIBookmarksURL),
                   tab_strip_model->GetWebContentsAt(0)->GetURL());
         EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+      }));
+}
+
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland. Fails on Windows.
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_OZONE_WAYLAND) && !BUILDFLAG(IS_WIN)
+#define MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState \
+  DragToDetachIntoNewWindowWithVerticalTabsState
+#else
+#define MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState \
+  DISABLED_DragToDetachIntoNewWindowWithVerticalTabsState
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragHandlerTest,
+                       MAYBE_DragToDetachIntoNewWindowWithVerticalTabsState) {
+  const int kInitialWidth = 250;
+  vertical_tab_strip_state_controller()->SetCollapsed(true);
+  vertical_tab_strip_state_controller()->SetUncollapsedWidth(kInitialWidth);
+
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      DragTabTo(1, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false), Do([&]() {
+        BrowserWindowInterface& new_browser = GetLatestBrowser();
+        auto* controller =
+            tabs::VerticalTabStripStateController::From(&new_browser);
+        ASSERT_NE(nullptr, controller);
+        EXPECT_TRUE(controller->IsCollapsed());
+        EXPECT_EQ(kInitialWidth, controller->GetUncollapsedWidth());
       }));
 }
 

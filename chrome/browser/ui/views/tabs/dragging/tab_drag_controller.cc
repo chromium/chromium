@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -2492,6 +2493,13 @@ Browser* TabDragController::CreateBrowserForDrag(TabDragContext* source,
                 /* trusted_source=*/true, gfx::Rect(), from_browser->profile(),
                 /* user_gesture=*/true)
           : from_browser->create_params();
+
+  if (auto* controller =
+          tabs::VerticalTabStripStateController::From(from_browser)) {
+    create_params.vertical_tab_strip_collapsed = controller->IsCollapsed();
+    create_params.vertical_tab_strip_uncollapsed_width =
+        controller->GetUncollapsedWidth();
+  }
 
   // Web app windows have their own initial size independent of the source
   // browser window.
