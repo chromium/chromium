@@ -107,7 +107,7 @@ EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
 }
 
 bool IsTrustFirstOnboardingPending(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
+  return GlicEnabling::IsTrustFirstOnboardingEnabled() &&
          !GlicEnabling::HasConsentedForProfile(profile);
 }
 }  // namespace
