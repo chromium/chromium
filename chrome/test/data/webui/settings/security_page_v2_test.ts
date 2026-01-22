@@ -7,11 +7,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import type {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
+import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -89,11 +89,148 @@ suite('Main', function() {
     await flushTasks();
     assertTrue(isChildVisible(page, '#safeBrowsingRadioGroup'));
 
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
     // Click on the expand button, collapses content and we can't see the radio
     // group.
     expandButton.click();
     await flushTasks();
     assertFalse(isChildVisible(page, '#safeBrowsingRadioGroup', true));
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+  });
+
+  test('SafeBrowsingToggledOff', async function() {
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Toggle Safe Browsing off.
+    const toggleButton =
+        page.$.safeBrowsingRow.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#toggleButton');
+    assertTrue(
+        !!toggleButton, 'Safe Browsing toggle button element should exist.');
+    assertTrue(
+        isVisible(toggleButton),
+        'The toggle button should be visible after expanding the row.');
+    toggleButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.DisableSafeBrowsingClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('StandardRadioButtonSelected', async function() {
+    // Set initial page state.
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.ENHANCED);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+    await flushTasks();
+
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Click the Standard radio button.
+    const radioGroup =
+        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
+    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
+    assertTrue(
+        isVisible(radioGroup),
+        'The radio group should be visible after expanding the row.');
+
+    const standardSafeBrowsingRadioButton =
+        radioGroup.querySelector<ControlledRadioButtonElement>(
+            'controlled-radio-button');
+    assertTrue(
+        !!standardSafeBrowsingRadioButton,
+        'Standard Safe Browsing radio button element should exist.');
+    assertTrue(
+        isVisible(standardSafeBrowsingRadioButton),
+        'The radio group should be visible after expanding the row.');
+
+    standardSafeBrowsingRadioButton.click();
+    await eventToPromise('change', radioGroup);
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.StandardProtectionClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('EnhancedRadioButtonSelected', async function() {
+    // Verify no User Action has been recorded yet.
+    assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
+
+    // Expand the Safe Browsing row.
+    page.$.safeBrowsingRow.$.expandButton.click();
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.SafeBrowsingRowClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
+    testMetricsBrowserProxy.resetResolver('recordAction');
+
+    // Click the Enhanced radio button.
+    const radioGroup =
+        page.shadowRoot!.querySelector<HTMLElement>('#safeBrowsingRadioGroup');
+    assertTrue(!!radioGroup, 'Radio group element must be in the DOM.');
+    assertTrue(
+        isVisible(radioGroup),
+        'The radio group should be visible after expanding the row.');
+
+    const enhancedSafeBrowsingRadioButton =
+        radioGroup.querySelector<ControlledRadioButtonElement>(
+            '#enhancedProtectionButton');
+    assertTrue(
+        !!enhancedSafeBrowsingRadioButton,
+        'Enhanced Safe Browsing radio button element should exist.');
+    assertTrue(
+        isVisible(enhancedSafeBrowsingRadioButton),
+        'The radio group should be visible after expanding the row.');
+
+    enhancedSafeBrowsingRadioButton.click();
+    await eventToPromise('change', radioGroup);
+    await flushTasks();
+
+    // Verify that the correct User Action has been recorded.
+    assertEquals(1, testMetricsBrowserProxy.getCallCount('recordAction'));
+    assertEquals(
+        'SafeBrowsing.Settings.EnhancedProtectionClicked',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('ResetStandardBundleToDefaultsButtonVisibility', async function() {

@@ -301,6 +301,15 @@ export class SettingsSecurityPageV2Element extends
     if (isExpanded) {
       this.interactions_.add(
           SecurityPageV2Interaction.SAFE_BROWSING_ROW_EXPANDED);
+      this.metricsBrowserProxy_.recordAction(
+          'SafeBrowsing.Settings.SafeBrowsingRowClicked');
+    }
+  }
+
+  private onSafeBrowsingToggleChange_() {
+    if (!this.isSafeBrowsingEnabled_) {
+      this.metricsBrowserProxy_.recordAction(
+          'SafeBrowsing.Settings.DisableSafeBrowsingClicked');
     }
   }
 
@@ -314,9 +323,13 @@ export class SettingsSecurityPageV2Element extends
     if (selected === SafeBrowsingSetting.STANDARD) {
       this.interactions_.add(
           SecurityPageV2Interaction.STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK);
+      this.metricsBrowserProxy_.recordAction(
+          'SafeBrowsing.Settings.StandardProtectionClicked');
     } else if (selected === SafeBrowsingSetting.ENHANCED) {
       this.interactions_.add(
           SecurityPageV2Interaction.ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK);
+      this.metricsBrowserProxy_.recordAction(
+          'SafeBrowsing.Settings.EnhancedProtectionClicked');
     }
   }
 

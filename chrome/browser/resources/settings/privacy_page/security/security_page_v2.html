@@ -254,7 +254,8 @@
         numeric-unchecked-values="[[safeBrowsingOff_]]"
         state-text-map="[[safeBrowsingStateTextMap_]]"
         icon="settings20:warning_outline"
-        icon-visible="[[isSafeBrowsingWarningIconVisible_]]">
+        icon-visible="[[isSafeBrowsingWarningIconVisible_]]"
+        on-change="onSafeBrowsingToggleChange_">
       <div slot="collapse">
         <settings-radio-group id="safeBrowsingRadioGroup"
             pref="{{prefs.generated.safe_browsing}}"
