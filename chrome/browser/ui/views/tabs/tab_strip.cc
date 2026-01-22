@@ -430,10 +430,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
              GetIndexOf(view) == 0);
   }
 
-  bool IsTabPinned(const TabSlotView* tab) const override {
-    return tab_strip_->IsTabPinned(tab);
-  }
-
   TabSlotView* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) const override {
     return tab_strip_->group_header(group);

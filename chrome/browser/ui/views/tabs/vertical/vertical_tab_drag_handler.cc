@@ -341,11 +341,6 @@ content::WebContents* VerticalTabDragHandlerImpl::GetContentsForTab(
   return tab->GetContents();
 }
 
-bool VerticalTabDragHandlerImpl::IsTabPinned(const TabSlotView* tab) const {
-  // TODO(crbug.com/439963720): Support dragging pinned tabs.
-  return false;
-}
-
 bool VerticalTabDragHandlerImpl::IsTabDetachable(
     const TabSlotView* view) const {
   return true;

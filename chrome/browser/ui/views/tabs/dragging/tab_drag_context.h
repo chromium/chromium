@@ -129,7 +129,6 @@ class TabDragContext : public views::View {
   virtual TabSlotView* GetTabForContents(content::WebContents* contents) = 0;
   virtual content::WebContents* GetContentsForTab(TabSlotView* view) = 0;
   virtual bool IsTabDetachable(const TabSlotView* view) const = 0;
-  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
   virtual TabSlotView* GetTabGroupHeader(
       const tab_groups::TabGroupId& group) const = 0;
   virtual TabStripModel* GetTabStripModel() = 0;
