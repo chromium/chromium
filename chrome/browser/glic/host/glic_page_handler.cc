@@ -37,6 +37,7 @@
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/page_metadata_manager.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -601,6 +603,57 @@ class JournalHandler {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 };
 #endif
+
+mojom::ProfileEnablementPtr BuildProfileEnablement(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile);
+
+  auto result = mojom::ProfileEnablement::New();
+  result->feature_disabled = enablement.feature_disabled;
+  result->not_regular_profile = enablement.not_regular_profile;
+  result->not_rolled_out = enablement.not_rolled_out;
+  result->primary_account_not_capable = enablement.primary_account_not_capable;
+  result->primary_account_not_fully_signed_in =
+      enablement.primary_account_not_fully_signed_in;
+  result->disallowed_by_chrome_policy = enablement.disallowed_by_chrome_policy;
+  result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
+  result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
+  result->not_consented = enablement.not_consented;
+  result->live_disallowed = enablement.live_disallowed;
+
+#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  result->actuation_eligibility =
+      mojom::ActuationEligibility::kPlatformUnsupported;
+#else
+  using CannotActReason = actor::ActorPolicyChecker::CannotActReason;
+  actor::ActorPolicyChecker& actor_policy_checker =
+      actor::ActorKeyedService::Get(profile)->GetPolicyChecker();
+  if (actor_policy_checker.CanActOnWeb()) {
+    result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
+  } else {
+    switch (actor_policy_checker.CannotActOnWebReason()) {
+      case CannotActReason::kAccountCapabilityIneligible:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kMissingAccountCapability;
+        break;
+      case CannotActReason::kAccountMissingChromeBenefits:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kMissingChromeBenefits;
+        break;
+      case CannotActReason::kManagedOrDataProtected:
+        result->actuation_eligibility =
+            mojom::ActuationEligibility::kManagedOrDataProtected;
+        break;
+      case CannotActReason::kNone:
+        NOTREACHED();
+    }
+  }
+#endif
+
+  return result;
+}
 
 }  // namespace
 
@@ -2403,54 +2456,19 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }
 
-void GlicPageHandler::GetProfileEnablement(
-    GetProfileEnablementCallback callback) {
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-  GlicEnabling::ProfileEnablement enablement =
-      GlicEnabling::EnablementForProfile(profile);
+void GlicPageHandler::GetInternalsDataPayload(
+    GetInternalsDataPayloadCallback callback) {
+  mojom::InternalsDataPayloadPtr payload = mojom::InternalsDataPayload::New();
 
-  auto result = mojom::ProfileEnablement::New();
-  result->feature_disabled = enablement.feature_disabled;
-  result->not_regular_profile = enablement.not_regular_profile;
-  result->not_rolled_out = enablement.not_rolled_out;
-  result->primary_account_not_capable = enablement.primary_account_not_capable;
-  result->disallowed_by_chrome_policy = enablement.disallowed_by_chrome_policy;
-  result->disallowed_by_remote_admin = enablement.disallowed_by_remote_admin;
-  result->disallowed_by_remote_other = enablement.disallowed_by_remote_other;
-  result->not_consented = enablement.not_consented;
-  result->live_disallowed = enablement.live_disallowed;
+  payload->enablement = BuildProfileEnablement(browser_context_);
 
-#if BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  result->actuation_eligibility =
-      mojom::ActuationEligibility::kPlatformUnsupported;
-#else
-  actor::ActorPolicyChecker& actor_policy_checker =
-      actor::ActorKeyedService::Get(profile)->GetPolicyChecker();
-  if (actor_policy_checker.CanActOnWeb()) {
-    result->actuation_eligibility = mojom::ActuationEligibility::kEligible;
-  } else {
-    switch (actor_policy_checker.CannotActOnWebReason()) {
-      case actor::ActorPolicyChecker::CannotActReason::
-          kAccountCapabilityIneligible:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kMissingAccountCapability;
-        break;
-      case actor::ActorPolicyChecker::CannotActReason::
-          kAccountMissingChromeBenefits:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kMissingChromeBenefits;
-        break;
-      case actor::ActorPolicyChecker::CannotActReason::kManagedOrDataProtected:
-        result->actuation_eligibility =
-            mojom::ActuationEligibility::kManagedOrDataProtected;
-        break;
-      case actor::ActorPolicyChecker::CannotActReason::kNone:
-        NOTREACHED();
-    }
-  }
-#endif
+  mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
+  config->guest_url = GetGuestURL();
+  config->fre_guest_url =
+      GetFreURL(Profile::FromBrowserContext(browser_context_));
+  payload->config = std::move(config);
 
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(std::move(payload));
 }
 
 void GlicPageHandler::PanelStateChanged(

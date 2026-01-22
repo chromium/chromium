@@ -183,6 +183,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       Profile* additional_profile);
 
   struct ProfileEnablement {
+    ProfileEnablement();
+    ProfileEnablement(ProfileEnablement&&);
+    ~ProfileEnablement();
+
     // These conditions are checked first and may prevent following checks from
     // occurring.
     bool feature_disabled : 1 = false;
@@ -191,6 +195,7 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     // These are checked separately, so may be present in various combinations.
     bool not_rolled_out : 1 = false;
     bool primary_account_not_capable : 1 = false;
+    bool primary_account_not_fully_signed_in : 1 = false;
     bool disallowed_by_chrome_policy : 1 = false;
     bool disallowed_by_remote_admin : 1 = false;
     bool disallowed_by_remote_other : 1 = false;

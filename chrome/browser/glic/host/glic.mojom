@@ -36,9 +36,12 @@ struct ProfileEnablement {
   // `GlicRollout` flag, or by the `GlicTieredRollout` flag and synced pref.
   bool not_rolled_out;
 
-  // Whether the primary account is not capable, by failing to have the
-  // can_use_model_execution_features accountcapability.
+  // Whether a primary account doesn't exist or is not capable, by failing to
+  // have the can_use_model_execution_features accountcapability.
   bool primary_account_not_capable;
+
+  // Whether the primary account is fully signed in (if it exists).
+  bool primary_account_not_fully_signed_in;
 
   // Whether the profile is disallowed by chrome policy.
   bool disallowed_by_chrome_policy;
@@ -57,6 +60,21 @@ struct ProfileEnablement {
 
   // Summary of whether actuation is enabled, and if not, why not.
   ActuationEligibility actuation_eligibility;
+};
+
+// Basic configuration information about Glic.
+struct ConfigInfo {
+  // The URL from which the guest web client is loaded from.
+  url.mojom.Url guest_url;
+
+  // The URL from which the FRE page is loaded from.
+  url.mojom.Url fre_guest_url;
+};
+
+// Consolidated data payload to populate the Glic internals page.
+struct InternalsDataPayload {
+  ProfileEnablement enablement;
+  ConfigInfo config;
 };
 
 // Whether actuation is enabled, and if not, why not.
@@ -223,8 +241,8 @@ interface PageHandler {
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
 
-  // Called by the internals WebUI page to get the GlicEnabling state.
-  GetProfileEnablement() => (ProfileEnablement enablement);
+  // Called by the internals WebUI page to get the data it will present.
+  GetInternalsDataPayload() => (InternalsDataPayload internals_data);
 };
 
 // @generate glic_api

@@ -6,7 +6,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from '../browser_proxy.js';
 import {ActuationEligibility} from '../glic.mojom-webui.js';
-import type {ProfileEnablement} from '../glic.mojom-webui.js';
+import type {InternalsDataPayload} from '../glic.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
 import {getHtml} from './glic_internals_app.html.js';
@@ -27,19 +27,19 @@ export class GlicInternalsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      enablement_: {type: Object},
+      data_: {type: Object},
     };
   }
 
-  protected accessor enablement_: ProfileEnablement|undefined;
+  protected accessor data_: InternalsDataPayload|undefined;
 
   private browserProxy_ = new BrowserProxyImpl();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.browserProxy_.pageHandler.getProfileEnablement().then(
-        ({enablement}) => {
-          this.enablement_ = enablement;
+    this.browserProxy_.pageHandler.getInternalsDataPayload().then(
+        ({internalsData}) => {
+          this.data_ = internalsData;
         });
   }
 

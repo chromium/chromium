@@ -210,6 +210,11 @@ std::string GlicGlobalEnabling::Delegate::GetLocale() {
       startup_data->chrome_feature_list_creator()->actual_locale());
 }
 
+GlicEnabling::ProfileEnablement::ProfileEnablement() = default;
+GlicEnabling::ProfileEnablement::ProfileEnablement(ProfileEnablement&&) =
+    default;
+GlicEnabling::ProfileEnablement::~ProfileEnablement() = default;
+
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
   ProfileEnablement result;
@@ -245,9 +250,15 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
                 signin::ConsentLevel::kSignin));
 
     // Not having a primary account is considered ineligible, as is kUnknown
-    // for the required account capability.
+    // for the required account capability (checked further below).
     if (primary_account.IsEmpty()) {
       result.primary_account_not_capable = true;
+    } else {
+      // Check if the profile is currently paused.
+      if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+              primary_account.account_id)) {
+        result.primary_account_not_fully_signed_in = true;
+      }
     }
 
     // Check account capabilities.
@@ -438,17 +449,10 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kReady;
   }
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-
-  // Check that profile is not currently paused.
-  CoreAccountInfo core_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (core_account_info.IsEmpty()) {
+  if (enablement.primary_account_not_capable) {
     return mojom::ProfileReadyState::kUnknownError;
   }
-  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          core_account_info.account_id)) {
+  if (enablement.primary_account_not_fully_signed_in) {
     return mojom::ProfileReadyState::kSignInRequired;
   }
   return mojom::ProfileReadyState::kReady;
