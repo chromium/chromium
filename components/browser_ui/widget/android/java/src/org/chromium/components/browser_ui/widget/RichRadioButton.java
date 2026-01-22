@@ -16,12 +16,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -55,23 +54,22 @@ public class RichRadioButton extends ConstraintLayout implements Checkable {
     private ViewGroup.MarginLayoutParams mDefaultTitleLayoutParams;
     private ViewGroup.MarginLayoutParams mDefaultRadioButtonLayoutParams;
 
-    public RichRadioButton(@NonNull Context context) {
+    public RichRadioButton(Context context) {
         super(context);
         init(context);
     }
 
-    public RichRadioButton(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public RichRadioButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public RichRadioButton(
-            @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public RichRadioButton(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
-    private void init(@NonNull Context context) {
+    private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.rich_radio_button, this, true);
 
         mHorizontalConstraints = new ConstraintSet();
@@ -113,7 +111,7 @@ public class RichRadioButton extends ConstraintLayout implements Checkable {
      */
     public void setItemData(
             @DrawableRes int iconResId,
-            @NonNull String title,
+            String title,
             @Nullable String description,
             boolean isInternalVertical) {
         if (iconResId != 0) {
