@@ -67,6 +67,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterListPref(kOnSecurityEventPref);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  registry->RegisterListPref(kOnFileDownloadedPref);
+  registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kWatermarkStyleFillOpacityPref,
                                 kWatermarkStyleFillOpacityDefault);
   registry->RegisterIntegerPref(kWatermarkStyleOutlineOpacityPref,
@@ -76,14 +78,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnFileAttachedPref);
-  registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
   registry->RegisterListPref(kOnPrintPref);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kOnFileTransferPref);
 #endif
   registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
-  registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
 
