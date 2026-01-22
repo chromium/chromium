@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/serial",
     "//chrome/common:constants",
     "//components/content_settings/core/common",

@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"

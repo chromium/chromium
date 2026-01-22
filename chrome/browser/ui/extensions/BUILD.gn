@@ -152,6 +152,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/signin",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/dialogs",
       "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/toolbar",
       "//components/sessions",

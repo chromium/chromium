@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/grit/generated_resources.h"

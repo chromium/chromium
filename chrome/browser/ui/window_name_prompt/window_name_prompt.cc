@@ -6,7 +6,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"

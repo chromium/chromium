@@ -7,7 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"

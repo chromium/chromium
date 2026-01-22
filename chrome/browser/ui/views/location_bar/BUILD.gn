@@ -66,6 +66,7 @@ source_set("impl") {
   deps = [
     ":icon_label_bubble",
     ":location_bar",
+    "//chrome/browser/ui/dialogs",
   ]
 
   if (toolkit_views) {

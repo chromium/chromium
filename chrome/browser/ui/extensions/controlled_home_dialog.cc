@@ -6,7 +6,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"

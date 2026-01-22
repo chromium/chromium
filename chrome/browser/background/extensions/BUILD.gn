@@ -61,6 +61,7 @@ source_set("impl") {
     "//chrome/browser/startup",
     "//chrome/browser/status_icons",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/profiles",
     "//components/crx_file",

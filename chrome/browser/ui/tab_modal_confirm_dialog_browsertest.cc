@@ -13,7 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"

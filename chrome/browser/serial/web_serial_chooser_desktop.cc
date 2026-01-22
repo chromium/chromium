@@ -4,7 +4,7 @@
 
 #include "chrome/browser/serial/web_serial_chooser_desktop.h"
 
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
 
 WebSerialChooserDesktop::WebSerialChooserDesktop() = default;

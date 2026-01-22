@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/notifications",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_dialogs.h",
+  "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/pref_names.h",
   "+chrome/grit",

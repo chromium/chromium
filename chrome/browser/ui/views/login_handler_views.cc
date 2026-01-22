@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/login_view.h"
 #include "components/constrained_window/constrained_window_views.h"

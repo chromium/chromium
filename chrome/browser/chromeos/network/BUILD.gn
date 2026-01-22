@@ -17,6 +17,7 @@ static_library("network") {
     "//chrome/browser:browser_process",
     "//chrome/browser/prefs",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common:constants",
     "//chromeos/ash/components/network",
     "//chromeos/crosapi/mojom",

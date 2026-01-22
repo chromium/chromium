@@ -4,7 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"

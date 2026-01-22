@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/widget/widget.h"

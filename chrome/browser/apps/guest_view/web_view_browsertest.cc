@@ -59,7 +59,7 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"

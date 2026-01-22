@@ -35,6 +35,7 @@ static_library("session") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/components/dbus/session_manager",

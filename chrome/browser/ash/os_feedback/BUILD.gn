@@ -34,6 +34,7 @@ static_library("os_feedback") {
     "//chrome/browser/signin",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chromeos/ash/services/multidevice_setup/public/cpp",

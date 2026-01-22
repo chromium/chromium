@@ -15,7 +15,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"

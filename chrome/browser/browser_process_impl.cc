@@ -87,7 +87,7 @@
 #include "chrome/browser/ssl/secure_origin_prefs_observer.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/status_icons/status_tray.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"

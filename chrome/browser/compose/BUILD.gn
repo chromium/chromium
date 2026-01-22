@@ -53,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/translate",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/user_education",
     "//chrome/common",

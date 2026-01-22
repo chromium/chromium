@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 
 WebUsbChooserDesktop::WebUsbChooserDesktop() = default;

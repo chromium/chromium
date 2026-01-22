@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/webui",
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",

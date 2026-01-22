@@ -83,6 +83,7 @@ source_set("impl") {
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/dialogs",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//components/content_settings/core/common",

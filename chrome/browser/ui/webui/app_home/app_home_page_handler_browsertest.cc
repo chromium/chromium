@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/create_application_shortcut_view_test_support.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"

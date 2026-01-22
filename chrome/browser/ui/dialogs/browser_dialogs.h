@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
-#define CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
+#ifndef CHROME_BROWSER_UI_DIALOGS_BROWSER_DIALOGS_H_
+#define CHROME_BROWSER_UI_DIALOGS_BROWSER_DIALOGS_H_
 
 #include <memory>
 #include <string>
@@ -170,4 +170,4 @@ void ShowFolderUploadConfirmationDialog(
     std::vector<ui::SelectedFileInfo> selected_files,
     content::WebContents* web_contents);
 
-#endif  // CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
+#endif  // CHROME_BROWSER_UI_DIALOGS_BROWSER_DIALOGS_H_

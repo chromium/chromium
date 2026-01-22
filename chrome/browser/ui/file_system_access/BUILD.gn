@@ -35,6 +35,7 @@ source_set("impl") {
   deps = [
     ":file_system_access",
     "//chrome/browser/ui:url_identity",
+    "//chrome/browser/ui/dialogs",
     "//ui/base/interaction",
   ]
 

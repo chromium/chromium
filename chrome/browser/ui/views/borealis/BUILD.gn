@@ -21,6 +21,7 @@ static_library("borealis") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/feedback",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chromeos/dbus/power",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
   ]

@@ -127,6 +127,7 @@ static_library("login") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/themes",
     "//chrome/browser/ui/content_settings",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/internet",

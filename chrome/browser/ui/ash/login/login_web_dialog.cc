@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

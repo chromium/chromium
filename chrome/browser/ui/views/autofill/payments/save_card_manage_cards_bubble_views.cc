@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/signin/public/base/signin_metrics.h"

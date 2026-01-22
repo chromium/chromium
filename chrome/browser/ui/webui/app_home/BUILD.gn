@@ -84,6 +84,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/app_home:resources",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",

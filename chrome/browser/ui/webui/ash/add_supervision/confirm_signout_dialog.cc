@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"

@@ -15,7 +15,7 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/url_constants.h"

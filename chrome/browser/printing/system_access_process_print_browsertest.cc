@@ -56,7 +56,7 @@
 #include "chrome/browser/printing/printer_query_oop.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/ui/cocoa/task_manager_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -18,8 +17,8 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"

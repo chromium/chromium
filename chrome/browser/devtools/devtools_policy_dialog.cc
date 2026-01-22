@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"

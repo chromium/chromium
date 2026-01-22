@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/profiles",
 
     # TODO(crubug.com/430804948): This dependency is needed because

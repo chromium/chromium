@@ -19,7 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/common/chrome_switches.h"
