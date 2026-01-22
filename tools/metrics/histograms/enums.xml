@@ -9393,6 +9393,7 @@ from previous Chrome versions.
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
   <int value="-1699505493" label="QuickDeleteAndroidFollowup:enabled"/>
+  <int value="-1698514367" label="AimUrlInterceptPassthrough:enabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>
   <int value="-1698059272" label="NewContentForCheckerboardedScrolls:enabled"/>
   <int value="-1696778023"
@@ -10520,6 +10521,7 @@ from previous Chrome versions.
   <int value="-1317782739" label="OmniboxAsyncViewInflation:enabled"/>
   <int value="-1317768255" label="PermissionStorageAccessAPI:enabled"/>
   <int value="-1316769004" label="CrossOriginOpenerPolicyReporting:disabled"/>
+  <int value="-1316242662" label="AimUrlInterceptPassthrough:disabled"/>
   <int value="-1315894943" label="HappyEyeballsV3:enabled"/>
   <int value="-1315862295" label="GlicMITabContextMenu:disabled"/>
   <int value="-1315812099"
