@@ -218,9 +218,11 @@ public interface ExternalNavigationDelegate {
      * Set the app for the current page and stay in the embedder app. The provided runnable is going
      * to be used to open the current page in the app when the user requests it.
      *
+     * @param resolveInfo The {@link ResolveInfo} to retrieve the name and icon for the app that
+     *     will open the page, null if multiple apps can open the page.
      * @param openInApp A {@link Runnable} to be run to open the current page in the app.
      */
-    void setAppForCurrentPage(Runnable openInApp);
+    void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp);
 
     /**
      * Clears the app set for the page. This should be called when the app becomes invalid for the

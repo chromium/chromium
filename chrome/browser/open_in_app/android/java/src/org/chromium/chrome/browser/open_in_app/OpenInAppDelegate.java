@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.open_in_app;
 
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.ObserverList;
@@ -18,6 +17,8 @@ import org.chromium.chrome.browser.tab.Tab;
 public class OpenInAppDelegate implements UserData {
     /** Observer for changes to the open in app state of the current tab. */
     public interface Observer {
+        // TODO(crbug.com/450253146): OpenInAppInfo changes before the URL is loaded, so the
+        // implementing class should wait for the navigation to be committed before updating the UI.
         /**
          * Called when the open in app info changes.
          *
@@ -29,8 +30,8 @@ public class OpenInAppDelegate implements UserData {
 
     /** Info needed to display open in app action UI. */
     public static class OpenInAppInfo {
-        /** Intent to open in app. */
-        public final Intent intent;
+        /** The {@link Runnable} to run to open in app. */
+        public final Runnable action;
 
         /**
          * App name to display for the open in app action. Null if the URL can be opened in more
@@ -44,8 +45,9 @@ public class OpenInAppDelegate implements UserData {
          */
         public final @Nullable Drawable appIcon;
 
-        public OpenInAppInfo(Intent intent, @Nullable String appName, @Nullable Drawable appIcon) {
-            this.intent = intent;
+        public OpenInAppInfo(
+                Runnable action, @Nullable String appName, @Nullable Drawable appIcon) {
+            this.action = action;
             this.appName = appName;
             this.appIcon = appIcon;
         }

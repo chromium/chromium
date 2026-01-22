@@ -49,6 +49,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.external_intents.ExternalNavigationHandler.IncognitoDialogDelegate;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -3688,7 +3689,7 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public void setAppForCurrentPage(Runnable openInApp) {}
+        public void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp) {}
 
         @Override
         public void clearAppForCurrentPage() {}

@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
+import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -326,18 +328,29 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldSetAppForCurrentPage() {
-        // TODO(crbug.com/450253146): Implement this method.
-        return false;
+        return OpenInAppUtils.isOpenInAppAvailable();
     }
 
     @Override
-    public void setAppForCurrentPage(Runnable openInApp) {
-        // TODO(crbug.com/450253146): Implement this method.
+    public void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp) {
+        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
+        if (!hasValidTab()) return;
+
+        // TODO(crbug.com/450253146): Share code with ExternalNavigationHandler#maybeAskToLaunchApp.
+        var pm = mApplicationContext.getPackageManager();
+        var name = resolveInfo != null ? resolveInfo.loadLabel(pm).toString() : null;
+        var icon = resolveInfo != null ? resolveInfo.loadIcon(pm) : null;
+        var info = new OpenInAppDelegate.OpenInAppInfo(openInApp, name, icon);
+
+        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(info);
     }
 
     @Override
     public void clearAppForCurrentPage() {
-        // TODO(crbug.com/450253146): Implement this method.
+        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
+        if (!hasValidTab()) return;
+
+        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(null);
     }
 
     /**

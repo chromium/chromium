@@ -418,6 +418,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/notifications/chime/android:java",
       "//chrome/browser/ntp_customization:java",
       "//chrome/browser/omaha/android:java",
+      "//chrome/browser/open_in_app/android:java",
       "//chrome/browser/optimization_guide/android:java",
       "//chrome/browser/page_content_annotations:java",
       "//chrome/browser/page_image_service/android:java",

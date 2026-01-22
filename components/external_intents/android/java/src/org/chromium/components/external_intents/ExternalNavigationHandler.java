@@ -1871,6 +1871,19 @@ public class ExternalNavigationHandler {
         }
 
         boolean shouldReturnAsResult = mDelegate.shouldReturnAsActivityResult(intentTargetUrl);
+
+        // TODO(crbug.com/450253146): Revisit the logic here because we're not handling everything
+        // correctly yet.
+        if (maybeSetAppForCurrentPage(
+                mDelegate.shouldSetAppForCurrentPage(),
+                params,
+                shouldReturnAsResult,
+                targetIntent)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        } else {
+            clearAppForCurrentPage();
+        }
+
         @NavigationChainResult
         int navigationChainResult =
                 navigationChainBlocksExternalNavigation(
@@ -1981,6 +1994,7 @@ public class ExternalNavigationHandler {
                         params);
             }
         }
+
         return startActivity(
                 targetIntent,
                 params,
@@ -1989,6 +2003,50 @@ public class ExternalNavigationHandler {
                 resolveActivity,
                 browserFallbackUrl,
                 intentTargetUrl);
+    }
+
+    private boolean maybeSetAppForCurrentPage(
+            boolean shouldSetAppForCurrentPage,
+            ExternalNavigationParams params,
+            boolean shouldReturnAsResult,
+            Intent targetIntent) {
+        if (!shouldSetAppForCurrentPage
+                || !UrlUtilities.isHttpOrHttps(params.getUrl())
+                || shouldReturnAsResult) {
+            return false;
+        }
+
+        var resolveActivity = new ResolveActivitySupplier(targetIntent).get();
+        if (resolveActivity == null) return false;
+
+        Context context = mDelegate.getContext();
+        if (context == null) return false;
+
+        var targetPackage = resolveActivity.activityInfo.packageName;
+
+        // We're setting the package explicitly to make sure the app that this intent launches
+        // matches what's expected based on the other data in resolveActivity.
+        targetIntent.setPackage(targetPackage);
+
+        Context activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            context = ContextUtils.getApplicationContext();
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        if (debug()) {
+            Log.i(TAG, "Setting app for current page to package: " + targetPackage);
+        }
+        var finalContext = context;
+        mDelegate.setAppForCurrentPage(
+                resolveActivity, () -> doStartActivity(targetIntent, finalContext));
+        return true;
+    }
+
+    private void clearAppForCurrentPage() {
+        if (debug()) {
+            Log.i(TAG, "Clearing app for current page.");
+        }
+        mDelegate.clearAppForCurrentPage();
     }
 
     // https://crbug.com/1249964
@@ -2403,29 +2461,37 @@ public class ExternalNavigationHandler {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
 
+        forcePdfViewerAsIntentHandlerIfNeeded(intent);
+        Context context = ContextUtils.activityFromContext(mDelegate.getContext());
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        if (requiresIntentChooser) {
+            assumeNonNull(resolvingInfos);
+            assumeNonNull(resolveActivity);
+            return startActivityWithChooser(
+                    intent,
+                    resolvingInfos,
+                    resolveActivity,
+                    browserFallbackUrl,
+                    intentTargetUrl,
+                    params,
+                    context);
+        }
+        mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
+        return doStartActivity(intent, context);
+    }
+
+    private OverrideUrlLoadingResult doStartActivity(Intent intent, Context context) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
-            forcePdfViewerAsIntentHandlerIfNeeded(intent);
-            Context context = ContextUtils.activityFromContext(mDelegate.getContext());
-            if (context == null) {
-                context = ContextUtils.getApplicationContext();
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            }
-            if (requiresIntentChooser) {
-                assumeNonNull(resolvingInfos);
-                assumeNonNull(resolveActivity);
-                return startActivityWithChooser(
-                        intent,
-                        resolvingInfos,
-                        resolveActivity,
-                        browserFallbackUrl,
-                        intentTargetUrl,
-                        params,
-                        context);
-            }
-            mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
-            return doStartActivity(intent, context);
+            if (debug()) Log.i(TAG, "startActivity");
+            context.startActivity(intent);
+            recordExternalNavigationDispatched(intent);
+            mDelegate.reportIntentToSafeBrowsing(intent);
+            return OverrideUrlLoadingResult.forExternalIntent();
         } catch (SecurityException e) {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another
             // application fails with a SecurityException. This happens due to malformed
@@ -2443,15 +2509,8 @@ public class ExternalNavigationHandler {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
-        return OverrideUrlLoadingResult.forNoOverride();
-    }
 
-    private OverrideUrlLoadingResult doStartActivity(Intent intent, Context context) {
-        if (debug()) Log.i(TAG, "startActivity");
-        context.startActivity(intent);
-        recordExternalNavigationDispatched(intent);
-        mDelegate.reportIntentToSafeBrowsing(intent);
-        return OverrideUrlLoadingResult.forExternalIntent();
+        return OverrideUrlLoadingResult.forNoOverride();
     }
 
     // If the |resolvingInfos| from queryIntentActivities don't contain the result of
