@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -59,6 +60,10 @@ class SelectBnplIssuerViewDesktop : public SelectBnplIssuerView {
   base::WeakPtr<SelectBnplIssuerDialogController> controller_;
   std::unique_ptr<views::Widget> dialog_;
   base::WeakPtr<SelectBnplIssuerDialog> select_bnpl_issuer_dialog_;
+
+  // Subscription to watch for the tab detaching. Handles logging to
+  // SelectBnplIssuerDialogResult if the dialog's parent window is closed.
+  base::CallbackListSubscription tab_detach_subscription_;
 };
 
 SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
@@ -73,6 +78,10 @@ SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
                                                  has_seen_ai_terms);
     select_bnpl_issuer_dialog_ =
         select_bnpl_issuer_dialog_delegate->GetWeakPtr();
+
+    tab_detach_subscription_ = tab_interface->RegisterWillDetach(
+        base::BindRepeating(&SelectBnplIssuerDialog::OnTabDetached,
+                            select_bnpl_issuer_dialog_));
 
     dialog_ = tab_interface->GetTabFeatures()
                   ->tab_dialog_manager()
@@ -233,6 +242,15 @@ void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
     return;
   }
   chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
+}
+
+void SelectBnplIssuerDialog::OnTabDetached(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    autofill_metrics::LogSelectBnplIssuerDialogResult(
+        autofill_metrics::SelectBnplIssuerDialogResult::kTabOrBrowserClosed);
+  }
 }
 
 }  // namespace payments

@@ -7,10 +7,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -184,6 +186,15 @@ bool BnplTosDialog::OnCancelled() {
   controller_->OnUserCancelled();
 
   return false;
+}
+
+void BnplTosDialog::OnTabDetached(tabs::TabInterface* tab,
+                                  tabs::TabInterface::DetachReason reason) {
+  if (controller_ && reason == tabs::TabInterface::DetachReason::kDelete) {
+    autofill_metrics::LogBnplTosDialogResult(
+        autofill_metrics::BnplTosDialogResult::kTabOrBrowserClosed,
+        controller_->GetIssuerId());
+  }
 }
 
 }  // namespace autofill

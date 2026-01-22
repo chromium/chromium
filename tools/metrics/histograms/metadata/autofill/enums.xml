@@ -3350,6 +3350,7 @@ Called by update_autofill_enums.py.-->
 <enum name="BnplTosDialogResult">
   <int value="0" label="The cancel button was pressed"/>
   <int value="1" label="The accept button was pressed"/>
+  <int value="2" label="The tab or browser was closed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplTosDialogResult) -->
@@ -4255,6 +4256,7 @@ Called by update_autofill_enums.py.-->
 <enum name="SelectBnplIssuerDialogResult">
   <int value="0" label="The cancel button was pressed"/>
   <int value="1" label="An issuer was selected"/>
+  <int value="2" label="The tab or browser was closed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SelectBnplIssuerDialogResult) -->

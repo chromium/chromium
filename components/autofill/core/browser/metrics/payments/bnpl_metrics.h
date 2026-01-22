@@ -47,7 +47,8 @@ enum class BnplSuggestionUnavailableReason {
 enum class BnplTosDialogResult {
   kCancelButtonClicked = 0,
   kAcceptButtonClicked = 1,
-  kMaxValue = kAcceptButtonClicked,
+  kTabOrBrowserClosed = 2,
+  kMaxValue = kTabOrBrowserClosed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplTosDialogResult)
 
@@ -60,7 +61,8 @@ enum class BnplTosDialogResult {
 enum class SelectBnplIssuerDialogResult {
   kCancelButtonClicked = 0,
   kIssuerSelected = 1,
-  kMaxValue = kIssuerSelected,
+  kTabOrBrowserClosed = 2,
+  kMaxValue = kTabOrBrowserClosed,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SelectBnplIssuerDialogResult)
 

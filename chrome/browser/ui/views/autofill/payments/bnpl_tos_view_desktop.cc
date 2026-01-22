@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +32,11 @@ BnplTosViewDesktop::BnplTosViewDesktop(
                                       weak_ptr_factory_.GetWeakPtr()));
   TabInterface* tab_interface = TabInterface::GetFromContents(web_contents_);
   CHECK(tab_interface);
+
+  tab_detach_subscription_ =
+      tab_interface->RegisterWillDetach(base::BindRepeating(
+          &BnplTosDialog::OnTabDetached, dialog_view->GetWeakPtr()));
+
   dialog_widget_ = tab_interface->GetTabFeatures()
                        ->tab_dialog_manager()
                        ->CreateAndShowDialog(

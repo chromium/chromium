@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -49,6 +50,11 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
   void DisplayThrobber();
   void DismissThrobberAndShowIssuerView();
   bool OnCancelled();
+
+  // Callback for when the tab is detached (closed or moved). Logs to
+  // SelectBnplIssuerDialogResult if the dialog's parent window is closed
+  void OnTabDetached(tabs::TabInterface* tab,
+                     tabs::TabInterface::DetachReason reason);
 
   // View:
   void AddedToWidget() override;

@@ -36,6 +36,10 @@ class BnplTosViewDesktop : public BnplTosView {
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> dialog_widget_;
 
+  // Subscription to watch for the tab detaching. Handles logging to
+  // BnplTosDialogResult if the dialog's parent window is closed.
+  base::CallbackListSubscription tab_detach_subscription_;
+
   base::WeakPtrFactory<BnplTosViewDesktop> weak_ptr_factory_{this};
 };
 

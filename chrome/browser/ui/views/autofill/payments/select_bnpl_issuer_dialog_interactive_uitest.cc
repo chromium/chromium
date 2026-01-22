@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -51,29 +52,21 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
       const SelectBnplIssuerDialogInteractiveUiTest&) = delete;
   ~SelectBnplIssuerDialogInteractiveUiTest() override = default;
 
-  void TearDownOnMainThread() override {
-    controller_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
   InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
       std::vector<BnplIssuerContext> issuer_contexts,
       bool has_seen_ai_terms = false) {
-    controller_ = std::make_unique<SelectBnplIssuerDialogControllerImpl>(
-        autofill_client_injector_[web_contents()]->GetPaymentsAutofillClient());
     return Steps(
         ObserveState(
             views::test::kCurrentFocusedViewId,
             BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
         Do([this, issuer_contexts, has_seen_ai_terms]() {
-          controller_->ShowDialog(
-              base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
-                             controller_->GetWeakPtr(),
-                             base::Unretained(web_contents()),
-                             has_seen_ai_terms),
-              std::move(issuer_contexts),
-              /*app_locale=*/"en-US", accept_callback_.Get(),
-              cancel_callback_.Get());
+          ContentAutofillClient::FromWebContents(web_contents())
+              ->GetPaymentsAutofillClient()
+              ->GetBnplUiDelegate()
+              ->ShowSelectBnplIssuerUi(
+                  std::move(issuer_contexts),
+                  /*app_locale=*/"en-US", accept_callback_.Get(),
+                  cancel_callback_.Get(), has_seen_ai_terms);
         }),
         InAnyContext(WaitForShow(views::DialogClientView::kTopViewId)));
   }
@@ -89,7 +82,6 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  std::unique_ptr<SelectBnplIssuerDialogControllerImpl> controller_;
   base::MockRepeatingCallback<void(BnplIssuer)> accept_callback_;
   base::MockOnceClosure cancel_callback_;
   base::test::ScopedFeatureList feature_list_{
@@ -97,12 +89,8 @@ class SelectBnplIssuerDialogInteractiveUiTest : public InteractiveBrowserTest {
 
  protected:
   PrefService& GetPrefs() {
-    return *autofill_client_injector_[web_contents()]->GetPrefs();
+    return *ContentAutofillClient::FromWebContents(web_contents())->GetPrefs();
   }
-
- private:
-  TestAutofillClientInjector<TestContentAutofillClient>
-      autofill_client_injector_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, InvokeUi) {
@@ -181,14 +169,17 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
           EnsureNotPresent(SelectBnplIssuerDialog::kBnplIssuerView),
           // Simulate the completion of fetching issuer data.
           Do([this]() {
-            controller_->UpdateDialogWithIssuers(
-                {GetTestBnplIssuerContext(
-                     IssuerId::kBnplAffirm,
-                     BnplIssuerEligibilityForPage::kIsEligible),
-                 GetTestBnplIssuerContext(
-                     IssuerId::kBnplZip,
-                     BnplIssuerEligibilityForPage::
-                         kNotEligibleIssuerDoesNotSupportMerchant)});
+            ContentAutofillClient::FromWebContents(web_contents())
+                ->GetPaymentsAutofillClient()
+                ->GetBnplUiDelegate()
+                ->UpdateBnplIssuerDialogUi(
+                    {GetTestBnplIssuerContext(
+                         IssuerId::kBnplAffirm,
+                         BnplIssuerEligibilityForPage::kIsEligible),
+                     GetTestBnplIssuerContext(
+                         IssuerId::kBnplZip,
+                         BnplIssuerEligibilityForPage::
+                             kNotEligibleIssuerDoesNotSupportMerchant)});
           }),
           // Verify the throbber is now hidden.
           WaitForHide(SelectBnplIssuerDialog::kThrobberId),
@@ -486,6 +477,28 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
               }
             }
           })));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       DialogResultLoggedWhenTabClosed) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow({GetTestBnplIssuerContext(
+          IssuerId::kBnplAffirm, BnplIssuerEligibilityForPage::kIsEligible)}),
+
+      // Close the active tab.
+      Do([this]() {
+        browser()->tab_strip_model()->CloseWebContentsAt(
+            browser()->tab_strip_model()->active_index(),
+            TabCloseTypes::CLOSE_USER_GESTURE);
+      }),
+
+      Check([&histogram_tester]() {
+        return histogram_tester.GetBucketCount(
+                   "Autofill.Bnpl.SelectionDialogResult",
+                   SelectBnplIssuerDialogResult::kTabOrBrowserClosed) == 1;
+      }));
 }
 
 }  // namespace autofill::payments
