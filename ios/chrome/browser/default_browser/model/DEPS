@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/signin/model",
+  # keep-sorted end
 ]
