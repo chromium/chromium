@@ -600,6 +600,7 @@ libfuzzer_linux_asan_high_end_builder(
     name = "Libfuzzer High End Upload Linux ASan Debug",
     build_config = builder_config.build_config.DEBUG,
     console_short_name = "linux high dbg",
+    gn_extra_configs = ["sanitizer_coverage_skip_stdlib_and_absl"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 

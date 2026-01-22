@@ -1215,6 +1215,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "sanitizer_coverage_skip_stdlib_and_absl",
+    args = {
+        "sanitizer_coverage_skip_stdlib_and_absl": True,
+    },
+)
+
+gn_args.config(
     name = "shared",
     args = {
         "is_component_build": True,
