@@ -146,15 +146,24 @@ void AccountConsistencyBrowserAgent::OnAddAccount(
     return;
   }
 
-  ProfileIOS* profile = browser_->GetProfile()->GetOriginalProfile();
+  if (prefilled_email.empty()) {
+    OnAddUnkwownAccount(url);
+  } else {
+    OnAddPrefilledAccount(url, prefilled_email);
+  }
+}
+
+void AccountConsistencyBrowserAgent::OnAddPrefilledAccount(
+    const GURL& url,
+    const std::string& prefilled_email) {
+  CHECK(!prefilled_email.empty());
   BOOL email_in_identity_on_device =
       signin::GetAccountInfoOnDeviceWithEmail(
-          IdentityManagerFactory::GetForProfile(profile), prefilled_email) !=
-      std::nullopt;
-  if (email_in_identity_on_device && CanShowAccountMenu()) {
-    // The user must select the correct account to follow.
-    ShowAccountMenu(url);
-  } else {
+          IdentityManagerFactory::GetForProfile(browser_->GetProfile()),
+          prefilled_email) != std::nullopt;
+  if (!email_in_identity_on_device) {
+    // No account with this email is on the device. Let’s ask the user to add
+    // the account.
     id<BrowserCoordinatorCommands> browser_coordinator_handler =
         HandlerForProtocol(browser_->GetCommandDispatcher(),
                            BrowserCoordinatorCommands);
@@ -163,6 +172,38 @@ void AccountConsistencyBrowserAgent::OnAddAccount(
     [browser_coordinator_handler
         showAddAccountWithAccessPoint:access_point
                        prefilledEmail:base::SysUTF8ToNSString(prefilled_email)];
+    return;
+  }
+  if (CanShowAccountMenu()) {
+    // The user is signed-in, so they must select the account in the account
+    // menu.
+    ShowAccountMenu(url);
+  } else {
+    // The user is signed-out and the account is on the device, so they must
+    // select the account in the account consistency view.
+    [application_handler_
+        showWebSigninPromoFromViewController:base_view_controller_
+                                         URL:url];
+  }
+}
+
+void AccountConsistencyBrowserAgent::OnAddUnkwownAccount(const GURL& url) {
+  size_t num_profiles = GetApplicationContext()
+                            ->GetProfileManager()
+                            ->GetProfileAttributesStorage()
+                            ->GetNumberOfProfiles();
+  // If there are any profiles beside the current one, it's likely the user
+  // wanted to switch to another profile rather than add/manage accounts.
+  if (num_profiles > 1 && CanShowAccountMenu()) {
+    ShowAccountMenu(url);
+  } else {
+    id<BrowserCoordinatorCommands> browser_coordinator_handler =
+        HandlerForProtocol(browser_->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
+    signin_metrics::AccessPoint access_point =
+        signin_metrics::AccessPoint::kAccountConsistencyService;
+    [browser_coordinator_handler showAddAccountWithAccessPoint:access_point
+                                                prefilledEmail:nil];
   }
 }
 

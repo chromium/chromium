@@ -49,6 +49,14 @@ class AccountConsistencyBrowserAgent
  private:
   friend class BrowserUserData<AccountConsistencyBrowserAgent>;
 
+  // Opens the account menu if the prefilled account is on the device.
+  // Otherwise, open the Add Account view.
+  void OnAddPrefilledAccount(const GURL& url,
+                             const std::string& prefilled_email);
+  // Opens the account menu if there is at least another profile. Otherwise open
+  // the Add Account View.
+  void OnAddUnkwownAccount(const GURL& url);
+
   void StopSigninCoordinator(SigninCoordinatorResult result,
                              id<SystemIdentity> identity);
 
