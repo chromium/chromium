@@ -883,6 +883,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-pay-now-pay-later-tabs",
+    "owners": [ "wilsonlow@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-payments-mandatory-reauth-chromeos",
     "owners": [ "yiwenqian@chromium.org",
       "payments-autofill-team@google.com" ],

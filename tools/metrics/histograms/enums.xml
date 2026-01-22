@@ -13713,6 +13713,7 @@ from previous Chrome versions.
   <int value="-204978485" label="WallpaperFullScreenPreview:enabled"/>
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
+  <int value="-203256841" label="AutofillEnablePayNowPayLaterTabs:disabled"/>
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
   <int value="-202823508" label="LockTopControlsOnLargeTabletsV2:disabled"/>
   <int value="-202761528" label="FeedDynamicColors:enabled"/>
@@ -18108,6 +18109,7 @@ from previous Chrome versions.
   <int value="1304989988" label="EnableDiscountInfoApi:disabled"/>
   <int value="1305339782"
       label="MayLaunchUrlUsesSeparateStoragePartition:disabled"/>
+  <int value="1305724037" label="AutofillEnablePayNowPayLaterTabs:enabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1306412559" label="FastPairPwaCompanion:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>

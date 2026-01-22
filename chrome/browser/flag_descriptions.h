@@ -893,6 +893,13 @@ inline constexpr char
         "interactive authentication to autofill payment methods, we will "
         "trigger a device authentication on ChromeOS.";
 
+inline constexpr char kAutofillEnablePayNowPayLaterTabsName[] =
+    "Enable Pay Now Pay Later tabs UI for payments autofill on Chrome";
+inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =
+    "When enabled, Chrome will use the Pay Now Pay Later tabs UI for payments "
+    "autofill when buy now pay later options are available for the merchant "
+    "webpage.";
+
 inline constexpr char kKeyboardLockApiOnAndroidName[] =
     "Keyboard Lock API on Android";
 inline constexpr char kKeyboardLockApiOnAndroidDescription[] =

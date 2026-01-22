@@ -13531,6 +13531,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(enterprise_reporting::kSaasUsageReporting)},
 #endif
 
+    {"autofill-enable-pay-now-pay-later-tabs",
+     flag_descriptions::kAutofillEnablePayNowPayLaterTabsName,
+     flag_descriptions::kAutofillEnablePayNowPayLaterTabsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnablePayNowPayLaterTabs)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

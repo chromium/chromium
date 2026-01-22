@@ -71,6 +71,9 @@ BASE_DECLARE_FEATURE(kAutofillEnableNewFopDisplayAndroid);
 
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnablePayNowPayLaterTabs);
+
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauthChromeOs);

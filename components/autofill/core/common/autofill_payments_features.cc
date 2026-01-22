@@ -199,6 +199,12 @@ BASE_FEATURE(kAutofillEnableNewFopDisplayAndroid,
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will use the Pay Now Pay Later tabs UI for payments
+// autofill when buy now pay later options are available for the merchant
+// webpage.
+BASE_FEATURE(kAutofillEnablePayNowPayLaterTabs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // When enabled, in use-cases where we would not have triggered any interactive
 // authentication to autofill payment methods, we will trigger a device
