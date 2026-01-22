@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 
+@class DownloadListCoordinator;
 @class NewTabPageCoordinator;
 
 // Coordinator for BrowserViewController. Testing category to expose properties
@@ -25,6 +26,10 @@
 // Coordinator for displaying the Save to Photos UI.
 @property(nonatomic, strong, readonly)
     SaveToPhotosCoordinator* saveToPhotosCoordinator;
+
+// Coordinator for displaying the Download List UI.
+@property(nonatomic, strong, readonly)
+    DownloadListCoordinator* downloadListCoordinator;
 
 @end
 

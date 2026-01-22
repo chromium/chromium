@@ -66,7 +66,15 @@ class DownloadManagerMediatorTest : public PlatformTest {
     DownloadManagerTabHelper::FromWebState(web_state_.get())
         ->SetCurrentDownload(std::move(task));
   }
-  ~DownloadManagerMediatorTest() override { [application_ stopMocking]; }
+  ~DownloadManagerMediatorTest() override {
+    // Ensure all background tasks complete before destroying test fixtures.
+    // This is necessary when kDownloadList is enabled, as DownloadRecordService
+    // initializes on a background thread.
+    if (IsDownloadListEnabled()) {
+      task_environment_.RunUntilIdle();
+    }
+    [application_ stopMocking];
+  }
 
   web::FakeDownloadTask* task() { return task_; }
 

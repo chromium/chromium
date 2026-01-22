@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/download_record_service_factory.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -87,6 +88,10 @@
 class BrowserCoordinatorTest : public PlatformTest {
  protected:
   BrowserCoordinatorTest() {
+    // Ensure DownloadRecordServiceFactory is registered before profile
+    // creation.
+    DownloadRecordServiceFactory::GetInstance();
+
     base_view_controller_ = [[UIViewController alloc] init];
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
 
@@ -243,8 +248,11 @@ class BrowserCoordinatorTest : public PlatformTest {
   id<SceneCommands> mock_scene_handler_;
 };
 
-// Tests if the URL to open the downlads directory from files.app is valid.
+// Tests showDownloadsFolder opens Files.app when download list is disabled.
 TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDownloadList);
+
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
 
@@ -254,24 +262,48 @@ TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
   UIApplication* shared_application = [UIApplication sharedApplication];
   ASSERT_TRUE([shared_application canOpenURL:url]);
 
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> handler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+
+  // When the download list feature is disabled, showDownloadsFolder should
+  // open Files.app.
   id shared_application_mock = OCMPartialMock(shared_application);
 
   OCMExpect([shared_application_mock openURL:url
                                      options:[OCMArg any]
                            completionHandler:nil]);
 
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [handler showDownloadsFolder];
 
+  EXPECT_OCMOCK_VERIFY(shared_application_mock);
+
+  [browser_coordinator stop];
+}
+
+// Tests showDownloadsFolder shows download list UI when feature is enabled.
+TEST_F(BrowserCoordinatorTest, ShowDownloadList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDownloadList);
+
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> handler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+
+  // When the download list feature is enabled, showDownloadsFolder should
+  // present the download list UI instead of opening Files.app.
   [handler showDownloadsFolder];
 
-  [browser_coordinator stop];
+  // Verify that the download list coordinator was created.
+  EXPECT_NE(browser_coordinator.downloadListCoordinator, nil);
 
-  EXPECT_OCMOCK_VERIFY(shared_application_mock);
+  [browser_coordinator stop];
 }
 
 // Tests that `-showShareSheet` is leaving fullscreen and starting the share
