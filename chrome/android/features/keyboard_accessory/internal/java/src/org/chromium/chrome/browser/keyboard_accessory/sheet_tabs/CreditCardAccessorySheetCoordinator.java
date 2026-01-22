@@ -54,7 +54,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                 createUiConfiguration(context, AutofillImageFetcherFactory.getForProfile(profile));
         mMediator =
                 new AccessorySheetTabMediator(
-                        mModel, Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
+                        mModel, Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS);
     }
 
     @Override
