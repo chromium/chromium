@@ -445,6 +445,8 @@ source_set("extensions") {
     "sync/extension_sync_service_factory.h",
     "sync/extension_sync_util.cc",
     "sync/extension_sync_util.h",
+    "sync/features.cc",
+    "sync/features.h",
     "sync/sync_bundle.cc",
     "sync/sync_bundle.h",
     "system_display/display_info_provider.h",

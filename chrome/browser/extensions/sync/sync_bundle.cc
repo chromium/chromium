@@ -43,7 +43,7 @@ void SyncBundle::PushSyncDataMap(
     sync_change_list.push_back(CreateSyncChange(
         extension_id_and_sync_data.first, extension_id_and_sync_data.second));
 
-    AddSyncedExtension(extension_id_and_sync_data.first);
+    AddSyncedExtension(extension_id_and_sync_data.second);
   }
 
   PushSyncChanges(sync_change_list);
@@ -65,7 +65,7 @@ void SyncBundle::PushSyncAddOrUpdate(const ExtensionId& extension_id,
                                      const syncer::SyncData& sync_data) {
   PushSyncChanges(
       syncer::SyncChangeList(1, CreateSyncChange(extension_id, sync_data)));
-  AddSyncedExtension(extension_id);
+  AddSyncedExtension(sync_data);
   // Now sync and local state agree. If we had a pending install from sync,
   // clear it now.
   pending_sync_data_.erase(extension_id);
@@ -75,7 +75,7 @@ void SyncBundle::ApplySyncData(const ExtensionSyncData& extension_sync_data) {
   if (extension_sync_data.uninstalled()) {
     RemoveSyncedExtension(extension_sync_data.id());
   } else {
-    AddSyncedExtension(extension_sync_data.id());
+    AddSyncedExtension(extension_sync_data);
   }
 }
 
@@ -91,11 +91,22 @@ void SyncBundle::AddPendingExtensionData(
 
 std::vector<ExtensionSyncData> SyncBundle::GetPendingExtensionData() const {
   std::vector<ExtensionSyncData> pending_extensions;
+  pending_extensions.reserve(pending_sync_data_.size());
   for (const auto& data : pending_sync_data_) {
     pending_extensions.push_back(data.second);
   }
 
   return pending_extensions;
+}
+
+std::vector<ExtensionSyncData> SyncBundle::GetSyncedExtensionData() const {
+  std::vector<ExtensionSyncData> synced_extension_data;
+  synced_extension_data.reserve(synced_extensions_.size());
+  for (const auto& data : synced_extensions_) {
+    synced_extension_data.push_back(data.second);
+  }
+
+  return synced_extension_data;
 }
 
 syncer::SyncChange SyncBundle::CreateSyncChange(
@@ -113,8 +124,18 @@ void SyncBundle::PushSyncChanges(
   sync_processor_->ProcessSyncChanges(FROM_HERE, sync_change_list);
 }
 
-void SyncBundle::AddSyncedExtension(const ExtensionId& id) {
-  synced_extensions_.insert(id);
+void SyncBundle::AddSyncedExtension(const syncer::SyncData& sync_data) {
+  std::unique_ptr<ExtensionSyncData> extension_sync_data =
+      ExtensionSyncData::CreateFromSyncData(sync_data);
+  if (extension_sync_data) {
+    AddSyncedExtension(std::move(*extension_sync_data));
+  }
+}
+
+void SyncBundle::AddSyncedExtension(
+    const ExtensionSyncData& extension_sync_data) {
+  synced_extensions_.insert_or_assign(extension_sync_data.id(),
+                                      extension_sync_data);
 }
 
 void SyncBundle::RemoveSyncedExtension(const ExtensionId& id) {

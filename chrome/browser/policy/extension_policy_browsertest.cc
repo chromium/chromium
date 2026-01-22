@@ -72,6 +72,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install_verifier.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
@@ -2235,8 +2236,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
           extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, DontSyncPolicyUninstalls) {
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
+                       DontSyncPolicyUninstallsAndReinstallWhenPolicyIsLifted) {
   policy::ScopedDomainEnterpriseManagement scoped_domain;
+  extensions::ExtensionManagement* management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile());
 
   // 1. Install an extension.
   extensions::ExtensionRegistry* registry = extension_registry();
@@ -2265,8 +2269,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, DontSyncPolicyUninstalls) {
   base::RunLoop().RunUntilIdle();
   observer.WaitForExtensionUninstalled();
 
-  // 4. Verify that the extension has been uninstalled.
+  // 4. Verify that the extension has been uninstalled and that the
+  // installation mode has changed.
   EXPECT_FALSE(registry->GetInstalledExtension(extension_id));
+  EXPECT_EQ(management->GetInstallationMode(extension_id, std::string()),
+            extensions::ManagedInstallationMode::kRemoved);
 
   // 5. Verify that no deletion was synced.
   // The uninstall should not be synced as a deletion.
@@ -2274,6 +2281,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, DontSyncPolicyUninstalls) {
     EXPECT_NE(syncer::SyncChange::ACTION_DELETE, change.change_type());
   }
   EXPECT_EQ(1u, extensions_processor.data().size());
+
+  // 6. Verify the extension is not pending install.
+  extensions::PendingExtensionManager* pending_extension_manager =
+      extensions::PendingExtensionManager::Get(profile());
+  bool is_pending = pending_extension_manager->IsIdPending(extension_id);
+  EXPECT_FALSE(is_pending);
+
+  // 6. Set policy to allow the extension back.
+  {
+    extensions::ExtensionManagementPolicyUpdater management_policy(&provider_);
+    management_policy.UnsetPerExtensionSettings(extension_id);
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // 7. Verify ExtensionManagement sees the change.
+  EXPECT_EQ(management->GetInstallationMode(extension_id, std::string()),
+            extensions::ManagedInstallationMode::kAllowed);
+
+  // 8. Verify the extension is now pending install or installed.
+  is_pending = pending_extension_manager->IsIdPending(extension_id);
+  bool is_installed = registry->GetInstalledExtension(extension_id) != nullptr;
+  EXPECT_TRUE(is_pending || is_installed);
 }
 
 // Verifies that policy host block/allow settings are applied even when
