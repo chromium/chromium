@@ -5,11 +5,14 @@
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service_factory.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,6 +24,12 @@ std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
     content::BrowserContext* browser_context) {
   return std::make_unique<
       testing::NiceMock<MockOptimizationGuideKeyedService>>();
+}
+
+std::unique_ptr<KeyedService> BuildTestHistoryService(
+    content::BrowserContext* browser_context) {
+  return history::CreateHistoryService(
+      Profile::FromBrowserContext(browser_context)->GetPath(), true);
 }
 
 }  // namespace
@@ -80,11 +89,12 @@ TEST_F(GeminiAntiscamProtectionServiceFactoryTest,
        EnabledForEnhancedSafeBrowsing) {
   TestingProfile* profile = profile_manager_->CreateTestingProfile(
       "profile",
-      {
-          TestingProfile::TestingFactory{
-              OptimizationGuideKeyedServiceFactory::GetInstance(),
-              base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
-      });
+      {TestingProfile::TestingFactory{
+           OptimizationGuideKeyedServiceFactory::GetInstance(),
+           base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
+       TestingProfile::TestingFactory{
+           HistoryServiceFactory::GetInstance(),
+           base::BindRepeating(&BuildTestHistoryService)}});
   profile->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_NE(nullptr,
             GeminiAntiscamProtectionServiceFactory::GetForProfile(profile));

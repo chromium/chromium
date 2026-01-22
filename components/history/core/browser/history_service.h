@@ -372,8 +372,8 @@ class HistoryService : public KeyedService,
       base::OnceCallback<void(VisibleVisitCountToHostResult)>;
 
   // TODO(crbug.com/40778368): Rename this function to use origin instead of
-  // host.
-  base::CancelableTaskTracker::TaskId GetVisibleVisitCountToHost(
+  // host. Virtual for mocking.
+  virtual base::CancelableTaskTracker::TaskId GetVisibleVisitCountToHost(
       const GURL& url,
       GetVisibleVisitCountToHostCallback callback,
       base::CancelableTaskTracker* tracker);

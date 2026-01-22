@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service_factory.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +38,7 @@ GeminiAntiscamProtectionServiceFactory::GeminiAntiscamProtectionServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
@@ -51,13 +53,23 @@ GeminiAntiscamProtectionServiceFactory::BuildServiceInstanceForBrowserContext(
           safe_browsing::kGeminiAntiscamProtectionForMetricsCollection)) {
     return nullptr;
   }
+
+  // The optimization guide keyed service must be instantiated.
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_keyed_service) {
     return nullptr;
   }
+
+  // The history service must be instantiated.
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  if (!history_service) {
+    return nullptr;
+  }
+
   return std::make_unique<GeminiAntiscamProtectionService>(
-      optimization_guide_keyed_service);
+      optimization_guide_keyed_service, history_service);
 }
 
 }  // namespace safe_browsing

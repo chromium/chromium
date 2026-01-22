@@ -658,6 +658,10 @@ source_set("unit_tests") {
     "metrics/bundled_settings_metrics_provider_unittest.cc",
   ]
 
+  if (safe_browsing_mode != 0) {
+    sources += [ "gemini_antiscam_protection/gemini_antiscam_protection_service_unittest.cc" ]
+  }
+
   deps = [
     ":safe_browsing",
     "//chrome/browser/safe_browsing:advanced_protection",
@@ -669,6 +673,15 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [
+      "//chrome/browser/history",
+      "//chrome/browser/optimization_guide",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+    ]
+  }
+
   if (is_android) {
     deps += [ "android:test_support" ]
   }
