@@ -486,12 +486,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
     const requiredFieldsMet = this.checkRequiredFields_();
 
-    if (this.allFieldsAreEmpty_) {
-      // TODO(crbug.com/454892936): Remove this string as well as the
-      // implementation of `allFieldsAreEmpty_`.
-      this.validationError_ =
-          this.i18n('autofillAiAddOrEditDialogValidationError');
-    } else if (!requiredFieldsMet) {
+    if (!requiredFieldsMet) {
       const requiredFieldNames =
           this.requiredAttributeTypes_.map(type => type.typeNameAsString);
 
@@ -503,6 +498,9 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       const formattedList = formatter.format(requiredFieldNames);
       this.validationError_ = this.i18n(
           'autofillAiAddOrEditDialogRequiredFieldError', formattedList);
+    } else if (this.allFieldsAreEmpty_) {
+      this.validationError_ =
+          this.i18n('autofillAiAddOrEditDialogValidationError');
     } else {
       this.validationError_ = '';
     }
