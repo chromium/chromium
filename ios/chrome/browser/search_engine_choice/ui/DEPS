@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/favicon/model/favicon_loader.h",
+  # keep-sorted end
 ]

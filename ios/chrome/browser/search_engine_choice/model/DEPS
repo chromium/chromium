@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/policy/model/profile_policy_connector.h",
+  "+ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h",
   "+ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
-  "+ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h",
+  # keep-sorted end
 ]
