@@ -58,7 +58,8 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
     BrowserView* browser_view)
-    : tab_strip_model_(browser_view->browser()->GetTabStripModel()),
+    : browser_view_(browser_view),
+      tab_strip_model_(browser_view->browser()->GetTabStripModel()),
       state_controller_(state_controller),
       resize_animation_(this) {
   // For z-ordering purposes this needs to be on a layer.
@@ -110,11 +111,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 
-  root_node_ = std::make_unique<RootTabCollectionNode>(
-      tab_strip_model_.get(),
-      base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
-                          base::Unretained(this)));
-
   SetBackground(std::make_unique<CustomCornersBackground>(
       *this, *browser_view,
       /*primary_color=*/CustomCornersBackground::FrameColor(),
@@ -124,10 +120,16 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() {
-  root_node_->SetController(nullptr);
+  if (root_node_) {
+    root_node_->SetController(nullptr);
+  }
+
   tab_strip_controller_.reset();
-  auto handler = RemoveChildViewT(drag_handler_);
-  drag_handler_ = nullptr;
+
+  if (drag_handler_) {
+    auto handler = RemoveChildViewT(drag_handler_);
+    drag_handler_ = nullptr;
+  }
 }
 
 void VerticalTabStripRegionView::AddedToWidget() {
@@ -147,6 +149,56 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
   return top_button_container_;
+}
+
+void VerticalTabStripRegionView::InitializeTabStrip() {
+  if (root_node_) {
+    return;
+  }
+
+  root_node_ = std::make_unique<RootTabCollectionNode>(
+      tab_strip_model_,
+      base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
+                          base::Unretained(this)),
+      base::BindRepeating(&VerticalTabStripRegionView::ClearTabStripView,
+                          base::Unretained(this)));
+
+  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
+  if (browser_view_ && browser_view_->browser()->app_controller()) {
+    tab_menu_model_factory =
+        browser_view_->browser()->app_controller()->GetTabMenuModelFactory();
+  }
+
+  TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();
+  CHECK(tab_strip_model);
+  auto drag_handler = std::make_unique<VerticalTabDragHandlerImpl>(
+      *tab_strip_model, *root_node_.get());
+  drag_handler_ = drag_handler.get();
+
+  CHECK(!tab_strip_controller_);
+  tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
+      tab_strip_model, browser_view_, *AddChildView(std::move(drag_handler)),
+      std::move(tab_menu_model_factory));
+
+  root_node_->SetController(tab_strip_controller_.get());
+
+  root_node_->Init();
+}
+
+void VerticalTabStripRegionView::ResetTabStrip() {
+  if (!root_node_) {
+    return;
+  }
+
+  root_node_->Reset();
+
+  root_node_->SetController(nullptr);
+  tab_strip_controller_.reset();
+
+  CHECK(drag_handler_);
+  RemoveChildViewT(std::exchange(drag_handler_, nullptr));
+
+  root_node_.reset();
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {
@@ -352,29 +404,6 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
   return true;
 }
 
-void VerticalTabStripRegionView::CreateTabStripController(
-    BrowserView* browser_view) {
-  std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view && browser_view->browser()->app_controller()) {
-    tab_menu_model_factory =
-        browser_view->browser()->app_controller()->GetTabMenuModelFactory();
-  }
-
-  TabStripModel* tab_strip_model = browser_view->browser()->GetTabStripModel();
-  CHECK(tab_strip_model);
-  auto drag_handler = std::make_unique<VerticalTabDragHandlerImpl>(
-      *tab_strip_model, *root_node_.get());
-  drag_handler_ = drag_handler.get();
-
-  tab_strip_controller_ = std::make_unique<VerticalTabStripController>(
-      tab_strip_model, browser_view, *AddChildView(std::move(drag_handler)),
-      std::move(tab_menu_model_factory));
-
-  if (root_node_) {
-    root_node_->SetController(tab_strip_controller_.get());
-  }
-}
-
 void VerticalTabStripRegionView::SetToolbarHeightForLayout(
     const int toolbar_height) {
   top_button_container_->SetToolbarHeightForLayout(toolbar_height);
@@ -412,6 +441,12 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
   CHECK(separator_index.has_value());
   ReorderChildView(tab_strip_view_, separator_index.value() + 1);
   return tab_strip_view_;
+}
+
+void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
+  CHECK(tab_strip_view_);
+  CHECK(tab_strip_view_ == view);
+  RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));
 }
 
 void VerticalTabStripRegionView::OnCollapsedStateChanged(

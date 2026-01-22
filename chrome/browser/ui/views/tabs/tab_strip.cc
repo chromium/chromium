@@ -1088,11 +1088,6 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(*AddChildView(std::make_unique<TabDragContextImpl>(this))),
-      tab_container_(
-          *AddChildViewAt(MakeTabContainer(this,
-                                           hover_card_controller_.get(),
-                                           base::to_address(drag_context_)),
-                          0)),
       style_(TabStyle::Get()) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
@@ -1108,23 +1103,45 @@ TabStrip::~TabStrip() {
   // Eliminate the hover card first to avoid order-of-operation issues.
   hover_card_controller_.reset();
 
-  // Disengage the drag controller before doing any additional cleanup. This
-  // call can interact with child views so we can't reliably do it during member
-  // destruction.
-  // End any ongoing drag session.
-  drag_context_->DestroyDragController();
-  // Immediately clean up that drag session instead of allowing things to
-  // animate back into place over time.
-  drag_context_->CompleteEndDragAnimations();
+  if (tab_container_) {
+    // Disengage the drag controller before doing any additional cleanup. This
+    // call can interact with child views so we can't reliably do it during
+    // member destruction. End any ongoing drag session.
+    drag_context_->DestroyDragController();
+    // Immediately clean up that drag session instead of allowing things to
+    // animate back into place over time.
+    drag_context_->CompleteEndDragAnimations();
 
-  // `tab_container_`'s tabs may call back to us or to `drag_context_` from
-  // their destructors. Delete them first so that if they call back we aren't in
-  // a weird state.
-  RemoveChildViewT(base::to_address(tab_container_));
-  RemoveChildViewT(base::to_address(drag_context_));
-
+    // `tab_container_`'s tabs may call back to us or to `drag_context_` from
+    // their destructors. Delete them first so that if they call back we aren't
+    // in a weird state.
+    RemoveChildViewT(base::to_address(tab_container_));
+    RemoveChildViewT(base::to_address(drag_context_));
+  }
   CHECK(!IsInObserverList())
       << "TabStrip should not be in any observer lists at destruction.";
+}
+
+void TabStrip::Initialize() {
+  CHECK(!tab_container_);
+  tab_container_ =
+      AddChildViewAt(MakeTabContainer(this, hover_card_controller_.get(),
+                                      base::to_address(drag_context_)),
+                     0);
+}
+
+void TabStrip::Reset() {
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
+  RemoveChildViewT(std::exchange(tab_container_, nullptr));
+  selected_tabs_.Clear();
+
+  // Reset any other transient state.
+  last_mouse_move_location_ = gfx::Point();
+  new_tab_button_pressed_start_time_.reset();
+  mouse_entered_tabstrip_time_.reset();
+  has_reported_time_mouse_entered_to_switch_ = false;
+  has_reported_tab_drag_metrics_ = false;
+  last_tab_drag_time_.reset();
 }
 
 void TabStrip::SetAvailableWidthCallback(
@@ -1514,6 +1531,10 @@ TabGroup* TabStrip::GetTabGroup(const tab_groups::TabGroupId& id) const {
 }
 
 std::optional<int> TabStrip::GetModelIndexOf(const TabSlotView* view) const {
+  if (!tab_container_) {
+    return std::nullopt;
+  }
+
   const std::optional<int> viewmodel_index =
       tab_container_->GetModelIndexOf(view);
 
@@ -1983,7 +2004,9 @@ void TabStrip::OnMouseEventInTab(views::View* source,
 }
 
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
-  tab_container_->UpdateHoverCard(tab, update_type);
+  if (tab_container_) {
+    tab_container_->UpdateHoverCard(tab, update_type);
+  }
 }
 
 bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
@@ -2103,6 +2126,10 @@ views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
 }
 
 gfx::Size TabStrip::GetMinimumSize() const {
+  if (!tab_container_) {
+    return gfx::Size();
+  }
+
   // `tab_container_` and `drag_context_` overlap (both share TabStrip's
   // origin), so we need to be able to cover the union of their bounds.
   gfx::Size min_size = tab_container_->GetMinimumSize();
@@ -2113,6 +2140,10 @@ gfx::Size TabStrip::GetMinimumSize() const {
 
 gfx::Size TabStrip::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
+  if (!tab_container_) {
+    return gfx::Size();
+  }
+
   // `tab_container_` and `drag_context_` overlap (both share TabStrip's
   // origin), so we need to be able to cover the union of their bounds.
   gfx::Size preferred_size = tab_container_->GetPreferredSize(available_size);
@@ -2122,6 +2153,10 @@ gfx::Size TabStrip::CalculatePreferredSize(
 }
 
 void TabStrip::Layout(PassKey) {
+  if (!tab_container_) {
+    return;
+  }
+
   if (tab_container_->bounds() != GetLocalBounds()) {
     UpdateHoverCard(nullptr,
                     TabSlotController::HoverCardUpdateType::kAnimating);

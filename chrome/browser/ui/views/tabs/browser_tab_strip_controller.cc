@@ -159,7 +159,6 @@ BrowserTabStripController::BrowserTabStripController(
     // Use the default one.
     menu_model_factory_ = std::make_unique<TabMenuModelFactory>();
   }
-  model_->SetTabStripUI(this);
 }
 
 BrowserTabStripController::~BrowserTabStripController() {
@@ -175,6 +174,7 @@ BrowserTabStripController::~BrowserTabStripController() {
 
 void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   tabstrip_ = tabstrip;
+  model_->SetTabStripUI(this);
 
   // Walk the model, calling our insertion observer method for each item within
   // it.
@@ -183,7 +183,37 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
     tabs_to_add.emplace_back(model_->GetTabAtIndex(i), i);
   }
   AddTabs(tabs_to_add);
+
+  // Add group data.
+  if (model_->SupportsTabGroups()) {
+    for (const tab_groups::TabGroupId& group_id :
+         model_->group_model()->ListTabGroups()) {
+      tabstrip_->OnGroupCreated(group_id);
+
+      for (const int index : model_->group_model()
+                                 ->GetTabGroup(group_id)
+                                 ->ListTabs()
+                                 .ToIntVector()) {
+        tabstrip_->AddTabToGroup(group_id, index);
+      }
+
+      tabstrip_->OnGroupContentsChanged(group_id);
+    }
+  }
+
+  // Add split data.
+  for (const split_tabs::SplitTabId& split_id : model_->ListSplits()) {
+    split_tabs::SplitTabData* data = model_->GetSplitData(split_id);
+    tabstrip_->OnSplitCreated(data->GetIndexRange().ToIntVector(), split_id);
+  }
 }
+
+void BrowserTabStripController::Reset() {
+  // Stop observing.
+  model_->RemoveObserver(this);
+  tabstrip_ = nullptr;
+}
+
 // TODO(crbug.com/435178910): Change this to return a
 // TabStripModelSelectionState instead of a ListSelectionModel.
 ui::ListSelectionModel BrowserTabStripController::GetSelectionModel() const {

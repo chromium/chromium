@@ -120,10 +120,7 @@ std::unique_ptr<TabStrip> CreateTabStrip(BrowserView* browser_view) {
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
       browser_view->browser()->GetTabStripModel(), browser_view,
       std::move(tab_menu_model_factory));
-  BrowserTabStripController* tabstrip_controller_ptr =
-      tabstrip_controller.get();
   auto tab_strip = std::make_unique<TabStrip>(std::move(tabstrip_controller));
-  tabstrip_controller_ptr->InitFromModel(tab_strip.get());
   return tab_strip;
 }
 
@@ -405,6 +402,10 @@ views::View::Views HorizontalTabStripRegionView::GetChildrenInZOrder() {
 // FlexLayout doesn't currently support. Because of this the TSB bounds are
 // manually calculated.
 void HorizontalTabStripRegionView::Layout(PassKey) {
+  if (!tab_strip_set_) {
+    return;
+  }
+
   const bool tab_search_container_before_tab_strip =
       tab_search_container_ && render_tab_search_before_tab_strip_;
   if (tab_search_container_before_tab_strip) {
@@ -517,9 +518,27 @@ views::View* HorizontalTabStripRegionView::GetDefaultFocusableChild() {
                          : AccessiblePaneView::GetDefaultFocusableChild();
 }
 
+void HorizontalTabStripRegionView::InitializeTabStrip() {
+  if (tab_strip_set_) {
+    return;
+  }
+
+  tab_strip_->Initialize();
+  static_cast<BrowserTabStripController*>(tab_strip_->controller())
+      ->InitFromModel(tab_strip_);
+  tab_strip_set_ = true;
+}
+
+void HorizontalTabStripRegionView::ResetTabStrip() {
+  tab_strip_set_ = false;
+  static_cast<BrowserTabStripController*>(tab_strip_->controller())->Reset();
+  tab_strip_->Reset();
+}
+
 bool HorizontalTabStripRegionView::IsTabStripEditable() const {
   return tab_strip_->IsTabStripEditable();
 }
+
 void HorizontalTabStripRegionView::DisableTabStripEditingForTesting() const {
   tab_strip_->DisableTabStripEditingForTesting();  // IN-TEST
 }
