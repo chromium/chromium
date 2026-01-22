@@ -163,6 +163,9 @@
       <structure type="chrome_scaled_image" name="IDR_PLUGINS_FAVICON" file="common/favicon_plugins.png" />
       <structure type="chrome_scaled_image" name="IDR_PRERENDER" file="common/prerender_succeed_icon.png" />
       <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32" file="${branding_path_component}/product_logo_32.png" />
+      <if expr="not is_android">
+          <structure type="chrome_scaled_image" name="IDR_PRICE_TRACKING_ON_IOS_ICON" file="common/price_tracking_on_ios.png" />
+      </if>
       <if expr="_google_chrome">
         <then>
           <if expr="is_linux">
@@ -330,6 +333,9 @@
       </if>
       <structure type="chrome_scaled_image" name="IDR_TAB_DROP_DOWN" file="tab_drop_down.png" />
       <structure type="chrome_scaled_image" name="IDR_TAB_DROP_UP" file="tab_drop_up.png" />
+      <if expr="not is_android">
+          <structure type="chrome_scaled_image" name="IDR_TAB_GROUPS_ON_IOS_ICON" file="common/tab_groups_on_ios.png" />
+      </if>
       <structure type="chrome_scaled_image" name="IDR_THEME_BUTTON_BACKGROUND" file="notused.png" />
       <structure type="chrome_scaled_image" name="IDR_THEME_FRAME" file="notused.png" />
       <structure type="chrome_scaled_image" name="IDR_THEME_FRAME_INACTIVE" file="notused.png" />
