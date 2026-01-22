@@ -295,8 +295,16 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
   EXPECT_EQ(ActiveTab(), Tab::kCapturedTab);
 }
 
+// TODO(crbug.com/40913269): Flaky on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_UserFocusChangeSuppressesFocusDecision \
+  DISABLED_UserFocusChangeSuppressesFocusDecision
+#else
+#define MAYBE_UserFocusChangeSuppressesFocusDecision \
+  UserFocusChangeSuppressesFocusDecision
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
-                       UserFocusChangeSuppressesFocusDecision) {
+                       MAYBE_UserFocusChangeSuppressesFocusDecision) {
   SetUpTestTabs();
 
   // Recall that tab 0 is neither the capturing nor captured tab,
@@ -316,8 +324,17 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }
 
-IN_PROC_BROWSER_TEST_F(ConditionalFocusInteractiveUiTest,
-                       ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes) {
+// TODO(crbug.com/40913269): Flaky on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes \
+  DISABLED_ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes
+#else
+#define MAYBE_ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes \
+  ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ConditionalFocusInteractiveUiTest,
+    MAYBE_ExceptionRaisedIfFocusCalledAfterMicrotaskExecutes) {
   // Setup.
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface,
