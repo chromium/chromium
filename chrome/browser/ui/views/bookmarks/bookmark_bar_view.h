@@ -432,6 +432,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   void MaybeShowSavedTabGroupsIntroPromo() const;
 
+  // Return true when `drop_info_` is not null, as it indicates that a drag
+  // action is being performed.
+  bool HasDropInfo() const;
+
   // True if BookmarkMergedSurfaceServiceLoaded() has been invoked,
   // either by manually checking `bookmark_service_->loaded()` or by
   // notification via BookmarkMergedSurfaceServiceObserver.

@@ -217,8 +217,11 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
   explicit BookmarkFolderButton(PressedCallback callback,
                                 AccessibleActionCallback ax_action_callback,
+                                IsDraggingCallback is_dragging_callback,
                                 std::u16string_view title = {})
-      : BookmarkMenuButtonBase(std::move(callback), title),
+      : BookmarkMenuButtonBase(std::move(callback),
+                               std::move(is_dragging_callback),
+                               title),
         ax_action_callback_(std::move(ax_action_callback)) {
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     if (!animations_enabled) {
@@ -1671,12 +1674,15 @@ std::unique_ptr<MenuButton> BookmarkBarView::CreateManagedBookmarksButton() {
 }
 
 std::unique_ptr<MenuButton> BookmarkBarView::CreateOverflowButton() {
-  auto button = std::make_unique<BookmarkMenuButtonBase>(base::BindRepeating(
-      [](BookmarkBarView* bar, const ui::Event& event) {
-        bar->OnMenuButtonPressed(BookmarkParentFolder::BookmarkBarFolder(),
-                                 event);
-      },
-      base::Unretained(this)));
+  auto button = std::make_unique<BookmarkMenuButtonBase>(
+      base::BindRepeating(
+          [](BookmarkBarView* bar, const ui::Event& event) {
+            bar->OnMenuButtonPressed(BookmarkParentFolder::BookmarkBarFolder(),
+                                     event);
+          },
+          base::Unretained(this)),
+      base::BindRepeating(&BookmarkBarView::HasDropInfo,
+                          base::Unretained(this)));
 
   // The overflow button's image contains an arrow and therefore it is a
   // direction sensitive image and we need to flip it if the UI layout is
@@ -1733,6 +1739,8 @@ std::unique_ptr<views::MenuButton> BookmarkBarView::CreateMenuButtonForFolder(
                           base::Unretained(this), folder),
       base::BindRepeating(&BookmarkBarView::OnMenuButtonAccessibleAction,
                           base::Unretained(this), folder),
+      base::BindRepeating(&BookmarkBarView::HasDropInfo,
+                          base::Unretained(this)),
       title);
 }
 
@@ -2174,10 +2182,9 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
 
   overflow_button_->SetImageModel(views::Button::STATE_NORMAL,
                                   overflow_button_icon);
-  overflow_button_->SetImageModel(
-      views::Button::STATE_DISABLED,
-      ui::GetDefaultDisabledIconFromImageModel(overflow_button_icon,
-                                               color_provider));
+  overflow_button_->SetImageModel(views::Button::STATE_DISABLED,
+                                  ui::GetDefaultDisabledIconFromImageModel(
+                                      overflow_button_icon, color_provider));
 
   // Redraw the background.
   SchedulePaint();
@@ -2402,6 +2409,10 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
 
   BrowserUserEducationInterface::From(browser_view_->browser())
       ->MaybeShowStartupFeaturePromo(std::move(params));
+}
+
+bool BookmarkBarView::HasDropInfo() const {
+  return drop_info_.get();
 }
 
 BEGIN_METADATA(BookmarkBarView)
