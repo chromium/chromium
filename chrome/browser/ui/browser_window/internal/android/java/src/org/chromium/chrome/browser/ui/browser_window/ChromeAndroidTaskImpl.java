@@ -476,15 +476,6 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public <T extends ChromeAndroidTaskFeature> void addFeature(
-            Class<T> featureClazz, Supplier<@Nullable T> featureSupplier) {
-        // For the deprecated API, we assume the feature is not profile-scoped.
-        addFeature(
-                new ChromeAndroidTaskFeatureKey(featureClazz, /* profile= */ null),
-                featureSupplier);
-    }
-
-    @Override
     public @Nullable Intent createIntentForNormalBrowserWindow(boolean isIncognito) {
         ThreadUtils.assertOnUiThread();
         var topActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
@@ -901,19 +892,6 @@ final class ChromeAndroidTaskImpl
             ChromeAndroidTaskFeatureKey featureKey) {
         ThreadUtils.assertOnUiThread();
         return mFeatures.get(featureKey);
-    }
-
-    @Override
-    public @Nullable ChromeAndroidTaskFeature getFeatureForTesting(
-            Class<? extends ChromeAndroidTaskFeature> featureClazz) {
-        // For the deprecated API try both for until downstream tests are updated.
-        var feature =
-                getFeatureForTesting(
-                        new ChromeAndroidTaskFeatureKey(featureClazz, mInitialProfile));
-        if (feature != null) {
-            return feature;
-        }
-        return getFeatureForTesting(new ChromeAndroidTaskFeatureKey(featureClazz, null));
     }
 
     @Override

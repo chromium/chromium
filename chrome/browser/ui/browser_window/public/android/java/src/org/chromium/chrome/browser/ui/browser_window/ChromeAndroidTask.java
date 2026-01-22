@@ -221,15 +221,6 @@ public interface ChromeAndroidTask {
             ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier);
 
     /**
-     * {@see addFeature(ChromeAndroidTaskFeatureKey, Supplier<T>)}.
-     *
-     * @deprecated Use {@link #addFeature(ChromeAndroidTaskFeatureKey, Supplier<T>)} instead.
-     */
-    @Deprecated
-    <T extends ChromeAndroidTaskFeature> void addFeature(
-            Class<T> featureClazz, Supplier<@Nullable T> featureSupplier);
-
-    /**
      * Creates the {@link Intent} to open a new window of type {@link BrowserWindowType#NORMAL}.
      *
      * @param isIncognito Whether the new window should be in incognito mode.
@@ -334,15 +325,6 @@ public interface ChromeAndroidTask {
 
     /** Returns the {@link ChromeAndroidTaskFeature} instance for the given class. */
     @Nullable ChromeAndroidTaskFeature getFeatureForTesting(ChromeAndroidTaskFeatureKey featureKey);
-
-    /**
-     * {@see getFeatureForTesting(ChromeAndroidTaskFeatureKey)}.
-     *
-     * @deprecated Use {@link #getFeatureForTesting(ChromeAndroidTaskFeatureKey)} instead.
-     */
-    @Deprecated
-    @Nullable ChromeAndroidTaskFeature getFeatureForTesting(
-            Class<? extends ChromeAndroidTaskFeature> featureClazz);
 
     /**
      * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.
