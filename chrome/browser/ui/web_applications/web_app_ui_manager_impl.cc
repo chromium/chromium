@@ -6,8 +6,10 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -375,6 +377,19 @@ void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
   ::web_app::ShowWebAppIdentityUpdateDialog(
       app_id, title_change, icon_change, old_title, new_title, old_icon,
       new_icon, web_contents, std::move(callback));
+}
+
+void WebAppUiManagerImpl::ShowSubAppsInstallDialog(
+    content::WebContents* initiating_web_contents,
+    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    const webapps::AppId& parent_app_id,
+    base::OnceCallback<void(bool)> callback) {
+  std::string parent_app_name = WebAppProvider::GetForWebApps(profile_)
+                                    ->registrar_unsafe()
+                                    .GetAppShortName(parent_app_id);
+  web_app::ShowSubAppsInstallDialog(initiating_web_contents, sub_apps,
+                                    parent_app_name, parent_app_id,
+                                    std::move(callback));
 }
 
 void WebAppUiManagerImpl::ShowWebAppSettings(const webapps::AppId& app_id) {

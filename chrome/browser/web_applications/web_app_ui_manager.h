@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -46,6 +47,7 @@ namespace web_app {
 class WithAppResources;
 // WebAppUiManagerImpl can be used only in UI code.
 class WebAppUiManagerImpl;
+struct WebAppInstallInfo;
 
 enum class AppRelaunchState {
   kAppClosingForRelaunch,
@@ -204,6 +206,13 @@ class WebAppUiManager {
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
       AppIdentityDialogCallback callback) = 0;
+
+  // Shows the dialog for installing sub-apps.
+  virtual void ShowSubAppsInstallDialog(
+      content::WebContents* initiating_web_contents,
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+      const webapps::AppId& parent_app_id,
+      base::OnceCallback<void(bool)> callback) = 0;
 
   // Show the settings UI for the given app.
   virtual void ShowWebAppSettings(const webapps::AppId& app_id) = 0;

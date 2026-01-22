@@ -113,6 +113,11 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback) override;
+  void ShowSubAppsInstallDialog(
+      content::WebContents* initiating_web_contents,
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+      const webapps::AppId& parent_app_id,
+      base::OnceCallback<void(bool)> callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override;
   void LaunchWebApp(apps::AppLaunchParams params,
                     LaunchWebAppWindowSetting launch_setting,

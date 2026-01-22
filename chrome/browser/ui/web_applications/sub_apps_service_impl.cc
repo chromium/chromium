@@ -24,17 +24,18 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -387,15 +388,11 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
     return;
   }
 
-  WebAppRegistrar& registrar =
-      GetWebAppProvider(render_frame_host())->registrar_unsafe();
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
-
-  ShowSubAppsInstallDialog(
+  provider->ui_manager().ShowSubAppsInstallDialog(
       content::WebContents::FromRenderFrameHost(&render_frame_host()),
-      add_call_info.install_infos,
-      /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
-      *parent_app_id,
+      add_call_info.install_infos, *parent_app_id,
       base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
                      weak_ptr_factory_.GetWeakPtr(), add_call_id));
 }

@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -136,6 +137,14 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   }
 
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
+}
+
+void FakeWebAppUiManager::ShowSubAppsInstallDialog(
+    content::WebContents* initiating_web_contents,
+    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    const webapps::AppId& parent_app_id,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
 }
 
 void FakeWebAppUiManager::LaunchWebApp(apps::AppLaunchParams params,
