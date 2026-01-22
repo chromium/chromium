@@ -22,6 +22,7 @@
 
 class AvatarMenuObserver;
 class Browser;
+class BrowserWindowInterface;
 class ProfileAttributesStorage;
 class ProfileListDesktop;
 
@@ -30,13 +31,13 @@ class ProfileListDesktop;
 // browser window frame. This class will notify its observer when the backend
 // data changes, and the view for this model should forward actions
 // back to it in response to user events.
-class AvatarMenu :
-    public SupervisedUserServiceObserver,
-    public ProfileAttributesStorage::Observer {
+class AvatarMenu : public SupervisedUserServiceObserver,
+                   public ProfileAttributesStorage::Observer {
  public:
   // Represents an item in the menu.
   struct Item {
-    Item(size_t menu_index, const base::FilePath& profile_path,
+    Item(size_t menu_index,
+         const base::FilePath& profile_path,
          const gfx::Image& icon);
     Item(const Item& other);
     ~Item();
@@ -133,7 +134,7 @@ class AvatarMenu :
   // This menu is also used for the always-present Mac and Linux system menubar.
   // If the last active browser changes, the menu will need to reference that
   // browser.
-  void ActiveBrowserChanged(Browser* browser);
+  void ActiveBrowserChanged(BrowserWindowInterface* browser);
 
   // Returns true if the add profile link should be shown/enabled.
   bool ShouldShowAddNewProfileLink() const;
@@ -177,7 +178,7 @@ class AvatarMenu :
   raw_ptr<AvatarMenuObserver, DanglingUntriaged> observer_;
 
   // Browser in which this avatar menu resides. Weak.
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_AVATAR_MENU_H_
