@@ -309,9 +309,12 @@ static_library("test_support") {
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",
-      "LocalAuthentication.framework",
       "Security.framework",
     ]
+
+    if (is_mac || (is_ios && target_platform != "tvos")) {
+      frameworks += [ "LocalAuthentication.framework" ]
+    }
   }
 
   deps = [

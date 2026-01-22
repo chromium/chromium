@@ -6,7 +6,6 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
-#import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
 #include <algorithm>
@@ -24,6 +23,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "crypto/apple/keychain_v2.h"
+
+#if !BUILDFLAG(IS_IOS_TVOS)
+#import <LocalAuthentication/LocalAuthentication.h>
+#endif
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
