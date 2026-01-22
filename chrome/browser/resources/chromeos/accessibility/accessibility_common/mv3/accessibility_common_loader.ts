@@ -5,6 +5,7 @@
 import '/common/testing/test_import_manager.js';
 
 import {Flags} from '/common/flags.js';
+import {KeepAlive} from '/common/keep_alive.js';
 import {InstanceChecker} from '/common/mv3/instance_checker.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -43,6 +44,7 @@ export class AccessibilityCommon {
   }
 
   static async init(): Promise<void> {
+    KeepAlive.init();
     await Flags.init();
     globalThis.accessibilityCommon = new AccessibilityCommon();
     return Messenger.init(Messenger.Context.SERVICE_WORKER);
