@@ -111,11 +111,12 @@ AddOptionsFromMojo(
     const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
   std::vector<SubAppInstallParams> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
-    ASSIGN_OR_RETURN(webapps::ManifestId manifest_id,
+    ASSIGN_OR_RETURN(GURL manifest_url,
                      ConvertPathToUrl(sub_app->manifest_id_path, origin));
     ASSIGN_OR_RETURN(GURL install_url,
                      ConvertPathToUrl(sub_app->install_url_path, origin));
-    sub_apps.emplace_back(std::move(manifest_id), std::move(install_url));
+    sub_apps.emplace_back(webapps::ManifestId(std::move(manifest_url)),
+                          std::move(install_url));
   }
   return sub_apps;
 }
