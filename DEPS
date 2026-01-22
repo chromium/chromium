@@ -1867,7 +1867,7 @@ deps = {
           },
           {
               'package': 'chromium/third_party/android_sdk/public/cmdline-tools/linux',
-              'version': 'nClDjKPpactQ8aQZF5rHwD-wuSp0RXLzKy9ORun0p4wC',
+              'version': 'LZa8CWNVWS6UUQgQ7IJdFCqRV1Bmx2-alTNqEDJpJkcC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
