@@ -338,14 +338,6 @@ void TabStripModel::AddObserver(TabStripModelObserver* observer) {
 
 void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
   observer->StoppedObserving(TabStripModelObserver::ModelPasskey(), this);
-
-  // Reset `tab_strip_ui_was_set_` flag if it is the first observer in the list.
-  // The `SetTabStripUI` function ensures it is the first observer added.
-  if (tab_strip_ui_was_set_ && !observers_.empty() &&
-      &*observers_.begin() == observer) {
-    tab_strip_ui_was_set_ = false;
-  }
-
   observers_.RemoveObserver(observer);
 }
 
