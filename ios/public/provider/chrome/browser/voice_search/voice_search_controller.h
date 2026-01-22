@@ -11,8 +11,6 @@ namespace web {
 class WebState;
 }
 
-@protocol LoadQueryCommands;
-
 // Protocol for interacting with the Voice Search UI.
 @protocol VoiceSearchController <NSObject>
 

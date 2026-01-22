@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -167,8 +166,6 @@
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   mediator.lensCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
-  mediator.loadQueryCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), LoadQueryCommands);
   mediator.sceneState = browser->GetSceneState();
   mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(browser);

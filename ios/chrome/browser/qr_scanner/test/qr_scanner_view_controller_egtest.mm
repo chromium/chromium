@@ -631,8 +631,7 @@ void TapButton(id<GREYMatcher> button) {
   [cameraControllerMock verify];
 
   NSError* error = [QRScannerAppInterface
-      assertQueryLoaded:base::SysUTF8ToNSString(sanitizedResult)
-            immediately:NO];
+      assertQueryLoaded:base::SysUTF8ToNSString(sanitizedResult)];
   GREYAssertNil(error, error.localizedDescription);
 
   error = [QRScannerAppInterface
@@ -677,8 +676,7 @@ void TapButton(id<GREYMatcher> button) {
   [cameraControllerMock verify];
 
   NSError* error = [QRScannerAppInterface
-      assertQueryLoaded:base::SysUTF8ToNSString(_testURL.GetContent())
-            immediately:NO];
+      assertQueryLoaded:base::SysUTF8ToNSString(_testURL.GetContent())];
   GREYAssertNil(error, error.localizedDescription);
 }
 

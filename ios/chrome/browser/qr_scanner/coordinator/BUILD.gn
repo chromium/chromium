@@ -6,9 +6,13 @@ source_set("coordinator") {
   sources = [
     "qr_scanner_legacy_coordinator.h",
     "qr_scanner_legacy_coordinator.mm",
+    "qr_scanner_mediator.h",
+    "qr_scanner_mediator.mm",
   ]
   deps = [
     "//base",
+    "//components/omnibox/browser",
+    "//ios/chrome/browser/composebox/coordinator",
     "//ios/chrome/browser/qr_scanner/ui",
     "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -16,5 +20,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/url_loading/model",
   ]
 }

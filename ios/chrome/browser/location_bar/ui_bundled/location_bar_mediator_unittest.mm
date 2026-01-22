@@ -53,7 +53,9 @@ class LocationBarMediatorTest : public PlatformTest {
     placeholder_service_ = std::make_unique<PlaceholderService>(
         mock_favicon_loader_.get(), template_url_service_);
 
-    mediator_ = [[LocationBarMediator alloc] initWithIsIncognito:NO];
+    mediator_ =
+        [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:nil
+                                                         isIncognito:NO];
     mediator_.templateURLService = template_url_service_;
     mediator_.placeholderService = placeholder_service_.get();
   }

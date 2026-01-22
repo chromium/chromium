@@ -34,7 +34,6 @@ class FullscreenController;
 @protocol IncognitoReauthCommands;
 @class KeyCommandsProvider;
 @class LayoutGuideCenter;
-@protocol LoadQueryCommands;
 @class NewTabPageCoordinator;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
@@ -127,9 +126,6 @@ typedef struct {
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
-
-// Command handler for load query commands.
-@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
 
 // Command handler for Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;

@@ -29,6 +29,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -60,13 +62,17 @@ const CGFloat kIconPointSize = 16.0;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
   BOOL _isIncognito;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
 }
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
+- (instancetype)initWithURLLoadingBrowsingAgent:
+                    (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                                    isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
+    _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _isIncognito = isIncognito;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
   }
@@ -196,6 +202,12 @@ const CGFloat kIconPointSize = 16.0;
   if (status.active_web_state_change()) {
     [self.consumer defocusOmnibox];
   }
+}
+
+#pragma mark - LocationBarMutator
+
+- (void)loadQuery:(NSString*)query {
+  _URLLoadingBrowserAgent->LoadURLForQuery(query);
 }
 
 #pragma mark - PlaceholderServiceObserving

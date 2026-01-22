@@ -9,13 +9,15 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_mutator.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_transitioning_delegate.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -28,26 +30,12 @@ using base::UserMetricsAction;
   ScannerTransitioningDelegate* _transitioningDelegate;
 }
 
-@property(nonatomic, readwrite, weak) id<LoadQueryCommands> queryLoader;
-
 // Whether VoiceOver detection has been overridden.
 @property(nonatomic, assign) BOOL voiceOverCheckOverridden;
 
 @end
 
 @implementation QRScannerViewController
-
-#pragma mark - Lifecycle
-
-- (instancetype)
-    initWithPresentationProvider:(id<ScannerPresenting>)presentationProvider
-                     queryLoader:(id<LoadQueryCommands>)queryLoader {
-  self = [super initWithPresentationProvider:presentationProvider];
-  if (self) {
-    _queryLoader = queryLoader;
-  }
-  return self;
-}
 
 #pragma mark - ScannerViewController
 
@@ -102,11 +90,19 @@ using base::UserMetricsAction;
         l10n_util::GetNSString(
             IDS_IOS_SCANNER_SCANNED_ACCESSIBILITY_ANNOUNCEMENT));
   } else {
+    __weak __typeof(self) weakSelf = self;
     [self.scannerView animateScanningResultWithCompletion:^void(void) {
-      [self dismissForReason:scannerViewController::SCAN_COMPLETE
-              withCompletion:^{
-                [self.queryLoader loadQuery:result immediately:load];
-              }];
+      [weakSelf
+          dismissForReason:scannerViewController::SCAN_COMPLETE
+            withCompletion:^{
+              if (load) {
+                [weakSelf.mutator loadScannerQuery:result];
+              } else {
+                [weakSelf.browserCoordinatorHandler
+                    showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                                       withQuery:result];
+              }
+            }];
     }];
   }
 }

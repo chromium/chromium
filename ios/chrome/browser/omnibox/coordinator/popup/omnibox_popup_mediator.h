@@ -20,7 +20,6 @@
 @protocol BrowserCoordinatorCommands;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
-@protocol LoadQueryCommands;
 @class OmniboxAutocompleteController;
 @class OmniboxImageFetcher;
 @protocol OmniboxPopupConsumer;

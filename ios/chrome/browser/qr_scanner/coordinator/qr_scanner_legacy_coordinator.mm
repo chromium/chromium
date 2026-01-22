@@ -5,20 +5,22 @@
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_mediator.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view_controller.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @interface QRScannerLegacyCoordinator () <ScannerPresenting>
 
 @property(nonatomic, readwrite, strong) QRScannerViewController* viewController;
+@property(nonatomic, readwrite, strong) QRScannerMediator* mediator;
 
 @end
 
@@ -48,6 +50,7 @@
     [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
   }
   self.viewController = nil;
+  self.mediator = nil;
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 }
 
@@ -56,14 +59,18 @@
 - (void)showQRScanner {
   DCHECK(self.browser);
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<LoadQueryCommands> loadQueryHandler =
-      HandlerForProtocol(dispatcher, LoadQueryCommands);
   id<BrowserCoordinatorCommands> browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   [browserCoordinatorHandler hideComposebox];
-  self.viewController = [[QRScannerViewController alloc]
-      initWithPresentationProvider:self
-                       queryLoader:loadQueryHandler];
+
+  UrlLoadingBrowserAgent* loader =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  self.mediator = [[QRScannerMediator alloc] initWithLoader:loader];
+
+  self.viewController =
+      [[QRScannerViewController alloc] initWithPresentationProvider:self];
+  self.viewController.mutator = self.mediator;
+  self.viewController.browserCoordinatorHandler = browserCoordinatorHandler;
   self.viewController.modalPresentationStyle = UIModalPresentationFullScreen;
 
   SceneState* sceneState = self.browser->GetSceneState();

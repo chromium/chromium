@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -127,11 +126,6 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(SceneCommands)];
-
-    load_query_handler_ = OCMProtocolMock(@protocol(LoadQueryCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:load_query_handler_
-                     forProtocol:@protocol(LoadQueryCommands)];
 
     browser_coordinator_commands_handler_ =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
@@ -246,7 +240,6 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   id dispatcher_;
   raw_ptr<LensOverlayTabHelper> tab_helper_;
   id<SceneCommands> application_handler_;
-  id<LoadQueryCommands> load_query_handler_;
   id<LensCommands> lens_commands_handler_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_handler_;
   id<ToolbarCommands> toolbar_commands_handler_;

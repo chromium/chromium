@@ -815,13 +815,6 @@ CreateInputDataFromAnnotatedPageContent(
   [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
 }
 
-#pragma mark - LoadQueryCommands
-
-- (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  [self sendText:query];
-}
-
 #pragma mark - Private
 
 // Helper for `-attachSelectedTabsWithWebStateIDs:cachedWebStateIDs:`. Attaches

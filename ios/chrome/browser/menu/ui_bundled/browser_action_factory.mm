@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
@@ -380,17 +379,18 @@
 
 - (UIAction*)actionToSearchCopiedImage {
   __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<gfx::Image>) =
       ^(std::optional<gfx::Image> optionalImage) {
-        if (!optionalImage || !weakSelf) {
+        __typeof(weakSelf) strongSelf = weakSelf;
+        if (!optionalImage || !strongSelf || !weakBrowser) {
           return;
         }
-        __typeof(weakSelf) strongSelf = weakSelf;
 
         TemplateURLService* templateURLService =
             ios::TemplateURLServiceFactory::GetForProfile(
-                strongSelf.browser->GetProfile());
+                weakBrowser->GetProfile());
 
         UIImage* image = [optionalImage.value().ToUIImage() copy];
 
@@ -399,7 +399,7 @@
                                                           templateURLService);
         UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
 
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
+        UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())->Load(params);
       };
 
   return
@@ -416,8 +416,7 @@
 }
 
 - (UIAction*)actionToSearchCopiedURL {
-  id<LoadQueryCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<GURL>) =
       ^(std::optional<GURL> optionalURL) {
@@ -426,7 +425,14 @@
         }
         NSString* URL = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [handler loadQuery:URL immediately:YES];
+          if (!weakBrowser) {
+            return;
+          }
+          UrlLoadingBrowserAgent* loadingAgent =
+              UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get());
+          if (loadingAgent) {
+            loadingAgent->LoadURLForQuery(URL);
+          }
         });
       };
 
@@ -444,8 +450,7 @@
 }
 
 - (UIAction*)actionToSearchCopiedText {
-  id<LoadQueryCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<std::u16string>) =
       ^(std::optional<std::u16string> optionalText) {
@@ -454,7 +459,14 @@
         }
         NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [handler loadQuery:query immediately:YES];
+          if (!weakBrowser) {
+            return;
+          }
+          UrlLoadingBrowserAgent* loadingAgent =
+              UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get());
+          if (loadingAgent) {
+            loadingAgent->LoadURLForQuery(query);
+          }
         });
       };
 

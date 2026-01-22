@@ -10,21 +10,17 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_mutator.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_transitioning_delegate.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::UserMetricsAction;
-
-@interface ScannerViewController ()
-
-@property(nonatomic, readwrite, weak) id<LoadQueryCommands> queryLoader;
-
-@end
 
 @implementation ScannerViewController
 
@@ -232,7 +228,13 @@ using base::UserMetricsAction;
 }
 
 - (void)dismissForReasonCompletion {
-  [self.queryLoader loadQuery:_result immediately:self.loadResultImmediately];
+  if (self.loadResultImmediately) {
+    [self.mutator loadScannerQuery:_result];
+  } else {
+    [self.browserCoordinatorHandler
+        showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                           withQuery:_result];
+  }
 }
 
 #pragma mark - CameraControllerDelegate

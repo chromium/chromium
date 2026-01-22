@@ -15,7 +15,6 @@
 class FaviconLoader;
 @protocol BrowserCoordinatorCommands;
 @protocol LensCommands;
-@protocol LoadQueryCommands;
 @protocol OmniboxConsumer;
 @protocol OmniboxMediatorDelegate;
 @class OmniboxTextController;
@@ -53,7 +52,6 @@ class Tracker;
 /// object and may be nil.
 @property(nonatomic, weak) id<OmniboxConsumer> consumer;
 
-@property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
 @property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorCommandsHandler;
