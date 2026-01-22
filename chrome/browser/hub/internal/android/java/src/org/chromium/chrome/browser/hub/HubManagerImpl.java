@@ -14,9 +14,11 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,8 +45,8 @@ import org.chromium.ui.util.TokenHolder;
 public class HubManagerImpl implements HubManager, HubController {
     private final ValueChangedCallback<Pane> mOnFocusedPaneChanged =
             new ValueChangedCallback<>(this::onFocusedPaneChanged);
-    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Activity mActivity;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final PaneManagerImpl mPaneManager;
@@ -130,7 +132,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public MonotonicObservableSupplier<Boolean> getHubVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
     }
 
@@ -159,7 +161,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public MonotonicObservableSupplier<Integer> getHubOverviewColorSupplier() {
+    public NonNullObservableSupplier<Integer> getHubOverviewColorSupplier() {
         return mHubColorMixer.getOverviewColorSupplier();
     }
 
@@ -266,7 +268,7 @@ public class HubManagerImpl implements HubManager, HubController {
         return mHubCoordinator;
     }
 
-    private void onFocusedPaneChanged(@Nullable Pane newPane, @Nullable Pane oldPane) {
+    private void onFocusedPaneChanged(Pane newPane, @Nullable Pane oldPane) {
         detachPaneDependencies(oldPane);
         if (mHubCoordinator != null) {
             attachPaneDependencies(newPane);

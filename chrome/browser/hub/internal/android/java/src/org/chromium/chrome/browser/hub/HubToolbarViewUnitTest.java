@@ -63,7 +63,8 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -112,7 +113,7 @@ public class HubToolbarViewUnitTest {
 
     @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
+    private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
     private Activity mActivity;
     private FrameLayout mToolbarContainer;
     private Button mActionButton;
@@ -150,13 +151,11 @@ public class HubToolbarViewUnitTest {
         mHairline = mToolbarContainer.findViewById(R.id.toolbar_bottom_hairline);
         mActivity.setContentView(mToolbarContainer);
 
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mFocusedPaneSupplier = ObservableSuppliers.createMonotonic();
         mColorMixer =
                 spy(
                         new HubColorMixerImpl(
-                                mActivity,
-                                new ObservableSupplierImpl<>(true),
-                                mFocusedPaneSupplier));
+                                mActivity, ObservableSuppliers.alwaysTrue(), mFocusedPaneSupplier));
         mPropertyModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)

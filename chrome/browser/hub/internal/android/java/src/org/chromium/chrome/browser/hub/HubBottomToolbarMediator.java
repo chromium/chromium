@@ -40,6 +40,6 @@ public class HubBottomToolbarMediator {
     }
 
     private void onVisibilityChange(Boolean visible) {
-        mPropertyModel.set(BOTTOM_TOOLBAR_VISIBLE, visible != null ? visible : false);
+        mPropertyModel.set(BOTTOM_TOOLBAR_VISIBLE, visible);
     }
 }

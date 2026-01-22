@@ -29,6 +29,7 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -122,7 +123,7 @@ public class HubToolbarMediator {
             this::onHubSearchEnabledStateChange;
     private final Callback<Boolean> mOnSearchBoxVisibilityChange =
             this::onSearchBoxVisibilityChange;
-    private final MonotonicObservableSupplier<Boolean> mHairlineVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mHairlineVisibilitySupplier;
 
     private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
 
@@ -293,15 +294,8 @@ public class HubToolbarMediator {
         return new DelegateButtonData(referenceButtonData, onPress);
     }
 
-    private void onFocusedPaneChange(@Nullable Pane focusedPane) {
-        @Nullable Integer focusedPaneId = focusedPane == null ? null : focusedPane.getPaneId();
-        if (focusedPaneId == null) {
-            mPropertyModel.set(PANE_SWITCHER_INDEX, INVALID_PANE_SWITCHER_INDEX);
-            mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
-            mPropertyModel.set(IS_INCOGNITO, false);
-            return;
-        }
-        assumeNonNull(focusedPane);
+    private void onFocusedPaneChange(Pane focusedPane) {
+        int focusedPaneId = focusedPane.getPaneId();
 
         // This must be called before IS_INCOGNITO is set for all valid focused panes. This is
         // because hub search box elements (hint text) that will be updated via incognito state
@@ -344,7 +338,8 @@ public class HubToolbarMediator {
     }
 
     private void onSearchClicked() {
-        @PaneId int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();
+        @PaneId
+        int focusedPaneId = assumeNonNull(mPaneManager.getFocusedPaneSupplier().get()).getPaneId();
         // Due to animations when switching between focused panes, there is exists a possibility for
         // race conditions which can cause clicks to register or allows them to be registered when
         // toggling panes. This logic filters out clicks unless the pane is hub search eligible.
@@ -364,7 +359,8 @@ public class HubToolbarMediator {
         // Based on the ComponentCallback#onConfigurationChanged logic for hub search, it is implied
         // that the search box and search loupe visibilities have opposite behaviors at any time.
         @HubSearchEntrypoint int action;
-        @PaneId int focusedPaneId = mPaneManager.getFocusedPaneSupplier().get().getPaneId();
+        @PaneId
+        int focusedPaneId = assumeNonNull(mPaneManager.getFocusedPaneSupplier().get()).getPaneId();
 
         switch (focusedPaneId) {
             case PaneId.INCOGNITO_TAB_SWITCHER:

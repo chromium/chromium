@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.hub;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -21,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
@@ -30,7 +31,9 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -65,16 +68,16 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Spy
-    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
-    private final ObservableSupplierImpl<Pane> mFocusedPaneSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
+            ObservableSuppliers.createMonotonic();
     private HubToolbarCoordinator mCoordinator;
     private HubToolbarView mHubToolbarView;
     private MenuButton mMenuButton;
-    private ObservableSupplierImpl<Boolean> mBottomToolbarVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mBottomToolbarVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Mock private PaneManager mPaneManager;
     @Mock private PaneOrderController mPaneOrderController;
@@ -92,7 +95,6 @@ public class HubToolbarCoordinatorUnitTest {
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneOrderController.getPaneOrder()).thenReturn(ImmutableSet.of());
-        mBottomToolbarVisibilitySupplier = spy(new ObservableSupplierImpl<>());
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
@@ -121,23 +123,24 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Test
     public void isIphTriggered() {
-        verify(mIsAnimatingSupplier).addSyncObserver(any());
+        assertTrue(mIsAnimatingSupplier.hasObservers());
+        mIsAnimatingSupplier.set(true);
         mIsAnimatingSupplier.set(false);
         ShadowLooper.runUiThreadTasks();
 
         verify(mUserEducationHelper).requestShowIph(any());
-        verify(mIsAnimatingSupplier).removeObserver(any());
+        assertFalse(mIsAnimatingSupplier.hasObservers());
     }
 
     @Test
     public void testBottomToolbarVisibilitySupplier() {
         // Verify that observer was added to the bottom toolbar visibility supplier
-        verify(mBottomToolbarVisibilitySupplier).addObserver(any());
+        assertTrue(mBottomToolbarVisibilitySupplier.hasObservers());
 
         // Destroy coordinator
         mCoordinator.destroy();
 
         // Verify that observer was removed from the bottom toolbar visibility supplier
-        verify(mBottomToolbarVisibilitySupplier).removeObserver(any());
+        assertFalse(mBottomToolbarVisibilitySupplier.hasObservers());
     }
 }

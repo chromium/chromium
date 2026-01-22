@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -23,7 +24,7 @@ public class PaneManagerImpl implements PaneManager {
     private final SettableMonotonicObservableSupplier<Pane> mCurrentPaneSupplierImpl =
             ObservableSuppliers.createMonotonic();
     private final ImmutableMap<Integer, LazyOneshotSupplier<Pane>> mPanes;
-    private final MonotonicObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mHubVisibilitySupplier;
     private final Callback<Boolean> mHubVisibilityObserver;
     private final PaneTransitionHelper mPaneTransitionHelper;
     private final PaneOrderController mPaneOrderController;
@@ -39,7 +40,7 @@ public class PaneManagerImpl implements PaneManager {
      */
     public PaneManagerImpl(
             PaneListBuilder paneListBuilder,
-            MonotonicObservableSupplier<Boolean> hubVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> hubVisibilitySupplier,
             @PaneId int defaultPaneId) {
         mPanes = paneListBuilder.build();
         mHubVisibilitySupplier = hubVisibilitySupplier;
@@ -85,11 +86,11 @@ public class PaneManagerImpl implements PaneManager {
         RecordHistogram.recordEnumeratedHistogram("Android.Hub.PaneFocused", paneId, PaneId.COUNT);
 
         mCurrentPaneSupplierImpl.set(nextPane);
-        if (isHubVisible()) {
+        if (mHubVisibilitySupplier.get()) {
             mPaneTransitionHelper.processTransition(nextPane.getPaneId(), LoadHint.HOT);
         }
 
-        if (previousPane != null && isHubVisible()) {
+        if (previousPane != null && mHubVisibilitySupplier.get()) {
             mPaneTransitionHelper.queueTransition(previousPane.getPaneId(), LoadHint.WARM);
         }
         return true;
@@ -119,10 +120,6 @@ public class PaneManagerImpl implements PaneManager {
     @Override
     public @PaneId int getDefaultPaneId() {
         return mDefaultPaneId;
-    }
-
-    private boolean isHubVisible() {
-        return Boolean.TRUE.equals(mHubVisibilitySupplier.get());
     }
 
     private void onHubVisibilityChanged(boolean isVisible) {

@@ -24,7 +24,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -38,19 +41,18 @@ public class PaneBackStackHandlerUnitTest {
     @Mock private Pane mBookmarksPane;
     @Mock private DisplayButtonData mReferenceButtonData;
 
-    private final ObservableSupplierImpl<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    private final MonotonicObservableSupplier<DisplayButtonData> mEmptyReferenceButtonDataSupplier =
+            ObservableSuppliers.alwaysNull();
+    private SettableMonotonicObservableSupplier<DisplayButtonData> mReferenceButtonDataSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private PaneManager mPaneManager;
     private PaneBackStackHandler mBackStackHandler;
 
     @Before
     public void setUp() {
-        mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        mReferenceButtonDataSupplier = ObservableSuppliers.createMonotonic(mReferenceButtonData);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
@@ -328,7 +330,7 @@ public class PaneBackStackHandlerUnitTest {
         assertEquals(mIncognitoTabSwitcherPane, mPaneManager.getFocusedPaneSupplier().get());
     }
 
-    private boolean hasObservers(MonotonicObservableSupplier<Pane> paneSupplier) {
-        return ((ObservableSupplierImpl<Pane>) paneSupplier).hasObservers();
+    private boolean hasObservers(NullableObservableSupplier<Pane> paneSupplier) {
+        return paneSupplier.hasObservers();
     }
 }

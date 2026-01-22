@@ -136,7 +136,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
         NonNullObservableSupplier<Boolean> bottomToolbarVisibilitySupplier =
                 bottomToolbarDelegate != null
                         ? bottomToolbarDelegate.getBottomToolbarVisibilitySupplier()
-                        : null;
+                        : ObservableSuppliers.alwaysFalse();
 
         mHubToolbarCoordinator =
                 new HubToolbarCoordinator(

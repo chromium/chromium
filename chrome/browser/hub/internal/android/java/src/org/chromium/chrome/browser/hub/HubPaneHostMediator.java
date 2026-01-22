@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -69,23 +68,21 @@ public class HubPaneHostMediator {
         return mSnackbarContainer;
     }
 
-    private void onPaneChange(@Nullable Pane pane) {
-        View view = pane == null ? null : pane.getRootView();
+    private void onPaneChange(Pane pane) {
+        View view = pane.getRootView();
         boolean slideLeftToRight = false; // Default/fallback direction.
 
-        if (pane != null) {
-            int newPaneId = pane.getPaneId();
-            List<Integer> paneOrderList = mPaneOrderController.getPaneOrder().asList();
-            int currentIndex = paneOrderList.indexOf(mCurrentPaneId);
-            int newIndex = paneOrderList.indexOf(newPaneId);
+        int newPaneId = pane.getPaneId();
+        List<Integer> paneOrderList = mPaneOrderController.getPaneOrder().asList();
+        int currentIndex = paneOrderList.indexOf(mCurrentPaneId);
+        int newIndex = paneOrderList.indexOf(newPaneId);
 
-            if (currentIndex != -1 && newIndex != -1) {
-                // If the new pane is located to the right of the current pane in hub pane switcher,
-                // slide from right to left in the hub host view.
-                slideLeftToRight = newIndex < currentIndex;
-            }
-            mCurrentPaneId = newPaneId;
+        if (currentIndex != -1 && newIndex != -1) {
+            // If the new pane is located to the right of the current pane in hub pane switcher,
+            // slide from right to left in the hub host view.
+            slideLeftToRight = newIndex < currentIndex;
         }
+        mCurrentPaneId = newPaneId;
 
         mPropertyModel.set(SLIDE_ANIMATE_LEFT_TO_RIGHT, slideLeftToRight);
         mPropertyModel.set(PANE_ROOT_VIEW, view);

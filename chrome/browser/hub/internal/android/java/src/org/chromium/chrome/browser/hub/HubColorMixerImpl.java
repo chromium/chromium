@@ -21,7 +21,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.animation.AnimationHandler;
@@ -35,11 +37,12 @@ public class HubColorMixerImpl implements HubColorMixer {
     @VisibleForTesting
     interface HubOverviewColorProvider extends HubViewColorBlend.ColorGetter {}
 
-    private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
+    private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final Callback<Boolean> mOnHubVisibilityObserver = this::onHubVisibilityChange;
-    private final Callback<Pane> mOnFocusedPaneObserver = this::onFocusedPaneChange;
-    private final MonotonicObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final Callback<Pane> mOnFocusedPaneObserver =
+            (Callback<Pane>) this::onFocusedPaneChange;
+    private final NonNullObservableSupplier<Boolean> mHubVisibilitySupplier;
     private final MonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
     private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
     private final AnimationHandler mColorBlendAnimatorHandler;
@@ -55,7 +58,7 @@ public class HubColorMixerImpl implements HubColorMixer {
      */
     public HubColorMixerImpl(
             Context context,
-            MonotonicObservableSupplier<Boolean> hubVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> hubVisibilitySupplier,
             MonotonicObservableSupplier<Pane> focusedPaneSupplier) {
         this(
                 hubVisibilitySupplier,
@@ -68,7 +71,7 @@ public class HubColorMixerImpl implements HubColorMixer {
 
     @VisibleForTesting
     HubColorMixerImpl(
-            MonotonicObservableSupplier<Boolean> hubVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> hubVisibilitySupplier,
             MonotonicObservableSupplier<Pane> focusedPaneSupplier,
             HubColorBlendAnimatorSetHelper animatorSetHelper,
             AnimationHandler animationHandler,
@@ -99,7 +102,7 @@ public class HubColorMixerImpl implements HubColorMixer {
     }
 
     @Override
-    public MonotonicObservableSupplier<Integer> getOverviewColorSupplier() {
+    public NonNullObservableSupplier<Integer> getOverviewColorSupplier() {
         return mOverviewColorSupplier;
     }
 

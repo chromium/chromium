@@ -38,9 +38,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
@@ -103,18 +103,17 @@ public class HubCoordinatorUnitTest {
             mIncognitoTabSwitcherBackPressSupplier = ObservableSuppliers.createNonNull(false);
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
-    private final ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier =
+            ObservableSuppliers.createMonotonic();
+    private SettableMonotonicObservableSupplier<DisplayButtonData> mReferenceButtonDataSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mRegularHubSearchEnabledStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean>
             mIncognitoHubSearchEnabledStateSupplier = ObservableSuppliers.createNonNull(false);
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
@@ -124,7 +123,7 @@ public class HubCoordinatorUnitTest {
         DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
         TrackerFactory.setTrackerForTests(mTracker);
-        mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        mReferenceButtonDataSupplier = ObservableSuppliers.createMonotonic(mReferenceButtonData);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
@@ -132,31 +131,31 @@ public class HubCoordinatorUnitTest {
         when(mTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mTabSwitcherBackPressSupplier);
         when(mTabSwitcherPane.getActionButtonDataSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysNull());
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mRegularHubSearchEnabledStateSupplier);
         when(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mIncognitoTabSwitcherBackPressSupplier);
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysNull());
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
                 .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysFalse());
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.isIncognito()).thenReturn(false);
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mHubLayoutController.getIsAnimatingSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())

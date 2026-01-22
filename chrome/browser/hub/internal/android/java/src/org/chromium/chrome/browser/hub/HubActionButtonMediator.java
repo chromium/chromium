@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_B
 import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_BUTTON_VISIBLE;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,8 +27,7 @@ public class HubActionButtonMediator {
     public HubActionButtonMediator(PropertyModel propertyModel, PaneManager paneManager) {
         mPropertyModel = propertyModel;
 
-        MonotonicObservableSupplier<Pane> focusedPaneSupplier =
-                paneManager.getFocusedPaneSupplier();
+        NullableObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
 
         mActionButtonDataSupplier =
                 focusedPaneSupplier.createTransitiveNullable(Pane::getActionButtonDataSupplier);

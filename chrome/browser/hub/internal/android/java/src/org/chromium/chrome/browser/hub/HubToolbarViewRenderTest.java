@@ -30,7 +30,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -69,7 +70,7 @@ public class HubToolbarViewRenderTest {
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
     @Mock private Pane mPane;
 
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
+    private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
     private Activity mActivity;
     private HubToolbarView mToolbar;
     private PropertyModel mPropertyModel;
@@ -95,10 +96,10 @@ public class HubToolbarViewRenderTest {
                 (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
         mToolbar = toolbarContainer.findViewById(R.id.hub_toolbar);
         mActivity.setContentView(toolbarContainer);
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mFocusedPaneSupplier = ObservableSuppliers.createMonotonic();
         mColorMixer =
                 new HubColorMixerImpl(
-                        mActivity, new ObservableSupplierImpl<>(true), mFocusedPaneSupplier);
+                        mActivity, ObservableSuppliers.alwaysTrue(), mFocusedPaneSupplier);
         mPropertyModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)

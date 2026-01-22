@@ -50,9 +50,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -100,24 +101,27 @@ public class HubToolbarMediatorUnitTest {
     @Mock private Runnable mExitHubRunnable;
     @Mock private HubColorMixer mColorMixer;
 
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
-    private ObservableSupplierImpl<DisplayButtonData> mTabSwitcherReferenceButtonDataSupplier1;
+    private final SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier =
+            ObservableSuppliers.createMonotonic();
+
+    private SettableNullableObservableSupplier<DisplayButtonData>
+            mTabSwitcherReferenceButtonDataSupplier1;
     private final SettableNonNullObservableSupplier<Boolean> mRegularHubSearchEnabledStateSupplier =
             ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<Boolean>
             mIncognitoHubSearchEnabledStateSupplier = ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<Boolean>
             mTabSwitcherSearchBoxVisibilitySupplier = ObservableSuppliers.createNonNull(true);
-    private ObservableSupplierImpl<DisplayButtonData>
+    private SettableMonotonicObservableSupplier<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
-        mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
-        mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mTabSwitcherReferenceButtonDataSupplier1 =
+                ObservableSuppliers.createNullable(mDisplayButtonData);
+        mIncognitoTabSwitcherReferenceButtonDataSupplier2 =
+                ObservableSuppliers.createMonotonic(mDisplayButtonData);
         mModel =
                 new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)
@@ -172,9 +176,6 @@ public class HubToolbarMediatorUnitTest {
 
         when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
         when(mHistoryPane.getPaneId()).thenReturn(PaneId.HISTORY);
-
-        mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
-        mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(mDisplayButtonData);
 
         mConfiguration.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
         when(mActivity.getResources()).thenReturn(mResources);
@@ -333,9 +334,6 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertEquals(1, mModel.get(PANE_SWITCHER_INDEX));
 
-        mFocusedPaneSupplier.set(null);
-        assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
-
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         mTabSwitcherReferenceButtonDataSupplier1.set(null);
         assertEquals(-1, mModel.get(PANE_SWITCHER_INDEX));
@@ -366,9 +364,6 @@ public class HubToolbarMediatorUnitTest {
         when(mTabSwitcherPane.getMenuButtonVisible()).thenReturn(true);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         assertTrue(mModel.get(MENU_BUTTON_VISIBLE));
-
-        mFocusedPaneSupplier.set(null);
-        assertFalse(mModel.get(MENU_BUTTON_VISIBLE));
     }
 
     @Test
@@ -433,8 +428,6 @@ public class HubToolbarMediatorUnitTest {
         assertFalse(mModel.get(IS_INCOGNITO));
         mFocusedPaneSupplier.set(mIncognitoTabSwitcherPane);
         assertTrue(mModel.get(IS_INCOGNITO));
-        mFocusedPaneSupplier.set(null);
-        assertFalse(mModel.get(IS_INCOGNITO));
     }
 
     @Test

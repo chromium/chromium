@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -26,7 +26,7 @@ public interface HubManager {
     HubController getHubController();
 
     /** Returns a supplier that contains true when the Hub is visible and false otherwise. */
-    MonotonicObservableSupplier<Boolean> getHubVisibilitySupplier();
+    NonNullObservableSupplier<Boolean> getHubVisibilitySupplier();
 
     /**
      * Returns the {@link HubShowPaneHelper} used to select a pane before opening the {@link
@@ -41,5 +41,5 @@ public interface HubManager {
     void setAppHeaderHeight(int height);
 
     /** Gets the supplier providing the Hub Overview color. */
-    MonotonicObservableSupplier<Integer> getHubOverviewColorSupplier();
+    NonNullObservableSupplier<Integer> getHubOverviewColorSupplier();
 }

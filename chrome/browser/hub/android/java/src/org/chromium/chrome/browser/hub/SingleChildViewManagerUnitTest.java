@@ -21,7 +21,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit test for {@link SingleChildViewManager}. */
@@ -29,7 +30,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class SingleChildViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final ObservableSupplierImpl<View> mViewSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<View> mViewSupplier =
+            ObservableSuppliers.createNullable();
 
     @Mock private ViewGroup mContainerView;
     @Mock private View mView1;

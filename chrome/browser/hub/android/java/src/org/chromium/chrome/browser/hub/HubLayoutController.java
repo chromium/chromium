@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -29,5 +30,5 @@ public interface HubLayoutController {
     MonotonicObservableSupplier<Integer> getPreviousLayoutTypeSupplier();
 
     /** Supplies whether an animation for the Hub Layout is running. */
-    MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier();
+    NonNullObservableSupplier<Boolean> getIsAnimatingSupplier();
 }

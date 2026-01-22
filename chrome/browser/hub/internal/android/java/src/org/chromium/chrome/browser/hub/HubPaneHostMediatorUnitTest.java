@@ -29,7 +29,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -48,12 +49,13 @@ public class HubPaneHostMediatorUnitTest {
     private @Mock ViewGroup mSnackbarContainer;
     private @Mock HubColorMixer mColorMixer;
 
-    private ObservableSupplierImpl<Pane> mPaneSupplier;
+    private final SettableMonotonicObservableSupplier<Pane> mPaneSupplier =
+            ObservableSuppliers.createMonotonic();
+
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
                 new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)
@@ -105,9 +107,6 @@ public class HubPaneHostMediatorUnitTest {
 
         mPaneSupplier.set(mPane);
         assertEquals(mRootView, mModel.get(PANE_ROOT_VIEW));
-
-        mPaneSupplier.set(null);
-        assertNull(mModel.get(PANE_ROOT_VIEW));
     }
 
     @Test

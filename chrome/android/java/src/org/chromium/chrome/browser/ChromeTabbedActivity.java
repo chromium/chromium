@@ -1791,8 +1791,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             TabGroupModelFilter filter) {
         Runnable openTabGroupRunnable =
                 () -> {
-                    PaneManager paneManager =
-                            mHubProvider.getHubManagerSupplier().get().getPaneManager();
+                    HubManager hubManager = mHubProvider.getHubManagerSupplier().get();
+                    assumeNonNull(hubManager);
+                    PaneManager paneManager = hubManager.getPaneManager();
                     TabSwitcherPaneBase tabSwitcherPaneBase =
                             (TabSwitcherPaneBase) paneManager.getDefaultPane();
                     TabSwitcherUtils.openTabGroupDialog(
@@ -1802,8 +1803,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     .getTabGroupSyncController(),
                             filter,
                             (rootId) -> {
-                                if (paneManager.getFocusedPaneSupplier().get().getPaneId()
-                                        != PaneId.TAB_SWITCHER) {
+                                Pane curPane =
+                                        assumeNonNull(paneManager.getFocusedPaneSupplier().get());
+                                if (curPane.getPaneId() != PaneId.TAB_SWITCHER) {
                                     paneManager.focusPane(PaneId.TAB_SWITCHER);
                                 }
                                 tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);

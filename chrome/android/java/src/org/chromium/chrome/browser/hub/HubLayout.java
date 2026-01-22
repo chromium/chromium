@@ -33,6 +33,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -708,7 +709,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public MonotonicObservableSupplier<Boolean> getIsAnimatingSupplier() {
+    public NonNullObservableSupplier<Boolean> getIsAnimatingSupplier() {
         return mIsAnimatingSupplier;
     }
 
@@ -716,7 +717,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @VisibleForTesting
     HubLayoutAnimatorProvider createShowAnimatorProvider(HubContainerView containerView) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
@@ -735,7 +736,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @VisibleForTesting
     HubLayoutAnimatorProvider createHideAnimatorProvider(HubContainerView containerView) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
@@ -792,7 +793,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     private void maybeAddPaneAnimationListener(HubLayoutAnimationRunner animationRunner) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         if (pane == null) return;
 
         HubLayoutAnimationListener listener = pane.getHubLayoutAnimationListener();
