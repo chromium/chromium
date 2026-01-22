@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
   ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Dismiss();
+  permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermissionScript,
                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
   ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Deny();
+  permission_request_manager->Deny(/*prompt_options=*/std::monostate());
   EXPECT_EQ("denied", EvalJs(tab, kCheckPermissionScript,
                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest, Accept) {
   ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Accept();
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   EXPECT_EQ("granted", EvalJs(tab, kCheckPermissionScript,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
   ExecuteScriptAsync(child, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Accept();
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   EXPECT_EQ("granted", EvalJs(child, kCheckPermissionScript,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
   WaitForUserActivationExpiry();
 
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Accept();
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   EXPECT_EQ("granted", EvalJs(child, kCheckPermissionScript,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());

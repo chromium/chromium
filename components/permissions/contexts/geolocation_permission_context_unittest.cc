@@ -573,28 +573,37 @@ void GeolocationPermissionContextTests::AcceptPrompt(
     content::WebContents* web_contents) {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents);
-  manager->Accept();
+  manager->Accept(GetGeolocationContentSettingsType() ==
+                          ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+                      ? PromptOptions(GeolocationPromptOptions{
+                            .selected_accuracy = GeolocationAccuracy::kPrecise})
+                      : std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 
 void GeolocationPermissionContextTests::AcceptPromptThisTime() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
-  manager->AcceptThisTime();
+  manager->AcceptThisTime(
+      GetGeolocationContentSettingsType() ==
+              ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          ? PromptOptions(GeolocationPromptOptions{
+                .selected_accuracy = GeolocationAccuracy::kPrecise})
+          : std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 
 void GeolocationPermissionContextTests::DenyPrompt() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
-  manager->Deny();
+  manager->Deny(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 
 void GeolocationPermissionContextTests::ClosePrompt() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
-  manager->Dismiss();
+  manager->Dismiss(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 

@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
                       std::make_unique<permissions::MockPermissionRequest>(
                           permissions::RequestType::kNotifications));
   bubble_factory->WaitForPermissionBubble();
-  manager->Accept();
+  manager->Accept(/*prompt_options=*/std::monostate());
 
   GrantNotificationPermissionForTest(TesterUrl());
 

@@ -222,15 +222,24 @@ void ChipController::OnWidgetDestroyed(views::Widget* widget) {
     return;
   }
 
+  CHECK_NE(active_chip_permission_request_manager_.value()
+               ->Requests()
+               .front()
+               ->GetContentSettingsType(),
+           ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
   switch (action) {
     case permissions::PermissionAction::GRANTED:
-      active_chip_permission_request_manager_.value()->Accept();
+      active_chip_permission_request_manager_.value()->Accept(
+          /*prompt_options=*/std::monostate());
       break;
     case permissions::PermissionAction::GRANTED_ONCE:
-      active_chip_permission_request_manager_.value()->AcceptThisTime();
+      active_chip_permission_request_manager_.value()->AcceptThisTime(
+          /*prompt_options=*/std::monostate());
       break;
     case permissions::PermissionAction::DENIED:
-      active_chip_permission_request_manager_.value()->Deny();
+      active_chip_permission_request_manager_.value()->Deny(
+          /*prompt_options=*/std::monostate());
       break;
     default:
       NOTREACHED();
@@ -439,7 +448,8 @@ void ChipController::ResetPermissionPromptChip() {
            (active_chip_permission_request_manager_.value()
                 ->web_contents()
                 ->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)))) {
-        active_chip_permission_request_manager_.value()->Ignore();
+        active_chip_permission_request_manager_.value()->Ignore(
+            /*prompt_options=*/std::monostate());
       }
       active_chip_permission_request_manager_.reset();
     }
@@ -707,7 +717,8 @@ void ChipController::OnPromptBubbleDismissed() {
     permission_prompt_model_->GetDelegate()->SetDecisionTime();
     // If a permission popup bubble is closed/dismissed, a permission request
     // should be dismissed as well.
-    permission_prompt_model_->GetDelegate()->Dismiss();
+    permission_prompt_model_->GetDelegate()->Dismiss(
+        /*prompt_options=*/std::monostate());
   }
 }
 
@@ -723,7 +734,8 @@ void ChipController::OnPromptExpired() {
   // existing permission request before resolving it as `Ignore`.
   if (permission_prompt_model_ && permission_prompt_model_->GetDelegate() &&
       !permission_prompt_model_->GetDelegate()->Requests().empty()) {
-    permission_prompt_model_->GetDelegate()->Ignore();
+    permission_prompt_model_->GetDelegate()->Ignore(
+        /*prompt_options=*/std::monostate());
   }
 
   ResetPermissionPromptChip();

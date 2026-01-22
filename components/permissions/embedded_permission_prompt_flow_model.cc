@@ -291,20 +291,19 @@ void EmbeddedPermissionPromptFlowModel::SetDelegateAction(
     return;
   }
 
-  delegate_->SetPromptOptions(prompt_options);
   action_ = action;
   switch (action) {
     case DelegateAction::kAllow:
-      delegate_->Accept();
+      delegate_->Accept(prompt_options);
       break;
     case DelegateAction::kAllowThisTime:
-      delegate_->AcceptThisTime();
+      delegate_->AcceptThisTime(prompt_options);
       break;
     case DelegateAction::kDeny:
-      delegate_->Deny();
+      delegate_->Deny(prompt_options);
       break;
     case DelegateAction::kDismiss:
-      delegate_->Dismiss();
+      delegate_->Dismiss(prompt_options);
       break;
   }
 }

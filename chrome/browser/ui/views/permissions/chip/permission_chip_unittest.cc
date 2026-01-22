@@ -22,6 +22,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +39,7 @@ using QuietUiReason = ::permissions::PermissionUiSelector::QuietUiReason;
 using ::base::test::ScopedFeatureList;
 using ::infobars::InfoBar;
 using ::infobars::InfoBarManager;
+using ::testing::_;
 using ::testing::Combine;
 using ::testing::Values;
 
@@ -166,10 +168,10 @@ class MockPermissionRequestManager
     return GURL("https://embedder.example.com");
   }
 
-  MOCK_METHOD(void, Dismiss, (), (override));
-  MOCK_METHOD(void, Deny, (), (override));
-  MOCK_METHOD(void, Ignore, (), (override));
-  MOCK_METHOD(void, Accept, (), (override));
+  MOCK_METHOD(void, Dismiss, (const PromptOptions&), (override));
+  MOCK_METHOD(void, Deny, (const PromptOptions&), (override));
+  MOCK_METHOD(void, Ignore, (const PromptOptions&), (override));
+  MOCK_METHOD(void, Accept, (const PromptOptions&), (override));
   MOCK_METHOD(void, PreIgnoreQuietPrompt, (), (override));
   MOCK_METHOD(void, FinalizeCurrentRequests, (), (override));
 
@@ -382,7 +384,7 @@ TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
 
   // A click on the chip hides the popup bubble and resolves a permission
   // request.
-  EXPECT_CALL(delegate, Dismiss()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Dismiss(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
   ClickOnChip(chip_controller);
@@ -434,7 +436,7 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->chip()->GetVisible());
 
-  EXPECT_CALL(delegate, Ignore()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Ignore(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
   task_environment()->AdvanceClock(kNormalChipDismissDuration +
@@ -475,7 +477,7 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  EXPECT_CALL(delegate, Dismiss()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Dismiss(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
   // The seconds click on the chip hides the popup bubble.
@@ -514,7 +516,7 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->chip()->GetVisible());
 
-  EXPECT_CALL(delegate, Ignore()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Ignore(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
   // Wait 2 more seconds for the dismiss timer to finish.
@@ -551,7 +553,7 @@ TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   EXPECT_TRUE(delegate.IsRequestInProgress());
   EXPECT_TRUE(chip_controller->IsBubbleShowing());
 
-  EXPECT_CALL(delegate, Dismiss()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Dismiss(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
   // The second click on the chip hides the prompt.
@@ -669,7 +671,7 @@ TEST_P(QuietUiAbusiveRequestsTest, GetsDenied) {
   ClickOnChip(chip_controller);
   ASSERT_TRUE(chip_controller->IsBubbleShowing());
 
-  EXPECT_CALL(delegate, Deny()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Deny(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
 
@@ -709,7 +711,7 @@ TEST_P(QuietUiNonAbusiveRequestsTest, GetsAccepted) {
   ClickOnChip(chip_controller);
   ASSERT_TRUE(chip_controller->IsBubbleShowing());
 
-  EXPECT_CALL(delegate, Accept()).WillOnce([&delegate]() {
+  EXPECT_CALL(delegate, Accept(_)).WillOnce([&delegate]() {
     delegate.ClearRequests();
   });
 
@@ -755,9 +757,10 @@ TEST_P(InfobarTest, ShowInfobarIfNecessary) {
   ClickOnChip(chip_controller);
   ASSERT_TRUE(chip_controller->IsBubbleShowing());
 
-  EXPECT_CALL(delegate, Accept()).WillOnce([&delegate]() {
-    delegate.PermissionRequestManager::Accept();
-  });
+  EXPECT_CALL(delegate, Accept(_))
+      .WillOnce([&delegate](const PromptOptions& prompt_options) {
+        delegate.PermissionRequestManager::Accept(prompt_options);
+      });
   EXPECT_CALL(delegate, FinalizeCurrentRequests()).WillOnce([&delegate]() {
     delegate.PermissionRequestManager::FinalizeCurrentRequests();
   });

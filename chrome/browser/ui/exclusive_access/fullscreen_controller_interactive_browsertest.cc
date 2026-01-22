@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Accept the permission request to close the bubble.
-  permission_request_manager->Accept();
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
 
   // Now we should be able to enter tab fullscreen again.
   EXPECT_THAT(content::EvalJs(web_contents,
@@ -1771,7 +1771,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
-  permission_request_manager->Accept();
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
   const std::string script = R"(
     (async () => {
       await document.body.requestFullscreen();

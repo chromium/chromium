@@ -383,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
   EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
   EXPECT_TRUE(lbv->GetChipController()->IsBubbleShowing());
 
-  lbv->GetChipController()->active_permission_request_manager().value()->Deny();
+  lbv->GetChipController()->active_permission_request_manager().value()->Deny(
+      /*prompt_options=*/std::monostate());
 
   base::RunLoop().RunUntilIdle();
 

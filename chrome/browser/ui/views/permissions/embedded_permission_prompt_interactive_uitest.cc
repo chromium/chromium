@@ -411,7 +411,7 @@ class EmbeddedPermissionPromptInteractiveTest
                   auto* manager =
                       permissions::PermissionRequestManager::FromWebContents(
                           browser()->tab_strip_model()->GetActiveWebContents());
-                  manager->Dismiss();
+                  manager->Dismiss(/*prompt_options=*/std::monostate());
                   manager->FinalizeCurrentRequests();
                 })));
 
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         ASSERT_FALSE(manager->has_pending_requests());
 
         // Need to close the permission prompt before the test shuts down.
-        manager->Dismiss();
+        manager->Dismiss(/*prompt_options=*/std::monostate());
         manager->FinalizeCurrentRequests();
       }));
 }
@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         ASSERT_FALSE(manager->has_pending_requests());
 
         // Need to close the permission prompt before the test shuts down.
-        manager->Dismiss();
+        manager->Dismiss(/*prompt_options=*/std::monostate());
         manager->FinalizeCurrentRequests();
       }));
 }
@@ -1346,7 +1346,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
           auto* manager =
               permissions::PermissionRequestManager::FromWebContents(
                   browser()->tab_strip_model()->GetActiveWebContents());
-          manager->Dismiss();
+          manager->Dismiss(/*prompt_options=*/std::monostate());
           manager->FinalizeCurrentRequests();
 
           zoom::ZoomController* zoom_controller =
@@ -1407,7 +1407,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
           auto* manager =
               permissions::PermissionRequestManager::FromWebContents(
                   browser()->tab_strip_model()->GetActiveWebContents());
-          manager->Dismiss();
+          manager->Dismiss(/*prompt_options=*/std::monostate());
           manager->FinalizeCurrentRequests();
         }));
   }

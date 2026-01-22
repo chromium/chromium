@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision.h"
@@ -32,6 +34,7 @@
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -111,28 +114,40 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void Accept() {
-    manager_->Accept();
+  void Accept(PromptOptions prompt_options = std::monostate()) {
+    if (std::holds_alternative<std::monostate>(prompt_options) &&
+        manager_->Requests().front()->GetContentSettingsType() ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      prompt_options = PromptOptions(GeolocationPromptOptions{
+          .selected_accuracy = GeolocationAccuracy::kPrecise});
+    }
+    manager_->Accept(prompt_options);
     task_environment()->RunUntilIdle();
   }
 
-  void AcceptThisTime() {
-    manager_->AcceptThisTime();
+  void AcceptThisTime(PromptOptions prompt_options = std::monostate()) {
+    if (std::holds_alternative<std::monostate>(prompt_options) &&
+        manager_->Requests().front()->GetContentSettingsType() ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      prompt_options = PromptOptions(GeolocationPromptOptions{
+          .selected_accuracy = GeolocationAccuracy::kPrecise});
+    }
+    manager_->AcceptThisTime(prompt_options);
     task_environment()->RunUntilIdle();
   }
 
   void Deny() {
-    manager_->Deny();
+    manager_->Deny(/*prompt_options=*/std::monostate());
     task_environment()->RunUntilIdle();
   }
 
   void Closing() {
-    manager_->Dismiss();
+    manager_->Dismiss(/*prompt_options=*/std::monostate());
     task_environment()->RunUntilIdle();
   }
 
   void Ignore() {
-    manager_->Ignore();
+    manager_->Ignore(/*prompt_options=*/std::monostate());
     task_environment()->RunUntilIdle();
   }
 
@@ -198,14 +213,15 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
   }
 
   void WaitAndAcceptPromptForRequest(
-      MockPermissionRequest::MockPermissionRequestState* request_state) {
+      MockPermissionRequest::MockPermissionRequestState* request_state,
+      const PromptOptions& prompt_options = std::monostate()) {
     WaitForBubbleToBeShown();
 
     EXPECT_FALSE(request_state->finished);
     EXPECT_TRUE(prompt_factory_->is_visible());
     ASSERT_EQ(prompt_factory_->request_count(), 1);
 
-    Accept();
+    Accept(prompt_options);
     EXPECT_TRUE(request_state->granted);
   }
 
@@ -2573,8 +2589,8 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
-  WaitAndAcceptPromptForRequest(request_geolocation.get());
+  WaitAndAcceptPromptForRequest(request_geolocation.get(),
+                                GeolocationPromptOptions{accuracy});
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Accepted.Accuracy",
@@ -2603,9 +2619,8 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
-  AcceptThisTime();
+  AcceptThisTime(GeolocationPromptOptions{accuracy});
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.AcceptedOnce.Accuracy",
@@ -2634,9 +2649,9 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
-  Deny();
+  manager_->Deny(GeolocationPromptOptions{accuracy});
+  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Denied.Accuracy",
@@ -2664,9 +2679,9 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
-  Closing();
+  manager_->Dismiss(GeolocationPromptOptions{accuracy});
+  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Dismissed.Accuracy",
@@ -2694,9 +2709,9 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
                                                  /*should_be_seen=*/true, 1);
 
   GeolocationAccuracy accuracy = GetParam();
-  manager_->SetPromptOptions(GeolocationPromptOptions{accuracy});
   WaitForBubbleToBeShown();
-  Ignore();
+  manager_->Ignore(GeolocationPromptOptions{accuracy});
+  task_environment()->RunUntilIdle();
 
   histograms.ExpectUniqueSample(
       "Permissions.Prompt.Geolocation.Ignored.Accuracy",

@@ -5,6 +5,7 @@
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,7 +30,8 @@ TEST_F(IdentityProviderPermissionRequestTest, PermissionGranted) {
   EXPECT_CALL(callback, Run(true)).WillOnce(testing::Return());
   auto request = std::make_unique<IdentityProviderPermissionRequest>(
       url::Origin::Create(GURL("https://idp.example")), callback.Get());
-  request->PermissionGranted(/**is_one_time=*/false);
+  request->PermissionGranted(/*prompt_options=*/std::monostate(),
+                             /*is_one_time=*/false);
 }
 
 TEST_F(IdentityProviderPermissionRequestTest, PermissionDenied) {

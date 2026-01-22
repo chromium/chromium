@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -1417,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
                                TopChromeShownState::kFullyShown);
 
   // Dismiss the bubble.
-  permission_manager->Dismiss();
+  permission_manager->Dismiss(/*prompt_options=*/std::monostate());
   EXPECT_FALSE(permission_manager->IsRequestInProgress());
   SynchronizeBrowserWithRenderer(active_contents);
 

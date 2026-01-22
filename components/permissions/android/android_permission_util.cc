@@ -4,6 +4,8 @@
 
 #include "components/permissions/android/android_permission_util.h"
 
+#include <variant>
+
 #include "base/android/jni_array.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
@@ -238,7 +240,7 @@ void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
         base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
                                   true);
       }
-      permission_request_manager->Accept();
+      permission_request_manager->Accept(/*prompt_options=*/std::monostate());
     } else if (setting == CONTENT_SETTING_BLOCK) {
       // There are multiple ways to deny the permission request. This histogram
       // will track the number of times the user denied the permission request
@@ -247,7 +249,7 @@ void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
         base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
                                   true);
       }
-      permission_request_manager->Deny();
+      permission_request_manager->Deny(/*prompt_options=*/std::monostate());
     } else if (setting == CONTENT_SETTING_DEFAULT) {
       if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
         base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset",
@@ -257,7 +259,7 @@ void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
       // all previously decided permissions are reset by setting them to
       // DEFAULT. There is no a default action or a state for permission
       // requests, so we need to explicitly dismiss the request.
-      permission_request_manager->Dismiss();
+      permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
     } else {
       // Currently, only ALLOW and BLOCK are supported. In case other actions
       // are added in the future, this should be updated.
@@ -280,7 +282,7 @@ void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
       permission_request_manager->Requests().size() > 0 &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
           ContentSettingsType::NOTIFICATIONS) {
-    permission_request_manager->Dismiss();
+    permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
   }
 }
 
@@ -334,7 +336,7 @@ static void JNI_PermissionUtil_NotifyQuietIconDismissed(
     if (prompt && prompt->GetPromptDisposition() ==
                       permissions::PermissionPromptDisposition::
                           LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON) {
-      permission_request_manager->Ignore();
+      permission_request_manager->Ignore(/*prompt_options=*/std::monostate());
     }
   }
 }

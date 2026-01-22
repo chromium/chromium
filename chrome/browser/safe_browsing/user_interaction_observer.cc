@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 
 #include <string>
+#include <variant>
 
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/profiles/profile.h"
@@ -198,7 +199,7 @@ void SafeBrowsingUserInteractionObserver::OnPromptAdded() {
   if (!permission_request_manager) {
     return;
   }
-  permission_request_manager->Deny();
+  permission_request_manager->Deny(/*prompt_options=*/std::monostate());
   ShowInterstitial(DelayedWarningEvent::kWarningShownOnPermissionRequest);
   // DO NOT add code past this point. |this| is destroyed.
 }

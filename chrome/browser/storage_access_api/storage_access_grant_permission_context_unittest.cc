@@ -321,7 +321,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
   // Accept the prompt and validate we get the expected setting back in our
   // callback.
-  request_manager()->Accept();
+  request_manager()->Accept(/*prompt_options=*/std::monostate());
   EXPECT_EQ(PermissionStatus::GRANTED, future.Get().status);
 
   histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
@@ -359,7 +359,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, PermissionDecided) {
   EXPECT_EQ(GetRequesterURL(), request_manager()->GetRequestingOrigin());
   EXPECT_EQ(GetTopLevelURL(), request_manager()->GetEmbeddingOrigin());
 
-  request_manager()->Dismiss();
+  request_manager()->Dismiss(/*prompt_options=*/std::monostate());
   EXPECT_EQ(PermissionStatus::ASK, future.Get().status);
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kDismissedByUser, 1);
@@ -587,7 +587,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
 
     // Close the prompt and validate we get the expected setting back in our
     // callback.
-    request_manager()->Dismiss();
+    request_manager()->Dismiss(/*prompt_options=*/std::monostate());
     EXPECT_EQ(PermissionStatus::ASK, future.Get().status);
   }
   EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
@@ -707,7 +707,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantDenial) {
 
   // Deny the prompt and validate we get the expected setting back in our
   // callback.
-  request_manager()->Deny();
+  request_manager()->Deny(/*prompt_options=*/std::monostate());
   EXPECT_EQ(PermissionStatus::DENIED, future.Get().status);
 
   histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
@@ -774,7 +774,7 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantAccept) {
 
   // Accept the prompt and validate we get the expected setting back in our
   // callback.
-  request_manager()->Accept();
+  request_manager()->Accept(/*prompt_options=*/std::monostate());
   EXPECT_EQ(PermissionStatus::GRANTED, future.Get().status);
 
   histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,

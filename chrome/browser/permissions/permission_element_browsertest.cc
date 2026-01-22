@@ -125,7 +125,7 @@ class PermissionElementBrowserTestBase
         permission_request_manager->GetCurrentPrompt()->GetPromptPosition(),
         position);
 
-    permission_request_manager->Dismiss();
+    permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
     permission_request_manager->FinalizeCurrentRequests();
   }
 

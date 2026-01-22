@@ -29,13 +29,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/mock_permission_ui_selector.h"
@@ -402,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   base::TimeDelta duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
 
-  GetTestApi().manager()->Accept();
+  GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   histograms.ExpectBucketCount(
@@ -423,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
 
-  GetTestApi().manager()->Accept();
+  GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   histograms.ExpectBucketCount(
@@ -450,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   base::TimeDelta duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
 
-  GetTestApi().manager()->AcceptThisTime();
+  GetTestApi().manager()->AcceptThisTime(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   histograms.ExpectBucketCount(
@@ -472,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   duration = base::Milliseconds(42);
   GetTestApi().manager()->set_time_to_decision_for_test(duration);
 
-  GetTestApi().manager()->AcceptThisTime();
+  GetTestApi().manager()->AcceptThisTime(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   histograms.ExpectBucketCount(
@@ -514,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
             ui::mojom::CursorType::kPointer);
 
   // After the prompt is resolved, custom cursors are allowed again.
-  GetTestApi().manager()->Accept();
+  GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   widget_host->SetCursor(custom_cursor);
@@ -534,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
       permissions::PermissionPromptDisposition::
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-  GetTestApi().manager()->Accept();
+  GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 
   ShowUi("notifications");
@@ -561,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
               permissions::PermissionPromptDisposition::
                   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
-    GetTestApi().manager()->Accept();
+    GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
     base::RunLoop().RunUntilIdle();
 
     ShowUi("geolocation");
@@ -572,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
               permissions::PermissionPromptDisposition::
                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 
-    GetTestApi().manager()->Accept();
+    GetTestApi().manager()->Accept(/*prompt_options=*/std::monostate());
     base::RunLoop().RunUntilIdle();
 
     ShowUi("notifications");

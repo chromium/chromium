@@ -210,17 +210,20 @@ bool NfcPermissionContextTests::HasActivePrompt() {
 }
 
 void NfcPermissionContextTests::AcceptPrompt() {
-  PermissionRequestManager::FromWebContents(web_contents())->Accept();
+  PermissionRequestManager::FromWebContents(web_contents())
+      ->Accept(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 
 void NfcPermissionContextTests::DenyPrompt() {
-  PermissionRequestManager::FromWebContents(web_contents())->Deny();
+  PermissionRequestManager::FromWebContents(web_contents())
+      ->Deny(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 
 void NfcPermissionContextTests::ClosePrompt() {
-  PermissionRequestManager::FromWebContents(web_contents())->Dismiss();
+  PermissionRequestManager::FromWebContents(web_contents())
+      ->Dismiss(/*prompt_options=*/std::monostate());
   base::RunLoop().RunUntilIdle();
 }
 

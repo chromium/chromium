@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
@@ -446,13 +447,14 @@ bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess;
 }
 
-void PermissionRequest::PermissionGranted(bool is_one_time) {
+void PermissionRequest::PermissionGranted(const PromptOptions& prompt_options,
+                                          bool is_one_time) {
   std::move(permission_decided_callback_)
       .Run(PermissionPromptDecision{.overall_decision =
                                         is_one_time
                                             ? PermissionDecision::kAllowThisTime
                                             : PermissionDecision::kAllow,
-                                    .prompt_options = prompt_options(),
+                                    .prompt_options = prompt_options,
                                     .is_final = true},
            /*request_data=*/*data_);
 }
@@ -461,7 +463,7 @@ void PermissionRequest::PermissionDenied() {
   std::move(permission_decided_callback_)
       .Run(PermissionPromptDecision{.overall_decision =
                                         PermissionDecision::kDeny,
-                                    .prompt_options = prompt_options(),
+                                    .prompt_options = std::monostate(),
                                     .is_final = true},
            /*request_data=*/*data_);
 }
@@ -470,7 +472,7 @@ void PermissionRequest::Cancelled(bool is_final_decision) {
   if (permission_decided_callback_) {
     permission_decided_callback_.Run(
         PermissionPromptDecision{.overall_decision = PermissionDecision::kNone,
-                                 .prompt_options = prompt_options(),
+                                 .prompt_options = std::monostate(),
                                  .is_final = is_final_decision},
         /*request_data=*/*data_);
   }
@@ -478,10 +480,6 @@ void PermissionRequest::Cancelled(bool is_final_decision) {
 
 PermissionRequestGestureType PermissionRequest::GetGestureType() const {
   return PermissionUtil::GetGestureType(data_->user_gesture);
-}
-
-void PermissionRequest::SetPromptOptions(PromptOptions prompt_options) {
-  data_->prompt_options = std::move(prompt_options);
 }
 
 const std::vector<std::string>&
