@@ -1847,6 +1847,10 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 
   [self setNeedsStatusBarAppearanceUpdate];
 
+  if (IsGeminiCopresenceEnabled()) {
+    [self.geminiHandler updateFloatyWithTraitCollection:self.traitCollection];
+  }
+
   self.fullscreenController->BrowserTraitCollectionChangedEnd();
 }
 

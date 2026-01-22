@@ -115,6 +115,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Setter for `last_shown_view_state_`.
   void SetLastShownViewState(ios::provider::GeminiViewState view_state);
 
+  // Called when trait collection is updated.
+  void UpdateForTraitCollection(UITraitCollection* traitCollection);
+
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;

@@ -229,6 +229,14 @@ CGFloat BwgBrowserAgent::GetFloatyOffsetFromFullscreenController(
   return offset;
 }
 
+void BwgBrowserAgent::UpdateForTraitCollection(
+    UITraitCollection* traitCollection) {
+  // Update the offset for a device orientation update to landscape or portrait.
+  CGFloat offset =
+      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
+  ios::provider::UpdateOverlayOffsetWithOpacity(offset, 1.0);
+}
+
 void BwgBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
                                     UIImage* image_attachment,
                                     gemini::EntryPoint entry_point,

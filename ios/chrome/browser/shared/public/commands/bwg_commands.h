@@ -44,6 +44,8 @@ class WebState;
 // Updates floaty visibility when persisting across WebStates.
 - (void)updateFloatyVisibilityForWebState:(web::WebState*)webState;
 
+- (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection;
+
 // Starts the FRE flow with a completion block.
 - (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
                       fromEntryPoint:(gemini::EntryPoint)entryPoint;

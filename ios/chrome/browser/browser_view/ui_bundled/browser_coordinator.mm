@@ -3325,6 +3325,16 @@ const char kChromeAppStoreUrl[] =
   }
 }
 
+- (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection {
+  BwgBrowserAgent* geminiBrowserAgent =
+      BwgBrowserAgent::FromBrowser(self.browser);
+  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
+    return;
+  }
+
+  geminiBrowserAgent->UpdateForTraitCollection(traitCollection);
+}
+
 - (void)showBWGPromoIfPageIsEligible {
   BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
