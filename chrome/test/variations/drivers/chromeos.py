@@ -231,6 +231,8 @@ class CrOSDriverFactory(DriverFactory):
     finally:
       if driver:
         driver.quit()
+      if browser:
+        browser.Close()
 
   #override
   @contextmanager
@@ -255,10 +257,6 @@ class CrOSDriverFactory(DriverFactory):
         logging.warning(
             'Failed to get window handle on attempt %d/%d, restarting VM...',
             attempt + 1, MAX_BROWSER_LAUNCH_ATTEMPTS)
-        if self.device.IsRunning():
-          self.device.Stop()
-        # Invalidate the cached property to relaunch the VM.
-        del self.device
 
   def close(self):
     if self.vm_started and self.device.IsRunning():
