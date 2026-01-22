@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
@@ -84,6 +83,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -429,13 +429,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowEmptySpaceContextMenu() {
-        // Enable empty space context menu from mouse-right click on all device form factors.
-        // Limit long press (touch) as trigger only when desktop agent is used, because
-        //   * some phones always identify as having a touchpad (crbug.com/429262357), and
-        //   * known web compatibility issue on tablet devices (crbug.com/45188879).
+        // Enable empty space context menu from mouse-right click on all device form factors, while
+        // long press (touch) should only work for large screen devices (crbug.com/429262357).
         return (mParams.getSourceType() == MenuSourceType.MOUSE
-                        || (TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())
-                                && mParams.getSourceType() == MenuSourceType.LONG_PRESS))
+                     || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                         && mParams.getSourceType() == MenuSourceType.LONG_PRESS))
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE);
     }
 
