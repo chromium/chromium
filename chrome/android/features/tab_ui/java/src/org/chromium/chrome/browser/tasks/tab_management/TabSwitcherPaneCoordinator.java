@@ -879,6 +879,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 TabListContainerProperties.IS_CONTENT_SENSITIVE, contentIsSensitive);
     }
 
+    /** Returns whether the search box animation is manual. */
+    public NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
+        return mMediator.getManualSearchBoxAnimationSupplier();
+    }
+
+    /** Returns a fraction for the manual search box animation. */
+    public NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
+        return mMediator.getSearchBoxVisibilityFractionSupplier();
+    }
+
     @Override
     public @BackPressResult int handleBackPress() {
         return mMediator.handleBackPress();

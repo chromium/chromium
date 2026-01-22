@@ -36,6 +36,10 @@ public abstract class PaneBase implements Pane {
             ObservableSuppliers.createNonNull(true);
     protected final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(true);
+    protected SettableNonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier =
+            ObservableSuppliers.createNonNull(false);
+    protected SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
+            ObservableSuppliers.createNonNull(0.0f);
 
     protected @HubColorScheme int mColorScheme = HubColorScheme.DEFAULT;
     protected boolean mMenuButtonVisible;
@@ -86,6 +90,16 @@ public abstract class PaneBase implements Pane {
     @Override
     public final NullableObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
         return mReferenceButtonDataSupplier;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
+        return mManualSearchBoxAnimationSupplier;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
+        return mSearchBoxVisibilityFractionSupplier;
     }
 
     @Override

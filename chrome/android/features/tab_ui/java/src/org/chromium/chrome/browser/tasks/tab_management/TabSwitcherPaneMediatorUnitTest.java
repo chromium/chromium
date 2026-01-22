@@ -22,12 +22,16 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_TABLET_OR_LANDSCAPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SUPPRESS_ACCESSIBILITY;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
@@ -61,6 +66,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -92,6 +98,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Mock private Runnable mAllOnLayoutChangedAfterInitialScrollListener;
     @Mock private TabIndexLookup mTabIndexLookup;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private LinearLayout mSupplementaryDataContainer;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -125,7 +132,14 @@ public class TabSwitcherPaneMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = ContextUtils.getApplicationContext();
+        mContext = Mockito.spy(ContextUtils.getApplicationContext());
+        Resources resources = Mockito.mock(Resources.class);
+        Configuration configuration = new Configuration();
+        configuration.screenWidthDp = 400; // phone
+        when(mContext.getResources()).thenReturn(resources);
+        when(resources.getConfiguration()).thenReturn(configuration);
+        when(resources.getDimensionPixelSize(R.dimen.hub_search_box_gap)).thenReturn(20);
+
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabIndexLookup.getNthTabIndexInModel(anyInt())).thenAnswer(i -> i.getArguments()[0]);
         mTabModel = new MockTabModel(mProfile, null);
@@ -167,6 +181,7 @@ public class TabSwitcherPaneMediatorUnitTest {
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(BROWSER_CONTROLS_STATE_PROVIDER, null)
                         .with(MODE, TabListMode.GRID)
+                        .with(IS_TABLET_OR_LANDSCAPE, false)
                         .build();
         mTabGridDialogControllerSupplier = LazyOneshotSupplier.fromValue(mTabGridDialogController);
         mMediator =
@@ -185,6 +200,9 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mBottomSheetController,
                         mAllOnLayoutChangedAfterInitialScrollListener,
                         mHubSearchBoxVisibilitySupplier);
+
+        when(mContainerView.findViewById(R.id.supplementary_data_container))
+                .thenReturn(mSupplementaryDataContainer);
 
         assertTrue(mTabGroupModelFilterSupplier.hasObservers());
         assertTrue(mIsVisibleSupplier.hasObservers());
@@ -484,5 +502,68 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.NONE);
         assertFalse(mModel.get(SUPPRESS_ACCESSIBILITY));
+    }
+
+    @Test
+    public void testSetHubSearchBoxVisibility() {
+        assertFalse(mHubSearchBoxVisibilitySupplier.get());
+
+        mMediator.setHubSearchBoxVisibility(true);
+        assertTrue(mHubSearchBoxVisibilitySupplier.get());
+
+        mMediator.setHubSearchBoxVisibility(false);
+        assertFalse(mHubSearchBoxVisibilitySupplier.get());
+    }
+
+    @Test
+    public void testSetIsTabletOrLandscape() {
+        mMediator.setIsTabletOrLandscape(true);
+        assertTrue(mModel.get(TabListContainerProperties.IS_TABLET_OR_LANDSCAPE));
+
+        mMediator.setIsTabletOrLandscape(false);
+        assertFalse(mModel.get(TabListContainerProperties.IS_TABLET_OR_LANDSCAPE));
+    }
+
+    @Test
+    public void testMaybeTranslatePinnedStrip_showOnPhone() {
+        // Not a tablet. isSearchBoxMovementEnabledForPinnedTabs returns false, so should show.
+        mMediator.maybeTranslatePinnedStrip(false, false);
+
+        // Animation should start to show
+        assertTrue(mMediator.getManualSearchBoxAnimationSupplier().get());
+        assertTrue(mHubSearchBoxVisibilitySupplier.get());
+
+        // Run animation to completion.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mMediator.getManualSearchBoxAnimationSupplier().get());
+        assertTrue(mHubSearchBoxVisibilitySupplier.get());
+        assertEquals(1.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
+    }
+
+    @Test
+    public void testMaybeTranslatePinnedStrip_hideOnTablet() {
+        // Show it first forcibly on phone.
+        mMediator.maybeTranslatePinnedStrip(true, true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(1.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
+        when(mSupplementaryDataContainer.getTranslationY()).thenReturn(20f);
+
+        // Now switch to tablet.
+        Configuration configuration = new Configuration();
+        configuration.screenWidthDp = 700;
+        when(mContext.getResources().getConfiguration()).thenReturn(configuration);
+
+        mMediator.maybeTranslatePinnedStrip(true, false);
+
+        // Animation should start to hide
+        assertTrue(mMediator.getManualSearchBoxAnimationSupplier().get());
+
+        // Run animation to completion.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertFalse(mMediator.getManualSearchBoxAnimationSupplier().get());
+        assertFalse(mHubSearchBoxVisibilitySupplier.get());
+        assertEquals(0.0f, mMediator.getSearchBoxVisibilityFractionSupplier().get(), 0.0);
     }
 }

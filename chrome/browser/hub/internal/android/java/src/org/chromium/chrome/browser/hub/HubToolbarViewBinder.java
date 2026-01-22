@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_F
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MANUAL_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
@@ -52,6 +54,10 @@ public class HubToolbarViewBinder {
             view.setHubSearchEnabledState(model.get(HUB_SEARCH_ENABLED_STATE));
         } else if (key == HAIRLINE_VISIBILITY) {
             view.setHairlineVisibility(model.get(HAIRLINE_VISIBILITY));
+        } else if (key == MANUAL_SEARCH_BOX_ANIMATION) {
+            view.setManualSearchBoxAnimation(model.get(MANUAL_SEARCH_BOX_ANIMATION));
+        } else if (key == SEARCH_BOX_VISIBILITY_FRACTION) {
+            view.setSearchBoxVisibilityFraction(model.get(SEARCH_BOX_VISIBILITY_FRACTION));
         }
     }
 }

@@ -92,4 +92,10 @@ public interface Pane extends BackPressHandler {
 
     /** Returns whether the hub search box should be visible. */
     NonNullObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier();
+
+    /** Returns whether the search box animation is manual. */
+    NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier();
+
+    /** Returns a fraction for the manual search box animation. */
+    NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier();
 }

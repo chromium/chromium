@@ -9,10 +9,12 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_F
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MANUAL_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBILITY_FRACTION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
@@ -124,8 +126,14 @@ public class HubToolbarMediator {
     private final Callback<Boolean> mOnSearchBoxVisibilityChange =
             this::onSearchBoxVisibilityChange;
     private final NonNullObservableSupplier<Boolean> mHairlineVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier;
+    private final NonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier;
 
     private final Callback<Boolean> mOnHairlineVisibilityChange = this::onHairlineVisibilityChange;
+    private final Callback<Boolean> mOnManualSearchBoxAnimationChange =
+            this::onManualSearchBoxAnimationChange;
+    private final Callback<Float> mOnSearchBoxVisibilityFractionChange =
+            this::onSearchBoxVisibilityFractionChange;
 
     private @Nullable PaneButtonLookup mPaneButtonLookup;
     private boolean mIgnoreTabLayoutSelection;
@@ -173,6 +181,20 @@ public class HubToolbarMediator {
         MonotonicObservableSupplier<Pane> focusedPaneSupplier =
                 paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
+
+        mManualSearchBoxAnimationSupplier =
+                paneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitiveNonNull(false, Pane::getManualSearchBoxAnimationSupplier);
+        mManualSearchBoxAnimationSupplier.addObserver(mOnManualSearchBoxAnimationChange);
+
+        mSearchBoxVisibilityFractionSupplier =
+                paneManager
+                        .getFocusedPaneSupplier()
+                        .createTransitiveNonNull(
+                                0.0f, Pane::getSearchBoxVisibilityFractionSupplier);
+        mSearchBoxVisibilityFractionSupplier.addObserver(mOnSearchBoxVisibilityFractionChange);
+
         rebuildPaneSwitcherButtonData();
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
@@ -198,6 +220,8 @@ public class HubToolbarMediator {
             pane.getHubSearchBoxVisibilitySupplier().removeObserver(mOnSearchBoxVisibilityChange);
         }
         mHairlineVisibilitySupplier.removeObserver(mOnHairlineVisibilityChange);
+        mManualSearchBoxAnimationSupplier.removeObserver(mOnManualSearchBoxAnimationChange);
+        mSearchBoxVisibilityFractionSupplier.removeObserver(mOnSearchBoxVisibilityFractionChange);
     }
 
     /** Returns the button view for a given pane if present. */
@@ -331,6 +355,14 @@ public class HubToolbarMediator {
 
     private void onHairlineVisibilityChange(@Nullable Boolean visible) {
         mPropertyModel.set(HAIRLINE_VISIBILITY, Boolean.TRUE.equals(visible));
+    }
+
+    private void onManualSearchBoxAnimationChange(@Nullable Boolean manual) {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, Boolean.TRUE.equals(manual));
+    }
+
+    private void onSearchBoxVisibilityFractionChange(@Nullable Float fraction) {
+        mPropertyModel.set(SEARCH_BOX_VISIBILITY_FRACTION, fraction == null ? 0.0f : fraction);
     }
 
     private void consumeButtonLookup(PaneButtonLookup paneButtonLookup) {

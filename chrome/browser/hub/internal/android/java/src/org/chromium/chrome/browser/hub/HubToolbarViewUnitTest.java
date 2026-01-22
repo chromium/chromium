@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MANUAL_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
@@ -473,6 +474,41 @@ public class HubToolbarViewUnitTest {
     })
     public void testHubColorMixer_searchBoxEnabled() {
         verify(mColorMixer, times(9)).registerBlend(any());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testSearchBoxVisibilityFraction_Slide() {
+        HubToolbarView hubToolbarView = mToolbarContainer.findViewById(R.id.hub_toolbar);
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        hubToolbarView.setSearchBoxVisibilityFraction(0.5f);
+
+        assertEquals(0.5f, mSearchBox.getAlpha(), 0.01f);
+        assertTrue(mSearchBox.getTranslationY() < 0);
+        assertEquals(1.0f, mSearchBox.getScaleY(), 0.01f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS + ":search_box_squish_animation/true")
+    public void testSearchBoxVisibilityFraction_Squish() {
+        HubToolbarView hubToolbarView = mToolbarContainer.findViewById(R.id.hub_toolbar);
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+        hubToolbarView.setSearchBoxVisibilityFraction(0.5f);
+
+        assertEquals(0.5f, mSearchBox.getAlpha(), 0.01f);
+        assertEquals(0.5f, mSearchBox.getScaleY(), 0.01f);
+        assertEquals(0.0f, mSearchBox.getTranslationY(), 0.01f);
+    }
+
+    @Test
+    public void testManualSearchBoxAnimation_ToggleVisibility() {
+        mPropertyModel.set(MANUAL_SEARCH_BOX_ANIMATION, true);
+
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, false);
+        assertEquals(View.GONE, mSearchBox.getVisibility());
     }
 
     /**

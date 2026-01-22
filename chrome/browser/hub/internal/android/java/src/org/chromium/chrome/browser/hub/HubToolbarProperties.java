@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -48,6 +49,22 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Whether the search box animation is controlled manually. When this is true, the default
+     * animation is disabled and the visibility is controlled by {@link
+     * #SEARCH_BOX_VISIBILITY_FRACTION}. This is useful for panes that want to control the search
+     * box visibility with a scroll-based animation.
+     */
+    public static final WritableBooleanPropertyKey MANUAL_SEARCH_BOX_ANIMATION =
+            new WritableBooleanPropertyKey();
+
+    /**
+     * The visibility fraction of the search box. This is only used when {@link
+     * #MANUAL_SEARCH_BOX_ANIMATION} is true. 0.0f is hidden, 1.0f is fully visible.
+     */
+    public static final WritableFloatPropertyKey SEARCH_BOX_VISIBILITY_FRACTION =
+            new WritableFloatPropertyKey();
+
     @FunctionalInterface
     public interface PaneButtonLookup {
         @Nullable View get(int index);
@@ -69,5 +86,7 @@ class HubToolbarProperties {
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
         HUB_SEARCH_ENABLED_STATE,
         HAIRLINE_VISIBILITY,
+        MANUAL_SEARCH_BOX_ANIMATION,
+        SEARCH_BOX_VISIBILITY_FRACTION,
     };
 }

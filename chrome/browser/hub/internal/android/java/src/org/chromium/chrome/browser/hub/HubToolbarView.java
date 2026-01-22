@@ -74,10 +74,13 @@ public class HubToolbarView extends LinearLayout {
     private @Nullable OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private boolean mApplyDelayForSearchBoxAnimation;
+    private boolean mManualSearchBoxAnimation;
     private final AnimationHandler mHubSearchAnimatorHandler;
     private final Handler mHandler;
     private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable List<FullButtonData> mCachedButtonDataList;
+    private final int mSearchBoxHeightPx;
+    private final boolean mIsSquishAnimationEnabled;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
@@ -85,6 +88,10 @@ public class HubToolbarView extends LinearLayout {
         mHubSearchAnimatorHandler = new AnimationHandler();
         mHandler = new Handler();
         mToolbarOverviewColorSetter = (color) -> {};
+        mSearchBoxHeightPx = getResources().getDimensionPixelSize(R.dimen.hub_search_box_height);
+        mIsSquishAnimationEnabled =
+                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
+                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
     }
 
     @Override
@@ -433,6 +440,14 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisible(boolean visible) {
+        // When manual search box animation is enabled, the visibility is controlled directly
+        // by the HubToolbarMediator and HubToolbarViewBinder via the
+        // SEARCH_BOX_VISIBILITY_FRACTION property, and no animation is applied here.
+        if (mManualSearchBoxAnimation) {
+            mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+            return;
+        }
+
         AnimatorSet hubSearchTransitionAnimation = getHubSearchBoxTransitionAnimation(visible);
         AnimatorListenerAdapter animationListener =
                 new AnimatorListenerAdapter() {
@@ -479,6 +494,34 @@ public class HubToolbarView extends LinearLayout {
 
     void setApplyDelayForSearchBoxAnimation(boolean applyDelay) {
         mApplyDelayForSearchBoxAnimation = applyDelay;
+    }
+
+    void setManualSearchBoxAnimation(boolean manual) {
+        mManualSearchBoxAnimation = manual;
+    }
+
+    void setSearchBoxVisibilityFraction(float fraction) {
+        if (!mManualSearchBoxAnimation) return;
+
+        mSearchBoxLayout.setAlpha(fraction);
+        if (mIsSquishAnimationEnabled) {
+            mSearchBoxLayout.setPivotY(0);
+            mSearchBoxLayout.setScaleY(fraction);
+            mSearchBoxLayout.setTranslationY(0);
+        } else {
+            mSearchBoxLayout.setTranslationY((fraction - 1) * mSearchBoxHeightPx);
+            mSearchBoxLayout.setScaleY(1.0f);
+        }
+
+        // Physical Height Reduction (Reduces the Canvas size).
+        int targetHeight =
+                Math.max(1, Math.round(mSearchBoxHeightPx * fraction)); // Avoid 0 height.
+
+        ViewGroup.LayoutParams params = mSearchBoxLayout.getLayoutParams();
+        if (params.height != targetHeight) {
+            params.height = targetHeight;
+            mSearchBoxLayout.setLayoutParams(params);
+        }
     }
 
     public void setSearchLoupeVisible(boolean visible) {
@@ -546,9 +589,11 @@ public class HubToolbarView extends LinearLayout {
     }
 
     AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
-        boolean isSquishAnimationEnabled =
-                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
-                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
+        // Reset the search box height to its default for regular transitions.
+        // This is necessary because manual animation might have adjusted its height.
+        ViewGroup.LayoutParams layoutParams = mSearchBoxLayout.getLayoutParams();
+        layoutParams.height = mSearchBoxHeightPx;
+        mSearchBoxLayout.setLayoutParams(layoutParams);
 
         AnimatorSet transitionAnimator = new AnimatorSet();
 
@@ -558,7 +603,7 @@ public class HubToolbarView extends LinearLayout {
                 ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
 
         Animator primaryAnimator;
-        if (isSquishAnimationEnabled) {
+        if (mIsSquishAnimationEnabled) {
             primaryAnimator = createSquishAnimation(visible);
         } else {
             primaryAnimator = createSlideAnimation(visible);

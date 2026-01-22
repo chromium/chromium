@@ -65,8 +65,7 @@ public class TabSwitcherPaneMediator
                 TabSwitcherCustomViewManager.Delegate,
                 BackPressHandler {
 
-    private static final int PINNED_TABS_SHOW_SEARCH_BOX_DURATION = 10;
-    private static final int PINNED_TABS_HIDE_SEARCH_BOX_DURATION = 100;
+    private static final int PINNED_TABS_SEARCH_BOX_DURATION_MS = 250;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableNonNullObservableSupplier<Boolean> mIsDialogVisibleSupplier =
@@ -171,6 +170,10 @@ public class TabSwitcherPaneMediator
     private @Nullable MonotonicObservableSupplier<TabListEditorController>
             mTabListEditorControllerSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mManualSearchBoxAnimationSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
+            ObservableSuppliers.createNonNull(0.0f);
     private @Nullable NonNullObservableSupplier<Boolean>
             mCurrentTabListEditorControllerBackSupplier;
     private @Nullable View mCustomView;
@@ -451,6 +454,8 @@ public class TabSwitcherPaneMediator
 
         LinearLayout supplementaryDataContainer =
                 mContainerView.findViewById(R.id.supplementary_data_container);
+        if (supplementaryDataContainer == null) return;
+
         int translationHeight = isSearchBoxVisible ? mSearchBoxGapPx : 0;
 
         // Early out if we are already in the correct state.
@@ -460,11 +465,6 @@ public class TabSwitcherPaneMediator
             return;
         }
 
-        int duration =
-                isSearchBoxVisible
-                        ? PINNED_TABS_SHOW_SEARCH_BOX_DURATION
-                        : PINNED_TABS_HIDE_SEARCH_BOX_DURATION;
-
         // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
         ValueAnimator translateAnimator =
                 ObjectAnimator.ofFloat(
@@ -472,22 +472,31 @@ public class TabSwitcherPaneMediator
                         View.TRANSLATION_Y,
                         supplementaryDataContainer.getTranslationY(),
                         translationHeight);
-        translateAnimator.setDuration(duration);
+        translateAnimator.setDuration(PINNED_TABS_SEARCH_BOX_DURATION_MS);
         translateAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-                        if (!isSearchBoxVisible) {
-                            setHubSearchBoxVisibility(false);
+                        setManualSearchBoxAnimation(true);
+                        if (isSearchBoxVisible) {
+                            setHubSearchBoxVisibility(true);
                         }
                     }
 
                     @Override
                     public void onAnimationEnd(@NonNull Animator animation, boolean isReverse) {
-                        if (isSearchBoxVisible) {
-                            setHubSearchBoxVisibility(true);
+                        if (!isSearchBoxVisible) {
+                            setHubSearchBoxVisibility(false);
                         }
+                        setManualSearchBoxAnimation(false);
                     }
+                });
+
+        translateAnimator.addUpdateListener(
+                animation -> {
+                    float translation = (float) animation.getAnimatedValue();
+                    float fraction = mSearchBoxGapPx > 0 ? translation / mSearchBoxGapPx : 0f;
+                    setSearchBoxVisibilityFraction(fraction);
                 });
 
         mSupplementaryContainerAnimationHandler.startAnimation(translateAnimator);
@@ -632,5 +641,25 @@ public class TabSwitcherPaneMediator
 
     private void suppressAccessibility(boolean suppress) {
         mContainerViewModel.set(TabListContainerProperties.SUPPRESS_ACCESSIBILITY, suppress);
+    }
+
+    /** Returns whether the search box animation is manual. */
+    NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
+        return mManualSearchBoxAnimationSupplier;
+    }
+
+    /** Returns a fraction for the manual search box animation. */
+    NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
+        return mSearchBoxVisibilityFractionSupplier;
+    }
+
+    /** Sets whether the search box animation is manual. */
+    private void setManualSearchBoxAnimation(boolean manual) {
+        mManualSearchBoxAnimationSupplier.set(manual);
+    }
+
+    /** Sets the search box visibility fraction. */
+    private void setSearchBoxVisibilityFraction(float fraction) {
+        mSearchBoxVisibilityFractionSupplier.set(fraction);
     }
 }

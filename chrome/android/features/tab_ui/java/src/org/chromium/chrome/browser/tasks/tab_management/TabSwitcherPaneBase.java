@@ -204,6 +204,13 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                         return false;
                     }
                 };
+
+        mManualSearchBoxAnimationSupplier =
+                mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
+                        false, TabSwitcherPaneCoordinator::getManualSearchBoxAnimationSupplier);
+        mSearchBoxVisibilityFractionSupplier =
+                mTabSwitcherPaneCoordinatorSupplier.createTransitiveNonNull(
+                        0.0f, TabSwitcherPaneCoordinator::getSearchBoxVisibilityFractionSupplier);
     }
 
     @Override
@@ -335,6 +342,16 @@ public abstract class TabSwitcherPaneBase extends PaneBase
                 backgroundColor,
                 HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
                 mOnToolbarAlphaChange);
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getManualSearchBoxAnimationSupplier() {
+        return mManualSearchBoxAnimationSupplier;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Float> getSearchBoxVisibilityFractionSupplier() {
+        return mSearchBoxVisibilityFractionSupplier;
     }
 
     private @ColorInt int getAnimationBackgroundColor() {
