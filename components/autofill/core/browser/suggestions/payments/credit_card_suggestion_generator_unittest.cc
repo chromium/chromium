@@ -333,18 +333,12 @@ class PaymentsSuggestionGeneratorTest
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>&
           virtual_card_guid_to_last_four_map) {
-    CreditCardSuggestionGenerator generator(
-        /*four_digit_combinations_in_dom=*/{},
-        payments::AmountExtractionStatus(),
-        autofill_manager().GetCreditCardFormEventLogger(),
-        AutofillMetrics::PaymentsSigninState::kUnknown);
     std::pair<SuggestionGenerator::SuggestionDataSource,
               std::vector<SuggestionGenerator::SuggestionData>>
-        suggestion_data =
-            generator.FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
-                client, trigger_field, metadata_logging_context);
+        suggestion_data = FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
+            client, trigger_field, metadata_logging_context);
 
-    return generator.GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
+    return GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
         {suggestion_data}, payments::AmountExtractionStatus());
   }
@@ -376,20 +370,14 @@ class PaymentsSuggestionGeneratorTest
       bool should_show_scan_credit_card,
       CreditCardSuggestionSummary& summary,
       bool is_card_number_field_empty) {
-    CreditCardSuggestionGenerator generator(
-        /*four_digit_combinations_in_dom=*/{},
-        payments::AmountExtractionStatus(),
-        autofill_manager().GetCreditCardFormEventLogger(),
-        AutofillMetrics::PaymentsSigninState::kUnknown);
-
     std::pair<SuggestionGenerator::SuggestionDataSource,
               std::vector<SuggestionGenerator::SuggestionData>>
-        suggestion_data = generator.FetchCreditCardOrCvcFieldSuggestionDataSync(
+        suggestion_data = FetchCreditCardOrCvcFieldSuggestionDataSync(
             client, trigger_field, trigger_field_type,
             four_digit_combinations_in_dom,
             autofilled_last_four_digits_in_form_for_filtering, summary);
 
-    return generator.GenerateCreditCardOrCvcFieldSuggestionsSync(
+    return GenerateCreditCardOrCvcFieldSuggestionsSync(
         client, trigger_field, trigger_field_type, should_show_scan_credit_card,
         summary, is_card_number_field_empty, {suggestion_data},
         payments::AmountExtractionStatus());
