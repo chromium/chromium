@@ -321,12 +321,16 @@ void HlsManifestDemuxerEngine::Stop() {
 
 void HlsManifestDemuxerEngine::SelectVideoTrack(const MediaTrack::Id& track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  rendition_manager_->SetPreferredVideoRendition(track);
+  if (rendition_manager_) {
+    rendition_manager_->SetPreferredVideoRendition(track);
+  }
 }
 
 void HlsManifestDemuxerEngine::SelectAudioTrack(const MediaTrack::Id& track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  rendition_manager_->SetPreferredAudioRendition(track);
+  if (rendition_manager_) {
+    rendition_manager_->SetPreferredAudioRendition(track);
+  }
 }
 
 std::vector<DemuxerStream*> HlsManifestDemuxerEngine::FilterDemuxerStreams(
