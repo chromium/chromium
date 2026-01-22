@@ -535,7 +535,7 @@ void WebDialogView::InitDialog() {
   }
 
   web_contents->SetDelegate(this);
-
+  web_contents->SetIgnoreZoomGestures(true);
   // Set the delegate. This must be done before loading the page. See
   // the comment above WebDialogUI in its header file for why.
   WebDialogUIBase::SetDelegate(web_contents, this);

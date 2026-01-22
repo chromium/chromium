@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
 
 using content::BrowserContext;
 using content::OpenURLParams;
@@ -60,13 +59,6 @@ WebContents* WebDialogWebContentsDelegate::AddNewContents(
                            target_url, disposition, window_features,
                            user_gesture);
   return nullptr;
-}
-
-bool WebDialogWebContentsDelegate::PreHandleGestureEvent(
-    WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
 }
 
 void WebDialogWebContentsDelegate::RunFileChooser(
