@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -23,7 +22,6 @@
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
@@ -65,12 +63,13 @@ void OnResponse(
       .Run(url, ToSafeSearchClientClassification(classify_url_response.get()));
 }
 
-FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
+FetcherConfig GetFetcherConfig(
+    bool is_subject_to_family_link_parental_controls) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Supervised users on these platforms might get into a state where their
   // credentials are not available, so best-effort access mode is a graceful
   // fallback here.
-  CHECK(is_subject_to_parental_controls)
+  CHECK(is_subject_to_family_link_parental_controls)
       << "Kids API not available to users outside of Family Link parental "
          "controls";
   return kClassifyUrlConfigBestEffort;
@@ -80,21 +79,13 @@ FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
   // therefore wait for a valid access token to be available before calling
   // ClassifyUrl, to avoid window conditions where the access token is not yet
   // available (eg. during startup).
-  if (is_subject_to_parental_controls ||
-      !ClassifyUrlWithoutCredentialsForLocalSupervision()) {
-    return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
-  }
-
-  CHECK(!is_subject_to_parental_controls &&
-        ClassifyUrlWithoutCredentialsForLocalSupervision())
-      << "Mode not intended for family link users (or misconfigured "
-         "experiment; enable kAllowNonFamilyLinkUrlFilterMode (backs "
-         "ClassifyUrlWithoutCredentialsForLocalSupervision()))";
-  return kClassifyUrlConfigWithoutCredentials;
+  return is_subject_to_family_link_parental_controls
+             ? kClassifyUrlConfigWaitUntilAccessTokenAvailable
+             : kClassifyUrlConfigWithoutCredentials;
 #else
   // Other platforms use default configuration, which strictly requires
   // immediately available access token.
-  CHECK(is_subject_to_parental_controls)
+  CHECK(is_subject_to_family_link_parental_controls)
       << "Kids API not available to users outside of Family Link parental "
          "controls";
   return kClassifyUrlConfig;

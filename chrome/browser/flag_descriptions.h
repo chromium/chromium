@@ -124,12 +124,6 @@ inline constexpr char kNewTabAddsToActiveGroupDescription[] =
     "If enabled, and there is a tab group is focused, then new tabs "
     "will be added to the focused tab group.";
 
-inline constexpr char kAllowNonFamilyLinkUrlFilterModeName[] =
-    "Allow non-family link URL filter mode";
-inline constexpr char kAllowNonFamilyLinkUrlFilterModeDescription[] =
-    "Allows the URL classification mode without credentials, even if the "
-    "profile is not managed by the family link System.";
-
 inline constexpr char kAndroidAdaptiveFrameRateName[] =
     "Android Adaptive Refresh Rate features";
 inline constexpr char kAndroidAdaptiveFrameRateDescription[] =
@@ -3576,13 +3570,6 @@ inline constexpr char kProfileSignalsReportingEnabledName[] =
 inline constexpr char kProfileSignalsReportingEnabledDescription[] =
     "Enables the profile signals reporting flow for Chrome Enterprise.";
 
-inline constexpr char kPropagateDeviceContentFiltersToSupervisedUserName[] =
-    "Propagate device content filters to supervised user";
-inline constexpr char
-    kPropagateDeviceContentFiltersToSupervisedUserDescription[] =
-        "Propagates the device settings about content filters to supervised "
-        "user features.";
-
 inline constexpr char kProtectedAudiencesConsentedDebugTokenName[] =
     "Protected Audiences Consented Debug Token";
 inline constexpr char kProtectedAudiencesConsentedDebugTokenDescription[] =
@@ -5710,15 +5697,6 @@ inline constexpr char kSubmenusTabContextMenuLffTabStripName[] =
 inline constexpr char kSubmenusTabContextMenuLffTabStripDescription[] =
     "Enables submenus (for moving tabs to groups or windows) in the tab "
     "context menu on LFF tab strip";
-
-inline constexpr char kSupervisedUserInterstitialWithoutApprovalsName[] =
-    "Supervisded user interstitial without approvals for content filters";
-inline constexpr char kSupervisedUserInterstitialWithoutApprovalsDescription[] =
-    "Enables the supervised user interstitial without approvals nor custodian "
-    "information for content filters. Strictly requires "
-    "#propagate-device-content-filters-to-supervised-user to be enabled. "
-    "Enabling #allow-non-family-link-url-filter-mode is also required for "
-    "users who do not sign-in.";
 
 inline constexpr char kTabBottomSheetName[] = "Tab bottom sheet";
 inline constexpr char kTabBottomSheetDescription[] =

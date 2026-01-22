@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -21,7 +20,6 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -59,11 +57,6 @@ class SupervisedUserServiceTest : public ::testing::Test {
   void SetWebFilterType(WebFilterType web_filter_type) {
     supervised_user_test_environment_->SetWebFilterType(web_filter_type);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
-#endif  // BUILDFLAG(IS_ANDROID)
 
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_;

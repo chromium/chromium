@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -26,7 +25,6 @@
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -284,12 +282,6 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
 #endif  // BUILDFLAG(IS_ANDROID)
     }
   }
-
-#if BUILDFLAG(IS_ANDROID)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,

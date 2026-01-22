@@ -12350,21 +12350,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(strike_database::features::kDisableStrikeSystem)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"allow-non-family-link-url-filter-mode",
-     flag_descriptions::kAllowNonFamilyLinkUrlFilterModeName,
-     flag_descriptions::kAllowNonFamilyLinkUrlFilterModeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(supervised_user::kAllowNonFamilyLinkUrlFilterMode)},
-
-    {"propagate-device-content-filters-to-supervised-user",
-     flag_descriptions::kPropagateDeviceContentFiltersToSupervisedUserName,
-     flag_descriptions::
-         kPropagateDeviceContentFiltersToSupervisedUserDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kPropagateDeviceContentFiltersToSupervisedUser)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"show-tab-list-animations", flag_descriptions::kShowTabListAnimationsName,
      flag_descriptions::kShowTabListAnimationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kShowTabListAnimations)},
@@ -12447,15 +12432,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableDownstreamCardAwarenessIph)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"supervised-user-interstitial-without-approvals",
-     flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsName,
-     flag_descriptions::kSupervisedUserInterstitialWithoutApprovalsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kSupervisedUserInterstitialWithoutApprovals)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-ntp-browser-promos",

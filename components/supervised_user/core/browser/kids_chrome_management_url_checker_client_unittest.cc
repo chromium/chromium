@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,7 +23,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -274,9 +272,6 @@ class KidsChromeManagementURLCheckerClientForRegularUserTest
     : public KidsChromeManagementURLCheckerClientTest {
  protected:
   void SetUp() override { DisableParentalControls(pref_service_); }
-
- private:
-  base::test::ScopedFeatureList feature_list{kAllowNonFamilyLinkUrlFilterMode};
 };
 
 TEST_F(KidsChromeManagementURLCheckerClientForRegularUserTest,

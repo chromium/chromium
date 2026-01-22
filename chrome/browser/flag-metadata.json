@@ -157,11 +157,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "allow-non-family-link-url-filter-mode",
-    "owners": ["tju@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "allow-user-installed-chrome-apps",
     "owners": ["//apps/DEPRECATION_OWNERS"],
     "expiry_milestone": 169
@@ -7867,11 +7862,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "propagate-device-content-filters-to-supervised-user",
-    "owners": ["tju@google.com", "chrome-signin-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "protected-audience-debug-token",
     "owners": [
       "behamilton@google.com",
@@ -8783,11 +8773,6 @@
       "ddac@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "supervised-user-interstitial-without-approvals",
-    "owners": [ "tju@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 150
   },
   {

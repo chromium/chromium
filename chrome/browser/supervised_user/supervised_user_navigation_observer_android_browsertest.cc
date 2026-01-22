@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,8 +79,6 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
   }
 
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
 };
 
 // With disabled search content filters, the navigation is unchanged and safe
@@ -196,10 +193,6 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::SimulateMouseClickOrTapElementWithId(web_contents(), link_id);
     navigation_observer.Wait();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kSupervisedUserInterstitialWithoutApprovals};
 };
 
 // Shows the interstitial page when the search content filter is enabled.

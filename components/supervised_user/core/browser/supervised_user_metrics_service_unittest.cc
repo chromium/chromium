@@ -9,13 +9,11 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,11 +53,6 @@ class SupervisedUserMetricsServiceTest : public ::testing::Test {
     return supervised_user_test_environment_->pref_service()->GetInteger(
         prefs::kSupervisedUserMetricsDayId);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kPropagateDeviceContentFiltersToSupervisedUser};
-#endif  // BUILDFLAG(IS_ANDROID)
 
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
@@ -199,8 +192,6 @@ class SupervisedUserMetricsServiceFieldTrialTest
   static FieldTrialName GetFieldTrialName() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList feature_list{
-      kPropagateDeviceContentFiltersToSupervisedUser};
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<SupervisedUserTestEnvironment> test_environment_;
 };

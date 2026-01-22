@@ -244,8 +244,7 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
   // interstitials. Other users can see these interstitials if they have local
   // supervision enabled.
   if (!IsSubjectToParentalControls(*profile->GetPrefs()) &&
-      g_browser_process->device_parental_controls().IsWebFilteringEnabled() &&
-      UseInterstitialForLocalSupervision()) {
+      g_browser_process->device_parental_controls().IsWebFilteringEnabled()) {
     return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
         result.url, g_browser_process->GetApplicationLocale());
   }
