@@ -205,9 +205,8 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     PriceNotificationSettingsFragment.class.getName(),
-                    R.xml.price_notification_preferences);
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
