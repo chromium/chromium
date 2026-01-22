@@ -2109,21 +2109,15 @@ RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
       importance_,
 #endif
   };
-  bool should_contribute = false;
-  if (base::FeatureList::IsEnabled(features::kSubframePriorityContribution)) {
-    should_contribute = should_contribute_priority_to_process_;
-    if (owner_delegate_ && !owner_delegate_->IsMainFrameActive()) {
-      // If this RenderWidgetHost is owned by a RenderViewHost which does not
-      // have an active main frame, it should not contribute to the priority of
-      // the process. This can happen for an OOPIF which not only has its own
-      // RenderWidgetHost, but also has an inactive RenderViewHost in its
-      // SiteInstance, and that RenderViewHost owns another unused
-      // RenderWidgetHost which is what's being excluded here.
-      should_contribute = false;
-    }
-  } else {
-    should_contribute = !owner_delegate_ ||
-                        owner_delegate_->ShouldContributePriorityToProcess();
+  bool should_contribute = should_contribute_priority_to_process_;
+  if (owner_delegate_ && !owner_delegate_->IsMainFrameActive()) {
+    // If this RenderWidgetHost is owned by a RenderViewHost which does not
+    // have an active main frame, it should not contribute to the priority of
+    // the process. This can happen for an OOPIF which not only has its own
+    // RenderWidgetHost, but also has an inactive RenderViewHost in its
+    // SiteInstance, and that RenderViewHost owns another unused
+    // RenderWidgetHost which is what's being excluded here.
+    should_contribute = false;
   }
 
 #if BUILDFLAG(IS_ANDROID)

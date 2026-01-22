@@ -3134,8 +3134,6 @@ void WebContentsImpl::SetPrimaryPageImportance(
   base::android::ScopedServiceBindingBatch scoped_service_binding_batch;
 
   if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
-    CHECK(
-        base::FeatureList::IsEnabled(features::kSubframePriorityContribution));
     if (subframe_importance != primary_subframe_importance_) {
       primary_subframe_importance_ = subframe_importance;
       ApplyPrimaryPageSubframeImportance();

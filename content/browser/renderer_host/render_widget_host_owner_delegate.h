@@ -45,10 +45,6 @@ class RenderWidgetHostOwnerDelegate {
   virtual bool MayRenderWidgetForwardKeyboardEvent(
       const input::NativeWebKeyboardEvent& key_event) = 0;
 
-  // Allow OwnerDelegate to control whether its RenderWidgetHost contributes
-  // priority to the RenderProcessHost.
-  virtual bool ShouldContributePriorityToProcess() = 0;
-
   // When false, this allows the renderer's output to be transparent. By default
   // the renderer's background is forced to be opaque.
   virtual void SetBackgroundOpaque(bool opaque) = 0;

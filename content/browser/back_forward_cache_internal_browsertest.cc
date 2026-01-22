@@ -2255,8 +2255,7 @@ class BackForwardCacheInternalSubframeImportanceBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     feature_list_.InitWithFeatures(
-        /* enabled_features= */ {features::kSubframePriorityContribution,
-                                 features::kSubframeImportance},
+        /* enabled_features= */ {features::kSubframeImportance},
         /* disabled_features= */ {});
   }
 
@@ -2336,19 +2335,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif
 
-class BackForwardCacheInternalSubframePriorityBrowserTest
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-    feature_list_.InitAndEnableFeature(features::kSubframePriorityContribution);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheInternalSubframePriorityBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        FrameDepthInBackForwardCache) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(embedded_test_server()->Start());

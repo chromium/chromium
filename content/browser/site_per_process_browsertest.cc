@@ -9525,8 +9525,7 @@ class SitePerProcessBrowserTestWithSubframePriority
  public:
   SitePerProcessBrowserTestWithSubframePriority() {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features= */ {features::kSubframePriorityContribution,
-                                 features::kSubframeImportance},
+        /* enabled_features= */ {features::kSubframeImportance},
         /* disabled_features= */ {});
   }
 
@@ -11297,8 +11296,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
   EXPECT_FALSE(child1_rvh->is_active());
   EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
             child1_rvh->GetWidget()->GetPriority().frame_depth);
-  EXPECT_FALSE(static_cast<RenderWidgetHostOwnerDelegate*>(child1_rvh)
-                   ->ShouldContributePriorityToProcess());
   // The RenderWidgetHost of the RenderFrameHost is different from the
   // RenderWidgetHost of the RenderViewHost and contributes to the priority.
   EXPECT_NE(child1->current_frame_host()->GetRenderWidgetHost(),

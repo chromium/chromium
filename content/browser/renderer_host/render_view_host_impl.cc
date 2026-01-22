@@ -896,10 +896,6 @@ bool RenderViewHostImpl::MayRenderWidgetForwardKeyboardEvent(
   return true;
 }
 
-bool RenderViewHostImpl::ShouldContributePriorityToProcess() {
-  return is_active();
-}
-
 void RenderViewHostImpl::SendWebPreferencesToRenderer() {
   if (auto& broadcast = GetAssociatedPageBroadcast()) {
     if (!will_send_web_preferences_callback_for_testing_.is_null()) {

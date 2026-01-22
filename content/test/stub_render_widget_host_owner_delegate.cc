@@ -13,10 +13,6 @@ bool StubRenderWidgetHostOwnerDelegate::MayRenderWidgetForwardKeyboardEvent(
   return true;
 }
 
-bool StubRenderWidgetHostOwnerDelegate::ShouldContributePriorityToProcess() {
-  return false;
-}
-
 bool StubRenderWidgetHostOwnerDelegate::IsMainFrameActive() {
   return true;
 }
