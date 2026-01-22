@@ -114,7 +114,7 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
     return false;
 
   // TODO(asargent/benwells) - As a short term remediation for
-  // crbug.com/179010 we're adding the ability for a allowlisted extension to
+  // crbug.com/179010 we're adding the ability for an allowlisted extension to
   // use this API since chrome.fileBrowserHandler.selectFile is ChromeOS-only.
   // Eventually we'd like a better solution and likely this code will go back
   // to being platform-app only.
