@@ -41,7 +41,6 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinder;
 import org.chromium.components.signin.identitymanager.AccountManagedStatusFinderOutcome;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -124,8 +123,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
                 new SigninManagerImpl(
                         nativeSigninManagerAndroid, prefService, identityManager, identityMutator);
 
-        AccountInfoServiceProvider.init(identityManager);
-
         return signinManager;
     }
 
@@ -162,7 +159,6 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @VisibleForTesting
     @CalledByNative
     void destroy() {
-        AccountInfoServiceProvider.get().destroy();
         mAccountManagerFacade.removeObserver(this);
         mPrefChangeRegistrar.destroy();
         mNativeSigninManagerAndroid = 0;

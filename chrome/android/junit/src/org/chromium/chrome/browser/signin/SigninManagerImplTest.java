@@ -53,7 +53,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.identitymanager.PrimaryAccountError;
@@ -112,7 +111,6 @@ public class SigninManagerImplTest {
     public void tearDown() {
         mSigninManager.removeSignInStateObserver(mSignInStateObserver);
         mSigninManager.destroy();
-        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test

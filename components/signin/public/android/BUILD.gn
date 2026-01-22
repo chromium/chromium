@@ -52,9 +52,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImpl.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceProvider.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountManagedStatusFinder.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManagerImpl.java",
@@ -194,7 +191,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/signin/AccountUtilsTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
     "junit/src/org/chromium/components/signin/base/AccountCapabilitiesTest.java",
-    "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
   ]
   deps = [
     ":java",
