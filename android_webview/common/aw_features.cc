@@ -265,4 +265,8 @@ BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
 // Enables recording user actions for API calls.
 BASE_FEATURE(kWebViewEnableApiCallUserActions,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for reporting web performance metrics.
+BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace android_webview::features
