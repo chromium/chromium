@@ -22,7 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -111,7 +111,7 @@ public class MiniOriginBarController implements Observer {
     private final KeyboardVisibilityListener mKeyboardVisibilityObserver;
     private final Context mContext;
     private final ControlContainer mControlContainer;
-    private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final NonNullObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing;
     private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
@@ -146,10 +146,10 @@ public class MiniOriginBarController implements Observer {
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Context context,
             ControlContainer controlContainer,
-            ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier,
+            SettableNonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             BrowserControlsSizer browserControlsSizer,
             InsetObserver insetObserver,
-            ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
+            SettableNonNullObservableSupplier<Integer> controlContainerTranslationSupplier,
             NonNullObservableSupplier<Boolean> isKeyboardAccessorySheetShowing,
             BooleanSupplier isOmniboxFocusedSupplier) {
         mLocationBar = locationBar;
@@ -475,8 +475,8 @@ public class MiniOriginBarController implements Observer {
         private int mMaxKeyboardHeight;
         private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
         private final ViewGroup mContainerView;
-        private final ObservableSupplierImpl<Integer> mTranslationSupplier;
-        private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
+        private final SettableNonNullObservableSupplier<Integer> mTranslationSupplier;
+        private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier;
         private final BooleanSupplier mShowingMiniOriginBar;
         private final Runnable mOnAnimationPreparedSignal;
         private final Callback<Boolean> mAnimationEndedSignal;
@@ -493,8 +493,8 @@ public class MiniOriginBarController implements Observer {
         MiniOriginWindowInsetsAnimationListener(
                 KeyboardVisibilityDelegate keyboardVisibilityDelegate,
                 ViewGroup containerView,
-                ObservableSupplierImpl<Integer> translationSupplier,
-                ObservableSupplierImpl<Boolean> suppressToolbarSceneLayerSupplier,
+                SettableNonNullObservableSupplier<Integer> translationSupplier,
+                SettableNonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
                 BooleanSupplier showingMiniOriginBar,
                 Runnable animationPreparedSignal,
                 Callback<Boolean> animationEndedSignal,

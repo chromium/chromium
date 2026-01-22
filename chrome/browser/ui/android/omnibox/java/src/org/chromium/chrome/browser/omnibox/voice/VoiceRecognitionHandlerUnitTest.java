@@ -14,12 +14,14 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -37,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -44,7 +47,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -98,7 +102,8 @@ public class VoiceRecognitionHandlerUnitTest {
 
     private VoiceRecognitionHandler mHandler;
     private WindowAndroid mWindowAndroid;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
@@ -118,7 +123,6 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         var activity = Robolectric.buildActivity(Activity.class).setup().get();
 
-        mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity, /* trackOcclusion= */ true));
         mHandler = spy(new VoiceRecognitionHandler(mDelegate, mProfileSupplier));
         mHandler.addObserver(mObserver);
@@ -140,7 +144,6 @@ public class VoiceRecognitionHandlerUnitTest {
         // will be taken care of here.
         ShadowLooper.shadowMainLooper().idle();
         mHandler.removeObserver(mObserver);
-        mProfileSupplier.set(null);
         ProfileManager.resetForTesting();
     }
 
@@ -283,13 +286,12 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testIgnoreProfileAfterDestroy() {
         mProfileSupplier.set(mProfile);
         verify(mObserver).onVoiceAvailabilityImpacted();
-        mProfileSupplier.set(null);
-        verify(mObserver, times(2)).onVoiceAvailabilityImpacted();
+        clearInvocations(mObserver);
 
         mHandler.destroy();
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier.set(Mockito.mock(Profile.class));
         // Stop propagating changes after destroy.
-        verify(mObserver, times(2)).onVoiceAvailabilityImpacted();
+        verifyNoInteractions(mObserver);
     }
 
     @Test

@@ -43,8 +43,10 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -95,16 +97,17 @@ public class FuseboxCoordinatorUnitTest {
     private WindowAndroid mWindowAndroid;
     private FuseboxCoordinator mCoordinator;
 
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>(mTabModelSelector);
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createNonNull(mTabModelSelector);
     private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
             new OneshotSupplierImpl<>();
     private final Function<Tab, Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
     private final List<Tab> mTabs = new ArrayList<>();
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
-                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
 
     @Before
     public void setUp() {

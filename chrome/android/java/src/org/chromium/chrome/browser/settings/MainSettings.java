@@ -28,7 +28,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -152,7 +153,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // Will be true if `onSignedOut()` was called when the current activity state is not
     // `Lifecycle.State.STARTED`.
     private boolean mShouldShowSnackbar;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private @Nullable MultiColumnSettings mMultiColumnSettings;

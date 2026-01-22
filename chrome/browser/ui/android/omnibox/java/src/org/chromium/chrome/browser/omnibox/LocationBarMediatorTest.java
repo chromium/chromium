@@ -57,8 +57,10 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -190,7 +192,7 @@ public class LocationBarMediatorTest {
     @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
@@ -233,18 +235,19 @@ public class LocationBarMediatorTest {
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
 
     private Context mContext;
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
     private LocationBarMediator mMediator;
     private LocationBarMediator mTabletMediator;
     private UrlBarData mUrlBarData;
     private boolean mIsToolbarMicEnabled;
     private LocationBarEmbedderUiOverrides mUiOverrides;
     private OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
-                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
-    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
-            new ObservableSupplierImpl<>(FuseboxState.EXPANDED);
+                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
+    private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.EXPANDED);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
 
     // Members capturing final state of the LocationBarLayout elements.
@@ -355,7 +358,7 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
+                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,
@@ -1113,7 +1116,7 @@ public class LocationBarMediatorTest {
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
                         () -> mModalDialogManager,
-                        new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH),
+                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH),
                         mPageZoomIndicatorCoordinator,
                         mFuseboxCoordinator,
                         mMultiInstanceManager,

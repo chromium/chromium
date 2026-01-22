@@ -105,7 +105,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             ScrollingBottomViewResourceFrameLayout root,
             OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
-            MonotonicObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         mRootFrameLayout = root;

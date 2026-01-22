@@ -74,7 +74,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private final Callback<TabModelDotInfo> mNotificationDotObserver =
             this::onUpdateNotificationDot;
     private @Nullable MonotonicObservableSupplier<Integer> mTabCountSupplier;
-    private @Nullable MonotonicObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
+    private @Nullable NonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier;
 
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
@@ -147,7 +147,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
             OnLongClickListener onLongClickListener,
             MonotonicObservableSupplier<Integer> tabCountSupplier,
             @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
-            MonotonicObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
+            NonNullObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
             Runnable archivedTabsIphShownCallback,
             Runnable archivedTabsIphDismissedCallback) {
         mTabCountSupplier = tabCountSupplier;
@@ -156,9 +156,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         }
 
         mNotificationDotSupplier = tabModelNotificationDotSupplier;
-        if (mNotificationDotSupplier != null) {
-            mNotificationDotSupplier.addObserver(mNotificationDotObserver);
-        }
+        mNotificationDotSupplier.addObserver(mNotificationDotObserver);
 
         mToggleTabStackButton.setOnClickListener(onClickListener);
         mToggleTabStackButton.setOnLongClickListener(onLongClickListener);

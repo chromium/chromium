@@ -56,7 +56,7 @@ public class MultiColumnSettingsUnitTest {
                 new ObservableSupplierImpl();
 
         @Override
-        public MonotonicObservableSupplier getPageTitle() {
+        public MonotonicObservableSupplier<String> getPageTitle() {
             return mTitleSupplier;
         }
 

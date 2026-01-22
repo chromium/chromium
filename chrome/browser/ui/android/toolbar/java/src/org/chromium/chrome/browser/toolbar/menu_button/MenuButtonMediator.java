@@ -22,8 +22,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -57,7 +58,8 @@ class MenuButtonMediator implements AppMenuObserver {
     private final Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
     private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
-    private final ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
+    private final SettableMonotonicObservableSupplier<AppMenuButtonHelper>
+            mAppMenuButtonHelperSupplier;
     private @Nullable AppMenuHandler mAppMenuHandler;
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private final SetFocusFunction mSetUrlBarFocusFunction;
@@ -129,7 +131,7 @@ class MenuButtonMediator implements AppMenuObserver {
         mAppMenuCoordinatorSupplier.onAvailable(mAppMenuCoordinatorSupplierObserver);
         mActivity = assertNonNull(windowAndroid.getActivity().get());
         mResources = mActivity.getResources();
-        mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
+        mAppMenuButtonHelperSupplier = ObservableSuppliers.createMonotonic();
         mKeyboardDelegate = windowAndroid.getKeyboardDelegate();
         mMenuButtonStateSupplier = menuButtonStateSupplier;
         mOnMenuButtonClicked = onMenuButtonClicked;

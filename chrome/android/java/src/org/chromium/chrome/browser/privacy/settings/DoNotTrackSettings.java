@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.privacy.settings;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,7 +31,8 @@ public class DoNotTrackSettings extends ChromeBaseSettingsFragment {
     private static final String PREF_DO_NOT_TRACK_SWITCH = "do_not_track_switch";
     private static final String PREF_DO_NOT_TRACK_DESCRIPTION = "do_not_track_description";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {

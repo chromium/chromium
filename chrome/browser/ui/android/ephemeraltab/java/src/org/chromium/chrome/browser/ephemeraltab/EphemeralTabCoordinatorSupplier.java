@@ -8,7 +8,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
@@ -18,7 +19,8 @@ import org.chromium.ui.base.WindowAndroid;
 public class EphemeralTabCoordinatorSupplier {
     private static final UnownedUserDataKey<MonotonicObservableSupplier<EphemeralTabCoordinator>>
             KEY = new UnownedUserDataKey<>();
-    private static @Nullable ObservableSupplierImpl<EphemeralTabCoordinator> sInstanceForTesting;
+    private static @Nullable SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
+            sInstanceForTesting;
 
     /**
      * Return {@link EphemeralTabCoordinator} supplier associated with the given {@link
@@ -47,8 +49,7 @@ public class EphemeralTabCoordinatorSupplier {
 
     /** Sets an instance for testing. */
     public static void setInstanceForTesting(EphemeralTabCoordinator ephemeralTabCoordinator) {
-        sInstanceForTesting = new ObservableSupplierImpl<>();
-        sInstanceForTesting.set(ephemeralTabCoordinator);
+        sInstanceForTesting = ObservableSuppliers.createMonotonic(ephemeralTabCoordinator);
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 

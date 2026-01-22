@@ -20,7 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -43,8 +44,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
                 OnLayoutChangeListener,
                 OnGlobalLayoutListener,
                 ComponentCallbacks {
-    private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
-            new ObservableSupplierImpl<>(OmniboxAlignment.UNSPECIFIED);
+    private final SettableNonNullObservableSupplier<OmniboxAlignment> mOmniboxAlignmentSupplier =
+            ObservableSuppliers.createNonNull(OmniboxAlignment.UNSPECIFIED);
     private final WindowAndroid mWindowAndroid;
     private final View mAnchorView;
     private final View mAlignmentView;

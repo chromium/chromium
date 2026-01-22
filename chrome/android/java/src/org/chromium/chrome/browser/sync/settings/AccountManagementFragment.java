@@ -26,8 +26,9 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -109,7 +110,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private SyncService mSyncService;
     private SyncService.@Nullable SyncSetupInProgressHandle mSyncSetupInProgressHandle;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedState, @Nullable String rootKey) {

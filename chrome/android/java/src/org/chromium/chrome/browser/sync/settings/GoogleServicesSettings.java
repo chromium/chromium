@@ -18,8 +18,9 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -96,7 +97,8 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     private @Nullable Preference mPriceNotificationSection;
     private @Nullable Preference mUsageStatsReporting;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {

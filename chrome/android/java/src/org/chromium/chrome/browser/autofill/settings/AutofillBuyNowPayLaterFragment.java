@@ -23,7 +23,8 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -57,7 +58,8 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
     @VisibleForTesting static final String PREF_KEY_BNPL_ISSUER_TERM = "bnpl_issuers_term_key";
     @VisibleForTesting static final String PREF_LIST_TERMS_URL = "bnpl_issuers_terms_url";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     private PersonalDataManager mPersonalDataManager;
 

@@ -40,7 +40,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -242,7 +241,7 @@ class LocationBarMediator
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable AddToHomescreenCoordinator mAddToHomescreenCoordinatorForTesting;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
-    private final SettableMonotonicObservableSupplier<@AutocompleteRequestType Integer>
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final boolean mPersistEditingState;
@@ -273,7 +272,7 @@ class LocationBarMediator
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            SettableMonotonicObservableSupplier<@AutocompleteRequestType Integer>
+            SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
             FuseboxCoordinator fuseboxCoordinator,
@@ -2212,7 +2211,7 @@ class LocationBarMediator
                         mContext, mWindowAndroid, mProfileSupplier.get());
     }
 
-    public MonotonicObservableSupplier<@AutocompleteRequestType Integer>
+    public NonNullObservableSupplier<@AutocompleteRequestType Integer>
             getAutocompleteRequestTypeSupplier() {
         return mAutocompleteRequestTypeSupplier;
     }

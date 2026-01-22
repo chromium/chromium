@@ -8,30 +8,30 @@ import android.graphics.Rect;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * An implementation of {@link MonotonicObservableSupplier} that monitors changes to browser controls and
- * updates a Rect indicating top/bottom margins for Views that should be inset by the browser
- * control(s) height(s).
+ * An implementation of {@link MonotonicObservableSupplier} that monitors changes to browser
+ * controls and updates a Rect indicating top/bottom margins for Views that should be inset by the
+ * browser control(s) height(s).
  */
 @NullMarked
 public class BrowserControlsMarginAdapter
         implements BrowserControlsStateProvider.Observer, Destroyable {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ObservableSupplierImpl<Rect> mTargetSupplier;
+    private final SettableMonotonicObservableSupplier<Rect> mTargetSupplier;
 
     private BrowserControlsMarginAdapter(
             BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplierImpl<Rect> targetSupplier) {
+            SettableMonotonicObservableSupplier<Rect> targetSupplier) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTargetSupplier = targetSupplier;
     }
 
     public static Destroyable create(
             BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplierImpl<Rect> targetSupplier) {
+            SettableMonotonicObservableSupplier<Rect> targetSupplier) {
         BrowserControlsMarginAdapter ret =
                 new BrowserControlsMarginAdapter(browserControlsStateProvider, targetSupplier);
         browserControlsStateProvider.addObserver(ret);

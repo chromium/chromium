@@ -29,7 +29,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -288,7 +287,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 backPressManager,
                 null,
                 null,
-                new ObservableSupplierImpl<>(Color.TRANSPARENT),
+                ObservableSuppliers.createNonNull(Color.TRANSPARENT),
                 edgeToEdgeManager,
                 /* xrSpaceModeObservableSupplier= */ null,
                 desktopWindowStateManager);

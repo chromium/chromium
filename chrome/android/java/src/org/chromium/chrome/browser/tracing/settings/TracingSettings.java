@@ -12,7 +12,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -64,8 +65,8 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private final MonotonicObservableSupplier<String> mPageTitle =
-            new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
+    private final NonNullObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.of(MSG_TRACING_TITLE);
 
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =

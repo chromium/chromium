@@ -50,7 +50,8 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -143,8 +144,8 @@ public class AutocompleteMediatorUnitTest {
     private List<AutocompleteMatch> mSuggestionsList;
     private AutocompleteResult mAutocompleteResult;
     private ModelList mSuggestionModels;
-    private ObservableSupplierImpl<@ControlsPosition Integer> mToolbarPositionSupplier;
-    private ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private SettableNonNullObservableSupplier<@ControlsPosition Integer> mToolbarPositionSupplier;
+    private SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private Context mContext;
 
@@ -159,9 +160,9 @@ public class AutocompleteMediatorUnitTest {
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJniMock);
         OmniboxActionFactoryJni.setInstanceForTesting(mActionFactoryJni);
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
-        mToolbarPositionSupplier = new ObservableSupplierImpl<>(ControlsPosition.TOP);
+        mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mAutocompleteRequestTypeSupplier =
-                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+                ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
 
         lenient().doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 

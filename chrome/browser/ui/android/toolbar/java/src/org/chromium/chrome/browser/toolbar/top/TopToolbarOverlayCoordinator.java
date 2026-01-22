@@ -9,6 +9,7 @@ import android.graphics.RectF;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,8 +55,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            MonotonicObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            MonotonicObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled,
             MonotonicObservableSupplier<Long> captureResourceIdSupplier,

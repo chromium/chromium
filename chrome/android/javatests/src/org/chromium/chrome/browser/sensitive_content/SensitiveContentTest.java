@@ -40,8 +40,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
@@ -50,7 +50,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -76,7 +75,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -139,9 +137,6 @@ public class SensitiveContentTest {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    @Mock private MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    @Mock private MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 
@@ -712,11 +707,11 @@ public class SensitiveContentTest {
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder,
-                        mCompositorViewHolderSupplier,
+                        ObservableSuppliers.alwaysNull(),
                         mContentView,
                         mToolbarManager,
-                        mScrimVisibilitySupplier,
-                        mTopInsetProviderSupplier);
+                        ObservableSuppliers.alwaysFalse(),
+                        ObservableSuppliers.alwaysNull());
 
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);
@@ -726,7 +721,7 @@ public class SensitiveContentTest {
                 null,
                 null,
                 mTopUiThemeColorProvider,
-                new ObservableSupplierImpl<>(0));
+                ObservableSuppliers.alwaysZero());
     }
 
     /**

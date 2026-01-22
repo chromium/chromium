@@ -42,7 +42,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -86,13 +87,13 @@ public class MiniOriginBarControllerTest {
             mKeyboardVisibilityDelegate =
                     new ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate();
     private MiniOriginBarController mMiniOriginBarController;
-    private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier =
-            new ObservableSupplierImpl<>(false);
-    ObservableSupplierImpl<Integer> mControlContainerTranslationSupplier =
-            new ObservableSupplierImpl<>(0);
+    private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier =
+            ObservableSuppliers.createNonNull(false);
+    SettableNonNullObservableSupplier<Integer> mControlContainerTranslationSupplier =
+            ObservableSuppliers.createNonNull(0);
 
-    private final ObservableSupplierImpl<Boolean> mIsKeyboardAccessorySheetShowing =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing =
+            ObservableSuppliers.createNonNull(false);
 
     private final WindowInsetsAnimationCompat mImeAnimation =
             new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);

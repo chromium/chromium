@@ -30,8 +30,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -270,8 +272,9 @@ public class LocationBarCoordinator
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
-        ObservableSupplierImpl<@AutocompleteRequestType Integer> autocompleteRequestTypeSupplier =
-                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+        SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
+                autocompleteRequestTypeSupplier =
+                        ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
         mFuseboxCoordinator =
                 new FuseboxCoordinator(
                         context,
@@ -1082,7 +1085,7 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonBackground(backgroundResId);
     }
 
-    public MonotonicObservableSupplier<@AutocompleteRequestType Integer>
+    public NonNullObservableSupplier<@AutocompleteRequestType Integer>
             getAutocompleteRequestTypeSupplier() {
         return mLocationBarMediator.getAutocompleteRequestTypeSupplier();
     }

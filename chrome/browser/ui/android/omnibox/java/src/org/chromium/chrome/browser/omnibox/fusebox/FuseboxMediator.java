@@ -24,7 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -71,10 +71,10 @@ public class FuseboxMediator {
     private final FuseboxPopup mPopup;
     private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier;
+    private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
@@ -87,11 +87,11 @@ public class FuseboxMediator {
             PropertyModel model,
             FuseboxViewHolder viewHolder,
             FuseboxAttachmentModelList modelList,
-            ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
-            ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
+            SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SnackbarManager snackbarManager) {
         mContext = context;
         mProfile = profile;

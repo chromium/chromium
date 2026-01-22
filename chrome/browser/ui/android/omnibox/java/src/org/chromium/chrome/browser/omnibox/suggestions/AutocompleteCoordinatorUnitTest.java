@@ -26,7 +26,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -54,11 +55,11 @@ public class AutocompleteCoordinatorUnitTest {
 
     private Context mContext;
     private AutocompleteCoordinator mAutocompleteCoordinator;
-    private final ObservableSupplierImpl<@ControlsPosition Integer> mControlsPositionSupplier =
-            new ObservableSupplierImpl<>(ControlsPosition.TOP);
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final SettableNonNullObservableSupplier<@ControlsPosition Integer>
+            mControlsPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
-                    new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+                    ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
 
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private OmniboxSuggestionsDropdownEmbedder mDropdownEmbedder;
@@ -79,16 +80,12 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private ViewGroup mParentView;
     @Mock private TopInsetProvider mTopInsetProvider;
 
-    private final ObservableSupplierImpl<TopInsetProvider> mTopInsetProviderSupplier =
-            new ObservableSupplierImpl<>();
-
     @Before
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mTopInsetProviderSupplier.set(mTopInsetProvider);
 
         lenient().when(mParentView.getContext()).thenReturn(mContext);
         lenient()
@@ -111,7 +108,7 @@ public class AutocompleteCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mLocationBarDataProvider,
                         mProfileObservableSupplier,
-                        mTopInsetProviderSupplier,
+                        ObservableSuppliers.of(mTopInsetProvider),
                         mBringToForegroundCallback,
                         mBookmarkState,
                         mOmniboxActionDelegate,

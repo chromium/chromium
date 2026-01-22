@@ -14,6 +14,8 @@ public class ObservableSuppliers {
             new BaseObservableSupplierImpl<>(false, /* allowSetToNull= */ false);
     private static final NonNullObservableSupplier<Boolean> ALWAYS_TRUE =
             new BaseObservableSupplierImpl<>(true, /* allowSetToNull= */ false);
+    private static final NonNullObservableSupplier<Integer> ALWAYS_ZERO =
+            new BaseObservableSupplierImpl<>(0, /* allowSetToNull= */ false);
     private static final MonotonicObservableSupplier<?> ALWAYS_NULL =
             new BaseObservableSupplierImpl<>(null, /* allowSetToNull= */ false);
 
@@ -60,8 +62,17 @@ public class ObservableSuppliers {
         return ALWAYS_FALSE;
     }
 
+    public static NonNullObservableSupplier<Integer> alwaysZero() {
+        return ALWAYS_ZERO;
+    }
+
     public static <T> MonotonicObservableSupplier<T> alwaysNull() {
         return (MonotonicObservableSupplier<T>) ALWAYS_NULL;
+    }
+
+    public static <T> NonNullObservableSupplier<T> of(T value) {
+        // Saves the overhead of having an ObserverList.
+        return new BaseObservableSupplierImpl<>(value, false);
     }
 
     private ObservableSuppliers() {}

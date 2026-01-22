@@ -10,6 +10,7 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,7 +43,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // rolled out.
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
-    private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
@@ -75,7 +76,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
             ToolbarManager toolbarManager,
-            MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> scrimVisibilitySupplier,
             MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
         super(
                 host,
@@ -106,7 +107,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 

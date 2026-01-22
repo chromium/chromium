@@ -20,7 +20,8 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -75,7 +76,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @VisibleForTesting
     static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     private SafetyHubModuleDelegate mDelegate;
     private @Nullable CallbackController mCallbackController;

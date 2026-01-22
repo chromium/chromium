@@ -40,6 +40,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
@@ -381,7 +382,7 @@ public class RootUiCoordinator
     protected final BottomControlsStacker mBottomControlsStacker;
     protected final TopControlsStacker mTopControlsStacker;
     protected final @Nullable TopControlsLockCoordinator mTopControlsLockCoordinator;
-    @NonNull protected final MonotonicObservableSupplier<Integer> mOverviewColorSupplier;
+    @NonNull protected final NonNullObservableSupplier<Integer> mOverviewColorSupplier;
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private PageZoomBarCoordinator mPageZoomBarCoordinator;
     @Nullable private ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
@@ -503,7 +504,7 @@ public class RootUiCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
-            @NonNull MonotonicObservableSupplier<Integer> overviewColorSupplier,
+            @NonNull NonNullObservableSupplier<Integer> overviewColorSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {

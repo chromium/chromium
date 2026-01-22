@@ -35,9 +35,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -109,7 +110,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
     private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
-    private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
+    private @Nullable SettableNonNullObservableSupplier<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
 
     /**
@@ -204,7 +205,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     public void setOnHeightChangedListener(
-            @Nullable ObservableSupplierImpl<Integer> heightChangedSupplier) {
+            @Nullable SettableNonNullObservableSupplier<Integer> heightChangedSupplier) {
         mHeightChangedSupplier = heightChangedSupplier;
     }
 
@@ -439,7 +440,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             boolean isIncognito,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<@Nullable Tab> tabSupplier,
-            MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
+            NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -578,7 +579,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
+                NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier isVisible,
@@ -645,7 +646,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         private Toolbar mToolbar;
         private ConstraintsChecker mConstraintsObserver;
         private Supplier<@Nullable Tab> mTabSupplier;
-        private MonotonicObservableSupplier<Boolean> mCompositorInMotionSupplier;
+        private @Nullable NonNullObservableSupplier<Boolean> mCompositorInMotionSupplier;
 
         private BrowserStateBrowserControlsVisibilityDelegate
                 mBrowserStateBrowserControlsVisibilityDelegate;
@@ -687,7 +688,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
+                NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier controlContainerIsVisibleSupplier,
@@ -762,8 +763,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 // capture when the controls were partially or fully scrolled off, in the middle
                 // of motion, before the view became dirty.
                 if (mCompositorInMotionSupplier != null) {
-                    Boolean compositorInMotion = mCompositorInMotionSupplier.get();
-                    if (Boolean.TRUE.equals(compositorInMotion)) {
+                    if (mCompositorInMotionSupplier.get()) {
                         CaptureReadinessResult.logCaptureReasonFromResult(
                                 CaptureReadinessResult.notReady(
                                         TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));

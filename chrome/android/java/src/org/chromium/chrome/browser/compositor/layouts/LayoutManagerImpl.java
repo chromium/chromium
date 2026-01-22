@@ -643,7 +643,7 @@ public class LayoutManagerImpl
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         mBrowserControlsStateProvider = mHost.getBrowserControlsManager();

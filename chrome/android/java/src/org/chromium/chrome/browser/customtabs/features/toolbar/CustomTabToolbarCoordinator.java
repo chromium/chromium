@@ -22,7 +22,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -305,7 +305,7 @@ public class CustomTabToolbarCoordinator {
                         /* bookmarkClickHandler= */ null,
                         /* customTabsBackClickHandler= */ v -> onCloseButtonClick(),
                         /* archivedTabCountSupplier= */ null,
-                        /* tabModelNotificationDotSupplier= */ new ObservableSupplierImpl<>(
+                        /* tabModelNotificationDotSupplier= */ ObservableSuppliers.createNonNull(
                                 TabModelDotInfo.HIDE),
                         /* undoBarThrottle= */ null);
         mInitializedToolbarWithNative = true;

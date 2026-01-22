@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.HUB_CLOSED;
 import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.HUB_SHOWN;
@@ -143,7 +142,7 @@ public class HubColorMixerImpl implements HubColorMixer {
     public OverviewModeAlphaObserver getOverviewModeAlphaObserver() {
         return alpha -> {
             mOverviewColorAlpha = (float) alpha;
-            @ColorInt int color = assumeNonNull(mOverviewColorSupplier.get());
+            @ColorInt int color = mOverviewColorSupplier.get();
             processOverviewColor(color, mOverviewColorAlpha);
         };
     }

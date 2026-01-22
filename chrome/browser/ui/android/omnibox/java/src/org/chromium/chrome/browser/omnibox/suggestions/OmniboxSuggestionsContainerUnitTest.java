@@ -36,7 +36,8 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,8 +56,8 @@ public class OmniboxSuggestionsContainerUnitTest {
     private Context mContext;
     private TestOmniboxSuggestionsContainer mContainer;
     private OmniboxAlignment mOmniboxAlignment;
-    private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<OmniboxAlignment> mOmniboxAlignmentSupplier =
+            ObservableSuppliers.createNullable();
     private boolean mIsTablet;
     private boolean mAttachedToWindow;
     private boolean mShouldPassThroughUnhandledTouchEvents;

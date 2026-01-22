@@ -400,7 +400,6 @@ class TabImpl implements Tab {
     TabImpl(int id, Profile profile, @TabLaunchType int launchType, boolean isArchived) {
         mId = TabIdManager.getInstance().generateValidId(id);
         mProfile = profile;
-        assert mProfile != null;
         mRootId = mId;
         mIsArchived = isArchived;
 
@@ -1713,8 +1712,7 @@ class TabImpl implements Tab {
      * @return iff the AutofillProvider should provide a ViewStructure when prompted.
      */
     boolean providesAutofillStructure() {
-
-        if (mProfile == null || !mProfile.isNativeInitialized()) {
+        if (!mProfile.isNativeInitialized()) {
             return false;
         }
         @Nullable PrefService prefs = UserPrefs.get(mProfile);

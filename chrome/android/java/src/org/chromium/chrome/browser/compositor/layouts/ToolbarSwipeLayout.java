@@ -20,6 +20,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -130,7 +131,7 @@ public class ToolbarSwipeLayout extends Layout {
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager,
             TopUiThemeColorProvider topUiColorProvider,
-            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier,
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier,
             ViewGroup contentContainer) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);

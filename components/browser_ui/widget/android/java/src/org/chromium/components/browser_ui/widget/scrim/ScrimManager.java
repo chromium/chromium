@@ -26,6 +26,7 @@ import androidx.core.util.Function;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -138,7 +139,7 @@ public class ScrimManager {
     }
 
     /** Returns observable visibility information about all scrims. */
-    public MonotonicObservableSupplier<Boolean> getScrimVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getScrimVisibilitySupplier() {
         return mScrimVisibilitySupplier;
     }
 

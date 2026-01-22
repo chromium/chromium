@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -97,7 +98,7 @@ public class NewTabAnimationLayout extends Layout {
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
-    private final MonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final CustomTabCount mCustomTabCount;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
@@ -146,7 +147,7 @@ public class NewTabAnimationLayout extends Layout {
             ViewGroup animationHostView,
             ToolbarManager toolbarManager,
             BrowserControlsManager browserControlsManager,
-            MonotonicObservableSupplier<Boolean> scrimVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> scrimVisibilitySupplier,
             MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
@@ -332,7 +333,7 @@ public class NewTabAnimationLayout extends Layout {
                 }
             }
 
-            MonotonicObservableSupplier<Boolean> visibilitySupplier =
+            NonNullObservableSupplier<Boolean> visibilitySupplier =
                     data != null && !isRegularNtp
                             ? data.getTabContextMenuVisibilitySupplier()
                             : mScrimVisibilitySupplier;
@@ -690,7 +691,7 @@ public class NewTabAnimationLayout extends Layout {
             boolean isRegularNtp,
             @Px int x,
             @Px int y,
-            MonotonicObservableSupplier<Boolean> visibilitySupplier) {
+            NonNullObservableSupplier<Boolean> visibilitySupplier) {
         boolean isIncognito = animationTab.isIncognitoBranded();
         assert assumeNonNull(mLayoutTabs).length == 1;
         mSkipForceAnimationToFinish = true;
@@ -733,7 +734,7 @@ public class NewTabAnimationLayout extends Layout {
         Rect compositorViewRect = new Rect();
         mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
 
-        MonotonicObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
+        NonNullObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
                 mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
 
         @AnimationType

@@ -54,7 +54,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -117,20 +118,20 @@ public class FuseboxMediatorUnitTest {
     private PropertyModel mModel;
     private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
-    private ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
-            new ObservableSupplierImpl<>(FuseboxState.DISABLED);
+    private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private boolean mCompactModeEnabled;
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
-        mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
+        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         mAutocompleteRequestTypeSupplier =
-                new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+                ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         ConstraintLayout viewGroup = new ConstraintLayout(activity);
@@ -514,8 +515,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void setToolbarVisible_noBridge_doesNothing() {
-        ObservableSupplierImpl<Integer> requestTypeSupplier = new ObservableSupplierImpl<>();
-        requestTypeSupplier.set(AutocompleteRequestType.SEARCH);
+        var requestTypeSupplier = ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
 
         // Create a mediator, but don't initialize the bridge.
         FuseboxMediator mediator =

@@ -36,7 +36,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorProcessor;
@@ -79,7 +79,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 new DropdownItemViewInfoListBuilder(
                         () -> null,
                         (url) -> false,
-                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setGroupSeparatorProcessorForTest(mGroupSeparatorProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);

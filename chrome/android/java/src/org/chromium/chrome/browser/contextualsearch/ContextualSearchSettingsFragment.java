@@ -10,7 +10,8 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,7 +37,8 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
     static final String PREF_CONTEXTUAL_SEARCH_DESCRIPTION = "contextual_search_description";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {

@@ -56,6 +56,7 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -270,7 +271,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
         mCompositorViewHolder.onFinishNativeInitialization(
-                mTabModelSelector, null, new ObservableSupplierImpl<>(0));
+                mTabModelSelector, null, ObservableSuppliers.alwaysZero());
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());

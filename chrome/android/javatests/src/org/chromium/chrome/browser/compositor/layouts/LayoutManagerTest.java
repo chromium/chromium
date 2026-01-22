@@ -42,9 +42,9 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -225,8 +225,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         FrameLayout container = new FrameLayout(context);
         parentContainer.addView(container);
 
-        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
+                ObservableSuppliers.createMonotonic();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl();
         mManagerPhone =
@@ -253,7 +253,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 null,
                 null,
                 mTopUiThemeColorProvider,
-                new ObservableSupplierImpl<>(0));
+                ObservableSuppliers.alwaysZero());
         initializeMotionEvent();
     }
 
@@ -296,8 +296,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         FrameLayout container = new FrameLayout(context);
         parentContainer.addView(container);
 
-        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
+                ObservableSuppliers.createMonotonic();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl();
         mManager =
@@ -319,7 +319,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 null,
                 null,
                 mTopUiThemeColorProvider,
-                new ObservableSupplierImpl<>(0));
+                ObservableSuppliers.alwaysZero());
         initializeMotionEvent();
     }
 

@@ -33,12 +33,14 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
@@ -462,7 +464,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @NonNull MonotonicObservableSupplier<Integer> overviewColorSupplier,
+            @NonNull NonNullObservableSupplier<Integer> overviewColorSupplier,
             @NonNull
                     MonotonicObservableSupplier<ManualFillingComponent>
                             manualFillingComponentSupplier,
@@ -1530,8 +1532,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     hubManager.setStatusIndicatorHeight(mStatusIndicatorHeight);
                 });
 
-        ObservableSupplierImpl<Boolean> isUrlBarFocusedSupplier = new ObservableSupplierImpl<>();
-        isUrlBarFocusedSupplier.set(mToolbarManager.isUrlBarFocused());
+        SettableNonNullObservableSupplier<Boolean> isUrlBarFocusedSupplier =
+                ObservableSuppliers.createNonNull(mToolbarManager.isUrlBarFocused());
         mUrlFocusChangeListener =
                 new UrlFocusChangeListener() {
                     @Override

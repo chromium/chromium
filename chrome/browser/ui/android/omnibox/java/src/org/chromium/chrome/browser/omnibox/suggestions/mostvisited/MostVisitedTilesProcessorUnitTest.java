@@ -38,7 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -131,7 +131,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -217,7 +217,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
         mProcessor = new MostVisitedTilesProcessor(uiContext);
         List<ListItem> tileList =
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));

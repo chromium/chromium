@@ -18,10 +18,13 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -101,7 +104,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
     private final ToolbarLayout mToolbarLayout;
     private final View mLocationBarView;
-    private final ObservableSupplierImpl<Tracker> mTrackerSupplier;
+    private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier;
 
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
@@ -126,7 +129,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private final TabObscuringHandler mTabObscuringHandler;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
-    private final ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mNtpLoadingSupplier;
     private final BrowserControlsStateProvider mBrowserControls;
     private final TopControlsStacker mTopControlsStacker;
 
@@ -193,13 +196,13 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             MonotonicObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             @Nullable ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             MonotonicObservableSupplier<Integer> tabCountSupplier,
-            MonotonicObservableSupplier<Boolean> homepageEnabledSupplier,
-            MonotonicObservableSupplier<Boolean> homepageNonNtpSupplier,
+            NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
+            NonNullObservableSupplier<Boolean> homepageNonNtpSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             HistoryDelegate historyDelegate,
             boolean initializeWithIncognitoColors,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
-            MonotonicObservableSupplier<Boolean> compositorInMotionSupplier,
+            NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
@@ -210,7 +213,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             @Nullable OnLongClickListener onLongClickListener,
             ToolbarProgressBar progressBar,
             NullableObservableSupplier<Tab> tabSupplier,
-            MonotonicObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
+            NonNullObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
             @Nullable HomeButtonDisplay homeButtonDisplay,
@@ -233,8 +236,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
         mTabObscuringHandler = tabObscuringHandler;
         mDesktopWindowStateManager = desktopWindowStateManager;
-        mTrackerSupplier = new ObservableSupplierImpl<>();
-        mNtpLoadingSupplier = new ObservableSupplierImpl<>();
+        mTrackerSupplier = ObservableSuppliers.createMonotonic();
+        mNtpLoadingSupplier = ObservableSuppliers.createNonNull(false);
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
         mLocationBarView = mToolbarLayout.findViewById(R.id.location_bar);
@@ -295,9 +298,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 incognitoWindowCountSupplier);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
-        homepageEnabledSupplier.addObserver(
+        homepageEnabledSupplier.addSyncObserverAndCallIfNonNull(
                 (show) -> mToolbarLayout.onHomeButtonIsEnabledUpdate(show));
-        homepageNonNtpSupplier.addObserver(
+        homepageNonNtpSupplier.addSyncObserverAndCallIfNonNull(
                 (isNonNtp) -> mToolbarLayout.onHomepageIsNonNtpUpdate(isNonNtp));
 
         // When we can force height adjustment on start up, we need to create tab strip transition
@@ -361,8 +364,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            MonotonicObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            MonotonicObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             Callback<DrawingInfo> progressInfoCallback,
             MonotonicObservableSupplier<Long> captureResourceIdSupplier,
             TabStripTransitionHandler tabStripTransitionHandler) {

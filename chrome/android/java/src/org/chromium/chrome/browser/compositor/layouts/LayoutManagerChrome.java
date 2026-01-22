@@ -17,6 +17,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -172,7 +173,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            MonotonicObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =

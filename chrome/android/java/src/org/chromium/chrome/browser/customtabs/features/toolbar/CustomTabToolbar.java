@@ -71,9 +71,10 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -1687,8 +1688,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private @Nullable ToolbarBrandingOverlayCoordinator mBrandingOverlayCoordinator;
 
         private @Nullable OptionalButtonCoordinator mOptionalButtonCoordinator;
-        private final ObservableSupplierImpl<Tracker> mTrackerSupplier =
-                new ObservableSupplierImpl<>();
+        private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
+                ObservableSuppliers.createMonotonic();
 
         /** Returns {@code true} if optional button MVC was initialized successfully. */
         private boolean initializeOptionalButton() {

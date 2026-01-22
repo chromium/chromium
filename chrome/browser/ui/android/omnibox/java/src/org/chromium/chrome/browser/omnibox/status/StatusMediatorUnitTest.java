@@ -37,7 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -52,8 +52,8 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
@@ -157,8 +157,6 @@ public final class StatusMediatorUnitTest {
 
     private void setupStatusMediator(boolean isTablet) {
         mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
-        ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
-                merchantTrustSignalsCoordinatorObservableSupplier = new ObservableSupplierImpl<>();
         mMediator =
                 new StatusMediator(
                         mModel,
@@ -168,12 +166,11 @@ public final class StatusMediatorUnitTest {
                         mLocationBarDataProvider,
                         mPermissionDialogController,
                         mTemplateUrlServiceSupplier,
-                        new ObservableSupplierImpl(mProfile),
+                        ObservableSuppliers.of(mProfile),
                         mPageInfoIphController,
                         mWindowAndroid,
-                        merchantTrustSignalsCoordinatorObservableSupplier);
+                        () -> mMerchantTrustSignalsCoordinator);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-        merchantTrustSignalsCoordinatorObservableSupplier.set(mMerchantTrustSignalsCoordinator);
     }
 
     @Test

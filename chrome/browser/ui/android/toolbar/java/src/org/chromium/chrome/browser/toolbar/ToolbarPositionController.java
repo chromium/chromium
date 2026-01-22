@@ -25,7 +25,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -122,12 +121,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final ControlContainer mControlContainer;
     private final ToolbarLayout mToolbarLayout;
     private final BottomControlsStacker mBottomControlsStacker;
-    private final ObservableSupplierImpl<Integer> mBrowserControlsOffsetSupplier;
+    private final SettableNonNullObservableSupplier<Integer> mBrowserControlsOffsetSupplier;
     private final View mToolbarProgressBarContainer;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final NonNullObservableSupplier<Integer> mKeyboardAccessoryHeightSupplier;
-    private final MonotonicObservableSupplier<Integer> mControlContainerTranslationSupplier;
-    private final MonotonicObservableSupplier<Integer> mControlContainerHeightSupplier;
+    private final NonNullObservableSupplier<Integer> mControlContainerTranslationSupplier;
+    private final NonNullObservableSupplier<Integer> mControlContainerHeightSupplier;
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Handler mHandler;
@@ -200,10 +199,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             ControlContainer controlContainer,
             ToolbarLayout toolbarLayout,
             BottomControlsStacker bottomControlsStacker,
-            ObservableSupplierImpl<Integer> browserControlsOffsetSupplier,
+            SettableNonNullObservableSupplier<Integer> browserControlsOffsetSupplier,
             View toolbarProgressBarContainer,
-            MonotonicObservableSupplier<Integer> controlContainerTranslationSupplier,
-            MonotonicObservableSupplier<Integer> controlContainerHeightSupplier,
+            NonNullObservableSupplier<Integer> controlContainerTranslationSupplier,
+            NonNullObservableSupplier<Integer> controlContainerHeightSupplier,
             MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             Handler handler,
             Context context,

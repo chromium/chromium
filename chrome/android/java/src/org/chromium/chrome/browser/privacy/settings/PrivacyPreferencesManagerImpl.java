@@ -16,8 +16,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -42,7 +43,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     private PolicyService.@Nullable Observer mPolicyServiceObserver;
 
     // Supplier for other class to observe. Null until the supplier is requested.
-    private @Nullable ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier;
+    private @Nullable SettableNonNullObservableSupplier<Boolean> mCrashUploadPermittedSupplier;
 
     private boolean mNativeInitialized;
 
@@ -134,11 +135,11 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
      * Get the supplier for isUsageAndCrashReportingPermitted. If the supplier is null, initialize a
      * new one. Ui Thread only.
      */
-    protected ObservableSupplierImpl<Boolean> getCrashUploadPermittedSupplier() {
+    protected SettableNonNullObservableSupplier<Boolean> getCrashUploadPermittedSupplier() {
         ThreadUtils.assertOnUiThread();
         if (mCrashUploadPermittedSupplier == null) {
             mCrashUploadPermittedSupplier =
-                    new ObservableSupplierImpl<>(isUsageAndCrashReportingPermitted());
+                    ObservableSuppliers.createNonNull(isUsageAndCrashReportingPermitted());
         }
         return mCrashUploadPermittedSupplier;
     }
@@ -235,7 +236,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
-    public MonotonicObservableSupplier<Boolean>
+    public NonNullObservableSupplier<Boolean>
             getUsageAndCrashReportingPermittedObservableSupplier() {
         return getCrashUploadPermittedSupplier();
     }

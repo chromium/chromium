@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
@@ -112,7 +113,7 @@ class BottomControlsMediator
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
             int bottomControlsShadowHeight,
-            MonotonicObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            NonNullObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
         mModel = model;
@@ -127,12 +128,6 @@ class BottomControlsMediator
         mBottomControlsHeight = bottomControlsHeight;
         mBottomControlsShadowHeight = bottomControlsShadowHeight;
         mCallbackController = new CallbackController();
-        overlayPanelVisibilitySupplier.addObserver(
-                mCallbackController.makeCancelable(
-                        (showing) -> {
-                            mIsOverlayPanelShowing = showing;
-                            updateAndroidViewVisibility();
-                        }));
 
         // Watch for keyboard events so we can hide the bottom toolbar when the keyboard is showing.
         mWindowAndroid = windowAndroid;
@@ -145,6 +140,13 @@ class BottomControlsMediator
         }
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
         mBottomControlsStacker.addLayer(this);
+
+        overlayPanelVisibilitySupplier.addSyncObserverAndCallIfNonNull(
+                mCallbackController.makeCancelable(
+                        (showing) -> {
+                            mIsOverlayPanelShowing = showing;
+                            updateAndroidViewVisibility();
+                        }));
     }
 
     void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

@@ -40,7 +40,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -1497,7 +1496,7 @@ public class NewTabPage
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
         MonotonicObservableSupplier<Profile> profileSupplier =
-                new ObservableSupplierImpl<>(mTab.getProfile());
+                ObservableSuppliers.createMonotonic(mTab.getProfile());
         mHomeModulesCoordinator =
                 new HomeModulesCoordinator(
                         mActivity,

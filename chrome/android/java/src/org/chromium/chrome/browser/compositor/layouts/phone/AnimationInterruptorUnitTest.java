@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -56,8 +57,8 @@ public class AnimationInterruptorUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableMonotonicObservableSupplier<Float>
-            mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Float>
+            mNtpSearchBoxTransitionPercentageSupplier = ObservableSuppliers.createNonNull(0f);
     private Runnable mInterruptRunnable;
     private AnimationInterruptor mAnimationInterruptor;
     private int mInterruptCount;

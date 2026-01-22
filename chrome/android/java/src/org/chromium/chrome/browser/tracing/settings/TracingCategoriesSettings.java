@@ -13,7 +13,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -39,8 +40,8 @@ public class TracingCategoriesSettings extends ChromeBaseSettingsFragment
 
     // Non-translated strings:
     private static final String MSG_CATEGORY_SELECTION_TITLE = "Select categories";
-    private final MonotonicObservableSupplier<String> mPageTitle =
-            new ObservableSupplierImpl<>(MSG_CATEGORY_SELECTION_TITLE);
+    private final NonNullObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.of(MSG_CATEGORY_SELECTION_TITLE);
 
     private static final String SELECT_ALL_KEY = "select-all";
     private static final String SELECT_ALL_TITLE = "Select all";

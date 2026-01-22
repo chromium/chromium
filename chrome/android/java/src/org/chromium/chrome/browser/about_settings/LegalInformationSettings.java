@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.about_settings;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -21,7 +22,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 @NullMarked
 public class LegalInformationSettings extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage {
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String s) {
