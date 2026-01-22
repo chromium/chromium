@@ -89,7 +89,8 @@ raw_ptr<BrowserWindowInterface> LocateWindowWithSameUrl(
     // Activate window and tab we are switching to.
     bwi->GetWindow()->Activate();
     TabListInterface* tab_list = TabListInterface::From(bwi);
-    tab_list->ActivateTab(tab->GetHandle());
+    tabs::TabHandle tab_handle = tab->GetHandle();
+    tab_list->HighlightTabs(tab_handle, {tab_handle});
 
     // Close the current tab if NTP.
     // TODO (crbug.com/441594986) This should only close an NTP tab if there
