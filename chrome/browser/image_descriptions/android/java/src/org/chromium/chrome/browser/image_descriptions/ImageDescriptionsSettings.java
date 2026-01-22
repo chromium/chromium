@@ -126,7 +126,7 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    // The index logic is left empty as there is no dynamic logic to be handled.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     ImageDescriptionsSettings.class.getName(), R.xml.image_descriptions_preference);
