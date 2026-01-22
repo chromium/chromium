@@ -1403,7 +1403,7 @@ policies:
   1402: GeminiActOnWebSettings
   1403: LocalAuthFactorsComplexity
   1404: ProxyOverrideRules
-  1405: LocalAuthFactors
+  1405: AllowedLocalAuthFactors
   1406: EnableProxyOverrideRulesForAllUsers
   1407: DefaultIdleDetectionSetting
   1408: IdleDetectionAllowedForUrls

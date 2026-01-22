@@ -66,12 +66,12 @@ EarlyLoginAuthPolicyConnector::GetLocalAuthFactorsComplexity(
 std::optional<AuthFactorsSet>
 EarlyLoginAuthPolicyConnector::AllowedLocalAuthFactors(
     const AccountId& account) {
-  if (!early_prefs_->HasPref(prefs::kLocalAuthFactors)) {
+  if (!early_prefs_->HasPref(prefs::kAllowedLocalAuthFactors)) {
     return std::nullopt;
   }
 
   const base::Value::List* allowed_auth_factors =
-      &early_prefs_->GetValue(prefs::kLocalAuthFactors)->GetList();
+      &early_prefs_->GetValue(prefs::kAllowedLocalAuthFactors)->GetList();
   return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
 }
 

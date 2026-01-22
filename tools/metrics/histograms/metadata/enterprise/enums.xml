@@ -2327,7 +2327,7 @@ chromium-metrics-reviews@google.com.
   <int value="1402" label="GeminiActOnWebSettings"/>
   <int value="1403" label="LocalAuthFactorsComplexity"/>
   <int value="1404" label="ProxyOverrideRules"/>
-  <int value="1405" label="LocalAuthFactors"/>
+  <int value="1405" label="AllowedLocalAuthFactors"/>
   <int value="1406" label="EnableProxyOverrideRulesForAllUsers"/>
   <int value="1407" label="DefaultIdleDetectionSetting"/>
   <int value="1408" label="IdleDetectionAllowedForUrls"/>

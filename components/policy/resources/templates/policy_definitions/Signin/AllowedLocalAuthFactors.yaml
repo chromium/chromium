@@ -1,4 +1,4 @@
-caption: Configure allowed local auth factors
+caption: Configure allowed local authentication factors
 desc: |-
   Setting the policy controls which local authentication factors can be used for both login and reauthentication on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
 

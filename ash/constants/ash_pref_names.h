@@ -1740,7 +1740,7 @@ inline constexpr char kLocalAuthFactorsComplexity[] =
     "ash.local_auth_factors.complexity";
 
 // A list of allowed local auth factors.
-inline constexpr char kLocalAuthFactors[] =
+inline constexpr char kAllowedLocalAuthFactors[] =
     "ash.local_auth_factors.enabled_factors";
 
 // Dictionary prefs in local state that keeps information about detachable

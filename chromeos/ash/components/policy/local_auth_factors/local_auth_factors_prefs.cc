@@ -20,7 +20,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ash::prefs::kLocalAuthFactorsComplexity,
       static_cast<int>(ash::LocalAuthFactorsComplexity::kNone));
-  registry->RegisterListPref(ash::prefs::kLocalAuthFactors,
+  registry->RegisterListPref(ash::prefs::kAllowedLocalAuthFactors,
                              std::move(local_auth_factors_default));
 }
 

@@ -115,7 +115,7 @@ class PasswordSelectionScreenTest : public OobeBaseTest,
     enterprise_management::CloudPolicySettings* policy =
         user_policy_mixin_.RequestPolicyUpdate()->policy_payload();
     policy->mutable_subproto1()
-        ->mutable_localauthfactors()
+        ->mutable_allowedlocalauthfactors()
         ->mutable_value()
         ->add_entries("LOCAL_PASSWORD");
     policy_server_.UpdateUserPolicy(*policy, FakeGaiaMixin::kEnterpriseUser1);

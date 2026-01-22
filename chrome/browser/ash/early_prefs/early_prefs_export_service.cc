@@ -46,7 +46,7 @@ EarlyPrefsExportService::EarlyPrefsExportService(const base::FilePath& root_dir,
   StoreAndTrackPref(ash::prefs::kLocalAuthFactorsComplexity);
 
   // Used for determining which local auth factors have been enabled.
-  StoreAndTrackPref(prefs::kLocalAuthFactors);
+  StoreAndTrackPref(prefs::kAllowedLocalAuthFactors);
 }
 
 EarlyPrefsExportService::~EarlyPrefsExportService() = default;
