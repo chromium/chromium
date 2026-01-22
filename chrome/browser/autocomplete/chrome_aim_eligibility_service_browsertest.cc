@@ -635,13 +635,13 @@ class ChromeAimEligibilityServiceStartupRequestBrowserTest
   }
 
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
     SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
 
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
-
-    InProcessBrowserTest::SetUpOnMainThread();
   }
 
  private:

@@ -218,6 +218,7 @@ class AimEligibilityService
   void UpdateMostRecentResponse(
       const omnibox::AimEligibilityResponse& response_proto,
       EligibilityResponseSource response_source);
+
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 

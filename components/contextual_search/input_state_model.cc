@@ -21,12 +21,80 @@ using omnibox::SearchboxConfig;
 InputState::InputState() = default;
 InputState::~InputState() = default;
 
+namespace {
+
+// Populates `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB` if it does
+// not exist.
+void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
+  if (!config) {
+    return;
+  }
+  omnibox::RuleSet* rule_set = config->mutable_rule_set();
+
+  bool browser_tab_rule_exists = false;
+  for (const auto& rule : rule_set->input_type_rules()) {
+    if (rule.input_type() == omnibox::INPUT_TYPE_BROWSER_TAB) {
+      browser_tab_rule_exists = true;
+      break;
+    }
+  }
+
+  // Populate `InputTypeRule` for `omnibox::INPUT_TYPE_BROWSER_TAB`.
+  if (!browser_tab_rule_exists) {
+    omnibox::InputTypeRule* new_rule = rule_set->add_input_type_rules();
+    new_rule->set_input_type(omnibox::INPUT_TYPE_BROWSER_TAB);
+    new_rule->set_max_instance(5);
+    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_FILE);
+    new_rule->add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+  }
+
+  // Add `omnibox::INPUT_TYPE_BROWSER_TAB` to the `allowed_input_types` in
+  // `ToolRule` for all tools if the tool allows both images and files.
+  for (auto& tool_rule : *rule_set->mutable_tool_rules()) {
+    bool has_image = false;
+    bool has_file = false;
+    for (const auto& input_type : tool_rule.allowed_input_types()) {
+      if (input_type == omnibox::INPUT_TYPE_LENS_IMAGE) {
+        has_image = true;
+      } else if (input_type == omnibox::INPUT_TYPE_LENS_FILE) {
+        has_file = true;
+      }
+    }
+    if (has_image && has_file) {
+      tool_rule.add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+    }
+  }
+
+  // Add `omnibox::INPUT_TYPE_BROWSER_TAB` to the `allowed_input_types` in
+  // `ModelRule` for all models if the model allows both images and files.
+  for (auto& model_rule : *rule_set->mutable_model_rules()) {
+    bool has_image = false;
+    bool has_file = false;
+    for (const auto& input_type : model_rule.allowed_input_types()) {
+      if (input_type == omnibox::INPUT_TYPE_LENS_IMAGE) {
+        has_image = true;
+      } else if (input_type == omnibox::INPUT_TYPE_LENS_FILE) {
+        has_file = true;
+      }
+    }
+    if (has_image && has_file) {
+      model_rule.add_allowed_input_types(omnibox::INPUT_TYPE_BROWSER_TAB);
+    }
+  }
+}
+
+}  // namespace
+
 InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle,
     const SearchboxConfig& config)
     : session_handle_(session_handle) {
-  if (config.has_rule_set()) {
-    rule_set_ = config.rule_set();
+  SearchboxConfig mutable_config = config;
+  MaybePopulateBrowserTabInputTypeRule(&mutable_config);
+
+  if (mutable_config.has_rule_set()) {
+    rule_set_ = mutable_config.rule_set();
 
     // Initialize allowed tools, models, inputs in `state_`.
     for (const auto& tool : rule_set_.allowed_tools()) {
@@ -41,11 +109,11 @@ InputStateModel::InputStateModel(
     }
   }
 
-  state_.active_tool = config.has_initial_tool_mode()
-                           ? config.initial_tool_mode()
+  state_.active_tool = mutable_config.has_initial_tool_mode()
+                           ? mutable_config.initial_tool_mode()
                            : omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
-  state_.active_model = config.has_initial_model_mode()
-                            ? config.initial_model_mode()
+  state_.active_model = mutable_config.has_initial_model_mode()
+                            ? mutable_config.initial_model_mode()
                             : omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
 
   updateDisabledState();
@@ -106,6 +174,10 @@ std::vector<omnibox::InputType> GetCurrentInputTypes(
     const contextual_search::ContextualSearchSessionHandle& session_handle) {
   std::vector<omnibox::InputType> input_types;
   for (const auto& file_info : session_handle.GetUploadedContextFileInfos()) {
+    if (file_info.tab_url) {
+      input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+      continue;
+    }
     switch (file_info.mime_type) {
       case lens::MimeType::kImage:
         input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
