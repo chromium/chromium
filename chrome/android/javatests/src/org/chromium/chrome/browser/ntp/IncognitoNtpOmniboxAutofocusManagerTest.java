@@ -195,8 +195,9 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     public void whenLaunchFromTabSwitcher_autofocusSucceeds_phone() {
         // Open an incognito tab to select incognito tab model.
         mActivityTestRule.loadUrlInNewTab("about:blank", true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(false, null);
 
-        // Open the tab switcher.
+        // Open the Tab Switcher.
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
 
@@ -206,6 +207,34 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                         getOriginalNativeNtpUrl(), true, TabLaunchType.FROM_TAB_SWITCHER_UI);
 
         verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
+    @Restriction(DeviceFormFactor.PHONE)
+    public void whenLaunchFromTabSwitcher_andNotFirstTabEnabled_autofocusFails_phone() {
+        // Delay in waiting for Layout causes second time trying to autofocus, so this test checks
+        // whether logic of counting and checking "not_first_tab" condition was not corrupted.
+
+        // Open an incognito tab to select incognito tab model.
+        mActivityTestRule.loadUrlInNewTab("about:blank", true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(false, null);
+
+        // Open the Tab Switcher.
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
+
+        // Open first incognito NTP from Tab Switcher.
+        final Tab incognitoNtpTab =
+                mActivityTestRule.loadUrlInNewTab(
+                        getOriginalNativeNtpUrl(), true, TabLaunchType.FROM_TAB_SWITCHER_UI);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(false, incognitoNtpTab);
+
+        // Open second incognito NTP.
+        final Tab incognitoNtpTab2 =
+                mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab2);
     }
 
     @Test
@@ -237,14 +266,18 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
     @Restriction(DeviceFormFactor.PHONE)
     public void whenVeryFirstTabOpened_andNotFirstTabEnabled_autofocusFails_phone() {
+        // With the "not_first_tab" feature, the first incognito NTP skips autofocus while
+        // subsequent ones do not. Open a non-NTP incognito tab first to ensure it is not
+        // counted, so that the first actual NTP correctly skips autofocus.
+        mActivityTestRule.loadUrlInNewTab("about:blank", true);
+        verifyPhoneOmniboxFocusAndKeyboardVisibility(false, null);
+
         for (int i = 0; i < 4; i++) {
-            // With the not_first_tab feature enabled, autofocus should be skipped on the first
-            // incognito tab, but triggered on any subsequent ones.
-            final boolean isFirstTab = i == 0;
+            final boolean isFirstNtpTab = i == 0;
 
             final Tab incognitoNtpTab =
                     mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
-            verifyPhoneOmniboxFocusAndKeyboardVisibility(!isFirstTab, incognitoNtpTab);
+            verifyPhoneOmniboxFocusAndKeyboardVisibility(!isFirstNtpTab, incognitoNtpTab);
 
             clearOmniboxFocusOnIncognitoNtp();
             verifyPhoneOmniboxFocusAndKeyboardVisibility(false, incognitoNtpTab);

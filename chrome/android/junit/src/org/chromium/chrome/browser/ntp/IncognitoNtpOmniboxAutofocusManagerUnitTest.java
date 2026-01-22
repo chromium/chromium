@@ -143,6 +143,35 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         mTabObserver.onPageLoadFinished(mTab, mNtpGurl);
     }
 
+
+    /**
+     * Simulates opening a new incognito tab and finishing a page load with the given URL.
+     * This helper method is used to test scenarios with multiple tabs.
+     *
+     * @param url The URL to load in the new tab.
+     */
+    private void openNewTabAndLoadUrl(GURL url) {
+        Tab tab = Mockito.mock(Tab.class);
+        View tabView = Mockito.mock(View.class);
+        when(tab.isIncognitoBranded()).thenReturn(true);
+        when(tab.getView()).thenReturn(tabView);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(tab.getUrl()).thenReturn(url);
+
+        mTabModelObserver.didAddTab(tab, 0, 0, false);
+        ArgumentCaptor<TabObserver> tabObserverCaptor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(tab).addObserver(tabObserverCaptor.capture());
+
+        tabObserverCaptor.getValue().onPageLoadFinished(tab, url);
+
+        if (url.equals(mNtpGurl)) {
+            ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+            verify(tabView).post(runnableCaptor.capture());
+            runnableCaptor.getValue().run();
+        }
+    }
+
     @Test
     @DisableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     public void testMaybeCreate_featureDisabled() {
@@ -337,31 +366,19 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
-    public void testAutofocusCondition_notFirstTab_andFirstTabOpened_autofocusFails() {
-        // Open first tab.
+    public void testAutofocusCondition_notFirstTab_autofocusSucceedsOnSecondNtp() {
         setUpManagerAndAddNewTab();
-        finishLoadingNtp();
 
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mTabView).post(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
-
+        // Open first tab with a non-NTP URL. This should not be counted.
+        openNewTabAndLoadUrl(mOtherGurl);
         verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
-    }
 
-    @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
-    public void testAutofocusCondition_notFirstTab_andSecondTabOpened_autofocusSucceeds() {
-        // Open first tab.
-        setUpManagerAndAddNewTab();
-        // Open second tab.
-        mTabModelObserver.didAddTab(mTab, 0, 0, false);
-        finishLoadingNtp();
+        // Open second tab and load NTP. This is the first NTP, so no autofocus.
+        openNewTabAndLoadUrl(mNtpGurl);
+        verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
 
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mTabView).post(runnableCaptor.capture());
-        runnableCaptor.getValue().run();
-
+        // Open a third tab and load NTP. This is the second NTP, so autofocus should be triggered.
+        openNewTabAndLoadUrl(mNtpGurl);
         verify(mOmniboxStub)
                 .setUrlBarFocus(
                         true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
