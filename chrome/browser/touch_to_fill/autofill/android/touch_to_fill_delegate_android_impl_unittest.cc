@@ -407,7 +407,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
       FillOrPreviewForm(
           mojom::ActionPersistence::kFill, form_, form_.fields()[0].global_id(),
           ::testing::VariantWith<const CreditCard*>(Pointee(test_card)),
-          AutofillTriggerSource::kTouchToFillCreditCard));
+          AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet));
 
   // Run the captured callback, simulating a successful VCN fetch.
   std::move(captured_callback).Run(test_card);

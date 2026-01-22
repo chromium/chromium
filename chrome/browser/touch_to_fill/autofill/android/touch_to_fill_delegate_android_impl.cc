@@ -403,9 +403,9 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
   }
   const CreditCard& card_to_fill =
       is_virtual ? CreditCard::CreateVirtualCard(*card) : *card;
-  manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
-                              query_field_.global_id(), &card_to_fill,
-                              AutofillTriggerSource::kTouchToFillCreditCard);
+  manager_->FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
+      &card_to_fill, AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet);
 }
 
 void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
@@ -421,7 +421,7 @@ void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
               delegate->manager_->FillOrPreviewForm(
                   mojom::ActionPersistence::kFill, delegate->query_form_,
                   delegate->query_field_.global_id(), &card,
-                  AutofillTriggerSource::kTouchToFillCreditCard);
+                  AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet);
             }
           },
           GetWeakPtr()));

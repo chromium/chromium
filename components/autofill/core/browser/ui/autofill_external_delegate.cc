@@ -128,7 +128,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
-      return AutofillTriggerSource::kKeyboardAccessory;
+      return AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;
 #else
       return AutofillTriggerSource::kPopup;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -622,7 +622,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
                                       query_form_, query_field_.global_id(),
                                       entity.as_ptr(),
-                                      AutofillTriggerSource::kAutofillAi);
+                                      AutofillTriggerSource::kPopup);
         }
       }
       break;
@@ -855,12 +855,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                     manager_->GetBrowserAutofillManagerWeakPtr(),
                     mojom::ActionPersistence::kFill, query_form_,
                     query_field_.global_id(), payload.guid,
-                    AutofillTriggerSource::kAutofillAi));
+                    AutofillTriggerSource::kPopup));
           } else {
             manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                         query_form_, query_field_.global_id(),
                                         entity.as_ptr(),
-                                        AutofillTriggerSource::kAutofillAi);
+                                        AutofillTriggerSource::kPopup);
           }
         }
       }

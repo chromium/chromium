@@ -16,18 +16,18 @@ namespace autofill {
 // internal surface that provided the autofill experience (like `kPopup`) or
 // internal mechanisms/business logic (like kSelectOptionsChanged). For example
 // AutofillSuggestionTriggerSource::kFormControlElementClicked "action" can lead
-// autofill to be "surfaced" from `kKeyboardAccessory` or
-// `kTouchToFillCreditCard`.
+// autofill to be "surfaced" from `kKeyboardAccessoryOrBottomSheet` or
+// `kPopup`.
 enum class AutofillTriggerSource {
   kNone = 0,
   // Autofill was triggered from accepting a suggestion in the Autofill popup.
   kPopup = 1,
   // Autofill was triggered from accepting a suggestion in the keyboard
-  // accessory.
-  kKeyboardAccessory = 2,
+  // accessory or from the bottom sheet.
+  kKeyboardAccessoryOrBottomSheet = 2,
   // Autofill was triggered from accepting a suggestion in the touch to fill for
   // credit cards bottom sheet.
-  kTouchToFillCreditCard = 3,
+  // kTouchToFillCreditCard = 3, // DEPRECATED
   // Refill was triggered from the forms seen event. This includes cases where a
   // refill was triggered right after a non-refill Autofill invocation - in this
   // case the original trigger source got lost.
@@ -47,7 +47,7 @@ enum class AutofillTriggerSource {
   // unclassified form fields.
   kManualFallback = 9,
   // Autofill AI was triggered.
-  kAutofillAi = 10,
+  // kAutofillAi = 10, // DEPRECATED.
   // Autofill was triggered with devtools trigger command.
   kDevtools = 11,
   // Autofill was triggered by successfully scanning a credit card.
