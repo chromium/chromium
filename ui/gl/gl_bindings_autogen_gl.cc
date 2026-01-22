@@ -16,6 +16,8 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -14519,8 +14521,10 @@ void LogGLApi::glWindowRectanglesEXTFn(GLenum mode,
 
 namespace {
 void NoContextHelper(const char* method_name) {
-  NOTREACHED() << "Trying to call " << method_name
-               << " without current GL context";
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "gl_method_no_context_key", base::debug::CrashKeySize::Size32);
+  base::debug::ScopedCrashKeyString scoped_message_key(crash_key, method_name);
+  base::debug::DumpWithoutCrashing();
 }
 }  // namespace
 

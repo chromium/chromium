@@ -2982,6 +2982,8 @@ def GenerateSource(file, functions, set_name, used_extensions,
 
   set_header_name = "ui/gl/gl_" + set_name.lower() + "_api_implementation.h"
   include_list = [ 'base/containers/span.h',
+                   'base/debug/crash_logging.h',
+                   'base/debug/dump_without_crashing.h',
                    'base/trace_event/trace_event.h',
                    'ui/gl/gl_enums.h',
                    'ui/gl/gl_bindings.h',
@@ -3352,9 +3354,13 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     file.write('\n')
     file.write('namespace {\n')
     file.write('void NoContextHelper(const char* method_name) {\n')
-    no_context_error = ('<< "Trying to call " << method_name << " without '
-                        'current GL context"')
-    file.write('  NOTREACHED() %s;\n' % no_context_error)
+    file.write('  static auto* const crash_key = '
+               'base::debug::AllocateCrashKeyString(\n')
+    file.write('      "gl_method_no_context_key", '
+               'base::debug::CrashKeySize::Size32);\n')
+    file.write('  base::debug::ScopedCrashKeyString '
+               'scoped_message_key(crash_key, method_name);\n')
+    file.write('  base::debug::DumpWithoutCrashing();\n')
     file.write('}\n')
     file.write('}  // namespace\n')
     for func in functions:
