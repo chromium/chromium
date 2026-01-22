@@ -120,6 +120,7 @@ source_set("coordinator") {
     "//ios/chrome/common",
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",

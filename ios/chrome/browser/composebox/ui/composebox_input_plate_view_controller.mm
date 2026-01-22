@@ -320,6 +320,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
         _inputPlateContainerView.layer.cornerRadius;
   }
   [self updateCarouselFade];
+  [self updatePreferredContentSize];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -1581,6 +1582,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)updateInputPlateStackViewAnimated:(BOOL)animated {
   if (!animated) {
     [self updateInputPlateStackViewContent];
+    [self updatePreferredContentSize];
     return;
   }
 

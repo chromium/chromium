@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/web_state.h"
 
 @interface ComposeboxCoordinator () <ComposeboxViewControllerDelegate,
@@ -317,7 +318,8 @@
 - (BOOL)shouldUseIpadPresentationController {
   return IsComposeboxIpadEnabled() &&
          UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
-         base::ios::IsRunningOnIOS26OrLater();
+         (base::ios::IsRunningOnIOS26OrLater() ||
+          IsRegularXRegularSizeClass(self.baseViewController.traitCollection));
 }
 
 #pragma mark - Clipboard checks
