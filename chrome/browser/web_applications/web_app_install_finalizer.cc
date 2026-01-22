@@ -125,6 +125,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::PRELOADED_OEM:
     case InstallSource::PRELOADED_DEFAULT:
     case InstallSource::MICROSOFT_365_SETUP:
+    case InstallSource::MIGRATION:
       return false;
   }
 }

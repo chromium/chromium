@@ -221,7 +221,9 @@ void ManifestUpdateJob::Start() {
   }
 
   if (!lock_->registrar().AppMatches(app_id_,
-                                     WebAppFilter::InstalledInChrome())) {
+                                     WebAppFilter::InstalledInChrome()) &&
+      !lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSuggestedForMigration())) {
     Complete(Result::kAppNotAllowedToUpdate);
     return;
   }

@@ -158,7 +158,10 @@ enum class WebappInstallSource {
   // displaying the install dialog for that page.
   CHROMEOS_HELP_APP = 37,
 
-  kMaxValue = CHROMEOS_HELP_APP,
+  // Installed via a migration source app.
+  MIGRATION = 38,
+
+  kMaxValue = MIGRATION,
 };
 
 std::ostream& operator<<(std::ostream& os, WebappInstallSource source);

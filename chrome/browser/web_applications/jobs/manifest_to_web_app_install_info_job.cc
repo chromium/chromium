@@ -399,6 +399,26 @@ ScopeExtensions ToWebAppScopeExtensions(
   return apps_scope_extensions;
 }
 
+proto::WebAppMigrationSource ToWebAppMigrationSource(
+    const blink::mojom::ManifestMigrateFrom& migrate_from) {
+  proto::WebAppMigrationSource result;
+  result.set_manifest_id(migrate_from.id.spec());
+  if (migrate_from.install_url && migrate_from.install_url->is_valid()) {
+    result.set_install_url(migrate_from.install_url->spec());
+  }
+  switch (migrate_from.behavior) {
+    case blink::mojom::ManifestMigrationBehavior::kSuggest:
+      result.set_behavior(
+          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+      break;
+    case blink::mojom::ManifestMigrationBehavior::kForce:
+      result.set_behavior(
+          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+      break;
+  }
+  return result;
+}
+
 base::flat_map<std::string, blink::Manifest::TranslationItem>
 ToWebAppTranslations(
     const base::flat_map<std::u16string, blink::Manifest::TranslationItem>&
@@ -780,6 +800,11 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
 
   CHECK(install_info().shortcuts_menu_item_infos.empty());
   PopulateWebAppShortcutsMenuItemInfos(manifest_->shortcuts, &install_info());
+
+  for (const auto& migrate_from : manifest_->migrate_from) {
+    install_info().migration_sources.push_back(
+        ToWebAppMigrationSource(*migrate_from));
+  }
 
   if (manifest_->manifest_url.is_valid()) {
     install_info().manifest_url = manifest_->manifest_url;

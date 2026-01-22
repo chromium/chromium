@@ -94,6 +94,8 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
       return os << "web install";
     case WebappInstallSource::CHROMEOS_HELP_APP:
       return os << "chromeos help app";
+    case WebappInstallSource::MIGRATION:
+      return os << "migration";
   }
 }
 
@@ -230,6 +232,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::IWA_EXTERNAL_POLICY:
     case WebappInstallSource::IWA_SHIMLESS_RMA:
     case WebappInstallSource::MANAGEMENT_API:
+    case WebappInstallSource::MIGRATION:
     case WebappInstallSource::SUB_APP:
     case WebappInstallSource::SYNC:
       return false;

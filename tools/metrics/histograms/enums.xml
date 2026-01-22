@@ -27063,6 +27063,7 @@ others/histograms.xml -->
   <int value="37"
       label="Installed from the ChromeOS help app directing a user to a page
              and showing the installation dialog."/>
+  <int value="38" label="Installed via a migration source app"/>
 </enum>
 
 <!-- LINT.IfChange(WebClientHintsType) -->
