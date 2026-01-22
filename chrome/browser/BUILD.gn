@@ -571,19 +571,8 @@ static_library("browser") {
     "interstitials/enterprise_util.h",
     "invalidation/profile_invalidation_provider_factory.cc",
     "invalidation/profile_invalidation_provider_factory.h",
-    "k_anonymity_service/k_anonymity_service_client.cc",
-    "k_anonymity_service/k_anonymity_service_client.h",
     "k_anonymity_service/k_anonymity_service_factory.cc",
     "k_anonymity_service/k_anonymity_service_factory.h",
-    "k_anonymity_service/k_anonymity_service_metrics.cc",
-    "k_anonymity_service/k_anonymity_service_metrics.h",
-    "k_anonymity_service/k_anonymity_service_storage.cc",
-    "k_anonymity_service/k_anonymity_service_storage.h",
-    "k_anonymity_service/k_anonymity_service_urls.h",
-    "k_anonymity_service/k_anonymity_trust_token_getter.cc",
-    "k_anonymity_service/k_anonymity_trust_token_getter.h",
-    "k_anonymity_service/remote_trust_token_query_answerer.cc",
-    "k_anonymity_service/remote_trust_token_query_answerer.h",
     "language/accept_languages_service_factory.cc",
     "language/accept_languages_service_factory.h",
     "language/language_model_manager_factory.cc",
@@ -1770,7 +1759,6 @@ static_library("browser") {
     ":flags",
     ":font_pref",
     ":global_features",
-    ":k_anonymity_storage_proto",
     ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
     ":resource_prefetch_predictor_proto",
@@ -8865,10 +8853,6 @@ if (is_win) {
     sources = [ "win/titlebar_config.h" ]
     deps = [ "//base" ]
   }
-}
-
-proto_library("k_anonymity_storage_proto") {
-  sources = [ "k_anonymity_service/proto/k_anonymity_storage.proto" ]
 }
 
 proto_library("resource_prefetch_predictor_proto") {

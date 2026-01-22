@@ -516,13 +516,6 @@ after discussions on the right group.
       <annotation id="payments_autofill"/>
     </sender>
   </group>
-  <group name="K-Anonymity Service" hidden="true">
-    <sender name="K-Anonymity Service">
-      <annotation id="k_anonymity_service_get_token"/>
-      <annotation id="k_anonymity_service_join_set"/>
-      <annotation id="k_anonymity_service_query_set"/>
-    </sender>
-  </group>
   <group name="Location" hidden="true">
     <sender name="Location">
       <annotation id="geo_language_provider"/>
