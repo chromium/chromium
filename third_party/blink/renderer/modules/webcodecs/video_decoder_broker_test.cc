@@ -411,8 +411,10 @@ TEST_F(VideoDecoderBrokerTest, Init_DenyAcceleration) {
 }
 
 TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
-  base::test::ScopedFeatureList enabled_features_{
-      media::kResolutionBasedDecoderPriority};
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({media::kResolutionBasedDecoderPriority,
+                                    media::kWebCodecsDecoderFlushOptimizations},
+                                   {});
   V8TestingScope v8_scope;
   ExecutionContext* execution_context = v8_scope.GetExecutionContext();
 
@@ -449,12 +451,21 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   ASSERT_EQ(3U, output_frames_.size());
   EXPECT_TRUE(IsPlatformDecoder());
 
-  // Reinitializing with a smaller resolution should use the software decoder.
+  // Reinitializing with a smaller resolution will prefer existing decoder.
   auto normal_config = media::TestVideoConfig::Normal(media::VideoCodec::kVP8);
+  InitializeDecoder(normal_config);
+  DecodeBuffer(media::CreateFakeVideoBufferForTest(
+      normal_config, base::TimeDelta(), base::Milliseconds(33)));
+  DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
+  ASSERT_EQ(4U, output_frames_.size());
+  EXPECT_TRUE(IsPlatformDecoder());
+
+  // But changing the preference to kSoftware will switch back to software.
+  decoder_broker_->SetHardwarePreference(HardwarePreference::kPreferSoftware);
   InitializeDecoder(normal_config);
   DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
-  ASSERT_EQ(4U, output_frames_.size());
+  ASSERT_EQ(5U, output_frames_.size());
   EXPECT_FALSE(IsPlatformDecoder());
 
   ResetDecoder();

@@ -6,8 +6,10 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,10 +55,14 @@ class FakeVideoDecoder : public VideoDecoder {
   }
 
   void SetupMockSoftwareDecoder(base::RepeatingClosure quit_closure) {
+    CreateMockSoftwareDecoder();
+    SetupExpectations(std::move(quit_closure));
+  }
+
+  void CreateMockSoftwareDecoder() {
     mock_decoder_ = std::make_unique<media::MockVideoDecoder>(
         /*is_platform_decoder=*/false, /*supports_decription=*/false,
         /*decoder_id=*/2);
-    SetupExpectations(std::move(quit_closure));
   }
 
   media::MockVideoDecoder* mock_decoder() { return mock_decoder_.get(); }
@@ -268,6 +274,50 @@ TEST_F(VideoDecoderTest, isConfigureSupportedWithInvalidHWConfig) {
   ASSERT_TRUE(tester.IsFulfilled());
   auto* result = ToVideoDecoderSupport(&v8_scope, tester.Value());
   EXPECT_FALSE(result->supported());
+}
+
+TEST_F(VideoDecoderTest, ConfigureGeneratesConfigChangeEOS) {
+  base::test::ScopedFeatureList feature_list{
+      media::kWebCodecsDecoderFlushOptimizations};
+  V8TestingScope v8_scope;
+  MockFunctionScope mock_functions(v8_scope.GetScriptState());
+
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
+
+  fake_decoder->CreateMockSoftwareDecoder();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*fake_decoder->mock_decoder(), GetMaxDecodeRequests())
+      .WillRepeatedly(testing::Return(4));
+
+  // Due to how this test overrides decoder(), calls to configure() result in
+  // an EOS buffer being sent to the decoder.
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Decode_(_, _))
+      .WillOnce([](scoped_refptr<media::DecoderBuffer> buffer,
+                   media::VideoDecoder::DecodeCB& decode_cb) {
+        EXPECT_TRUE(buffer->end_of_stream());
+        EXPECT_TRUE(buffer->next_config().has_value());
+
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE,
+            blink::BindOnce(std::move(decode_cb), media::OkStatus()));
+      });
+
+  EXPECT_CALL(*fake_decoder->mock_decoder(), Initialize_(_, _, _, _, _, _))
+      .WillOnce([&](Unused, Unused, Unused,
+                    media::VideoDecoder::InitCB& init_cb, Unused, Unused) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, blink::BindOnce(std::move(init_cb), media::OkStatus()));
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, run_loop.QuitClosure());
+      });
+
+  fake_decoder->configure(CreateVideoConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  run_loop.Run();
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

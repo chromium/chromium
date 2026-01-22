@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decoder_factory.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -101,6 +103,13 @@ class MediaAudioTaskWrapper {
                       Unretained(this)),
         blink::BindRepeating(&MediaAudioTaskWrapper::OnDecodeOutput,
                              weak_factory_.GetWeakPtr()));
+
+    // Prefer the existing decoder if the `config` is still supported by it.
+    // This avoids unnecessary decoder churn during repeated flush() operations.
+    if (decoder_ && base::FeatureList::IsEnabled(
+                        media::kWebCodecsDecoderFlushOptimizations)) {
+      selector_->PrependDecoder(std::move(decoder_));
+    }
 
     selector_->SelectDecoder(
         config, /*low_delay=*/false,

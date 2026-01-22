@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -385,9 +386,17 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
     return;
   }
 
+  // configure() generates an implicit config change per the WebCodecs spec. On
+  // some platforms, providing the next config may allow the decoder to elide
+  // costly reinitialization work.
+  auto eos_buffer =
+      base::FeatureList::IsEnabled(media::kWebCodecsDecoderFlushOptimizations)
+          ? media::DecoderBuffer::CreateEOSBuffer(*request->media_config)
+          : media::DecoderBuffer::CreateEOSBuffer();
+
   // Processing continues in OnFlushDone().
   decoder()->Decode(
-      media::DecoderBuffer::CreateEOSBuffer(),
+      std::move(eos_buffer),
       BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
 }
 
@@ -590,6 +599,7 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
   // Since configure is always required after reset we can drop any cached
   // configuration.
   active_config_.reset();
+  active_preference_.reset();
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kReset;
@@ -609,22 +619,36 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
   DCHECK(pending_request_->type == Request::Type::kConfigure ||
          pending_request_->type == Request::Type::kFlush);
 
-  if (!status.is_ok()) {
+  const bool did_elide_eos =
+      status.code() ==
+      media::DecoderStatus::Codes::kElidedEndOfStreamForConfigChange;
+
+  if (!status.is_ok() && !did_elide_eos) {
     Shutdown(MakeEncodingError("Error during flush.", status));
     return;
   }
 
-  // If reset() has been called during the Flush(), we can skip reinitialization
-  // since the client is required to do so manually.
-  const bool is_flush = pending_request_->type == Request::Type::kFlush;
-  if (is_flush && MaybeAbortRequest(pending_request_)) {
+  // If reset() has been called during the configure() or flush(), we can skip
+  // reinitialization since the client is required to do so manually.
+  if (MaybeAbortRequest(pending_request_)) {
     pending_request_.Release()->EndTracing();
     ProcessRequests();
     return;
   }
 
-  if (!is_flush)
+  const bool is_flush = pending_request_->type == Request::Type::kFlush;
+  if (is_flush) {
+    DCHECK(!did_elide_eos);
+  } else {
     SetHardwarePreference(pending_request_->hw_pref.value());
+
+    // Skip reinitialization if the codec supports it and the new config has the
+    // same hardware preference.
+    if (did_elide_eos && active_preference_ == pending_request_->hw_pref) {
+      OnInitializeDone(media::OkStatus());
+      return;
+    }
+  }
 
   // Processing continues in OnInitializeDone().
   Traits::InitializeDecoder(
@@ -676,6 +700,7 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
 
     low_delay_ = pending_request_->low_delay.value();
     active_config_ = std::move(pending_request_->media_config);
+    active_preference_ = pending_request_->hw_pref.value();
     OnActiveConfigChanged(*active_config_);
   }
 

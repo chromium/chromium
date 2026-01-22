@@ -60,6 +60,12 @@ class DecoderSelector {
                      bool low_delay,
                      SelectDecoderCB select_decoder_cb);
 
+  // Used to indicate the existing decoder should be preferred if `config` is
+  // supported by it.
+  void PrependDecoder(std::unique_ptr<Decoder> decoder) {
+    impl_.PrependDecoder(std::move(decoder));
+  }
+
  private:
   // Helper to create |stream_traits_|.
   std::unique_ptr<StreamTraits> CreateStreamTraits();
