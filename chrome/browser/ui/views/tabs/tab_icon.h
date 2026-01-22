@@ -83,7 +83,11 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   gfx::ImageSkia GetThemedIconForTesting() { return themed_favicon_; }
   bool GetActiveStateForTesting() { return is_active_tab_; }
 
-  void EnlargeDiscardIndicatorRadius(int radius);
+  // Called by the parent view when the width available to draw the tab icon
+  // changes, to determine whether to increase the discard indicator radius.
+  // Not used by vertical tabs since there always is enough width to draw the
+  // increased discard indicator radius.
+  void ResizeDiscardIndicatorRadiusForWidth(int width);
   void OnDiscardRingTreatmentEnabledChanged();
 
  protected:
@@ -211,7 +215,12 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   bool is_monochrome_favicon_ = false;
 
-  int increased_discard_indicator_radius_ = 0;
+  // If there is enough space, increased the size of the discard ring beyond the
+  // default favicon size, by this amount.
+  static constexpr int kIncreasedDiscardIndicatorRadiusDp = 2;
+
+  // The amount to increase the size of the discard ring by.
+  int increased_discard_indicator_radius_ = kIncreasedDiscardIndicatorRadiusDp;
 
   PrefChangeRegistrar local_state_registrar_;
 };

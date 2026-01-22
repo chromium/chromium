@@ -128,10 +128,6 @@ constexpr int kPinnedTabExtraWidthToRenderAsNormal = 30;
 constexpr int kTabAlertIndicatorCloseButtonPaddingAdjustmentTouchUI = 8;
 constexpr int kTabAlertIndicatorCloseButtonPaddingAdjustment = 4;
 
-// When the DiscardRingImprovements feature is enabled, increase the radius of
-// the discard ring by this amount if there is enough space.
-constexpr int kIncreasedDiscardIndicatorRadiusDp = 2;
-
 bool g_show_hover_card_on_mouse_hover = true;
 
 // Helper functions ------------------------------------------------------------
@@ -383,11 +379,8 @@ void Tab::Layout(PassKey) {
     } else {
       MaybeAdjustLeftForPinnedTab(&favicon_bounds, gfx::kFaviconSize);
     }
-    icon_->EnlargeDiscardIndicatorRadius(
-        width() - 2 * tab_style()->GetBottomCornerRadius() >=
-                gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
-            ? kIncreasedDiscardIndicatorRadiusDp
-            : 0);
+    icon_->ResizeDiscardIndicatorRadiusForWidth(
+        width() - 2 * tab_style()->GetBottomCornerRadius());
 
     // Add space for insets outside the favicon bounds.
     favicon_bounds.Inset(-icon_->GetInsets());

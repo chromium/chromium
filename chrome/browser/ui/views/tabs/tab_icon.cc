@@ -102,9 +102,8 @@ TabIcon::TabIcon()
   SetCanProcessEventsWithinSubtree(false);
 
   // Add padding to avoid clipping the attention indicator and the increased
-  // discard ring radius when kDiscardRingImprovements is enabled. Padding must
-  // be symmetric on each side so that elements will anchor to the center of the
-  // favicon.
+  // discard ring radius. Padding must be symmetric on each side so that
+  // elements will anchor to the center of the favicon.
   SetBorder(views::CreateEmptyBorder(kAttentionIndicatorRadius));
 
   const int preferred_width = gfx::kFaviconSize + GetInsets().width();
@@ -201,9 +200,11 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   }
 }
 
-void TabIcon::EnlargeDiscardIndicatorRadius(int radius) {
-  CHECK(radius <= GetInsets().left());
-  increased_discard_indicator_radius_ = radius;
+void TabIcon::ResizeDiscardIndicatorRadiusForWidth(int width) {
+  increased_discard_indicator_radius_ =
+      width >= gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
+          ? kIncreasedDiscardIndicatorRadiusDp
+          : 0;
 }
 
 void TabIcon::OnDiscardRingTreatmentEnabledChanged() {
@@ -317,11 +318,10 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
   // Fades in the discard ring and smaller favicon
   MaybePaintFavicon(canvas, icon, icon_bounds);
 
-  // Increase the bounds of the discard ring beyond the icon bounds if
-  // kDiscardRingImprovements is enabled. This is safe because in the
-  // constructor, we have already added insets so that the larger discard ring
-  // can expand into them and won't be clipped, and the icon bounds will be
-  // inside those insets.
+  // Increase the bounds of the discard ring beyond the icon bounds if there is
+  // enough space in the tab. This is safe because in the constructor, we have
+  // already added insets so that the larger discard ring can expand into them
+  // and won't be clipped, and the icon bounds will be inside those insets.
   gfx::Rect discard_ring_bounds = icon_bounds;
   discard_ring_bounds.Outset(increased_discard_indicator_radius_);
 
