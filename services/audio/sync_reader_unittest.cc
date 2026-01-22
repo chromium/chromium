@@ -281,9 +281,11 @@ TEST_F(SyncReaderTest, PropagatesDelay) {
 }
 
 TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
+  media::AudioGlitchInfo cumulative_glitch_info;
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(1),
                                        .count = 123};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
@@ -293,9 +295,10 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
-    EXPECT_EQ(buffer_->params.glitch_duration_us,
-              base::Seconds(1).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 123u);
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
 
     // Set a clearly incorrect buffer index. This means that the reader will
     // assume it's got the wrong data back from the Renderer process, and will
@@ -309,6 +312,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(2),
                                        .count = 246};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
@@ -320,10 +324,12 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
 
     // Since there was a glitch on the last read, this time there will be an
     // extra glitch reflected in the propagated info.
-    EXPECT_EQ(
-        buffer_->params.glitch_duration_us,
-        (base::Seconds(2) + params_.GetBufferDuration()).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 246u + 1u);
+    cumulative_glitch_info += media::AudioGlitchInfo{
+        .duration = params_.GetBufferDuration(), .count = 1};
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
 
     // This time, send the correct buffer index.
     uint32_t buffer_index = 2;
@@ -335,6 +341,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
   {
     media::AudioGlitchInfo glitch_info{.duration = base::Seconds(3),
                                        .count = 321};
+    cumulative_glitch_info += glitch_info;
 
     reader_->RequestMoreData(base::TimeDelta(), base::TimeTicks(), glitch_info);
     uint32_t signal;
@@ -344,10 +351,10 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
         shmem_.mapped_size() - sizeof(AudioOutputBufferParameters);
     std::unique_ptr<AudioBus> output_bus = AudioBus::Create(params_);
 
-    // This time there should be no added glitches.
-    EXPECT_EQ(buffer_->params.glitch_duration_us,
-              base::Seconds(3).InMicroseconds());
-    EXPECT_EQ(buffer_->params.glitch_count, 321u);
+    EXPECT_EQ(buffer_->params.cumulative_glitch_duration_us,
+              cumulative_glitch_info.duration.InMicroseconds());
+    EXPECT_EQ(static_cast<uint32_t>(buffer_->params.cumulative_glitch_count),
+              cumulative_glitch_info.count);
   }
 }
 

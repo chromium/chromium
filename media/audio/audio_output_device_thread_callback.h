@@ -70,6 +70,8 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   std::optional<base::TimeTicks> first_play_start_time_;
 
   AudioDeviceStatsReporter stats_reporter_;
+
+  AudioOutputBufferParametersHelper buffer_helper_;
 };
 
 }  // namespace media

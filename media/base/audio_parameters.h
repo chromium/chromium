@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <optional>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_point.h"
 #include "media/base/channel_layout.h"
@@ -50,11 +52,39 @@ struct MEDIA_EXPORT alignas(kParametersAlignment) AudioInputBufferParameters {
 struct MEDIA_EXPORT alignas(kParametersAlignment) AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
   int64_t delay_timestamp_us;  // base::TimeTicks in microseconds.
-  int64_t glitch_duration_us;  // base::TimeDelta in microseconds.
-  uint32_t glitch_count;
+
+  // `cumulative_glitch_duration_us` and `cumulative_glitch_count` are
+  // atomically accumulated on the AudioService side, and are differentiated on
+  // the Renderer side to produce AudioGlitchInfo.
+  int64_t cumulative_glitch_duration_us;  // base::TimeDelta in microseconds.
+  static_assert(std::atomic_ref<int64_t>::is_always_lock_free);
+  uint64_t cumulative_glitch_count;
+  static_assert(std::atomic_ref<uint64_t>::is_always_lock_free);
+
   uint32_t bitstream_data_size;
   uint32_t bitstream_frames;
 };
+
+// Helper class for writing and reading from an AudioOutputBufferParameters
+// living in shared memory. The helper takes care of converting the difference
+// in the cumulative counters from the buffer into an AudioGlitchInfo, which
+// contains the glitches accrued since the last call to
+// GetGlitchIncrementSinceLastCall().
+class MEDIA_EXPORT AudioOutputBufferParametersHelper {
+ public:
+  AudioOutputBufferParametersHelper();
+  ~AudioOutputBufferParametersHelper();
+
+  AudioGlitchInfo GetGlitchIncrementSinceLastCall(
+      AudioOutputBufferParameters& params);
+  static void AddGlitchIncrementToBuffer(AudioOutputBufferParameters& params,
+                                         AudioGlitchInfo glitch_info);
+
+ private:
+  base::TimeDelta previous_glitch_duration_ = {};
+  uint64_t previous_glitch_count_ = 0;
+};
+
 #if BUILDFLAG(IS_WIN)
 #pragma warning(pop)
 #endif

@@ -4,10 +4,12 @@
 
 #include "media/audio/audio_output_device_thread_callback.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_stats_reporter.h"
@@ -61,15 +63,12 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
 void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   callback_num_++;
 
-  // Read and reset the glitch info.
   media::AudioOutputBuffer* buffer =
       reinterpret_cast<media::AudioOutputBuffer*>(
           shared_memory_mapping_.memory());
-  media::AudioGlitchInfo glitch_info{
-      .duration = base::Microseconds(buffer->params.glitch_duration_us),
-      .count = buffer->params.glitch_count};
-  buffer->params.glitch_duration_us = {};
-  buffer->params.glitch_count = 0;
+  // Read the glitch info.
+  media::AudioGlitchInfo glitch_info =
+      buffer_helper_.GetGlitchIncrementSinceLastCall(buffer->params);
 
   base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
