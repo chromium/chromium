@@ -1317,6 +1317,9 @@
                   'chrome/browser/resources/glic',
 
     },
+    'glic_api': {
+      'filepath': 'chrome/browser/resources/glic/glic_api',
+    },
     'global_media_controls': {
       'filepath': 'chrome/browser/ui/global_media_controls|'\
                   'chrome/browser/ui/views/global_media_controls|'\
@@ -3027,6 +3030,7 @@
     'gfx_geometry': ['cc-bugs@chromium.org'],
     'gfx_image': ['rsesek+watch@chromium.org'],
     'glic': ['dewittj+watch@chromium.org'],
+    'glic_api': ['zewenli@google.com'],
     'global_media_controls': ['steimel+watch-gmc@chromium.org'],
     'gn': ['agrieve+watch@chromium.org',
            'dpranke@chromium.org'],
