@@ -2325,6 +2325,61 @@ TEST_F(BrowserAutofillManagerTest,
                                         {suggestions[0], suggestions[1]});
 }
 
+#if BUILDFLAG(IS_IOS)
+// Tests that no loyalty card suggestions are shown on iOS.
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_LoyaltyCardsEmpty) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableLoyaltyCardsFilling};
+
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://www.domain.example/"));
+
+  FormData form =
+      test::GetFormData({.fields = {{.role = LOYALTY_MEMBERSHIP_ID}}});
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://example.test/")));
+
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+  FormSubmitted(form);
+
+  EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
+}
+
+// Tests that when both email and loyalty card suggestions are available, no
+// loyalty card suggestions are shown on iOS.
+TEST_F(BrowserAutofillManagerTest, GetSuggestions_EmailAndLoyaltyCards) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://www.domain.example/"));
+
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+                                    {.role = PASSWORD}}});
+  auto form_structure = std::make_unique<FormStructure>(form_data);
+  test_api(*form_structure)
+      .SetFieldTypes({EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD},
+                     {EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD});
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
+
+  FormsSeen({form_data});
+  OnAskForValuesToFill(form_data, form_data.fields()[0]);
+  external_delegate()->CheckSuggestions(
+      form_data.fields()[0].global_id(),
+      {Suggestion("buddy@gmail.com", "", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion("theking@gmail.com", "", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       CreateManageAddressesSuggestion()});
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+#if !BUILDFLAG(IS_IOS)
 class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
  public:
   void SetUp() override {
@@ -2341,7 +2396,7 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
             web_data_service_helper_->autofill_webdata_service(),
             autofill_client().GetPrefs(),
             /*image_fetcher=*/nullptr));
-    WaitUntilWebDataServiceHelperIdle();
+    web_data_service_helper_->WaitUntilIdle();
   }
 
   void SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
@@ -2633,6 +2688,7 @@ TEST_F(BrowserAutofillManagerTestValuables,
   EXPECT_EQ(ValuableMetadata(loyalty_card.id(), base::Time::Now(), 1),
             valuables_data().GetLoyaltyCards()[0].metadata());
 }
+#endif
 
 class BrowserAutofillManagerTestForMetadataCardSuggestions
     : public BrowserAutofillManagerTest,
