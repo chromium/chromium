@@ -317,7 +317,9 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
                        omnibox::kFocusTriggersWebAndSRPZeroSuggest))) {
       return ResultType::kRemoteSendURL;
     }
-    if (input.type() == OIT::EMPTY && !is_ios) {
+    if (input.type() == OIT::EMPTY &&
+        (!is_ios ||
+         base::FeatureList::IsEnabled(omnibox::kOnClobberSuggestIOS))) {
       return ResultType::kRemoteSendURL;
     }
   }
