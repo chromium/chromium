@@ -500,83 +500,73 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{SessionRestore}.BrowserWindow.FirstPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.BrowserWindow.FirstPaint{StartupTemperature}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
-    Records the time from {SessionRestore} browser application startup to the
-    first presentation of the browser window onto the
-    screen{StartupTemperature}. . This is only recorded for desktop platforms
-    when the InitialWebUIMetrics feature is enabled.
+    Records the time from {Scenario} browser application startup to the first
+    presentation of the browser window onto the screen{StartupTemperature}.
+
+    This metric is mutually exclusive by scenarios.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
   </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
     <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
+        summary="session restored (without showing the Profile Picker)"/>
   </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
-    <variant name=".ColdStartup"
+    <variant name=".Temperature.ColdStartup"
         summary=", where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
         summary=", where startup was warm (almost no hard faults)"/>
   </token>
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstContentfulPaint{StartupTemperature}"
+    name="InitialWebUI.Startup{Scenario}.ReloadButton.{PaintType}{StartupTemperature}"
     units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
-    {SessionRestore} browser application startup with pre/post InitialWebUI
-    (WaaP) setup. The timer starts immediately after the browser application
-    startup{StartupTemperature}, and ends immediately after a contentful paint
-    of the view is requested. For browser process (pre-WaaP setup) this is equal
-    to the InitialWebUI.Startup.ReloadButton.FirstPaint metric. For renderer
-    process (post-WaaP setup) this might be slightly different. Only recorded on
-    desktop platforms.
-  </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
-    <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
-  </token>
-  <token key="StartupTemperature">
-    <variant name="" summary=""/>
-    <variant name=".ColdStartup"
-        summary="where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
-        summary="where startup was warm (almost no hard faults)"/>
-  </token>
-</histogram>
+    {Scenario} browser application startup with pre/post InitialWebUI (WaaP)
+    setup. The timer starts immediately after the browser application
+    startup{StartupTemperature}, and ends immediately after a {PaintType} of the
+    view is requested.
 
-<histogram
-    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstPaint{StartupTemperature}"
-    units="ms" expires_after="2026-07-05">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
-  <summary>
-    Records the time spent initializing a newly constructed ReloadButton in the
-    {SessionRestore} browser application startup with pre/post InitialWebUI
-    (WaaP) setup. The timer starts immediately after the browser application
-    startup{StartupTemperature}, and ends immediately after a paint of the view
-    is requested by either the browser process (pre-WaaP) or by the WebUI
-    renderer process (post-WaaP). Only recorded on desktop platforms.
+    This metric is mutually exclusive by scenarios.
+
+    For FirstPaint, the paint is requested by either the browser process
+    (pre-WaaP) or by the WebUI renderer process (post-WaaP).
+
+    Only recorded on desktop platforms.
   </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
     <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="PaintType">
+    <variant name="FirstContentfulPaint" summary="contentful paint"/>
+    <variant name="FirstPaint" summary="paint"/>
   </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
-    <variant name=".ColdStartup"
-        summary="where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
-        summary="where startup was warm (almost no hard faults)"/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults)"/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults)"/>
   </token>
 </histogram>
 

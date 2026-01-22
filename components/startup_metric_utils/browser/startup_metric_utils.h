@@ -156,6 +156,9 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   // Returns the startup temperature if available.
   StartupTemperature GetStartupTemperature() const;
 
+  // Returns true if this is the first run of the browser.
+  bool IsFirstRun() const;
+
   // Returns the appropriate application start ticks for use in startup metrics.
   // Returns a null TimeTicks if a value has not been recorded yet.
   base::TimeTicks GetApplicationStartTicksForStartup() const;
@@ -214,6 +217,8 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   bool is_privacy_sandbox_attestations_component_ready_recorded_ = false;
 
   bool is_privacy_sandbox_attestations_first_check_recorded_ = false;
+
+  bool is_first_run_ = false;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

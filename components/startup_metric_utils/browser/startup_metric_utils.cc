@@ -260,6 +260,7 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   browser_window_first_paint_ticks_ = base::TimeTicks();
   is_privacy_sandbox_attestations_component_ready_recorded_ = false;
   is_privacy_sandbox_attestations_first_check_recorded_ = false;
+  is_first_run_ = false;
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -291,6 +292,7 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
     base::TimeTicks ticks,
     bool is_first_run) {
   DCHECK(!GetCommon().application_start_ticks_.is_null());
+  is_first_run_ = is_first_run;
 
   RecordMessageLoopStartTicks(ticks);
 
@@ -310,7 +312,6 @@ void BrowserStartupMetricRecorder::RecordBrowserMainMessageLoopStart(
         &base::UmaHistogramLongTimes100, "Startup.BrowserMessageLoopStartTime",
         GetCommon().application_start_ticks_, ticks);
   }
-
   GetCommon().AddStartupEventsForTelemetry();
 
   // Record values stored prior to startup temperature evaluation.
@@ -516,6 +517,10 @@ bool BrowserStartupMetricRecorder::ShouldLogStartupHistogram() const {
 
 StartupTemperature BrowserStartupMetricRecorder::GetStartupTemperature() const {
   return g_startup_temperature;
+}
+
+bool BrowserStartupMetricRecorder::IsFirstRun() const {
+  return is_first_run_;
 }
 
 base::TimeTicks
