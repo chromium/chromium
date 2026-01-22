@@ -69,7 +69,6 @@ source_set("glic") {
       "browser_ui/scoped_glic_button_indicator.h",
       "fre/glic_fre_ui.h",
       "host/context/glic_focused_tab_manager.h",
-      "public/glic_keyed_service.h",
       "widget/glic_window_controller.h",
     ]
 
