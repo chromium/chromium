@@ -90,9 +90,9 @@ class WebContentsUserData : public base::SupportsUserData::Data {
   // Returns the WebContents associated with `this` object of a subclass
   // which inherits from WebContentsUserData.
   //
-  // The returned `WebContents` is guaranteed to live as long as `this`
-  // WebContentsUserData (due to how UserData works - WebContents
-  // owns `this` UserData).
+  // The reference is not invalidated during the destruction of `this`
+  // WebContentsUserData. That is because the destructor of `this` is called by
+  // ~SupportsUserData(), at which time ~WebContents() has already run.
   content::WebContents& GetWebContents() { return *web_contents_; }
   const content::WebContents& GetWebContents() const { return *web_contents_; }
 
