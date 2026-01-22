@@ -107,6 +107,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   static bool IsValidRemoteFrontendURL(const GURL& url);
 
   static base::Value::Dict GetHostConfigDictionary(Profile* profile);
+  static void SetChromeFlagInternal(Profile* profile,
+                                    const std::string& flag_name,
+                                    bool value);
 
   explicit DevToolsUIBindings(content::WebContents* web_contents);
 
@@ -277,6 +280,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                         const std::string& request) override;
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
+  void SetChromeFlag(const std::string& flag_name, bool value) override;
 
   // Dispatches a generic HTTP request to a backend service.
   // This is a centralized entry point for DevTools frontend to make network
@@ -414,6 +418,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
+
+  static bool GetFeatureStateForDevTools(const base::Feature& feature,
+                                         std::string enabled_by_flags,
+                                         std::string disabled_by_flags);
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 

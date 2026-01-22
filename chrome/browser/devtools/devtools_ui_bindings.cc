@@ -38,6 +38,7 @@
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/aida_service_handler.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
@@ -76,6 +77,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "components/zoom/page_zoom.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1732,9 +1734,42 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
   return result;
 }
 
+bool DevToolsUIBindings::GetFeatureStateForDevTools(
+    const base::Feature& feature,
+    std::string enabled_by_flags,
+    std::string disabled_by_flags) {
+  bool enabled = base::FeatureList::IsEnabled(feature);
+  if (enabled_by_flags.find(feature.name) != std::string::npos) {
+    enabled = true;
+  }
+  if (disabled_by_flags.find(feature.name) != std::string::npos) {
+    enabled = false;
+  }
+  return enabled;
+}
+
 // static
 base::Value::Dict DevToolsUIBindings::GetHostConfigDictionary(
     Profile* profile) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+#if BUILDFLAG(IS_CHROMEOS)
+  PrefService* prefs = profile->GetPrefs();
+#else
+  PrefService* prefs = g_browser_process->local_state();
+#endif
+  auto flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(prefs);
+
+  // Read from flags storage and create strings which list enabled and disabled
+  // features.
+  about_flags::GetCurrentFlagsState()->ConvertFlagsToSwitches(
+      flags_storage.get(), &command_line, flags_ui::kAddSentinels,
+      "enable-features", "disable-features");
+  std::string enabled_by_flags =
+      command_line.GetSwitchValueASCII("enable-features");
+  std::string disabled_by_flags =
+      command_line.GetSwitchValueASCII("disable-features");
+
   base::Value::Dict response_dict;
 
   AidaClient::Availability availability = AidaClient::CanUseAida(profile);
@@ -2245,6 +2280,38 @@ void DevToolsUIBindings::RecordNewBadgeUsage(const std::string& feature_name) {
         web_contents()->GetBrowserContext(), *feature_to_register);
   }
 #endif
+}
+
+// static
+void DevToolsUIBindings::SetChromeFlagInternal(Profile* profile,
+                                               const std::string& flag_name,
+                                               bool value) {
+#if BUILDFLAG(IS_CHROMEOS)
+  PrefService* prefs = profile->GetPrefs();
+#else
+  PrefService* prefs = g_browser_process->local_state();
+#endif
+  auto flags_storage =
+      std::make_unique<flags_ui::PrefServiceFlagsStorage>(prefs);
+
+  if (!about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(flag_name)) {
+    return;
+  }
+
+  // The feature entry for a base::Feature has 3 states:
+  // Default (0), Enabled (1), and Disabled (2).
+  // Its internal name is constructed as:
+  // name-of-experiment + kMultiSeparator + state.
+  // See also the documentation in components/webui/flags/feature_entry.h.
+  const std::string internal_flag_name =
+      flag_name + flags_ui::kMultiSeparatorChar + (value ? "1" : "2");
+  about_flags::SetFeatureEntryEnabled(flags_storage.get(), internal_flag_name,
+                                      true);
+}
+
+void DevToolsUIBindings::SetChromeFlag(const std::string& flag_name,
+                                       bool value) {
+  SetChromeFlagInternal(profile_, flag_name, value);
 }
 
 void DevToolsUIBindings::MaybeStartLogging() {

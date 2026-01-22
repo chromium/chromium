@@ -485,6 +485,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::RecordUserMetricsAction, delegate);
   d->RegisterHandler("recordNewBadgeUsage", &Delegate::RecordNewBadgeUsage,
                      delegate);
+  d->RegisterHandler("setChromeFlag", &Delegate::SetChromeFlag, delegate);
   d->RegisterHandler("recordImpression", &Delegate::RecordImpression, delegate);
   d->RegisterHandler("recordResize", &Delegate::RecordResize, delegate);
   d->RegisterHandler("recordClick", &Delegate::RecordClick, delegate);

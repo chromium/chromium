@@ -147,6 +147,7 @@ class DevToolsEmbedderMessageDispatcher {
                                     const std::string& request) = 0;
     virtual void RegisterAidaClientEvent(DispatchCallback callback,
                                          const std::string& request) = 0;
+    virtual void SetChromeFlag(const std::string& flag_name, bool value) = 0;
     virtual void DispatchHttpRequest(
         DispatchCallback callback,
         const DevToolsDispatchHttpRequestParams& body) = 0;
