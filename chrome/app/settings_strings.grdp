@@ -495,6 +495,9 @@
   <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD" desc="The text shown in the secondary action menu button to direct users to pay.google.com to edit the information of credit cards stored in Google Payments.">
     Edit in Google Pay
   </message>
+  <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD_IN_WALLET" desc="The text shown in the secondary action menu button to direct users to wallet.google.com to edit the information of credit cards stored in Google Wallet.">
+    Edit in Google Wallet
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_TURNED_ON_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been enabled for the credit card. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     Virtual card turned on
   </message>
@@ -548,6 +551,9 @@
   </message>
   <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
     Your payment methods in Google Pay
+  </message>
+  <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_WALLET_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://wallet.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
+    Your payment methods in Google Wallet
   </message>
   <message name="IDS_SETTINGS_NAME_ON_CREDIT_CARD" desc="The title for the input that lets users modify the name on the credit card.">
     Name on card

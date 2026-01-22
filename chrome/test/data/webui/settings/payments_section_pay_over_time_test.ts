@@ -24,6 +24,7 @@ suite('PaymentsSectionPayOverTime', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       shouldShowPayOverTimeSettings: true,
+      autofillEnableWalletBranding: true,
     });
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -128,12 +129,35 @@ suite('PaymentsSectionPayOverTime', function() {
   });
 
   test('verifyPayOverTimeLinkToGPay', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: false,
+    });
+
     const entry =
         await createPayOverTimeIssuerListEntry(createPayOverTimeIssuerEntry());
 
     const outlinkButton = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
+    assertEquals('Your payment methods in Google Pay', outlinkButton.title);
+    outlinkButton.click();
+
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(loadTimeData.getString('managePaymentMethodsUrl'), url);
+  });
+
+  test('verifyPayOverTimeLinkToGoogleWallet', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: true,
+    });
+
+    const entry =
+        await createPayOverTimeIssuerListEntry(createPayOverTimeIssuerEntry());
+
+    const outlinkButton = entry.shadowRoot!.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+    assertEquals('Your payment methods in Google Wallet', outlinkButton.title);
     outlinkButton.click();
 
     const url = await openWindowProxy.whenCalled('openUrl');

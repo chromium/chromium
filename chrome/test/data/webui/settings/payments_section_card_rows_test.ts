@@ -36,6 +36,7 @@ suite('PaymentsSectionCardRows', function() {
       migrationEnabled: true,
       showIbansSettings: true,
       enableNewFopDisplay: true,
+      autofillEnableWalletBranding: true,
     });
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -170,6 +171,98 @@ suite('PaymentsSectionCardRows', function() {
             rowShadowRoot.querySelector('cr-icon-button.icon-external');
         assertFalse(!!outlinkButton);
       });
+
+  test(
+      'verifyCreditCardGooglePayLinkTextForDropdownRowButton',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillEnableWalletBranding: false,
+        });
+
+        const creditCard = createCreditCardEntry();
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton =
+            rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        assertTrue(!!menuButton);
+
+        menuButton.click();
+        flush();
+        assertTrue(isVisible(section.$.menuEditCreditCard));
+
+        assertEquals(
+            'Edit in Google Pay',
+            section.$.menuEditCreditCard.textContent.trim());
+      });
+
+  test(
+      'verifyCreditCardGoogleWalletLinkTextForDropdownRowButton',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillEnableWalletBranding: true,
+        });
+
+        const creditCard = createCreditCardEntry();
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton =
+            rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        assertTrue(!!menuButton);
+
+        menuButton.click();
+        flush();
+        assertTrue(isVisible(section.$.menuEditCreditCard));
+
+        assertEquals(
+            'Edit in Google Wallet',
+            section.$.menuEditCreditCard.textContent.trim());
+      });
+
+  test('verifyCreditCardGooglePayOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: false,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Pay', outlinkButton.title);
+  });
+
+  test('verifyCreditCardGoogleWalletOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Wallet', outlinkButton.title);
+  });
 
   test('verifyPaymentsIndicator', async function() {
     const creditCard = createCreditCardEntry();

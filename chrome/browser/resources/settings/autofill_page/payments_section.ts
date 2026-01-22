@@ -138,6 +138,18 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
+       * Whether Google Wallet branding should be used instead of Google Pay
+       * branding.
+       */
+      autofillEnableWalletBrandingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillEnableWalletBranding');
+        },
+        readOnly: true,
+      },
+
+      /**
        * The model for any credit card-related action menus or dialogs.
        */
       activeCreditCard_: Object,
@@ -246,6 +258,7 @@ export class SettingsPaymentsSectionElement extends
   declare ibans: chrome.autofillPrivate.IbanEntry[];
   declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
   declare private showIbanSettingsEnabled_: boolean;
+  declare private autofillEnableWalletBrandingEnabled_: boolean;
   declare private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
       null;
   declare private activeIban_: chrome.autofillPrivate.IbanEntry|null;
@@ -606,7 +619,12 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private getMenuEditCardText_(isLocalCard: boolean): string {
-    return this.i18n(isLocalCard ? 'edit' : 'editServerCard');
+    if (isLocalCard) {
+      return this.i18n('edit');
+    }
+    return this.i18n(
+        this.autofillEnableWalletBrandingEnabled_ ? 'editServerCardInWallet' :
+                                                    'editServerCard');
   }
 
   private shouldShowAddVirtualCardButton_(): boolean {

@@ -32,10 +32,20 @@ export class SettingsPayOverTimeIssuerListEntryElement extends PolymerElement {
   static get properties() {
     return {
       payOverTimeIssuer: Object,
+
+      autofillEnableWalletBrandingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillEnableWalletBranding');
+        },
+        readOnly: true,
+      },
     };
   }
 
   declare payOverTimeIssuer: chrome.autofillPrivate.PayOverTimeIssuerEntry;
+
+  declare private autofillEnableWalletBrandingEnabled_: boolean;
 
   /**
    * When the provided `imageSrc` points toward an issuer's default logo art,

@@ -61,12 +61,21 @@ export class SettingsIbanListEntryElement extends
         },
         readOnly: true,
       },
+
+      autofillEnableWalletBrandingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillEnableWalletBranding');
+        },
+        readOnly: true,
+      },
     };
   }
 
   declare iban: chrome.autofillPrivate.IbanEntry;
 
   declare private showNewFopDisplayEnabled_: boolean;
+  declare private autofillEnableWalletBrandingEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('ibanMenu');
@@ -77,6 +86,14 @@ export class SettingsIbanListEntryElement extends
    */
   private showDotsMenu_(): boolean {
     return !!this.iban.metadata!.isLocal;
+  }
+
+  private shouldShowOutlinkWithWalletBranding_(): boolean {
+    return !this.showDotsMenu_() && this.autofillEnableWalletBrandingEnabled_;
+  }
+
+  private shouldShowOutlinkWithoutWalletBranding_(): boolean {
+    return !this.showDotsMenu_() && !this.autofillEnableWalletBrandingEnabled_;
   }
 
   /**

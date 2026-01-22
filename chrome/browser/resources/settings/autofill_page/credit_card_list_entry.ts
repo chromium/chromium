@@ -57,12 +57,21 @@ export class SettingsCreditCardListEntryElement extends
         },
         readOnly: true,
       },
+
+      autofillEnableWalletBrandingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillEnableWalletBranding');
+        },
+        readOnly: true,
+      },
     };
   }
 
   declare creditCard: chrome.autofillPrivate.CreditCardEntry;
 
   declare private showNewFopDisplayEnabled_: boolean;
+  declare private autofillEnableWalletBrandingEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('creditCardMenu');
@@ -151,6 +160,14 @@ export class SettingsCreditCardListEntryElement extends
     return !!(
         this.creditCard.metadata!.isLocal ||
         this.isVirtualCardEnrollmentEligible_());
+  }
+
+  private shouldShowOutlinkWithWalletBranding_(): boolean {
+    return !this.showDots_() && this.autofillEnableWalletBrandingEnabled_;
+  }
+
+  private shouldShowOutlinkWithoutWalletBranding_(): boolean {
+    return !this.showDots_() && !this.autofillEnableWalletBrandingEnabled_;
   }
 
   private isVirtualCardEnrollmentEligible_(): boolean {
