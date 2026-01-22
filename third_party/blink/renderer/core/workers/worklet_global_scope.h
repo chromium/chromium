@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -37,9 +36,7 @@ struct GlobalScopeCreationParams;
 // This instance lives either on the main thread (main thread worklet) or a
 // worker thread (threaded worklet). It's determined by constructors. See
 // comments on the constructors.
-class CORE_EXPORT WorkletGlobalScope
-    : public WorkerOrWorkletGlobalScope,
-      public ActiveScriptWrappable<WorkletGlobalScope> {
+class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -123,9 +120,6 @@ class CORE_EXPORT WorkletGlobalScope
   bool DocumentSecureContext() const { return IsCreatorSecureContext(); }
 
   void Trace(Visitor*) const override;
-
-  // ActiveScriptWrappable.
-  bool HasPendingActivity() const override;
 
   HttpsState GetHttpsState() const override { return https_state_; }
 

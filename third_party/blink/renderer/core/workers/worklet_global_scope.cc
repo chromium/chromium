@@ -90,7 +90,6 @@ WorkletGlobalScope::WorkletGlobalScope(
           /*is_worker_loaded_from_data_url=*/false,
           /*is_default_world_of_isolate=*/
           creation_params->is_default_world_of_isolate),
-      ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
       document_security_origin_(creation_params->starter_origin),
@@ -357,10 +356,6 @@ void WorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(browser_interface_broker_proxy_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
-}
-
-bool WorkletGlobalScope::HasPendingActivity() const {
-  return !ExecutionContext::IsContextDestroyed();
 }
 
 }  // namespace blink

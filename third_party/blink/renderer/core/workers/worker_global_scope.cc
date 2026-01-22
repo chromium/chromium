@@ -693,7 +693,6 @@ WorkerGlobalScope::WorkerGlobalScope(
           creation_params->script_url.ProtocolIsData(),
           /*is_default_world_of_isolate=*/
           creation_params->is_default_world_of_isolate),
-      ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
       ua_metadata_(creation_params->ua_metadata),
@@ -837,10 +836,6 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   UniversalGlobalScope::Trace(visitor);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
-}
-
-bool WorkerGlobalScope::HasPendingActivity() const {
-  return !ExecutionContext::IsContextDestroyed();
 }
 
 CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
