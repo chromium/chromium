@@ -27133,6 +27133,43 @@
             ]
         }
     ],
+    "V8NoTrimDescriptorArray": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NoTrimWithStack",
+                    "enable_features": [
+                        "V8Flag_trim_descriptor_arrays_in_gc"
+                    ],
+                    "disable_features": [
+                        "V8Flag_trim_descriptor_arrays_in_gc_with_stack"
+                    ]
+                },
+                {
+                    "name": "NoTrim",
+                    "disable_features": [
+                        "V8Flag_trim_descriptor_arrays_in_gc",
+                        "V8Flag_trim_descriptor_arrays_in_gc_with_stack"
+                    ]
+                },
+                {
+                    "name": "Default",
+                    "enable_features": [
+                        "V8Flag_trim_descriptor_arrays_in_gc",
+                        "V8Flag_trim_descriptor_arrays_in_gc_with_stack"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ParserAblation": [
         {
             "platforms": [
