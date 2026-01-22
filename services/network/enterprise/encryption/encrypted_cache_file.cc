@@ -29,17 +29,14 @@ int64_t GetLogicalChunkStart(uint32_t chunk_index) {
 EncryptedCacheFile::EncryptedCacheFile(
     std::unique_ptr<disk_cache::CacheFile> file,
     base::span<const uint8_t, kKeySize> key)
-    : file_(std::move(file)) {
-  base::span(key_).copy_from(key);
-}
+    : file_(std::move(file)), key_(std::string(key.begin(), key.end())) {}
 
 EncryptedCacheFile::EncryptedCacheFile(
     std::unique_ptr<disk_cache::CacheFile> file)
-    : file_(std::move(file)) {
-  // TODO(crbug.com/474061119): Temporary placeholder key until master key
-  // generation is fully implemented.
-  key_.fill(0xFE);
-}
+    : file_(std::move(file)),
+      // TODO(crbug.com/474061119): Temporary placeholder key until master key
+      // generation is fully implemented.
+      key_(std::string(kKeySize, static_cast<char>(0xFE))) {}
 
 EncryptedCacheFile::~EncryptedCacheFile() = default;
 
@@ -321,7 +318,7 @@ bool EncryptedCacheFile::EnsureInitialized() {
 
   if (file_length == 0) {
     // New file: Create and write header.
-    auto result = CreateHeader(key_);
+    auto result = CreateHeader(base::as_byte_span(key_.secure_value()));
     if (!result.has_value()) {
       // TODO(crbug.com/474585860): Log errors in UMA.
       return false;
@@ -342,7 +339,8 @@ bool EncryptedCacheFile::EnsureInitialized() {
       return false;
     }
 
-    auto context_or_error = ParseHeader(header_bytes, key_);
+    auto context_or_error =
+        ParseHeader(header_bytes, base::as_byte_span(key_.secure_value()));
     if (!context_or_error.has_value()) {
       // TODO(crbug.com/474585860): Log errors in UMA.
       return false;

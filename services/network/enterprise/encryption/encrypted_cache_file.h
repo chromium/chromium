@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "crypto/process_bound_string.h"
 #include "net/disk_cache/cache_file.h"
 #include "services/network/enterprise/encryption/chunked_encryptor.h"
 
@@ -69,7 +70,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedCacheFile
   bool EnsurePreviousChunkNotLast(int64_t new_logical_length);
 
   std::unique_ptr<disk_cache::CacheFile> file_;
-  std::array<uint8_t, kKeySize> key_;
+  crypto::ProcessBoundString key_;
   std::unique_ptr<ChunkedEncryptor> encryptor_;
   bool initialized_ = false;
 };
