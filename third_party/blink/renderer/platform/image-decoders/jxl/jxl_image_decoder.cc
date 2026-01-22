@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/jxl/jxl_image_decoder.h"
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -356,6 +357,7 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
           if (frame_idx < frame_info_.size()) {
             frame_info_[frame_idx] = info;
           } else {
+            CHECK_EQ(frame_idx, frame_info_.size());
             frame_info_.push_back(info);
           }
         }
