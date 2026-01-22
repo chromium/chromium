@@ -62,22 +62,6 @@ _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
 TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
 
 
-# Policies that are allowed to already include
-# the sensitive policy notices in their description.
-#
-# The build will skip these policies to allow a stepwise migration.
-# Sensitive policies not on this list and
-# already containing notices will result in an error.
-#
-# DO NOT ADD new policies to this list.
-# Instead, let the build automatically add the appropriate notices
-# when you mark a policy with sensitive: True
-SENSITIVE_POLICIES_WITH_MANUAL_NOTICE = [
-    "RestoreOnStartupURLs",
-    "AutoOpenFileTypes",
-]
-
-
 def _SafeListDir(directory):
   '''Wrapper around os.listdir() that ignores files created by Finder.app.'''
   # On macOS, Finder.app creates .DS_Store files when a user visit a
@@ -906,18 +890,13 @@ def CheckSensitivePoliciesWithManualNotices(input_api, output_api):
   policies_with_manual_notice = \
     GetPolicyTemplates()['sensitive_policies_with_manual_notices']
 
-  not_allowed = [
-    policy for policy in policies_with_manual_notice
-    if policy not in SENSITIVE_POLICIES_WITH_MANUAL_NOTICE
-  ]
-
-  if not_allowed:
+  if policies_with_manual_notice:
     error_message = (
       "The following sensitive policies contain manually added sensitive "
       "policy notices in their YAML descriptions:\n\n"
     )
 
-    for name in not_allowed:
+    for name in policies_with_manual_notice:
       error_message += f"{name}\n"
 
     error_message += (
