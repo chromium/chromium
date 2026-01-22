@@ -21,6 +21,9 @@
 //
 // If you only need to observe a single browser, use the callback registrations
 // exposed on BrowserWindowInterface instead.
+//
+// TODO(crbug.com/474120522): The Android implementation does not yet fire
+// BrowserCollectionObserver events.
 class GlobalBrowserCollection final : public BrowserCollection {
  public:
   GlobalBrowserCollection();
@@ -44,6 +47,11 @@ class GlobalBrowserCollection final : public BrowserCollection {
   friend base::ScopedObservationTraits<GlobalBrowserCollection,
                                        BrowserCollectionObserver>;
   friend GlobalBrowserCollectionPlatformDelegate;
+
+  void OnBrowserCreated(BrowserWindowInterface* browser);
+  void OnBrowserClosed(BrowserWindowInterface* browser);
+  void OnBrowserActivated(BrowserWindowInterface* browser);
+  void OnBrowserDeactivated(BrowserWindowInterface* browser);
 
   GlobalBrowserCollectionPlatformDelegate platform_delegate_;
 

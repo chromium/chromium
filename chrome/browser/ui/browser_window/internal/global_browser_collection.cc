@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
 GlobalBrowserCollection::GlobalBrowserCollection()
     : platform_delegate_(GlobalBrowserCollectionPlatformDelegate(*this)) {}
@@ -34,6 +35,47 @@ BrowserCollection::BrowserVector GlobalBrowserCollection::GetBrowsers(
   CHECK(order == Order::kCreation || order == Order::kActivation);
   return order == Order::kCreation ? browsers_creation_order_
                                    : browsers_activation_order_;
+}
+
+void GlobalBrowserCollection::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  browsers_creation_order_.push_back(browser);
+
+  // Push the browser to the back of the activation order list. It will be moved
+  // to the front when the browser is eventually activated (which may or may
+  // not happen immediately after creation).
+  browsers_activation_order_.push_back(browser);
+
+  for (BrowserCollectionObserver& observer : observers()) {
+    observer.OnBrowserCreated(browser);
+  }
+}
+
+void GlobalBrowserCollection::OnBrowserClosed(BrowserWindowInterface* browser) {
+  std::erase(browsers_activation_order_, browser);
+  std::erase(browsers_creation_order_, browser);
+  for (BrowserCollectionObserver& observer : observers()) {
+    observer.OnBrowserClosed(browser);
+  }
+}
+
+void GlobalBrowserCollection::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  // Move `browser` to the front of the activation list.
+  auto it = std::ranges::find(browsers_activation_order_, browser);
+  CHECK(it != browsers_activation_order_.end());
+  std::rotate(browsers_activation_order_.begin(), it, it + 1);
+
+  for (BrowserCollectionObserver& observer : observers()) {
+    observer.OnBrowserActivated(browser);
+  }
+}
+
+void GlobalBrowserCollection::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
+  for (BrowserCollectionObserver& observer : observers()) {
+    observer.OnBrowserDeactivated(browser);
+  }
 }
 
 GlobalBrowserCollectionPlatformDelegate*

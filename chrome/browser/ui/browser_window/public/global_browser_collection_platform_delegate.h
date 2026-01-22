@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_PLATFORM_DELEGATE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_GLOBAL_BROWSER_COLLECTION_PLATFORM_DELEGATE_H_
 
-#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#else
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#include "base/memory/raw_ref.h"
 
 class GlobalBrowserCollection;
 
@@ -28,8 +34,15 @@ class GlobalBrowserCollectionPlatformDelegate final
       const GlobalBrowserCollectionPlatformDelegate&) = delete;
 #if BUILDFLAG(IS_ANDROID)
   ~GlobalBrowserCollectionPlatformDelegate();
-#else   // BUILDFLAG(IS_ANDROID)
+#else
   ~GlobalBrowserCollectionPlatformDelegate() override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnBrowserCreated(JNIEnv* env, int64_t j_browser_window_ptr);
+  void OnBrowserClosed(JNIEnv* env, int64_t j_browser_window_ptr);
+  void OnBrowserActivated(JNIEnv* env, int64_t j_browser_window_ptr);
+  void OnBrowserDeactivated(JNIEnv* env, int64_t j_browser_window_ptr);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
