@@ -682,6 +682,13 @@ source_set("extensions") {
     }
   }
 
+  if (enable_guest_view) {
+    deps += [
+      "//components/guest_view/browser",
+      "//components/guest_view/common:mojom",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/40245282): Ideally, no API implementations would be included
@@ -987,7 +994,6 @@ source_set("extensions") {
       "//components/favicon/content",
       "//components/feedback",
       "//components/gcm_driver",
-      "//components/guest_view/common:mojom",
       "//components/history/core/browser",
       "//components/history/core/common",
       "//components/javascript_dialogs",
@@ -1549,10 +1555,6 @@ source_set("extensions") {
       deps += [ "//chrome/browser/ui/toasts" ]
     }
   }  # if (enable_extensions)
-
-  if (enable_guest_view) {
-    deps += [ "//components/guest_view/browser" ]
-  }
 
   if (enable_platform_apps) {
     sources += [

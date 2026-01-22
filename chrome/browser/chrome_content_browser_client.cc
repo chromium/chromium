@@ -621,6 +621,13 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -632,12 +639,6 @@
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/common/user_script.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_content_browser_client_plugins_part.h"
@@ -3248,14 +3249,14 @@ void ChromeContentBrowserClient::AllowWorkerFileSystem(
           Profile::FromBrowserContext(browser_context));
   bool allow = embedder_support::AllowWorkerFileSystem(
       url, {}, cookie_settings.get(), storage_key);
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   GuestPermissionRequestHelper(url, render_frames, std::move(callback), allow);
 #else
   FileSystemAccessed(url, render_frames, std::move(callback), allow);
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     const GURL& url,
     const std::vector<content::GlobalRenderFrameHostId>& render_frames,
@@ -4375,12 +4376,12 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     return true;
   }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
           opener->GetProcess()->GetDeprecatedID())) {
     return true;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   if (target_url.SchemeIs(extensions::kExtensionScheme)) {

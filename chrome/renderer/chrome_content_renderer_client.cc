@@ -225,9 +225,9 @@
 #include "third_party/blink/public/web/web_settings.h"
 #endif  // BUIDFLAG(ENABLE_EXTENSIONS_CORE)
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
@@ -693,13 +693,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
                                               associated_interfaces);
   }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_GUEST_VIEW)
   associated_interfaces
       ->AddInterface<extensions::mojom::MimeHandlerViewContainerManager>(
           base::BindRepeating(
               &extensions::MimeHandlerViewContainerManager::BindReceiver,
               base::Unretained(render_frame)));
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // Owned by |render_frame|.
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);

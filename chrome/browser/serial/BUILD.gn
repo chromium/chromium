@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("serial") {
   sources = [
@@ -66,7 +67,7 @@ source_set("impl") {
     "//url",
   ]
 
-  if (enable_guest_view) {
+  if (enable_guest_view && enable_extensions_core) {
     deps += [ "//extensions/browser" ]
   }
 

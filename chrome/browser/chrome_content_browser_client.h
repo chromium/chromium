@@ -1238,13 +1238,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::OnceCallback<void(bool)> callback,
       bool allow);
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   void GuestPermissionRequestHelper(
       const GURL& url,
       const std::vector<content::GlobalRenderFrameHostId>& render_frames,
       base::OnceCallback<void(bool)> callback,
       bool allow);
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // Returns the existing UrlCheckerDelegate object if it is already created.
   // Otherwise, creates a new one and returns it. Updates the

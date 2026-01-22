@@ -107,10 +107,9 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "components/guest_view/browser/guest_view_base.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
 namespace {
 
@@ -871,7 +870,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
     // A permission request from a webview is normally delegated to its embedder
     // without showing a prompt. However, filesystem permissions are known to be
     // broken:
@@ -889,7 +888,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       std::move(callback).Run(outcome);
       return;
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
     auto* request_manager =
         FileSystemAccessPermissionRequestManager::FromWebContents(web_contents);
@@ -2184,7 +2183,7 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
 base::expected<void, std::string>
 ChromeFileSystemAccessPermissionContext::CanShowFilePicker(
     content::RenderFrameHost* rfh) {
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   // Because permission is scoped to profile, <webview> and <controlledframe>,
   // despite having isolated StoragePartition, will share File System Access
   // permission with the rest of the profile. Therefore, we want to disable FSA
@@ -2201,7 +2200,7 @@ ChromeFileSystemAccessPermissionContext::CanShowFilePicker(
     }
     return base::ok();
   }
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // Disable any other non-default StoragePartition contexts. However, unique
   // schemes (e.g. isolated-app://) are exempt here.

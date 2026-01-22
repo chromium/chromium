@@ -7588,24 +7588,24 @@ static_library("browser") {
     sources += [ "download/download_crx_util_android.cc" ]
   }
 
-  if (enable_guest_view && enable_extensions_core) {
-    sources += [
-      "guest_view/chrome_guest_view_manager_delegate.cc",
-      "guest_view/chrome_guest_view_manager_delegate.h",
-      "guest_view/extension_options/chrome_extension_options_guest_delegate.cc",
-      "guest_view/extension_options/chrome_extension_options_guest_delegate.h",
-      "guest_view/web_view/chrome_web_view_guest_delegate.cc",
-      "guest_view/web_view/chrome_web_view_guest_delegate.h",
-      "guest_view/web_view/chrome_web_view_permission_helper_delegate.cc",
-      "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
-      "guest_view/web_view/context_menu_content_type_web_view.cc",
-      "guest_view/web_view/context_menu_content_type_web_view.h",
-    ]
-
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
-
   if (enable_extensions_core) {
+    if (enable_guest_view) {
+      sources += [
+        "guest_view/chrome_guest_view_manager_delegate.cc",
+        "guest_view/chrome_guest_view_manager_delegate.h",
+        "guest_view/extension_options/chrome_extension_options_guest_delegate.cc",
+        "guest_view/extension_options/chrome_extension_options_guest_delegate.h",
+        "guest_view/web_view/chrome_web_view_guest_delegate.cc",
+        "guest_view/web_view/chrome_web_view_guest_delegate.h",
+        "guest_view/web_view/chrome_web_view_permission_helper_delegate.cc",
+        "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
+        "guest_view/web_view/context_menu_content_type_web_view.cc",
+        "guest_view/web_view/context_menu_content_type_web_view.h",
+      ]
+    }
     sources += [
       "download/download_crx_util.cc",
       "policy/cloud/extension_install_policy_service.cc",
@@ -7844,7 +7844,6 @@ static_library("browser") {
       "//chrome/common/extensions/api:extensions_features",
       "//components/app_constants",
       "//components/drive",
-      "//components/guest_view/browser",
       "//extensions/browser/api/content_settings",
       "//extensions/common:common_constants",
       "//extensions/common:mojom",

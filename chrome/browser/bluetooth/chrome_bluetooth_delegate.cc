@@ -10,17 +10,18 @@
 #include "components/permissions/bluetooth_delegate_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
 ChromeBluetoothDelegate::ChromeBluetoothDelegate(std::unique_ptr<Client> client)
     : permissions::BluetoothDelegateImpl(std::move(client)) {}
 
 bool ChromeBluetoothDelegate::MayUseBluetooth(content::RenderFrameHost* rfh) {
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
   // Because permission is scoped to profile, <webview> and <controlledframe>,
   // despite having isolated StoragePartition, will share bluetooth permission
   // with the rest of the profile. Therefore bluetooth is not allowed in these
@@ -28,7 +29,7 @@ bool ChromeBluetoothDelegate::MayUseBluetooth(content::RenderFrameHost* rfh) {
   if (extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
     return false;
   }
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // Disable any other non-default StoragePartition contexts, unless it has a
   // non-http/https scheme.

@@ -116,9 +116,9 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
@@ -369,11 +369,12 @@ void CreateAndAddChromeThrottlesForNavigation(
         ->GetUserScriptListener()
         ->CreateAndAddNavigationThrottle(registry);
   }
-#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   extensions::WebViewGuest::MaybeCreateAndAddNavigationThrottle(registry);
-#endif
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(registry);
   supervised_user::ClassifyUrlNavigationThrottle::MaybeCreateAndAdd(registry);

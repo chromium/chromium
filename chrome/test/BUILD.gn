@@ -1840,7 +1840,6 @@ source_set("platform_browser_tests") {
     if (enable_guest_view) {
       deps += [
         "//components/guest_view/browser",
-        "//components/guest_view/browser:test_support",
       ]
     }
     if (!is_android || enable_desktop_android_extensions) {
