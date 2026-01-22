@@ -348,8 +348,11 @@ class ServiceWorkerResourceReaderImpl::DataReader {
       return;
     }
 
-    if (read_bytes > 0) {
-      hasher_.Update(buffer->first(read_bytes));
+    if (read_bytes > 0 && owner_) {
+      if (owner_->sha256_checksum_) {
+        owner_->hasher_.Update(buffer->first(read_bytes));
+      }
+      owner_->bytes_read_so_far_ += read_bytes;
     }
 
     producer_handle_ = pending_buffer_->Complete(read_bytes);
@@ -372,18 +375,6 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     state_ = State::kComplete;
 #endif
 
-    if (status >= 0 && owner_ && owner_->sha256_checksum_) {
-      std::array<uint8_t, crypto::hash::kSha256Size> calculated_checksum;
-      hasher_.Finish(calculated_checksum);
-      const std::string calculated_checksum_hex =
-          base::HexEncode(calculated_checksum);
-      bool checksums_match = base::EqualsCaseInsensitiveASCII(
-          calculated_checksum_hex, *owner_->sha256_checksum_);
-
-      base::UmaHistogramBoolean("ServiceWorker.ResourceChecksumMatch",
-                                checksums_match);
-    }
-
     watcher_.Cancel();
     producer_handle_.reset();
 
@@ -392,7 +383,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     }
 
     if (owner_) {
-      owner_->DidReadDataComplete();
+      owner_->DidReadDataComplete(status);
     }
   }
 
@@ -402,7 +393,6 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   ReadDataCallback callback_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::SimpleWatcher watcher_;
-  crypto::hash::Hasher hasher_{crypto::hash::HashKind::kSha256};
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
 
 #if DCHECK_IS_ON()
@@ -423,9 +413,11 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
     base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-    mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver,
-    base::OnceClosure disconnect_handler)
+    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> receiver,
+    base::OnceClosure disconnect_handler,
+    const std::optional<const net::SHA256HashValue>& sha256_checksum)
     : entry_opener_(resource_id, std::move(disk_cache)),
+      sha256_checksum_(sha256_checksum),
       receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(std::move(disconnect_handler));
 }
@@ -548,6 +540,7 @@ void ServiceWorkerResourceReaderImpl::DidReadHttpResponseInfo(
 
   int64_t response_data_size =
       entry_opener_.entry()->GetSize(kResponseContentIndex);
+  expected_total_size_ = response_data_size;
 
   response_head_ = ConvertHttpResponseInfo(*http_info, response_data_size);
 
@@ -587,13 +580,6 @@ void ServiceWorkerResourceReaderImpl::DidReadMetadata(
     return;
   }
 
-  ServiceWorkerResourceRecord record;
-  if (record.ParseFromArray(metadata_buffer->data(), status)) {
-    if (record.has_sha256_checksum()) {
-      sha256_checksum_ = record.sha256_checksum();
-    }
-  }
-
   CompleteReadResponseHead(status);
 }
 
@@ -622,12 +608,21 @@ void ServiceWorkerResourceReaderImpl::CompleteReadResponseHead(int status) {
       .Run(status, std::move(response_head_), std::move(metadata));
 }
 
-void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
+void ServiceWorkerResourceReaderImpl::DidReadDataComplete(int status) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(state_, State::kReadDataStarted);
   state_ = State::kIdle;
 #endif
   DCHECK(data_reader_);
+
+  if (status >= 0 && sha256_checksum_ &&
+      bytes_read_so_far_ == expected_total_size_) {
+    net::SHA256HashValue calculated_checksum;
+    hasher_.Finish(calculated_checksum);
+    base::UmaHistogramBoolean("ServiceWorker.ResourceChecksumMatch",
+                              *sha256_checksum_ == calculated_checksum);
+  }
+
   data_reader_.reset();
 }
 

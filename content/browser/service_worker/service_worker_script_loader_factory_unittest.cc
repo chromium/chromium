@@ -6,12 +6,15 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/fake_network.h"
+#include "crypto/sha2.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -125,6 +128,41 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, ContextDestroyed) {
       CreateTestLoaderAndStart(&client);
   client.RunUntilComplete();
   EXPECT_EQ(net::ERR_ABORTED, client.completion_status().error_code);
+}
+
+TEST_F(ServiceWorkerScriptLoaderFactoryTest, ChecksumVerification) {
+  const std::string kData = "some script data";
+  const int64_t kResourceId = 1;
+  const std::string kChecksum =
+      base::HexEncode(crypto::SHA256HashString(kData));
+
+  // Write to disk cache
+  WriteToDiskCacheWithIdSync(
+      helper_->context()->GetStorageControl(), script_url_, kResourceId,
+      {{"Content-Type", "text/javascript"},
+       {"Content-Length", base::NumberToString(kData.length())}},
+      kData, std::string());
+
+  // Set resources on version with checksum
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  resources.push_back(storage::mojom::ServiceWorkerResourceRecord::New(
+      kResourceId, script_url_, kData.length(), kChecksum));
+  version_->script_cache_map()->SetResources(resources);
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::INSTALLED);
+
+  base::HistogramTester histogram_tester;
+
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(&client);
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+
+  // Verification should pass
+  histogram_tester.ExpectUniqueSample("ServiceWorker.ResourceChecksumMatch",
+                                      true, 1);
 }
 
 // This tests copying script and creating resume type
