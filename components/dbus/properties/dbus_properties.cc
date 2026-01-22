@@ -136,11 +136,11 @@ void DbusProperties::OnGetAllProperties(
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
-  if (properties_.contains(interface)) {
+  if (auto it = properties_.find(interface); it != properties_.end()) {
     dbus::MessageWriter array_writer(nullptr);
     dbus::MessageWriter dict_entry_writer(nullptr);
     writer.OpenArray("{sv}", &array_writer);
-    for (const auto& pair : properties_[interface]) {
+    for (const auto& pair : it->second) {
       array_writer.OpenDictEntry(&dict_entry_writer);
       dict_entry_writer.AppendString(pair.first);
       pair.second.Write(dict_entry_writer);
@@ -169,18 +169,22 @@ void DbusProperties::OnGetProperty(
   dbus::MessageReader reader(method_call);
   std::string interface;
   std::string property_name;
-  if (!reader.PopString(&interface) || !reader.PopString(&property_name) ||
-      !properties_.contains(interface) ||
-      !properties_[interface].contains(property_name)) {
-    std::move(response_sender).Run(nullptr);
-    return;
+
+  if (reader.PopString(&interface) && reader.PopString(&property_name)) {
+    if (auto it = properties_.find(interface); it != properties_.end()) {
+      if (auto variant_it = it->second.find(property_name);
+          variant_it != it->second.end()) {
+        std::unique_ptr<dbus::Response> response =
+            dbus::Response::FromMethodCall(method_call);
+        dbus::MessageWriter writer(response.get());
+        variant_it->second.Write(writer);
+        std::move(response_sender).Run(std::move(response));
+        return;
+      }
+    }
   }
 
-  std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method_call);
-  dbus::MessageWriter writer(response.get());
-  properties_[interface][property_name].Write(writer);
-  std::move(response_sender).Run(std::move(response));
+  std::move(response_sender).Run(nullptr);
 }
 
 void DbusProperties::OnSetProperty(
