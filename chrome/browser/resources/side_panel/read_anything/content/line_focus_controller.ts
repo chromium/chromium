@@ -112,7 +112,7 @@ export class LineFocusController {
       const previousY = this.model_.getY();
       this.setY_(Math.max(this.model_.getMinY(), y));
       chrome.readingMode.addLineFocusMouseDistance(
-          Math.abs(this.model_.getY() - previousY));
+          Math.round(Math.abs(this.model_.getY() - previousY)));
     }
   }
 
@@ -337,10 +337,14 @@ export class LineFocusController {
       // TODO(crbug.com/447427066): Consider whether to instead scroll one
       // line at a time. If so, uncomment the code below and remove the center
       // logic below.
-      // const scrollDiff = lines[newIndex]! - lines[currentLineIndex]!;
+      // const scrollDiff = lines[nextIndex]! - lines[clampedIndex]!;
 
       // Center it vertically.
-      const scrollDiff = bottomRect.bottom - (this.model_.getMaxY() / 2);
+      const desiredCenter =
+          this.getCurrentLineFocusType() === LineFocusType.LINE ?
+          bottomRect.bottom :
+          (topRect.top + bottomRect.bottom) / 2;
+      const scrollDiff = desiredCenter - (this.model_.getMaxY() / 2);
       this.scroll_(scrollDiff);
     } else if (this.model_.getCurrentLineIndex() !== currentIndex) {
       chrome.readingMode.incrementLineFocusKeyboardLines();
@@ -439,7 +443,10 @@ export class LineFocusController {
     const numLines = this.getCurrentLineFocusStyle().lines;
     const topIndex = currentLineIndex - ((numLines - 1) / 2);
     const maxTopIndex = bounds.length - numLines;
-    const validTopIndex = Math.max(0, Math.min(maxTopIndex, topIndex));
+    const minTopIndex =
+        bounds.findIndex(rect => rect.top >= this.model_.getMinY());
+    const validTopIndex =
+        Math.max(minTopIndex, Math.min(maxTopIndex, topIndex));
     const topLine = bounds[validTopIndex]!;
     this.model_.setTop(topLine.top);
     const bottomIndex = (validTopIndex + numLines - 1);
