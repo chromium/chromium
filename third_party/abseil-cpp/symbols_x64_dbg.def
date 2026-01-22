@@ -2798,7 +2798,6 @@ EXPORTS
     ??_4uint128@absl@@QEAAAEAV01@V01@@Z
     ??_5uint128@absl@@QEAAAEAV01@V01@@Z
     ??_6uint128@absl@@QEAAAEAV01@V01@@Z
-    ??_ECordzHandle@cord_internal@absl@@MEAAPEAXI@Z
     ?AbortedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?AbsDuration@absl@@YA?AVDuration@1@V21@@Z
     ?AbslFormatFlush@detect_specialization@log_internal@absl@@YAXPEAVStringifySink@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -2938,7 +2937,6 @@ EXPORTS
     ?Avail@FormatSinkImpl@str_format_internal@absl@@AEBA_KXZ
     ?Await@Mutex@absl@@QEAAXAEBVCondition@2@@Z
     ?AwaitCommon@Mutex@absl@@AEAA_NAEBVCondition@2@VKernelTimeout@synchronization_internal@2@@Z
-    ?BadDownCastCrash@base_internal@absl@@YAXPEBD0@Z
     ?Base64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?Base64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?Base64EscapeInternal@strings_internal@absl@@YA_KPEBE_KPEAD1PEBD_N@Z
@@ -3384,7 +3382,6 @@ EXPORTS
     ?GetData@?$AllocationTransaction@V?$allocator@PEAVLogSink@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAAEAPEAPEAVLogSink@3@XZ
     ?GetData@?$AllocationTransaction@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QEAAAEAPEAUPayload@status_internal@3@XZ
     ?GetDebugStackTraceHook@debugging_internal@absl@@YAP6AXQEBQEAXHP6AXPEBDPEAX@Z2@ZXZ
-    ?GetDebugStackTraceHookLegacy@debugging_internal@absl@@YAP6AXQEBQEAXHP6AXPEBDPEAX@Z2@ZXZ
     ?GetEntropyFromRandenPool@random_internal@absl@@YAXPEAX_K@Z
     ?GetEstimatedFairShareMemoryUsage@cord_internal@absl@@YA_KPEBUCordRep@12@@Z
     ?GetEstimatedMemoryUsage@cord_internal@absl@@YA_KPEBUCordRep@12@@Z

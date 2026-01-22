@@ -628,10 +628,7 @@ class linked_hash_map {
   std::pair<iterator, bool> InsertOrAssignInternal(K&& k, V&& v) {
     auto [it, inserted] =
         LazyEmplaceInternal(std::forward<K>(k), std::forward<V>(v));
-    if (!inserted) {
-      // NOLINTNEXTLINE(bugprone-use-after-move)
-      it->second = std::forward<V>(v);
-    }
+    if (!inserted) it->second = std::forward<V>(v);
     return {it, inserted};
   }
 

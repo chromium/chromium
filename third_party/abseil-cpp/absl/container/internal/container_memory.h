@@ -135,7 +135,6 @@ decltype(std::declval<F>()(std::declval<T>())) WithConstructedImpl(
 template <class T, size_t... Is>
 auto TupleRefImpl(T&& t, absl::index_sequence<Is...>)
     -> decltype(std::forward_as_tuple(std::get<Is>(std::forward<T>(t))...)) {
-  // NOLINTNEXTLINE(bugprone-use-after-move)
   return std::forward_as_tuple(std::get<Is>(std::forward<T>(t))...);
 }
 

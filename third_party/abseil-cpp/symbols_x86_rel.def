@@ -355,7 +355,6 @@ EXPORTS
     ??_0Duration@absl@@QAEAAV01@N@Z
     ??_0Duration@absl@@QAEAAV01@_J@Z
     ??_1Duration@absl@@QAEAAV01@V01@@Z
-    ??_ECordzHandle@cord_internal@absl@@MAEPAXI@Z
     ?AbortedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?AbslFormatFlush@detect_specialization@log_internal@absl@@YAXPAVStringifySink@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?AbslParseFlag@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVDuration@1@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
@@ -443,7 +442,6 @@ EXPORTS
     ?AtLocation@LogMessage@log_internal@absl@@QAEAAV123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@H@Z
     ?AtomicBufferValue@FlagImpl@flags_internal@absl@@ABEPAU?$atomic@_K@__Cr@std@@XZ
     ?AwaitCommon@Mutex@absl@@AAE_NABVCondition@2@VKernelTimeout@synchronization_internal@2@@Z
-    ?BadDownCastCrash@base_internal@absl@@YAXPBD0@Z
     ?Base64Escape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?Base64Escape@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ?Base64EscapeInternal@strings_internal@absl@@YAIPBEIPADIPBD_N@Z
@@ -728,7 +726,6 @@ EXPORTS
     ?GetCpuType@crc_internal@absl@@YA?AW4CpuType@12@XZ
     ?GetCurrentTimeNanos@absl@@YA_JXZ
     ?GetDebugStackTraceHook@debugging_internal@absl@@YAP6AXQBQAXHP6AXPBDPAX@Z2@ZXZ
-    ?GetDebugStackTraceHookLegacy@debugging_internal@absl@@YAP6AXQBQAXHP6AXPBDPAX@Z2@ZXZ
     ?GetEntropyFromRandenPool@random_internal@absl@@YAXPAXI@Z
     ?GetEstimatedFairShareMemoryUsage@cord_internal@absl@@YAIPBUCordRep@12@@Z
     ?GetEstimatedMemoryUsage@cord_internal@absl@@YAIPBUCordRep@12@@Z

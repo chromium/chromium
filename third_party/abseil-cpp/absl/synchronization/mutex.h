@@ -608,7 +608,6 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
   // Calls `mu->lock()` and returns when that call returns. That is, `*mu` is
   // guaranteed to be locked when this object is constructed. Requires that
   // `mu` be dereferenceable.
-  ABSL_REFACTOR_INLINE
   explicit MutexLock(Mutex* absl_nonnull mu) ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : MutexLock(*mu) {}
 
@@ -621,7 +620,6 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
     this->mu_.LockWhen(cond);
   }
 
-  ABSL_REFACTOR_INLINE
   explicit MutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : MutexLock(*mu, cond) {}
@@ -649,7 +647,6 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
     mu.lock_shared();
   }
 
-  ABSL_REFACTOR_INLINE
   explicit ReaderMutexLock(Mutex* absl_nonnull mu) ABSL_SHARED_LOCK_FUNCTION(mu)
       : ReaderMutexLock(*mu) {}
 
@@ -659,7 +656,6 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
     mu.ReaderLockWhen(cond);
   }
 
-  ABSL_REFACTOR_INLINE
   explicit ReaderMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_SHARED_LOCK_FUNCTION(mu)
       : ReaderMutexLock(*mu, cond) {}
@@ -687,7 +683,6 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
     mu.lock();
   }
 
-  ABSL_REFACTOR_INLINE
   explicit WriterMutexLock(Mutex* absl_nonnull mu)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : WriterMutexLock(*mu) {}
@@ -699,7 +694,6 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
     mu.WriterLockWhen(cond);
   }
 
-  ABSL_REFACTOR_INLINE
   explicit WriterMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : WriterMutexLock(*mu, cond) {}
@@ -1103,7 +1097,6 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
     this->mu_->lock();
   }
 
-  ABSL_REFACTOR_INLINE
   explicit ReleasableMutexLock(Mutex* absl_nonnull mu)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : ReleasableMutexLock(*mu) {}
@@ -1115,7 +1108,6 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
     this->mu_->LockWhen(cond);
   }
 
-  ABSL_REFACTOR_INLINE
   explicit ReleasableMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
       : ReleasableMutexLock(*mu, cond) {}

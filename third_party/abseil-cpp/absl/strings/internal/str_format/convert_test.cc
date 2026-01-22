@@ -284,11 +284,6 @@ const NativePrintfTraits &VerifyNativeImplementation() {
   return native_traits;
 }
 
-bool IsNativeHexFloatConversion(char f) { return f == 'a' || f == 'A'; }
-bool IsNativeFloatConversion(char f) {
-  return f == 'f' || f == 'F' || f == 'e' || f == 'E' || f == 'a' || f == 'A';
-}
-
 class FormatConvertTest : public ::testing::Test { };
 
 template <typename T>
@@ -804,19 +799,20 @@ void TestWithMultipleFormatsHelper(Floating tested_float) {
                    'e', 'E'}) {
       std::string fmt_str = std::string(fmt) + f;
 
-      if (fmt == absl::string_view("%.5000") && !IsNativeFloatConversion(f)) {
+      if (fmt == absl::string_view("%.5000") && f != 'f' && f != 'F' &&
+          f != 'a' && f != 'A') {
         // This particular test takes way too long with snprintf.
         // Disable for the case we are not implementing natively.
         continue;
       }
 
-      if (IsNativeHexFloatConversion(f) &&
+      if ((f == 'a' || f == 'A') &&
           !native_traits.hex_float_has_glibc_rounding) {
         continue;
       }
 
       if (!native_traits.hex_float_prefers_denormal_repr &&
-          IsNativeHexFloatConversion(f) &&
+          (f == 'a' || f == 'A') &&
           std::fpclassify(tested_float) == FP_SUBNORMAL) {
         continue;
       }
@@ -1332,13 +1328,14 @@ TEST_F(FormatConvertTest, LongDouble) {
                    'e', 'E'}) {
       std::string fmt_str = std::string(fmt) + 'L' + f;
 
-      if (fmt == absl::string_view("%.5000") && !IsNativeFloatConversion(f)) {
+      if (fmt == absl::string_view("%.5000") && f != 'f' && f != 'F' &&
+          f != 'a' && f != 'A') {
         // This particular test takes way too long with snprintf.
         // Disable for the case we are not implementing natively.
         continue;
       }
 
-      if (IsNativeHexFloatConversion(f)) {
+      if (f == 'a' || f == 'A') {
         if (!native_traits.hex_float_has_glibc_rounding ||
             !native_traits.hex_float_optimizes_leading_digit_bit_count) {
           continue;
