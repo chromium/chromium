@@ -9,6 +9,12 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="autofill_ai_switch"
+        android:order="0"
+        app:isPreferenceVisible="false"
+        app:allowDividerBelow="true" />
+
     <org.chromium.chrome.browser.autofill.options.RadioButtonGroupThirdPartyPreference
         android:key="autofill_third_party_filling"
         android:order="1"

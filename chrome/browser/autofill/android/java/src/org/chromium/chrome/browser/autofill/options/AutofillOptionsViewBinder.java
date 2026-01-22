@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.R;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -54,6 +57,16 @@ class AutofillOptionsViewBinder {
         } else if (key == THIRD_PARTY_TOGGLE_HINT) {
             view.getHint().setSummary(model.get(THIRD_PARTY_TOGGLE_HINT));
             view.getHint().setVisible(model.get(THIRD_PARTY_TOGGLE_HINT) != null);
+        } else if (key == AUTOFILL_AI_SETTING_VISIBLE) {
+            ChromeSwitchPreference autofillAiSwitch = view.getAutofillAiSwitch();
+            autofillAiSwitch.setVisible(model.get(AUTOFILL_AI_SETTING_VISIBLE));
+            autofillAiSwitch.setTitle(R.string.settings_autofill_ai_page_title);
+            autofillAiSwitch.setSummary(R.string.settings_autofill_ai_description);
+            autofillAiSwitch.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        // TODO(crbug.com/376662762): Implement side effect.
+                        return true;
+                    });
         } else {
             assert false : "Unhandled property: " + key;
         }

@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -41,6 +42,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String AUTOFILL_OPTIONS_REFERRER = "autofill-options-referrer";
     public static final String PREF_AUTOFILL_THIRD_PARTY_FILLING = "autofill_third_party_filling";
     public static final String PREF_THIRD_PARTY_TOGGLE_HINT = "third_party_toggle_hint";
+    public static final String PREF_AUTOFILL_AI_SWITCH = "autofill_ai_switch";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -85,6 +87,12 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                 findPreference(PREF_AUTOFILL_THIRD_PARTY_FILLING);
         assert thirdPartyFillingSwitch != null;
         return thirdPartyFillingSwitch;
+    }
+
+    ChromeSwitchPreference getAutofillAiSwitch() {
+        ChromeSwitchPreference autofillAiSwitch = findPreference(PREF_AUTOFILL_AI_SWITCH);
+        assert autofillAiSwitch != null;
+        return autofillAiSwitch;
     }
 
     TextMessagePreference getHint() {

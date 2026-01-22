@@ -1169,4 +1169,23 @@
   <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the enhanced autofill settings page to learn more about this feature.">
     learn more about enhanced autofill in settings
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings." formatter_data="android_java">
+    Enhanced autofill
+  </message>
+  <if expr="_google_chrome">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+      Chrome understands forms better and can autofill them faster for you
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+      Chrome understands forms better and can autofill them faster for you
+    </message>
+  </if>
+  <if expr="not _google_chrome">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+      Chromium understands forms better and can autofill them faster for you
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
+      Chromium understands forms better and can autofill them faster for you
+    </message>
+  </if>
 </grit-part>

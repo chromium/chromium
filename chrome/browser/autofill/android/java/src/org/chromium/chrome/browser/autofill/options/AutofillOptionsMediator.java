@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
@@ -116,6 +117,13 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     boolean isInitialized() {
         return mModel != null;
+    }
+
+    // TODO(crbug.com/467563819): Update the initial switch value using the Enhanced Autofill pref.
+    // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
+    // deep-link.
+    boolean shouldShowAutofillAi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
     }
 
     /**
