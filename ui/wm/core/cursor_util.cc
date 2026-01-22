@@ -302,6 +302,9 @@ std::optional<ui::CursorData> GetCursorData(
     // Read lottie content and create a lottie animation.
     std::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(resource_id);
+    if (!lottie_bytes) {
+      return std::nullopt;
+    }
     scoped_refptr<cc::SkottieWrapper> skottie =
         cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
     cursor_animations[type] =
