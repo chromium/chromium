@@ -523,8 +523,6 @@ TrustStoreChrome::ParseCrsConstraintsSwitch(std::string_view switch_value) {
       } else {
         LOG(ERROR) << "unrecognized constraint " << constraint_name_lower;
       }
-      // TODO(crbug.com/40941039): add other constraint types here when they
-      // are implemented
     }
     for (const auto& root_hash : root_hashes) {
       constraints[root_hash].push_back(constraint);
