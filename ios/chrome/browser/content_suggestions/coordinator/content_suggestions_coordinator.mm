@@ -1265,6 +1265,9 @@ using segmentation_platform::TipIdentifier;
       break;
     case SetUpListItemType::kBackgroundCustomization:
       [self.delegate openMainCustomizationMenu];
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands)
+          presentInProductHelpWithType:InProductHelpType::
+                                           kHomeBackgroundCustomization];
   }
 }
 

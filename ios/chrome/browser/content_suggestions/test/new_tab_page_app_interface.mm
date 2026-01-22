@@ -72,6 +72,10 @@ using set_up_list_prefs::SetUpListItemState;
                                   unknown);
   set_up_list_prefs::SetItemState(localState, SetUpListItemType::kNotifications,
                                   unknown);
+  set_up_list_prefs::SetItemState(localState, SetUpListItemType::kSafariImport,
+                                  unknown);
+  set_up_list_prefs::SetItemState(
+      localState, SetUpListItemType::kBackgroundCustomization, unknown);
 }
 
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete {
