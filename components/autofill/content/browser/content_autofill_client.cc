@@ -20,6 +20,10 @@ ContentAutofillClient::ContentAutofillClient(content::WebContents* web_contents)
 
 ContentAutofillClient::~ContentAutofillClient() = default;
 
+content::WebContents* ContentAutofillClient::web_contents() const {
+  return autofill_driver_factory_.web_contents();
+}
+
 ContentAutofillDriverFactory&
 ContentAutofillClient::GetAutofillDriverFactory() {
   return autofill_driver_factory_;
