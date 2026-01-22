@@ -26854,6 +26854,22 @@ should be able to be added at any place in this file.
   <description>Reported when the BWG FRE was shown. iOS only.</description>
 </action>
 
+<action name="MobileGeminiImageRemixContextMenuEntryPointShown">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user was shown the Gemini Image Remix context menu entry point.
+  </description>
+</action>
+
+<action name="MobileGeminiImageRemixContextMenuEntryPointTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the Gemini Image Remix context menu entry point.
+  </description>
+</action>
+
 <action name="MobileGeminiImageRemixIPHTapped">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>

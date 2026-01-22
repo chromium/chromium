@@ -125,6 +125,33 @@ enum class IOSGeminiFeedback {
 // UMA histogram key for IOS.Gemini.Feedback.
 extern const char kFeedbackHistogram[];
 
+// Enum for the IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.*
+// histograms.
+// LINT.IfChange(IOSGeminiAspectRatioBucket)
+enum class IOSGeminiAspectRatioBucket {
+  kUnknown = 0,
+  kVeryTall = 1,
+  kTall = 2,
+  kSlightlyTall = 3,
+  kPerfectSquare = 4,
+  kSlightlyWide = 5,
+  kWide = 6,
+  kVeryWide = 7,
+  kMaxValue = kVeryWide,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiAspectRatioBucket)
+
+// UMA histogram key for
+// IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped.
+extern const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[];
+
+// Records that the Image Remix context menu entry point was shown.
+void RecordImageRemixContextMenuEntryPointShown();
+
+// Records that the Image Remix context menu entry point was tapped with the
+// given image aspect ratio.
+void RecordImageRemixContextMenuEntryPointTapped(double aspect_ratio);
+
 // Records user feedback on a Gemini response.
 void RecordGeminiFeedback(IOSGeminiFeedback feedback);
 // Records the duration of a Gemini session.

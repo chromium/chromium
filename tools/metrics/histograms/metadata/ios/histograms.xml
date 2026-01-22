@@ -2413,6 +2413,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped"
+    enum="IOSGeminiAspectRatioBucket" expires_after="2027-01-16">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    The aspect ratio bucket of the associated image when the user tapped the
+    context menu Image Remix entry point.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.ImageRemix.IPH.DismissalReason"
     enum="InProductHelpDismissalReason" expires_after="2027-01-16">
   <owner>joepeplowski@google.com</owner>

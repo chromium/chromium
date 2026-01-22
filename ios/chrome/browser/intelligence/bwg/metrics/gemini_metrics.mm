@@ -19,6 +19,33 @@ base::TimeTicks& GetLastGeminiImpressionTime() {
   static base::TimeTicks last_impression_time;
   return last_impression_time;
 }
+
+// Returns an IOSGeminiAspectRatioBucket for a given aspect ratio.
+IOSGeminiAspectRatioBucket GetAspectRatioBucket(double aspect_ratio) {
+  if (aspect_ratio <= 0) {
+    return IOSGeminiAspectRatioBucket::kUnknown;
+  }
+  if (aspect_ratio < 0.3) {
+    return IOSGeminiAspectRatioBucket::kVeryTall;
+  }
+  if (aspect_ratio < 0.8) {
+    return IOSGeminiAspectRatioBucket::kTall;
+  }
+  if (aspect_ratio < 1.0) {
+    return IOSGeminiAspectRatioBucket::kSlightlyTall;
+  }
+  if (aspect_ratio == 1.0) {
+    return IOSGeminiAspectRatioBucket::kPerfectSquare;
+  }
+  if (aspect_ratio <= 1.2) {
+    return IOSGeminiAspectRatioBucket::kSlightlyWide;
+  }
+  if (aspect_ratio <= 1.7) {
+    return IOSGeminiAspectRatioBucket::kWide;
+  }
+  return IOSGeminiAspectRatioBucket::kVeryWide;
+}
+
 }  // namespace
 
 const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
@@ -66,6 +93,9 @@ const char kResponseLatencyWithoutContextHistogram[] =
 const char kSessionPromptCountHistogram[] = "IOS.Gemini.Session.PromptCount";
 
 const char kSessionFirstPromptHistogram[] = "IOS.Gemini.Session.FirstPrompt";
+
+const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[] =
+    "IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped";
 
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   switch (action) {
@@ -257,4 +287,17 @@ void RecordGeminiFeedback(IOSGeminiFeedback feedback) {
           base::UserMetricsAction("MobileGeminiFeedbackThumbsDown"));
       break;
   }
+}
+
+void RecordImageRemixContextMenuEntryPointShown() {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileGeminiImageRemixContextMenuEntryPointShown"));
+}
+
+void RecordImageRemixContextMenuEntryPointTapped(double aspect_ratio) {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileGeminiImageRemixContextMenuEntryPointTapped"));
+  base::UmaHistogramEnumeration(
+      kImageRemixContextMenuEntryPointAspectRatioTappedHistogram,
+      GetAspectRatioBucket(aspect_ratio));
 }
