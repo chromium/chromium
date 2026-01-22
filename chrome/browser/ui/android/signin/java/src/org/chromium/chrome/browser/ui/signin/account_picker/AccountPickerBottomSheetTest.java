@@ -96,7 +96,6 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.SigninMatchers;
@@ -115,12 +114,6 @@ import java.util.concurrent.atomic.AtomicReference;
         message = "crbug.com/428056054")
 public class AccountPickerBottomSheetTest {
 
-    private static class CustomFakeAccountInfoService extends FakeAccountInfoService {
-        int getNumberOfObservers() {
-            return ThreadUtils.runOnUiThreadBlocking(mObservers::size);
-        }
-    }
-
     private static final String DOMAIN1 = "Domain1";
 
     @Rule
@@ -132,12 +125,12 @@ public class AccountPickerBottomSheetTest {
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
 
-    private final CustomFakeAccountInfoService mFakeAccountInfoService =
-            new CustomFakeAccountInfoService();
-
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeAccountManagerFacade, mFakeAccountInfoService);
+            new AccountManagerTestRule(mFakeAccountManagerFacade);
+
+    private final FakeIdentityManager mFakeIdentityManager =
+            mAccountManagerTestRule.getIdentityManager();
 
     @Rule
     public OverrideContextWrapperTestRule mAutoTestRule = new OverrideContextWrapperTestRule();
@@ -153,7 +146,6 @@ public class AccountPickerBottomSheetTest {
 
     @Captor private ArgumentCaptor<Callback<Boolean>> mUpdateCredentialsSuccessCallbackCaptor;
 
-    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
     private final AtomicReference<Boolean> mIsNextSigninSuccessful = new AtomicReference<>(true);
     private WebPageStation mPage;
     private AccountPickerBottomSheetCoordinator mCoordinator;
@@ -296,7 +288,7 @@ public class AccountPickerBottomSheetTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mIdentityManager,
+                                    mFakeIdentityManager,
                                     mSigninManagerMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
@@ -324,7 +316,7 @@ public class AccountPickerBottomSheetTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mIdentityManager,
+                                    mFakeIdentityManager,
                                     mSigninManagerMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
@@ -358,13 +350,13 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
-        Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
                 2,
@@ -390,13 +382,13 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
 
         Espresso.pressBack();
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
-        Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
                 1,
@@ -421,13 +413,13 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
 
         onViewWaiting(withText(R.string.signin_account_picker_dismiss_button)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
-        Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
                 2,
@@ -453,13 +445,13 @@ public class AccountPickerBottomSheetTest {
                 .check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
         Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(2, mFakeIdentityManager.getObserverCount());
 
         onVisibleView(withText(R.string.cancel)).perform(click());
 
         Assert.assertFalse(controller.isSheetOpen());
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
-        Assert.assertEquals(0, mFakeAccountInfoService.getNumberOfObservers());
+        Assert.assertEquals(0, mFakeIdentityManager.getObserverCount());
         accountConsistencyHistogram.assertExpected();
         Assert.assertEquals(
                 1,
@@ -559,7 +551,7 @@ public class AccountPickerBottomSheetTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mIdentityManager,
+                                    mFakeIdentityManager,
                                     mSigninManagerMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
@@ -606,7 +598,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedThenExpandedBottomSheet();
         String newFullName = "New Full Name1";
 
-        mFakeAccountInfoService.addAccountInfo(
+        mAccountManagerTestRule.addAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
@@ -627,7 +619,7 @@ public class AccountPickerBottomSheetTest {
         buildAndShowBottomSheet(AccountPickerLaunchMode.CHOOSE_ACCOUNT);
         String newFullName = "New Full Name1";
 
-        mFakeAccountInfoService.addAccountInfo(
+        mAccountManagerTestRule.addAccount(
                 new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
 
         onViewFullyShownInParent(
@@ -669,7 +661,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testSignInDefaultAccount_alreadySignedIn() {
         buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
-        mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT2);
+        mFakeIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT2);
 
         clickContinueButtonAndCheckSignInInProgressSheet();
 
@@ -1536,7 +1528,7 @@ public class AccountPickerBottomSheetTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mIdentityManager,
+                                    mFakeIdentityManager,
                                     mSigninManagerMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,

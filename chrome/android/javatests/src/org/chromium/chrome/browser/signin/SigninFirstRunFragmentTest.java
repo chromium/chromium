@@ -106,7 +106,6 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.SigninMatchers;
@@ -152,9 +151,7 @@ public class SigninFirstRunFragmentTest {
     @Mock private PolicyLoadListener mPolicyLoadListenerMock;
     @Mock private OneshotSupplierImpl<Boolean> mChildAccountStatusListenerMock;
     @Mock private SigninManager mSigninManagerMock;
-    @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SigninChecker mSigninCheckerMock;
-    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
     @Mock private ProfileProvider mProfileProvider;
@@ -382,15 +379,8 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenSigninIsDisabledByPolicy() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
@@ -407,19 +397,8 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenSigninErrorOccurs() {
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
         doCallback(/* index= */ 2, (SignInCallback callback) -> callback.onSignInAborted())
                 .when(mSigninManagerMock)
                 .signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
@@ -447,16 +426,8 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-
                     PrefService prefService =
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
@@ -669,20 +640,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testContinueButtonWithTheSignedInAccount() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
         launchActivityWithFragment();
 
         final String continueAsText =
@@ -693,7 +650,6 @@ public class SigninFirstRunFragmentTest {
                                 TestAccounts.ACCOUNT1.getGivenName());
         clickContinueButton(continueAsText);
 
-        verify(mSigninManagerMock, never()).signin(any(CoreAccountInfo.class), anyInt(), any());
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
@@ -744,19 +700,6 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testContinueButtonWithChildAccount() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
-
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         checkContinueButtonWithChildAccount(
@@ -785,19 +728,6 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
-
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
 
         checkContinueButtonWithChildAccount(
@@ -810,18 +740,7 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
+
         mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
 
         checkContinueButtonWithChildAccount(
@@ -834,18 +753,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testProgressSpinnerOnContinueButtonPress() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
         launchActivityWithFragment();
 
         final String continueAsText =
@@ -892,18 +799,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testUIStateChangeOnContinueButtonPress_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    // IdentityManager#getPrimaryAccountInfo() is called during this test flow by
-                    // FullscreenSigninMediator.
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
         launchActivityWithFragment();
 
         final String continueAsText =
@@ -936,27 +831,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSuccessfulSignInFlow_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
-        doCallback(
-                        /* index= */ 2,
-                        (SignInCallback callback) -> {
-                            callback.onSignInComplete();
-                        })
-                .when(mSigninManagerMock)
-                .signin(eq(TestAccounts.ACCOUNT1), anyInt(), any());
-        doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(false))
-                .when(mSigninManagerMock)
-                .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
-
         launchActivityWithFragment();
         final String continueAsText =
                 mActivityTestRule
@@ -978,16 +852,7 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSignInFailureUIReversion_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
+        IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         doCallback(
                         /* index= */ 2,
                         (SignInCallback callback) -> {
@@ -998,7 +863,6 @@ public class SigninFirstRunFragmentTest {
         doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(false))
                 .when(mSigninManagerMock)
                 .isAccountManaged(eq(TestAccounts.ACCOUNT1), any());
-
         launchActivityWithFragment();
         final String continueAsText =
                 mActivityTestRule
@@ -1055,20 +919,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testStatePreservationOnRotation_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
-        // Don't complete the sign-in to keep the spinner active.
-        doCallback(2, (SignInCallback callback) -> {})
-                .when(mSigninManagerMock)
-                .signin(any(), anyInt(), any());
         launchActivityWithFragment();
 
         final String continueAsText =
@@ -1099,16 +949,6 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testUIWithNoGivenNameAccount_XplatSyncedSetup() {
         mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get()
-                                    .getIdentityManager(ProfileManager.getLastUsedRegularProfile()))
-                            .thenReturn(mIdentityManagerMock);
-                });
         launchActivityWithFragment();
 
         final String continueAsText =

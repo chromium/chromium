@@ -118,4 +118,8 @@ public class FakeIdentityManager implements IdentityManager {
     public void setIsClearPrimaryAccountAllowed(boolean isAllowed) {
         mIsClearPrimaryAccountAllowed = isAllowed;
     }
+
+    public int getObserverCount() {
+        return mObservers.size();
+    }
 }
