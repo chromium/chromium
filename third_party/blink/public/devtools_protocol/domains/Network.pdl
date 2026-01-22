@@ -333,8 +333,6 @@ domain Network
       # TODO(https://crbug.com/1263483): Remove this once frontend code does
       # not reference it anymore.
       PreflightInvalidAllowExternal
-      PreflightMissingAllowPrivateNetwork
-      PreflightInvalidAllowPrivateNetwork
       InvalidAllowMethodsPreflightResponse
       InvalidAllowHeadersPreflightResponse
       MethodDisallowedByPreflightResponse
@@ -345,25 +343,7 @@ domain Network
       # Request carried a target IP address space property that did not match
       # the target resource's address space.
       InvalidPrivateNetworkAccess
-      # Request was a private network request yet did not carry a target IP
-      # address space.
-      UnexpectedPrivateNetworkAccess
       NoCorsRedirectModeNotFollow
-      # Request was a private network request and needed user permission yet did
-      # not carry `Private-Network-Access-Id` in the preflight response.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PreflightMissingPrivateNetworkAccessId
-      # Request was a private network request and needed user permission yet did
-      # not carry `Private-Network-Access-Name` in the preflight response.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PreflightMissingPrivateNetworkAccessName
-      # Request was a private network request and needed user permission yet not
-      # able to request for permission.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PrivateNetworkAccessPermissionUnavailable
-      # Request was a private network request and is denied by user permission.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PrivateNetworkAccessPermissionDenied
       # Request was a local network request and is denied by user permission.
       # https://wicg.github.io/local-network-access/
       LocalNetworkAccessPermissionDenied
