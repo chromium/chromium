@@ -281,7 +281,8 @@ TestingApplicationContext::GetActivityReporter() {
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
             GetSharedURLLoaderFactory(),
             // Never send cookies for activity reports.
-            base::BindRepeating([](const GURL& url) { return false; })));
+            base::BindRepeating([](const GURL& url) { return false; })),
+        base::DoNothing());
   }
   return activity_reporter_.get();
 }

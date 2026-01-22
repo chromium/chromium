@@ -67,6 +67,7 @@ source_set("updater") {
         "//chrome/common:channel_info",
         "//chrome/common:chrome_features",
         "//chrome/updater:browser_sources",
+        "//components/activity_reporter:buildflags",
         "//ui/base",
       ]
       frameworks = [ "OpenDirectory.framework" ]
