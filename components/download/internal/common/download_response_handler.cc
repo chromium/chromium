@@ -76,6 +76,7 @@ DownloadResponseHandler::DownloadResponseHandler(
     bool is_background_mode)
     : delegate_(delegate),
       started_(false),
+      first_origin_(url::Origin::Create(resource_request->url)),
       save_info_(std::move(save_info)),
       url_chain_(std::move(url_chain)),
       method_(resource_request->method),
@@ -84,7 +85,6 @@ DownloadResponseHandler::DownloadResponseHandler(
       is_transient_(is_transient),
       fetch_error_body_(fetch_error_body),
       cross_origin_redirects_(cross_origin_redirects),
-      first_origin_(url::Origin::Create(resource_request->url)),
       request_headers_(request_headers),
       request_origin_(request_origin),
       download_source_(download_source),
@@ -135,11 +135,11 @@ void DownloadResponseHandler::OnReceiveResponse(
   // suggested name for the security origin of the downlaod URL. However, this
   // assumption doesn't hold if there were cross origin redirects. Therefore,
   // clear the suggested_name for such requests.
-  if (request_initiator_.has_value() &&
+  if (create_info_->request_initiator.has_value() &&
       !create_info_->url_chain.back().SchemeIsBlob() &&
       !create_info_->url_chain.back().SchemeIs(url::kAboutScheme) &&
       !create_info_->url_chain.back().SchemeIs(url::kDataScheme) &&
-      request_initiator_.value() !=
+      create_info_->request_initiator.value() !=
           url::Origin::Create(create_info_->url_chain.back())) {
     create_info_->save_info->suggested_name.clear();
   }
@@ -160,6 +160,11 @@ void DownloadResponseHandler::OnReceiveResponse(
 std::unique_ptr<DownloadCreateInfo>
 DownloadResponseHandler::CreateDownloadCreateInfo(
     const network::mojom::URLResponseHead& head) {
+  // This method consumes `save_info_` and other members. Check that it isn't
+  // called more than once.
+  CHECK(save_info_);
+  CHECK(!create_info_);
+
   auto create_info = std::make_unique<DownloadCreateInfo>(
       base::Time::Now(), std::move(save_info_));
 
@@ -180,22 +185,22 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->result = result;
   if (result == DOWNLOAD_INTERRUPT_REASON_NONE)
     create_info->remote_address = head.remote_endpoint.ToStringWithoutPort();
-  create_info->method = method_;
+  create_info->method = std::move(method_);
   create_info->connection_info = head.connection_info;
-  create_info->url_chain = url_chain_;
-  create_info->referrer_url = referrer_;
+  create_info->url_chain = std::move(url_chain_);
+  create_info->referrer_url = std::move(referrer_);
   create_info->referrer_policy = referrer_policy_;
   create_info->transient = is_transient_;
   create_info->response_headers = head.headers;
   create_info->offset = create_info->save_info->offset;
   create_info->mime_type = head.mime_type;
   create_info->fetch_error_body = fetch_error_body_;
-  create_info->request_headers = request_headers_;
-  create_info->request_origin = request_origin_;
+  create_info->request_headers = std::move(request_headers_);
+  create_info->request_origin = std::move(request_origin_);
   create_info->download_source = download_source_;
-  create_info->request_initiator = request_initiator_;
+  create_info->request_initiator = std::move(request_initiator_);
   create_info->credentials_mode = credentials_mode_;
-  create_info->isolation_info = isolation_info_;
+  create_info->isolation_info = std::move(isolation_info_);
   create_info->require_safety_checks = require_safety_checks_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());

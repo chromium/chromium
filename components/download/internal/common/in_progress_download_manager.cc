@@ -513,9 +513,6 @@ void InProgressDownloadManager::StartDownload(
   DVLOG(20) << __func__
             << "() result=" << DownloadInterruptReasonToString(info->result);
 
-  GURL url = info->url();
-  std::vector<GURL> url_chain = info->url_chain;
-  std::string mime_type = info->mime_type;
 
   // If the download cannot be found locally, ask |delegate_| to provide the
   // DownloadItem.
