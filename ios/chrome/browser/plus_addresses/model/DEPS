@@ -1,8 +1,10 @@
 include_rules = [
+  # keep-sorted start
   "+components/plus_addresses/core/browser",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webdata_services/model",
+  # keep-sorted end
 ]
