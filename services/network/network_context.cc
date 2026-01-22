@@ -320,6 +320,9 @@ void CookieOSCryptAsyncDelegate::InitCallback(
     mojo::Remote<network::mojom::CookieEncryptionProvider> lifetime,
     os_crypt_async::Encryptor encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The Encryptor is moved between sequences here. Verify that it's only moved
+  // once.
+  CHECK(!instance_.has_value());
   instance_.emplace(std::move(encryptor));
   is_initialized_ = true;
   callbacks_.Notify();
