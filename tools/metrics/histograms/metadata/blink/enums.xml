@@ -6408,6 +6408,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5774" label="WebAudioRenderSizeHint"/>
   <int value="5775" label="WebAudioRenderQuantumSize"/>
   <int value="5776" label="ImageElementTimingNotImageOrVideoNode"/>
+  <int value="5777" label="XSLPIInSVGImage"/>
+  <int value="5778" label="XSLPIInSVGStandaloneDoc"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

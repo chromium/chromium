@@ -643,6 +643,10 @@ void SVGImage::UpdateUseCountersAfterLoad(const Document& document) const {
       document.CountUse(WebFeature::kSVGSMILAnimationInImageRegardlessOfCache);
     }
   }
+
+  if (did_encounter_xsl_) {
+    document.CountUse(WebFeature::kXSLPIInSVGImage);
+  }
 }
 
 void SVGImage::MaybeRecordSvgImageProcessingTime(const Document& document) {

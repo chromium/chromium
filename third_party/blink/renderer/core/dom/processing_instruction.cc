@@ -31,7 +31,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"  // for parseAttributes()
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"  // for parseAttributesRust()
@@ -152,6 +154,25 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (is_xsl_ && SVGImage::IsInSVGImage(this) && !IsLocalSheet(href)) {
     is_xsl_ = false;
     return false;
+  }
+
+  if (is_xsl_ && GetDocument().IsSVGDocument()) {
+    if (SVGImage::IsInSVGImage(this)) {
+      // Encountering XSL inside an external SVG image can't be counted through
+      // the document we retrieve through GetDocument() here, as that is the SVG
+      // document of the image. Instead, we set the flag on the SVG image, and
+      // in SVGImage::UpdateUseCountersAfterLoad() send the use counter as part
+      // of the metrics of the embedding document, not the SVG document of the
+      // image.
+      if (Page* page = GetDocument().GetPage()) {
+        if (auto* client =
+                DynamicTo<IsolatedSVGChromeClient>(&page->GetChromeClient())) {
+          client->SetDidEncounterXSL();
+        }
+      }
+    } else {
+      UseCounter::Count(GetDocument(), WebFeature::kXSLPIInSVGStandaloneDoc);
+    }
   }
 
   auto it_charset = attrs.find("charset");

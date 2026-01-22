@@ -5090,6 +5090,8 @@ enum WebFeature {
   kWebAudioRenderSizeHint = 5774,
   kWebAudioRenderQuantumSize = 5775,
   kImageElementTimingNotImageOrVideoNode = 5776,
+  kXSLPIInSVGImage = 5777,
+  kXSLPIInSVGStandaloneDoc = 5778,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
