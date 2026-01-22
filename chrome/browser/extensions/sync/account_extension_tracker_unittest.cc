@@ -70,6 +70,9 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
 
 // Test that an extension's AccountExtensionType is set to the right value based
 // on whether it was installed when there is a signed in user with sync enabled.
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
   InstallCRX(good_crx_path, INSTALL_NEW);
