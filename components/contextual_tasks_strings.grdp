@@ -40,6 +40,9 @@
   <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE" desc="Learn more clickable span shown on the first run experience of the contextual task page.">
     Learn more
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON" desc="Accept button shown on the first run experience of the contextual task page.">
+    Got it
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_CONTINUE_THREAD_MESSAGE" desc="Text on the side panel to ask user whether they want to continue the current thread.">
     Continue this thread?
   </message>

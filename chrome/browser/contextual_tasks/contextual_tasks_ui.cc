@@ -210,6 +210,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"onboardingTitle", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_TITLE},
       {"onboardingBody", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_DESCRIPTION},
       {"onboardingLink", IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_LEARN_MORE},
+      {"onboardingAcceptButton",
+       IDS_CONTEXTUAL_TASKS_FIRST_RUN_EXPERIENCE_ACCEPT_BUTTON},
       {"permissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
       {"listening", IDS_NEW_TAB_VOICE_LISTENING},
   };

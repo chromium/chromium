@@ -56,9 +56,8 @@ a {
   color: var(--cr-link-color);
 }
 
-cr-icon-button {
-  --cr-icon-button-margin-end: 0;
-  --cr-icon-button-fill-color: var(--color-composebox-font);
-  --cr-icon-button-size: 20px;
-  --cr-icon-button-icon-size: 16px;
+#buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
 }
