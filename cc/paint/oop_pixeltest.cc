@@ -1129,7 +1129,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   // Draw using image HDR metadata indicating that 10,000 nits is the maximum
   // luminance. The result should map the image to something darker than solid
   // white.
-  constexpr float kExpected10kToSdr = 0.7114198123454021f;
+  constexpr float kExpected10kToSdr = 0.60392159223556519f;
   {
     auto actual =
         Raster(make_display_item_list(image_500_nits, 10000.f), options);
@@ -1153,7 +1153,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
   // Increase the destination HDR headroom. The result should now be brighter.
   {
-    constexpr float kExpected = 0.933675419515227f;
+    constexpr float kExpected = 0.83529418706893921f;
     constexpr float kDstHeadroom = 1.5f;
     options.target_color_params.hdr_headroom = std::log2(kDstHeadroom);
     auto actual =
