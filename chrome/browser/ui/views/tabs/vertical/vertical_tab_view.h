@@ -61,8 +61,10 @@ class VerticalTabView : public views::View,
   const TabCollectionNode* collection_node() const { return collection_node_; }
   const TabStyle* tab_style() { return tab_style_; }
   const TabRendererData& tab_data() const { return tab_data_; }
-  TabCloseButton* close_button_for_testing() { return close_button_; }
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
+
+  TabCloseButton* close_button_for_testing() { return close_button_; }
+  bool collapsed_for_testing() { return collapsed_; }
 
  private:
   // views::View
@@ -160,6 +162,7 @@ class VerticalTabView : public views::View,
   bool selected_ = false;
   bool hovered_ = false;
   bool split_ = false;
+  bool collapsed_ = false;
   bool pinned_ = false;
   bool shift_pressed_on_mouse_down_ = false;
 

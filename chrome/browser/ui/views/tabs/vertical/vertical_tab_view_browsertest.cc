@@ -280,6 +280,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   // After the mouse exits the tab, the close button should be hidden.
   event_generator.MoveMouseTo(gfx::Point());
   EXPECT_FALSE(close_button->GetVisible());
+
+  // Collapse the tab strip.
+  tabs::VerticalTabStripStateController::From(browser())->SetCollapsed(true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_view->collapsed_for_testing(); }));
+
+  // After the mouse enters the tab, the close button should still be hidden
+  // since the tab is not active.
+  event_generator.MoveMouseTo(tab_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(close_button->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonPressed) {

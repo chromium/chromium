@@ -361,6 +361,8 @@ void VerticalTabView::RemovedFromWidget() {
 }
 
 void VerticalTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  collapsed_ = width() < VerticalTabStripRegionView::kCollapsedWidth;
+
   SetClipPath(GetPath());
 }
 
@@ -407,8 +409,7 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
   gfx::Rect bounds_remaining = gfx::Rect(0, 0, width, height);
   bounds_remaining.Inset(gfx::Insets::VH(0, kHorizontalInset));
 
-  const bool is_centered =
-      width < VerticalTabStripRegionView::kCollapsedWidth || pinned_;
+  const bool is_centered = collapsed_ || pinned_;
 
   int placed_children = 0;
   for (const auto& child : tab_children_configs_) {
@@ -562,7 +563,7 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
 }
 
 void VerticalTabView::UpdateCloseButtonVisibility() {
-  close_button_->SetVisible((active_ || hovered_) && !pinned_);
+  close_button_->SetVisible((active_ || (!collapsed_ && hovered_)) && !pinned_);
 }
 
 void VerticalTabView::UpdateColors() {
