@@ -609,6 +609,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     var summaryId = getPrivacySandboxSummaryId(restricted);
                     indexData.updateEntrySummaryForKey(frag, PREF_PRIVACY_SANDBOX, summaryId);
 
+                    // Remove the summary text as it will be replaced by current status.
+                    indexData.updateEntrySummaryForKey(
+                            frag, PREF_PRELOAD_PAGES, /* summaryId= */ 0);
+
                     if (shouldHideSandboxPref(bridge)) {
                         indexData.removeEntry(getUniqueId(PREF_PRIVACY_SANDBOX));
                     }
