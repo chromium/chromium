@@ -2594,7 +2594,7 @@ bool StyleResolver::ApplyAnimatedStyle(
       state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
       state.OldStyle(), style_recalc_context, state.CanTriggerAnimations());
 
-  bool apply = !state.AnimationUpdate().IsEmpty();
+  bool apply = state.AnimationUpdate().HasActiveInterpolations();
   if (apply) {
     const ActiveInterpolationsMap& animations =
         state.AnimationUpdate().ActiveInterpolationsForAnimations();
