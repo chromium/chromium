@@ -245,6 +245,9 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
         *checker.ResponseAddressSpace(),
         base::BindOnce(
             [](base::WeakPtr<WebSocket> weak_self,
+               const net::NetLogWithSource& net_log,
+               const mojom::TransportType transport_type,
+               const mojom::IPAddressSpace address_space,
                net::CompletionOnceCallback callback,
                mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
@@ -254,6 +257,19 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
                 // `WebSocket`.
                 return;
               }
+
+              net_log.AddEvent(
+                  net::NetLogEventType::
+                      LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
+                  [&] {
+                    return base::Value::Dict()
+                        .Set("address_space",
+                             IPAddressSpaceToStringPiece(address_space))
+                        .Set("transport_type",
+                             TransportTypeToStringPiece(transport_type))
+                        .Set("result",
+                             LocalNetworkAccessResultToStringPiece(result));
+                  });
               // Note: The WebSocket handshake request is made with cache mode
               // "no-store", so they are never cached and this code doesn't
               // need to handle a kRetryDueToCache result. See
@@ -263,7 +279,11 @@ int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
                       ? net::OK
                       : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
-            impl_->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+            impl_->weak_ptr_factory_.GetWeakPtr(), request->net_log(),
+            MapTransportTypeToMojomTransportType(info.type),
+            *checker.ResponseAddressSpace(), std::move(callback)
+
+                ));
     return net::ERR_IO_PENDING;
   }
 
