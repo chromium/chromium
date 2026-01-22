@@ -72,7 +72,7 @@ class AccessibilityPrivateApiTest
   }
 
   [[nodiscard]] bool RunSubtest(const char* subtest) {
-    std::string path = "accessibility_private/mv3";
+    std::string path = "accessibility_private";
     return RunExtensionTest(path.c_str(), {.custom_arg = subtest});
   }
 
