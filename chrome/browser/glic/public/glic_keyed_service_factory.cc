@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -14,7 +15,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #endif
@@ -42,10 +42,9 @@ GlicKeyedServiceFactory::GlicKeyedServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(ThemeServiceFactory::GetInstance());  // NEEDS_ANDROID_IMPL
-  DependsOn(contextual_cueing::ContextualCueingServiceFactory::
-                GetInstance());  // NEEDS_ANDROID_IMPL
   DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
 #endif
+  DependsOn(contextual_cueing::ContextualCueingServiceFactory::GetInstance());
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
                 GetInstance());
 }
@@ -70,12 +69,7 @@ GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<GlicKeyedService>(
       profile, IdentityManagerFactory::GetForProfile(profile),
       g_browser_process->profile_manager(), GlicProfileManager::GetInstance(),
-#if !BUILDFLAG(IS_ANDROID)
-      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(profile)
-#else
-      nullptr  // NEEDS_ANDROID_IMPL
-#endif
-          ,
+      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(profile),
 #if !BUILDFLAG(IS_ANDROID)
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)
 #else
