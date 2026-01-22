@@ -33,6 +33,7 @@
 #include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
+#include "chrome/browser/component_updater/tpcd_metadata_component_remover.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/common/buildflags.h"
@@ -167,6 +168,11 @@ void RegisterComponentsForUpdate() {
     //
     // TODO(crbug.com/473796598): Remove this code in M146+.
     DeleteCookieReadinessList(path);
+
+    // Clean up remaining state for TPCD Metadata component.
+    //
+    // TODO(crbug.com/477611289): Remove this code in M147+.
+    DeleteTPCDMetadataComponent(path);
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Lacros is sunsetted. While rootfs Lacros was already taken care of,
