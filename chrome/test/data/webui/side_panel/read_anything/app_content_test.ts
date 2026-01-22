@@ -550,6 +550,110 @@ suite('AppContent', () => {
     });
   });
 
+  suite('on image toggle with readability', () => {
+    setup(() => {
+      contentController.configureTrustedTypes();
+      chrome.readingMode.isReadabilityEnabled = true;
+    });
+
+    test('shows and hides images when toggled', async () => {
+      readingMode.imagesFeatureEnabled = true;
+
+      readingMode.htmlContent = '<img src="foo.png">;';
+
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      const img = app.$.container.querySelector('img')!;
+
+      readingMode.imagesEnabled = true;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+
+      assertTrue(!!img);
+      assertEquals('', img.style.display);  // Visible
+
+      // Verify toggle off.
+      readingMode.imagesEnabled = false;
+      emitEvent(app, ToolbarEvent.IMAGES);
+      await microtasksFinished();
+      assertEquals('none', img.style.display);
+    });
+
+    test(
+        'does not show images when images feature flag is disabled',
+        async () => {
+          readingMode.imagesFeatureEnabled = false;
+          readingMode.htmlContent = '<img src="foo.png">;';
+          app.updateContent();
+          await microtasksFinished();
+
+          const img = app.$.container.querySelector('img')!;
+
+          readingMode.imagesEnabled = true;
+          emitEvent(app, ToolbarEvent.IMAGES);
+          await microtasksFinished();
+
+          assertTrue(!!img);
+          assertEquals('none', img.style.display);
+        });
+
+    suite('figure with caption', () => {
+      const caption = 'That\'s ancient history';
+
+      test('shows figures and captions when enabled', async () => {
+        readingMode.imagesFeatureEnabled = true;
+
+        readingMode.htmlContent = '<figure><img src="foo.png"><figcaption>' +
+            caption + '</figcaption></figure>';
+
+        app.updateContent();
+        await microtasksFinished();
+        assertTrue(contentController.hasContent());
+
+        const figure = app.$.container.querySelector('figure')!;
+        const figcaption = app.$.container.querySelector('figcaption')!;
+
+        readingMode.imagesEnabled = true;
+        emitEvent(app, ToolbarEvent.IMAGES);
+        await microtasksFinished();
+
+        assertEquals('', figure.style.display);  // Figure should be visible
+        assertEquals(
+            caption, figcaption.textContent);  // Caption text should be there
+
+        // Verify toggle off.
+        readingMode.imagesEnabled = false;
+        emitEvent(app, ToolbarEvent.IMAGES);
+        await microtasksFinished();
+        assertEquals(
+            'none', figure.style.display);  // figcaption will also be hidden if
+                                            // it's parent is hidden.
+      });
+
+      test('does not show figures or captions when flag disabled', async () => {
+        readingMode.imagesFeatureEnabled = false;
+
+        readingMode.htmlContent = '<figure><img src="foo.png"><figcaption>' +
+            caption + '</figcaption></figure>';
+
+        app.updateContent();
+        await microtasksFinished();
+        assertTrue(contentController.hasContent());
+
+        const figure = app.$.container.querySelector('figure')!;
+
+        readingMode.imagesEnabled = true;
+        emitEvent(app, ToolbarEvent.IMAGES);
+        await microtasksFinished();
+        assertEquals(
+            'none', figure.style.display);  // figcaption will also be hidden if
+                                            // it's parent is hidden.
+      });
+    });
+  });
+
   suite('on speech active change', () => {
     test('selection allowed by default', () => {
       assertEquals(

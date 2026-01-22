@@ -127,7 +127,12 @@ export class ContentController {
   private currentState_: ContentState = CONTENT_STATES[ContentType.NO_CONTENT];
   private previousRootId_?: number;
 
-  private trustedUpdatePolicy: TrustedTypePolicy|undefined;
+  // The Trusted Types policy is registered globally on the window object.
+  // The browser only allows a policy name to be registered once per page load.
+  // Making this static ensures that multiple instances of ContentController
+  // (which occur frequently during WebUI test runs) share the same policy
+  // reference and do not trigger a "Policy already exists" TypeError.
+  private static trustedUpdatePolicy: TrustedTypePolicy|undefined;
 
   getState(): ContentState {
     return this.currentState_;
@@ -243,9 +248,14 @@ export class ContentController {
 
       const contentContainer = document.createElement('div');
       contentContainer.innerHTML = this.getTrustedHtml(contentHtml);
+
+      // Set before updateImages to avoid early return.
+      this.setState(ContentType.HAS_CONTENT);
+
+      // Process images from distillation.
+      this.updateImages(contentContainer);
       contentFragment.appendChild(contentContainer);
 
-      this.setState(ContentType.HAS_CONTENT);
       this.updateReadAloudState(contentFragment);
       this.listeners_.forEach(l => l.onContentChange());
       return contentFragment;
@@ -539,9 +549,20 @@ export class ContentController {
     }
   }
 
-  updateImages(shadowRoot?: ShadowRoot) {
-    if (!shadowRoot || !chrome.readingMode.imagesFeatureEnabled ||
-        !this.hasContent()) {
+  updateImages(root?: ParentNode) {
+    if (!root || !this.hasContent()) {
+      return;
+    }
+
+    if (chrome.readingMode.isReadabilityEnabled) {
+      this.updateImagesForReadability(root);
+    } else {
+      this.updateImagesForAxTree(root);
+    }
+  }
+
+  updateImagesForAxTree(shadowRoot: ParentNode) {
+    if (!chrome.readingMode.imagesFeatureEnabled) {
       return;
     }
 
@@ -563,6 +584,22 @@ export class ContentController {
     }
     if (canvases.length > 0 || figures.length > 0) {
       this.listeners_.forEach(l => l.onContentChange());
+    }
+  }
+
+  updateImagesForReadability(container: ParentNode) {
+    if (!chrome.readingMode.isReadabilityEnabled) {
+      return;
+    }
+
+    // If chrome.readingMode.imagesFeatureEnabled is disabled, hide images also.
+    const imagesEnabled = chrome.readingMode.imagesEnabled &&
+        chrome.readingMode.imagesFeatureEnabled;
+    // We look for 'img' tags (standard HTML) and 'figure' tags like screen2x.
+    const images = container.querySelectorAll<HTMLElement>('img, figure');
+
+    for (const element of images) {
+      element.style.display = imagesEnabled ? '' : 'none';
     }
   }
 
@@ -597,17 +634,18 @@ export class ContentController {
   }
 
   private getTrustedHtml(html: string): TrustedHTML {
-    if (!this.trustedUpdatePolicy || !chrome.readingMode.isReadabilityEnabled) {
+    if (!ContentController.trustedUpdatePolicy ||
+        !chrome.readingMode.isReadabilityEnabled) {
       return window.trustedTypes!.emptyHTML;
     }
-    return this.trustedUpdatePolicy.createHTML(html);
+    return ContentController.trustedUpdatePolicy.createHTML(html);
   }
 
   configureTrustedTypes(): void {
-    if (!window.trustedTypes) {
+    if (!window.trustedTypes || ContentController.trustedUpdatePolicy) {
       return;
     }
-    this.trustedUpdatePolicy =
+    ContentController.trustedUpdatePolicy =
         window.trustedTypes.createPolicy('reader-mode-policy', {
           createHTML: (s: string) => s,
           createScript: () => '',
