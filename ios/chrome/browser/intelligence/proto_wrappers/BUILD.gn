@@ -136,6 +136,18 @@ source_set("utils") {
   ]
 }
 
+source_set("page_context_wrapper_test_utils") {
+  testonly = true
+  sources = [
+    "page_context_wrapper_test_utils.h",
+    "page_context_wrapper_test_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//net:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -150,6 +162,7 @@ source_set("unit_tests") {
     ":page_context_extractor_feature",
     ":page_context_metrics",
     ":page_context_wrapper_test_feature",
+    ":page_context_wrapper_test_utils",
     ":proto_wrappers",
     ":utils",
     "//base/test:test_support",
