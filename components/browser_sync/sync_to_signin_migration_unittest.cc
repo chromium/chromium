@@ -523,6 +523,9 @@ TEST_P(SyncToSigninMigrationTest, UndoFeaturePreventsMigration) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }));
 
   // Save the above state to prefs.
@@ -620,6 +623,9 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }));
 
   // Save the above state to prefs.
@@ -667,6 +673,11 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
       "Sync.SyncToSigninMigrationDecision." + infix + ".EXTENSION",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".THEME",
+      /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
@@ -744,6 +755,9 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }));
 
   // Save the Sync configuration (enabled data types etc) to prefs, but not the
@@ -778,6 +792,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.EXTENSION", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationDecision.DryRun.THEME",
+                              0);
   if (IsForceMigrationEnabled()) {
     // The individual data types were not active and so should not be migrated.
     histograms.ExpectUniqueSample(
@@ -800,6 +816,12 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
         /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
         1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision.Migration.THEME",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   } else {
     // The overall migration didn't run.
     histograms.ExpectTotalCount(
@@ -810,6 +832,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
         "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
     histograms.ExpectTotalCount(
         "Sync.SyncToSigninMigrationDecision.Migration.EXTENSION", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision.Migration.THEME", 0);
   }
 }
 
@@ -840,6 +864,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.EXTENSION", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationDecision.DryRun.THEME",
+                              0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
   histograms.ExpectTotalCount(
@@ -848,6 +874,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
       "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.Migration.EXTENSION", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.THEME", 0);
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
@@ -863,6 +891,9 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }));
 
   // Save the above state to prefs.
@@ -887,6 +918,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.EXTENSION", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationDecision.DryRun.THEME",
+                              0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK", 0);
   histograms.ExpectTotalCount(
@@ -895,6 +928,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
       "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.Migration.EXTENSION", 0);
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision.Migration.THEME", 0);
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
@@ -942,6 +977,12 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
         /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
         1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".THEME",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   } else if (IsMigrationEnabled()) {
     // The migration should not run because not enough time passed since the
     // auth error was detected. There's still a chance the user will resolve it.
@@ -957,6 +998,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
         "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST", 0);
     histograms.ExpectTotalCount(
         "Sync.SyncToSigninMigrationDecision." + infix + ".EXTENSION", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".THEME", 0);
   } else {
     // The migration should not run because the flag is disabled. The per type
     // metrics are still recorded for historical reasons.
@@ -988,6 +1031,12 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayNotPassed) {
         /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
         1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision." + infix + ".THEME",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
 }
 
@@ -1061,6 +1110,12 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_MinDelayPassed) {
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".THEME",
+      /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+      1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_AuthErrorResolved) {
@@ -1118,6 +1173,11 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused_AuthErrorResolved) {
       "Sync.SyncToSigninMigrationDecision." + infix + ".EXTENSION",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".THEME",
+      /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
@@ -1156,6 +1216,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
       "Sync.SyncToSigninMigrationDecision.DryRun.READING_LIST", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.EXTENSION", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationDecision.DryRun.THEME",
+                              0);
   if (IsForceMigrationEnabled()) {
     // The individual data types were not active and so should not be migrated.
     histograms.ExpectUniqueSample(
@@ -1178,6 +1240,12 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
         /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
         1);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision.Migration.THEME",
+        /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
+        1);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   } else {
     // The overall migration didn't run.
     histograms.ExpectTotalCount(
@@ -1188,6 +1256,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
         "Sync.SyncToSigninMigrationDecision.Migration.READING_LIST", 0);
     histograms.ExpectTotalCount(
         "Sync.SyncToSigninMigrationDecision.Migration.EXTENSION", 0);
+    histograms.ExpectTotalCount(
+        "Sync.SyncToSigninMigrationDecision.Migration.THEME", 0);
   }
 }
 
@@ -1236,6 +1306,9 @@ class SyncToSigninMigrationDataTypesTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+        syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     }));
 
     // Save the above state to prefs.
@@ -1569,6 +1642,21 @@ TEST_P(SyncToSigninMigrationDataTypesTest, MarkExtensionsToBeMigrated) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_P(SyncToSigninMigrationDataTypesTest, MarkThemeToBeMigrated) {
+  ASSERT_FALSE(pref_service_.GetBoolean(
+      syncer::prefs::internal::kMigrateThemeFromLocalToAccount));
+
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The migration does not happen right away, but rather the theme is
+  // marked to be migrated.
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      syncer::prefs::internal::kMigrateThemeFromLocalToAccount));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncToSigninMigrationDataTypesTest,
@@ -1609,6 +1697,9 @@ class SyncToSigninMigrationUndoTest
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         syncer::EXTENSIONS,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+        syncer::THEMES,
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     }));
 
     // Save the above state to prefs.

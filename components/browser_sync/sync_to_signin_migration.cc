@@ -400,6 +400,17 @@ void MaybeMigrateSyncingUserToSignedInInternal(
       extensions_decision);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  const SyncToSigninMigrationDataTypeDecision themes_decision =
+      GetSyncToSigninMigrationDataTypeDecision(
+          pref_service, syncer::THEMES, syncer::prefs::internal::kSyncThemes);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sync.SyncToSigninMigrationDecision.",
+                    GetHistogramMigratingOrNotInfix(doing_migration),
+                    syncer::DataTypeToHistogramSuffix(syncer::THEMES)}),
+      themes_decision);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (!doing_migration) {
     return;
   }
@@ -503,6 +514,13 @@ void MaybeMigrateSyncingUserToSignedInInternal(
     // TODO(crbug.com/328400930): Add metrics to track this migration.
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (themes_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    pref_service->SetBoolean(
+        syncer::prefs::internal::kMigrateThemeFromLocalToAccount, true);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   if (!is_blocking_allowed) {
     base::ThreadPool::PostTaskAndReplyWithResult(
