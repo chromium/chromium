@@ -616,6 +616,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testThrottleUndo_UndoNotViaSnackbar() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();
