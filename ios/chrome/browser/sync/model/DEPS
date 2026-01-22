@@ -1,16 +1,17 @@
 include_rules = [
+  # keep-sorted start
+  "+components/collaboration/public/collaboration_service.h",
   "+components/consent_auditor",
   "+components/data_sharing/public",
   "+components/desktop_to_mobile_promos",
-  "+components/collaboration/public/collaboration_service.h",
   "+components/saved_tab_groups/public/tab_group_sync_service.h",
   "+components/sharing_message",
   "+components/skills",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/bookmarks/model",
-  "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/collaboration/model",
+  "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/consent_auditor/model",
   "+ios/chrome/browser/data_sharing/model",
   "+ios/chrome/browser/dom_distiller/model",
@@ -35,6 +36,7 @@ include_rules = [
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/webauthn/model",
   "+ios/chrome/browser/webdata_services/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

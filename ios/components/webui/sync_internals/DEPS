@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+components/browser_sync",
   "+components/grit",
   "+components/sync",
   "+ui/base",
+  # keep-sorted end
 ]
