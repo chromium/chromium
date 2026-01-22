@@ -91,11 +91,10 @@ raw_ptr<BrowserWindowInterface> LocateWindowWithSameUrl(
     TabListInterface* tab_list = TabListInterface::From(bwi);
     tab_list->ActivateTab(tab->GetHandle());
 
-    // Close the current tab if NTP, unless the tab has history.
-    content::NavigationController& controller =
-        active_tab->GetContents()->GetController();
-    bool has_history = controller.CanGoBack() || controller.CanGoForward();
-    if (tab != active_tab && !has_history &&
+    // Close the current tab if NTP.
+    // TODO (crbug.com/441594986) This should only close an NTP tab if there
+    // is no associated history.
+    if (tab != active_tab &&
         IsNtpUrl(active_tab->GetContents()->GetVisibleURL())) {
       active_tab->Close();
     }

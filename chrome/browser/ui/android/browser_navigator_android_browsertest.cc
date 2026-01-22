@@ -19,7 +19,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/feed/feed_feature_list.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -98,15 +97,6 @@ class NavigateAndroidBrowserTest : public BrowserWindowAndroidBrowserTestBase {
       params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       Navigate(&params);
     }
-  }
-
-  void SetTabToNewTabPageWithNoHistory() {
-    content::NavigationController::LoadURLParams params{
-        GURL(chrome::kChromeUINewTabURL)};
-    params.should_replace_current_entry = true;
-    web_contents_->GetController().LoadURLWithParams(params);
-    content::TestNavigationObserver observer(web_contents_);
-    observer.Wait();
   }
 
   BrowserWindowInterface* CreateIncognitoBrowserWindow() {
@@ -807,7 +797,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_SameWindow_ClosesNtp) {
-  SetTabToNewTabPageWithNoHistory();
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_, GURL(chrome::kChromeUINewTabURL)));
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
   NavigateParams open_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   open_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -832,51 +823,11 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
             tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    NavigateAndroidBrowserTest,
-    Disposition_SwitchToTab_SameWindow_NtpWithHistoryNotClosed) {
-  // 1. Start at a regular URL.
-  const GURL url1 = StartAtURL("/title1.html");
-
-  // 2. Navigate to NTP in the same tab. This tab now has history (can go back
-  // to url1).
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents_, GURL(chrome::kChromeUINewTabURL)));
-  ASSERT_EQ(1, tab_list_->GetTabCount());
-  content::NavigationController& controller = web_contents_->GetController();
-  ASSERT_TRUE(controller.CanGoBack());
-
-  // 3. Open another tab with a target URL.
-  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
-  NavigateParams open_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
-  open_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  base::WeakPtr<content::NavigationHandle> handle = Navigate(&open_params);
-  ASSERT_TRUE(handle);
-  content::TestNavigationObserver observer(url2);
-  observer.WatchWebContents(handle->GetWebContents());
-  observer.Wait();
-
-  ASSERT_EQ(2, tab_list_->GetTabCount());
-  // Activate the NTP tab.
-  tab_list_->ActivateTab(tab_list_->GetTab(0)->GetHandle());
-  ASSERT_EQ(0, tab_list_->GetActiveIndex());
-
-  // 4. Switch to the second tab.
-  NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
-  switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
-
-  // 5. Verify the NTP tab is NOT closed because it has history.
-  EXPECT_EQ(2, tab_list_->GetTabCount());
-  EXPECT_EQ(1, tab_list_->GetActiveIndex());
-  EXPECT_EQ(url2,
-            tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
-}
-
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_DifferentWindow_ClosesNtp) {
   // Set up initial window with an NTP.
-  SetTabToNewTabPageWithNoHistory();
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_, GURL(chrome::kChromeUINewTabURL)));
   ASSERT_EQ(1, tab_list_->GetTabCount());
   ASSERT_EQ(0, tab_list_->GetActiveIndex());
   ASSERT_EQ(1u, GetAllBrowserWindowInterfaces().size());
@@ -947,7 +898,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_NavigatesCurrentTabNtp) {
-  SetTabToNewTabPageWithNoHistory();
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_, GURL(chrome::kChromeUINewTabURL)));
   ASSERT_EQ(1, tab_list_->GetTabCount());
   ASSERT_EQ(0, tab_list_->GetActiveIndex());
 
