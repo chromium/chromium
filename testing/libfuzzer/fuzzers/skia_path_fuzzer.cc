@@ -48,8 +48,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   paint_stroke.setStrokeWidth(1);
   paint_stroke.setAntiAlias(anti_alias & 1);
 
-  SkPath dst_path;
-  skpathutils::FillPathWithPaint(path, paint_stroke, &dst_path, nullptr);
+  SkPath dst_path = skpathutils::FillPathWithPaint(path, paint_stroke);
 
   // Width and height should never be 0.
   auto surface(
@@ -57,6 +56,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   surface->getCanvas()->drawPath(path, paint_fill);
   surface->getCanvas()->drawPath(path, paint_stroke);
+  surface->getCanvas()->drawPath(dst_path, paint_fill);
 
   return 0;
 }
