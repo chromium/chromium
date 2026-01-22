@@ -1,10 +1,12 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/price_insights/model",
   "+ios/chrome/browser/promos_manager/coordinator",
   "+ios/chrome/browser/promos_manager/model",
-  "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/url_loading/model",
-  "+ios/chrome/browser/default_browser/model",
-  "+ios/chrome/browser/price_insights/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
