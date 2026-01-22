@@ -215,7 +215,6 @@ void FirstPartySetsHandlerImplInstance::SetPublicFirstPartySets(
     return;
   }
 
-  // TODO(crbug.com/40186153): Use the version to compute sets diff.
   sets_loader_->SetComponentSets(version, std::move(sets_file));
 }
 
