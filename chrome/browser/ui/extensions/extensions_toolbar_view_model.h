@@ -144,12 +144,10 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
                          ToolbarActionViewModel::InvocationSource source);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns RequestAccessButtonParams which contain information to be used in
   // the button's tooltip.
   RequestAccessButtonParams GetRequestAccessButtonParams(
       content::WebContents* web_contents) const;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // ExtensionsContainer:
   ToolbarActionViewModel* GetActionForId(const std::string& action_id) override;

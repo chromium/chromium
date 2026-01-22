@@ -150,9 +150,6 @@ void ExtensionsToolbarViewModel::ExecuteUserAction(
   GetActionModelForId(action_id)->ExecuteUserAction(source);
 }
 
-// TODO(crbug.com/476282370): Remove ifdef when generated resource is available
-// on Android.
-#if !BUILDFLAG(IS_ANDROID)
 // Extensions are included in the request access button only when:
 //   - site allows customizing site access by extension
 //   - extension added a request that has not been dismissed
@@ -207,7 +204,6 @@ ExtensionsToolbarViewModel::GetRequestAccessButtonParams(
 
   return params;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ToolbarActionViewModel* ExtensionsToolbarViewModel::GetActionForId(
     const std::string& action_id) {

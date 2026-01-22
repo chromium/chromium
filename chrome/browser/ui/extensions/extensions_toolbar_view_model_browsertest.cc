@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
@@ -118,7 +119,8 @@ class ExtensionsToolbarViewModelBrowserTest
   scoped_refptr<const extensions::Extension> AddExtension(
       const std::string& name,
       const std::vector<std::string>& permissions,
-      const std::vector<std::string>& host_permissions);
+      const std::vector<std::string>& host_permissions,
+      bool withhold_permissions = false);
 
   // Navigates the active web contents to a URL on `host_name`.
   void NavigateTo(std::string_view host_name);
@@ -146,7 +148,8 @@ scoped_refptr<const extensions::Extension>
 ExtensionsToolbarViewModelBrowserTest::AddExtension(
     const std::string& name,
     const std::vector<std::string>& permissions,
-    const std::vector<std::string>& host_permissions) {
+    const std::vector<std::string>& host_permissions,
+    bool withhold_permissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
@@ -155,6 +158,10 @@ ExtensionsToolbarViewModelBrowserTest::AddExtension(
           .SetAction(extensions::ActionInfo::Type::kBrowser)
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
+  if (withhold_permissions) {
+    extensions::ExtensionPrefs::Get(profile())->SetWithholdingPermissions(
+        extension->id(), true);
+  }
   extension_registrar()->AddExtension(extension.get());
   return extension;
 }
@@ -320,9 +327,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
       TabListInterface::From(browser_window_interface())->GetActiveTab());
 }
 
-// TODO(crbug.com/476282370): Remove ifdef when generated resource is available
-// on Android.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that GetRequestAccessButtonParams returns empty when there are no
 // extensions requesting access.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
@@ -394,5 +398,3 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(params.extension_ids.empty());
   EXPECT_TRUE(params.tooltip_text.empty());
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
