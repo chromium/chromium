@@ -206,6 +206,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
@@ -1085,10 +1086,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             pendingId);
 
             // 4. Add windowing features.
+            // TODO(crbug.com/475200706): Handle multiple profiles for mobile.
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             assert profile != null;
             chromeAndroidTask.addFeature(
-                    ExtensionWindowControllerBridge.class,
+                    new ChromeAndroidTaskFeatureKey(ExtensionWindowControllerBridge.class, profile),
                     () ->
                             ExtensionWindowControllerBridgeFactory.create(
                                     chromeAndroidTask, profile));

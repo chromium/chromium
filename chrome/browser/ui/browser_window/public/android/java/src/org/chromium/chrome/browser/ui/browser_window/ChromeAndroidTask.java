@@ -200,20 +200,32 @@ public interface ChromeAndroidTask {
     /**
      * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.
      *
-     * <p>If an instance of the given {@code featureClazz} hasn't been added to this Task, this
-     * method will be the start of the feature's lifecycle, and {@link
+     * <p>If an instance of the given {@code featureKey} hasn't been added to this Task, this method
+     * will be the start of the feature's lifecycle, and {@link
      * ChromeAndroidTaskFeature#onAddedToTask} will be invoked.
      *
-     * <p>If an instance of the given {@code featureClazz} is already added, this method will be a
+     * <p>If the {@code featureKey} is profile-scoped and the profile doesn't have an associated
+     * browser window this method will throw an exception.
+     *
+     * <p>If an instance of the given {@code featureKey} is already added, this method will be a
      * no-op and {@link ChromeAndroidTaskFeature#onAddedToTask} won't be invoked.
      *
      * <p>Production code should initialize a feature inside {@code featureSupplier}'s {@link
      * Supplier#get()} implementation to avoid unnecessarily initializing the feature if it
      * shouldn't be added.
      *
-     * @param featureClazz The class of the feature, used as the feature identifier.
+     * @param featureKey The key of the feature to add.
      * @param featureSupplier {@link Supplier} that should instantiate the feature.
      */
+    <T extends ChromeAndroidTaskFeature> void addFeature(
+            ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier);
+
+    /**
+     * {@see addFeature(ChromeAndroidTaskFeatureKey, Supplier<T>)}.
+     *
+     * @deprecated Use {@link #addFeature(ChromeAndroidTaskFeatureKey, Supplier<T>)} instead.
+     */
+    @Deprecated
     <T extends ChromeAndroidTaskFeature> void addFeature(
             Class<T> featureClazz, Supplier<@Nullable T> featureSupplier);
 
@@ -321,6 +333,14 @@ public interface ChromeAndroidTask {
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
 
     /** Returns the {@link ChromeAndroidTaskFeature} instance for the given class. */
+    @Nullable ChromeAndroidTaskFeature getFeatureForTesting(ChromeAndroidTaskFeatureKey featureKey);
+
+    /**
+     * {@see getFeatureForTesting(ChromeAndroidTaskFeatureKey)}.
+     *
+     * @deprecated Use {@link #getFeatureForTesting(ChromeAndroidTaskFeatureKey)} instead.
+     */
+    @Deprecated
     @Nullable ChromeAndroidTaskFeature getFeatureForTesting(
             Class<? extends ChromeAndroidTaskFeature> featureClazz);
 

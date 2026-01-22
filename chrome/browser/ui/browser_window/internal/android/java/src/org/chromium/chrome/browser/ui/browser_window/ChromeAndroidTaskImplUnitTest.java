@@ -701,17 +701,25 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void addFeature_addsFeatureToInternalFeatureMap() {
         // Arrange.
-        var chromeAndroidTask =
-                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
+        var altFeatureKeyRef =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
+        var profileLessFeatureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
 
         // Act.
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Assert.
-        assertEquals(
-                testFeature,
-                chromeAndroidTask.getFeatureForTesting(TestChromeAndroidTaskFeature.class));
+        assertEquals(testFeature, chromeAndroidTask.getFeatureForTesting(featureKey));
+        assertEquals(testFeature, chromeAndroidTask.getFeatureForTesting(altFeatureKeyRef));
+        assertNull(chromeAndroidTask.getFeatureForTesting(profileLessFeatureKey));
     }
 
     @Test
@@ -722,7 +730,10 @@ public class ChromeAndroidTaskImplUnitTest {
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
 
         // Act.
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        chromeAndroidTask.addFeature(
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null),
+                () -> testFeature);
 
         // Assert.
         testFeature.mOnAddedToTaskHelper.waitForCallback(
@@ -736,10 +747,13 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
 
         // Act: add the feature twice.
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Assert: only the first addFeature() should invoke onAddedToTask().
         testFeature.mOnAddedToTaskHelper.waitForCallback(
@@ -749,8 +763,9 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void addFeature_calledAfterTaskDestroyed_throwsException() {
         // Arrange.
-        var chromeAndroidTask =
-                createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
         chromeAndroidTask.destroy();
 
         // Act & Assert.
@@ -759,7 +774,9 @@ public class ChromeAndroidTaskImplUnitTest {
                 AssertionError.class,
                 () ->
                         chromeAndroidTask.addFeature(
-                                TestChromeAndroidTaskFeature.class, () -> testFeature));
+                                new ChromeAndroidTaskFeatureKey(
+                                        TestChromeAndroidTaskFeature.class, profile),
+                                () -> testFeature));
     }
 
     @Test
@@ -897,7 +914,10 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Act.
         chromeAndroidTask.destroy();
@@ -953,8 +973,11 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask =
                 createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
         testFeature.mShouldRefuseToBeRemoved = true;
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Act & Assert.
         assertThrows(AssertionError.class, chromeAndroidTask::destroy);
@@ -969,7 +992,10 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
@@ -1004,7 +1030,10 @@ public class ChromeAndroidTaskImplUnitTest {
         when(mockDisplayAndroid.getDipScale()).thenReturn(dipScale);
 
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
@@ -1036,7 +1065,10 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
@@ -1108,7 +1140,10 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl)
                         createChromeAndroidTaskWithMockDeps(/* taskId= */ 1).mChromeAndroidTask;
         var testFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
-        chromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> testFeature);
+        var featureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(featureKey, () -> testFeature);
 
         // Act.
         chromeAndroidTask.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
@@ -2799,7 +2834,10 @@ public class ChromeAndroidTaskImplUnitTest {
             mOnTaskRemovedHelper.notifyCalled();
 
             if (mShouldRefuseToBeRemoved) {
-                mChromeAndroidTask.addFeature(TestChromeAndroidTaskFeature.class, () -> this);
+                var featureKey =
+                        new ChromeAndroidTaskFeatureKey(
+                                TestChromeAndroidTaskFeature.class, /* profile= */ null);
+                mChromeAndroidTask.addFeature(featureKey, () -> this);
             }
         }
 

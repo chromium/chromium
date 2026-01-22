@@ -23,7 +23,8 @@ public interface ChromeAndroidTaskFeature {
     void onAddedToTask();
 
     /**
-     * Called by a {@link ChromeAndroidTask} when the Task is removed.
+     * Called by a {@link ChromeAndroidTask} when the Task is removed or on {@link Profile}
+     * destruction if the feature is associated with a {@link Profile}.
      *
      * <p>This is the end of the feature's lifecycle. A feature should destroy all objects it owns
      * in this method.

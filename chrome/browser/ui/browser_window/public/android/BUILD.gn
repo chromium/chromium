@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParams.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
+    "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeatureKey.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerObserver.java",
   ]
