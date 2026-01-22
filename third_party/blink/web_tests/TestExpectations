@@ -870,7 +870,6 @@ crbug.com/1080870 http/tests/payments/payment-request-app-store-billing-mandator
 ### ====== Payments related tests end =======
 
 ### ====== HTML-in-Canvas
-crbug.com/477575513 wpt_internal/html/canvas/drawElementImage/css-backdrop-filter-and-mask.html [ Failure ]
 crbug.com/477575513 wpt_internal/html/canvas/drawElementImage/nested-webgl-canvas.html [ Failure ]
 
 # WPT speculative-parsing tests failing

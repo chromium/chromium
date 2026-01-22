@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
@@ -178,6 +179,8 @@ class PLATFORM_EXPORT PendingLayer {
   // draw a solid color (see comment above `solid_color_chunk_index_`).
   bool IsSolidColor() const { return solid_color_chunk_index_ != kNotFound; }
 
+  CompositorElementId canvas_subtree_id() const { return canvas_subtree_id_; }
+
  private:
   // Checks basic merge-ability with `guest` and calls
   // PropertyTreeState::CanUpcastWith().
@@ -227,6 +230,7 @@ class PLATFORM_EXPORT PendingLayer {
       non_composited_scroll_translations_;
   gfx::RectF bounds_;
   gfx::RectF rect_known_to_be_opaque_;
+  CompositorElementId canvas_subtree_id_;
   // If not kNotFound, this is the index of the chunk that makes this layer
   // solid color. The solid color chunk must be the last drawable chunk and
   // must draw a solid color that fully covers this pending layer.

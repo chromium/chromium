@@ -220,7 +220,6 @@ std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
   paint_layer_painter.Paint(builder.Context(),
-                            PaintFlag::kCanvasElementImage |
                                 PaintFlag::kPrivacyPreserving |
                                 PaintFlag::kOmitCompositingInfo);
 

@@ -13,6 +13,7 @@
 #include "base/dcheck_is_on.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/hit_test_data.h"
@@ -45,11 +46,13 @@ struct PLATFORM_EXPORT PaintChunk {
              const DisplayItemClient& client,
              const Id& id,
              const PropertyTreeStateOrAlias& properties,
-             bool effectively_invisible = false)
+             bool effectively_invisible = false,
+             CompositorElementId canvas_subtree_id = CompositorElementId())
       : begin_index(begin),
         end_index(end),
         id(id),
         properties(properties),
+        canvas_subtree_id(canvas_subtree_id),
         text_known_to_be_on_opaque_background(true),
         has_text(false),
         is_cacheable(client.IsCacheable()),
@@ -71,6 +74,7 @@ struct PLATFORM_EXPORT PaintChunk {
         bounds(other.bounds),
         drawable_bounds(other.drawable_bounds),
         rect_known_to_be_opaque(other.rect_known_to_be_opaque),
+        canvas_subtree_id(other.canvas_subtree_id),
         raster_effect_outset(other.raster_effect_outset),
         hit_test_opaqueness(other.hit_test_opaqueness),
         text_known_to_be_on_opaque_background(
@@ -182,6 +186,8 @@ struct PLATFORM_EXPORT PaintChunk {
   gfx::Rect drawable_bounds;
 
   gfx::Rect rect_known_to_be_opaque;
+
+  CompositorElementId canvas_subtree_id;
 
   // Some raster effects can exceed |bounds| in the rasterization space. This
   // is the maximum DisplayItemClient::VisualRectOutsetForRasterEffects() of

@@ -269,6 +269,7 @@ class CC_EXPORT LayerImpl {
     viz::RegionCaptureBounds capture_bounds;
     TrackedElementBounds tracked_element_bounds;
 
+    ElementId canvas_subtree_id;
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_handler_region;
@@ -337,6 +338,15 @@ class CC_EXPORT LayerImpl {
   const TrackedElementBounds* tracked_element_bounds() const {
     return rare_properties_ ? &rare_properties_->tracked_element_bounds
                             : nullptr;
+  }
+
+  void SetCanvasSubtreeId(ElementId id) {
+    if (rare_properties_ || id) {
+      EnsureRareProperties().canvas_subtree_id = id;
+    }
+  }
+  ElementId canvas_subtree_id() const {
+    return rare_properties_ ? rare_properties_->canvas_subtree_id : ElementId();
   }
 
   // Set or get the region that contains wheel event handler.

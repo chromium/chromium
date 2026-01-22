@@ -3871,16 +3871,198 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayers) {
   )HTML");
   Compositor().BeginFrame();
 
-  // All direct children of canvas get a layer
-  EXPECT_TRUE(CcLayerByDOMElementId("child_a"));
-  EXPECT_TRUE(CcLayerByDOMElementId("child_b"));
-  EXPECT_TRUE(CcLayerByDOMElementId("child_c"));
+  // All direct children of canvas get a layer.
+  auto* child_a_layer = CcLayerByDOMElementId("child_a");
+  EXPECT_TRUE(child_a_layer);
+  auto* child_b_layer = CcLayerByDOMElementId("child_b");
+  EXPECT_TRUE(child_b_layer);
+  auto* child_c_layer = CcLayerByDOMElementId("child_c");
+  EXPECT_TRUE(child_c_layer);
 
   // Composited layers are created using normal heuristics for deeper
   // descendants.
   EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a"));
-  EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_wct"));
-  EXPECT_TRUE(CcLayerByDOMElementId("grandchild_a_bdf"));
+  auto* grandchild_a_wct_layer = CcLayerByDOMElementId("grandchild_a_wct");
+  EXPECT_TRUE(grandchild_a_wct_layer);
+  auto* grandchild_a_bdf_layer = CcLayerByDOMElementId("grandchild_a_bdf");
+  EXPECT_TRUE(grandchild_a_bdf_layer);
+
+  // Composited picture layers should have display items.
+  EXPECT_GT(static_cast<const cc::PictureLayer*>(child_a_layer)
+                ->GetRecordingSourceForTesting()
+                .display_list()
+                ->TotalOpCount(),
+            0u);
+  // child_b_layer is not checked because it is a solid color layer.
+  EXPECT_GT(static_cast<const cc::PictureLayer*>(child_c_layer)
+                ->GetRecordingSourceForTesting()
+                .display_list()
+                ->TotalOpCount(),
+            0u);
+  EXPECT_GT(static_cast<const cc::PictureLayer*>(grandchild_a_wct_layer)
+                ->GetRecordingSourceForTesting()
+                .display_list()
+                ->TotalOpCount(),
+            0u);
+  EXPECT_GT(static_cast<const cc::PictureLayer*>(grandchild_a_bdf_layer)
+                ->GetRecordingSourceForTesting()
+                .display_list()
+                ->TotalOpCount(),
+            0u);
+  EXPECT_GT(static_cast<const cc::PictureLayer*>(child_a_layer)
+                ->GetRecordingSourceForTesting()
+                .display_list()
+                ->TotalOpCount(),
+            0u);
+
+  // Composited layers should have canvas_subtree_id set.
+  auto* child_a_element = GetElementById("child_a");
+  auto child_a_element_id =
+      CompositorElementIdFromDOMNodeId(child_a_element->GetDomNodeId());
+  EXPECT_EQ(child_a_layer->canvas_subtree_id(), child_a_element_id);
+  EXPECT_EQ(grandchild_a_wct_layer->canvas_subtree_id(), child_a_element_id);
+  EXPECT_EQ(grandchild_a_bdf_layer->canvas_subtree_id(), child_a_element_id);
+
+  auto* child_b_element = GetElementById("child_b");
+  auto child_b_element_id =
+      CompositorElementIdFromDOMNodeId(child_b_element->GetDomNodeId());
+  EXPECT_EQ(child_b_layer->canvas_subtree_id(), child_b_element_id);
+
+  auto* child_c_element = GetElementById("child_c");
+  auto child_c_element_id =
+      CompositorElementIdFromDOMNodeId(child_c_element->GetDomNodeId());
+  EXPECT_EQ(child_c_layer->canvas_subtree_id(), child_c_element_id);
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementLayerUpdates) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div { width: 100px; height: 100px; }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="child_a">
+        <div id="grandchild_a">a1</div>
+        <div id="grandchild_b" style="will-change: transform;">a2</div>
+        <div id="grandchild_c"
+            style="will-change: transform; background: blue;"></div>
+      </div>
+      <div id="child_b"></div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // #child_a is a direct child of a canvas with layoutsubtree which requires a
+  // layer.
+  auto* child_a_layer = CcLayerByDOMElementId("child_a");
+  EXPECT_TRUE(child_a_layer);
+  // #grandchild_a does not get a layer because there is no compositing reason.
+  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_a"));
+  // #grandchild_b has will-change transform which is a direct compositing
+  // reason.
+  auto* grandchild_b_layer = CcLayerByDOMElementId("grandchild_b");
+  EXPECT_TRUE(grandchild_b_layer);
+  // #grandchild_c has will-change transform which is a direct compositing
+  // reason.
+  auto* grandchild_c_layer = CcLayerByDOMElementId("grandchild_c");
+  EXPECT_TRUE(grandchild_c_layer);
+  // #child_b is a direct child of a canvas with layoutsubtree which requires a
+  // layer.
+  auto* child_b_layer = CcLayerByDOMElementId("child_b");
+  EXPECT_TRUE(child_b_layer);
+
+  // Ensure all layers have the correct canvas_subtree_id.
+  Element* child_a_element = GetElementById("child_a");
+  auto child_a_element_id =
+      CompositorElementIdFromDOMNodeId(child_a_element->GetDomNodeId());
+  EXPECT_EQ(child_a_layer->canvas_subtree_id(), child_a_element_id);
+  EXPECT_EQ(grandchild_b_layer->canvas_subtree_id(), child_a_element_id);
+  EXPECT_EQ(grandchild_c_layer->canvas_subtree_id(), child_a_element_id);
+  Element* child_b_element = GetElementById("child_b");
+  auto child_b_element_id =
+      CompositorElementIdFromDOMNodeId(child_b_element->GetDomNodeId());
+  EXPECT_EQ(child_b_layer->canvas_subtree_id(), child_b_element_id);
+
+  // Move #grandchild_b to be a child of #child_b and ensure the canvas subtree
+  // id is updated to child_b.
+  Element* grandchild_b_element = GetElementById("grandchild_b");
+  child_b_element->appendChild(grandchild_b_element);
+  UpdateAllLifecyclePhases();
+  grandchild_b_layer = CcLayerByDOMElementId("grandchild_b");
+  EXPECT_EQ(grandchild_b_layer->canvas_subtree_id(), child_b_element_id);
+
+  // Add will-change transform to #grandchild_a should cause it to get a layer
+  // with the correct canvas_subtree_id.
+  Element* grandchild_a_element = GetElementById("grandchild_a");
+  grandchild_a_element->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("will-change: transform"));
+  UpdateAllLifecyclePhases();
+  auto* grandchild_a_layer = CcLayerByDOMElementId("grandchild_a");
+  EXPECT_EQ(grandchild_a_layer->canvas_subtree_id(), child_a_element_id);
+
+  // Move #child_a out of the canvas and ensure the descendant layers update
+  // their canvas subtree ids.
+  GetDocument().body()->appendChild(child_a_element);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("child_a"));
+  grandchild_a_layer = CcLayerByDOMElementId("grandchild_a");
+  EXPECT_TRUE(grandchild_a_layer);
+  EXPECT_EQ(grandchild_a_layer->canvas_subtree_id(), CompositorElementId());
+  // #grandchild_b was reparented under #child_b, so should be unaffected by
+  // the move of #child_a.
+  grandchild_b_layer = CcLayerByDOMElementId("grandchild_b");
+  EXPECT_TRUE(grandchild_b_layer);
+  EXPECT_EQ(grandchild_b_layer->canvas_subtree_id(), child_b_element_id);
+  grandchild_c_layer = CcLayerByDOMElementId("grandchild_c");
+  EXPECT_TRUE(grandchild_c_layer);
+  EXPECT_EQ(grandchild_c_layer->canvas_subtree_id(), CompositorElementId());
+  // #child_b should be unaffected by #child_a moving.
+  child_b_layer = CcLayerByDOMElementId("child_b");
+  EXPECT_TRUE(child_b_layer);
+  EXPECT_EQ(child_b_layer->canvas_subtree_id(), child_b_element_id);
+
+  // Removing layoutsubtree from canvas should remove the corresponding layers
+  // for #child_b and #grandchild_b, which are still under the canvas.
+  Element* canvas_element = GetElementById("canvas");
+  canvas_element->removeAttribute(html_names::kLayoutsubtreeAttr);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(CcLayerByDOMElementId("child_b"));
+  EXPECT_FALSE(CcLayerByDOMElementId("grandchild_b"));
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementNested) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div { width: 100px; height: 100px; }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="child">
+        <canvas id="nested_canvas" width="200" height="200" layoutsubtree>
+          <div id="nested_child">a</div>
+        </canvas>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* child_layer = CcLayerByDOMElementId("child");
+  EXPECT_TRUE(child_layer);
+  Element* child_element = GetElementById("child");
+  auto child_element_id =
+      CompositorElementIdFromDOMNodeId(child_element->GetDomNodeId());
+  EXPECT_EQ(child_layer->canvas_subtree_id(), child_element_id);
+
+  auto* nested_child_layer = CcLayerByDOMElementId("nested_child");
+  EXPECT_TRUE(nested_child_layer);
+  Element* nested_child_element = GetElementById("nested_child");
+  auto nested_child_element_id =
+      CompositorElementIdFromDOMNodeId(nested_child_element->GetDomNodeId());
+  EXPECT_EQ(nested_child_layer->canvas_subtree_id(), nested_child_element_id);
 }
 
 // Test that canvas draw element ids are sent from blink to cc for canvas

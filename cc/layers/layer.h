@@ -686,6 +686,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void SetElementId(ElementId id);
   ElementId element_id() const { return inputs_.Read(*this).element_id; }
 
+  // Set or get the ID used to identify the subtree of a canvas that this layer
+  // belongs to.
+  void SetCanvasSubtreeId(ElementId id);
+  ElementId canvas_subtree_id() const {
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
+      return rare_inputs->canvas_subtree_id;
+    }
+    return ElementId();
+  }
+
   // For layer tree mode only.
   // Sets or gets if trilinear filtering should be used to scaling the contents
   // of this layer and its subtree. When set the layer and its subtree will be
@@ -1038,6 +1048,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     // Rare because only used on Android XR platform
     std::vector<ElementId> xr_hit_test_order;
 #endif
+    ElementId canvas_subtree_id;
     PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
     PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
         PaintFlags::DynamicRangeLimit::kHigh};

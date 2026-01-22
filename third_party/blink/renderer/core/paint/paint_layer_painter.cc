@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_canvas_subtree_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_effectively_invisible.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -391,24 +392,23 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   PaintController& controller = context.GetPaintController();
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
-
-  bool is_invisible_drawn_canvas_child = false;
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-    auto* element = DynamicTo<Element>(object.GetNode());
-    if (element) {
-      if (auto* canvas = DynamicTo<HTMLCanvasElement>(
-              element->ParentOrShadowHostNode())) [[unlikely]] {
-        if (canvas->layoutSubtree() &&
-            !(paint_flags & PaintFlag::kCanvasElementImage)) {
-          is_invisible_drawn_canvas_child = true;
-        }
-      }
-    }
+  if (PaintedOutputInvisible(object.StyleRef())) {
+    effectively_invisible.emplace(controller);
   }
 
-  if (is_invisible_drawn_canvas_child ||
-      PaintedOutputInvisible(object.StyleRef())) {
-    effectively_invisible.emplace(controller);
+  std::optional<ScopedCanvasSubtreeId> canvas_subtree_id_scope;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    // Start a canvas subtree id scope with the id of each direct child of a
+    // layoutsubtree canvas.
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element && element->IsInCanvasSubtree()) [[unlikely]] {
+      auto* canvas = DynamicTo<HTMLCanvasElement>(element->parentElement());
+      if (canvas && canvas->layoutSubtree()) {
+        auto canvas_subtree_id =
+            CompositorElementIdFromDOMNodeId(element->GetDomNodeId());
+        canvas_subtree_id_scope.emplace(controller, canvas_subtree_id);
+      }
+    }
   }
 
   std::optional<ScopedPaintChunkProperties> layer_chunk_properties;

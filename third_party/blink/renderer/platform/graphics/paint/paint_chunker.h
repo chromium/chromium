@@ -11,6 +11,7 @@
 #include "base/memory/stack_allocated.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -121,6 +122,9 @@ class PLATFORM_EXPORT PaintChunker final {
     current_effectively_invisible_ = invisible;
   }
 
+  CompositorElementId CanvasSubtreeId() const { return canvas_subtree_id_; }
+  void SetCanvasSubtreeId(CompositorElementId id) { canvas_subtree_id_ = id; }
+
  private:
   // Returns true if a new chunk is created.
   bool EnsureCurrentChunk(const PaintChunk::Id&, const DisplayItemClient&);
@@ -159,6 +163,7 @@ class PLATFORM_EXPORT PaintChunker final {
   bool will_force_new_chunk_ = true;
 
   bool current_effectively_invisible_ = false;
+  CompositorElementId canvas_subtree_id_;
 
 #if DCHECK_IS_ON()
   bool finished_ = false;

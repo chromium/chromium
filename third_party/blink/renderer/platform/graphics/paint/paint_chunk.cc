@@ -26,6 +26,7 @@ struct SameSizeAsPaintChunk {
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
+  CompositorElementId canvas_subtree_id;
   uint8_t raster_effect_outset;
   uint8_t hit_test_opaqueness;
   bool b;
@@ -45,7 +46,8 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          drawable_bounds == other.drawable_bounds &&
          raster_effect_outset == other.raster_effect_outset &&
          hit_test_opaqueness == other.hit_test_opaqueness &&
-         effectively_invisible == other.effectively_invisible;
+         effectively_invisible == other.effectively_invisible &&
+         canvas_subtree_id == other.canvas_subtree_id;
   // Derived fields like rect_known_to_be_opaque are not checked because they
   // are updated when we create the next chunk or release chunks. We ensure
   // their correctness with unit tests and under-invalidation checking of
@@ -101,6 +103,10 @@ static String ToStringImpl(const PaintChunk& c,
     if (c.tracked_element_data) {
       sb.Append(" tracked_element_data=");
       sb.Append(c.tracked_element_data->ToString());
+    }
+    if (c.canvas_subtree_id) {
+      sb.Append(" canvas_subtree_id=");
+      sb.Append(c.canvas_subtree_id.ToString().c_str());
     }
   }
   sb.Append(')');

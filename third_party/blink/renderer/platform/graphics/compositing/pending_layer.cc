@@ -48,6 +48,7 @@ PendingLayer::PendingLayer(const PaintArtifact& artifact,
       property_tree_state_(first_chunk.properties.Unalias()),
       bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
+      canvas_subtree_id_(first_chunk.canvas_subtree_id),
       solid_color_chunk_index_(
           first_chunk.background_color.is_solid_color ? 0 : kNotFound),
       compositing_type_(compositing_type),
@@ -145,6 +146,10 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
   result->SetBoolean("is_solid_color", IsSolidColor());
   result->SetString("hit_test_opaqueness",
                     cc::HitTestOpaquenessToString(hit_test_opaqueness_));
+  if (canvas_subtree_id_) {
+    result->SetString("canvas_subtree_id",
+                      canvas_subtree_id_.ToString().c_str());
+  }
   return result;
 }
 
@@ -391,6 +396,9 @@ std::optional<PropertyTreeState> PendingLayer::CanUpcastWith(
     return std::nullopt;
   }
   if (&GetPropertyTreeState().Effect() != &guest_state.Effect()) {
+    return std::nullopt;
+  }
+  if (canvas_subtree_id_ != guest.canvas_subtree_id_) {
     return std::nullopt;
   }
   std::optional<PropertyTreeState> result =
@@ -796,9 +804,9 @@ void PendingLayer::UpdateLayerProperties(cc::LayerSelection& layer_selection,
   if (compositing_type_ == PendingLayer::kForeignLayer) {
     return;
   }
-  PaintChunksToCcLayer::UpdateLayerProperties(CcLayer(), GetPropertyTreeState(),
-                                              Chunks(), layer_selection,
-                                              selection_only);
+  PaintChunksToCcLayer::UpdateLayerProperties(
+      CcLayer(), GetPropertyTreeState(), Chunks(), layer_selection,
+      selection_only, canvas_subtree_id_);
 }
 
 // The heuristic for picking a checkerboarding color works as follows:

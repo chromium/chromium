@@ -17,6 +17,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -163,6 +164,12 @@ class PLATFORM_EXPORT PaintController {
   }
   bool CurrentEffectivelyInvisible() const {
     return paint_chunker_.CurrentEffectivelyInvisible();
+  }
+  void SetCanvasSubtreeId(CompositorElementId id) {
+    paint_chunker_.SetCanvasSubtreeId(id);
+  }
+  CompositorElementId CanvasSubtreeId() const {
+    return paint_chunker_.CanvasSubtreeId();
   }
   void EnsureChunk();
 

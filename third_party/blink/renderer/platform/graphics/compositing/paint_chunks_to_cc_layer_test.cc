@@ -15,6 +15,7 @@
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -64,7 +65,8 @@ void UpdateLayerProperties(cc::Layer& layer,
                            const PaintChunkSubset& chunks) {
   cc::LayerSelection layer_selection;
   PaintChunksToCcLayer::UpdateLayerProperties(
-      layer, layer_state, chunks, layer_selection, /*selection_only=*/false);
+      layer, layer_state, chunks, layer_selection, /*selection_only=*/false,
+      /*canvas_subtree_id=*/CompositorElementId());
 }
 
 class TestChunks {

@@ -80,7 +80,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
     MarkClientForValidation(next_chunk_id_->second);
     chunks_.emplace_back(begin, begin, next_chunk_id_->second,
                          next_chunk_id_->first, current_properties_,
-                         current_effectively_invisible_);
+                         current_effectively_invisible_, canvas_subtree_id_);
     next_chunk_id_ = std::nullopt;
     will_force_new_chunk_ = false;
     return true;
