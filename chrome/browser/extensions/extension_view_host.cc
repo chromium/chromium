@@ -13,7 +13,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -42,6 +41,8 @@ ExtensionViewHost::ExtensionViewHost(
   // in TabHelpers::AttachTabHelpers, but popups don't.
   // TODO(kalman): How much of TabHelpers::AttachTabHelpers should be here?
   autofill::ChromeAutofillClient::CreateForWebContents(host_contents());
+
+  host_contents()->SetIgnoreZoomGestures(true);
 }
 
 ExtensionViewHost::~ExtensionViewHost() = default;
@@ -149,13 +150,6 @@ bool ExtensionViewHost::HandleKeyboardEvent(
     return true;
   }
   return UnhandledKeyboardEvent(source, event);
-}
-
-bool ExtensionViewHost::PreHandleGestureEvent(
-    content::WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
 }
 
 void ExtensionViewHost::RunFileChooser(
