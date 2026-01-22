@@ -198,7 +198,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_box, searchBoxParent, true);
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, actionBar, true);
         View searchBox = mActivity.findViewById(R.id.search_box);
-        setSearchBoxBottomMargin(searchBox, mUseMultiColumn);
+        setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(v -> enterSearchState());
 
         View query = mActivity.findViewById(R.id.search_query_container);
@@ -676,7 +676,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         View query = mActivity.findViewById(R.id.search_query_container);
         if (mUseMultiColumn) {
             ViewGroup actionBar = mActivity.findViewById(R.id.action_bar);
-            setSearchBoxBottomMargin(searchBox, true);
+            setSearchBoxVerticalMargin(searchBox, true);
             assumeNonNull(actionBar).addView(searchBox);
             if (mFragmentState == FS_SETTINGS) {
                 searchBox.setVisibility(View.VISIBLE);
@@ -694,7 +694,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
-            setSearchBoxBottomMargin(searchBox, false);
+            setSearchBoxVerticalMargin(searchBox, false);
             appBarLayout.addView(searchBox);
             if (!isShowingMainSettings()) {
                 searchBox.setVisibility(View.GONE);
@@ -723,8 +723,9 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         }
     }
 
-    private void setSearchBoxBottomMargin(View searchBox, boolean multiColumn) {
+    private void setSearchBoxVerticalMargin(View searchBox, boolean multiColumn) {
         var lp = (ViewGroup.MarginLayoutParams) searchBox.getLayoutParams();
+        lp.topMargin = multiColumn ? 0 : getPixelSize(R.dimen.settings_search_ui_top_margin);
         lp.bottomMargin = multiColumn ? 0 : getPixelSize(R.dimen.settings_search_ui_bottom_margin);
         searchBox.setLayoutParams(lp);
     }
