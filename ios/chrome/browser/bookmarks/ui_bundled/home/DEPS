@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/authentication/signin/non_modal_promo/coordinator",
   "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
   "+ios/chrome/browser/drag_and_drop/model",
@@ -6,11 +7,12 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/metrics/model/new_tab_page_uma.h",
-  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h",
+  "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",
+  # keep-sorted end
 ]

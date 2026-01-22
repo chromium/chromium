@@ -1,5 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/history/model",
+  # keep-sorted start
   "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/signin/model",
+  # keep-sorted end
 ]
