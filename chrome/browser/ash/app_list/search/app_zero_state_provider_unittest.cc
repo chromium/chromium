@@ -126,24 +126,46 @@ TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   EXPECT_EQ(std::string(kNormalAppName), RunZeroStateSearch());
 }
 
-TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
-  // Disable the pre-installed high-priority extensions. This test simulates
-  // a brand new profile being added to a device, and should not include these.
-  registrar()->UninstallExtension(
-      kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  registrar()->UninstallExtension(
-      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  registrar()->UninstallExtension(
-      kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+class AppZeroStateProviderWithArcAppsTest : public AppSearchProviderTestBase {
+ public:
+  AppZeroStateProviderWithArcAppsTest()
+      : AppSearchProviderTestBase(/*zero_state_provider=*/true) {}
+  AppZeroStateProviderWithArcAppsTest(
+      const AppZeroStateProviderWithArcAppsTest&) = delete;
+  AppZeroStateProviderWithArcAppsTest& operator=(
+      const AppZeroStateProviderWithArcAppsTest&) = delete;
+  ~AppZeroStateProviderWithArcAppsTest() override = default;
 
-  base::RunLoop().RunUntilIdle();
+  void SetUp() override {
+    arc_app_test().PreProfileSetUp();
+    AppSearchProviderTestBase::SetUp();
 
-  testing_profile()->SetIsNewProfile(true);
-  ASSERT_TRUE(profile()->IsNewProfile());
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
+    // Disable the pre-installed high-priority extensions. This test simulates
+    // a brand new profile being added to a device, and should not include
+    // these.
+    registrar()->UninstallExtension(
+        kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+    registrar()->UninstallExtension(
+        kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+    registrar()->UninstallExtension(
+        kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
+    base::RunLoop().RunUntilIdle();
+
+    testing_profile()->SetIsNewProfile(true);
+    ASSERT_TRUE(profile()->IsNewProfile());
+
+    arc_app_test().PostProfileSetUp(profile());
+  }
+
+  void TearDown() override {
+    arc_app_test().PreProfileTearDown();
+    AppSearchProviderTestBase::TearDown();
+    arc_app_test().PostProfileTearDown();
+  }
+};
+
+TEST_F(AppZeroStateProviderWithArcAppsTest, DefaultRecommendedAppRanking) {
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
   const std::vector<std::string> kDefaultRecommendedWebAppIds = {
@@ -205,10 +227,6 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
                 ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
-
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
 }  // namespace app_list::test
