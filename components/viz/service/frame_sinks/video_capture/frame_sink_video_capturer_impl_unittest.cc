@@ -2255,15 +2255,17 @@ TEST_P(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {
 // Tests that buffer_format_preference is correctly passed to the
 // GpuVideoFramePool
 TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
-  // GpuMemoryBuffer only kicks in for ARGB and NV12 pixel formats.
-  if (pixel_format_ != media::PIXEL_FORMAT_ARGB &&
-      pixel_format_ != media::PIXEL_FORMAT_NV12) {
+  // MappableSharedImageVideoFramePool is only used for the
+  // kPreferMappableSharedImage and kPreferSharedImageWithNativeHandle format
+  // preferences.
+  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
     return;
   }
 
-  // MappableSharedImageVideoFramePool only kicks in for the
-  // kPreferMappableSharedImage and kPreferSharedImageWithNativeHandle formats.
-  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
+  // Additionally, the format itself must be ARGB or NV12 for
+  // MappableSharedImageVideoFramePool to be used.
+  if (pixel_format_ != media::PIXEL_FORMAT_ARGB &&
+      pixel_format_ != media::PIXEL_FORMAT_NV12) {
     return;
   }
 
