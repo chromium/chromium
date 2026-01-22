@@ -56,8 +56,8 @@ export function getHtml(this: SourcesMenuElement) {
         <button class="dropdown-item" @click="${this.onImageClick_}"
             data-index="${index}">
           <div class="image-container">
-            <img class="image-thumbnail" src="${this.getImageUrl_(item)}"
-              aria-label="${item.title}">
+            <img is="cr-auto-img" class="image-thumbnail"
+              .autoSrc="${item.url}" aria-label="${item.title}">
           </div>
           <div class="image-title">${item.title}</div>
         </button>
