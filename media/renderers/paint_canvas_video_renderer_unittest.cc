@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/renderers/paint_canvas_video_renderer.h"
 
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <bit>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
@@ -62,28 +61,35 @@ static const int kHeight = 240;
 static const gfx::RectF kNaturalRect(kWidth, kHeight);
 
 // Generate frame pixels to provided |external_memory| and wrap it as frame.
-scoped_refptr<VideoFrame> CreateTestY16Frame(const gfx::Size& coded_size,
-                                             const gfx::Rect& visible_rect,
-                                             void* external_memory,
-                                             base::TimeDelta timestamp) {
-  const int offset_x = visible_rect.x();
-  const int offset_y = visible_rect.y();
-  const int stride = coded_size.width();
-  const size_t byte_size = stride * coded_size.height() * 2;
+scoped_refptr<VideoFrame> CreateTestY16Frame(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    base::span<uint8_t> external_memory,
+    base::TimeDelta timestamp) {
+  static constexpr size_t kBytesPerPixel = 2;
+
+  const size_t offset_x = visible_rect.x();
+  const size_t offset_y = visible_rect.y();
+  const size_t stride = coded_size.width();
+  const size_t byte_size = stride * coded_size.height() * kBytesPerPixel;
 
   // In the visible rect, fill upper byte with [0-255] and lower with [255-0].
-  uint16_t* data = static_cast<uint16_t*>(external_memory);
+  base::SpanWriter writer(external_memory);
+  writer.Skip(offset_y * stride * kBytesPerPixel);
+
+  const size_t extra_size = stride - visible_rect.width() - offset_x;
   for (int j = 0; j < visible_rect.height(); j++) {
+    writer.Skip(offset_x * kBytesPerPixel);
     for (int i = 0; i < visible_rect.width(); i++) {
       const int value = i + j * visible_rect.width();
-      data[(stride * (j + offset_y)) + i + offset_x] =
-          ((value & 0xFF) << 8) | (~value & 0xFF);
+      writer.WriteU16NativeEndian(((value & 0xFF) << 8) | (~value & 0xFF));
     }
+    writer.Skip(extra_size * kBytesPerPixel);
   }
 
   return media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
-      base::span(static_cast<uint8_t*>(external_memory), byte_size), timestamp);
+      external_memory.first(byte_size), timestamp);
 }
 
 // Readback the contents of a RGBA texture into an array of RGBA values.
@@ -277,17 +283,17 @@ static scoped_refptr<VideoFrame> CreateRGBA16TestFrame(
   frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
 
   // Draw full red in RGBA F16 frame.
+  base::SpanWriter writer(frame->GetWritableVisiblePlaneData(0));
+  const size_t padding = frame->stride(0) - kWidth;
+  uint16_t result[] = {
+      fp16_ieee_from_fp32_value(1), fp16_ieee_from_fp32_value(0),
+      fp16_ieee_from_fp32_value(0), fp16_ieee_from_fp32_value(1)};
   for (int y = 0; y < kHeight; ++y) {
     for (int x = 0; x < kWidth; ++x) {
       // Fill the frame with red color.
-      uint16_t* pixel_data = reinterpret_cast<uint16_t*>(
-          frame->writable_data(0) + y * frame->stride(0) + x * 8);
-
-      pixel_data[0] = fp16_ieee_from_fp32_value(1);
-      pixel_data[1] = fp16_ieee_from_fp32_value(0);
-      pixel_data[2] = fp16_ieee_from_fp32_value(0);
-      pixel_data[3] = fp16_ieee_from_fp32_value(1);
+      writer.Write(base::as_byte_span(result));
     }
+    writer.Skip(padding);
   }
   return frame;
 }
@@ -542,27 +548,22 @@ TEST_F(PaintCanvasVideoRendererTest, CroppedFrameToRGBParallel) {
 
   const gfx::Size visible_size = test_frame->visible_rect().size();
   const size_t row_bytes = visible_size.width() * sizeof(SkColor);
-  const size_t allocation_size = row_bytes * visible_size.height();
-  auto memory =
-      base::HeapArray<uint8_t, base::AlignedFreeDeleter>::FromOwningPointer(
-          static_cast<uint8_t*>(base::AlignedAlloc(
-              allocation_size, media::VideoFrame::kFrameAddressAlignment)),
-          allocation_size);
-  memset(memory.data(), 0, allocation_size);
+  auto memory = base::AlignedUninit<uint32_t>(
+      visible_size.width() * visible_size.height(),
+      media::VideoFrame::kFrameAddressAlignment);
+  std::ranges::fill(memory, 0);
 
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-      test_frame.get(), memory.data(), row_bytes);
-
-  const uint32_t* rgb_pixels = reinterpret_cast<uint32_t*>(memory.data());
+      test_frame.get(), base::as_writable_byte_span(memory), row_bytes);
 
   // Check the corners; this is sufficient to reveal https://crbug.com/1027442.
-  EXPECT_EQ(SK_ColorBLACK, rgb_pixels[0]);
+  EXPECT_EQ(SK_ColorBLACK, memory[0]);
   EXPECT_EQ(MaybeConvertABGRToARGB(SK_ColorRED),
-            rgb_pixels[visible_size.width() - 1]);
+            memory[visible_size.width() - 1]);
   EXPECT_EQ(SK_ColorGREEN,
-            rgb_pixels[visible_size.width() * (visible_size.height() - 1)]);
+            memory[visible_size.width() * (visible_size.height() - 1)]);
   EXPECT_EQ(MaybeConvertABGRToARGB(SK_ColorBLUE),
-            rgb_pixels[(visible_size.width() - 1) * visible_size.height()]);
+            memory[(visible_size.width() - 1) * visible_size.height()]);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, CroppedFrame_NoScaling) {
@@ -727,14 +728,16 @@ TEST_F(PaintCanvasVideoRendererTest, HighBitDepth) {
     for (int plane = VideoFrame::Plane::kY; plane <= VideoFrame::Plane::kV;
          ++plane) {
       int width = cropped_frame()->row_bytes(plane);
-      uint16_t* dst = reinterpret_cast<uint16_t*>(frame->writable_data(plane));
-      const uint8_t* src = cropped_frame()->data(plane);
+      base::span<const uint8_t> src = cropped_frame()->data_span(plane);
+      base::span<uint8_t> dest = frame->writable_span(plane);
       for (int row = 0; row < cropped_frame()->rows(plane); row++) {
+        auto src_row = src.take_first(cropped_frame()->stride(plane));
+        auto dest_row = dest.take_first(frame->stride(plane));
         for (int col = 0; col < width; col++) {
-          dst[col] = src[col] << (param.bit_depth - 8);
+          const uint16_t value = src_row[col] << (param.bit_depth - 8);
+          dest_row.take_first<sizeof(uint16_t)>().copy_from_nonoverlapping(
+              base::byte_span_from_ref(value));
         }
-        src += cropped_frame()->stride(plane);
-        dst += frame->stride(plane) / 2;
       }
     }
 
@@ -767,15 +770,12 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
   const int offset_y = 5;
   const int stride = bitmap.width() + offset_x;
   const size_t byte_size = stride * (bitmap.height() + offset_y) * 2;
-  auto memory = base::HeapArray<unsigned char, base::AlignedFreeDeleter>::
-      FromOwningPointer(
-          static_cast<unsigned char*>(base::AlignedAlloc(
-              byte_size, media::VideoFrame::kFrameAddressAlignment)),
-          byte_size);
+  auto memory = base::AlignedUninit<uint8_t>(
+      byte_size, media::VideoFrame::kFrameAddressAlignment);
   const gfx::Rect rect(offset_x, offset_y, bitmap.width(), bitmap.height());
   auto video_frame =
       CreateTestY16Frame(gfx::Size(stride, offset_y + bitmap.height()), rect,
-                         memory.data(), cropped_frame()->timestamp());
+                         memory, cropped_frame()->timestamp());
 
   cc::SkiaPaintCanvas canvas(bitmap);
   cc::PaintFlags flags;
@@ -800,39 +800,27 @@ TEST_F(PaintCanvasVideoRendererTest, Yuv420P12OddWidth) {
   constexpr int kImgHeight = 3;
   constexpr int kUvWidth = (kImgWidth + 1) / 2;
   constexpr int kUvHeight = (kImgHeight + 1) / 2;
-  auto y_plane = base::HeapArray<uint8_t>::Uninit(kImgWidth * kImgHeight *
-                                                  sizeof(uint16_t));
-  auto u_plane =
-      base::HeapArray<uint8_t>::Uninit(kUvWidth * kUvHeight * sizeof(uint16_t));
-  auto v_plane =
-      base::HeapArray<uint8_t>::Uninit(kUvWidth * kUvHeight * sizeof(uint16_t));
+  auto y_plane = base::HeapArray<uint16_t>::Uninit(kImgWidth * kImgHeight);
+  auto u_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
+  auto v_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
   const int32_t y_stride = sizeof(uint16_t) * kImgWidth;
   const int32_t uv_stride = sizeof(uint16_t) * kUvWidth;
   // Set all pixels to white.
-  uint16_t* y_plane_ptr = reinterpret_cast<uint16_t*>(y_plane.data());
-  for (int i = 0; i < kImgHeight; ++i) {
-    for (int j = 0; j < kImgWidth; ++j) {
-      y_plane_ptr[i * kImgWidth + j] = 4095;
-    }
-  }
-  uint16_t* u_plane_ptr = reinterpret_cast<uint16_t*>(u_plane.data());
-  uint16_t* v_plane_ptr = reinterpret_cast<uint16_t*>(v_plane.data());
-  for (int i = 0; i < kUvHeight; ++i) {
-    for (int j = 0; j < kUvWidth; ++j) {
-      u_plane_ptr[i * kUvWidth + j] = 2048;
-      v_plane_ptr[i * kUvWidth + j] = 2048;
-    }
-  }
+  std::ranges::fill(y_plane, 4095);
+  std::ranges::fill(u_plane, 2048);
+  std::ranges::fill(v_plane, 2048);
 
   auto size = gfx::Size(kImgWidth, kImgHeight);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_YUV420P12, size, gfx::Rect(size), size, y_stride, uv_stride,
-      uv_stride, y_plane, u_plane, v_plane, base::TimeDelta());
+      uv_stride, base::as_byte_span(y_plane), base::as_byte_span(u_plane),
+      base::as_byte_span(v_plane), base::TimeDelta());
 
   auto rgba = base::HeapArray<uint32_t>::Uninit(kImgWidth * kImgHeight);
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-      frame.get(), rgba.data(), frame->visible_rect().width() * 4,
-      kN32_SkColorType, /*premultiply_alpha=*/true);
+      frame.get(), base::as_writable_byte_span(rgba),
+      frame->visible_rect().width() * 4, kN32_SkColorType,
+      /*premultiply_alpha=*/true);
   for (int i = 0; i < kImgHeight; ++i) {
     for (int j = 0; j < kImgWidth; ++j) {
       EXPECT_EQ(rgba[i * kImgWidth + j], 0xffffffff);
@@ -854,7 +842,7 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
   // (R = 255, G = 0, B = 0) is Y = 76, U = 85, V = 255.
   //
   // Set Y to 76 for all pixels.
-  memset(y_plane.data(), 76, kImgWidth * kImgHeight);
+  std::ranges::fill(y_plane, 76);
   // Set U = 85 and V = 255 for the upperleft pixel. Then vary U and V with a
   // linear, diagonal slope over the UV planes with a step size of 4 and -4,
   // respectively.
@@ -893,8 +881,9 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
 
   // First convert with kFilterNone (nearest neighbor).
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-      frame.get(), rgba.data(), frame->visible_rect().width() * 4,
-      kN32_SkColorType, /*premultiply_alpha=*/true);
+      frame.get(), base::as_writable_byte_span(rgba),
+      frame->visible_rect().width() * 4, kN32_SkColorType,
+      /*premultiply_alpha=*/true);
 
   // The pixel at coordinates (1, 1) will have U = 89 and V = 251 if nearest
   // neighbor is used. (The correct values are U = 93 and V = 247.)
@@ -917,9 +906,9 @@ TEST_F(PaintCanvasVideoRendererTest, I420WithFilters) {
 
   // Then convert with kFilterBilinear (bilinear interpolation).
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-      frame.get(), rgba.data(), frame->visible_rect().width() * 4,
-      kN32_SkColorType, /*premultiply_alpha=*/true,
-      PaintCanvasVideoRenderer::kFilterBilinear);
+      frame.get(), base::as_writable_byte_span(rgba),
+      frame->visible_rect().width() * 4, kN32_SkColorType,
+      /*premultiply_alpha=*/true, PaintCanvasVideoRenderer::kFilterBilinear);
 
   // The pixel at coordinates (1, 1) will have the correct values U = 93 and
   // V = 247 if bilinear interpolation is used.
@@ -1038,15 +1027,12 @@ TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
   const int height = 16;
   const int stride = width + offset_x;
   const size_t byte_size = stride * (height + offset_y) * 2;
-  auto memory = base::HeapArray<unsigned char, base::AlignedFreeDeleter>::
-      FromOwningPointer(
-          static_cast<unsigned char*>(base::AlignedAlloc(
-              byte_size, media::VideoFrame::kFrameAddressAlignment)),
-          byte_size);
+  auto memory = base::AlignedUninit<uint8_t>(
+      byte_size, media::VideoFrame::kFrameAddressAlignment);
   const gfx::Rect rect(offset_x, offset_y, width, height);
   auto video_frame =
-      CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect,
-                         memory.data(), cropped_frame()->timestamp());
+      CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect, memory,
+                         cropped_frame()->timestamp());
 
   TestGLES2Interface gles2;
   // Bind the texImage2D callback to verify the uint16 to float32 conversion.
@@ -1061,7 +1047,13 @@ TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
         EXPECT_EQ(16, width);
         EXPECT_EQ(16, height);
         EXPECT_EQ(static_cast<unsigned>(GL_TEXTURE_2D), target);
-        const float* data = static_cast<const float*>(pixels);
+        // SAFETY: When we convert Y16 data to RGBAF32 data, our size will
+        // become four times the original. Width and height will remain
+        // unchanged.
+        auto data = UNSAFE_BUFFERS(base::span<const float>(
+            static_cast<const float*>(pixels),
+            base::CheckMul<size_t>(width, height, 4).ValueOrDie()));
+
         for (int j = 0; j < height; j++) {
           for (int i = 0; i < width; i++) {
             const int value = i + (height - j - 1) * width;  // flip_y is true.
@@ -1089,16 +1081,13 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
   const int height = 16;
   const int stride = width + offset_x;
   const size_t byte_size = stride * (height + offset_y) * 2;
-  auto memory = base::HeapArray<unsigned char, base::AlignedFreeDeleter>::
-      FromOwningPointer(
-          static_cast<unsigned char*>(base::AlignedAlloc(
-              byte_size, media::VideoFrame::kFrameAddressAlignment)),
-          byte_size);
+  auto memory = base::AlignedUninit<uint8_t>(
+      byte_size, media::VideoFrame::kFrameAddressAlignment);
 
   const gfx::Rect rect(offset_x, offset_y, width, height);
   auto video_frame =
-      CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect,
-                         memory.data(), cropped_frame()->timestamp());
+      CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect, memory,
+                         cropped_frame()->timestamp());
 
   TestGLES2Interface gles2;
   // Bind the texImage2D callback to verify the uint16 to float32 conversion.
@@ -1113,7 +1102,12 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
         EXPECT_EQ(16, width);
         EXPECT_EQ(16, height);
         EXPECT_EQ(static_cast<unsigned>(GL_TEXTURE_2D), target);
-        const float* data = static_cast<const float*>(pixels);
+        // SAFETY: When we convert Y16 to R32, our data size is equal to the
+        // original size.
+        auto data = UNSAFE_BUFFERS(base::span<const float>(
+            static_cast<const float*>(pixels),
+            base::CheckMul<size_t>(width, height).ValueOrDie()));
+
         for (int j = 0; j < height; j++) {
           for (int i = 0; i < width; i++) {
             const int value = i + j * width;  // flip_y is false.
@@ -1198,11 +1192,12 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     destination_gl->DeleteTextures(1, &texture);
 
     auto get_color = base::BindRepeating(
-        [](uint8_t* pixels, const gfx::Size& size, int x, int y) {
-          uint8_t* p = pixels + (size.width() * y + x) * 4;
+        [](base::span<uint8_t> pixels, const gfx::Size& size, int x, int y) {
+          base::span<uint8_t> p = pixels.subspan(
+              base::CheckMul<size_t>(size.width() * y + x, 4).ValueOrDie());
           return SkColorSetARGB(p[3], p[0], p[1], p[2]);
         },
-        pixels.data(), expected_size);
+        pixels.as_span(), expected_size);
     check_pixels(get_color);
   }
 

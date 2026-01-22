@@ -187,6 +187,42 @@ inline T& ToPointer(T& value) {
     return UNSAFE_TODO(base::span<uint32_t>(row, size));  \
   }(::base::spanification_internal::ToPointer(arg_self), arg_x, arg_y))
 
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkBitmap.h;l=283;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkBitmap.h;l=293;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b
+#define UNSAFE_SKBITMAP_TO_BYTES_SPAN(arg_self)              \
+  ([](auto&& self) {                                         \
+    uint8_t* row = static_cast<uint8_t*>(self->getPixels()); \
+    size_t size = self->computeByteSize();                   \
+    CHECK(row || size == 0);                                 \
+    CHECK_NE(size, SIZE_MAX);                                \
+    return UNSAFE_TODO(base::span<uint8_t>(row, size));      \
+  }(::base::spanification_internal::ToPointer(arg_self)))
+
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkPixmap.h;l=483;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b;bpv=1;bpt=1
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkPixmap.h;l=231;drc=f72bd467feb15edd9323e46eab1b74ab6025bc5b
+#define UNSAFE_SKPIXMAP_TO_BYTES_SPAN(arg_self)                  \
+  ([](auto&& self) {                                             \
+    uint8_t* row = static_cast<uint8_t*>(self->writable_addr()); \
+    size_t size = self->computeByteSize();                       \
+    CHECK(row || size == 0);                                     \
+    CHECK_NE(size, SIZE_MAX);                                    \
+    return UNSAFE_TODO(base::span<uint8_t>(row, size));          \
+  }(::base::spanification_internal::ToPointer(arg_self)))
+
+// https://source.chromium.org/chromium/chromium/src/+/main:cc/paint/paint_canvas.h;l=66;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/src/core/SkCanvas.cpp;l=1264;drc=6c24069ae3996c883ea5d5886d0c013cb78f8394;bpv=1;bpt=1
+#define UNSAFE_PAINTCANVAS_TOP_LAYER_TO_BYTES_SPAN(arg_self, arg_info,        \
+                                                   arg_row_bytes, arg_origin) \
+  ([](auto&& self, SkImageInfo* info, size_t* rowBytes, SkIPoint* origin) {   \
+    uint8_t* row = static_cast<uint8_t*>(                                     \
+        self->accessTopLayerPixels(info, rowBytes, origin));                  \
+    size_t size = info->computeByteSize(*rowBytes);                           \
+    CHECK(row || size == 0);                                                  \
+    CHECK_NE(size, SIZE_MAX);                                                 \
+    return UNSAFE_TODO(base::span<uint8_t>(row, size));                       \
+  }(::base::spanification_internal::ToPointer(arg_self), arg_info,            \
+    arg_row_bytes, arg_origin))
+
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/boringssl/src/include/openssl/pool.h;drc=c76e4f83a8c5786b463c3e55c070a21ac751b96b;l=81
 #define UNSAFE_CRYPTO_BUFFER_DATA(arg_buf)                    \
   ([](const CRYPTO_BUFFER* buf) {                             \
