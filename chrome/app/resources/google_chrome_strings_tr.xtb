@@ -304,6 +304,7 @@
 <translation id="4242034826641750751">Bu site için Chrome'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4251615635259297716">Chrome verileriniz bu hesaba bağlansın mı?</translation>
+<translation id="4280647692742956593">Hareket halindeyken sekme gruplarını açmak veya yenilerini oluşturmak için telefonunuza Chrome'u indirin.</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
 <translation id="4293420128516039005">Chrome'u cihazlarınız arasında senkronize etmek ve kişiselleştirmek için oturum açın</translation>
 <translation id="430327780270213103">Uzantının, Chrome araç çubuğunda erişim isteklerini göstermesine izin ver</translation>
@@ -359,7 +360,6 @@
 <translation id="4918844574251943176">Resim kopyalandı</translation>
 <translation id="4926882258455737990">Chrome'da Gemini ile farklı bir Google Hesabı kullanmak için <ph name="BEGIN_LINK" />yeni bir profil oluşturun<ph name="END_LINK" /> ve istediğiniz hesapla oturum açın</translation>
 <translation id="492720062778050435">Chrome bu uzantıyı incelemenizi öneriyor</translation>
-<translation id="4946912144186040233">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar kapalı.</translation>
 <translation id="4953650215774548573">Google Chrome'u varsayılan tarayıcım olarak ayarla</translation>
 <translation id="495931528404527476">Chrome'da</translation>
 <translation id="4969674060580488087">Hesap oturum açma bilgileriniz güncel olmadığı için ChromeOS Flex, verilerinizi senkronize edemedi.</translation>
@@ -408,7 +408,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ile kullanılacak bir Chrome profili seçin</translation>
 <translation id="5468572406162360320">Chrome, özelliklerle olan etkileşimlerinizi Google'a göndererek bu özelliklerin iyileştirilmesini sağlar. İnceleme uzmanları bu verileri okuyabilir, işleyebilir ve bunlara ek açıklama ekleyebilir.</translation>
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
-<translation id="5530733413481476019">Chrome'u Daha Hızlı Hale Getirin</translation>
 <translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u Özelleştir düğmesini tıklayın</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
@@ -589,12 +588,14 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chrome kuruluşunuz tarafından kapatılır.</translation>
 <translation id="7242029209006116544">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chrome verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz.<ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome'u <ph name="MANAGER" /> yönetiyor</translation>
+<translation id="7285990705317078173">Fiyatları takip etmek ve herhangi bir sitede fiyat düştüğünde uyarı almak için telefonunuza Chrome'u indirin.</translation>
 <translation id="7288567540154601580">Sekmeler ve uzantılar</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7302361266603927550">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7308322188646931570">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7352651011704765696">Bir hata oluştu</translation>
+<translation id="7379321689415048316">Chrome, standart otomatik doldurma özelliğinin atlayabileceği zor alanları otomatik olarak doldurabilir.</translation>
 <translation id="7386878009611068389">Anne veya babanızın seçimleriyle internette daha güvende olmak için <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtığınız Chrome profilinize geçin</translation>
 <translation id="7398801000654795464">Chrome'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7412494426921990001">Chrome menüsünü tıklayın</translation>
@@ -609,7 +610,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7481213027396403996">Chrome’un en güçlü güvenlik özelliklerinden faydalanın</translation>
 <translation id="749228101751499733">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. <ph name="SHORTCUT" />, Google hizmetlerindeki ayarlarınızı değiştirebilir.</translation>
 <translation id="7496017508659652909">Chrome, sayfaları önceden yükleyerek internette gezinme ve arama işlemlerini hızlandırır. <ph name="BEGIN_LINK" />Önceden yükleme sayfaları hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
-<translation id="7510927761955779701">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar açık.</translation>
 <translation id="7514258452813684157">Google Güncelleyici Hizmeti</translation>
 <translation id="7515191208480168435">Daha kolay erişmek için Google Lens'i sabitleyebilirsiniz</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -618,7 +618,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7572537927358445944">Kapalı • Chrome, bu uzantının kaynağını doğrulayamıyor</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Yükleyici</translation>
 <translation id="7596160425942761210">Mesajlardaki, belgelerdeki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chrome'u kullanabilirsiniz</translation>
-<translation id="7602868996817972616">Google'a bu sayfa hakkında soru sorun</translation>
+<translation id="7602868996817972616">Google'a bu sayfa hakkında soru sor</translation>
 <translation id="760353356052806707">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir uygulama ekledi.
 
 <ph name="EXTENSION_NAME" /></translation>

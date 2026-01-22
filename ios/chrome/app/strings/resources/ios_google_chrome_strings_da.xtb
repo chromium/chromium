@@ -86,6 +86,9 @@ Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangs­kode­admin­istrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2788811701191021538">Åbner siden med indstillinger for betalingsmetoder i Chrome.</translation>
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Du har nået Google Chromes grænse på <ph name="LIMIT" /> bogmærker, så nogle af dine bogmærker er endnu ikke gemt på din Google-konto.
+
+Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
 <translation id="2922914028977213693">Tryk her for at få mest muligt ud af Chrome på din iPad.</translation>
 <translation id="292371311537977079">Indstillinger for Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitofaner, når du lukker Chrome</translation>

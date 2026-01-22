@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">Преминаване към адресната лента</translation>
 <translation id="2888126860611144412">Всичко за Chrome</translation>
 <translation id="2891154217021530873">Спиране на зареждането на страницата</translation>
+<translation id="2893168226686371498">Браузър по подразбиране</translation>
 <translation id="2894821468041866720">Не забавя осезаемо браузъра или устройството ви.</translation>
 <translation id="2895521649038438824">Можете да слушате тази страница</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" /> – фиксиран раздел, който възпроизвежда звук</translation>
@@ -1467,6 +1468,7 @@
 За да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Научете повече за това защо Chrome блокира някои файлове</translation>
 <translation id="7168323970702333693">Влезли сте като <ph name="USER_NAME" />. Отваря настройките.</translation>
+<translation id="7170930892977483182">Всички кодове за сигурност, запазени на устройството ви и в Google Wallet, ще бъдат изтрити</translation>
 <translation id="7173114856073700355">Към настройките</translation>
 <translation id="7173338713290252554">История на цените в мрежата</translation>
 <translation id="7177466738963138057">Можете да промените това по-късно от настройките</translation>

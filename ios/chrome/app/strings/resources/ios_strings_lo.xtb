@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4568230126482344545">ເຊື່ອງ ແຖບຫຼ້າສຸດ</translation>
 <translation id="4578835633387306383">ເປີດ…</translation>
+<translation id="4580621046861724270">ລະບົບບໍ່ໄດ້ບັນທຶກບຸກມາກບາງລາຍການ</translation>
 <translation id="4580716718466706433">ເຂົ້າໄປ "ຕົວຈັດການລະຫັດຜ່ານ"</translation>
 <translation id="4585751637295612750">ເປີດແຖບໃໝ່ເພື່ອເພີ່ມໃສ່ໃນຄຳຖາມຂອງທ່ານ</translation>
 <translation id="4587589328781138893">ເວັບໄຊ</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">ທ່ານກຳລັງຕິດຕາມສິນຄ້ານີ້ຢູ່ກ່ອນແລ້ວ.</translation>
 <translation id="5327248766486351172">ຊື່</translation>
 <translation id="5329451663851195956">ທ່ານສາມາດດຶງລົງເພື່ອໂຫຼດຂໍ້ມູນຄືນໃໝ່ໄດ້.</translation>
+<translation id="5336910966955551309">ແຕະຄ້າງໄວ້ເພື່ອປັກໝຸດເວັບໄຊທີ່ທ່ານມັກ</translation>
 <translation id="5338512273860059533">ກຳລັງເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="5343472494710226394">ຂ່າວ, ກິລາ ແລະ ເນື້ອຫາໂດຍອີງຕາມຄວາມສົນໃຈຂອງທ່ານ.</translation>
 <translation id="5352128922772839949">ບັນທຶກໄຟລ໌</translation>
@@ -2004,6 +2006,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8319282042900445670">ຕັ້ງການແຈ້ງເຕືອນເປັນ <ph name="TIME" />, <ph name="DATE" /> ແລ້ວ</translation>
 <translation id="8320212361750431956">ການເຄື່ອນໄຫວຫຼ້າສຸດ</translation>
 <translation id="8325455175867928593">ເຊື່ອງ "ຄຳຕິຊົມຕາມຄວາມສົນໃຈຂອງທ່ານ"</translation>
+<translation id="8328777765163860529">ປິດທັງໝົດ</translation>
 <translation id="833647236762414178">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ສຳຮອງຂໍ້ມູນຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້.</translation>
 <translation id="8348530355586151720">ແຕະເມນູສາມຈ້ຳ</translation>

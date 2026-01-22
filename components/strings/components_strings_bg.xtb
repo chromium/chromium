@@ -287,6 +287,7 @@
 <translation id="1433225466058025572">Опитайте отново да преместите файловете си</translation>
 <translation id="1433478348197382180">Режим на четене</translation>
 <translation id="1436185428532214179">Може да поиска разрешение да редактира файлове и папки на устройството ви</translation>
+<translation id="1442054921249164535">Други данни</translation>
 <translation id="1442386063175183758">Сгъване на десния край навътре</translation>
 <translation id="1442987760062738829">Перфориране</translation>
 <translation id="1445896388055045436">Показване на наличните предимства и награди за картата при плащане. В сила са условията на издателя.</translation>
@@ -940,6 +941,7 @@
 <translation id="24699311393038040">Хартия (с покритие)</translation>
 <translation id="2471632709106952369">Таблици за сравнение</translation>
 <translation id="2473810985261856484">Правни услуги</translation>
+<translation id="2477607419416067650">Други данни в Google</translation>
 <translation id="2479148705183875116">Към настройките</translation>
 <translation id="2479410451996844060">Невалиден URL адрес за търсене.</translation>
 <translation id="2480300195898055381">В профила ви в Google <ph name="USER_EMAIL" /></translation>
@@ -994,6 +996,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">От сега нататък да се използва опцията за заключване на екрана за потвърждаване на картите</translation>
 <translation id="2552532158894206888">клавиш със стрелка за надясно</translation>
+<translation id="2553352788023127673">Историята в Търсене и паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
 <translation id="255497580849974774">Устройството ви трябва да е свързано със зарядно по време на актуализацията.</translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
@@ -1498,6 +1501,7 @@
 <translation id="3407789382767355356">подкани за вход от трети страни</translation>
 <translation id="340924996148642843">В момента функцията за сравняване не е налице</translation>
 <translation id="3409896703495473338">Управление на настройките за сигурност</translation>
+<translation id="3410151451624226773">Управление в Google Мениджър на пароли</translation>
 <translation id="3411091017011773343">Качване след <ph name="HOURS" /> ч</translation>
 <translation id="341134412449102894">Данните ви се запазват в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Ако използвате обществена мрежа, най-безопасно е да посетите този сайт по-късно. Рискът е по-малък при доверена мрежа, като например домашната или служебната ви Wi-Fi мрежа.</translation>
@@ -1589,6 +1593,7 @@
 <translation id="3549904448933807997">Информация за браузърите и потребителските профили (включително личните и служебните потребителски профили).</translation>
 <translation id="3552155506104542239">Предупреждение: Това правило е в конфликт с правилото <ph name="POLICY_NAME" /> и няма да има ефект върху приложенията за Android. Иначе то работи нормално.</translation>
 <translation id="3552297013052089404">Безсерифен шрифт</translation>
+<translation id="3558335486599406178">IBAN номерът е запазен в Google Wallet</translation>
 <translation id="3558573058928565255">През деня</translation>
 <translation id="3559897352860026926">Помолете администратора си да потвърди настройките си за конфигуриране на <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="3560824484345057728">Преглед на сродните сайтове</translation>
@@ -2159,12 +2164,14 @@
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4406896451731180161">резултата от търсенето</translation>
 <translation id="4407758156081352648">От съображения за сигурност организацията ви не позволява повторното използване на пароли в Chrome. Паролите в браузъра са шифровани с цел защита на поверителността на потребителите.</translation>
+<translation id="4409271659088619928">Търсещата ви машина е <ph name="DSE" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="4409556632583862731">Нова нишка</translation>
 <translation id="4412074349188076601">Тази конфигурация е означена като такава с възможност за инсталиране, но не може да се инсталира, тъй като не е предоставен образ за съответната архитектура.</translation>
 <translation id="4412377069090572315">Какво казват хората</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415156962929755728">Пластмаса (силно гланцирана)</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
+<translation id="4419287616181386201">Паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="4424024547088906515">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; Chrome няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="4425750422187370446">Спортно облекло</translation>
 <translation id="443121186588148776">Сериен порт</translation>
@@ -2483,6 +2490,7 @@
 <translation id="4950898438188848926">Бутон за превключване между раздели. Натиснете Enter, за да преминете към отворения раздел – <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953689047182316270">Реагиране на събития за достъпност</translation>
+<translation id="4954891067389874142">Плащайте по-бързо, когато картата ви е запазена. Данните за картата се шифроват в Google Wallet.</translation>
 <translation id="4957080528849277028">Бутон „Преглед на историята ви в Chrome“. Активирайте, за да прегледате и управлявате историята си на сърфиране в настройките на Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
 <translation id="4958444002117714549">Разгъване на списъка</translation>
@@ -2570,6 +2578,7 @@
 <translation id="5097468150760963273">27 x 39 инча</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Натиснете Tab и след това – Enter, за да попитате режима с AI</translation>
+<translation id="5105442806410269908">Управление на други данни в Google</translation>
 <translation id="510644072453496781">Картон (окрайчен)</translation>
 <translation id="5106648964679263509">Виртуалната карта за <ph name="BNPL_ISSUER_NAME" /> е попълнена</translation>
 <translation id="5108567515277121477">Карта за лоялност</translation>
@@ -2709,6 +2718,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chromium<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="5323043727018853753">Вграденото съдържание е разрешено</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> от <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Управление в профила ви в Google</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329858041417644019">Браузърът ви не се управлява</translation>
 <translation id="5331585574693522196">Задаване като основен избор</translation>
@@ -2752,6 +2762,7 @@
 <translation id="5394069166371280357">Семейни телевизионни предавания</translation>
 <translation id="5396631636586785122">Зашиване на десния ръб</translation>
 <translation id="5397794290049113714">Вие</translation>
+<translation id="5398461103557553443">За да се попълни автоматично този IBAN следващия път, запазете го в Google Wallet</translation>
 <translation id="5398772614898833570">Рекламите са блокирани</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="5401344472773249513">Новини за знаменитости и шоубизнеса</translation>
@@ -3860,6 +3871,7 @@
 <translation id="7162277662076933695">Четец на смарткарти</translation>
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> не е поддържано ограничение в тази платформа</translation>
+<translation id="7170930892977483182">Всички кодове за сигурност, запазени на устройството ви и в Google Wallet, ще бъдат изтрити</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
 <translation id="7173338713290252554">История на цените в мрежата</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
@@ -3915,6 +3927,7 @@
 <translation id="7251437084390964440">Конфигурацията на мрежата не спазва стандарта на ONC. Възможно е части от нея да не са импортирани.
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">За да изтриете тези данни, отворете съответните настройки за управление</translation>
 <translation id="7255540419660272073">Бутон „Не ми харесва“. Натиснете Enter, за да отворите формуляр за изпращане на подробни отзиви за причината, поради която не харесвате това, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задна тава</translation>
 <translation id="7257453341537973799">Кариерно планиране и ресурси</translation>
@@ -4013,6 +4026,7 @@
 <translation id="7408613996403626141">Играчки</translation>
 <translation id="7410852728357935715">Предаване към устройство</translation>
 <translation id="741204030948306876">Да, ще участвам</translation>
+<translation id="7412081313067625215">Картата ви е запазена в Google Wallet, за да можете да попълвате автоматично данните ѝ за бъдещи покупки</translation>
 <translation id="7416351320495623771">Управление на паролите…</translation>
 <translation id="7416898721136759658">Безвъзмездна и финансова помощ и стипендии</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4042,6 +4056,7 @@
 <translation id="7450577240311017924">Бутон „Управление на синхронизирането“. Активирайте, за да управлявате данните, които да се синхронизират, в настройките на Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
 <translation id="745208957946308667">Играта с динозавъра – натиснете интервал, за да играете</translation>
+<translation id="7453032093368223821">Управление на други данни</translation>
 <translation id="7453849010505253492">Сървърът не успя да докаже, че е <ph name="DOMAIN" />, защото използва сертификат за сигурност, който не се смята за надежден от Chrome или системната ви конфигурация за шифроване на трафика в мрежата. Това може да се дължи на неправилно конфигуриране или на прехващане на връзката ви от хакер. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Преглед на сертификата<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Профил в Cloud</translation>
 <translation id="7455133967321480974">Използване на глобалната стандартна стойност (блокиране)</translation>
@@ -4146,6 +4161,7 @@
 <translation id="759889825892636187">Понастоящем <ph name="HOST_NAME" /> не може да обработи тази заявка.</translation>
 <translation id="7599089013883397081">Времето за изчакване при изтегляне изтече</translation>
 <translation id="7602868996817972616">Попитайте Google за тази страница</translation>
+<translation id="7606123685356405076">Модели на Gemini 3</translation>
 <translation id="7610193165460212391">Стойността е извън обхват <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Дебела</translation>
 <translation id="7613889955535752492">Валидна до: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

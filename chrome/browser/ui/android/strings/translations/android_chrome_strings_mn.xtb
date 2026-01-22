@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">Хаяг оруулах хэсэг рүү очих</translation>
 <translation id="2888126860611144412">Chrome-н тухай</translation>
 <translation id="2891154217021530873">Хуудас ачаалахыг зогсоох</translation>
+<translation id="2893168226686371498">Стандарт веб хөтөч</translation>
 <translation id="2894821468041866720">Таны хөтөч эсвэл төхөөрөмжийг мэдэгдэхүйц хэмжээгээр удаашруулахгүй.</translation>
 <translation id="2895521649038438824">Та энэ хуудсыг сонсох боломжтой</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, Бэхлэгдэж, аудио тоглуулж буй таб</translation>
@@ -1467,6 +1468,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Chrome яагаад зарим файлыг блоклодог талаар нэмэлт мэдээлэл авна уу</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" />-р нэвтэрсэн. Тохиргоог нээнэ.</translation>
+<translation id="7170930892977483182">Таны төхөөрөмж, Google Wallet-д хадгалсан хамгаалалтын бүх кодыг устгана</translation>
 <translation id="7173114856073700355">Тохиргоог нээх</translation>
 <translation id="7173338713290252554">Веб дээрх үнийн түүх</translation>
 <translation id="7177466738963138057">Та дараа үүнийг Тохиргоо хэсэгт өөрчлөх боломжтой</translation>

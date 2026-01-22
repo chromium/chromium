@@ -265,6 +265,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1408787208417187241">Tripla pinzatura in alto</translation>
 <translation id="1410365862999780287">Le altre persone che usano questo dispositivo non vedranno la tua attività, di conseguenza potrai navigare in modo più privato. La modalità di raccolta dei dati da parte dei siti web visitati e dei servizi utilizzati, incluso Google, rimane invariata. I download, i preferiti e gli elementi dell'elenco di lettura verranno salvati.</translation>
 <translation id="1410941016594047814">Busta Invite</translation>
+<translation id="1413235258620101697">Il CVC di questa carta verrà criptato e salvato in Google Wallet per un pagamento più rapido</translation>
 <translation id="1413809658975081374">Errore di privacy</translation>
 <translation id="1414134146594747368">Scuole materne</translation>
 <translation id="1419305130220238697">Pulsante Gestisci i download in Chrome, attiva per gestire i file che hai scaricato in Chrome</translation>
@@ -286,6 +287,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
 <translation id="1433478348197382180">Modalità Lettura</translation>
 <translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
+<translation id="1442054921249164535">Altri dati</translation>
 <translation id="1442386063175183758">Piegatura a finestra a destra</translation>
 <translation id="1442987760062738829">Perforatura</translation>
 <translation id="1445896388055045436">Mostra i premi e i vantaggi disponibili per la carta al momento del pagamento. Si applicano i termini dell'emittente.</translation>
@@ -939,6 +941,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="24699311393038040">Carta (patinata)</translation>
 <translation id="2471632709106952369">Tabelle di confronto</translation>
 <translation id="2473810985261856484">Servizi legali</translation>
+<translation id="2477607419416067650">Altri dati di Google</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2479410451996844060">URL ricerca non valido.</translation>
 <translation id="2480300195898055381">Nel tuo Account Google <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Usa il blocco schermo per verificare le carte da questo momento in poi</translation>
 <translation id="2552532158894206888">tasto destro</translation>
+<translation id="2553352788023127673">La cronologia delle ricerche e le password possono essere eliminate nelle relative impostazioni di gestione</translation>
 <translation id="2553853292994445426">Controlla le impostazioni del sistema DNS sicuro. Potresti avere configurato un server DNS sicuro con il quale non è possibile stabilire connessioni.</translation>
 <translation id="255497580849974774">Tieni il dispositivo collegato a un caricabatterie durante l'aggiornamento.</translation>
 <translation id="2556876185419854533">&amp;Annulla modifica</translation>
@@ -1330,7 +1334,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3126023634486644099">Etichette (fisse)</translation>
 <translation id="3133565499688974786">Ora <ph name="SEARCH_ENGINE_NAME" /> è il tuo motore di ricerca predefinito</translation>
 <translation id="3134859781443140237">Rete locale</translation>
-<translation id="3137283076021007034"><ph name="KEYWORD" /> - Cerca <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="3137283076021007034"><ph name="KEYWORD" /> - Cerca in <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="3140646734028448730">Servizi per le aziende</translation>
 <translation id="3141093262818886744">Apri comunque</translation>
@@ -1494,6 +1498,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3407789382767355356">accesso di terze parti</translation>
 <translation id="340924996148642843">La funzionalità di confronto non è al momento disponibile</translation>
 <translation id="3409896703495473338">Gestisci le impostazioni di sicurezza</translation>
+<translation id="3410151451624226773">Gestisci in Gestore delle password di Google</translation>
 <translation id="3411091017011773343">Carica tra <ph name="HOURS" /> h</translation>
 <translation id="341134412449102894">Le tue informazioni sono salvate su <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Se utilizzi una rete pubblica, è più sicuro visitare questo sito in un secondo momento. Con una rete affidabile, come il Wi-Fi di casa o del lavoro, corri meno rischi.</translation>
@@ -2155,12 +2160,14 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4406896451731180161">risultati di ricerca</translation>
 <translation id="4407758156081352648">Per motivi di sicurezza, la tua organizzazione non consente di riutilizzare le password in Chrome. Le password in Chrome sono criptate per proteggere la privacy degli utenti.</translation>
+<translation id="4409271659088619928">Il tuo motore di ricerca è <ph name="DSE" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
 <translation id="4409556632583862731">Nuovo thread</translation>
 <translation id="4412074349188076601">Questa configurazione è contrassegnata come installabile, ma non è stata fornita alcuna immagine per questa architettura, quindi non può essere installata.</translation>
 <translation id="4412377069090572315">Cosa dicono le persone</translation>
 <translation id="4414515549596849729">cookie e dati dei siti</translation>
 <translation id="4415156962929755728">Plastica (lucida)</translation>
 <translation id="4415426530740016218">Indirizzo di ritiro</translation>
+<translation id="4419287616181386201">Le password possono essere eliminate nelle relative impostazioni di gestione</translation>
 <translation id="4424024547088906515">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chrome. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="4425750422187370446">Abbigliamento da atletica</translation>
 <translation id="443121186588148776">Porta seriale</translation>
@@ -2479,6 +2486,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4950898438188848926">Pulsante per cambiare scheda, premi INVIO per passare alla scheda aperta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953689047182316270">Rispondi agli eventi di accessibilità</translation>
+<translation id="4954891067389874142">Se salvi la carta paghi più velocemente. I dati della carta sono criptati in Google Wallet.</translation>
 <translation id="4957080528849277028">Pulsante Visualizza la tua cronologia di Chrome, attiva per visualizzare e gestire la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sito}other{+ # siti}}</translation>
 <translation id="4958444002117714549">Espandi elenco</translation>
@@ -2565,7 +2573,8 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5097099694988056070">Statistiche del dispositivo quali l'utilizzo di CPU/RAM</translation>
 <translation id="5097468150760963273">68,5 × 99 cm</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Premi Tab, poi Invio per chiedere ad AI Mode</translation>
+<translation id="5102512728737175215">Premi Tab, poi Invio per chiedere a AI Mode</translation>
+<translation id="5105442806410269908">Gestisci altri dati di Google</translation>
 <translation id="510644072453496781">Cartone (fine)</translation>
 <translation id="5106648964679263509">Carta virtuale per <ph name="BNPL_ISSUER_NAME" /> compilata</translation>
 <translation id="5108567515277121477">Carta fedeltà</translation>
@@ -2705,6 +2714,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Il motore di ricerca predefinito ti consente di eseguire ricerche sul web e supporta le funzionalità di Chromium<ph name="END_BOLD" />, come la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web. Una funzionalità potrebbe non essere disponibile se il tuo motore di ricerca non la supporta.</translation>
 <translation id="5323043727018853753">Contenuti incorporati consentiti</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> di <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Gestisci nel tuo Account Google</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5329858041417644019">Il browser in uso non è gestito</translation>
 <translation id="5331585574693522196">Imposta come predefinito</translation>
@@ -2748,6 +2758,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5394069166371280357">Programmi TV per le famiglie</translation>
 <translation id="5396631636586785122">Impuntura a destra</translation>
 <translation id="5397794290049113714">Tu</translation>
+<translation id="5398461103557553443">Per compilare automaticamente questo IBAN la prossima volta, salvalo in Google Wallet</translation>
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="5401344472773249513">Notizie su celebrità e intrattenimento</translation>
@@ -3017,6 +3028,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5843987376989109187">Questa lingua non è ancora supportata.
     <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Alimentatori</translation>
+<translation id="5848445080378515710">Dopo aver esaminato l'ordine, devi accedere o creare un account con <ph name="BNPL_ISSUER_NAME" />. Questo account verrà collegato automaticamente in Google Wallet.</translation>
 <translation id="584902713199270089">Incontri e annunci personali</translation>
 <translation id="5851548754964597211">Elenco schede</translation>
 <translation id="5851868085455377790">Autorità emittente</translation>
@@ -3854,6 +3866,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7162277662076933695">Lettore di smart card</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vuoi copiare il file riservato?}other{Vuoi copiare i file riservati?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" non è una limitazione supportata su questa piattaforma</translation>
+<translation id="7170930892977483182">Tutti i codici di sicurezza salvati sul dispositivo e in Google Wallet verranno eliminati</translation>
 <translation id="717330890047184534">ID GAIA:</translation>
 <translation id="7173338713290252554">Cronologia dei prezzi sul web</translation>
 <translation id="7174545416324379297">Uniti</translation>
@@ -3909,6 +3922,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7251437084390964440">La configurazione di rete non è conforme allo standard ONC. Parti della configurazione potrebbero non essere importate.
 Ulteriori dettagli:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Per eliminare questi dati, vai alle impostazioni di gestione</translation>
 <translation id="7255540419660272073">Pulsante Non mi piace, premi Invio per aprire un modulo per inviare un feedback dettagliato sul motivo per cui non ti piace <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Vassoio posteriore</translation>
 <translation id="7257453341537973799">Pianificazione carriera e risorse</translation>
@@ -4007,6 +4021,7 @@ Ulteriori dettagli:
 <translation id="7408613996403626141">Giocattoli</translation>
 <translation id="7410852728357935715">Trasmetti a un dispositivo</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
+<translation id="7412081313067625215">La carta è salvata in Google Wallet, così potrai usare la compilazione automatica per gli acquisti futuri</translation>
 <translation id="7416351320495623771">Gestisci password…</translation>
 <translation id="7416898721136759658">Prestiti, borse di studio e aiuti finanziari</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4036,6 +4051,7 @@ Ulteriori dettagli:
 <translation id="7450577240311017924">Pulsante Gestisci sincronizzazione, attiva per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Leggere ulteriori informazioni<ph name="END_LINK" /> sul problema.</translation>
 <translation id="745208957946308667">Gioco Dino, premi la barra spaziatrice per giocare</translation>
+<translation id="7453032093368223821">Gestisci altri dati</translation>
 <translation id="7453849010505253492">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" /> perché utilizza un certificato di sicurezza non considerato attendibile da Chrome o dalla configurazione di sistema per la crittografia del traffico web. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Visualizza certificato<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Account cloud</translation>
 <translation id="7455133967321480974">Usa predefinita globale (Blocca)</translation>
@@ -4140,6 +4156,7 @@ Ulteriori dettagli:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> al momento non è in grado di gestire la richiesta.</translation>
 <translation id="7599089013883397081">Timeout del download</translation>
 <translation id="7602868996817972616">Chiedi a Google informazioni su questa pagina</translation>
+<translation id="7606123685356405076">Modelli di Gemini 3</translation>
 <translation id="7610193165460212391">Il valore non è compreso nell'intervallo (<ph name="VALUE" />).</translation>
 <translation id="761261689936461781">Spesso</translation>
 <translation id="7613889955535752492">Scadenza: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

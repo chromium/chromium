@@ -433,6 +433,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2885355868600171871">Pomik na naslovno vrstico</translation>
 <translation id="2888126860611144412">O brskalniku Chrome</translation>
 <translation id="2891154217021530873">Ustavi nalaganje strani</translation>
+<translation id="2893168226686371498">Privzeti brskalnik</translation>
 <translation id="2894821468041866720">Ne upočasni delovanja brskalnika ali naprave.</translation>
 <translation id="2895521649038438824">Poslušate lahko to stran</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, pripeti zavihek z zvokom</translation>
@@ -1467,6 +1468,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Preberite več o tem, zakaj Chrome blokira nekatere datoteke</translation>
 <translation id="7168323970702333693">Prijavljen kot <ph name="USER_NAME" />. Odpre nastavitve.</translation>
+<translation id="7170930892977483182">Izbrisane bodo vse varnostne kode, shranjene v napravi in Google Denarnici</translation>
 <translation id="7173114856073700355">Odpri nastavitve</translation>
 <translation id="7173338713290252554">Zgodovina cen v spletu</translation>
 <translation id="7177466738963138057">To lahko pozneje spremenite v nastavitvah</translation>

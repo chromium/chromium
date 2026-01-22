@@ -307,6 +307,7 @@
 <translation id="4242034826641750751">Chrome vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4251615635259297716">Kas soovite linkida Chrome'i andmed selle kontoga?</translation>
+<translation id="4280647692742956593">Laadige oma telefoni alla Chrome, et liikvel olles uusi vahelehegruppe avada või luua.</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4293420128516039005">Logige sisse, et Chrome kõigis oma seadmetes sünkroonida ja isikupärastada</translation>
 <translation id="430327780270213103">Lubage laiendus, et juurdepääsutaotlused Chrome'i tööriistaribal kuvada</translation>
@@ -362,7 +363,6 @@
 <translation id="4918844574251943176">Pilt kopeeriti</translation>
 <translation id="4926882258455737990">Kui soovite Geminiga Chrome'is kasutada teist Google'i kontot, <ph name="BEGIN_LINK" />looge uus profiil<ph name="END_LINK" /> ja logige soovitud kontoga sisse.</translation>
 <translation id="492720062778050435">Chrome soovitab teil selle laienduse üle vaadata</translation>
-<translation id="4946912144186040233">Chrome mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on välja lülitatud.</translation>
 <translation id="4953650215774548573">Määra Google Chrome vaikebrauseriks</translation>
 <translation id="495931528404527476">Chrome'is</translation>
 <translation id="4969674060580488087">Chrome OS Flex ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
@@ -411,7 +411,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5465210843490471889">Valige Chrome'i profiil, mida <ph name="START_GLIC_STYLING" />Geminiga<ph name="END_GLIC_STYLING" /> kasutada</translation>
 <translation id="5468572406162360320">Nende funktsioonide täiustamiseks saadab Chrome teie interaktsioonid funktsioonidega Google'ile. Ülevaatajad võivad neid andmeid lugeda, töödelda ja nende kohta märkmeid teha.</translation>
 <translation id="5524890928877629608">otsinguala vasak ülanurk: <ph name="LEFT" />% vasakul, <ph name="TOP" />% üleval</translation>
-<translation id="5530733413481476019">Muutke Chrome kiiremaks</translation>
 <translation id="5550137307985173298">Chrome'ile uue ilme andmiseks klõpsake uuel vahelehel nupul Chrome'i kohandamine</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
@@ -592,12 +591,14 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7193885263065350793">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul.</translation>
 <translation id="7242029209006116544">Logite sisse hallatud kontoga ja annate selle administraatorile üle oma Google Chrome'i profiili juhtimise. Teie Chrome'i andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed Google'i kontode juhtpaneeli kaudu kustutada, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> haldab Chrome'i</translation>
+<translation id="7285990705317078173">Laadige oma telefoni alla Chrome, et jälgida hindu ja saada märguandeid, kui hind mõnel saidil langeb.</translation>
 <translation id="7288567540154601580">Vahelehed ja laiendused</translation>
 <translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>
 <translation id="7302361266603927550">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud. Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="7308322188646931570">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
+<translation id="7379321689415048316">Chrome saab automaatselt täita keerukaid välju, mida tavaline automaattäide ei pruugi tuvastada.</translation>
 <translation id="7386878009611068389">Et kaitsta ennast veebis paremini vanema valikutega, lülituge Chrome'i profiilile, millele olete kasutajana <ph name="USER_EMAIL_ADDRESS" /> juba sisse logitud</translation>
 <translation id="7398801000654795464">Olite Chrome'i sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
 <translation id="7412494426921990001">Klõpsake Chrome'i menüül</translation>
@@ -612,7 +613,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
 <translation id="7496017508659652909">Chrome eellaadib lehed, muutes sirvimise ja otsimise kiiremaks. <ph name="BEGIN_LINK" />Lisateave lehtede eellaadimise kohta<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on sisse lülitatud.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

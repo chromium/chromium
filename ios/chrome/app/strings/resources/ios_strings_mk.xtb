@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
 <translation id="4568230126482344545">Скриј „Неодамнешни картички“</translation>
 <translation id="4578835633387306383">Вклучете…</translation>
+<translation id="4580621046861724270">Некои обележувачи не се зачувани</translation>
 <translation id="4580716718466706433">Одете во „Password Manager“</translation>
 <translation id="4585751637295612750">Отворете нова картичка за да ја додадете во вашето прашање</translation>
 <translation id="4587589328781138893">Сајтови</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Веќе го следите производов.</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329451663851195956">Може да повлечете надолу за да освежите.</translation>
+<translation id="5336910966955551309">Допрете и задржете за да ги закачите омилените сајтови</translation>
 <translation id="5338512273860059533">Најавувањето е во тек.</translation>
 <translation id="5343472494710226394">Вести, спорт и содржини согласно со вашите интереси.</translation>
 <translation id="5352128922772839949">Зачувајте ја датотеката</translation>
@@ -2004,6 +2006,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8319282042900445670">Поставен е потсетник за <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Последна активност</translation>
 <translation id="8325455175867928593">Скриј „Рецензии според вашите интереси“</translation>
+<translation id="8328777765163860529">Затвори ги сите</translation>
 <translation id="833647236762414178">Создавајте и зачувувајте лозинки и криптографски клучеви и управувајте со нив за да може лесно да се најавувате на сајтовите и апликациите. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Направете бекап од вашите работи и користете ги на сите уреди.</translation>
 <translation id="8348530355586151720">Допрете го менито со три точки</translation>

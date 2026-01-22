@@ -5089,6 +5089,19 @@ Etkinleştirilir, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir et
 <translation id="4501388411278568771">Özellik başlatma durumuna bağlı olarak HTTPS Yükseltmeleri uygulanabilir.</translation>
 <translation id="45036050223225148">TLS Encrypted ClientHello denemesini devre dışı bırak</translation>
 <translation id="4503935079903510542">x86_64 cihazlara sanal makine yüklemek için kullanılan UEFI önyüklenebilir disk görüntüsü.</translation>
+<translation id="4505299160236615603">Politikanın ayarlanması, Gizli modda listelenen URL'lere erişim sağlar. Bu politikayı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikasında tanımlanan belirli URL kalıplarına ilişkin istisnaları açmak için kullanın.
+
+Hem bu politika hem de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa izin verilenler listesi öncelikli olur. Bir URL, izin verilenler listesindeki bir kalıpla eşleşirse URL'ye izin verilir. Engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse URL engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak genel <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları kullanılır.
+
+Bu politika ayarlanır ve <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanmazsa izin verilenler listesinde yer almayan tüm URL'ler Gizli modda engellenir.
+
+<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası izin vermeyecek şekilde (1 değeri) ayarlanır ancak bu politika yapılandırılırsa Gizli mod yalnızca izin verilenler listesindeki URL'ler için kullanılabilir.
+
+Politika ayarlanmadan bırakılırsa <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ve <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası için hiçbir istisnaya izin verilmez.
+
+Bu politika yalnızca Gizli modu etkiler. URL'lere tüm kullanıcı profillerinde izin vermek için lütfen <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasını kullanın.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4508728400492074981">First-Party Sets özelliğiyle ilgili politikaları kontrol eder.</translation>
 <translation id="4510131075424939993">Kimlik bilgilerini değerlendirirken <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> içinde kullanılacak bir takviye değer belirtin</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
@@ -5367,6 +5380,17 @@ Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</
       Not: Politika ayarlanırsa <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> politikasını geçersiz kılar.</translation>
 <translation id="4658380868451934335">Giriş ekranında dikteyi etkinleştir</translation>
 <translation id="4658420696622830453">Korunan içerik denetimleri</translation>
+<translation id="4660251990929524821"><ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa yasaklı URL'leri olan web sayfalarının Gizli modda yüklenmesi durdurulur. Yöneticiler engellenecek URL kalıplarının listesini belirtebilir. URL kalıbının nasıl biçimlendirileceğine göz atın ( https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Hem bu politika hem de <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> politikası ayarlanırsa izin verilenler listesi öncelikli olur. Bir URL, izin verilenler listesindeki bir kalıpla eşleşirse URL'ye izin verilir. Engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse URL engellenir. Bir URL hiçbiriyle eşleşmezse yedek olarak genel <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> politikaları kullanılır.
+
+<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> politikası ayarlanır ve bu politika ayarlanmazsa izin verilenler listesinde yer almayan tüm URL'ler Gizli modda engellenir.
+
+<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> politikası izin vermeyecek şekilde (1 değeri) ayarlanır ancak <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> politikası yapılandırılırsa Gizli mod yalnızca izin verilenler listesindeki URL'ler için kullanılabilir.
+
+Bu politika yalnızca Gizli modu etkiler. URL'leri tüm kullanıcı profillerinde engellemek için lütfen <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasını kullanın.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="4660356908994631271">Yeni sekme sayfasındaki arama kutusunda Google Lens düğmesini göster.</translation>
 <translation id="4661885151480410620">Davranış değişiklikleri, özellik kullanıma sunma sürecine bağlı olarak geçerli olabilir.</translation>
 <translation id="4661889655253181651">İçerik ayarları belirli türdeki içeriklerin (ör. Çerezler, Resimler veya JavaScript) nasıl işleneceğini belirlemenize izin verir.</translation>
@@ -6674,17 +6698,6 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
 
 Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=gemini_in_chrome adresindeki Yardım Merkezi makalesini inceleyin.</translation>
-<translation id="5486352219019836984">Bu politika etkinleştirildiğinde <ph name="PRODUCT_NAME" /> ile ilgili kullanım ve kilitlenme verilerinin anonim olarak Google'a raporlanmasının varsayılan olarak etkinleştirilmesi önerilir. Kullanıcılar yine de bu ayarı değiştirebilirler.
-
-Bu politika devre dışı bırakıldığında anonim raporlama devre dışı kalır ve Google'a hiçbir kullanım veya kilitlenme verisi gönderilmez. Kullanıcılar bu ayarı değiştiremez.
-
-Bu politika ayarlanmadığında kullanıcılar, anonim raporlama davranışını yükleme veya ilk çalıştırma esnasında seçebilir ve bu ayarı daha sonra değiştirebilirler.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-(<ph name="PRODUCT_OS_NAME" /> için <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> politikasına bakın.)</translation>
 <translation id="5486917900445838803">Politikanın Etkin değerine ayarlanması veya ayarlamadan bırakılması, mevcutsa grafik hızlandırmayı açar.
 
       Politikanın Devre Dışı değerine ayarlanması grafik hızlandırmayı kapatır.</translation>
@@ -7609,35 +7622,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6083631234867522991">Windows (Windows istemcileri):</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" /> algoritmasını kullan</translation>
 <translation id="608788685013546076">Güç tüketimi en üst düzeydeyken pil kullanımına geçme eşiği yüzdesini ayarla</translation>
-<translation id="6089118101413877627">Bu politika, Birinci Taraf Grup özellikleri (daha sonra <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliği olarak yeniden adlandırıldı) için tarayıcı tarafından kullanılan grupların listesini geçersiz kılma imkanı sağlar.
-
-Tarayıcının Birinci Taraf Gruplar listesindeki her bir grup, Birinci Taraf Gruplar için gereken koşulları karşılamalıdır.
-Birinci Taraf Grup'ta birincil site ve en az bir tane üye site yer almalıdır.
-Ayrıca grup, sahibi olduğu hizmet sitelerinin listesinin yanı sıra bir sitenin ve bu siteye ait ccTLD varyantlarının haritasını da içerebilir.
-<ph name="PRODUCT_NAME" /> tarafından kullanılan Birinci Taraf Gruplar hakkında daha fazla bilgi için https://github.com/WICG/first-party-sets adresine göz atın.
-
-Birinci Taraf Grup'taki tüm siteler, HTTPS üzerinden sunulan kaydedilebilir bir alan olmalıdır. Birinci Taraf Grup içindeki her site aynı zamanda benzersiz olmalıdır. Bu demektir ki bir site, Birinci Taraf Grup'ta birden fazla kez listelenemez.
-
-Bu politikaya boş bir sözlük verilirse tarayıcı, herkese açık Birinci Taraf Grup listesini kullanır.
-
-<ph name="REPLACEMENTS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa bu site, tarayıcının Birinci Taraf Grubundan kaldırılır.
-Bunun ardından politikanın Birinci Taraf Grubu, tarayıcının Birinci Taraf Gruplar listesine eklenir.
-
-<ph name="ADDITIONS" /> listesindeki Birinci Taraf Gruplardaki bir site aynı zamanda tarayıcının listesindeki bir Birinci Taraf Grup'ta da yer alıyorsa tarayıcının Birinci Taraf Grubu yeni Birinci Taraf Grubun eklenebileceği şekilde güncellenir. Tarayıcının listesi güncellendikten sonra, politikanın Birinci Taraf Grubu tarayıcının Birinci Taraf Gruplar listesine eklenir.
-
-Tarayıcının Birinci Taraf Gruplar listesindeki sitelerin hiçbiri, birden fazla grupta yer alamaz. Bu zorunluluk ayrıca, <ph name="REPLACEMENTS" /> ve <ph name="ADDITIONS" /> listelerinin her ikisi için de geçerlidir. Benzer şekilde, bir site hem <ph name="REPLACEMENTS" /> listesinde hem de <ph name="ADDITIONS" /> listesinde yer alamaz.
-
-Joker karakterler (*) bir politika değeri olarak veya bu listelerdeki herhangi bir Birinci Taraf Grup içinde desteklenmez.
-
-Politika tarafından sağlanan tüm gruplar geçerli bir Birinci Taraf Grup olmalıdır. Geçerli değilse uygun bir hata verilir.
-
-<ph name="MS_WIN_NAME" /> işletim sisteminde bu politika yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alan adına katılmış ya da <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-<ph name="MAC_OS_NAME" /> işletim sisteminde bu politika yalnızca MDM ile çalışan, MCX aracılığıyla bir alan adına katılmış veya <ph name="CHROME_ENTERPRISE_CORE_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.
-
-Bu, <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> politikasına eşdeğerdir.
-Her iki politika da tarayıcı davranışı üzerinde aynı etkiye sahip olacak şekilde kullanılabilir.
-<ph name="PRODUCT_NAME" /> 144 sürümünde <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> özelliğinin desteği sonlandırıldıktan sonra bu iki politikanın da desteği sonlandırılmıştır.</translation>
 <translation id="6089679180657323464">Wilco teşhis ve telemetri denetleyicisi ayarlarını kontrol eder.</translation>
 <translation id="6091233616732024397">Tarayıcıyı kullanabilmeleri için kullanıcıları oturum açmaya zorla</translation>
 <translation id="6092073071805297119">Erişilebilirlik performansı filtrelerinin kullanılmasına izin ver.</translation>
@@ -10330,6 +10314,17 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
       Politika Devre Dışı değerine ayarlanırsa kullanıcıların uyarı sayfalarını tıklamalarına izin verilmez.</translation>
 <translation id="7750991880413385988">Yeni Sekme Sayfasını aç</translation>
 <translation id="7752154519644940493">Üretken yapay zeka Satır İçi Resim özelliğiyle ilgili ayarlar</translation>
+<translation id="7752654588237652882">Kullanıcının <ph name="PRODUCT_NAME" /> içinde Gizli modda sayfa açıp açamayacağını belirtir.
+
+      "Etkin" değeri seçilirse veya politika ayarlanmadan bırakılırsa sayfalar Gizli modda açılabilir.
+
+      "Devre Dışı" değeri seçilirse sayfalar Gizli modda açılamaz.
+
+      "Zorunlu" seçeneği belirlenirse sayfalar YALNIZCA Gizli modda açılabilir. "Zorunlu" seçeneğinin Android-on-Chrome'da çalışmadığını unutmayın
+
+      <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> politikası bu politikaya göre daha önceliklidir ve belirli URL'ler için Gizli modu yeniden etkinleştirebilir. İzin verilenler listesi sağlandığında Gizli mod bu politika tarafından devre dışı bırakılırsa Gizli mod, yalnızca izin verilenler listesiyle eşleşen URL'lerde kullanılabilir. Diğer tüm sayfalar engellenir.
+
+      Not: iOS'te oturum esnasında yapılan politika değişiklikleri, yeniden başlatmanın ardından uygulanır.</translation>
 <translation id="7753678409577376761">Tarayıcı deneysel özellikler araç çubuğu giriş noktasını etkinleştir</translation>
 <translation id="7754704193130578113">İndirmeden önce her dosyanın nereye kaydedileceğini sor</translation>
 <translation id="7754893969683595513">Politikanın ayarlanması, cihaz yönetimi hizmetinin kullanıcı politikası bilgileri için sorgulandığı süreyi milisaniye olarak belirtir. Geçerli değerler, 1.800.000 (30 dakika) ile 86.400.000 (1 gün) aralığındadır. Bu aralık dışındaki değerler ilgili sınıra ayarlanır.
@@ -11449,11 +11444,6 @@ Bu politika <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> ile birlikte etkinle
 Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf yazılımlarının <ph name="PRODUCT_NAME" /> işlemlerine çalıştırılabilir kod yerleştirmesi önlenir.
 
       Politika Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.</translation>
-<translation id="8503018573167958506">Bir kullanıcının, cihazın ana makine adını yapılandırmasına izin verilip verilmediğini belirleyin.
-
-      <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> ayarlanırsa ana makine adını yönetici belirler ve kullanıcı, bu politika neye ayarlanmış olursa olsun seçim yapamaz.
-      Bu politika Doğru değerine ayarlanırsa ve <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> ayarlanmazsa ana makine adını yönetici belirlemez ve kullanıcı seçim yapabilir.
-      Bu politika Yanlış değerine ayarlanırsa ve <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> ayarlanmazsa ana makine adını yönetici belirlemez ve kullanıcı da seçim yapamaz. Bu nedenle varsayılan ad kullanılır.</translation>
 <translation id="8504243661032323176">Politika ayarlanırsa seçilen minimum PIN uzunluğu uygulanır. (1'in altındaki değerler minimum 1'e yuvarlanır.)
 
       Politika, ayarlanmadan bırakılırsa önerilen en kısa uzunluk olan minimum 6 basamaklı PIN uzunluğu uygulanır.</translation>

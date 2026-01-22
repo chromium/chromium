@@ -5055,6 +5055,19 @@ Questa policy non ha effetto se viene attivata, lasciata vuota o se non viene co
 <translation id="4501388411278568771">Potrebbero essere applicati upgrade a HTTPS a seconda dello stato del lancio della funzionalità.</translation>
 <translation id="45036050223225148">Disattiva l'esperimento TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">L'immagine del disco di avvio UEFI utilizzata per installare la VM sui dispositivi x86_64.</translation>
+<translation id="4505299160236615603">La configurazione della policy consente di accedere in modalità Incognito agli URL elencati. Utilizzala per aprire le eccezioni di alcuni pattern URL definiti in <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se vengono configurate sia questa policy sia <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, la lista consentita ha la precedenza. Se un URL corrisponde a un pattern nella lista consentita, verrà consentito. Se corrisponde a un pattern nella lista bloccata (ma non nella lista consentita), verrà bloccato. Se un URL non corrisponde a nessuno dei due, verranno utilizzate le policy generali <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> come riserva.
+
+Se questa policy viene impostata, ma <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> no, tutti gli URL non presenti nella lista consentita verranno bloccati in modalità Incognito.
+
+Se <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> è impostata sulla negazione del consenso (valore 1), ma questa policy è configurata, la modalità Incognito sarà disponibile solo per gli URL corrispondenti alla lista consentita.
+
+Se la policy non viene configurata, non sono consentite eccezioni a <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> e <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Questa policy influisce solo sulla modalità Incognito. Per consentire gli URL per tutti i profili utente, utilizza la policy <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="4508728400492074981">Controlla le policy relative alla funzionalità First-Party Sets.</translation>
 <translation id="4510131075424939993">Specifica un valore di sale da usare nella policy <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> durante la valutazione delle informazioni sull'identità</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
@@ -5343,6 +5356,17 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
       Nota: questa impostazione sostituisce <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, se presente.</translation>
 <translation id="4658380868451934335">Attiva la dettatura nella schermata di accesso</translation>
 <translation id="4658420696622830453">Controlli dei contenuti protetti</translation>
+<translation id="4660251990929524821">Se la policy <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate in modalità Incognito. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Se vengono impostate sia questa policy sia la policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />, la lista consentita ha la precedenza. Se un URL corrisponde a un pattern nella lista consentita, verrà consentito. Se corrisponde a un pattern nella lista bloccata ma non nella lista consentita, verrà bloccato. Se un URL non corrisponde a nessuno dei due, verranno utilizzate le policy generali <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> come riserva.
+
+Se la policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> viene impostata e questa policy no, tutti gli URL non presenti nella lista consentita verranno bloccati in modalità Incognito.
+
+Se <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> è impostata sulla negazione del consenso (valore 1), ma la policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> è configurata, la modalità Incognito sarà disponibile solo per gli URL corrispondenti alla lista consentita.
+
+Questa policy influisce solo sulla modalità Incognito. Per bloccare gli URL per tutti i profili utente, utilizza la policy <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="4660356908994631271">Mostra il pulsante di Google Lens nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="4661885151480410620">Le modifiche del comportamento potrebbero essere applicate in base al processo di lancio delle funzionalità.</translation>
 <translation id="4661889655253181651">Le impostazioni contenuti consentono di specificare la modalità di gestione di determinati tipi di contenuto (ad esempio Cookie, Immagini o JavaScript).</translation>
@@ -6649,17 +6673,6 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 Se la policy non viene configurata, il relativo comportamento verrà determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Per maggiori informazioni, consulta l'articolo del Centro assistenza all'indirizzo https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Se questa policy viene attivata, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
-
-Se questa policy viene disattivata, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non potranno modificare questa impostazione.
-
-Se questa policy non viene configurata, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5486917900445838803">Se la policy viene impostata su Attivata o se non viene configurata, viene abilitata l'accelerazione grafica, se disponibile.
 
       Se la policy viene impostata su Disattivata, l'accelerazione grafica viene disabilitata.</translation>
@@ -7581,43 +7594,6 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="6087413944876892918">Utilizza l'algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
-<translation id="6089118101413877627">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari (che in seguito è stata rinominata funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
-
-Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
-Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
-Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
-
-Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco,
-ovvero non può essere elencato più di una volta in un insieme proprietario.
-
-Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche
-in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
-Dopodiché, l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche
-in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il
-nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
-l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in
-più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli
-elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-I caratteri jolly (*) non sono supportati come valore della policy, neppure all'interno di un insieme proprietario in questi elenchi.
-
-Tutti gli insiemi forniti da questa policy devono essere insiemi proprietari validi. Qualora non lo fossero,
-verrà segnalato un errore adeguato.
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Equivale alla policy <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Entrambe le policy possono essere utilizzate con lo stesso effetto sul comportamento del browser.
-Entrambe queste policy sono state ritirate in seguito al ritiro della funzionalità <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> nella versione 144 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Forza gli utenti a eseguire l'accesso per usare il browser</translation>
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
@@ -10306,6 +10282,17 @@ Se questa policy non viene impostata, il renderer del PDF viene scelto dal brows
       Se la policy viene impostata su Disattivata, gli utenti non possono fare clic nelle pagine di avviso.</translation>
 <translation id="7750991880413385988">Apri pagina Nuova scheda</translation>
 <translation id="7752154519644940493">Impostazioni per la funzionalità di immagine in linea di AI generativa</translation>
+<translation id="7752654588237652882">Consente di specificare se l'utente può aprire o meno le pagine in modalità Incognito in <ph name="PRODUCT_NAME" />.
+
+      Se viene selezionata l'opzione "Attivata" o se la policy non viene impostata, è possibile aprire le pagine in modalità Incognito.
+
+      Se viene selezionata l'opzione "Disattivata", non è possibile aprire le pagine in modalità Incognito.
+
+      Se viene selezionata l'opzione "Forzata", è possibile aprire le pagine SOLTANTO in modalità Incognito. Tieni presente che l'opzione "Forzata" non funziona per Android-on-Chrome.
+
+      La policy <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza su questa policy e può riattivare la modalità Incognito per URL specifici. Se la modalità Incognito viene disattivata da questa policy quando viene fornita una lista consentita, la modalità Incognito è disponibile solo per gli URL che corrispondono alla lista consentita, mentre tutte le altre pagine vengono bloccate.
+
+      Nota: su iOS, se la policy viene modificata durante una sessione, avrà effetto solamente al riavvio.</translation>
 <translation id="7753678409577376761">Attiva il punto di ingresso nella barra degli strumenti delle funzionalità sperimentali del browser</translation>
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7754893969683595513">L'impostazione della policy specifica il periodo in millisecondi durante il quale il servizio di gestione dei dispositivi viene interrogato per informazioni sulle policy relative agli utenti. I valori validi vanno da 1.800.000 (30 minuti) a 86.400.000 (1 giorno). I valori che non rientrano in questo intervallo verranno bloccati al relativo limite.
@@ -11417,11 +11404,6 @@ Ulteriori informazioni su <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> sono d
 Se la policy viene impostata su Attivata o se non viene configurata, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
 
       Se la policy viene impostata su Disattivata, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8503018573167958506">Consente di determinare se un utente può configurare il nome host del dispositivo.
-
-      Se la policy <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> è impostata, l'amministratore imposta il nome host e l'utente non può sceglierne uno, a prescindere dall'impostazione di questa policy.
-      Se questa policy è impostata su True e <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> non è impostata, l'amministratore non configura il nome host e l'utente può sceglierne uno.
-      Se questa policy è impostata su False e <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> non è impostata, l'amministratore non configura il nome host e l'utente non può sceglierne uno, per cui viene usato il nome predefinito.</translation>
 <translation id="8504243661032323176">La configurazione della policy consente di applicare la lunghezza minima del PIN scelta. I valori inferiori a 1 vengono arrotondati per eccesso a 1 (valore minimo).
 
       Se la policy non viene configurata, viene applicata una lunghezza minima del PIN di 6 cifre, ossia il valore minimo consigliato.</translation>

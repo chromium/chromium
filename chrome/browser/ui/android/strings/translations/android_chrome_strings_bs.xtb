@@ -27,7 +27,7 @@
 <translation id="1100066534610197918">Otvori u novoj kartici i grupi</translation>
 <translation id="1103142993930332957">Želite li pomoći da poboljšamo Chrome?</translation>
 <translation id="1105960400813249514">Snimanje ekrana</translation>
-<translation id="1108214977745280468">Prikaži uvide stranice</translation>
+<translation id="1108214977745280468">Prikaži uvide u stranicu</translation>
 <translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1111673857033749125">Oznake koje sačuvate na drugim uređajima će se pojaviti ovdje.</translation>
 <translation id="1126696498560056882">Upravljajte računima na uređaju</translation>
@@ -433,6 +433,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2885355868600171871">Prelazak na traku za adresu</translation>
 <translation id="2888126860611144412">O Chromeu</translation>
 <translation id="2891154217021530873">Zaustavljanje učitavanja stranice</translation>
+<translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2894821468041866720">Ne usporava primjetno preglednik ni uređaj.</translation>
 <translation id="2895521649038438824">Možete slušati sadržaj stranice</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, zakačena kartica sa zvukom</translation>
@@ -1467,6 +1468,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Više informacija o tome zašto Chrome blokira određene fajlove</translation>
 <translation id="7168323970702333693">Prijavljeni ste kao <ph name="USER_NAME" />. Otvara postavke.</translation>
+<translation id="7170930892977483182">Svi sigurnosni kodovi sačuvani na uređaju i u Google Novčaniku će se izbrisati</translation>
 <translation id="7173114856073700355">Otvori postavke</translation>
 <translation id="7173338713290252554">Historija cijena na webu</translation>
 <translation id="7177466738963138057">Ovo možete kasnije promijeniti u meniju Postavke</translation>

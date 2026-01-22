@@ -309,6 +309,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4242034826641750751">Chromeu su za ovu web lokaciju potrebna odobrenja za kameru i mikrofon</translation>
 <translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
 <translation id="4251615635259297716">Povezati podatke iz Chromea s ovim računom?</translation>
+<translation id="4280647692742956593">Preuzmite Chrome na telefon da otvarate ili kreirate nove grupe kartica u pokretu.</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4293420128516039005">Prijavite se za sinhroniziranje i personaliziranje Chromea na svim svojim uređajima</translation>
 <translation id="430327780270213103">Dozvoli ekstenziju za prikaz zahtjeva za pristup na alatnoj traci Chromea</translation>
@@ -364,7 +365,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4926882258455737990">Da koristite drugi Google račun s Geminijem u Chromeu, <ph name="BEGIN_LINK" />kreirajte novi profil<ph name="END_LINK" /> i prijavite se putem računa koji želite</translation>
 <translation id="492720062778050435">Chrome vam preporučuje da pregledate ovu ekstenziju</translation>
-<translation id="4946912144186040233">Chrome bolje razumije obrasce i može ih brže automatski popuniti za vas. Ova postavka je isključena.</translation>
 <translation id="4953650215774548573">Postavi Google Chrome kao zadani preglednik</translation>
 <translation id="495931528404527476">Iz Chromea</translation>
 <translation id="4969674060580488087">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer su detalji za prijavu na vaš račun zastarjeli.</translation>
@@ -415,7 +415,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5465210843490471889">Odaberite Chrome profil koji ćete koristiti s <ph name="START_GLIC_STYLING" />Geminijem<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Radi poboljšanja ovih funkcija Chrome šalje vaše interakcije s njima Googleu. Ove podatke će možda čitati, obrađivati i komentirati osobe koje vrše pregled.</translation>
 <translation id="5524890928877629608">gornji lijevi ugao područja za pretraživanje: lijevo <ph name="LEFT" />%, gore <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Ubrzajte Chrome</translation>
 <translation id="5550137307985173298">Kliknite na dugme Prilagodite Chrome na stranici Nova kartica da Chromeu dodijelite novi izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
@@ -596,12 +595,14 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7193885263065350793">Vaš organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljujete se na upravljani račun i administratoru dajete kontrolu nad svojim Google Chrome profilom. Vaši podaci iz Chromea, kao što su vaše aplikacije, oznake, historija, lozinke i druge postavke, trajno će se vezati za račun <ph name="USER_NAME" />. Moći ćete izbrisati ove podatke na kontrolnoj tabli Google računa, ali nećete moći povezati ove podatke s drugim računom. Imate mogućnost kreiranja novog profila kako biste odvojili postojeće podatke iz Chromea. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Organizacija <ph name="MANAGER" /> upravlja Chromeom</translation>
+<translation id="7285990705317078173">Preuzmite Chrome na telefon da pratite cijene i dobijate obavještenja kada cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="7288567540154601580">Kartice i ekstenzije</translation>
 <translation id="7296210096911315575">Važne informacije o korištenju i sigurnosti</translation>
 <translation id="7302361266603927550">Određeni podaci Chromea još uvijek nisu sačuvani na Google račun. Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ti podaci će se izbrisati.</translation>
 <translation id="7308322188646931570">Chrome treba pristup pohrani da preuzme fajlove</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
+<translation id="7379321689415048316">Chrome može automatski popuniti složena polja koja standardno automatsko popunjavanje može propustiti</translation>
 <translation id="7386878009611068389">Radi veće sigurnosti online uz roditeljeve odabire prebaci se na Chrome profil na kojem ti je već izvršena prijava putem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Prijavljeni ste na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Ponovo upotrijebite isti račun za prijavu.</translation>
 <translation id="7412494426921990001">Kliknite na Chrome meni</translation>
@@ -616,7 +617,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7481213027396403996">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
 <translation id="749228101751499733">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromeu. Pritiskom na <ph name="SHORTCUT" /> možete mijenjati postavke Googleovih usluga.</translation>
 <translation id="7496017508659652909">Chrome predučitava stranice, što ubrzava pregledanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitanim stranicama<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome bolje razumije obrasce i može ih brže automatski popuniti za vas. Ova postavka je uključena.</translation>
 <translation id="7514258452813684157">Usluga za ažuriranje Googlea</translation>
 <translation id="7515191208480168435">Možete zakačiti Google Objektiv da mu lako pristupate</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

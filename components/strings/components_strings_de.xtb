@@ -265,6 +265,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1408787208417187241">Drei Heftklammern oben</translation>
 <translation id="1410365862999780287">Andere Personen, die dieses Gerät verwenden, können deine Aktivitäten nicht sehen, sodass du privat surfen kannst. Dies hat keine Auswirkungen darauf, wie Daten durch von dir besuchte Websites und den von ihnen genutzten Diensten, einschließlich Google, erhoben werden. Downloads, Lesezeichen und Webseiten auf deiner Leseliste werden gespeichert.</translation>
 <translation id="1410941016594047814">Umschlag Invite</translation>
+<translation id="1413235258620101697">Der CVC dieser Karte wird verschlüsselt und für einen schnelleren Bezahlvorgang in Google Wallet gespeichert</translation>
 <translation id="1413809658975081374">Datenschutzfehler</translation>
 <translation id="1414134146594747368">Vorschule</translation>
 <translation id="1419305130220238697">Button „Downloads in Chrome verwalten“ – aktivieren, um in Chrome heruntergeladene Dateien zu verwalten</translation>
@@ -286,6 +287,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1433225466058025572">Versuche noch einmal, deine Dateien zu verschieben</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1436185428532214179">Darf Anfragen, Dateien und Ordner auf meinem Gerät zu bearbeiten</translation>
+<translation id="1442054921249164535">Sonstige Daten</translation>
 <translation id="1442386063175183758">Rechtsseitige Fensterfaltung</translation>
 <translation id="1442987760062738829">Lochen</translation>
 <translation id="1445896388055045436">Beim Bezahlen verfügbare Vorteile und Prämien der Karte anzeigen. Es gelten die Bedingungen des Ausstellers.</translation>
@@ -939,6 +941,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="24699311393038040">Papier (beschichtet)</translation>
 <translation id="2471632709106952369">Vergleichstabellen</translation>
 <translation id="2473810985261856484">Rechtsdienstleistungen</translation>
+<translation id="2477607419416067650">Andere Google-Daten</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2479410451996844060">Ungültige Such-URL</translation>
 <translation id="2480300195898055381">In meinem Google-Konto, <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Von jetzt an Displaysperre verwenden, um Karten zu bestätigen</translation>
 <translation id="2552532158894206888">die rechte Taste</translation>
+<translation id="2553352788023127673">Suchverlauf und Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="2553853292994445426">Prüfe die Einstellungen für sichere DNS-Abfragen. Du hast möglicherweise einen sicheren DNS-Server konfiguriert, zu dem keine Verbindung aufgebaut werden kann.</translation>
 <translation id="255497580849974774">Lass dein Gerät während des Updates an ein Ladegerät angeschlossen.</translation>
 <translation id="2556876185419854533">&amp;Bearbeiten rückgängig machen</translation>
@@ -1497,6 +1501,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3407789382767355356">Anmeldung über Drittanbieter</translation>
 <translation id="340924996148642843">Compare ist momentan nicht verfügbar</translation>
 <translation id="3409896703495473338">Sicherheitseinstellungen verwalten</translation>
+<translation id="3410151451624226773">Im Google Passwortmanager verwalten</translation>
 <translation id="3411091017011773343">In <ph name="HOURS" /> Std. hochladen</translation>
 <translation id="341134412449102894">Deine Daten für <ph name="ACCOUNT" /> werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert</translation>
 <translation id="3413466783792948876">Wenn du ein öffentliches Netzwerk verwendest, ist es am sichersten, diese Website erst später aufzurufen. Das Risiko ist bei einem vertrauenswürdigen Netzwerk – wie dem WLAN zu Hause oder am Arbeitsplatz – geringer.</translation>
@@ -2156,12 +2161,14 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4406896451731180161">Suchergebnisse</translation>
 <translation id="4407758156081352648">Aus Sicherheitsgründen erlaubt deine Organisation nicht, dass Passwörter in Chrome wiederverwendet werden. Passwörter in Chrome werden aus Gründen des Datenschutzes verschlüsselt.</translation>
+<translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4409556632583862731">Neue Unterhaltung</translation>
 <translation id="4412074349188076601">Diese Konfiguration ist als installierbar gekennzeichnet, aber für diese Architektur ist kein Image verfügbar, weshalb sie nicht installiert werden kann.</translation>
 <translation id="4412377069090572315">Was andere Nutzer sagen</translation>
 <translation id="4414515549596849729">Cookies und Websitedaten</translation>
 <translation id="4415156962929755728">Kunststoff (hochglanz)</translation>
 <translation id="4415426530740016218">Abholadresse</translation>
+<translation id="4419287616181386201">Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425750422187370446">Sportbekleidung</translation>
 <translation id="443121186588148776">Serieller Port</translation>
@@ -2480,6 +2487,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
+<translation id="4954891067389874142">Mit einer gespeicherten Karte kannst du schneller bezahlen. Die Kartendetails werden in Google Wallet verschlüsselt.</translation>
 <translation id="4957080528849277028">Button „Chrome-Verlauf ansehen“ – aktivieren, um in den Chrome-Einstellungen deinen Browserverlauf aufzurufen und zu verwalten</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{und 1 weiteren Website}other{und # weiteren Websites}}</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
@@ -2567,6 +2575,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5097468150760963273">27 x 39 Zoll</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Tabulator- und dann Eingabetaste drücken, um den KI‑Modus zu fragen</translation>
+<translation id="5105442806410269908">Andere Google-Daten verwalten</translation>
 <translation id="510644072453496781">Karton (Ende)</translation>
 <translation id="5106648964679263509">Virtuelle Karte für <ph name="BNPL_ISSUER_NAME" /> ausgefüllt</translation>
 <translation id="5108567515277121477">Kundenkarte</translation>
@@ -2706,6 +2715,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Mit der Standardsuchmaschine hast du die Möglichkeit, im Web zu suchen und Chromium-Funktionen zu nutzen.<ph name="END_BOLD" /> Du kannst beispielsweise über die Adressleiste oder über Bilder auf Webseiten suchen. Eine Funktion ist möglicherweise nicht verfügbar, wenn sie nicht von deiner Suchmaschine unterstützt wird.</translation>
 <translation id="5323043727018853753">Eingebettete Inhalte zulässig</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> von <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Im Google-Konto verwalten</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329858041417644019">Dein Browser wird nicht verwaltet</translation>
 <translation id="5331585574693522196">Als Standard festlegen</translation>
@@ -2749,6 +2759,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5394069166371280357">Familiengerechte TV-Sendungen</translation>
 <translation id="5396631636586785122">Mehrere Heftklammern rechts</translation>
 <translation id="5397794290049113714">Ich</translation>
+<translation id="5398461103557553443">Wenn diese IBAN beim nächsten Mal automatisch ausgefüllt werden soll, speichere sie in Google Wallet</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5401344472773249513">Prominenten- und Unterhaltungsnachrichten</translation>
@@ -3018,6 +3029,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5843987376989109187">Diese Sprache wird noch nicht unterstützt.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Stromversorgung</translation>
+<translation id="5848445080378515710">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues Konto erstellen. Dieses Konto wird automatisch in Google Wallet verknüpft.</translation>
 <translation id="584902713199270089">Dating und Partnervermittlung</translation>
 <translation id="5851548754964597211">Tab-Liste</translation>
 <translation id="5851868085455377790">Aussteller</translation>
@@ -3856,6 +3868,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7162277662076933695">Intelligentes Kartenlesegerät</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vertrauliche Datei kopieren?}other{Vertrauliche Dateien kopieren?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ ist keine unterstützte Einschränkung auf dieser Plattform</translation>
+<translation id="7170930892977483182">Alle auf deinem Gerät und in Google Wallet gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="717330890047184534">GAIA-ID: </translation>
 <translation id="7173338713290252554">Preisentwicklung im Web</translation>
 <translation id="7174545416324379297">Zusammengeführt</translation>
@@ -3911,6 +3924,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7251437084390964440">Die Netzwerkkonfiguration entspricht nicht dem ONC-Standard. Die Konfiguration wird unter Umständen nicht vollständig importiert.
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Wenn du diese Daten löschen möchtest, ruf die entsprechenden Verwaltungseinstellungen auf</translation>
 <translation id="7255540419660272073">Button „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> nicht gefällt</translation>
 <translation id="7256634549594854023">Hinteres Fach</translation>
 <translation id="7257453341537973799">Karriereplanung</translation>
@@ -4009,6 +4023,7 @@ Weitere Details:
 <translation id="7408613996403626141">Spielzeug</translation>
 <translation id="7410852728357935715">Auf ein Gerät streamen</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
+<translation id="7412081313067625215">Deine Karte wurde in Google Wallet gespeichert, damit du ihre Details bei zukünftigen Käufen automatisch ausfüllen lassen kannst</translation>
 <translation id="7416351320495623771">Passwörter verwalten…</translation>
 <translation id="7416898721136759658">Ausbildungsförderung, Stipendien und Finanzhilfen</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4038,6 +4053,7 @@ Weitere Details:
 <translation id="7450577240311017924">Button „Synchronisierung verwalten“ – aktivieren, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
 <translation id="745208957946308667">Dino-Spiel – drücke die Leertaste, um das Spiel zu starten</translation>
+<translation id="7453032093368223821">Andere Daten verwalten</translation>
 <translation id="7453849010505253492">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chrome oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zertifikat ansehen<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud-Konto</translation>
 <translation id="7455133967321480974">Globalen Standard verwenden (Blockieren)</translation>
@@ -4142,6 +4158,7 @@ Weitere Details:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kann diese Anfrage momentan nicht verarbeiten.</translation>
 <translation id="7599089013883397081">Zeitüberschreitung beim Herunterladen</translation>
 <translation id="7602868996817972616">Google Fragen zu dieser Seite stellen</translation>
+<translation id="7606123685356405076">Gemini 3-Modelle</translation>
 <translation id="7610193165460212391">Wert liegt außerhalb des zulässigen Bereichs (<ph name="VALUE" />).</translation>
 <translation id="761261689936461781">Dick</translation>
 <translation id="7613889955535752492">Gültig bis: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

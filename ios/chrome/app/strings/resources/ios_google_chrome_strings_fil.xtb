@@ -86,6 +86,9 @@ Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka n
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2788811701191021538">Bubuksan ang page ng setting ng mga paraan ng pagbabayad sa Chrome.</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Naabot mo ang limitasyon ng Google Chrome na <ph name="LIMIT" /> (na) bookmark, kaya hindi pa nase-save sa iyong Google Account ang ilan sa mga bookmark mo.
+
+Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde-delete ng ilan. Kung magsa-sign out ka ngayon, made-delete ang mga hindi na-save na bookmark.</translation>
 <translation id="2922914028977213693">Mag-tap dito para masulit ang Chrome sa iyong iPad.</translation>
 <translation id="292371311537977079">Mga setting ng Chrome</translation>
 <translation id="2923827943290349720">I-lock ang mga tab na Incognito kapag isinara mo ang Chrome</translation>

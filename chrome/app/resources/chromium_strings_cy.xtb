@@ -3,7 +3,6 @@
 <translationbundle lang="cy">
 <translation id="1026101648481255140">Parhau i Osod</translation>
 <translation id="1029669172902658969">Ail-lansiwch i ddiweddaru &amp;ChromiumOS</translation>
-<translation id="103359417695385097">Mae Chromium yn deall ffurflenni'n well a gall eu llenwi'n awtomatig yn gyflymach i chi. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="1040916596585577953">Mae Chromium yn argymell eich bod yn adolygu'r estyniad hwn</translation>
 <translation id="1042552502243217427">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chromium yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="1051793555070215510">Helpwch ni i wella'r modd anhysbys trwy gymryd yr arolwg 1 funud hwn.</translation>
@@ -72,6 +71,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="183031085822326697">Y tro nesaf y byddwch yn agor Chromium ar eich <ph name="DEVICE_TYPE" />, byddwch yn gweld anogwr i ddefnyddio Rheolwr Cyfrineiriau Google.</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
 <translation id="18552579716432081">I ddileu data pori o'r ddyfais hon yn unig, tra'n eu cadw yn eich Cyfrif Google, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Lawrlwythwch Chromium ar eich ffôn i agor neu greu grwpiau tabiau newydd wrth fynd.</translation>
 <translation id="185970820835152459">Gallwch reoli'ch Cyfrifon Google sydd wedi'u mewngofnodi. Defnyddir eich Cyfrifon Google ar gyfer porwr Chromium, Play Store, Gmail, a rhagor. Os ydych am ychwanegu cyfrif ar gyfer rhywun arall, megis aelod o'r teulu, ychwanegwch berson newydd at eich <ph name="DEVICE_TYPE" /> yn lle. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Chwilio gyda Chwilio Lluniau</translation>
 <translation id="1880677175115548835">Dewis testun</translation>
@@ -162,6 +162,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
 <translation id="2768103863314748511">Gosod Chromium fel eich dangosydd PDF diofyn</translation>
+<translation id="277828055419948999">Gall Chromium awtolenwi meysydd anodd y gallai awtolenwi safonol eu colli</translation>
 <translation id="2785438272836277133">Mae'r estyniad hwn yn cynnwys drwgwedd ac mae'n anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2803971713792056305">Eich Chromium</translation>
@@ -338,7 +339,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4613863813562375431">Fersiwn ChromiumOS</translation>
 <translation id="4621240073146040695">Bron yn gyfoes! Ail-lansiwch Chromium i orffen diweddaru.</translation>
 <translation id="4625064703209785397">Yn cyflymu gwefannau gydag injan V8 Chromium ond yn lleihau gallu Chromium i wrthsefyll ymosodiadau ychydig</translation>
-<translation id="4654936675281451226">Mae Chromium yn deall ffurflenni'n well a gall eu llenwi'n awtomatig yn gyflymach i chi. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
 <translation id="4665829708273112819">Rhybudd: Ni all Chromium atal estyniadau rhag cofnodi eich hanes pori. I ddiffodd yr estyniad hwn yn y modd Anhysbys, dad-ddewiswch yr opsiwn hwn.</translation>
 <translation id="4673151026126227699">Os ydych hefyd yn rhannu adroddiadau defnydd Chromium, mae'r adroddiadau hynny'n cynnwys y cyfeiriadau URL rydych yn ymweld â nhw</translation>
 <translation id="4677944499843243528">Mae'n ymddangos bod y proffil yn cael ei ddefnyddio gan broses Chromium arall (<ph name="PROCESS_ID" />) ar gyfrifiadur arall (<ph name="HOST_NAME" />). Mae Chromium wedi cloi'r proffil fel nad yw'n cael ei lygru. Os ydych yn siŵr nad oes unrhyw brosesau eraill yn defnyddio'r proffil hwn, gallwch ddatgloi'r proffil ac ail-lansio Chromium.</translation>
@@ -442,7 +442,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="6063093106622310249">&amp;Agor yn Chromium</translation>
 <translation id="6069027071882229820">Copïo fel llun</translation>
 <translation id="6072279588547424923">Mae <ph name="EXTENSION_NAME" /> wedi'i ychwanegu at Chromium</translation>
-<translation id="6072463441809498330">Gwneud Chromium yn Gyflymach</translation>
 <translation id="6096348254544841612">Personoleiddio a rheoli Chromium. Mae diweddariad ar gael.</translation>
 <translation id="6107893135096467929">Ymlaen • Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="611228897408671387">Eich cyfrif yn Chromium</translation>
@@ -487,6 +486,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="6436260184216827876">Nid yw Chwilio Lluniau ar gael. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6442900851116057561">Ailgychwyn ChromiumOS</translation>
 <translation id="6443470774889161065">Mae Chromium yn rhaglwytho hyd yn oed mwy o dudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn gwneud hynny</translation>
+<translation id="6450948450282634257">Lawrlwythwch Chromium ar eich ffôn i olrhain prisiau a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="645458117210240797">Wedi diffodd • Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod</translation>
 <translation id="6455857529632101747">Croeso i broffiliau Chromium</translation>
 <translation id="6466344609055215035">Tynnu Cyfrif o Chromium</translation>

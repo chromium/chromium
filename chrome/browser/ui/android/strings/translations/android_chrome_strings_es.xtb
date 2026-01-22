@@ -433,6 +433,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2885355868600171871">Ir a la barra de direcciones</translation>
 <translation id="2888126860611144412">Información de Chrome</translation>
 <translation id="2891154217021530873">Detener la carga de la página</translation>
+<translation id="2893168226686371498">Navegador predeterminado</translation>
 <translation id="2894821468041866720">No ralentiza de forma significativa tu navegador ni tu dispositivo.</translation>
 <translation id="2895521649038438824">Puedes escuchar esta página</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, pestaña audible fijada</translation>
@@ -1467,6 +1468,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Más información sobre por qué Chrome bloquea algunos archivos</translation>
 <translation id="7168323970702333693">Has iniciado sesión como <ph name="USER_NAME" />. Abre la configuración.</translation>
+<translation id="7170930892977483182">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en Google Wallet</translation>
 <translation id="7173114856073700355">Abrir Configuración</translation>
 <translation id="7173338713290252554">Historial de precios en la Web</translation>
 <translation id="7177466738963138057">Puedes cambiar esta opción más tarde en Configuración</translation>

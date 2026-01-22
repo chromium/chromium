@@ -6819,17 +6819,6 @@ Se for "1", a integração do Gemini não vai ficar disponível para os usuário
 Se não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Para mais informações, consulte o artigo da Central de Ajuda: https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Se essa política for ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
-
-Se a política for definida como "Desativada", os relatórios anônimos também serão desativados e nenhum dado de uso ou falha será enviado ao Google. Os usuários não poderão mudar essa configuração.
-
-Se a polícia for deixada sem definição, será possível escolher o comportamento dos relatórios anônimos durante a instalação ou a primeira execução. Além disso, será possível mudar essa configuração mais tarde.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Para o <ph name="PRODUCT_OS_NAME" />, consulte <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5486917900445838803">Se a política for ativada ou deixada sem definição, a aceleração gráfica também será ativada, se disponível.
 
       Se ela for desativada, a aceleração gráfica também será.</translation>
@@ -7769,44 +7758,6 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
 <translation id="6087413944876892918">Usar o algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
-<translation id="6089118101413877627">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para os recursos de Conjuntos Primários (agora chamados <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
-
-Cada item na lista do navegador precisa atender aos requisitos de um Conjunto Primário.
-Para isso, o conjunto precisa conter um site primário e um ou mais sites membros.
-Os conjuntos também podem ter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
-Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como os Conjuntos Primários são usados pelo <ph name="PRODUCT_NAME" />.
-
-Todos os sites em um Conjunto Primário precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um Conjunto Primário também precisa ser único,
-o que significa que um site não pode ser listado mais de uma vez em um mesmo Conjunto Primário.
-
-Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de Conjuntos Primários.
-
-No caso de todos os sites em um Conjunto Primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver
-em um Conjunto Primário na lista do navegador, ele será removido desse último conjunto.
-Em seguida, o Conjunto Primário da política será adicionado à lista desses conjuntos do navegador.
-
-No caso de todos os sites em um Conjunto Primário da lista de <ph name="ADDITIONS" />, se um site também estiver
-em um Conjunto Primário na lista do navegador, esse último será atualizado para que o
-novo possa ser adicionado à lista. Depois dessa atualização,
-o Conjunto Primário da política será adicionado à lista desses conjuntos do navegador.
-
-A lista de Conjuntos Primários do navegador exige que nenhum dos sites na lista esteja em
-mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
-e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
-<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
-
-Caracteres curinga (*) não podem ser usados como valor da política nem dentro de Conjuntos Primários nessas listas.
-
-Todos os conjuntos fornecidos pela política precisam ser um Conjunto Primário válido. Caso contrário,
-será gerado um erro.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Qualquer uma das políticas pode ser usada com o mesmo efeito no comportamento do navegador.
-Ambas foram descontinuadas junto ao recurso <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> na versão 144 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forçar o usuário a fazer login para usar o navegador</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
@@ -11728,11 +11679,6 @@ Para mais informações sobre a política <ph name="DOWNLOAD_RESTRICTIONS_POLICY
 Se ela for ativada ou deixada sem definição, softwares de terceiros não poderão injetar código executável em processos do <ph name="PRODUCT_NAME" />.
 
       Se ela for desativada, esses softwares poderão injetar códigos executáveis nos processos do <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8503018573167958506">Determinar se um usuário tem permissão para configurar o nome do host do dispositivo.
-
-      Se a <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> for configurada, o administrador definirá o nome do host e o usuário não poderá escolhê-lo, independentemente da definição desta política.
-      Se esta política for definida como verdadeira e a <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> for deixada sem definição, o administrador não escolherá o nome do host e o usuário poderá escolher um.
-      Se esta política for definida como falsa e a <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> não for configurada, o administrador não escolherá o nome do host e o usuário também não poderá escolher um, então o nome padrão será usado.</translation>
 <translation id="8504243661032323176">Se a política for definida, o tamanho mínimo de PIN escolhido será aplicado. Valores inferiores a 1 são arredondados para o mínimo de 1.
 
       Se a política não for definida, um tamanho mínimo de PIN de 6 dígitos será aplicado (o mínimo recomendado).</translation>

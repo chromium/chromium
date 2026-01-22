@@ -4989,6 +4989,19 @@ Esta política no tendrá efecto si se habilita, se deja vacía o no se define.<
 <translation id="4501388411278568771">Los cambios a HTTPS pueden aplicarse en función del estado del lanzamiento de la función.</translation>
 <translation id="45036050223225148">Inhabilitar el experimento Encrypted ClientHello de TLS</translation>
 <translation id="4503935079903510542">La imagen del disco de arranque con UEFI usada para instalar la VM en dispositivos x86_64.</translation>
+<translation id="4505299160236615603">Si se define esta política, se permite acceder en modo Incógnito a las URLs incluidas en la lista. Úsala para abrir excepciones de determinados patrones de URL definidos en <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, con el formato especificado en https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si se definen tanto esta política como <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, la lista de permitidos tendrá prioridad. Si una URL coincide con un patrón de la lista de permitidas, se permitirá. Si coincide con un patrón de la lista de bloqueadas (pero no con la lista de permitidas), se bloqueará. Si una URL no coincide con ninguna de las dos, se usarán las políticas generales <ph name="URL_BLOCKLIST_POLICY_NAME" /> o <ph name="URL_ALLOWLIST_POLICY_NAME" /> como alternativa.
+
+Si se define esta política y no se define <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se bloquearán todas las URLs que no estén incluidas en la lista de permitidas en el modo Incógnito.
+
+Si se define la política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para no permitirlo (valor 1), pero se configura esta política, el modo Incógnito solo estará disponible para las URLs que estén incluidas en la lista de permitidas.
+
+Si no se define esta política, no se permitirán excepciones de <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ni de <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Esta política solo afecta al modo Incógnito. Para permitir URLs en todos los perfiles de usuario, usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="4508728400492074981">Controla políticas para la función Conjuntos propios.</translation>
 <translation id="4510131075424939993">Especificar el valor salt que se usará en <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> al evaluar la información de identificación</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso raíz a los contenedores de Crostini</translation>
@@ -5275,6 +5288,17 @@ Esta política es temporal y se eliminará más adelante.</translation>
       Nota: Esta opción anula la política <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" /> (si está presente).</translation>
 <translation id="4658380868451934335">Habilitar el dictado en la pantalla de inicio de sesión</translation>
 <translation id="4658420696622830453">Controles de contenido protegido</translation>
+<translation id="4660251990929524821">Si se define la política <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas en modo Incógnito. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Si se definen tanto esta política como la política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />, la lista de permitidas tendrá prioridad. Si una URL coincide con un patrón de la lista de permitidas, se permitirá. Si coincide con un patrón de la lista de bloqueadas, pero no con la lista de permitidas, se bloqueará. Si una URL no coincide con ninguna de las dos, se usarán las políticas generales <ph name="URL_BLOCKLIST_POLICY_NAME" /> o <ph name="URL_ALLOWLIST_POLICY_NAME" /> como alternativa.
+
+Si esta política no se define y se define la política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />, se bloquearán todas las URLs que no estén incluidas en la lista de permitidas en el modo Incógnito.
+
+Si se define la política <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> para no permitirlo (valor 1), pero se configura la política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> el modo Incógnito solo estará disponible para las URLs que estén incluidas en la lista de permitidas.
+
+Esta política solo afecta al modo Incógnito. Para bloquear URLs en todos los perfiles de usuario, usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Esta política está limitada a 1000 entradas.</translation>
 <translation id="4660356908994631271">Mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="4661885151480410620">Los cambios de comportamiento pueden aplicarse en función del proceso de lanzamiento de funciones.</translation>
 <translation id="4661889655253181651">La configuración de contenido permite especificar la gestión de un tipo específico de contenido (por ejemplo, cookies, imágenes o JavaScript).</translation>
@@ -6581,17 +6605,6 @@ Si se le asigna el valor 1, la integración de Gemini no estará disponible para
 Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Para obtener más información, consulta el artículo del Centro de Ayuda https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Si se habilita esta política, se recomendará habilitar de forma predeterminada el envío a Google de informes anónimos sobre datos de uso y de fallos de <ph name="PRODUCT_NAME" />. Los usuarios podrán cambiar este ajuste.
-
-Si se inhabilita esta política, el envío a Google de informes anónimos de uso y de datos sobre fallos de Chrome estará inhabilitado. Los usuarios no podrán cambiar este ajuste.
-
-Si no se define esta política, los usuarios podrán elegir el comportamiento del envío de informes anónimos durante la instalación o cuando se ejecute por primera vez. Además, podrán cambiar este ajuste más adelante.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Para <ph name="PRODUCT_OS_NAME" />, consulta <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5486917900445838803">Si se habilita esta política o no se le asigna ningún valor, se activará la aceleración de gráficos en caso de que esté disponible.
 
       Si se inhabilita esta política, se desactivará la aceleración de gráficos.</translation>
@@ -7515,35 +7528,6 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="6087413944876892918">Usar el algoritmo <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Establece el umbral de batería de Peak Shift en forma de porcentaje</translation>
-<translation id="6089118101413877627">Esta política proporciona una forma de anular la lista de conjuntos que el navegador usa para las funciones de conjuntos propios (que más tarde se pasó a llamar "<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />").
-
-Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
-Un conjunto propio debe contener un sitio principal y uno o varios sitios miembros.
-Un conjunto también puede contener una lista de los sitios de servicio de los que es propietario, así como un mapa de un sitio a todas sus variantes de ccTLD.
-Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los conjuntos propios que usa <ph name="PRODUCT_NAME" />.
-
-Todos los sitios de un conjunto propio deben ser dominios registrables publicados mediante HTTPS. Los sitios de un conjunto propio también deben ser únicos, es decir, un sitio no puede incluirse más de una vez en un conjunto propio.
-
-Cuando esta política tiene un diccionario vacío, el navegador usa la lista pública de conjuntos propios.
-
-En el caso de los sitios que se encuentran en un conjunto propio de la lista de <ph name="REPLACEMENTS" />, si un sitio también se incluye en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
-Una vez hecho esto, el conjunto propio de la política se añadirá a la lista de conjuntos propios del navegador.
-
-En el caso de los sitios que se encuentran en un conjunto propio de la lista de <ph name="ADDITIONS" />, si un sitio también se incluye en un conjunto propio de la lista del navegador, el conjunto propio del navegador se actualizará para que el nuevo conjunto propio pueda añadirse a la lista del navegador. Cuando se haya actualizado la lista del navegador, el conjunto propio de la política se añadirá a la lista de conjuntos propios del navegador.
-
-La lista de conjuntos propios del navegador requiere que ninguno de los sitios incluidos en ella aparezca en más de un conjunto. Este requisito también se aplica tanto a la lista de <ph name="REPLACEMENTS" /> como a la lista de <ph name="ADDITIONS" />. Del mismo modo, un sitio no puede incluirse en la lista de <ph name="REPLACEMENTS" /> y en la lista de <ph name="ADDITIONS" /> al mismo tiempo.
-
-Los comodines (*) no se admiten como valor de la política ni en los conjuntos propios de estas listas.
-
-Todos los conjuntos proporcionados mediante esta política deben ser conjuntos propios válidos. En caso contrario, se mostrará el error correspondiente.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Esta política equivale a la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Las dos tienen el mismo efecto en el comportamiento del navegador.
-Estas dos políticas están obsoletas tras la discontinuación de la función <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> en la versión 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Controla los ajustes del controlador de diagnóstico y telemetría wilco.</translation>
 <translation id="6091233616732024397">Forzar a los usuarios a iniciar sesión para usar el navegador</translation>
 <translation id="6092073071805297119">Permitir el uso de filtros de rendimiento de accesibilidad.</translation>
@@ -10184,6 +10168,17 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
       Si la política se inhabilita, los usuarios no podrán hacer clic para ignorar las páginas de advertencia.</translation>
 <translation id="7750991880413385988">Abrir página Nueva pestaña</translation>
 <translation id="7752154519644940493">Configuración de la función Inserción de imágenes de IA generativa</translation>
+<translation id="7752654588237652882">Especifica si el usuario podrá abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
+
+      Si se le asigna el valor "Enabled" a esta política o no se le asigna ninguno, se podrán abrir páginas en modo Incógnito.
+
+      Si se le asigna el valor "Disabled", no se podrán abrir páginas en modo Incógnito.
+
+      Si se le asigna el valor "Forced", solo se podrán abrir páginas en modo Incógnito. Ten en cuenta que el valor "Forced" no funciona en dispositivos con Android en Chrome.
+
+      La política <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre esta política y puede volver a habilitar el modo Incógnito en URLs específicas. Cuando esta política inhabilita el modo Incógnito y se proporciona una lista de permitidas, el modo Incógnito solo está disponible en las URLs incluidas en la lista de permitidas, mientras que todas las demás páginas se bloquean.
+
+      Nota: En iOS, si se cambia esta política durante una sesión, los cambios se aplicarán después de reiniciar.</translation>
 <translation id="7753678409577376761">Habilitar el punto de entrada de las funciones experimentales de la barra de herramientas del navegador</translation>
 <translation id="7754704193130578113">Preguntar dónde guardar cada archivo antes de descargarlo</translation>
 <translation id="7754893969683595513">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de usuarios. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
@@ -11289,11 +11284,6 @@ Puedes consultar más información sobre <ph name="DOWNLOAD_RESTRICTIONS_POLICY_
 Si se habilita la política o no se le asigna ningún valor, se impide que software de terceros pueda inyectar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si la política se inhabilita, el software podrá inyectar dicho código en los procesos de <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8503018573167958506">Determina si un usuario puede configurar el nombre de host del dispositivo.
-
-      Si se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador definirá el nombre de host y el usuario no podrá elegirlo, independientemente del valor que se haya asignado a esta política.
-      Si se le asigna el valor true a esta política y no se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no definirá el nombre de host y el usuario podrá elegir uno.
-      Si se le asigna el valor false a esta política y no se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no definirá el nombre de host y el usuario no podrá elegirlo. Por ello, se usará el nombre predeterminado.</translation>
 <translation id="8504243661032323176">Si se establece esta política, se aplica la longitud mínima definida del PIN. Los valores inferiores a 1 se redondean al mínimo de 1.
 
       Si no se establece esta política, se aplica la longitud mínima del PIN de 6 dígitos, que es el mínimo recomendado.</translation>

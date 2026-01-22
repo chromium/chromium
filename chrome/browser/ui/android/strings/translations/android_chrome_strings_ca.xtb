@@ -433,6 +433,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2885355868600171871">Ves a la barra d'adreces</translation>
 <translation id="2888126860611144412">Sobre Chrome</translation>
 <translation id="2891154217021530873">Atura la càrrega de la pàgina</translation>
+<translation id="2893168226686371498">Navegador predeterminat</translation>
 <translation id="2894821468041866720">No redueix significativament la velocitat del navegador ni del dispositiu.</translation>
 <translation id="2895521649038438824">Pots escoltar aquesta pàgina</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, pestanya audible fixada</translation>
@@ -1467,6 +1468,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Més informació sobre per què Chrome bloqueja alguns fitxers</translation>
 <translation id="7168323970702333693">Has iniciat la sessió com a <ph name="USER_NAME" />. Obre la configuració.</translation>
+<translation id="7170930892977483182">Se suprimiran tots els codis de seguretat desats al teu dispositiu i a Google Wallet</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
 <translation id="7173338713290252554">Historial de preus al web</translation>
 <translation id="7177466738963138057">Pots canviar aquesta opció més endavant a Configuració</translation>
@@ -1903,7 +1905,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>
 <translation id="8965591936373831584">pendent</translation>
 <translation id="8969796057708736017">La baixada es completarà si el fitxer compleix les polítiques de l'organització</translation>
-<translation id="8970887620466824814">S'ha produït un error.</translation>
+<translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>
 <translation id="8992769679401294069">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>

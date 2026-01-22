@@ -186,7 +186,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1289129165308566697">Wyświetlaj historię na innych urządzeniach</translation>
 <translation id="1292571435393770077">Taca 16</translation>
 <translation id="1292701964462482250">„Oprogramowanie na Twoim komputerze uniemożliwia Chrome bezpieczne połączenie się z internetem” (tylko na komputerach z systemem Windows)</translation>
-<translation id="1293154089865862473">Aby oferować te opcje, Google otrzymuje informacje o zawartości strony płatności. Jeśli chcesz ukryć opcje płatności odroczonej w funkcji autouzupełniania, otwórz <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1293797321964802402">Koperta 9 x 11 cali</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
@@ -288,6 +287,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1433225466058025572">Spróbuj przenieść pliki ponownie</translation>
 <translation id="1433478348197382180">Tryb czytania</translation>
 <translation id="1436185428532214179">Może prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
+<translation id="1442054921249164535">Inne dane</translation>
 <translation id="1442386063175183758">Składanie od dołu do środka</translation>
 <translation id="1442987760062738829">Otwór</translation>
 <translation id="1445896388055045436">W momencie płatności pokaż dostępne korzyści i nagrody z karty. Obowiązują warunki wystawcy.</translation>
@@ -941,6 +941,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="24699311393038040">Papier (powlekany)</translation>
 <translation id="2471632709106952369">Tabele porównawcze</translation>
 <translation id="2473810985261856484">Usługi prawne</translation>
+<translation id="2477607419416067650">Inne dane Google</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2479410451996844060">Nieprawidłowy URL wyszukiwania</translation>
 <translation id="2480300195898055381">Na koncie Google <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Od teraz używaj blokady ekranu, by potwierdzać karty</translation>
 <translation id="2552532158894206888">prawy klawisz</translation>
+<translation id="2553352788023127673">Historię wyszukiwania i hasła można usunąć w ustawieniach zarządzania nimi</translation>
 <translation id="2553853292994445426">Sprawdź ustawienia bezpiecznego DNS. Być może masz skonfigurowany serwer bezpiecznego DNS, z którym nie można się połączyć.</translation>
 <translation id="255497580849974774">Upewnij się, że na czas aktualizacji urządzenie jest podłączone do zasilania.</translation>
 <translation id="2556876185419854533">&amp;Cofnij edycję</translation>
@@ -1126,7 +1128,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2782088940970074970">Wypożyczanie samochodu</translation>
 <translation id="278436560439594386">Urządzenia domowe</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Aby oferować te opcje, Google otrzymuje informacje o zawartości strony płatności.</translation>
 <translation id="2784949926578158345">Połączenie zostało zresetowane.</translation>
 <translation id="2786008859124691917">Rowery i akcesoria</translation>
 <translation id="2792012897584536778">Administratorzy tego urządzenia skonfigurowali certyfikaty zabezpieczeń, dzięki którym mogą zobaczyć zawartość stron internetowych, które odwiedzasz.</translation>
@@ -1500,6 +1501,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3407789382767355356">logowanie przez usługę zewnętrzną</translation>
 <translation id="340924996148642843">Porównanie nie jest teraz dostępne</translation>
 <translation id="3409896703495473338">Zarządzaj ustawieniami zabezpieczeń</translation>
+<translation id="3410151451624226773">Zarządzaj w Menedżerze haseł Google</translation>
 <translation id="3411091017011773343">Prześlij za <ph name="HOURS" /> godz.</translation>
 <translation id="341134412449102894">Twoje informacje są zapisane w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Jeśli korzystasz z sieci publicznej, najlepiej będzie odwiedzić tę witrynę później. W zaufanej sieci, np. w domu lub pracy, ryzyko jest mniejsze.</translation>
@@ -1591,6 +1593,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3549904448933807997">Informacje o przeglądarkach i profilach (w tym profilach osobistych i służbowych)</translation>
 <translation id="3552155506104542239">Ostrzeżenie: ta zasada jest w konflikcie z zasadą <ph name="POLICY_NAME" /> i nie będzie miała wpływu na aplikacje na Androida. Gdy konflikt nie występuje, zasada działa zgodnie z oczekiwaniami.</translation>
 <translation id="3552297013052089404">Czcionka bezszeryfowa</translation>
+<translation id="3558335486599406178">Numer IBAN został zapisany w Portfelu Google</translation>
 <translation id="3558573058928565255">Dzień godzina</translation>
 <translation id="3559897352860026926">Poproś administratora o sprawdzenie ustawień konfiguracji usługi <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="3560824484345057728">Pokaż powiązane witryny</translation>
@@ -2161,12 +2164,14 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4406896451731180161">wyniki wyszukiwania</translation>
 <translation id="4407758156081352648">Aby zapewnić bezpieczeństwo, Twoja organizacja nie zezwala na ponowne używanie haseł w Chrome. Hasła w Chrome są szyfrowane, aby chronić prywatność użytkowników.</translation>
+<translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4409556632583862731">Nowy wątek</translation>
 <translation id="4412074349188076601">Ta konfiguracja jest oznaczona jako możliwa do zainstalowania, ale nie można jej zainstalować, bo nie udostępniono obrazu dla tej architektury.</translation>
 <translation id="4412377069090572315">Opinie użytkowników</translation>
 <translation id="4414515549596849729">pliki cookie i dane witryn</translation>
 <translation id="4415156962929755728">Plastik (wysoki połysk)</translation>
 <translation id="4415426530740016218">Adres odbioru</translation>
+<translation id="4419287616181386201">Hasła można usunąć w ustawieniach zarządzania nimi</translation>
 <translation id="4424024547088906515">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w Chrome. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="4425750422187370446">Odzież sportowa</translation>
 <translation id="443121186588148776">Port szeregowy</translation>
@@ -2573,6 +2578,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5097468150760963273">27 x 39 cali</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Naciśnij Tab, a potem Enter, aby zapytać w Trybie AI</translation>
+<translation id="5105442806410269908">Zarządzaj innymi danymi Google</translation>
 <translation id="510644072453496781">Karton (koniec)</translation>
 <translation id="5106648964679263509">Karta wirtualna dla: <ph name="BNPL_ISSUER_NAME" /> została wypełniona</translation>
 <translation id="5108567515277121477">Karta lojalnościowa</translation>
@@ -2712,6 +2718,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Domyślna wyszukiwarka umożliwia wyszukiwanie w internecie i obsługuje funkcje Chromium<ph name="END_BOLD" />, takie jak wyszukiwanie na pasku adresu i wyszukiwanie za pomocą obrazów na stronach internetowych. Funkcja może być niedostępna, jeśli Twoja wyszukiwarka jej nie obsługuje.</translation>
 <translation id="5323043727018853753">Umieszczona treść jest dozwolona</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> z <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Zarządzaj na koncie Google</translation>
 <translation id="5327248766486351172">Nazwa</translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
 <translation id="5331585574693522196">Ustaw jako opcję domyślną</translation>
@@ -2755,6 +2762,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5394069166371280357">Telewizyjne programy rodzinne</translation>
 <translation id="5396631636586785122">Zszywanie przy prawej krawędzi</translation>
 <translation id="5397794290049113714">Ty</translation>
+<translation id="5398461103557553443">Aby następnym razem automatycznie uzupełnić ten numer IBAN, zapisz go w Portfelu Google</translation>
 <translation id="5398772614898833570">Reklamy zostały zablokowane</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="5401344472773249513">Wiadomości o celebrytach i branży rozrywkowej</translation>
@@ -3863,6 +3871,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7162277662076933695">Czytnik kart inteligentnych</translation>
 <translation id="7163295244162773898">{0,plural, =1{Skopiować poufny plik?}few{Skopiować poufne pliki?}many{Skopiować poufne pliki?}other{Skopiować poufne pliki?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />” nie jest obsługiwanym ograniczeniem na tej platformie</translation>
+<translation id="7170930892977483182">Zostaną usunięte wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i w Portfelu Google</translation>
 <translation id="717330890047184534">Identyfikator GAIA:</translation>
 <translation id="7173338713290252554">Historia cen w internecie</translation>
 <translation id="7174545416324379297">Wartości scalone</translation>
@@ -3918,6 +3927,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7251437084390964440">Konfiguracja sieci jest niezgodna ze standardem ONC. Jej część mogła nie zostać zaimportowana.
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Aby usunąć te dane, przejdź do ustawień zarządzania nimi</translation>
 <translation id="7255540419660272073">Przycisk Nie lubię. Naciśnij Enter, aby otworzyć formularz, w którym możesz szczegółowo wyjaśnić, dlaczego wynik <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> Ci się nie podoba</translation>
 <translation id="7256634549594854023">Taca tylna</translation>
 <translation id="7257453341537973799">Informacje zawodowe i planowanie kariery</translation>
@@ -4046,6 +4056,7 @@ Dodatkowe informacje:
 <translation id="7450577240311017924">Przycisk Zarządzaj synchronizacją; aktywuj, aby zarządzać informacjami, które mają być synchronizowane w ustawieniach Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o tym problemie.</translation>
 <translation id="745208957946308667">Gra z dinozaurem. Aby zagrać, naciśnij spację</translation>
+<translation id="7453032093368223821">Zarządzaj innymi danymi</translation>
 <translation id="7453849010505253492">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />, ponieważ używa certyfikatu bezpieczeństwa, który nie jest zaufany przez Chrome ani konfigurację systemu do szyfrowania ruchu internetowego. Może to wynikać z błędnej konfiguracji lub przechwycenia połączenia. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Wyświetl certyfikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Konto Cloud</translation>
 <translation id="7455133967321480974">Użyj globalnej wartości domyślnej (Blokuj)</translation>

@@ -433,6 +433,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2885355868600171871">Zur Adressleiste wechseln</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
 <translation id="2891154217021530873">Laden der Seite anhalten</translation>
+<translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894821468041866720">Dein Browser oder Gerät wird nicht merklich verlangsamt.</translation>
 <translation id="2895521649038438824">Du kannst dir diese Seite vorlesen lassen</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, angepinnter Tab mit Audio</translation>
@@ -1467,6 +1468,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Weitere Informationen dazu, warum einige Dateien von Chrome blockiert werden</translation>
 <translation id="7168323970702333693">Angemeldet als <ph name="USER_NAME" />. Die Einstellungen werden geöffnet.</translation>
+<translation id="7170930892977483182">Alle auf deinem Gerät und in Google Wallet gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
 <translation id="7173338713290252554">Preisentwicklung im Web</translation>
 <translation id="7177466738963138057">Dies kann später in den Einstellungen geändert werden</translation>

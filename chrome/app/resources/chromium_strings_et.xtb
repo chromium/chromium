@@ -3,7 +3,6 @@
 <translationbundle lang="et">
 <translation id="1026101648481255140">Jätka installimist</translation>
 <translation id="1029669172902658969">Taaskäivitage &amp;Chromium OS-i värskendamiseks</translation>
-<translation id="103359417695385097">Chromium mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on välja lülitatud.</translation>
 <translation id="1040916596585577953">Chromium soovitab teil selle laienduse üle vaadata.</translation>
 <translation id="1042552502243217427">Kui sait palub lehel olevad lingid privaatselt eellaadida, kasutab Chromium Google'i servereid. See peidab teie identiteedi eellaaditud saidi eest, kuid Google saab teada, milliseid saite eellaaditakse.</translation>
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
@@ -70,6 +69,7 @@
 <translation id="183031085822326697">Järgmine kord, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi, kuvatakse teile Google'i paroolihalduri kasutamise viip.</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="18552579716432081">Sirvimisandmete kustutamiseks ainult sellest seadmest, kuid jättes need oma Google'i kontole alles, <ph name="BEGIN_LINK" />logige Chromiumist välja<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Laadige oma telefoni alla Chromium, et liikvel olles uusi vahelehegruppe avada või luua.</translation>
 <translation id="185970820835152459">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chromiumi brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Otsing pildiotsinguga</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
@@ -160,6 +160,7 @@
 <translation id="2738871930057338499">Internetiga ei õnnestu ühendust luua. HTTP 403 on keelatud. Kontrollige puhverserveri seadistust.</translation>
 <translation id="2753623023919742414">Klõpsake otsimiseks</translation>
 <translation id="2768103863314748511">Määrake Chromium oma PDF-vaikevaaturiks</translation>
+<translation id="277828055419948999">Chromium saab automaatselt täita keerukaid välju, mida tavaline automaattäide ei pruugi tuvastada.</translation>
 <translation id="2785438272836277133">Laiendus sisaldab pahavara ja see on ebaturvaline. Eemaldage laiendus Chromiumist, et see ei saaks enam teie külastatavatel saitidel näha ja muuta teie andmeid, sealhulgas teie isiklikku teavet.</translation>
 <translation id="2799223571221894425">Taaskäivita</translation>
 <translation id="2803971713792056305">Teie Chromium</translation>
@@ -336,7 +337,6 @@
 <translation id="4613863813562375431">Chromium OS-i versioon</translation>
 <translation id="4621240073146040695">Rakendus on peaaegu ajakohane! Värskenduse lõpuleviimiseks taaskäivitage Chromium.</translation>
 <translation id="4625064703209785397">Kiirendab Chromiumi V8 mootoriga saite, kuid muudab Chromiumi rünnetele veidi vähem vastupidavaks</translation>
-<translation id="4654936675281451226">Chromium mõistab vorme paremini ja saab need teie eest automaatselt täita. See seade on sisse lülitatud.</translation>
 <translation id="4665829708273112819">Hoiatus. Chromium ei saa takistada laiendustel teie sirvimisajalugu salvestada. Kui soovite laienduse inkognito režiimis keelata, siis tühistage see valik.</translation>
 <translation id="4673151026126227699">Kui jagate ka Chromiumi kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
 <translation id="4677944499843243528">Näib, et profiili kasutab Chromiumi muu protsess (<ph name="PROCESS_ID" />) mingis muus arvutis (<ph name="HOST_NAME" />). Chromium on profiili lukustanud, et seda ei saaks rikkuda. Kui olete kindel, et ükski muu protsess seda profiili ei kasuta, saate profiili avada ja Chromiumi taaskäivitada.</translation>
@@ -440,7 +440,6 @@
 <translation id="6063093106622310249">&amp;Ava Chromiumis</translation>
 <translation id="6069027071882229820">Kopeeri pildina</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> on Chromiumi lisatud</translation>
-<translation id="6072463441809498330">Muutke Chromium kiiremaks</translation>
 <translation id="6096348254544841612">Kohandage ja juhtige Chromiumi. Saadaval on värskendus.</translation>
 <translation id="6107893135096467929">Sees • Chromium ei suuda tuvastada, kust see laiendus pärineb</translation>
 <translation id="611228897408671387">Teie konto Chromiumis</translation>
@@ -485,6 +484,7 @@
 <translation id="6436260184216827876">Pildiotsing pole saadaval. Proovige hiljem uuesti.</translation>
 <translation id="6442900851116057561">Chromium OS-i taaskäivitamine</translation>
 <translation id="6443470774889161065">Chromium eellaadib veelgi rohkem lehti, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
+<translation id="6450948450282634257">Laadige oma telefoni alla Chromium, et jälgida hindu ja saada märguandeid, kui hind mõnel saidil langeb.</translation>
 <translation id="645458117210240797">Väljas • Chromium ei suuda tuvastada, kust see laiendus pärineb</translation>
 <translation id="6455857529632101747">Tere tulemast kasutama Chromiumi profiile</translation>
 <translation id="6466344609055215035">Konto eemaldamine Chromiumist</translation>

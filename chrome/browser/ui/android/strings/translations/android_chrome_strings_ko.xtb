@@ -433,6 +433,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2885355868600171871">주소 표시줄로 이동</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
+<translation id="2893168226686371498">기본 브라우저</translation>
 <translation id="2894821468041866720">브라우저나 기기 속도에 크게 영향을 미치지 않습니다.</translation>
 <translation id="2895521649038438824">이 페이지의 내용을 들을 수 있습니다</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, 고정되고 청취 가능한 탭</translation>
@@ -1467,6 +1468,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="7165972437814027679">Chrome에서 일부 파일을 차단하는 이유 자세히 알아보기</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
+<translation id="7170930892977483182">기기 및 Google 월렛에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="7173114856073700355">설정 열기</translation>
 <translation id="7173338713290252554">웹에서의 가격 변동 내역</translation>
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>

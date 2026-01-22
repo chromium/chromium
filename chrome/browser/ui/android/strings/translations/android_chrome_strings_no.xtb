@@ -433,6 +433,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2885355868600171871">Gå til adressefeltet</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Stopp innlastingen av siden</translation>
+<translation id="2893168226686371498">Standardnettleser</translation>
 <translation id="2894821468041866720">Funksjonen gjør ikke nettleseren eller enheten merkbart tregere.</translation>
 <translation id="2895521649038438824">Du kan lytte til denne siden</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, festet fane med lyd</translation>
@@ -1467,6 +1468,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Finn ut mer om hvorfor Chrome blokkerer enkelte filer</translation>
 <translation id="7168323970702333693">Logget på som <ph name="USER_NAME" />. Åpner innstillinger.</translation>
+<translation id="7170930892977483182">Alle sikkerhetskoder som er lagret på enheten og i Google Wallet, slettes</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7173338713290252554">Prishistorikk på nettet</translation>
 <translation id="7177466738963138057">Du kan endre dette senere i Innstillinger</translation>

@@ -265,6 +265,7 @@
 <translation id="1408787208417187241">三钉（顶部）</translation>
 <translation id="1410365862999780287">与您共用设备的其他人不会看到您的活动记录，因此您可以获得更私密的浏览体验。无痕模式不会改变您访问的网站及其所用服务（包括 Google）收集数据的方式。下载内容、书签和阅读清单中的内容仍会保存在此设备上。</translation>
 <translation id="1410941016594047814">Invite 信封</translation>
+<translation id="1413235258620101697">此卡的银行卡验证码 (CVC) 将加密保存至 Google 钱包，以便您更快捷地结账</translation>
 <translation id="1413809658975081374">隐私设置错误</translation>
 <translation id="1414134146594747368">学龄前教育</translation>
 <translation id="1419305130220238697">“管理 Chrome 中的下载内容”按钮，激活它即可管理您已在 Chrome 中下载的文件</translation>
@@ -286,6 +287,7 @@
 <translation id="1433225466058025572">尝试重新移动文件</translation>
 <translation id="1433478348197382180">阅读模式</translation>
 <translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
+<translation id="1442054921249164535">其他数据</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1445896388055045436">在结账时显示凭卡可享受哪些福利和奖励。须遵守发卡机构的相关条款。</translation>
@@ -939,6 +941,7 @@
 <translation id="24699311393038040">纸（涂布纸）</translation>
 <translation id="2471632709106952369">比较表格</translation>
 <translation id="2473810985261856484">法律服务</translation>
+<translation id="2477607419416067650">其他 Google 数据</translation>
 <translation id="2479148705183875116">前往“设置”</translation>
 <translation id="2479410451996844060">搜索网址无效。</translation>
 <translation id="2480300195898055381">保存到 Google 账号 <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">从现在开始，使用“屏幕锁定”功能确认银行卡</translation>
 <translation id="2552532158894206888">向右键</translation>
+<translation id="2553352788023127673">搜索记录和密码可在相应管理设置中删除</translation>
 <translation id="2553853292994445426">请检查您的安全 DNS 设置。您可能已配置了安全 DNS 服务器但无法连接到它。</translation>
 <translation id="255497580849974774">更新期间，请将设备连接到充电器。</translation>
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
@@ -1495,6 +1499,7 @@
 <translation id="3407789382767355356">第三方登录</translation>
 <translation id="340924996148642843">目前无法使用比较功能</translation>
 <translation id="3409896703495473338">管理安全设置</translation>
+<translation id="3410151451624226773">在 Google 密码管理工具中管理</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小时后上传</translation>
 <translation id="341134412449102894">您的信息已保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3413466783792948876">如果您使用的是公共网络，安全起见，建议您稍后再访问此网站。使用您信任的网络（例如家中或单位的 Wi-Fi）可以降低风险。</translation>
@@ -1585,6 +1590,7 @@
 <translation id="3549904448933807997">浏览器和资料信息（包括个人资料和工作资料）</translation>
 <translation id="3552155506104542239">警告：此政策与 <ph name="POLICY_NAME" /> 冲突，不会影响 Android 应用。否则，此政策将会按预期运行。</translation>
 <translation id="3552297013052089404">Sans-Serif 字体</translation>
+<translation id="3558335486599406178">IBAN 已保存到 Google 钱包</translation>
 <translation id="3558573058928565255">日间</translation>
 <translation id="3559897352860026926">请让您的管理员验证其“<ph name="CLOUD_PROVIDER" />”配置设置。</translation>
 <translation id="3560824484345057728">查看相关网站</translation>
@@ -2047,7 +2053,7 @@
 <translation id="4242981939686657948">如需更强大的浏览记录搜索方式，请开启</translation>
 <translation id="4244926541863471678">膜</translation>
 <translation id="4246517972543675653">出国留学</translation>
-<translation id="4250343410682686342">“先买后付”错误界面已以最大高度显示。</translation>
+<translation id="4250343410682686342">“先买后付”错误界面已以标准高度显示。</translation>
 <translation id="4250431568374086873">您与此网站之间建立的连接并非完全安全</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4250716950689692560">A4x4</translation>
@@ -2154,12 +2160,14 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
 <translation id="4407758156081352648">为确保安全，您的组织不允许在 Chrome 中重复使用密码。Chrome 中的密码会加密，以保护用户隐私。</translation>
+<translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4409556632583862731">新建会话</translation>
 <translation id="4412074349188076601">该配置已被标记为可安装，但系统未为此架构提供任何映像，所以无法安装该配置。</translation>
 <translation id="4412377069090572315">其他用户的评价</translation>
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415156962929755728">塑料（高光）</translation>
 <translation id="4415426530740016218">取货地址</translation>
+<translation id="4419287616181386201">密码可在相应管理设置中删除</translation>
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4425750422187370446">运动服装</translation>
 <translation id="443121186588148776">串行端口</translation>
@@ -2478,6 +2486,7 @@
 <translation id="4950898438188848926">标签页切换按钮，按 Enter 键可切换到打开的标签页，<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">对无障碍事件做出响应</translation>
+<translation id="4954891067389874142">保存卡信息，付款更便捷。卡详细信息会在 Google 钱包中加密。</translation>
 <translation id="4957080528849277028">“查看您的 Chrome 历史记录”按钮，激活它即可在 Chrome 设置中查看和管理您的浏览记录</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{以及另外 1 个网站}other{以及另外 # 个网站}}</translation>
 <translation id="4958444002117714549">展开列表</translation>
@@ -2565,6 +2574,7 @@
 <translation id="5097468150760963273">27 x 39 英寸</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">依次按 Tab 键和 Enter 键即可问问 AI 模式</translation>
+<translation id="5105442806410269908">管理其他 Google 数据</translation>
 <translation id="510644072453496781">纸板（封边）</translation>
 <translation id="5106648964679263509">已填写<ph name="BNPL_ISSUER_NAME" />的虚拟卡信息</translation>
 <translation id="5108567515277121477">会员卡</translation>
@@ -2704,6 +2714,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />默认搜索引擎让您可在网络中搜索信息，并支持某些 Chromium 功能<ph name="END_BOLD" />，例如通过地址栏和网页上的图片进行搜索。如果您所用的搜索引擎不支持某项功能，您可能无法使用该功能。</translation>
 <translation id="5323043727018853753">允许嵌入内容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，第 <ph name="MATCH_POSITION" /> 个（共 <ph name="NUM_MATCHES" /> 个）</translation>
+<translation id="5323501626199324454">在 Google 账号中管理</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5329858041417644019">您的浏览器不受管理</translation>
 <translation id="5331585574693522196">设为默认</translation>
@@ -2747,6 +2758,7 @@
 <translation id="5394069166371280357">面向家庭的电视节目</translation>
 <translation id="5396631636586785122">边缘装订（右侧）</translation>
 <translation id="5397794290049113714">您</translation>
+<translation id="5398461103557553443">如需下次自动填充此 IBAN，请将其保存到 Google 钱包中</translation>
 <translation id="5398772614898833570">广告已被拦截</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5401344472773249513">名人与娱乐新闻</translation>
@@ -3016,6 +3028,7 @@
 <translation id="5843987376989109187">尚不支持此语言。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">电力供应</translation>
+<translation id="5848445080378515710">查看订单后，您必须登录或创建 <ph name="BNPL_ISSUER_NAME" /> 账号。该账号将自动关联至 Google 钱包。</translation>
 <translation id="584902713199270089">约会与交友</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5851868085455377790">颁发者</translation>
@@ -3853,6 +3866,7 @@
 <translation id="7162277662076933695">智能读卡器</translation>
 <translation id="7163295244162773898">{0,plural, =1{复制这个机密文件？}other{复制这些机密文件？}}</translation>
 <translation id="7168625890036931112">“<ph name="DATA_CONTROLS_RESTRICTION" />”不是此平台支持的限制条件</translation>
+<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将被删除</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
 <translation id="7174545416324379297">已合并</translation>
@@ -3908,6 +3922,7 @@
 <translation id="7251437084390964440">网络配置不符合 ONC 标准，因此它的某些部分可能会无法导入。
 更多详情：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">如需删除以下数据，请前往相应的管理设置</translation>
 <translation id="7255540419660272073">“不喜欢”按钮，按 Enter 键可打开一个反馈表单，您可以在表单中详细说明不喜欢<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />的原因</translation>
 <translation id="7256634549594854023">后端纸匣</translation>
 <translation id="7257453341537973799">职业资源与规划</translation>
@@ -4006,6 +4021,7 @@
 <translation id="7408613996403626141">玩具</translation>
 <translation id="7410852728357935715">投放到设备</translation>
 <translation id="741204030948306876">立即开启</translation>
+<translation id="7412081313067625215">您的卡已保存在 Google 钱包中，您下次购物时即可自动填充相关信息</translation>
 <translation id="7416351320495623771">管理密码…</translation>
 <translation id="7416898721136759658">助学金、奖学金与经济资助</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4035,6 +4051,7 @@
 <translation id="7450577240311017924">“管理同步数据”按钮，激活它即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
 <translation id="745208957946308667">恐龙游戏，按空格键即可畅玩</translation>
+<translation id="7453032093368223821">管理其他数据</translation>
 <translation id="7453849010505253492">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chrome 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看证书<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud 账号</translation>
 <translation id="7455133967321480974">使用全局默认设置（阻止）</translation>
@@ -4139,6 +4156,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前无法处理此请求。</translation>
 <translation id="7599089013883397081">下载超时</translation>
 <translation id="7602868996817972616">问问 Google 有关此页面的问题</translation>
+<translation id="7606123685356405076">Gemini 3 模型</translation>
 <translation id="7610193165460212391">值超出了范围 (<ph name="VALUE" />)。</translation>
 <translation id="761261689936461781">粗</translation>
 <translation id="7613889955535752492">过期时间：<ph name="EXPIRATION_YEAR" /> 年 <ph name="EXPIRATION_MONTH" /> 月</translation>

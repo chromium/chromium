@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4568230126482344545">Sakrij stavku Nedavne kartice</translation>
 <translation id="4578835633387306383">Uključi…</translation>
+<translation id="4580621046861724270">Neke oznake nisu spremljene</translation>
 <translation id="4580716718466706433">Otvorite Upravitelj zaporki</translation>
 <translation id="4585751637295612750">Otvorite novu karticu da biste je dodali u pitanje</translation>
 <translation id="4587589328781138893">Web-lokacije</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5329451663851195956">Možete povući prema dolje radi osvježavanja.</translation>
+<translation id="5336910966955551309">Dodirnite i zadržite da biste prikvačili omiljene web-lokacije</translation>
 <translation id="5338512273860059533">Prijava u tijeku.</translation>
 <translation id="5343472494710226394">Vijesti, sport i sadržaj na temelju vaših interesa.</translation>
 <translation id="5352128922772839949">Spremite datoteku</translation>
@@ -2004,6 +2006,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8319282042900445670">Podsjetnik postavljen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij opciju Recenzije na temelju vaših interesa</translation>
+<translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="833647236762414178">Izradite i spremite zaporke i pristupne ključeve te upravljajte njima kako biste se lako prijavljivali na web-lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju.</translation>
 <translation id="8348530355586151720">Dodirnite izbornik s tri točke.</translation>

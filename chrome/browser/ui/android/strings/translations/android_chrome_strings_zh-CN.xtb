@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">跳转到地址栏</translation>
 <translation id="2888126860611144412">关于 Chrome</translation>
 <translation id="2891154217021530873">停止加载网页</translation>
+<translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2894821468041866720">不会显著减慢浏览器或设备的运行速度。</translation>
 <translation id="2895521649038438824">您可以聆听此页面</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />，已固定的标签页，正在播放音频</translation>
@@ -1465,6 +1466,7 @@
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="7165972437814027679">详细了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
+<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将被删除</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
 <translation id="7177466738963138057">以后，您可以在“设置”中更改此设置。</translation>

@@ -304,6 +304,7 @@
 <translation id="4242034826641750751">Chrome 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251615635259297716">要將你的 Chrome 資料連結至這個帳戶嗎？</translation>
+<translation id="4280647692742956593">在手機上下載 Chrome，隨時隨地開啟/建立新的分頁群組。</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4293420128516039005">登入即可進行同步處理，讓你在所有裝置上享有個人化的 Chrome 體驗</translation>
 <translation id="430327780270213103">允許擴充功能在 Chrome 工具列中顯示存取要求</translation>
@@ -359,7 +360,6 @@
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="4926882258455737990">如要透過其他 Google 帳戶使用 Chrome 內建 Gemini，請<ph name="BEGIN_LINK" />建立新設定檔<ph name="END_LINK" />，並登入所需帳戶</translation>
 <translation id="492720062778050435">Chrome 建議你檢查這項擴充功能</translation>
-<translation id="4946912144186040233">Chrome 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已關閉。</translation>
 <translation id="4953650215774548573">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
 <translation id="4969674060580488087">帳戶登入詳細資料尚未更新，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
@@ -408,7 +408,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5465210843490471889">選擇要搭配 <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> 使用的 Chrome 設定檔</translation>
 <translation id="5468572406162360320">為協助改善這些功能，Chrome 會將你和功能的互動資料傳送給 Google。人工審查員可能會讀取、處理這些資料，並加上註解。</translation>
 <translation id="5524890928877629608">搜尋區域的左上角：左側 <ph name="LEFT" />%，頂端 <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">提升 Chrome 的運作速度</translation>
 <translation id="5550137307985173298">點選新分頁的「自訂 Chrome」按鈕，即可變更 Chrome 外觀</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者身分 (非系統管理員) 執行安裝程式。</translation>
@@ -589,12 +588,14 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7193885263065350793">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome 是由「<ph name="MANAGER" />」管理</translation>
+<translation id="7285990705317078173">在手機上下載 Chrome，就能追蹤價格，網站一有降價，就會收到通知</translation>
 <translation id="7288567540154601580">分頁和擴充功能</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存到 Google 帳戶，請稍候幾分鐘後再登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
+<translation id="7379321689415048316">一般自動填入功能容易漏掉的難填欄位，Chrome 能自動填好</translation>
 <translation id="7386878009611068389">為確保家長監護設定可以進一步守護你的上網安全，請切換至以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chrome 設定檔</translation>
 <translation id="7398801000654795464">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7412494426921990001">按一下 Chrome 選單</translation>
@@ -609,7 +610,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入帳戶就能在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊。按下 <ph name="SHORTCUT" /> 可變更 Google 服務設定。</translation>
 <translation id="7496017508659652909">Chrome 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已開啟。</translation>
 <translation id="7514258452813684157">Google 更新工具服務</translation>
 <translation id="7515191208480168435">固定 Google 智慧鏡頭可方便之後存取。</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>

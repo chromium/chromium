@@ -309,6 +309,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4242034826641750751">Kailangan ng Chrome ng pahintulot sa camera at mikropono para sa site na ito</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4251615635259297716">I-link ang iyong data sa Chrome sa account na ito</translation>
+<translation id="4280647692742956593">I-download ang Chrome sa iyong telepono para magbukas o gumawa ng mga bagong grupo ng tab nang on the go.</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4293420128516039005">Mag-sign in para i-sync at i-personalize ang Chrome sa lahat ng iyong device</translation>
 <translation id="430327780270213103">Payagan ang extension na ipakita ang mga kahilingan sa access sa toolbar ng Chromium</translation>
@@ -364,7 +365,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4918844574251943176">Nakopya na ang larawan</translation>
 <translation id="4926882258455737990">Para gumamit ng ibang Google Account sa Gemini sa Chrome, <ph name="BEGIN_LINK" />gumawa ng bagong profile<ph name="END_LINK" /> at mag-sign in gamit ang account na gusto mo</translation>
 <translation id="492720062778050435">Inirerekomenda ng Chrome na suriin mo ang extension na ito</translation>
-<translation id="4946912144186040233">Mas naiintindihan ng Chrome ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-off ang setting na ito.</translation>
 <translation id="4953650215774548573">Itakda ang Google Chrome bilang iyong default na browser</translation>
 <translation id="495931528404527476">Sa Chrome</translation>
 <translation id="4969674060580488087">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
@@ -415,7 +415,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5465210843490471889">Pumili ng profile sa Chrome na gagamitin sa <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para makatulong na pahusayin ang mga feature na ito, ipinapadala ng Chrome sa Google ang iyong mga interaction dito. Posibleng basahin, iproseso, at i-annotate ang data na ito ng mga taong tagasuri.</translation>
 <translation id="5524890928877629608">kaliwang sulok sa itaas ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, itaas <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Pabilisin ang Chrome</translation>
 <translation id="5550137307985173298">I-click ang button na I-customize ang Chrome sa Page na Bagong Tab para bigyan ang Chrome ng bagong hitsura</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
@@ -596,12 +595,14 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7193885263065350793">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Pinapamahalaan ni <ph name="MANAGER" /> ang Chrome</translation>
+<translation id="7285990705317078173">I-download ang Chrome sa iyong telepono para i-track ang mga presyo at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7288567540154601580">Mga tab at extension</translation>
 <translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>
 <translation id="7302361266603927550">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
+<translation id="7379321689415048316">Mao-autofill ng Chrome ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="7386878009611068389">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chrome kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Naka-sign in ka sa Chrome bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
 <translation id="7412494426921990001">I-click ang menu ng Chrome</translation>
@@ -616,7 +617,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="749228101751499733">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chrome. Gamit ang <ph name="SHORTCUT" />, puwede mong baguhin ang iyong mga setting ng Mga serbisyo ng Google.</translation>
 <translation id="7496017508659652909">Nagpe-preload ang Chrome ng mga page na mas nagpapabilis sa pag-browse at paghahanap. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pag-preload ng mga page<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Mas naiintindihan ng Chrome ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-on ang setting na ito.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Puwede mong i-pin ang Google Lens para sa madaling pag-access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

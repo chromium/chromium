@@ -3,7 +3,6 @@
 <translationbundle lang="vi">
 <translation id="1026101648481255140">Tiếp tục cài đặt</translation>
 <translation id="1029669172902658969">Chạy lại để cập nhật &amp;ChromiumOS</translation>
-<translation id="103359417695385097">Chromium nắm rõ các biểu mẫu hơn và có thể tự động điền vào biểu mẫu nhanh hơn. Chế độ cài đặt này đang tắt.</translation>
 <translation id="1040916596585577953">Chromium khuyên bạn nên xem xét tiện ích này</translation>
 <translation id="1042552502243217427">Khi một trang web yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, Chromium sẽ sử dụng các máy chủ của Google. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước, nhưng Google sẽ biết những trang web được tải trước.</translation>
 <translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
@@ -70,6 +69,7 @@
 <translation id="183031085822326697">Lần tới, khi mở Chromium trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng Trình quản lý mật khẩu của Google.</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="18552579716432081">Để xoá dữ liệu duyệt web chỉ trên thiết bị này mà không xoá trong Tài khoản Google, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Tải Chromium xuống điện thoại để mở hoặc tạo nhóm thẻ mới trong khi di chuyển.</translation>
 <translation id="185970820835152459">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn được sử dụng cho trình duyệt Chromium, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Tìm kiếm bằng tính năng Tìm kiếm hình ảnh</translation>
 <translation id="1880677175115548835">Chọn văn bản</translation>
@@ -160,6 +160,7 @@
 <translation id="2738871930057338499">Không thể kết nối với Internet. HTTP 403 bị cấm. Vui lòng kiểm tra cấu hình proxy.</translation>
 <translation id="2753623023919742414">Nhấp để tìm</translation>
 <translation id="2768103863314748511">Đặt Chromium làm trình xem PDF mặc định</translation>
+<translation id="277828055419948999">Chromium có thể tự động điền những trường khó mà tính năng tự động điền tiêu chuẩn có thể bỏ sót</translation>
 <translation id="2785438272836277133">Tiện ích này chứa phần mềm độc hại và không an toàn. Hãy xoá khỏi Chromium để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
 <translation id="2799223571221894425">Chạy lại</translation>
 <translation id="2803971713792056305">Chromium của bạn</translation>
@@ -336,7 +337,6 @@
 <translation id="4613863813562375431">Phiên bản ChromiumOS</translation>
 <translation id="4621240073146040695">Gần được cập nhật! Hãy khởi chạy lại Chromium để hoàn tất cập nhật.</translation>
 <translation id="4625064703209785397">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium</translation>
-<translation id="4654936675281451226">Chromium nắm rõ các biểu mẫu hơn và có thể tự động điền vào biểu mẫu nhanh hơn. Chế độ cài đặt này đang bật.</translation>
 <translation id="4665829708273112819">Cảnh báo: Chromium không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
 <translation id="4673151026126227699">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chromium, thì các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
 <translation id="4677944499843243528">Dường như cấu hình này đang được quy trình Chromium khác (<ph name="PROCESS_ID" />) trên máy tính khác (<ph name="HOST_NAME" />) sử dụng. Chromium đã khóa cấu hình này để cấu hình không bị lỗi. Nếu bạn chắc chắn không có quy trình nào khác đang sử dụng cấu hình này, bạn có thể mở khóa cấu hình và chạy lại Chromium.</translation>
@@ -440,7 +440,6 @@
 <translation id="6063093106622310249">&amp;Mở trong Chromium</translation>
 <translation id="6069027071882229820">Sao chép dưới dạng hình ảnh</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> đã được thêm vào Chromium</translation>
-<translation id="6072463441809498330">Giúp Chromium hoạt động nhanh hơn</translation>
 <translation id="6096348254544841612">Tùy chỉnh và kiểm soát Chromium. Đã có bản cập nhật.</translation>
 <translation id="6107893135096467929">Bật • Chromium không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="611228897408671387">Tài khoản của bạn trong Chromium</translation>
@@ -485,6 +484,7 @@
 <translation id="6436260184216827876">Không dùng được tính năng Tìm kiếm hình ảnh. Hãy thử lại sau.</translation>
 <translation id="6442900851116057561">Khởi động lại ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium tải trước thêm nhiều trang mà bạn có thể sẽ truy cập để những trang đó tải nhanh hơn khi bạn truy cập</translation>
+<translation id="6450948450282634257">Tải Chromium xuống điện thoại để theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="645458117210240797">Tắt • Chromium không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="6455857529632101747">Chào mừng bạn đến với hồ sơ trên Chromium</translation>
 <translation id="6466344609055215035">Xoá tài khoản khỏi Chromium</translation>

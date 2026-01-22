@@ -433,6 +433,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2885355868600171871">Aadressiribale liikumine</translation>
 <translation id="2888126860611144412">Teave Chrome'i kohta</translation>
 <translation id="2891154217021530873">Peata lehe laadimine</translation>
+<translation id="2893168226686371498">Vaikebrauser</translation>
 <translation id="2894821468041866720">Ei aeglusta märgatavalt teie brauserit ega seadet.</translation>
 <translation id="2895521649038438824">Saate seda lehte kuulata</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, kinnitatud kuuldav vaheleht</translation>
@@ -1467,6 +1468,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i andmed<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Lisateave selle kohta, miks Chrome blokeerib mõned failid</translation>
 <translation id="7168323970702333693">Sisse logitud kasutajana <ph name="USER_NAME" />. Avab seaded.</translation>
+<translation id="7170930892977483182">Kõik teie seadmesse ja Google Walletisse salvestatud turvakoodid kustutatakse.</translation>
 <translation id="7173114856073700355">Ava seaded</translation>
 <translation id="7173338713290252554">Hinna ajalugu kogu veebis</translation>
 <translation id="7177466738963138057">Seda saate hiljem muuta jaotises Seaded</translation>

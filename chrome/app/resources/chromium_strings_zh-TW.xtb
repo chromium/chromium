@@ -3,7 +3,6 @@
 <translationbundle lang="zh-TW">
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="1029669172902658969">重新啟動以更新 Chromium OS(&amp;C)</translation>
-<translation id="103359417695385097">Chromium 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已關閉。</translation>
 <translation id="1040916596585577953">Chromium 建議你檢查這項擴充功能</translation>
 <translation id="1042552502243217427">當網站要求以私密方式預先載入網頁上的連結時，Chromium 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="1051793555070215510">請花 1 分鐘填寫這份問卷調查，幫助我們提供更優質的無痕模式。</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用 Google 密碼管理工具。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="18552579716432081">如果只要刪除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
+<translation id="1857749206890802997">在手機上下載 Chromium，就能隨時隨地開啟/建立新的分頁群組。</translation>
 <translation id="185970820835152459">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用「圖片搜尋」尋找內容</translation>
 <translation id="1880677175115548835">選取文字</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2768103863314748511">將 Chromium 設為預設 PDF 檢視器</translation>
+<translation id="277828055419948999">一般自動填入功能容易漏掉的難填欄位，Chromium 能自動填好</translation>
 <translation id="2785438272836277133">這項擴充功能含有惡意軟體且不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803971713792056305">你的 Chromium</translation>
@@ -335,7 +336,6 @@
 <translation id="4613863813562375431">Chromium OS 版本</translation>
 <translation id="4621240073146040695">即將更新為最新版本！重新啟動 Chromium 即可完成更新程序。</translation>
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快網站速度，但 Chromium 防範攻擊的能力會稍微降低</translation>
-<translation id="4654936675281451226">Chromium 可以更準確地辨識表單，更快自動填入相關資訊。這項設定已開啟。</translation>
 <translation id="4665829708273112819">警告：Chromium 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="4673151026126227699">如果一併提供 Chromium 使用報告，這些報告中會包含你造訪的網址</translation>
 <translation id="4677944499843243528">另一台電腦 (<ph name="HOST_NAME" />) 的 Chromium 處理程序 (<ph name="PROCESS_ID" />) 正在使用這個設定檔。Chromium 已鎖定此設定檔，確保其不致受損。如果你確定其他處理程序目前未使用此設定檔，請予以解除鎖定，然後重新啟動 Chromium。</translation>
@@ -439,7 +439,6 @@
 <translation id="6063093106622310249">在 Chromium 中開啟(&amp;O)</translation>
 <translation id="6069027071882229820">複製為圖片</translation>
 <translation id="6072279588547424923">已將「<ph name="EXTENSION_NAME" />」加到 Chromium</translation>
-<translation id="6072463441809498330">提升 Chromium 的運作速度</translation>
 <translation id="6096348254544841612">有可用的更新，歡迎自訂及控制 Chromium。</translation>
 <translation id="6107893135096467929">已開啟 • Chromium 無法驗證這個擴充功能的來源</translation>
 <translation id="611228897408671387">你在 Chromium 中的帳戶</translation>
@@ -484,6 +483,7 @@
 <translation id="6436260184216827876">「圖片搜尋」無法使用，請稍後再試。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium OS</translation>
 <translation id="6443470774889161065">Chromium 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入</translation>
+<translation id="6450948450282634257">在手機上下載 Chromium 就能追蹤價格，網站一有降價，就會收到通知</translation>
 <translation id="645458117210240797">已關閉 • Chromium 無法驗證這個擴充功能的來源</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6466344609055215035">從 Chromium 中移除帳戶</translation>

@@ -3,7 +3,6 @@
 <translationbundle lang="is">
 <translation id="1026101648481255140">Halda uppsetningu áfram</translation>
 <translation id="1029669172902658969">Endurræstu til að uppfæra &amp;ChromiumOS</translation>
-<translation id="103359417695385097">Chromium áttar sig betur á eyðublöðum og getur fyllt þau út fyrir þig með fljótlegri hætti. Slökkt er á þessari stillingu.</translation>
 <translation id="1040916596585577953">Chromium mælir með að þú farir yfir þessa viðbót</translation>
 <translation id="1042552502243217427">Þegar vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðunni sinni notar Chromium Google-þjóna. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig en Google lærir að þekkja hvaða vefsvæðum er forhlaðið.</translation>
 <translation id="1051793555070215510">Taktu þátt í örstuttri könnun til að hjálpa okkur að bæta huliðsstillingu.</translation>
@@ -72,6 +71,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="183031085822326697">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Skráðu þig út af Chromium<ph name="END_LINK" /> til að eyða vefskoðunargögnum aðeins úr þessu tæki en ekki af Google-reikningnum þínum.</translation>
+<translation id="1857749206890802997">Sæktu Chromium í símann þinn til að opna eða búa til nýja flipahópa á ferðinni.</translation>
 <translation id="185970820835152459">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chromium vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Leitaðu með myndaleit</translation>
 <translation id="1880677175115548835">Velja texta</translation>
@@ -162,6 +162,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
 <translation id="2768103863314748511">Stilltu Chromium sem sjálfgefinn PDF-lesara</translation>
+<translation id="277828055419948999">Chromium getur fyllt út erfiða reiti sem stöðluð sjálfvirk útfylling gæti misst af</translation>
 <translation id="2785438272836277133">Þessi viðbót inniheldur spilliforrit og er ekki örugg. Fjarlægðu hana úr Chromium svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum þínum.</translation>
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2803971713792056305">Chromium-prófíllinn þinn</translation>
@@ -338,7 +339,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4613863813562375431">Útgáfa ChromiumOS</translation>
 <translation id="4621240073146040695">Næstum uppfært! Endurræstu Chromium til að ljúka uppfærslunni.</translation>
 <translation id="4625064703209785397">Styttir hleðslutíma vefsvæða með V8-vél Chromium en gerir Chromium örlítið berskjaldaðri gagnvart árásum</translation>
-<translation id="4654936675281451226">Chromium áttar sig betur á eyðublöðum og getur fyllt þau út fyrir þig með fljótlegri hætti. Kveikt er á þessari stillingu.</translation>
 <translation id="4665829708273112819">Viðvörun: Chromium getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="4673151026126227699">Ef þú deilir einnig Chromium notkunarskýrslum innihalda þær skýrslur vefslóðirnar sem þú opnar</translation>
 <translation id="4677944499843243528">Annað Chromium-ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chromium hefur læst prófílnum svo að hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chromium.</translation>
@@ -442,7 +442,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6063093106622310249">&amp;Opna í Chromium</translation>
 <translation id="6069027071882229820">Afrita sem mynd</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> hefur verið bætt við Chromium</translation>
-<translation id="6072463441809498330">Láttu Chromium vinna hraðar</translation>
 <translation id="6096348254544841612">Sérstilltu og stjórnaðu Chromium. Uppfærsla er í boði.</translation>
 <translation id="6107893135096467929">Kveikt • Chromium getur ekki staðfest hvaðan þessi viðbót kemur</translation>
 <translation id="611228897408671387">Reikningurinn þinn í Chromium</translation>
@@ -487,6 +486,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6436260184216827876">Myndaleit er ekki í boði. Reyndu aftur síðar.</translation>
 <translation id="6442900851116057561">Endurræsa ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium forhleður fleiri síðum sem er líklegt að þú munir skoða svo að þær hlaðist fyrr þegar þú opnar þær</translation>
+<translation id="6450948450282634257">Sæktu Chromium í símanum þínum til að rekja verð og fá tilkynningar þegar verðið lækkar á einhverri síðu</translation>
 <translation id="645458117210240797">Slökkt • Chromium getur ekki staðfest hvaðan þessi viðbót kemur</translation>
 <translation id="6455857529632101747">Velkomin(n) í Chromium prófíla</translation>
 <translation id="6466344609055215035">Fjarlægja reikning úr Chromium</translation>

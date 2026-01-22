@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">Перейти в адресний рядок</translation>
 <translation id="2888126860611144412">Про Chrome</translation>
 <translation id="2891154217021530873">Припинити завантаження сторінки</translation>
+<translation id="2893168226686371498">Веб-переглядач за умовчанням</translation>
 <translation id="2894821468041866720">Не сповільнює роботу веб-переглядача або пристрою.</translation>
 <translation id="2895521649038438824">Ви можете прослухати цю сторінку</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" /> (закріплена вкладка, на якій увімкнено звук)</translation>
@@ -1467,6 +1468,7 @@
 Щоб змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Докладніше про те, чому Chrome блокує деякі файли</translation>
 <translation id="7168323970702333693">Ви ввійшли як <ph name="USER_NAME" />. Ця опція відкриває налаштування.</translation>
+<translation id="7170930892977483182">Усі захисні коди, збережені на вашому пристрої і в Google Гаманці, буде видалено</translation>
 <translation id="7173114856073700355">Відкрити налаштування</translation>
 <translation id="7173338713290252554">Історія цін в Інтернеті</translation>
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>

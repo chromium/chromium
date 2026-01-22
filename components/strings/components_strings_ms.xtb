@@ -186,7 +186,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1289129165308566697">Lihat sejarah anda pada peranti lain</translation>
 <translation id="1292571435393770077">Dulang 16</translation>
 <translation id="1292701964462482250">"Perisian pada komputer anda menghalang Chrome daripada menyambung ke web dengan selamat" (komputer Windows sahaja)</translation>
-<translation id="1293154089865862473">Kandungan halaman daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini. Untuk menyembunyikan pilihan bayar kemudian dalam autolengkap, akses <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1293797321964802402">Sampul 9 x 11 inci</translation>
 <translation id="129553762522093515">Ditutup baru-baru ini</translation>
@@ -288,6 +287,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1433225466058025572">Cuba alihkan semula fail anda</translation>
 <translation id="1433478348197382180">Mod Membaca</translation>
 <translation id="1436185428532214179">Boleh meminta untuk mengedit fail dan folder pada peranti anda</translation>
+<translation id="1442054921249164535">Data lain</translation>
 <translation id="1442386063175183758">Lipatan pintu kanan</translation>
 <translation id="1442987760062738829">Tebuk</translation>
 <translation id="1445896388055045436">Tunjukkan manfaat kad dan ganjaran yang tersedia semasa semak keluar. Syarat pengeluar dikenakan.</translation>
@@ -941,6 +941,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="24699311393038040">Kertas (Bersalut)</translation>
 <translation id="2471632709106952369">Jadual perbandingan</translation>
 <translation id="2473810985261856484">Perkhidmatan Perundangan</translation>
+<translation id="2477607419416067650">Data Google lain</translation>
 <translation id="2479148705183875116">Pergi ke Tetapan</translation>
 <translation id="2479410451996844060">URL carian tidak sah.</translation>
 <translation id="2480300195898055381">Dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Gunakan kunci skrin untuk mengesahkan kad mulai sekarang</translation>
 <translation id="2552532158894206888">kekunci kanan</translation>
+<translation id="2553352788023127673">Sejarah carian dan kata laluan boleh dipadamkan dalam tetapan pengurusan data tersebut</translation>
 <translation id="2553853292994445426">Semak tetapan DNS selamat anda. Anda mungkin telah mengkonfigurasikan pelayan DNS selamat yang menyebabkan sambungan gagal.</translation>
 <translation id="255497580849974774">Sila pastikan peranti anda disambungkan kepada pengecas semasa pengemaskinian.</translation>
 <translation id="2556876185419854533">&amp;Buat Asal Edit</translation>
@@ -1126,7 +1128,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2782088940970074970">Sewaan Kereta</translation>
 <translation id="278436560439594386">Perkakas Rumah</translation>
 <translation id="2784474685437057136">B5 Ekstra</translation>
-<translation id="2784540996156451674">Kandungan halaman daripada halaman semak keluar dikongsi dengan Google untuk menawarkan pilihan ini.</translation>
 <translation id="2784949926578158345">Sambungan ditetapkan semula.</translation>
 <translation id="2786008859124691917">Basikal &amp; Aksesori</translation>
 <translation id="2792012897584536778">Pentadbir peranti ini telah menyediakan sijil keselamatan yang mungkin membolehkan mereka melihat kandungan laman web yang anda lawati.</translation>
@@ -1500,6 +1501,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3407789382767355356">log masuk pihak ketiga</translation>
 <translation id="340924996148642843">Perbandingan tidak tersedia sekarang</translation>
 <translation id="3409896703495473338">Urus tetapan keselamatan</translation>
+<translation id="3410151451624226773">Urus dalam Google Password Manager</translation>
 <translation id="3411091017011773343">Muat naik selepas <ph name="HOURS" /> jam</translation>
 <translation id="341134412449102894">Maklumat anda disimpan pada <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Anda akan lebih selamat jika melawati laman ini kemudian jika anda menggunakan rangkaian awam. Terdapat kurang risiko daripada rangkaian yang dipercayai, seperti Wi-Fi rumah atau tempat kerja anda.</translation>
@@ -1591,6 +1593,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3549904448933807997">Maklumat penyemak imbas &amp; profil (termasuk profil peribadi dan kerja)</translation>
 <translation id="3552155506104542239">Amaran: Dasar ini bercanggah dengan <ph name="POLICY_NAME" /> dan tidak akan memberikan kesan pada apl Android. Jika tidak, dasar ini berfungsi sewajarnya.</translation>
 <translation id="3552297013052089404">Fon Sans-serif</translation>
+<translation id="3558335486599406178">IBAN disimpan dalam Google Wallet</translation>
 <translation id="3558573058928565255">Waktu siang</translation>
 <translation id="3559897352860026926">Minta pentadbir anda mengesahkan tetapan konfigurasi <ph name="CLOUD_PROVIDER" /> mereka.</translation>
 <translation id="3560824484345057728">Lihat laman berkaitan</translation>
@@ -2162,12 +2165,14 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
 <translation id="4406896451731180161">hasil carian</translation>
 <translation id="4407758156081352648">Untuk mengekalkan keselamatan, organisasi anda tidak membenarkan kata laluan untuk digunakan semula dalam Chrome. Kata laluan dalam Chrome disulitkan untuk melindungi privasi pengguna.</translation>
+<translation id="4409271659088619928">Enjin carian anda ialah <ph name="DSE" />. Lihat arahan enjin carian itu untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="4409556632583862731">Urutan baharu</translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai boleh dipasang, tetapi tiada imej disediakan untuk seni bina ini, maka tidak boleh dipasang.</translation>
 <translation id="4412377069090572315">Perkara yang orang lain katakan</translation>
 <translation id="4414515549596849729">kuki dan data laman</translation>
 <translation id="4415156962929755728">Plastik (Kilat Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
+<translation id="4419287616181386201">Kata laluan boleh dipadamkan dalam tetapan pengurusan</translation>
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="4425750422187370446">Pakaian Olahraga</translation>
 <translation id="443121186588148776">Port siri</translation>
@@ -2574,6 +2579,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Tekan tab kemudian masuk untuk bertanya AI Mode</translation>
+<translation id="5105442806410269908">Urus data Google lain</translation>
 <translation id="510644072453496781">Kadbod (Hujung)</translation>
 <translation id="5106648964679263509">Kad maya untuk <ph name="BNPL_ISSUER_NAME" /> diisi</translation>
 <translation id="5108567515277121477">Kad kesetiaan</translation>
@@ -2713,6 +2719,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chromium<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="5323043727018853753">Kandungan terbenam dibenarkan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> daripada <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Urus dalam Google Account anda</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5329858041417644019">Penyemak imbas anda tidak diurus</translation>
 <translation id="5331585574693522196">Tetapkan sebagai Lalai</translation>
@@ -2756,6 +2763,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5394069166371280357">Rancangan TV berorientasikan Keluarga</translation>
 <translation id="5396631636586785122">Jahitan tepi kanan</translation>
 <translation id="5397794290049113714">Anda</translation>
+<translation id="5398461103557553443">Untuk membuat autolengkap IBAN ini pada masa hadapan, simpan maklumat IBAN ini dalam Google Wallet</translation>
 <translation id="5398772614898833570">Iklan disekat</translation>
 <translation id="5400836586163650660">Kelabu</translation>
 <translation id="5401344472773249513">Berita Selebriti &amp; Hiburan</translation>
@@ -3864,6 +3872,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7162277662076933695">Pembaca kad pintar</translation>
 <translation id="7163295244162773898">{0,plural, =1{Salin fail sulit?}other{Salin fail sulit?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" bukan sekatan yang disokong pada platform ini</translation>
+<translation id="7170930892977483182">Semua kod keselamatan yang disimpan pada peranti anda dan dalam Google Wallet akan dipadamkan</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7173338713290252554">Sejarah harga merentas web</translation>
 <translation id="7174545416324379297">Digabungkan</translation>
@@ -3919,6 +3928,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7251437084390964440">Konfigurasi rangkaian tidak mematuhi standard ONC. Sebahagian konfigurasi tidak boleh diimport.
 Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Untuk memadamkan data ini, akses tetapan pengurusan data tersebut</translation>
 <translation id="7255540419660272073">Butang tidak menyukai, tekan Enter untuk membuka borang dan menyerahkan maklum balas terperinci tentang sebab anda tidak menyukai, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Dulang Belakang</translation>
 <translation id="7257453341537973799">Sumber &amp; Perancangan Kerjaya</translation>
@@ -4047,6 +4057,7 @@ Butiran tambahan:
 <translation id="7450577240311017924">Butang urus penyegerakan, aktifkan untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="745208957946308667">Permainan Dino, tekan kekunci ruang untuk main</translation>
+<translation id="7453032093368223821">Urus data lain</translation>
 <translation id="7453849010505253492">Pelayan ini tidak dapat membuktikan bahawa perkara itu ialah <ph name="DOMAIN" /> kerana sijil keselamatan yang digunakan tidak dipercayai oleh Chrome atau konfigurasi sistem anda untuk penyulitan trafik web. Hal ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Lihat Sijil<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Akaun awan</translation>
 <translation id="7455133967321480974">Gunakan lalai global (Sekat)</translation>

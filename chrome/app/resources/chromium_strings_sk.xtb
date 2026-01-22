@@ -3,7 +3,6 @@
 <translationbundle lang="sk">
 <translation id="1026101648481255140">Pokračovať v inštalácii</translation>
 <translation id="1029669172902658969">Znova spustiť a aktualizovať &amp;Chromium OS</translation>
-<translation id="103359417695385097">Chromium lepšie rozumie formulárom a môže ich automaticky dopĺňať rýchlejšie za vás. Toto nastavenie je vypnuté.</translation>
 <translation id="1040916596585577953">Chromium odporúča, aby ste toto rozšírenie skontrolovali</translation>
 <translation id="1042552502243217427">Keď nejaký web požiada o súkromné prednačítanie odkazov na svojej stránke, Chromium použije servery Googlu. Týmto sa pred predinštalovaným webom skryje vaša identita, ale Google sa naučí, ktoré weby sa prednačítavajú.</translation>
 <translation id="1051793555070215510">Vyplňte tento minútový prieskum a pomôžte nám tak zlepšiť režim inkognito.</translation>
@@ -71,6 +70,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="183031085822326697">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa zobrazí výzva na používanie Správcu hesiel Google.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
 <translation id="18552579716432081">Ak chcete odstrániť dáta prehliadania iba z tohto zariadenia a vo svojom účte Google ich ponechať, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Stiahnite si Chromium do telefónu a otvárajte alebo vytvárajte nové skupiny kariet, nech ste kdekoľvek.</translation>
 <translation id="185970820835152459">Svoje prihlásené účty Google môžete spravovať. Účty Google sa používajú pre prehliadač Chromium, Obchod Play, Gmail a ďalšie služby. Ak chcete pridať účet inej osoby, napríklad člena rodiny, pridajte radšej novú osobu do svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Vyhľadávanie podľa obrázkov</translation>
 <translation id="1880677175115548835">Vybrať text</translation>
@@ -161,6 +161,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2738871930057338499">Nepodarilo sa pripojiť k internetu. Chyba odmietnutia prístupu HTTP 403. Skontrolujte konfiguráciu servera proxy.</translation>
 <translation id="2753623023919742414">Vyhľadávanie spustíte kliknutím</translation>
 <translation id="2768103863314748511">Nastavte si Chromium ako predvolený zobrazovač súborov PDF</translation>
+<translation id="277828055419948999">Chromium dokáže automaticky dopĺňať zložité polia, ktoré štandardné automatické dopĺňanie nemusí rozpoznať</translation>
 <translation id="2785438272836277133">Toto rozšírenie obsahuje malvér a je nebezpečné. Odstráňte ho z prehliadača Chromium, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2803971713792056305">Váš prehliadač Chromium</translation>
@@ -337,7 +338,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4613863813562375431">Verzia systému Chromium OS</translation>
 <translation id="4621240073146040695">Aktualizácia je takmer hotová! Dokončite ju reštartovaním prehliadača Chromium.</translation>
 <translation id="4625064703209785397">Zrýchľuje weby pomocou nástroja V8 prehliadača Chromium, ale mierne zníži odolnosť prehliadača voči útokom</translation>
-<translation id="4654936675281451226">Chromium lepšie rozumie formulárom a môže ich automaticky dopĺňať rýchlejšie za vás. Toto nastavenie je zapnuté.</translation>
 <translation id="4665829708273112819">Upozornenie: Chromium nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete rozšírenie v režime inkognito zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="4673151026126227699">Ak zdieľate aj prehľady používania prehliadača Chromium, nachádzajú sa v nich webové adresy, ktoré navštívite</translation>
 <translation id="4677944499843243528">Zdá sa, že profil používa ďalší proces prehliadača Chromium (<ph name="PROCESS_ID" />) na inom počítači (<ph name="HOST_NAME" />). Prehliadač Chromium daný profil uzamkol, aby sa nepoškodil. Ak s istotou viete, že tento profil nepoužívajú žiadne iné procesy, môžete ho odomknúť a prehliadač Chromium znova spustiť.</translation>
@@ -441,7 +441,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>
 <translation id="6069027071882229820">Kopírovať ako obrázok</translation>
 <translation id="6072279588547424923">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do prehliadača Chromium</translation>
-<translation id="6072463441809498330">Zrýchlite Chromium</translation>
 <translation id="6096348254544841612">Prispôsobte si prehliadač Chromium a ovládajte ho. K dispozícii je aktualizácia.</translation>
 <translation id="6107893135096467929">Zapnuté • Chromium nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>
 <translation id="611228897408671387">Váš účet v prehliadači Chromium</translation>
@@ -486,6 +485,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6436260184216827876">Vyhľadávanie podľa obrázkov nie je k dispozícii. Skúste to neskôr.</translation>
 <translation id="6442900851116057561">Reštartovanie systému Chromium OS</translation>
 <translation id="6443470774889161065">Chromium prednačítava dokonca viac stránok, ako pravdepodobne navštívite, aby sa v prípade návštevy načítali rýchlejšie</translation>
+<translation id="6450948450282634257">Stiahnite si Chromium do telefónu, aby ste mohli sledovať ceny a dostávať upozornenia, keď cena na niektorom webe klesne</translation>
 <translation id="645458117210240797">Vypnuté • Chromium nedokáže overiť, odkiaľ toto rozšírenie pochádza</translation>
 <translation id="6455857529632101747">Vitajte v profiloch prehliadača Chromium</translation>
 <translation id="6466344609055215035">Odstrániť účet z prehliadača Chromium</translation>

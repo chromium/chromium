@@ -433,6 +433,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2885355868600171871">Siirry osoitepalkkiin</translation>
 <translation id="2888126860611144412">Tietoja Chromesta</translation>
 <translation id="2891154217021530873">Pysäytä sivun lataus</translation>
+<translation id="2893168226686371498">Oletusselain</translation>
 <translation id="2894821468041866720">Se ei hidasta selainta tai laitetta merkittävästi.</translation>
 <translation id="2895521649038438824">Voit kuunnella tämän sivun</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, kiinnitetty välilehti, jolla toistetaan audiota</translation>
@@ -1467,6 +1468,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Lue lisää siitä, miksi Chrome estää joitakin tiedostoja</translation>
 <translation id="7168323970702333693">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. Avaa asetukset.</translation>
+<translation id="7170930892977483182">Kaikki laitteelle ja Google Walletiin tallennetut turvakoodit poistetaan</translation>
 <translation id="7173114856073700355">Avaa asetukset</translation>
 <translation id="7173338713290252554">Hintahistoria verkossa</translation>
 <translation id="7177466738963138057">Voit muuttaa tätä myöhemmin Asetuksista.</translation>

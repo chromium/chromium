@@ -433,6 +433,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2885355868600171871">Chuyển đến thanh địa chỉ</translation>
 <translation id="2888126860611144412">Giới thiệu về Chrome</translation>
 <translation id="2891154217021530873">Ngừng tải trang</translation>
+<translation id="2893168226686371498">Trình duyệt mặc định</translation>
 <translation id="2894821468041866720">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
 <translation id="2895521649038438824">Bạn có thể nghe trang này</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, Thẻ đang phát âm thanh được ghim</translation>
@@ -1467,6 +1468,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu trên Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Tìm hiểu thêm về lý do Chrome chặn một số tệp</translation>
 <translation id="7168323970702333693">Đã đăng nhập bằng <ph name="USER_NAME" />. Mở phần cài đặt.</translation>
+<translation id="7170930892977483182">Mọi mã bảo mật đã lưu trên thiết bị và trong Google Wallet sẽ bị xoá</translation>
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>
 <translation id="7173338713290252554">Giá trên Internet theo thời gian</translation>
 <translation id="7177466738963138057">Bạn có thể thay đổi cài đặt này sau trong Cài đặt</translation>

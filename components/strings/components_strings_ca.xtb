@@ -186,7 +186,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1289129165308566697">Consulta el teu historial en altres dispositius</translation>
 <translation id="1292571435393770077">Safata 16</translation>
 <translation id="1292701964462482250">"L'ordinador conté programari que impedeix que Chrome es connecti de manera segura al web" (només en ordinadors Windows)</translation>
-<translation id="1293154089865862473">El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions. Per amagar les opcions que permeten pagar més tard a Emplenament automàtic, ves a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1293797321964802402">Sobre de 9 x 11 polzades</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
@@ -288,6 +287,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1433225466058025572">Prova de tornar a moure els fitxers</translation>
 <translation id="1433478348197382180">Mode de lectura</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
+<translation id="1442054921249164535">Altres dades</translation>
 <translation id="1442386063175183758">Plegat amb finestra a la dreta</translation>
 <translation id="1442987760062738829">Encunyació</translation>
 <translation id="1445896388055045436">Mostra els avantatges i les recompenses disponibles de la targeta en tramitar la compra. S'hi apliquen les condicions de l'emissor.</translation>
@@ -941,6 +941,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="24699311393038040">Paper (estucat)</translation>
 <translation id="2471632709106952369">Taules de comparació</translation>
 <translation id="2473810985261856484">Serveis legals</translation>
+<translation id="2477607419416067650">Altres dades de Google</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
 <translation id="2479410451996844060">URL de cerca no vàlid.</translation>
 <translation id="2480300195898055381">Al teu Compte de Google, <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">A partir d'ara, fes servir el bloqueig de pantalla per confirmar les targetes</translation>
 <translation id="2552532158894206888">tecla dreta</translation>
+<translation id="2553352788023127673">L'historial de cerques i les contrasenyes es poden suprimir a la configuració de gestió corresponent</translation>
 <translation id="2553853292994445426">Revisa la configuració de DNS segur. Pot ser que hagis configurat un servidor de DNS segur en què fallin les connexions.</translation>
 <translation id="255497580849974774">Mantén el dispositiu connectat a un carregador durant l'actualització.</translation>
 <translation id="2556876185419854533">&amp;Desfés la modificació</translation>
@@ -1126,7 +1128,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2782088940970074970">Lloguers de cotxes</translation>
 <translation id="278436560439594386">Aparells domèstics</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">El contingut de la pàgina de tramitació de la compra es comparteix amb Google per oferir aquestes opcions.</translation>
 <translation id="2784949926578158345">S'ha restablert la connexió.</translation>
 <translation id="2786008859124691917">Bicicletes i accessoris</translation>
 <translation id="2792012897584536778">Els administradors d'aquest dispositiu han configurat certificats de seguretat que els permeten veure el contingut dels llocs web que visites.</translation>
@@ -1500,6 +1501,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3407789382767355356">inici de sessió de tercers</translation>
 <translation id="340924996148642843">Compare no està disponible en aquests moments</translation>
 <translation id="3409896703495473338">Gestiona la configuració de seguretat</translation>
+<translation id="3410151451624226773">Gestiona al gestor de contrasenyes de Google</translation>
 <translation id="3411091017011773343">Penja d'aquí a <ph name="HOURS" /> h</translation>
 <translation id="341134412449102894">La teva informació es desa a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">És més segur visitar aquest lloc web més tard si utilitzes una xarxa pública. Hi ha menys riscos en utilitzar una xarxa de confiança, com ara la Wi-Fi de la feina o de casa.</translation>
@@ -1591,6 +1593,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3549904448933807997">Informació dels navegadors i dels perfils (inclosos els perfils personals i de treball)</translation>
 <translation id="3552155506104542239">Advertiment: aquesta política entra en conflicte amb <ph name="POLICY_NAME" /> i no tindrà efecte en les aplicacions d'Android. Si no és així, la política funciona de la manera prevista.</translation>
 <translation id="3552297013052089404">Tipus de lletra Sans Serif</translation>
+<translation id="3558335486599406178">IBAN desat a Google Wallet</translation>
 <translation id="3558573058928565255">Durant el dia</translation>
 <translation id="3559897352860026926">Demana a l'administrador que verifiqui les seves opcions de configuració de <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="3560824484345057728">Mostra llocs web relacionats</translation>
@@ -2161,12 +2164,14 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4406896451731180161">resultats de la cerca</translation>
 <translation id="4407758156081352648">Per motius de seguretat, la teva organització no permet reutilitzar contrasenyes a Chrome. Les contrasenyes a Chrome estan encriptades per protegir la privadesa de l'usuari.</translation>
+<translation id="4409271659088619928">El teu motor de cerca és <ph name="DSE" />. Consulta'n les instruccions per suprimir l'historial de cerques, si escau.</translation>
 <translation id="4409556632583862731">Fil de discussió nou</translation>
 <translation id="4412074349188076601">Aquesta configuració està marcada com a instal·lable, però no s'ha proporcionat cap imatge per a aquesta arquitectura, de manera que no es pot instal·lar.</translation>
 <translation id="4412377069090572315">Què en diuen altres persones</translation>
 <translation id="4414515549596849729">dades de llocs web i galetes</translation>
 <translation id="4415156962929755728">Plàstic (brillantor alta)</translation>
 <translation id="4415426530740016218">Adreça de recollida</translation>
+<translation id="4419287616181386201">Les contrasenyes es poden suprimir a la configuració de gestió corresponent</translation>
 <translation id="4424024547088906515">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè Chrome considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="4425750422187370446">Moda esportiva</translation>
 <translation id="443121186588148776">Port en sèrie</translation>
@@ -2573,6 +2578,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5097468150760963273">27 x 39 polzades</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Prem Tab i, a continuació, Retorn per fer preguntes al mode IA</translation>
+<translation id="5105442806410269908">Gestiona altres dades de Google</translation>
 <translation id="510644072453496781">Cartró (final)</translation>
 <translation id="5106648964679263509">S'ha emplenat amb la targeta virtual de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108567515277121477">Targeta de fidelització</translation>
@@ -2712,6 +2718,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />El motor de cerca predeterminat et permet fer cerques al web i proporciona les funcions de Chromium<ph name="END_BOLD" />, com ara la cerca des de la barra d'adreces i des d'imatges de pàgines web. Si el teu motor de cerca no admet una funció, és possible que no estigui disponible.</translation>
 <translation id="5323043727018853753">El contingut inserit està permès</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Gestiona al meu Compte de Google</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329858041417644019">El navegador no està gestionat</translation>
 <translation id="5331585574693522196">Defineix com a predeterminat</translation>
@@ -2755,6 +2762,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5394069166371280357">Programes de televisió orientats a les famílies</translation>
 <translation id="5396631636586785122">Cosit de la vora a la dreta</translation>
 <translation id="5397794290049113714">Usuari</translation>
+<translation id="5398461103557553443">Perquè aquest IBAN s'empleni automàticament la propera vegada, desa'l a Google Wallet</translation>
 <translation id="5398772614898833570">Anuncis bloquejats</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="5401344472773249513">Notícies sobre famosos i entreteniment</translation>
@@ -3863,6 +3871,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7162277662076933695">Lector de targetes intel·ligents</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vols copiar el fitxer confidencial?}other{Vols copiar els fitxers confidencials?}}</translation>
 <translation id="7168625890036931112">La restricció "<ph name="DATA_CONTROLS_RESTRICTION" />" no s'admet en aquesta plataforma</translation>
+<translation id="7170930892977483182">Se suprimiran tots els codis de seguretat desats al teu dispositiu i a Google Wallet</translation>
 <translation id="717330890047184534">Identificador de Gaia:</translation>
 <translation id="7173338713290252554">Historial de preus al web</translation>
 <translation id="7174545416324379297">Combinats</translation>
@@ -3918,6 +3927,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7251437084390964440">La configuració de la xarxa no compleix l'estàndard ONC. Pot ser que algunes opcions de configuració no s'hagin importat.
 Detalls addicionals:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Per suprimir aquestes dades, ves a la configuració de gestió corresponent</translation>
 <translation id="7255540419660272073">Botó No m'agrada: prem Retorn per obrir un formulari i enviar comentaris detallats sobre per què indiques que no t'agrada <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Safata posterior</translation>
 <translation id="7257453341537973799">Recursos i planificació de carreres</translation>
@@ -4046,6 +4056,7 @@ Detalls addicionals:
 <translation id="7450577240311017924">Botó Gestiona la sincronització: activa'l per gestionar quina informació sincronitzes a la configuració de Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Obtenir més informació<ph name="END_LINK" /> sobre aquest problema</translation>
 <translation id="745208957946308667">Joc del dinosaure. Prem la barra espaiadora per jugar-hi.</translation>
+<translation id="7453032093368223821">Gestiona altres dades</translation>
 <translation id="7453849010505253492">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè utilitza un certificat de seguretat que Chrome o la configuració del sistema per a l'encriptació del trànsit web no consideren de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que ha interceptat la teva connexió. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Mostra el certificat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Compte al núvol</translation>
 <translation id="7455133967321480974">Utilitza l'opció predeterminada global (Bloqueja)</translation>
@@ -4966,7 +4977,7 @@ Detalls addicionals:
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Els teus fitxers locals se suprimiran d'aquí a <ph name="HOURS" /> hores</translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
-<translation id="8970887620466824814">S'ha produït un error.</translation>
+<translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="8971063699422889582">El certificat del servidor ha caducat.</translation>
 <translation id="8975012916872825179">Inclou informació com ara números de telèfon, adreces electròniques i adreces d'enviament</translation>
 <translation id="8975263830901772334">Noms de fitxers que imprimeixes</translation>

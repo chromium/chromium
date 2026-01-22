@@ -3,7 +3,6 @@
 <translationbundle lang="ja">
 <translation id="1026101648481255140">インストールを再開</translation>
 <translation id="1029669172902658969">再起動して Chromium OS を更新</translation>
-<translation id="103359417695385097">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオフになっています。</translation>
 <translation id="1040916596585577953">この拡張機能を確認することをおすすめします</translation>
 <translation id="1042552502243217427">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chromium は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="1051793555070215510">シークレット モードの改善のため、1 分程度のアンケートにご協力ください。</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">次回 <ph name="DEVICE_TYPE" /> で Chromium を開いたときに、Google パスワード マネージャーを使用するよう求めるメッセージが表示されます。</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
 <translation id="18552579716432081">閲覧履歴データをこのデバイスからのみ削除して、Google アカウントに残すには、<ph name="BEGIN_LINK" />Chromium からログアウト<ph name="END_LINK" />します。</translation>
+<translation id="1857749206890802997">スマートフォンに Chromium をダウンロードして、外出先でタブグループを開いたり、新しいタブグループを作成したりできます。</translation>
 <translation id="185970820835152459">ログインする Google アカウントを管理できます。Google アカウントは、Chromium ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">画像検索で検索</translation>
 <translation id="1880677175115548835">テキストを選択</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">インターネットに接続できません。HTTP 403 アクセス不可エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="2753623023919742414">クリックして検索</translation>
 <translation id="2768103863314748511">Chromium をデフォルトの PDF ビューアに設定する</translation>
+<translation id="277828055419948999">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="2785438272836277133">この拡張機能にはマルウェアが含まれており、安全ではありません。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2803971713792056305">あなたの Chromium</translation>
@@ -331,7 +332,6 @@
 <translation id="4613863813562375431">Chromium OS のバージョン</translation>
 <translation id="4621240073146040695">Chromium を再起動して更新を完了してください。</translation>
 <translation id="4625064703209785397">Chromium の V8 エンジンでサイトを高速化する（攻撃に対する Chromium の耐性は若干低下します）</translation>
-<translation id="4654936675281451226">Chromium でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオンになっています。</translation>
 <translation id="4665829708273112819">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="4673151026126227699">Chromium の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="4677944499843243528">プロフィールは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Chromium プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chromium はプロフィールが破損しないようにプロフィールをロックしています。他のプロセスがこのプロフィールを使用していないことが確実であれば、プロフィールのロックを解除して Chromium を再起動できます。</translation>
@@ -435,7 +435,6 @@
 <translation id="6063093106622310249">Chromium で開く(&amp;O)</translation>
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6072279588547424923">「<ph name="EXTENSION_NAME" />」が Chromium に追加されました</translation>
-<translation id="6072463441809498330">Chromium を高速化する</translation>
 <translation id="6096348254544841612">Chromium をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
 <translation id="6107893135096467929">オン • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="611228897408671387">Chromium のアカウント設定</translation>
@@ -478,6 +477,7 @@
 <translation id="6436260184216827876">画像検索は使用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="6442900851116057561">Chromium OS を再起動してください</translation>
 <translation id="6443470774889161065">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
+<translation id="6450948450282634257">スマートフォンに Chromium をダウンロードして、価格をトラッキングしたり、サイトで値下げがあった際に通知を受け取ったりできます</translation>
 <translation id="645458117210240797">オフ • Chromium では、この拡張機能の提供元を確認できません</translation>
 <translation id="6455857529632101747">Chromium プロフィールへようこそ</translation>
 <translation id="6466344609055215035">Chromium からアカウントを削除</translation>

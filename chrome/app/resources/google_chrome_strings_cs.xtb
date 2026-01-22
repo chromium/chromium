@@ -308,6 +308,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4242034826641750751">Chrome pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4251615635259297716">Chcete propojit údaje prohlížeče Chrome s tímto účtem?</translation>
+<translation id="4280647692742956593">Stáhněte si Chrome do telefonu, ať můžete otevírat nebo vytvářet nové skupiny karet na cestách.</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4293420128516039005">Po přihlášení si budete moci Chrome synchronizovat a upravit na různých zařízeních</translation>
 <translation id="430327780270213103">Povolit rozšíření zobrazovat na liště prohlížeče Chrome žádosti o přístup</translation>
@@ -363,7 +364,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4918844574251943176">Obrázek byl zkopírován</translation>
 <translation id="4926882258455737990">Pokud chcete používat Gemini v Chromu s jiným účtem Google, <ph name="BEGIN_LINK" />vytvořte nový profil<ph name="END_LINK" /> a přihlaste se pomocí požadovaného účtu</translation>
 <translation id="492720062778050435">Chrome doporučuje toto rozšíření zkontrolovat</translation>
-<translation id="4946912144186040233">Chrome lépe rozumí formulářům a může je automaticky vyplňovat rychleji. Toto nastavení je vypnuté.</translation>
 <translation id="4953650215774548573">Nastavit Google Chrome jako výchozí prohlížeč</translation>
 <translation id="495931528404527476">V Chromu</translation>
 <translation id="4969674060580488087">Systém ChromeOS Flex nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
@@ -414,7 +414,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5465210843490471889">Vyberte profil Chromu, který chcete používat s <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Za účelem zlepšení těchto funkcí odesílá Chrome vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
 <translation id="5524890928877629608">levý horní roh oblasti hledání: vlevo <ph name="LEFT" /> %, nahoře <ph name="TOP" /> %</translation>
-<translation id="5530733413481476019">Zrychlete si Chrome</translation>
 <translation id="5550137307985173298">Kliknutím na tlačítko Přizpůsobit Chrome na stránce Nová karta můžete dát Chromu nový vzhled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Chyba při spuštění: Spusťte instalační program jako běžný uživatel, nikoli jako administrátor.</translation>
@@ -595,12 +594,14 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7193885263065350793">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome spravuje organizace <ph name="MANAGER" /></translation>
+<translation id="7285990705317078173">Stáhněte si Chrome do telefonu, ať můžete sledovat ceny a dostávat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="7288567540154601580">Karty a rozšíření</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7302361266603927550">Některá data prohlížeče Chrome ještě nebyla uložena do vašeho účtu Google. Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
+<translation id="7379321689415048316">Chrome dokáže automaticky vyplnit i obtížná pole, se kterými si standardní automatické vyplňování nemusí poradit</translation>
 <translation id="7386878009611068389">Pokud na internetu chcete být víc v bezpečí s nastavením od rodičů, přepněte na profil Chrome, ve kterém jste už přihlášeni jako <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7412494426921990001">Na liště prohlížeče klikněte na nabídku Chrome</translation>
@@ -615,7 +616,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="749228101751499733">Když jste přihlášeni, můžete v Chromu používat hesla a další položky ze svého účtu Google. Pomocí zkratky <ph name="SHORTCUT" /> můžete nastavení služeb Google změnit.</translation>
 <translation id="7496017508659652909">Chrome načítá stránky předběžně, což zrychluje procházení a vyhledávání. <ph name="BEGIN_LINK" />Další informace o předběžném načítání stránek<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome lépe rozumí formulářům a může je automaticky vyplňovat rychleji. Toto nastavení je zapnuté.</translation>
 <translation id="7514258452813684157">Aktualizační služba Google</translation>
 <translation id="7515191208480168435">Google Lens si můžete pro snadný přístup připnout</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

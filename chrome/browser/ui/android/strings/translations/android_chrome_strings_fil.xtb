@@ -433,6 +433,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2885355868600171871">Pumunta sa address bar</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
 <translation id="2891154217021530873">Ihinto ang pag-load ng page</translation>
+<translation id="2893168226686371498">Default na browser</translation>
 <translation id="2894821468041866720">Hindi kapansin-pansing pababagalin ang iyong browser o device.</translation>
 <translation id="2895521649038438824">Puwede mong pakinggan ang page na ito</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, Naka-pin na Tab na May Naririnig na Audio</translation>
@@ -1467,6 +1468,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Alamin pa kung bakit bina-block ng Chrome ang ilang file</translation>
 <translation id="7168323970702333693">Naka-sign in bilang <ph name="USER_NAME" />. Binubuksan ang mga setting.</translation>
+<translation id="7170930892977483182">Made-delete ang lahat ng security code na naka-save sa iyong device at sa Google Wallet</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7173338713290252554">History ng presyo sa buong web</translation>
 <translation id="7177466738963138057">Maaari mo itong baguhin sa ibang pagkakataon sa Mga Setting</translation>

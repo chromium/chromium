@@ -3,7 +3,6 @@
 <translationbundle lang="ms">
 <translation id="1026101648481255140">Sambung Semula Pemasangan</translation>
 <translation id="1029669172902658969">Lancarkan semula untuk mengemas kini &amp;Chromium OS</translation>
-<translation id="103359417695385097">Chromium memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda. Tetapan ini dimatikan.</translation>
 <translation id="1040916596585577953">Chromium mengesyorkan anda agar menyemak sambungan ini</translation>
 <translation id="1042552502243217427">Apabila laman meminta prapemuatan pautan secara peribadi pada halaman mereka, Chromium menggunakan pelayan Google. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat tetapi Google mengetahui laman yang dipramuat.</translation>
 <translation id="1051793555070215510">Bantu kami meningkatkan Inkognito dengan melengkapkan tinjauan 1 minit ini.</translation>
@@ -70,6 +69,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="183031085822326697">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk menggunakan Google Password Manager.</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="18552579716432081">Untuk memadamkan data semakan imbas daripada peranti ini dan menyimpan data semakan imbas tersebut dalam Google Account anda, <ph name="BEGIN_LINK" />log keluar dari Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Muat turun Chromium pada telefon anda untuk membuka atau membuat kumpulan tab baharu semasa dalam perjalanan.</translation>
 <translation id="185970820835152459">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chromium, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Cari menggunakan Carian Imej</translation>
 <translation id="1880677175115548835">Pilih teks</translation>
@@ -160,6 +160,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2753623023919742414">Klik untuk mencari</translation>
 <translation id="2768103863314748511">Tetapkan Chromium sebagai alat lihat PDF lalai anda</translation>
+<translation id="277828055419948999">Chromium boleh membuat autolengkap medan sukar yang mungkin terlepas daripada autolengkap standard</translation>
 <translation id="2785438272836277133">Sambungan ini mengandungi perisian hasad dan tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2803971713792056305">Chromium anda</translation>
@@ -336,7 +337,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="4613863813562375431">Versi Chromium OS</translation>
 <translation id="4621240073146040695">Hampir terkini! Lancarkan semula Chromium untuk menyelesaikan kemas kini.</translation>
 <translation id="4625064703209785397">Mempercepat laman dengan enjin V8 Chromium tetapi Chromium menjadi kurang tahan terhadap serangan</translation>
-<translation id="4654936675281451226">Chromium memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda. Tetapan ini dihidupkan.</translation>
 <translation id="4665829708273112819">Amaran: Chromium tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="4673151026126227699">Jika anda turut berkongsi laporan penggunaan Chromium, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="4677944499843243528">Nampaknya profil digunakan oleh proses Chromium lain (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chromium telah mengunci profil supaya profil tidak rosak. Jika anda pasti tiada proses lain yang menggunakan profil ini, anda boleh membuka profil dan melancarkan semula Chromium.</translation>
@@ -440,7 +440,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6063093106622310249">&amp;Buka dalam Chromium</translation>
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chromium</translation>
-<translation id="6072463441809498330">Jadikan Chromium Lebih Pantas</translation>
 <translation id="6096348254544841612">Sesuaikan dan kawal Chromium. Kemas kini tersedia.</translation>
 <translation id="6107893135096467929">Hidupkan • Chromium tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="611228897408671387">Akaun anda dalam Chromium</translation>
@@ -485,6 +484,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6436260184216827876">Carian Imej tidak tersedia. Cuba sebentar lagi.</translation>
 <translation id="6442900851116057561">Mulakan semula Chromium OS</translation>
 <translation id="6443470774889161065">Chromium mempramuat lebih banyak halaman yang mungkin anda lawati supaya halaman tersebut dimuatkan dengan lebih pantas apabila dilawati</translation>
+<translation id="6450948450282634257">Muat turun Chromium pada telefon anda untuk menjejaki harga dan mendapatkan makluman apabila terdapat penurunan harga pada mana-mana laman</translation>
 <translation id="645458117210240797">Matikan • Chromium tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="6455857529632101747">Selamat datang ke profil Chromium</translation>
 <translation id="6466344609055215035">Alih keluar Akaun daripada Chromium</translation>

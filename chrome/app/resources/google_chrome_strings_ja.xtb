@@ -304,6 +304,7 @@
 <translation id="4242034826641750751">このサイトを利用するには、Chrome でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4251615635259297716">Chrome データをこのアカウントにリンクしますか？</translation>
+<translation id="4280647692742956593">スマートフォンに Chrome をダウンロードして、外出先でタブグループを開いたり、新しいタブグループを作成したりできます。</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4293420128516039005">ログインすると、同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
 <translation id="430327780270213103">拡張機能に Chrome ツールバーへのアクセス リクエストの表示を許可する</translation>
@@ -359,7 +360,6 @@
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="4926882258455737990">Gemini in Chrome で別の Google アカウントを使用するには、<ph name="BEGIN_LINK" />新しいプロファイルを作成<ph name="END_LINK" />し、使用するアカウントでログインしてください</translation>
 <translation id="492720062778050435">この拡張機能を確認することをおすすめします</translation>
-<translation id="4946912144186040233">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオフになっています。</translation>
 <translation id="4953650215774548573">Google Chrome を既定のブラウザとして設定する</translation>
 <translation id="495931528404527476">Chrome 専用</translation>
 <translation id="4969674060580488087">アカウントのログイン情報が最新ではないため、ChromeOS Flex はデータを同期できませんでした。</translation>
@@ -406,7 +406,6 @@
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> を使用する Chrome プロファイルを選択してください</translation>
 <translation id="5468572406162360320">Chrome では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
 <translation id="5524890928877629608">検索範囲の左上隅: 左 <ph name="LEFT" />%、上 <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Chrome を高速化する</translation>
 <translation id="5550137307985173298">新しいタブページで [Chrome をカスタマイズ] ボタンをクリックして、Chrome のレイアウトを変更できます</translation>
 <translation id="5566025111015594046">Google Chrome（mDNS インバウンド）</translation>
 <translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
@@ -587,12 +586,14 @@
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome は <ph name="MANAGER" /> によって管理されています</translation>
+<translation id="7285990705317078173">スマートフォンに Chrome をダウンロードして、価格をトラッキングしたり、サイトで値下げがあった際に通知を受け取ったりできます</translation>
 <translation id="7288567540154601580">タブと拡張機能</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7302361266603927550">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
+<translation id="7379321689415048316">標準の自動入力が難しい項目に自動入力できます</translation>
 <translation id="7386878009611068389">保護者の方が指定した設定でインターネットをより安全に利用するには、すでに <ph name="USER_EMAIL_ADDRESS" /> としてログインしている Chrome プロフィールに切り替えてください</translation>
 <translation id="7398801000654795464">Chrome に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7412494426921990001">Chrome メニューをクリックします</translation>
@@ -607,7 +608,6 @@
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
 <translation id="7496017508659652909">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome でフォームの内容を正確に把握して、すばやく自動入力できます。この設定はオンになっています。</translation>
 <translation id="7514258452813684157">Google Updater サービス</translation>
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -616,7 +616,7 @@
 <translation id="7572537927358445944">オフ • Chrome では、この拡張機能の提供元を確認できません</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> インストーラ</translation>
 <translation id="7596160425942761210">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chrome で開くことができます</translation>
-<translation id="7602868996817972616">このページについて Google に質問する</translation>
+<translation id="7602868996817972616">このページについて Google に質問</translation>
 <translation id="760353356052806707">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のあるアプリが追加されました。
 
 <ph name="EXTENSION_NAME" /></translation>

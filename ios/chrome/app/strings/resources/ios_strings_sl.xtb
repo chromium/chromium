@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4568230126482344545">Skrij nedavne zavihke</translation>
 <translation id="4578835633387306383">Vklopi …</translation>
+<translation id="4580621046861724270">Nekateri zaznamki se niso shranili</translation>
 <translation id="4580716718466706433">Odprite »Upravitelja gesel«</translation>
 <translation id="4585751637295612750">Odprite nov zavihek, če ga želite dodati v vprašanje</translation>
 <translation id="4587589328781138893">Spletna mesta</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Ta izdelek že spremljate.</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5329451663851195956">Če želite osvežiti, povlecite navzdol.</translation>
+<translation id="5336910966955551309">Pridržite, če želite pripeti priljubljena spletna mesta</translation>
 <translation id="5338512273860059533">Prijava poteka.</translation>
 <translation id="5343472494710226394">Novice, šport in vsebina na podlagi vaših zanimanj.</translation>
 <translation id="5352128922772839949">Shrani datoteko</translation>
@@ -2004,6 +2006,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8319282042900445670">Opomnik je nastavljen za ta čas: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna dejavnost</translation>
 <translation id="8325455175867928593">Skrij »Mnenja na podlagi vaših zanimanj«</translation>
+<translation id="8328777765163860529">Zapri vse</translation>
 <translation id="833647236762414178">Ustvarite, shranite in upravljajte gesla in ključe za dostop, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
 <translation id="8348530355586151720">Dotaknite se menija z ikono s tremi pikami</translation>

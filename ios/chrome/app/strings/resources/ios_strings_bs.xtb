@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4568230126482344545">Sakrij nedavne kartice</translation>
 <translation id="4578835633387306383">Uključivanje…</translation>
+<translation id="4580621046861724270">Određene oznake nisu sačuvane</translation>
 <translation id="4580716718466706433">Idite na "Upravitelj lozinki"</translation>
 <translation id="4585751637295612750">Otvorite novu karticu da je dodate u pitanje</translation>
 <translation id="4587589328781138893">Web lokacije</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5329451663851195956">Možete povući nadolje da osvježite.</translation>
+<translation id="5336910966955551309">Dodirnite i zadržite da zakačite svoje omiljene web lokacije</translation>
 <translation id="5338512273860059533">Prijava je u toku.</translation>
 <translation id="5343472494710226394">Vijesti, sportovi i sadržaj na osnovu vaših interesovanja.</translation>
 <translation id="5352128922772839949">Pohranjivanje fajla</translation>
@@ -2004,6 +2006,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8319282042900445670">Podsjetnik je postavljen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij "Recenzije koje se zasnivaju na vašim interesovanjima"</translation>
+<translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="833647236762414178">Kreirajte i sačuvajte lozinke i pristupne ključeve te upravljajte njima da se lako prijavljujete na web lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Napravite sigurnosnu kopiju svojih stvari i koristite ih na bilo kojem uređaju.</translation>
 <translation id="8348530355586151720">Dodirnite meni s tri tačke.</translation>

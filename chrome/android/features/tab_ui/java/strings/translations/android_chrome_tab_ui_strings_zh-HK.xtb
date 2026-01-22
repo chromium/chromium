@@ -143,7 +143,7 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6051432659151380973">分頁群組將會自動儲存</translation>
 <translation id="6054741997831917303">呢件商品嘅價格最近由 <ph name="PREVIOUS_PRICE" /> 減到 <ph name="NEW_PRICE" /></translation>
-<translation id="606985262342505139">分頁頁底面板宜家顯示喺成個畫面</translation>
+<translation id="606985262342505139">分頁頁底面板宜家喺成個畫面上顯示</translation>
 <translation id="6109251075362363230">所有重複的分頁現在亦會封存 (最近使用的重複分頁除外)。</translation>
 <translation id="612596694132302162">將單一網站取消靜音</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>

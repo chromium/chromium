@@ -485,7 +485,7 @@
 <translation id="2761788987260570878">Slikajte pretragu</translation>
 <translation id="2761898608071930085">Koristite drugi nalog</translation>
 <translation id="2762000892062317888">malopre</translation>
-<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte do 1 sliku}one{Dodajte do {COUNT} sliku}few{Dodajte do {COUNT} slike}other{Dodajte do {COUNT} slika}}</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte najviše 1 sliku}one{Dodajte najviše {COUNT} sliku}few{Dodajte najviše {COUNT} slike}other{Dodajte najviše {COUNT} slika}}</translation>
 <translation id="2772667768515195373">Možete da koristite sačuvane adrese u svim Google proizvodima. Ova adresa je sačuvana na Google nalogu, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Obaveštenja imejlom</translation>
 <translation id="2781331604911854368">Uključeno</translation>
@@ -1164,6 +1164,7 @@
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5329451663851195956">Možete da prevučete nadole da biste osvežili.</translation>
+<translation id="5336910966955551309">Dodirnite i zadržite da biste zakačili omiljene sajtove</translation>
 <translation id="5338512273860059533">Prijavljivanje je u toku.</translation>
 <translation id="5343472494710226394">Vesti, sport i sadržaj na osnovu interesovanja.</translation>
 <translation id="5352128922772839949">Sačuvajte fajl</translation>
@@ -2005,6 +2006,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8319282042900445670">Podsetnik je podešen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij Recenzije na osnovu interesovanja</translation>
+<translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="833647236762414178">Pravite i čuvajte lozinke i pristupne ključeve i upravljajte njima da biste se lako prijavljivali na sajtove i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Pravite rezervne kopije sadržaja i koristite ga na bilo kom uređaju.</translation>
 <translation id="8348530355586151720">Dodirnite meni sa tri tačke</translation>

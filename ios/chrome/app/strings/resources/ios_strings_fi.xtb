@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4568230126482344545">Piilota "Viimeaikaiset välilehdet"</translation>
 <translation id="4578835633387306383">Laita päälle…</translation>
+<translation id="4580621046861724270">Joitakin kirjanmerkkejä ei tallennettu</translation>
 <translation id="4580716718466706433">Siirry Salasanoihin</translation>
 <translation id="4585751637295612750">Avaa uusi välilehti, niin voit lisätä sen kysymykseen</translation>
 <translation id="4587589328781138893">Sivustot</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Seuraat jo tätä tuotetta.</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5329451663851195956">Voit päivittää välilehden vetämällä alas.</translation>
+<translation id="5336910966955551309">Kiinnitä suosikkisivustosi koskettamalla pitkään</translation>
 <translation id="5338512273860059533">Kirjautuminen käynnissä.</translation>
 <translation id="5343472494710226394">Kiinnostuksen kohteisiisi perustuvia uutisia, urheilua ja sisältöä.</translation>
 <translation id="5352128922772839949">Tallenna tiedosto</translation>
@@ -2004,6 +2006,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8319282042900445670">Muistutus asetettu: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Uusimmat tapahtumat</translation>
 <translation id="8325455175867928593">Piilota "Kiinnostuksen kohteisiisi perustuvat arvostelut"</translation>
+<translation id="8328777765163860529">Sulje kaikki</translation>
 <translation id="833647236762414178">Luo, tallenna ja muokkaa salasanoja ja avainkoodeja, jotta voit kirjautua helposti sivustoille ja sovelluksiin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="8348530355586151720">Napauta kolmen pisteen valikkoa</translation>

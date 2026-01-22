@@ -265,6 +265,7 @@
 <translation id="1408787208417187241">ሦስቴ ከላይ በስቴፕለር ምታ</translation>
 <translation id="1410365862999780287">ይህን መሳሪያ የሚጠቀሙ ሌሎች የእርስዎን እንቅስቃሴ ማየት አይችሉም፣ ስለዚህ የበለጠ በግል ማሰስ ይችላሉ። ይህ እርስዎ በሚጎበኟቸው ድረ ገጾች እና፣ Googleን ጨምሮ እነሱ በሚጠቀሙባቸው አገልግሎቶች መረጃ እንዴት እንደሚሰበሰብ አይቀይረውም። ውርዶች፣ ዕልባቶች እና የንባብ ዝርዝር ንጥሎች ይቀመጣሉ።</translation>
 <translation id="1410941016594047814">ኢንቫይት ፖስታ</translation>
+<translation id="1413235258620101697">የዚህ ካርድ የካርድ ማረጋገጫ ኮድ ለበለጠ ፈጣን ክፍያ ማጠናቀቅ ይመሠጠራል እና Google Wallet ውስጥ ይቀመጣል</translation>
 <translation id="1413809658975081374">የግላዊነት ስህተት</translation>
 <translation id="1414134146594747368">ቅድመ ትምህርት ቤት</translation>
 <translation id="1419305130220238697">በChrome አዝራር ውስጥ ውርዶችን ያስተዳድሩ፣ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ያግብሩ</translation>
@@ -286,6 +287,7 @@
 <translation id="1433225466058025572">ፋይሎችዎን እንደገና ለማንቀሳቀስ ይሞክሩ</translation>
 <translation id="1433478348197382180">የንባብ ሁነታ</translation>
 <translation id="1436185428532214179">በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላል</translation>
+<translation id="1442054921249164535">ሌላ ውሂብ</translation>
 <translation id="1442386063175183758">ቀኝ በር እጠፍ</translation>
 <translation id="1442987760062738829">ብሳ</translation>
 <translation id="1445896388055045436">በክፍያ ማጠናቀቅ ወቅት የሚገኙ የካርድ ጥቅማጥቅሞችን እና ሽልማቶችን ያሳያል። የሰጪ ደንቦች ይተገበራሉ።</translation>
@@ -939,6 +941,7 @@
 <translation id="24699311393038040">ወረቀት (የተሸፈነ)</translation>
 <translation id="2471632709106952369">የንጽጽር ሠንጠረዦች</translation>
 <translation id="2473810985261856484">ህጋዊ አገልግሎቶች</translation>
+<translation id="2477607419416067650">ሌላ የGoogle ውሂብ</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2479410451996844060">ልክ ያልሆነ የፍለጋ ዩአርኤል።</translation>
 <translation id="2480300195898055381">በእርስዎ Google መለያ ውስጥ፣ <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@
 <translation id="2552246211866555379">ሃጋኪ</translation>
 <translation id="2552295903035773204">ከአሁን በኋላ ካርዶችን ለማረጋገጥ የማያ ገፅ መቆለፊያን ይጠቀሙ</translation>
 <translation id="2552532158894206888">የቀኝ ቁልፍ</translation>
+<translation id="2553352788023127673">የፍለጋ ታሪክ እና የይለፍ ቃሎች በአስተዳደር ቅንብሮቻቸው ውስጥ ሊሰረዙ ይችላሉ</translation>
 <translation id="2553853292994445426">ደህንነታቸው የተጠበቁ የዲኤንኤስ ቅንብሮችዎን ይፈትሹ። ግንኙነቶቹ እየተሳኩ ያልሆነ ደህንነቱ የተጠበቀ የዲኤንኤስ አገልጋይ አዋቅረው ሊሆኑ ይችላሉ።</translation>
 <translation id="255497580849974774">በዝማኔው ወቅት መሳሪያዎን ከኃይል መሙያ ጋር እንደተገናኘ ያቆዩት።</translation>
 <translation id="2556876185419854533">&amp;አርትዕን ቀልብስ</translation>
@@ -1496,6 +1500,7 @@
 <translation id="3407789382767355356">የሶስተኛ ወገን መግቢያ</translation>
 <translation id="340924996148642843">ማነጻጸር አሁን ላይ አይገኝም</translation>
 <translation id="3409896703495473338">የደህንነት ቅንብሮችን ያቀናብሩ</translation>
+<translation id="3410151451624226773">Google የይለፍ ቃል አስተዳዳሪ ውስጥ ያስተዳድሩ</translation>
 <translation id="3411091017011773343">ሰቀላ በ<ph name="HOURS" /> ሰዓት ውስጥ</translation>
 <translation id="341134412449102894">መረጃዎ ለ<ph name="ACCOUNT" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ላይ ተቀምጧል</translation>
 <translation id="3413466783792948876">ይፋዊ አውታረ መረብ እየተጠቀሙ ከሆነ ይህን ጣቢያ በኋላ ላይ ቢጎበኙት የበለጠ ደህንነቱ የተጠበቀ ይሆናል። እንደ የእርስዎ ቤት ወይም የሥራ Wi-Fi ካለ የታመነ አውታረ መረብ ያነሰ ስጋት አለ።</translation>
@@ -1587,6 +1592,7 @@
 <translation id="3549904448933807997">የአሳሾች እና የመገለጫዎች መረጃ (የግል እና የሥራ መገለጫዎችን ጨምሮ)</translation>
 <translation id="3552155506104542239">ማስጠንቀቂያ፦ ይህ መመሪያ ከ<ph name="POLICY_NAME" /> ጋር ይጋጫል እና በAndroid መተግበሪያዎች ላይ ምንም ተጽእኖ አይኖረውም። አለበለዚያ ይህ መመሪያ እንደታሰበው እየሰራ ነው።</translation>
 <translation id="3552297013052089404">Sans-Serif ቅርጸ ቁምፊ</translation>
+<translation id="3558335486599406178">አይቢኤኤን በGoogle Wallet ውስጥ ተቀምጧል</translation>
 <translation id="3558573058928565255">የቀን ሰዓት</translation>
 <translation id="3559897352860026926">አስተዳዳሪዎ <ph name="CLOUD_PROVIDER" /> የውቅረት ቅንብሮቻቸውን እንዲያረጋግጡ ይጠይቁ።</translation>
 <translation id="3560824484345057728">ተዛማጅ ጣቢያዎችን ይመልከቱ</translation>
@@ -2157,12 +2163,14 @@
 <translation id="4406883609789734330">የቀጥታ ሥርጭት መግለጫ ጽሑፍ</translation>
 <translation id="4406896451731180161">የፍለጋ ውጤቶች</translation>
 <translation id="4407758156081352648">ደህንነትን ለማስጠበቅ ድርጅትዎ የይለፍ ቃላት Chrome ውስጥ እንደገና ጥቅም ላይ እንዲውሉ አይፈቅድም። Chrome ውስጥ ያሉ የይለፍ ቃላት የተጠቃሚ ግለኝነትን ለመጠበቅ ተመስጥረዋል።</translation>
+<translation id="4409271659088619928">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="4409556632583862731">አዲስ ተከታታይ</translation>
 <translation id="4412074349188076601">ይህ ውቅረት እንደ ሊጫን የሚችል ምልክት ተደርጎበታል ነገር ግን ለዚህ አርኪቴክቸር ምንም ምስል አልቀረበም ስለዚህ ሊጫን አይችልም።</translation>
 <translation id="4412377069090572315">ሰዎች እያሉ ያሉት ነገር</translation>
 <translation id="4414515549596849729">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="4415156962929755728">ፕላስቲክ (ከፍተኛ አንጸባራቂ)</translation>
 <translation id="4415426530740016218">የመውሰጃ አድራሻ</translation>
+<translation id="4419287616181386201">የይለፍ ቃላት በአስተዳደር ቅንብሮቻቸው ውስጥ መሰረዝ ይችላሉ</translation>
 <translation id="4424024547088906515">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በChrome የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="4425750422187370446">የአትሌቶች አልባሳት</translation>
 <translation id="443121186588148776">የመለያ ወደብ</translation>
@@ -2481,6 +2489,7 @@
 <translation id="4950898438188848926">የትር መቀየሪያ አዝራር፣ ወደ ክፍቱ ትር <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ለመቀየር Enterን ይጫኑ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953689047182316270">ለተደራሽነት ክስተቶች ምላሽ መስጠት</translation>
+<translation id="4954891067389874142">ካርድዎ ሲቀመጥ በፍጥነት ይክፈሉ። የካርድ ዝርዝሮች Google Wallet ውስጥ የተመሠጠሩ ናቸው።</translation>
 <translation id="4957080528849277028">የእርስዎን የChrome ታሪክ አዝራር ይመልከቱ፣ በChrome ቅንብሮች ውስጥ የአሰሳ ታሪክዎን ለማየት እና ለማቀናበር ያግብሩ</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ንጥል}one{+ # ንጥል}other{+ # ንጥሎች}}</translation>
 <translation id="4958444002117714549">ዝርዝሩን ዘርጋ</translation>
@@ -2568,6 +2577,7 @@
 <translation id="5097468150760963273">27 x 39 ኢንች</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">ትር ላይ ከዚያም የሰው ሠራሽ አስተውሎት ሁነታ ለመጠየቅ አስገባ ላይ መታ ያድርጉ</translation>
+<translation id="5105442806410269908">ሌላ የGoogle ውሂብን ያስተዳድሩ</translation>
 <translation id="510644072453496781">Cardboard (ማብቂያ)</translation>
 <translation id="5106648964679263509">ለ<ph name="BNPL_ISSUER_NAME" /> ምናባዊ ካርድ ተሞልቷል</translation>
 <translation id="5108567515277121477">የታማኝነት ካርድ</translation>
@@ -2707,6 +2717,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />የእርስዎ ነባሪ የፍለጋ ፕሮግራም ድርን እንዲፈልጉ ያስችልዎታል እና የChromium ባህሪያትን ያጎለብታል<ph name="END_BOLD" />፣ ለምሳሌ በድረ-ገጾች ላይ ከአድራሻ አሞሌ እና ከምስሎች መፈለግ። ባህሪ በእርስዎ የፍለጋ ፕሮግራም የሚደገፍ ካልሆነ ላይገኝ ይችላል።</translation>
 <translation id="5323043727018853753">የተከተት ይዘት ይፈቀዳል</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />፣ <ph name="MATCH_POSITION" /> ከ<ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">በእርስዎ የGoogle መለያ ውስጥ ያስተዳድሩ</translation>
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5329858041417644019">የእርስዎ አሳሽ አይተዳደርም</translation>
 <translation id="5331585574693522196">እንደ ነባሪ አቀናብር</translation>
@@ -2750,6 +2761,7 @@
 <translation id="5394069166371280357">የቲቪ ቤተሰብ-ተኮር ትርዒቶች</translation>
 <translation id="5396631636586785122">ቀኝ ጫፍን ስፋ</translation>
 <translation id="5397794290049113714">እርስዎ</translation>
+<translation id="5398461103557553443">በቀጣዩ ጊዜ ይህን አይቢኤኤን በራስ-ሰር ለመሙላት፣ በGoogle Wallet ውስጥ ያስቀምጡት</translation>
 <translation id="5398772614898833570">ማስታወቂያዎች ታግደዋል</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5401344472773249513">ዝነኛዎች እና የመዝናኛ ዜና</translation>
@@ -3019,6 +3031,7 @@
 <translation id="5843987376989109187">ይህ ቋንቋ ገና አይደገፍም።
     <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">የኃይል አቅርቦቶች</translation>
+<translation id="5848445080378515710">ትዕዛዝዎን ከገመገሙ በኋላ፣ በመለያ መግባት ወይም በ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ በGoogle Wallet ውስጥ በራስ-ሰር ይገናኛል።</translation>
 <translation id="584902713199270089">ለፍቅር መገናኘት እና ራስን ማስተዋወቅ</translation>
 <translation id="5851548754964597211">የትር ዝርዝር</translation>
 <translation id="5851868085455377790">ሰጪው</translation>
@@ -3857,6 +3870,7 @@
 <translation id="7162277662076933695">ዘመናዊ ካርድ አንባቢ</translation>
 <translation id="7163295244162773898">{0,plural, =1{ምስጢራዊ ፋይሉ ይቀዳ?}one{ምስጢራዊ ፋይሉ ይቀዳ?}other{ምስጢራዊ ፋይሎቹ ይቀዱ?}}</translation>
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» በዚህ መድረክ ላይ የሚደገፍ ገደብ አይደለም</translation>
+<translation id="7170930892977483182">በመሣሪያዎ ላይ እና በGoogle Wallet ውስጥ የተቀመጡ ሁሉም የደኅንነት ኮዶች ይሰረዛሉ</translation>
 <translation id="717330890047184534">የGaia መታወቂያ፦</translation>
 <translation id="7173338713290252554">በመላው ድር ላይ የዋጋ ታሪክ</translation>
 <translation id="7174545416324379297">ተዋህደዋል</translation>
@@ -3912,6 +3926,7 @@
 <translation id="7251437084390964440">የአውታረ መረብ ውቅረቱ የኦኤንሲ መስፈርቱን አያሟላም። አንዳንድ የውቅረቱ ክፍሎች ላይመጡ ይችላሉ።
 ተጨማሪ ዝርዝሮች፦
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">ይህን ውሂብ ለመሰረዝ ወደ የአስተዳደር ቅንብሮቹ ይሂዱ</translation>
 <translation id="7255540419660272073">ደባሪ ነው አዝራር፣ ለምን እንዳልወደዱት በዝርዝር የተቀመጠ ግብረመልስ ለማስገባት የሚሆን ቅጽ ለመክፈት አስገባን ይጫኑ፣ <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">የኋላ መሳቢያ</translation>
 <translation id="7257453341537973799">የስራ ፍለጋ መርጃዎች እና ዕቅድ ማውጣት</translation>
@@ -4010,6 +4025,7 @@
 <translation id="7408613996403626141">መጫወቻዎች</translation>
 <translation id="7410852728357935715">ወደ አንድ መሣሪያ Cast ያድርጉ</translation>
 <translation id="741204030948306876">አዎ፣ ገብቼያለሁ</translation>
+<translation id="7412081313067625215">ካርድዎ በGoogle Wallet ውስጥ ተቀምጧል፣ ስለዚህ ለወደፊት ግዢዎች በራስ መሙላት ይችላሉ</translation>
 <translation id="7416351320495623771">የይለፍ ቃላትን ያስተዳድሩ...</translation>
 <translation id="7416898721136759658">ድጎማዎች፣ ስኮላርሺፖች እና የገንዘብ ድጋፍ</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4039,6 +4055,7 @@
 <translation id="7450577240311017924">የአስምር አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ ምን መረጃ እንደሚያሰምሩ ለማስተዳደር ያግብሩ</translation>
 <translation id="7451311239929941790">ስለዚህ ችግር <ph name="BEGIN_LINK" />ይበልጥ በመረዳት ላይ<ph name="END_LINK" />።</translation>
 <translation id="745208957946308667">የዳይኖ ጨዋታ፣ ለመጫወት ክፍተትን ይጫኑ</translation>
+<translation id="7453032093368223821">ሌላ ውሂብን ያስተዳድሩ</translation>
 <translation id="7453849010505253492">ይህ አገልጋይ ለድር ትራፊክ ምሥጠራ በChrome ወይም በእርስዎ የሥርዓት ውቅረት ተዓማኒነት የሌለው የደኅንነት የዕውቅና ማረጋገጫ እየተጠቀመ ስለሆነ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም። ይህ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል። <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />የዕውቅና ማረጋገጫን ይመልከቱ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">የደመና መለያ</translation>
 <translation id="7455133967321480974">ሁለንተናዊ ነባሪውን ተጠቀም (አግድ)</translation>
@@ -4143,6 +4160,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> በአሁኑ ጊዜ ይህን ጥያቄ ተቀብሎ ለማስተናገድ አይችልም።</translation>
 <translation id="7599089013883397081">የእረፍት ጊዜን በማውረድ ላይ</translation>
 <translation id="7602868996817972616">Googleን ስለዚህ ገፅ ይጠይቁ</translation>
+<translation id="7606123685356405076">የGemini 3 ሞዴሎች</translation>
 <translation id="7610193165460212391">እሴት ከክልል <ph name="VALUE" /> ውጭ ነው።</translation>
 <translation id="761261689936461781">ወፍራም</translation>
 <translation id="7613889955535752492">የሚያበቃበት ጊዜ፦ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

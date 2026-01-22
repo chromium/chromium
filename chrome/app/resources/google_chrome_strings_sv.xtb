@@ -309,6 +309,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4242034826641750751">Du behöver ge Chrome kamera- och mikrofonbehörighet för den här webbplatsen</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="4251615635259297716">Koppla dina uppgifter i Chrome till det här kontot</translation>
+<translation id="4280647692742956593">Ladda ned Chrome på telefonen för att öppna eller skapa nya flikgrupper när du är på språng.</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4293420128516039005">Genom att logga in kan du synkronisera och anpassa Chrome på alla enheter du använder</translation>
 <translation id="430327780270213103">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chrome</translation>
@@ -364,7 +365,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4918844574251943176">Bilden har kopierats</translation>
 <translation id="4926882258455737990">Om du vill använda ett annat Google-konto med Gemini i Chrome <ph name="BEGIN_LINK" />skapar du en ny profil<ph name="END_LINK" /> och loggar in med det konto du vill använda</translation>
 <translation id="492720062778050435">Du rekommenderas av Chrome att granska detta tillägg</translation>
-<translation id="4946912144186040233">Chrome förstår formulär bättre och kan autofylla dem snabbare åt dig. Inställningen är inaktiverad.</translation>
 <translation id="4953650215774548573">Ange Google Chrome som standardwebbläsare</translation>
 <translation id="495931528404527476">I Chrome</translation>
 <translation id="4969674060580488087">Det gick inte att synkronisera data med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
@@ -415,7 +415,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5465210843490471889">Välj en Chrome-profil som du vill använda med <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Din interaktion med dessa funktioner skickas till Google i syfte att förbättra dem. Denna data kan läsas, bearbetas och kommenteras av mänskliga granskare.</translation>
 <translation id="5524890928877629608">övre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="TOP" /> % uppåt</translation>
-<translation id="5530733413481476019">Gör Chrome snabbare</translation>
 <translation id="5550137307985173298">Klicka på knappen Anpassa Chrome på sidan Ny flik för att ge Chrome ett nytt utseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Startfel: Kör installationsprogrammet som vanlig användare, inte som administratör.</translation>
@@ -596,12 +595,14 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7193885263065350793">Organisationen avslutar Chrome när det inte har använts på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Google Chrome-profil. Dina Chrome-uppgifter, t.ex. dina appar, bokmärken, din historik, dina lösenord och andra inställningar, knyts permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dessa uppgifter till ett annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chrome-uppgifter separata. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> hanterar Chrome</translation>
+<translation id="7285990705317078173">Ladda ned Chrome på telefonen för att bevaka priser och få aviseringar när priset sänks på en webbplats</translation>
 <translation id="7288567540154601580">Flikar och tillägg</translation>
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7302361266603927550">Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
+<translation id="7379321689415048316">Chrome kan fylla i svåra fält som standardautofyll kanske missar</translation>
 <translation id="7386878009611068389">Du kan skydda dig online med dina föräldrars val genom att byta till din Chrome-profil där du redan är inloggad som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7412494426921990001">Klicka på Chrome-menyn</translation>
@@ -616,7 +617,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="749228101751499733">När du är inloggad kan du använda dina lösenord och annat från ditt Google-konto i Chrome. Du kan ändra dina inställningar för Googles tjänster med <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">Sidor läses in i förväg i Chrome, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome förstår formulär bättre och kan autofylla dem snabbare åt dig. Inställningen är aktiverad.</translation>
 <translation id="7514258452813684157">Google-uppdateringstjänst</translation>
 <translation id="7515191208480168435">Du kan fästa Google Lens för enkel åtkomst</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

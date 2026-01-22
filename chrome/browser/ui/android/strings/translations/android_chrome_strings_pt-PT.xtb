@@ -433,6 +433,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2885355868600171871">Ir para a barra de endereço</translation>
 <translation id="2888126860611144412">Acerca do Chrome</translation>
 <translation id="2891154217021530873">Parar carregamento da página</translation>
+<translation id="2893168226686371498">Navegador predefinido</translation>
 <translation id="2894821468041866720">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
 <translation id="2895521649038438824">Pode ouvir esta página</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, separador audível fixado</translation>
@@ -1467,6 +1468,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Saiba mais sobre o motivo pelo qual o Chrome bloqueia alguns ficheiros</translation>
 <translation id="7168323970702333693">Com sessão iniciada como <ph name="USER_NAME" />. Abre as definições.</translation>
+<translation id="7170930892977483182">Todos os códigos de segurança guardados no seu dispositivo e na Carteira do Google são eliminados</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7173338713290252554">Histórico de preços na Web</translation>
 <translation id="7177466738963138057">Pode alterar esta opção mais tarde nas Definições</translation>

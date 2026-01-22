@@ -433,6 +433,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2885355868600171871">Jump to address bar</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2891154217021530873">Stop page loading</translation>
+<translation id="2893168226686371498">Default browser</translation>
 <translation id="2894821468041866720">Doesn't noticeably slow down your browser or device.</translation>
 <translation id="2895521649038438824">You can listen to this page</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, pinned audible tab</translation>
@@ -1467,6 +1468,7 @@ For example, some websites may respond to this request by showing you ads that a
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Learn more about why Chrome blocks some files</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
+<translation id="7170930892977483182">All security codes saved on your device and in Google Wallet will be deleted</translation>
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7173338713290252554">Price history across the web</translation>
 <translation id="7177466738963138057">You can change this later in Settings</translation>

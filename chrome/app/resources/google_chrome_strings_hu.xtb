@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">A Chrome-nak kamera- és mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="424864128008805179">Kijelentkezés a Chrome-ból</translation>
 <translation id="4251615635259297716">Társítja Chrome-adatait ezzel a fiókkal?</translation>
+<translation id="4280647692742956593">Töltse le a Chrome-ot a telefonjára, hogy útközben is megnyithasson vagy létrehozhasson új lapcsoportokat.</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4293420128516039005">Jelentkezzen be, hogy szinkronizálhassa és személyre szabhassa a Chrome-ot minden eszközén</translation>
 <translation id="430327780270213103">A bővítmény megjeleníthet hozzáférési kérelmeket a Chrome eszköztárán</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">Kép másolva</translation>
 <translation id="4926882258455737990">Ha másik Google-fiókot szeretne használni a Gemini a Chrome-ban funkcióval, <ph name="BEGIN_LINK" />hozzon létre új profilt<ph name="END_LINK" />, és jelentkezzen be a kívánt fiókkal.</translation>
 <translation id="492720062778050435">A Chrome a bővítmény ellenőrzését javasolja</translation>
-<translation id="4946912144186040233">A funkció segítségével a Chrome pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="4953650215774548573">A Google Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="495931528404527476">A Chrome-ban</translation>
 <translation id="4969674060580488087">A ChromeOS Flex nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai nem naprakészek.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">Válasszon ki egy Chrome-profilt a <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> használatához</translation>
 <translation id="5468572406162360320">A funkciók továbbfejlesztése érdekében a Chrome elküldi a velük végzett műveleteket a Google-nak. Ezeket az adatokat ellenőreink elolvashatják, feldolgozhatják és megjegyzésekkel láthatják el.</translation>
 <translation id="5524890928877629608">keresési terület bal felső sarka: bal <ph name="LEFT" />%, fent <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">A Chrome felgyorsítása</translation>
 <translation id="5550137307985173298">Az Új lap oldalon található A Chrome személyre szabása gombra kattintva új megjelenést adhat a Chrome-nak</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Indítási hiba: normál felhasználóként futtassa a telepítőt, ne rendszergazdaként.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">Szervezete bezárja a Chrome-ot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Kezelt fiókkal jelentkezik be, és annak adminisztrátora számára hozzáférést biztosít Google Chrome-profiljához. Chrome-adatait – például alkalmazásait, könyvjelzőit, előzményeit, jelszavait és más beállításait – a rendszer véglegesen társítja a(z) <ph name="USER_NAME" /> fiókhoz. Ezen adatokat a Google-fiók Irányítópultján törölheti, de más fiókhoz nem társíthatja őket. Létrehozhat egy új profilt is meglévő Chrome-adatainak külön tárolásához. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">A(z) <ph name="MANAGER" /> kezeli a Chrome-ot</translation>
+<translation id="7285990705317078173">Töltse le a Chrome-ot a telefonjára, hogy nyomon követhesse az árakat, és értesítést kapjon, ha valamelyik webhelyen csökkennek az árak.</translation>
 <translation id="7288567540154601580">Lapok és bővítmények</translation>
 <translation id="7296210096911315575">Fontos használati és biztonsági információk</translation>
 <translation id="7302361266603927550">Az Ön egyes Chrome-adatait még nem mentette a rendszer a Google-fiókjába. A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="7308322188646931570">A Chrome-nak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
 <translation id="7339898014177206373">Új ablak</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
+<translation id="7379321689415048316">A Chrome automatikusan ki tudja tölteni azokat a nehéz mezőket, amelyeket a normál automatikus kitöltés adott esetben nem tud kitölteni</translation>
 <translation id="7386878009611068389">Ha szeretnéd, hogy a szülőd által kiválasztott beállításokkal nagyobb biztonságban legyél az interneten, válts a Chrome-profilodra, amelybe már be vagy jelentkezve a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chrome-ba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
 <translation id="7412494426921990001">Kattintson a Chrome menüre</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="749228101751499733">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A(z) <ph name="SHORTCUT" /> billentyűparancs módosíthatja a Google-szolgáltatásokra vonatkozó beállításait.</translation>
 <translation id="7496017508659652909">A Chrome előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést. <ph name="BEGIN_LINK" />További információ az oldalak előtöltéséről<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">A funkció segítségével a Chrome pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket. Ez a beállítás be van kapcsolva.</translation>
 <translation id="7514258452813684157">Google-frissítési szolgáltatás</translation>
 <translation id="7515191208480168435">Az egyszerű hozzáférés érdekében kitűzheti a Google Lens funkciót</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

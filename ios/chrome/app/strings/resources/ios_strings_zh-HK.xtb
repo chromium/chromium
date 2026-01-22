@@ -936,7 +936,7 @@
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4568230126482344545">隱藏「最近開啟的分頁」</translation>
 <translation id="4578835633387306383">開啟…</translation>
-<translation id="4580621046861724270">未儲存部分書籤</translation>
+<translation id="4580621046861724270">部分書籤無法儲存</translation>
 <translation id="4580716718466706433">前往「密碼管理工具」</translation>
 <translation id="4585751637295612750">開啟新分頁以加入查詢</translation>
 <translation id="4587589328781138893">網站</translation>
@@ -1164,6 +1164,7 @@
 <translation id="5318298563956633672">您已追蹤此產品。</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329451663851195956">如要重新整理分頁，請將頁面往下拉。</translation>
+<translation id="5336910966955551309">按住即可固定常用網站</translation>
 <translation id="5338512273860059533">登入中。</translation>
 <translation id="5343472494710226394">根據個人興趣接收新聞、體育賽事和內容相關通知。</translation>
 <translation id="5352128922772839949">儲存檔案</translation>
@@ -2005,6 +2006,7 @@
 <translation id="8319282042900445670">提醒時間已設定為 <ph name="DATE" /><ph name="TIME" /></translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8325455175867928593">隱藏「按興趣顯示的評論」</translation>
+<translation id="8328777765163860529">全部關閉</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8348530355586151720">輕按三點選單</translation>

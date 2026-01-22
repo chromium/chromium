@@ -3,7 +3,6 @@
 <translationbundle lang="pt-PT">
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="1029669172902658969">Reiniciar para atualizar o &amp;ChromiumOS</translation>
-<translation id="103359417695385097">O Chromium compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida. Esta definição está desativada.</translation>
 <translation id="1040916596585577953">O Chromium recomenda que reveja esta extensão</translation>
 <translation id="1042552502243217427">Quando um site pede para pré-carregar links de forma privada na respetiva página, o Chromium usa os servidores da Google. Isto oculta a sua identidade no site pré-carregado, mas a Google aprende que sites são pré-carregados.</translation>
 <translation id="1051793555070215510">Responda a este inquérito de 1 minuto e ajude-nos a melhorar a Navegação anónima.</translation>
@@ -70,6 +69,7 @@
 <translation id="183031085822326697">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para usar o Gestor de Palavras-passe da Google.</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="18552579716432081">Para eliminar os dados de navegação apenas deste dispositivo e mantê-los na sua Conta Google, <ph name="BEGIN_LINK" />termine sessão no Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Transfira o Chromium para o seu telemóvel para abrir ou criar novos grupos de separadores em qualquer lugar.</translation>
 <translation id="185970820835152459">Pode gerir as suas Contas Google com sessão iniciada. As suas Contas Google são utilizadas para o navegador Chromium, a Play Store, o Gmail e muito mais. Se pretender adicionar uma conta para outra pessoa, como um membro da família, adicione uma nova pessoa ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Usar a pesquisa de imagens</translation>
 <translation id="1880677175115548835">Selecionar texto</translation>
@@ -160,6 +160,7 @@
 <translation id="2738871930057338499">Não é possível ligar à Internet. HTTP 403 proibido. Verifique a sua configuração de proxy.</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2768103863314748511">Defina o Chromium como o seu visualizador de PDFs predefinido</translation>
+<translation id="277828055419948999">O Chromium pode preencher automaticamente campos difíceis que o preenchimento automático padrão pode não preencher</translation>
 <translation id="2785438272836277133">Esta extensão contém software malicioso e não é segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">O seu Chromium</translation>
@@ -336,7 +337,6 @@
 <translation id="4613863813562375431">Versão do ChromiumOS</translation>
 <translation id="4621240073146040695">Quase atualizado! Reinicie o Chromium para concluir a atualização.</translation>
 <translation id="4625064703209785397">Acelera os sites com o motor V8 do Chromium, mas torna o Chromium ligeiramente menos resistente a ataques</translation>
-<translation id="4654936675281451226">O Chromium compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida. Esta definição está ativada.</translation>
 <translation id="4665829708273112819">Aviso: o Chromium não consegue impedir que as extensões gravem o seu histórico de navegação. Para desativar esta extensão no Modo de navegação anónima, desselecione esta opção.</translation>
 <translation id="4673151026126227699">Se também partilhar relatórios de utilização do Chromium, esses relatórios incluem os URLs que visita</translation>
 <translation id="4677944499843243528">O perfil parece estar a ser utilizado por outro processo do Chromium (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chromium bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a utilizar este perfil, pode desbloqueá-lo e reiniciar o Chromium.</translation>
@@ -440,7 +440,6 @@
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6069027071882229820">Copiar como imagem</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium.</translation>
-<translation id="6072463441809498330">Torne o Chromium mais rápido</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Está disponível uma atualização.</translation>
 <translation id="6107893135096467929">Ativada • O Chromium não consegue validar a origem desta extensão</translation>
 <translation id="611228897408671387">A sua conta no Chromium</translation>
@@ -485,6 +484,7 @@
 <translation id="6436260184216827876">A pesquisa de imagens não está disponível. Tente mais tarde.</translation>
 <translation id="6442900851116057561">Reinicie o ChromiumOS</translation>
 <translation id="6443470774889161065">O Chromium pré-carrega ainda mais páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
+<translation id="6450948450282634257">Transfira o Chromium para o telemóvel para acompanhar os preços e receber alertas quando o preço descer em qualquer site</translation>
 <translation id="645458117210240797">Desativada • O Chromium não consegue validar a origem desta extensão</translation>
 <translation id="6455857529632101747">Damos-lhe as boas-vindas aos perfis do Chromium</translation>
 <translation id="6466344609055215035">Remover conta do Chromium</translation>

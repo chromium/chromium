@@ -433,6 +433,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2885355868600171871">Neidio i'r bar cyfeiriad</translation>
 <translation id="2888126860611144412">Ynghylch Chrome</translation>
 <translation id="2891154217021530873">Stopio llwytho tudalen</translation>
+<translation id="2893168226686371498">Porwr diofyn</translation>
 <translation id="2894821468041866720">Nid yw'n amlwg yn arafu eich porwr neu ddyfais.</translation>
 <translation id="2895521649038438824">Gallwch wrando ar y dudalen hon</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, Tab Clywadwy wedi'i Binio</translation>
@@ -1468,6 +1469,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Dysgu rhagor am pam mae Chrome yn rhwystro rhai ffeiliau</translation>
 <translation id="7168323970702333693">Wedi mewngofnodi fel <ph name="USER_NAME" />. Yn agor gosodiadau.</translation>
+<translation id="7170930892977483182">Bydd yr holl godau diogelwch sy'n cael eu cadw ar eich dyfais ac yn Google Wallet yn cael eu dileu</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
 <translation id="7173338713290252554">Hanes prisiau ar draws y we</translation>
 <translation id="7177466738963138057">Gallwch newid hyn yn y Gosodiadau</translation>

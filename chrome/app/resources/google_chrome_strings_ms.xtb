@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">Chrome memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4251615635259297716">Paut data Chrome anda ke akaun ini?</translation>
+<translation id="4280647692742956593">Muat turun Chrome pada telefon anda untuk membuka atau membuat kumpulan tab baharu semasa dalam perjalanan.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4293420128516039005">Log masuk untuk menyegerakkan dan memperibadikan Chrome pada semua peranti anda</translation>
 <translation id="430327780270213103">Benarkan sambungan menunjukkan permintaan akses pada bar alat Chrome</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">Imej disalin</translation>
 <translation id="4926882258455737990">Untuk menggunakan Google Account yang berbeza dengan Gemini dalam Chrome, <ph name="BEGIN_LINK" />buat profil baharu<ph name="END_LINK" /> dan log masuk dengan akaun yang anda mahukan</translation>
 <translation id="492720062778050435">Chrome mengesyorkan agar anda menyemak sambungan ini</translation>
-<translation id="4946912144186040233">Chrome memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda. Tetapan ini dimatikan.</translation>
 <translation id="4953650215774548573">Tetapkan Google Chrome sebagai penyemak imbas lalai anda</translation>
 <translation id="495931528404527476">Dalam Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">Pilih profil Chrome untuk digunakan dengan <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Untuk membantu meningkatkan ciri ini, Chrome menghantar interaksi anda dengan ciri tersebut kepada Google. Data ini boleh dibaca, diproses dan dianotasikan oleh jurusemak.</translation>
 <translation id="5524890928877629608">penjuru atas sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Jadikan Chrome Lebih Pantas</translation>
 <translation id="5550137307985173298">Klik butang Sesuaikan Chrome pada Halaman Tab Baharu untuk memberikan rupa baharu pada Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Ralat permulaan: sila jalankan pemasang sebagai pengguna biasa, bukan sebagai pentadbir.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Google Account, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> mengurus Chrome</translation>
+<translation id="7285990705317078173">Muat turun Chrome pada telefon anda untuk menjejaki harga dan mendapatkan makluman apabila terdapat penurunan harga pada mana-mana laman</translation>
 <translation id="7288567540154601580">Tab &amp; sambungan</translation>
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7302361266603927550">Sesetengah data Chrome anda belum disimpan dalam Google Account anda. Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses storan untuk memuat turun fail</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
+<translation id="7379321689415048316">Chrome boleh membuat autolengkap medan sukar yang mungkin terlepas daripada autolengkap standard</translation>
 <translation id="7386878009611068389">Untuk kekal lebih selamat dalam talian dengan pilihan ibu/bapa anda, beralih kepada profil Chrome anda yang sudah digunakan untuk log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Anda telah log masuk ke Chrome sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
 <translation id="7412494426921990001">Klik menu Chrome</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="749228101751499733">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. <ph name="SHORTCUT" /> boleh menukar tetapan perkhidmatan Google anda.</translation>
 <translation id="7496017508659652909">Chrome mempramuatkan halaman yang menjadikan penyemakan imbas dan carian lebih pantas. <ph name="BEGIN_LINK" />Ketahui halaman pramuat dengan lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome memahami borang dengan lebih baik dan dapat membuat autolengkap borang dengan lebih pantas untuk anda. Tetapan ini dihidupkan.</translation>
 <translation id="7514258452813684157">Perkhidmatan Pengemas Kini Google</translation>
 <translation id="7515191208480168435">Anda boleh menyematkan Google Lens untuk akses yang mudah</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

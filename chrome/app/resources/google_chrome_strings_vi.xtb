@@ -307,6 +307,7 @@
 <translation id="4242034826641750751">Chrome cần có quyền truy cập máy ảnh và micrô đối với trang web này</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4251615635259297716">Bạn muốn liên kết dữ liệu Chrome của bạn với tài khoản này?</translation>
+<translation id="4280647692742956593">Tải Chrome xuống điện thoại để mở hoặc tạo nhóm thẻ mới trong khi di chuyển.</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="4293420128516039005">Đăng nhập để đồng bộ hóa và cá nhân hóa Chrome trên các thiết bị của bạn</translation>
 <translation id="430327780270213103">Cho phép tiện ích hiện các yêu cầu truy cập trong thanh công cụ của Chrome</translation>
@@ -362,7 +363,6 @@
 <translation id="4918844574251943176">Đã sao chép hình ảnh</translation>
 <translation id="4926882258455737990">Để dùng Gemini trong Chrome với một Tài khoản Google khác, hãy <ph name="BEGIN_LINK" />tạo một hồ sơ mới<ph name="END_LINK" /> rồi đăng nhập bằng tài khoản bạn muốn</translation>
 <translation id="492720062778050435">Chrome khuyên bạn nên xem xét tiện ích này</translation>
-<translation id="4946912144186040233">Chrome nắm rõ các biểu mẫu hơn và có thể tự động điền vào biểu mẫu nhanh hơn. Chế độ cài đặt này đang tắt.</translation>
 <translation id="4953650215774548573">Đặt Google Chrome làm trình duyệt mặc định của bạn</translation>
 <translation id="495931528404527476">Trong Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn vì thông tin đăng nhập tài khoản của bạn đã cũ.</translation>
@@ -411,7 +411,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5465210843490471889">Chọn một hồ sơ Chrome để dùng với <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome sẽ gửi cho Google thông tin về hoạt động tương tác của bạn với những tính năng này để giúp cải thiện tính năng. Nhân viên đánh giá có thể đọc, xử lý và chú thích dữ liệu này.</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
-<translation id="5530733413481476019">Giúp Chrome hoạt động nhanh hơn</translation>
 <translation id="5550137307985173298">Nhấp vào nút Tuỳ chỉnh Chrome trên Trang thẻ mới để mang lại giao diện mới cho Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
@@ -592,12 +591,14 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7193885263065350793">Tổ chức của bạn sẽ đóng Chrome khi Chrome không được dùng đến trong <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình trên Google Chrome của bạn. Dữ liệu Chrome của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. Bạn có thể tùy chọn tạo một cấu hình mới để giữ cho dữ liệu Chrome hiện có của bạn riêng biệt. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> quản lý Chrome</translation>
+<translation id="7285990705317078173">Tải Chrome xuống điện thoại để theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
 <translation id="7288567540154601580">Thẻ và tiện ích</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7302361266603927550">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
+<translation id="7379321689415048316">Chrome có thể tự động điền những trường khó mà tính năng tự động điền tiêu chuẩn có thể bỏ sót</translation>
 <translation id="7386878009611068389">Để giúp bạn an toàn hơn trên mạng với các lựa chọn của cha mẹ, hãy chuyển sang hồ sơ Chrome mà bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7412494426921990001">Nhấp vào Trình đơn Chrome</translation>
@@ -612,7 +613,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7481213027396403996">Có được chế độ bảo mật mạnh nhất của Chrome</translation>
 <translation id="749228101751499733">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. <ph name="SHORTCUT" /> có thể thay đổi chế độ cài đặt cho các dịch vụ của Google mà bạn sử dụng.</translation>
 <translation id="7496017508659652909">Chrome tải trước các trang để giúp bạn duyệt web và tìm kiếm nhanh hơn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về tính năng tải trước trang<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome nắm rõ các biểu mẫu hơn và có thể tự động điền vào biểu mẫu nhanh hơn. Chế độ cài đặt này đang bật.</translation>
 <translation id="7514258452813684157">Dịch vụ Trình cập nhật Google</translation>
 <translation id="7515191208480168435">Bạn có thể ghim Google Ống kính để tiện truy cập</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

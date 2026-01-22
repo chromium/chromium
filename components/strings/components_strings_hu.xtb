@@ -265,6 +265,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1408787208417187241">Három kapocs felül</translation>
 <translation id="1410365862999780287">Az ezt az eszközt használó többi személy nem láthatja az Ön tevékenységeit, így Ön privát módon böngészhet. Az inkognitó mód használata nincs hatással az Ön által felkeresett webhelyek és az általuk használt szolgáltatások (például a Google) által végzett adatgyűjtésre. A letöltéseket, a könyvjelzőket és az olvasólista elemeit menti a böngésző.</translation>
 <translation id="1410941016594047814">Invite boríték</translation>
+<translation id="1413235258620101697">A rendszer titkosítja, és a Google Walletbe menti a kártya CVC-kódját a gyorsabb fizetés érdekében.</translation>
 <translation id="1413809658975081374">Adatvédelmi hiba</translation>
 <translation id="1414134146594747368">Óvoda</translation>
 <translation id="1419305130220238697">Letöltések kezelése a Chrome-ban gomb. A gombot megnyomva kezelheti a Chrome-ban letöltött fájlokat.</translation>
@@ -286,6 +287,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
 <translation id="1433478348197382180">Olvasási mód</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
+<translation id="1442054921249164535">Egyéb adatok</translation>
 <translation id="1442386063175183758">Jobb oldalon kihajtható</translation>
 <translation id="1442987760062738829">Lyukasztás</translation>
 <translation id="1445896388055045436">Megjelenítheti fizetéskor a rendelkezésre álló kártyaelőnyöket és -jutalmakat. A kibocsátó feltételei érvényesek.</translation>
@@ -939,6 +941,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="24699311393038040">Papír (bevonatos)</translation>
 <translation id="2471632709106952369">Összehasonlító táblázatok</translation>
 <translation id="2473810985261856484">Jogi szolgáltatások</translation>
+<translation id="2477607419416067650">Egyéb Google-adatok</translation>
 <translation id="2479148705183875116">Beállítások</translation>
 <translation id="2479410451996844060">Érvénytelen keresési URL</translation>
 <translation id="2480300195898055381">Az Ön Google-fiókjába (<ph name="USER_EMAIL" />)</translation>
@@ -993,6 +996,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2552246211866555379">„Hagaki” méret</translation>
 <translation id="2552295903035773204">Mostantól a képernyőzár használata a kártyák megerősítéséhez</translation>
 <translation id="2552532158894206888">jobb billentyű</translation>
+<translation id="2553352788023127673">A keresési előzmények és a jelszavak a kezelési beállításokban törölhetők.</translation>
 <translation id="2553853292994445426">Ellenőrizze a biztonságos DNS beállításait. Lehet, hogy olyan biztonságos DNS-szervert állított be, amelyhez nem lehet kapcsolódni.</translation>
 <translation id="255497580849974774">A frissítés alatt tartsa az eszközt töltőhöz csatlakoztatva.</translation>
 <translation id="2556876185419854533">&amp;Szerkesztés visszavonása</translation>
@@ -1495,6 +1499,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3407789382767355356">a harmadik fél szolgáltatásokkal való bejelentkezés</translation>
 <translation id="340924996148642843">Az összehasonlítás jelenleg nem áll rendelkezésre</translation>
 <translation id="3409896703495473338">Biztonsági beállítások kezelése</translation>
+<translation id="3410151451624226773">Kezelés a Google Jelszókezelőben</translation>
 <translation id="3411091017011773343">Feltöltés <ph name="HOURS" /> óra múlva</translation>
 <translation id="341134412449102894">Adatait a(z) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> szolgáltatásba mentette a rendszer a következő fiókhoz: <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Ha nyilvános hálózatot használ, az a legbiztonságosabb, ha később látogatja meg ezt a webhelyet. A megbízható hálózatok (pl. otthoni vagy munkahelyi Wi-Fi) kisebb kockázatot jelentenek.</translation>
@@ -2155,12 +2160,14 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4406883609789734330">Élő feliratozás</translation>
 <translation id="4406896451731180161">keresési találat</translation>
 <translation id="4407758156081352648">Biztonsági okok miatt a szervezete nem engedélyezi a jelszavak újrafelhasználását a Chrome-ban. A Chrome-ban tárolt jelszavak titkosítva vannak a felhasználók adatainak védelme érdekében.</translation>
+<translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4409556632583862731">Új témaszál</translation>
 <translation id="4412074349188076601">Ez a konfiguráció telepítendőként van megjelölve, de nincs megadva kép az architektúrához, ezért nem lehet telepíteni.</translation>
 <translation id="4412377069090572315">Mit mondanak mások?</translation>
 <translation id="4414515549596849729">cookie-k és webhelyadatok</translation>
 <translation id="4415156962929755728">Műanyag (magas fényű)</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
+<translation id="4419287616181386201">A jelszavak a kezelési beállításokban törölhetők.</translation>
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="4425750422187370446">Atlétikai ruházat</translation>
 <translation id="443121186588148776">Soros port</translation>
@@ -2479,6 +2486,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4950898438188848926">Lapváltó gomb. Nyomja meg az Entert a következő megnyitott lapra való váltáshoz: <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Műveletek</translation>
 <translation id="4953689047182316270">Válasz kisegítő lehetőségekkel kapcsolatos eseményekre</translation>
+<translation id="4954891067389874142">Mentett kártyával gyorsabban fizethet. A kártyaadatok titkosítva vannak a Google Walletben.</translation>
 <translation id="4957080528849277028">Chrome-előzmények megtekintése gomb. A gombot megnyomva megtekintheti és kezelheti a böngészési előzményeket a Chrome beállításaiban.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+1 webhely}other{+# webhely}}</translation>
 <translation id="4958444002117714549">Lista részletes nézete</translation>
@@ -2566,6 +2574,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5097468150760963273">27 × 39 hüvelyk</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Nyomja meg a Tab, majd az Enter billentyűt az AI-módtól való kérdezéshez</translation>
+<translation id="5105442806410269908">Egyéb Google-adatok kezelése</translation>
 <translation id="510644072453496781">Karton (vége)</translation>
 <translation id="5106648964679263509">A(z) <ph name="BNPL_ISSUER_NAME" /> virtuális kártyája kitöltve</translation>
 <translation id="5108567515277121477">Hűségkártya</translation>
@@ -2705,6 +2714,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Az alapértelmezett keresőmotor lehetővé teszi az internetes keresést, és támogatja a Chromium-funkciókat<ph name="END_BOLD" />, például a címsávból és a weboldalakon található képek alapján történő keresést. Előfordulhat, hogy egy funkció nem áll rendelkezésre, ha a keresőmotor nem támogatja.</translation>
 <translation id="5323043727018853753">Beágyazott tartalmak engedélyezve</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> elemből a következő pozícióban: <ph name="MATCH_POSITION" />.</translation>
+<translation id="5323501626199324454">Kezelés a Google-fiókban</translation>
 <translation id="5327248766486351172">Név</translation>
 <translation id="5329858041417644019">A böngésző nem áll felügyelet alatt</translation>
 <translation id="5331585574693522196">Alapbeállítás</translation>
@@ -2748,6 +2758,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5394069166371280357">Családi tévéműsorok</translation>
 <translation id="5396631636586785122">Éltűzés a jobb oldalon</translation>
 <translation id="5397794290049113714">Ön</translation>
+<translation id="5398461103557553443">Ha legközelebb automatikusan ki szeretné tölteni ezt az IBAN-számot, mentse a Google Walletbe</translation>
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="5401344472773249513">Hírek celebekről és szórakoztatóiparból</translation>
@@ -3017,6 +3028,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5843987376989109187">Ez a nyelv még nem támogatott.
     <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5847181246682413476">Tápegységek</translation>
+<translation id="5848445080378515710">A megrendelés ellenőrzését követően be kell jelentkeznie <ph name="BNPL_ISSUER_NAME" />-fiókjába, vagy létre kell hoznia egy újat. Ezt a fiókot automatikusan összekapcsoljuk a Google Wallet szolgáltatásban.</translation>
 <translation id="584902713199270089">Párkeresés és ismerkedés</translation>
 <translation id="5851548754964597211">Laplista</translation>
 <translation id="5851868085455377790">Kiállító</translation>
@@ -3855,6 +3867,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7162277662076933695">Intelligens kártyaolvasó</translation>
 <translation id="7163295244162773898">{0,plural, =1{Biztosan átmásolja a bizalmas fájlt?}other{Biztosan átmásolja a bizalmas fájlokat?}}</translation>
 <translation id="7168625890036931112">A(z) „<ph name="DATA_CONTROLS_RESTRICTION" />” nem támogatott korlátozás ezen a platformon</translation>
+<translation id="7170930892977483182">Az eszközére és a Google Walletbe mentett biztonsági kódok is törlődnek</translation>
 <translation id="717330890047184534">Gaia-azonosító:</translation>
 <translation id="7173338713290252554">Árelőzmények az interneten</translation>
 <translation id="7174545416324379297">Egyesítve</translation>
@@ -3910,6 +3923,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7251437084390964440">A hálózati konfiguráció nem felel meg az ONC szabványnak. A konfiguráció egyes részeit nem lehet importálni.
 További részletek:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Ezen adatok törléséhez lépjen az adatok kezelési beállításaihoz</translation>
 <translation id="7255540419660272073">„Nem tetszik” gomb. Az Enter billentyű lenyomásával megnyithatja az űrlapot, amelyen részletes visszajelzést adhat arról, hogy miért nem tetszik Önnek a következő: <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Hátsó tálca</translation>
 <translation id="7257453341537973799">Karrieranyagok és karriertervezés</translation>
@@ -4008,6 +4022,7 @@ További részletek:
 <translation id="7408613996403626141">Játékok</translation>
 <translation id="7410852728357935715">Átküldés egyetlen eszközre</translation>
 <translation id="741204030948306876">Igen, folytatom</translation>
+<translation id="7412081313067625215">A kártyát a Google Walletbe menti a rendszer, így automatikusan kitöltheti a jövőbeli vásárlások során.</translation>
 <translation id="7416351320495623771">Jelszavak kezelése…</translation>
 <translation id="7416898721136759658">Ösztöndíjak és pénzügyi segítségek</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4037,6 +4052,7 @@ További részletek:
 <translation id="7450577240311017924">Szinkronizálás kezelése gomb. A gombot megnyomva a Chrome-beállítások között kezelheti, hogy milyen adatokat szinkronizáljon.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />További információk megtekintése<ph name="END_LINK" /> a problémával kapcsolatban.</translation>
 <translation id="745208957946308667">Dinós játék. Nyomja le a szóközt a játékhoz</translation>
+<translation id="7453032093368223821">Egyéb adatok kezelése</translation>
 <translation id="7453849010505253492">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domain, mert olyan biztonsági tanúsítványt használ, amelyet a Chrome vagy a rendszerkonfiguráció nem tart megbízhatónak a webes forgalom titkosításához. Ezt okozhatja konfigurációs hiba, vagy az, hogy egy támadó eltérítette az Ön kapcsolatát. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Tanúsítvány megtekintése<ph name="END_VIEW_CERTIFICATE_LINK" />.</translation>
 <translation id="7454377933424667109">Cloud-fiók</translation>
 <translation id="7455133967321480974">Globális alapértelmezés használata (Tiltás)</translation>
@@ -4141,6 +4157,7 @@ További részletek:
 <translation id="759889825892636187">A(z) <ph name="HOST_NAME" /> jelenleg nem tudja kezelni ezt a kérést.</translation>
 <translation id="7599089013883397081">Időtúllépés történt a letöltés során</translation>
 <translation id="7602868996817972616">Kérdés feltevése a Google-nak az oldalról</translation>
+<translation id="7606123685356405076">Gemini 3-modellek</translation>
 <translation id="7610193165460212391">Az érték kívül esik a következő tartományon: <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Vastag</translation>
 <translation id="7613889955535752492">Lejárat: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

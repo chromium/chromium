@@ -304,6 +304,7 @@
 <translation id="4242034826641750751">Chrome deve avere le autorizzazioni di accesso al microfono e alla fotocamera per questo sito</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4251615635259297716">Collegare i tuoi dati Chrome a questo account?</translation>
+<translation id="4280647692742956593">Scarica Chrome sullo smartphone per aprire o creare nuovi gruppi di schede ovunque ti trovi.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4293420128516039005">Accedi per sincronizzare e personalizzare Chrome sui tuoi dispositivi</translation>
 <translation id="430327780270213103">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chrome</translation>
@@ -359,7 +360,6 @@
 <translation id="4918844574251943176">Immagine copiata</translation>
 <translation id="4926882258455737990">Per usare un altro Account Google con Gemini in Chrome, <ph name="BEGIN_LINK" />crea un nuovo profilo<ph name="END_LINK" /> e accedi con l'account che preferisci</translation>
 <translation id="492720062778050435">Chrome consiglia di esaminare questa estensione</translation>
-<translation id="4946912144186040233">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido. Questa impostazione non è attiva.</translation>
 <translation id="4953650215774548573">Imposta Google Chrome come browser predefinito</translation>
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Impossibile sincronizzare i dati in ChromeOS Flex perché i dati di accesso dell'account sono obsoleti.</translation>
@@ -406,7 +406,6 @@
 <translation id="5465210843490471889">Scegli un profilo Chrome da utilizzare con <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Per contribuire a migliorare queste funzionalità, Chrome invia le tue interazioni a Google. Questi dati potrebbero essere letti, elaborati e annotati da revisori.</translation>
 <translation id="5524890928877629608">angolo in alto a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in alto <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Rendi Chrome più veloce</translation>
 <translation id="5550137307985173298">Fai clic sul pulsante Personalizza Chrome nella pagina Nuova scheda per dare un nuovo aspetto a Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Errore di avvio: esegui il programma di installazione come utente normale, non come amministratore.</translation>
@@ -587,12 +586,14 @@
 <translation id="7193885263065350793">La tua organizzazione chiude Chrome quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Google Chrome. I tuoi dati di Chrome, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. Se preferisci puoi creare un nuovo profilo per mantenere separati i dati di Chrome esistenti. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestisce Chrome</translation>
+<translation id="7285990705317078173">Scarica Chrome sullo smartphone per monitorare i prezzi e ricevere avvisi quando il prezzo cala su qualsiasi sito</translation>
 <translation id="7288567540154601580">Schede ed estensioni</translation>
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7302361266603927550">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
+<translation id="7379321689415048316">Chrome può compilare automaticamente i campi difficili che la compilazione automatica standard potrebbe non riuscire a compilare</translation>
 <translation id="7386878009611068389">Per navigare online in modo più sicuro con le scelte del tuo genitore, passa al tuo profilo Chrome dove hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7412494426921990001">Fai clic sul menu Chrome</translation>
@@ -607,7 +608,6 @@
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
 <translation id="7496017508659652909">Chrome precarica le pagine per velocizzare la navigazione e la ricerca. <ph name="BEGIN_LINK" />Scopri di più sul precaricamento delle pagine<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido. Questa impostazione è attiva.</translation>
 <translation id="7514258452813684157">Servizio di Google Updater</translation>
 <translation id="7515191208480168435">Puoi bloccare Google Lens per un facile accesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

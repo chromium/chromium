@@ -3,7 +3,6 @@
 <translationbundle lang="eu">
 <translation id="1026101648481255140">Berrekin instalazioari</translation>
 <translation id="1029669172902658969">&amp;Chromium OS eguneratzeko, exekuta ezazu berriro</translation>
-<translation id="103359417695385097">Chromium-ek hobeto ulertzen ditu inprimakiak, eta bizkorrago bete ditzake automatikoki. Desaktibatuta dago ezarpena.</translation>
 <translation id="1040916596585577953">Luzapen hau berrikustea gomendatzen dizu Chromium-ek</translation>
 <translation id="1042552502243217427">Webgune batek orriko estekak modu pribatuan aurrez kargatzeko eskatzen duenean, Chromium-ek Google-ren zerbitzariak erabiltzen ditu. Horrela, zure identitatea ezkutatzen zaio aurrez kargatutako webguneari, baina Google-k aurrez kargatu diren webguneak hautematen ditu.</translation>
 <translation id="1051793555070215510">Lagun iezaguzu ezkutuko modua hobetzen minutu bateko inkesta honi erantzunez.</translation>
@@ -71,6 +70,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Google-ren Pasahitz-kudeatzailea erabiltzeko eskatuko zaizu.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Deskargatu Chromium telefonoan, fitxa taldeak edonoiz eta edonon ireki edo sortu ahal izateko.</translation>
 <translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Google Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Bilatu irudi-bilaketaren bidez</translation>
 <translation id="1880677175115548835">Hautatu testua</translation>
@@ -161,6 +161,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2768103863314748511">Ezarri Chromium PDFen ikustaile lehenetsi gisa</translation>
+<translation id="277828055419948999">Betetze automatiko estandarrak agian betetzen ez dituen eremu zailak bete ditzake automatikoki Chromium-ek</translation>
 <translation id="2785438272836277133">Luzapenak malwarea dauka, eta ez da segurua. Ken ezazu Chromium-etik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2803971713792056305">Zure Chromium</translation>
@@ -337,7 +338,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4613863813562375431">Chromium OS-ren bertsioa</translation>
 <translation id="4621240073146040695">Ia amaitu dugu! Eguneratzen amaitzeko, exekutatu Chromium berriro.</translation>
 <translation id="4625064703209785397">Webguneen abiadura handitzen du Chromium-en V8 motorrarekin, baina erasoen aurrean Chromium apur bat ahultzen du</translation>
-<translation id="4654936675281451226">Chromium-ek hobeto ulertzen ditu inprimakiak, eta bizkorrago bete ditzake automatikoki. Aktibatuta dago ezarpena.</translation>
 <translation id="4665829708273112819">Abisua: Chromium-ek ezin die eragotzi luzapenei arakatze-historia erregistratzea. Ezkutuko moduan luzapen hau desgaitzeko, desautatu aukera.</translation>
 <translation id="4673151026126227699">Chromium-en erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
 <translation id="4677944499843243528">Beste Chromium prozesu bat (<ph name="PROCESS_ID" />) beste ordenagailu batean (<ph name="HOST_NAME" />) profila erabiltzen ari dela dirudi. Chromium-ek profila blokeatu du honda ez dadin. Ziur badakizu ez dela beste inongo prozesurik profila erabiltzen ari, profila desblokea dezakezu eta Chromium berrabiarazi.</translation>
@@ -441,7 +441,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6063093106622310249">&amp;Ireki Chromium-en</translation>
 <translation id="6069027071882229820">Kopiatu irudi gisa</translation>
 <translation id="6072279588547424923">Gehitu da <ph name="EXTENSION_NAME" /> luzapena Chromium-en</translation>
-<translation id="6072463441809498330">Bizkortu Chromium</translation>
 <translation id="6096348254544841612">Pertsonalizatu eta kontrolatu Chromium. Eguneratze bat erabilgarri dago.</translation>
 <translation id="6107893135096467929">Aktibatuta • Chromium-ek ezin du egiaztatu luzapena nondik datorren</translation>
 <translation id="611228897408671387">Zure kontua Chromium-en</translation>
@@ -486,6 +485,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6436260184216827876">Irudi-bilaketa ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
 <translation id="6443470774889161065">Ziurrenik bisitatuko dituzun are orri gehiago aurrez kargatzen ditu Chromium-ek, bisitatzen dituzunean bizkorrago karga daitezen</translation>
+<translation id="6450948450282634257">Deskargatu Chromium telefonoan, prezioen jarraipena egiteko eta alertak jasotzeko edozein webgunetan prezio-jaitsierak egotean</translation>
 <translation id="645458117210240797">Desaktibatuta • Chromium-ek ezin du egiaztatu luzapena nondik datorren</translation>
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
 <translation id="6466344609055215035">Kendu kontua Chromium-etik</translation>

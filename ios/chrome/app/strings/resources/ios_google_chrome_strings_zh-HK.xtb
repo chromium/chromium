@@ -86,7 +86,9 @@
 <translation id="2767464022270041271">沒有已儲存的密碼。當您儲存密碼時，「Google 密碼管理工具」可檢查您的密碼。</translation>
 <translation id="2788811701191021538">使用 Chrome 開啟付款方法設定頁面。</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何確保你的資料保密<ph name="END_LINK" /></translation>
-<translation id="288992067439702510">已達到 Google Chrome 的書籤數量上限 (<ph name="LIMIT" /> 個)，因此部分書籤尚未儲存到 Google 帳戶。請先刪除一些書籤，才能將新書籤儲存到帳戶。如果現在登出，系統會刪除未儲存的書籤。</translation>
+<translation id="288992067439702510">Google Chrome 的書籤數量已達上限 (<ph name="LIMIT" /> 個)，因此部分書籤未能儲存至 Google 帳戶。
+
+你必須刪除部分書籤，才能將新書籤儲存至帳戶。如果你現在登出，未儲存的書籤將會刪除。</translation>
 <translation id="2922914028977213693">輕按這裡以在 iPad 上充分運用 Chrome 的功能。</translation>
 <translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2923827943290349720">關閉 Chrome 時鎖定無痕式分頁</translation>

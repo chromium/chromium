@@ -362,7 +362,6 @@
 <translation id="4918844574251943176">ছবি কপি করা হয়েছে</translation>
 <translation id="4926882258455737990">Chrome-এ Gemini-র সাথে অন্য কোনও Google অ্যাকাউন্ট ব্যবহার করতে, <ph name="BEGIN_LINK" />নতুন প্রোফাইল তৈরি করুন<ph name="END_LINK" /> এবং আপনার পছন্দের অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="492720062778050435">এই এক্সটেনশন পর্যালোচনা করার জন্য Chrome সাজেস্ট করে</translation>
-<translation id="4946912144186040233">Chrome ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে। এই সেটিংস বন্ধ করা আছে।</translation>
 <translation id="4953650215774548573">আপনার ডিফল্ট ব্রাউজার হিসাবে Google Chrome-কে সেট করুন</translation>
 <translation id="495931528404527476">Chrome-এ</translation>
 <translation id="4969674060580488087">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS Flex আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
@@ -411,7 +410,6 @@
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-র সাথে ব্যবহার করার জন্য Chrome প্রোফাইল বেছে নিন</translation>
 <translation id="5468572406162360320">এইসব ফিচার উন্নত করতে, Chrome, এগুলির সাথে আপনার ইন্ট্যার‌্যাকশন সংক্রান্ত তথ্য Google-এর কাছে পাঠায়। এই ডেটা হিউম্যান রিভিউয়ারের দ্বারা পড়া, প্রসেস করা ও অ্যানোটেট করা হতে পারে।</translation>
 <translation id="5524890928877629608">সার্চে উপরের বাঁদিকের কোণা: বাঁদিক থেকে <ph name="LEFT" />%, উপরের দিকে <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Chrome-এর ব্যবহার আরও দ্রুত করে তোলা</translation>
 <translation id="5550137307985173298">Chrome-কে নতুন লুক দিতে নতুন ট্যাব পৃষ্ঠায় 'Chrome কাস্টমাইজ করুন' বোতামে ক্লিক করুন</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">স্টার্টআপ সম্পর্কিত এরর: নিয়মিত ব্যবহারকারী হিসেবে ইনস্টলার চালান, অ্যাডমিনিস্ট্রেটর হিসেবে নয়।</translation>
@@ -612,7 +610,6 @@
 <translation id="7481213027396403996">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
 <translation id="749228101751499733">আপনি সাইন-ইন করার সময়, Chrome-এ আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড এবং আরও অনেক কিছু ব্যবহার করতে পারবেন। <ph name="SHORTCUT" /> আপনার Google পরিষেবা সম্পর্কিত সেটিংস পরিবর্তন করতে পারবে।</translation>
 <translation id="7496017508659652909">Chrome পৃষ্ঠা প্রিলোড করে যার ফলে আরও ঝটপট ব্রাউজ ও সার্চ করা যায়। <ph name="BEGIN_LINK" />পৃষ্ঠা প্রিলোড করা সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে। এই সেটিংস চালু করা আছে।</translation>
 <translation id="7514258452813684157">Google আপডেটার পরিষেবা</translation>
 <translation id="7515191208480168435">সহজে অ্যাক্সেস করার জন্য আপনি Google Lens পিন করে রাখতে পারেন</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>

@@ -433,6 +433,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2885355868600171871">Vai alla barra degli indirizzi</translation>
 <translation id="2888126860611144412">Informazioni su Chrome</translation>
 <translation id="2891154217021530873">Interrompe il caricamento della pagina</translation>
+<translation id="2893168226686371498">Browser predefinito</translation>
 <translation id="2894821468041866720">Non rallenta in modo significativo il browser o il dispositivo.</translation>
 <translation id="2895521649038438824">Puoi ascoltare questa pagina</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, scheda udibile bloccata</translation>
@@ -1166,7 +1167,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
 <translation id="6071995715087444295">Per controllare la presenza di password compromesse, accedi al tuo Account Google</translation>
-<translation id="6078323886959318429">Aggiungi scorciatoia</translation>
+<translation id="6078323886959318429">Scorciatoia</translation>
 <translation id="6085886413119427067">Consente di stabilire come connettersi ai siti web tramite una connessione sicura</translation>
 <translation id="6087286598828478206">Bloccare e uscire dal gruppo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rimanenti</translation>
@@ -1467,6 +1468,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Scopri di più sul motivo per cui Chrome blocca alcuni file</translation>
 <translation id="7168323970702333693">Accesso eseguito come <ph name="USER_NAME" />. Consente di aprire le impostazioni.</translation>
+<translation id="7170930892977483182">Tutti i codici di sicurezza salvati sul dispositivo e in Google Wallet verranno eliminati</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7173338713290252554">Cronologia dei prezzi sul web</translation>
 <translation id="7177466738963138057">Puoi cambiarlo in un secondo momento nelle Impostazioni</translation>

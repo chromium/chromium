@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4568230126482344545">„Letzte Tabs“ ausblenden</translation>
 <translation id="4578835633387306383">Aktivieren…</translation>
+<translation id="4580621046861724270">Einige Lesezeichen wurden nicht gespeichert</translation>
 <translation id="4580716718466706433">Rufe den Passwortmanager auf</translation>
 <translation id="4585751637295612750">Neuen Tab öffnen, um ihn zur Frage hinzuzufügen</translation>
 <translation id="4587589328781138893">Websites</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Du beobachtest dieses Produkt bereits.</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329451663851195956">Zum Aktualisieren nach unten ziehen.</translation>
+<translation id="5336910966955551309">Halte deine bevorzugten Websites gedrückt, um sie anzupinnen</translation>
 <translation id="5338512273860059533">Anmeldung läuft.</translation>
 <translation id="5343472494710226394">Nachrichten, Sport und Inhalte, die deinen Interessen entsprechen.</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
@@ -1223,7 +1225,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5567439033041178034">Weitere Informationen</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5579012242779565775">Leseliste ausblenden</translation>
-<translation id="5581786858144165447">Mit dem KI-Modus fragen</translation>
+<translation id="5581786858144165447">Im KI-Modus fragen</translation>
 <translation id="5585019845078534178">Karten</translation>
 <translation id="5591526871732898147">Angehängtes Bild {index}</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
@@ -2004,6 +2006,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8319282042900445670">Erinnerung für den <ph name="DATE" /> um <ph name="TIME" /> eingerichtet</translation>
 <translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8325455175867928593">„Rezensionen, die auf deinen Interessen basieren“ ausblenden</translation>
+<translation id="8328777765163860529">Alle schließen</translation>
 <translation id="833647236762414178">Hier kannst du Passwörter und Passkeys erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="8348530355586151720">Tippe auf das Dreipunkt-Menü</translation>

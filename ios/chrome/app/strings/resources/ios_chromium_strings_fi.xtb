@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Käytä Chromiumia, kun napautat linkkejä viesteissä tai muissa sovelluksissa.</translation>
 <translation id="1722370509450468186">Salasana tallennetaan tilillesi (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Sinulle räätälöity fiidi</translation>
+<translation id="1761196287436320018">Olet saavuttanut Chromiumin <ph name="LIMIT" /> kirjanmerkin rajan, joten kaikkia kirjanmerkkejäsi ei ole vielä tallennettu Google-tilillesi.
+
+Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. Jos kirjaudut ulos nyt, tallentamattomat kirjanmerkit poistetaan.</translation>
 <translation id="1811860791247653035">Voit käyttää personointia ja muita ominaisuuksia, kun lisäät Chromiumin näihin: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
 <translation id="1839447949248872139">Avaa linkit oletuksena Chromiumissa</translation>

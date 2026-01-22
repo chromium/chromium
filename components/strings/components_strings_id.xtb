@@ -265,6 +265,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1408787208417187241">Tiga jepretan di atas</translation>
 <translation id="1410365862999780287">Orang lain yang menggunakan perangkat ini tidak akan melihat aktivitas Anda, sehingga Anda dapat menjelajah secara lebih pribadi. Hal ini tidak akan mengubah cara pengumpulan data oleh situs web yang Anda kunjungi dan layanan yang mereka gunakan, termasuk Google. Hasil download, bookmark, dan item daftar bacaan akan disimpan.</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
+<translation id="1413235258620101697">CVC kartu ini akan dienkripsi dan disimpan di Google Wallet untuk checkout yang lebih cepat</translation>
 <translation id="1413809658975081374">Kesalahan privasi</translation>
 <translation id="1414134146594747368">Prasekolah</translation>
 <translation id="1419305130220238697">Tombol Kelola download di Chrome, aktifkan untuk mengelola file yang telah Anda download di Chrome</translation>
@@ -286,6 +287,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1433225466058025572">Coba pindahkan file lagi</translation>
 <translation id="1433478348197382180">Mode Baca</translation>
 <translation id="1436185428532214179">Dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
+<translation id="1442054921249164535">Data lainnya</translation>
 <translation id="1442386063175183758">Lipatan format gate di kanan</translation>
 <translation id="1442987760062738829">Lubang</translation>
 <translation id="1445896388055045436">Tampilkan reward dan manfaat kartu yang tersedia saat checkout. Persyaratan penerbit berlaku.</translation>
@@ -940,6 +942,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="24699311393038040">Kertas (Berlapis)</translation>
 <translation id="2471632709106952369">Tabel perbandingan</translation>
 <translation id="2473810985261856484">Layanan Hukum</translation>
+<translation id="2477607419416067650">Data Google lainnya</translation>
 <translation id="2479148705183875116">Buka Setelan</translation>
 <translation id="2479410451996844060">URL penelusuran tidak valid.</translation>
 <translation id="2480300195898055381">Di Akun Google Anda, <ph name="USER_EMAIL" /></translation>
@@ -994,6 +997,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Mulai sekarang, gunakan kunci layar untuk mengonfirmasi kartu</translation>
 <translation id="2552532158894206888">tombol kanan</translation>
+<translation id="2553352788023127673">Histori penelusuran dan sandi dapat dihapus di setelan pengelolaannya</translation>
 <translation id="2553853292994445426">Periksa setelan DNS aman Anda. Anda mungkin telah mengonfigurasi server DNS aman yang koneksinya gagal.</translation>
 <translation id="255497580849974774">Pastikan perangkat Anda tetap terhubung ke pengisi daya selama update.</translation>
 <translation id="2556876185419854533">&amp;Urungkan Pengeditan</translation>
@@ -1498,6 +1502,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3407789382767355356">login pihak ketiga</translation>
 <translation id="340924996148642843">Perbandingan tidak tersedia untuk saat ini</translation>
 <translation id="3409896703495473338">Kelola setelan keamanan</translation>
+<translation id="3410151451624226773">Kelola di Pengelola Sandi Google</translation>
 <translation id="3411091017011773343">Upload dalam <ph name="HOURS" /> jam</translation>
 <translation id="341134412449102894">Info Anda disimpan ke <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Sebaiknya buka situs ini nanti, jika Anda saat ini menggunakan jaringan publik. Risiko dari jaringan tepercaya lebih kecil, seperti Wi-Fi rumah atau kantor Anda.</translation>
@@ -2158,12 +2163,14 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4406883609789734330">Teks Otomatis</translation>
 <translation id="4406896451731180161">hasil penelusuran</translation>
 <translation id="4407758156081352648">Untuk menjaga keamanan, organisasi Anda tidak mengizinkan sandi digunakan kembali di Chrome. Sandi di Chrome dienkripsi untuk melindungi privasi pengguna.</translation>
+<translation id="4409271659088619928">Mesin telusur Anda adalah <ph name="DSE" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="4409556632583862731">Rangkaian pesan baru</translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai dapat diinstal, tetapi tidak ada gambar yang disediakan untuk arsitektur ini, sehingga tidak dapat diinstal.</translation>
 <translation id="4412377069090572315">Pendapat orang lain</translation>
 <translation id="4414515549596849729">cookie dan data situs</translation>
 <translation id="4415156962929755728">Plastik (Kilap Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
+<translation id="4419287616181386201">Sandi dapat dihapus di setelan pengelolaannya</translation>
 <translation id="4424024547088906515">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh Chrome. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="4425750422187370446">Pakaian Atletik</translation>
 <translation id="443121186588148776">Port serial</translation>
@@ -2482,6 +2489,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4950898438188848926">Tombol beralih tab, tekan Enter untuk beralih ke tab yang terbuka, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953689047182316270">Merespons Acara Aksesibilitas</translation>
+<translation id="4954891067389874142">Bayar lebih cepat setelah kartu Anda disimpan. Detail kartu dienkripsi di Google Wallet.</translation>
 <translation id="4957080528849277028">Tombol Lihat histori Chrome Anda, aktifkan untuk melihat dan mengelola histori penjelajahan Anda di setelan Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 situs}other{+ # situs}}</translation>
 <translation id="4958444002117714549">Luaskan daftar</translation>
@@ -2569,6 +2577,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5097468150760963273">27 x 39 inci (68 x 99 cm)</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Tekan tab, lalu enter untuk bertanya ke Mode AI</translation>
+<translation id="5105442806410269908">Kelola data Google lainnya</translation>
 <translation id="510644072453496781">Kertas kardus (Akhir)</translation>
 <translation id="5106648964679263509">Kartu virtual untuk <ph name="BNPL_ISSUER_NAME" /> terisi</translation>
 <translation id="5108567515277121477">Kartu loyalitas</translation>
@@ -2708,6 +2717,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Mesin telusur default memungkinkan Anda menelusuri web dan mendukung fitur Chromium<ph name="END_BOLD" /> seperti menelusuri dari kolom URL dan dari gambar di halaman web. Fitur mungkin tidak tersedia jika mesin telusur tidak mendukungnya.</translation>
 <translation id="5323043727018853753">Konten tersemat diizinkan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> dari <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Kelola di Akun Google Anda</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5329858041417644019">Browser Anda tidak dikelola</translation>
 <translation id="5331585574693522196">Jadikan Default</translation>
@@ -2751,6 +2761,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5394069166371280357">Acara TV Berorientasi Keluarga</translation>
 <translation id="5396631636586785122">Jahitan tepi di kanan</translation>
 <translation id="5397794290049113714">Anda</translation>
+<translation id="5398461103557553443">Agar dapat diisikan secara otomatis pada lain waktu, simpan IBAN ini di Google Wallet</translation>
 <translation id="5398772614898833570">Iklan diblokir</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5401344472773249513">Berita Selebritas &amp; Hiburan</translation>
@@ -3020,6 +3031,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5843987376989109187">Bahasa ini belum didukung.
     <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Catu Daya Listrik</translation>
+<translation id="5848445080378515710">Setelah meninjau pesanan, Anda harus login atau membuat akun dengan <ph name="BNPL_ISSUER_NAME" />. Akun ini akan otomatis ditautkan di Google Wallet.</translation>
 <translation id="584902713199270089">Kencan &amp; Pribadi</translation>
 <translation id="5851548754964597211">Daftar tab</translation>
 <translation id="5851868085455377790">Penerbit</translation>
@@ -3858,6 +3870,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7162277662076933695">Pembaca kartu smart</translation>
 <translation id="7163295244162773898">{0,plural, =1{Salin file rahasia?}other{Salin file rahasia?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" bukan pembatasan yang didukung di platform ini</translation>
+<translation id="7170930892977483182">Semua kode keamanan yang disimpan di perangkat Anda dan di Google Wallet akan dihapus</translation>
 <translation id="717330890047184534">ID GAIA:</translation>
 <translation id="7173338713290252554">Histori harga di seluruh web</translation>
 <translation id="7174545416324379297">Digabung</translation>
@@ -3911,6 +3924,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7247459554233215758">Ketuk detail kartu untuk menambahkannya ke checkout.</translation>
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> manfaat kartu</translation>
 <translation id="7251437084390964440">Konfigurasi jaringan tidak mematuhi standar ONC. Sebagian konfigurasi mungkin tidak diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Untuk menghapus data ini, buka setelan pengelolaannya</translation>
 <translation id="7255540419660272073">Tombol tidak suka, tekan Enter untuk membuka formulir guna mengirim masukan mendetail tentang alasan Anda tidak menyukai, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Baki Belakang</translation>
 <translation id="7257453341537973799">Sumber Daya &amp; Perencanaan Karier</translation>
@@ -4009,6 +4023,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7408613996403626141">Mainan</translation>
 <translation id="7410852728357935715">Transmisikan ke perangkat</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
+<translation id="7412081313067625215">Kartu Anda disimpan di Google Wallet sehingga Anda dapat mengisi otomatis kartu tersebut untuk pembelian mendatang</translation>
 <translation id="7416351320495623771">Kelola Sandi...</translation>
 <translation id="7416898721136759658">Hibah, Beasiswa &amp; Bantuan Keuangan</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4038,6 +4053,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7450577240311017924">Tombol Kelola sinkronisasi, aktifkan untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="745208957946308667">Game Dino, tekan spasi untuk bermain</translation>
+<translation id="7453032093368223821">Kelola data lainnya</translation>
 <translation id="7453849010505253492">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" /> karena menggunakan sertifikat keamanan yang tidak dipercaya oleh Chrome atau konfigurasi sistem Anda untuk enkripsi traffic web. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang menyadap koneksi Anda. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Lihat Sertifikat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Akun Cloud</translation>
 <translation id="7455133967321480974">Gunakan default global (Blokir)</translation>
@@ -4142,6 +4158,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="759889825892636187"><ph name="HOST_NAME" /> saat ini tidak dapat menangani permintaan ini.</translation>
 <translation id="7599089013883397081">Waktu download habis</translation>
 <translation id="7602868996817972616">Tanya Google tentang halaman ini</translation>
+<translation id="7606123685356405076">Model Gemini 3</translation>
 <translation id="7610193165460212391">Nilai di luar jangkauan <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">Tebal</translation>
 <translation id="7613889955535752492">Masa berlaku habis: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

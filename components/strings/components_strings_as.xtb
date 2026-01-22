@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">আন ডিভাইচত আপোনাৰ ইতিহাস চাওক</translation>
 <translation id="1292571435393770077">ট্ৰে’ ১৬</translation>
 <translation id="1292701964462482250">"আপোনাৰ কম্পিউটাৰৰ ছফ্‌টৱেৰৰে Chromeক ৱেবৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে (কেৱল Windows কম্পিউটাৰ)</translation>
-<translation id="1293154089865862473">এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠাৰ সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হয়। স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাত পাছত পৰিশোধ কৰাৰ বিকল্পসমূহ লুকুৱাবলৈ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />লৈ যাওক।</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">এনভেল’প ৯ x ১১ ইঞ্চি</translation>
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
@@ -266,6 +265,7 @@
 <translation id="1408787208417187241">ওপৰৰ অংশত তিনিবাৰ ষ্টে'পল কৰক</translation>
 <translation id="1410365862999780287">এই ডিভাইচটো ব্যৱহাৰ কৰা অন্য লোকে আপোনাৰ কার্যকলাপ দেখা নাপাব, গতিকে আপুনি অধিক ব্যক্তিগতভাৱে ব্ৰাউজ কৰিব পাৰে। এইটোৱে Googleকে ধৰি আপুনি চোৱা ৱেবছাইটসমূহে ডেটা কেনেকৈ সংগ্ৰহ কৰে আৰু সেইসমূহে ব্যৱহাৰ কৰা সেৱাসমূহ সলনি নকৰিব। ডাউনল’ড, বুকমাৰ্ক আৰু পঢ়াৰ সূচীৰ বস্তুবোৰ ছেভ কৰা হ’ব।</translation>
 <translation id="1410941016594047814">এনভেল’প আমন্ত্ৰণ</translation>
+<translation id="1413235258620101697">এই কাৰ্ডখনৰ CVC এনক্ৰিপ্ট কৰা হ’ব আৰু ক্ষিপ্ৰভাৱে চেকআউট কৰিবলৈ Google Walletত ছেভ কৰা হ’ব</translation>
 <translation id="1413809658975081374">গোপনীয়তাৰ ক্ষেত্রত কিবা আসোঁৱাহ হৈছে</translation>
 <translation id="1414134146594747368">প্ৰাক-প্ৰাথমিক স্কুল</translation>
 <translation id="1419305130220238697">Chromeত ডাউনল’ড পৰিচালনা কৰাৰ বুটাম, আপুনি Chromeত জৰিয়তে ডাউনল’ড কৰা ফাইল পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
@@ -287,6 +287,7 @@
 <translation id="1433225466058025572">আপোনাৰ ফাইলসমূহ পুনৰ স্থানান্তৰ কৰি চাওক</translation>
 <translation id="1433478348197382180">পঢ়াৰ ম’ড</translation>
 <translation id="1436185428532214179">আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="1442054921249164535">আন ডেটা</translation>
 <translation id="1442386063175183758">সোঁফালে গে'ট ফ'ল্ড কৰক</translation>
 <translation id="1442987760062738829">পাঞ্চ</translation>
 <translation id="1445896388055045436">চেকআউটত উপলব্ধ কাৰ্ডৰ সুবিধা আৰু পুৰস্কাৰ দেখুৱাওক। জাৰিকৰ্তাৰ চৰ্তাৱলী প্ৰযোজ্য।</translation>
@@ -940,6 +941,7 @@
 <translation id="24699311393038040">কাগজ (ক’টেড)</translation>
 <translation id="2471632709106952369">তুলনাৰ তালিকা</translation>
 <translation id="2473810985261856484">আইনী সেৱা</translation>
+<translation id="2477607419416067650">আন Google ডেটা</translation>
 <translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
 <translation id="2479410451996844060">সন্ধানৰ URL অমান্য।</translation>
 <translation id="2480300195898055381">আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />ত</translation>
@@ -994,6 +996,7 @@
 <translation id="2552246211866555379">হাগাকি</translation>
 <translation id="2552295903035773204">এতিয়াৰ পৰা কাৰ্ডসমূহ নিশ্চিত কৰিবলৈ স্ক্ৰীন লক ব্যৱহাৰ কৰক</translation>
 <translation id="2552532158894206888">সোঁফালৰ কী</translation>
+<translation id="2553352788023127673">সন্ধানৰ ইতিহাস আৰু পাছৱৰ্ডসমূহ সেইসমূহৰ পৰিচালনাৰ ছেটিঙত মচি পেলাব পাৰি</translation>
 <translation id="2553853292994445426">আপোনাৰ সুৰক্ষিত DNS ছেটিংসমূহ পৰীক্ষা কৰক। আপুনি চাগে এটা সুৰক্ষিত DNS ছার্ভাৰ কনফিগাৰ কৰিছে, যিটোলৈ সংযোগসমূহ কৰিব পৰা নাই।</translation>
 <translation id="255497580849974774">অনুগ্ৰহ কৰি আপডে’টৰ প্ৰক্ৰিয়াটো চলি থকাৰ সময়ত আপোনাৰ ডিভাইচটো চাৰ্জাৰৰ সৈতে সংযুক্ত কৰি ৰাখক।</translation>
 <translation id="2556876185419854533">&amp;সম্পাদনা আনডু কৰক</translation>
@@ -1125,7 +1128,6 @@
 <translation id="2782088940970074970">গাড়ী ভাড়ালৈ দিয়া সেৱা</translation>
 <translation id="278436560439594386">ঘৰত ব্যৱহৃত সা-সৰঞ্জাম</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">এই বিকল্পসমূহ আগবঢ়াবলৈ চেকআউট পৃষ্ঠাৰ সমল Googleৰ সৈতে শ্বেয়াৰ কৰা হয়।</translation>
 <translation id="2784949926578158345">ইণ্টাৰনেট সংযোগ ৰিছেট কৰা হ’ল৷</translation>
 <translation id="2786008859124691917">চাইকেল আৰু আনুষংগিক সামগ্ৰী</translation>
 <translation id="2792012897584536778">এই ডিভাচৰ প্ৰশাসকে কিছুমান সুৰক্ষা সম্পর্কীয় প্ৰমাণপত্ৰ ছেট আপ কৰিছে, যিবোৰে তেওঁলোকক আপুনি চোৱা সমল বা ৱেবছাইটসমূহ চাবলৈ অনুমতি দিব পাৰে।</translation>
@@ -1497,6 +1499,7 @@
 <translation id="3407789382767355356">তৃতীয় পক্ষৰ ছাইন-ইন</translation>
 <translation id="340924996148642843">তুলনা কৰাৰ সুবিধা এই মুহূৰ্তত উপলব্ধ নহয়</translation>
 <translation id="3409896703495473338">সুৰক্ষাৰ ছেটিং পৰিচালনা কৰক</translation>
+<translation id="3410151451624226773">Google Password Managerত পৰিচালনা কৰক</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> ঘণ্টাত আপল’ড কৰক</translation>
 <translation id="341134412449102894">আপোনাৰ তথ্যখিনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত ছেভ কৰা হয়</translation>
 <translation id="3413466783792948876">আপুনি যদি ৰাজহুৱা নেটৱৰ্ক ব্যৱহাৰ কৰি আছে, এই ছাইটটো পাছত চোৱাটো নিৰাপদ হ’ব। আপোনাৰ ঘৰ বা কৰ্মস্থানৰ ৱাই-ফাইৰ দৰে বিশ্বস্ত নেটৱৰ্কৰ পৰা চালে বিপদাশংকা কম হয়।</translation>
@@ -1587,6 +1590,7 @@
 <translation id="3549904448933807997">ব্ৰাউজাৰ আৰু প্ৰ’ফাইলৰ তথ্য (ব্যক্তিগত আৰু কৰ্মস্থানৰ প্ৰ’ফাইলকে ধৰি)</translation>
 <translation id="3552155506104542239">সকীয়নি: এই নীতিটো <ph name="POLICY_NAME" />ৰ সৈতে বিবাদমান হৈছে আৰু Android এপত কোনো প্ৰভাৱ নপৰে। অন্যথা, এই নীতিটোৱে আশা কৰা ধৰণে কাম কৰি আছে।</translation>
 <translation id="3552297013052089404">Sans-serif ফ’ণ্ট</translation>
+<translation id="3558335486599406178">Google Walletত IBAN ছেভ কৰা হৈছে</translation>
 <translation id="3558573058928565255">দিনত</translation>
 <translation id="3559897352860026926">আপোনাৰ প্ৰশাসকক তেওঁৰ <ph name="CLOUD_PROVIDER" />ৰ কনফিগাৰেশ্বনৰ ছেটিং সত্যাপন কৰিবলৈ কওক।</translation>
 <translation id="3560824484345057728">জড়িত হৈ থকা ছাইটসমূহ চাওক</translation>
@@ -2156,12 +2160,14 @@
 <translation id="4406883609789734330">লাইভ কেপশ্বন</translation>
 <translation id="4406896451731180161">সন্ধানৰ ফলাফল</translation>
 <translation id="4407758156081352648">সুৰক্ষা বৰ্তাই ৰাখিবলৈ, আপোনাৰ প্ৰতিষ্ঠানে Chromeত পাছৱৰ্ড পুনৰ ব্যৱহাৰ কৰিবলৈ অনুমতি নিদিয়ে। ব্যৱহাৰকাৰীৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ Chromeৰ পাছৱৰ্ডসমূহ এনক্ৰিপ্ট কৰা হয়।</translation>
+<translation id="4409271659088619928">আপোনাৰ সন্ধানৰ ইঞ্জিনটো হৈছে <ph name="DSE" />। যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক।</translation>
 <translation id="4409556632583862731">নতুন থ্ৰেড</translation>
 <translation id="4412074349188076601">এই কনফিগাৰেশ্বনটো ইনষ্টল কৰিব পৰা হিচাপে চিহ্নিত কৰা হৈছে, কিন্তু এই গঠন প্ৰণালীটোৰ বাবে কোনো প্ৰতিচ্ছবি প্ৰদান কৰা হোৱা নাই, গতিকে এইটো ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="4412377069090572315">লোকসকলে কি কৈছে</translation>
 <translation id="4414515549596849729">কুকি আৰু ছাইটৰ ডেটা</translation>
 <translation id="4415156962929755728">প্লাষ্টিক (হাই গ্লছ)</translation>
 <translation id="4415426530740016218">পিকআপ কৰাৰ ঠিকনা</translation>
+<translation id="4419287616181386201">পাছৱৰ্ডসমূহ তেওঁৰ পৰিচালনাৰ ছেটিঙত মচিব পাৰি</translation>
 <translation id="4424024547088906515">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" />; বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু Chromeএ ইয়াৰ সুৰক্ষাৰ প্ৰমাণপত্ৰ বিশ্বাস নকৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে।</translation>
 <translation id="4425750422187370446">ক্ৰীড়াবিদৰ পোছাক</translation>
 <translation id="443121186588148776">ছিৰিয়েল প'ৰ্ট</translation>
@@ -2568,6 +2574,7 @@
 <translation id="5097468150760963273">২৭ x ৩৯ ইঞ্চি</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">AI ম’ডটো বিচাৰিবলৈ প্ৰথমে টেব টিপি এণ্টাৰ টিপক</translation>
+<translation id="5105442806410269908">আন Google ডেটা পৰিচালনা কৰক</translation>
 <translation id="510644072453496781">কাৰ্ডব’ৰ্ড (এণ্ড)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />ৰ বাবে ভাৰ্ছুৱেল কাৰ্ড পূৰ হৈছে</translation>
 <translation id="5108567515277121477">লয়েল্টী কাৰ্ড</translation>
@@ -2707,6 +2714,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনে আপোনাক ৱেবত সন্ধান কৰিবলৈ দিয়ে আৰু Chromiumৰ সুবিধাসমূহ আগবঢ়ায়<ph name="END_BOLD" /> যেনে, ঠিকনাৰ বাৰৰ পৰা আৰু ৱেব পৃষ্ঠাসমূহত প্ৰতিচ্ছবিৰ পৰা সন্ধান কৰা। আপোনাৰ সন্ধান ইঞ্জিনে কোনো সুবিধা সমৰ্থন নকৰিলে সেইটো উপলব্ধ নহ’ব পাৰে।</translation>
 <translation id="5323043727018853753">এম্বেড কৰা সমলৰ অনুমতি আছে</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />ৰ <ph name="MATCH_POSITION" /></translation>
+<translation id="5323501626199324454">আপোনাৰ Google একাউণ্টত পৰিচালনা কৰক</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5329858041417644019">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত নহয়</translation>
 <translation id="5331585574693522196">ডিফ’ল্ট হিচাপে ছেট কৰক</translation>
@@ -2750,6 +2758,7 @@
 <translation id="5394069166371280357">পৰিয়ালৰ বাবে নিৰ্মাণ কৰা টিভি শ্ব’</translation>
 <translation id="5396631636586785122">সোঁফালে কাষত চিলাওক</translation>
 <translation id="5397794290049113714">আপুনি</translation>
+<translation id="5398461103557553443">পৰৱৰ্তী সময়ত এই IBANটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, এইটো Google Walletত ছেভ কৰক</translation>
 <translation id="5398772614898833570">বিজ্ঞাপন অৱৰোধ কৰা হৈছে</translation>
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
 <translation id="5401344472773249513">যশস্বী ব্যক্তি আৰু মনোৰঞ্জন সম্পৰ্কীয় বাতৰি</translation>
@@ -3019,6 +3028,7 @@
 <translation id="5843987376989109187">এই ভাষাটো এই পৰ্যন্ত সমৰ্থিত হোৱা নাই।
     <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">পাৱাৰ ছাপ্লাই</translation>
+<translation id="5848445080378515710">আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি <ph name="BNPL_ISSUER_NAME" />ত ছাইন ইন কৰিবই লাগিব বা সেইটোৰ সৈতে এটা একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে Google Walletত লিংক কৰা হ’ব।</translation>
 <translation id="584902713199270089">ডে’টিং আৰু ব্যক্তিগত সেৱা</translation>
 <translation id="5851548754964597211">টেবৰ তালিকা</translation>
 <translation id="5851868085455377790">প্ৰদানকাৰী</translation>
@@ -3855,6 +3865,7 @@
 <translation id="7162277662076933695">স্মাৰ্ট কাৰ্ড ৰীডাৰ</translation>
 <translation id="7163295244162773898">{0,plural, =1{গোপনীয় ফাইলটো প্ৰতিলিপি কৰিবনে?}one{গোপনীয় ফাইলসমূহ প্ৰতিলিপি কৰিবনে?}other{গোপনীয় ফাইলসমূহ প্ৰতিলিপি কৰিবনে?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" এই প্লেটফৰ্মত সমৰ্থিত প্ৰতিবন্ধকতা নহয়</translation>
+<translation id="7170930892977483182">আপোনাৰ ডিভাইচত আৰু Google Walletত ছেভ কৰা আটাইবোৰ সুৰক্ষা ক’ড মচি পেলোৱা হ’ব</translation>
 <translation id="717330890047184534">Gaia আইডি:</translation>
 <translation id="7173338713290252554">সমগ্ৰ ৱেবত মূল্যৰ ইতিহাস</translation>
 <translation id="7174545416324379297">একত্ৰিত কৰা হৈছে</translation>
@@ -3910,6 +3921,7 @@
 <translation id="7251437084390964440">নেটৱৰ্ক কনফিগাৰেশ্বনটোৱে ONC নীতি মানি নচলে। কনফিগাৰেশ্বনটোৰ কিছু অংশ হয়তো আমদানি কৰা হ’ব।
 অতিৰিক্ত বিৱৰণ:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">এই ডেটা মচিবলৈ, ইয়াৰ পৰিচালনাৰ ছেটিঙলৈ যাওক</translation>
 <translation id="7255540419660272073">থাম্বছ ডাউন বুটাম, আপুনি <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> কিয় ভাল পোৱা নাই তাৰ ওপৰত বিতং মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খুলিবলৈ Enter টিপক</translation>
 <translation id="7256634549594854023">পিছফালৰ ট্ৰে’</translation>
 <translation id="7257453341537973799">জীৱিকা সম্পৰ্কীয় সম্পদ আৰু পৰিকল্পনা</translation>
@@ -4038,6 +4050,7 @@
 <translation id="7450577240311017924">ছিংক পৰিচালনা কৰাৰ বুটাম, আপুনি Chromeৰ ছেটিঙত কি তথ্য ছিংক কৰিব সেয়া পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="7451311239929941790">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>
 <translation id="745208957946308667">ডাইন’ছৰৰ গে’ম, খেলিবলৈ স্পেচ টিপক</translation>
+<translation id="7453032093368223821">আন ডেটা পৰিচালনা কৰক</translation>
 <translation id="7453849010505253492">এই ছাৰ্ভাৰটোৱে এইটো <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, কিয়নো ই এনে এখন সুৰক্ষা সম্পৰ্কীয় প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি আছে যিখন Chrome বা আপোনাৰ ছিষ্টেমৰ কনফিগাৰেশ্বনে ৱেব ট্ৰেফিক এনক্ৰিপশ্বনৰ বাবে বিশ্বাসযোগ্য বুলি গণ্য নকৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />প্ৰমাণপত্ৰ চাওক<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">ক্লাউড একাউণ্ট</translation>
 <translation id="7455133967321480974">গ্ল’বেল ডিফ’ল্ট ব্যৱহাৰ কৰক (অৱৰোধ কৰক)</translation>

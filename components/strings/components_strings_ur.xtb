@@ -265,6 +265,7 @@
 <translation id="1408787208417187241">اوپر تین سٹیپل</translation>
 <translation id="1410365862999780287">‏دوسرے لوگ جو یہ آلہ استعمال کرتے ہیں وہ آپ کی سرگرمی نہیں دیکھ پائیں گے، لہذا آپ مزید نجی طور پر براؤز کر سکتے ہیں۔ اس سے آپ کی ملاحظہ کی جانے والی ویب سائٹس کے ذریعے ڈیٹا جمع کرنے کا طریقہ اور Google سمیت ان کی استعمال کی جانے والی سروسز تبدیل نہیں ہوگی۔ تاہم، ڈاؤن لوڈز، بک مارکس اور پڑھنے کی فہرست کے آئٹمز محفوظ ہو جائیں گے۔</translation>
 <translation id="1410941016594047814">لفافہ دعوت نامہ</translation>
+<translation id="1413235258620101697">‏اس کارڈ کا CVC تیزی سے چیک آؤٹ کے لیے Google والٹ میں مرموز اور محفوظ کیا جائے گا</translation>
 <translation id="1413809658975081374">رازداری کی خرابی</translation>
 <translation id="1414134146594747368">پری اسکول</translation>
 <translation id="1419305130220238697">‏Chrome میں ڈاؤن لوڈز کا نظم کریں بٹن، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے فعال کریں</translation>
@@ -286,6 +287,7 @@
 <translation id="1433225466058025572">اپنی فائلز کو دوبارہ منتقل کرنے کی کوشش کریں</translation>
 <translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1436185428532214179">سائٹ آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہے</translation>
+<translation id="1442054921249164535">دیگر ڈیٹا</translation>
 <translation id="1442386063175183758">دایاں گیٹ فولڈ</translation>
 <translation id="1442987760062738829">سوراخ کریں</translation>
 <translation id="1445896388055045436">چیک آؤٹ پر دستیاب کارڈ کے فوائد اور انعامات دکھائیں۔ جاری کنندہ کی شرائط لاگو ہوتی ہیں۔</translation>
@@ -939,6 +941,7 @@
 <translation id="24699311393038040">کاغذ (کوٹیڈ)</translation>
 <translation id="2471632709106952369">موازنہ کے ٹیبلز</translation>
 <translation id="2473810985261856484">قانونی سروسز</translation>
+<translation id="2477607419416067650">‏دیگر Google ڈیٹا</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2479410451996844060">‏غلط تلاش URL۔</translation>
 <translation id="2480300195898055381">‏آپ کے Google اکاؤنٹ میں، <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">ابھی سے کارڈز کی توثیق کے لیے اسکرین لاک کا استعمال کریں</translation>
 <translation id="2552532158894206888">دائیں کلید</translation>
+<translation id="2553352788023127673">تلاش کی سرگزشت اور پاس ورڈز کو ان کی نظم و نسق کی ترتیبات میں حذف کیا جا سکتا ہے</translation>
 <translation id="2553853292994445426">‏اپنی محفوظ DNS ترتیبات کو چیک کریں۔ ممکن ہے کہ آپ نے ایک محفوظ DNS سرور ترتیب دیا ہو جس کی وجہ سے کنکشنز ناکام ہو رہے ہیں۔</translation>
 <translation id="255497580849974774">براہ کرم اپ ڈیٹ کے دوران اپنے آلہ کو چارجر سے منسلک رکھیں۔</translation>
 <translation id="2556876185419854533">ترمیم کریں کو &amp;کالعدم کریں</translation>
@@ -1498,6 +1502,7 @@
 <translation id="3407789382767355356">فریق ثالث سائن ان</translation>
 <translation id="340924996148642843">موازنہ ابھی دستیاب نہیں ہے</translation>
 <translation id="3409896703495473338">سیکیورٹی کی ترتیبات کا نظم کریں</translation>
+<translation id="3410151451624226773">‏‫Google پاس ورڈ مینیجر میں نظم کریں</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> گھنٹے میں اپ لوڈ کریں</translation>
 <translation id="341134412449102894">آپ کی معلومات <ph name="ACCOUNT" /> کے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> پر محفوظ ہو گئی ہے</translation>
 <translation id="3413466783792948876">‏اگر آپ کوئی عوامی نیٹ ورک استعمال کر رہے ہیں تو اس سائٹ کو بعد میں ملاحظہ کرنا محفوظ ترین ہے۔ قابل اعتماد نیٹ ورک، جیسے آپ کے گھر یا دفتر کے Wi-Fi سے کم خطرہ لاحق ہوتا ہے۔</translation>
@@ -2159,12 +2164,14 @@
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4406896451731180161">تلاش کے نتائج</translation>
 <translation id="4407758156081352648">‏سیکیورٹی کو برقرار رکھنے کے لیے، آپ کی تنظیم Chrome میں پاس ورڈز کو دوبارہ استعمال کرنے کی اجازت نہیں دیتی ہے۔ ‫Chrome میں پاس ورڈز کو صارف کی رازداری کے تحفظ کے لیے مرموز کیا جاتا ہے۔</translation>
+<translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4409556632583862731">نیا سلسلہ</translation>
 <translation id="4412074349188076601">اس کنفیگریشن کو قابل انسٹال کے طور پر نشان زد کیا جاتا ہے لیکن اس فن تعمیر کے لیے کوئی تصویر فراہم نہیں کی جاتی ہے، لہذا اسے انسٹال نہیں کیا جا سکتا۔</translation>
 <translation id="4412377069090572315">لوگ کیا کہہ رہے ہیں</translation>
 <translation id="4414515549596849729">کوکیز اور سائٹ کا ڈیٹا</translation>
 <translation id="4415156962929755728">پلاسٹک (ہائی گلوس)</translation>
 <translation id="4415426530740016218">پک اپ کا پتہ</translation>
+<translation id="4419287616181386201">پاس ورڈز کو ان کی نظم و نسق کی ترتیبات میں حذف کیا جا سکتا ہے</translation>
 <translation id="4424024547088906515">‏یہ سرور یہ بات ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ پر Chrome کو بھروسہ نہیں ہے۔ یہ غلط کنفیگرییشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="4425750422187370446">ایتھلیٹک پوشاک</translation>
 <translation id="443121186588148776">سیریل پورٹ</translation>
@@ -2483,6 +2490,7 @@
 <translation id="4950898438188848926">‏ٹیب پر سوئچ کرنے کا بٹن، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Enter دبائیں، <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">کارروائیاں</translation>
 <translation id="4953689047182316270">ایکسیسبیلٹی ایونٹس کا جواب دیں</translation>
+<translation id="4954891067389874142">‏اپنا کارڈ محفوظ ہو جانے پر زیادہ تیزی سے ادائیگی کریں۔ کارڈ کی تفصیلات Google والٹ میں مرموز کردہ ہیں۔</translation>
 <translation id="4957080528849277028">‏اپنے Chrome کی سرگزشت دیکھیں بٹن، Chrome کی ترتیبات میں اپنی براؤزنگ کی سرگزشت دیکھنے اور اس کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{‫+ 1 سائٹ}other{‫+ # سائٹس}}</translation>
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
@@ -2570,6 +2578,7 @@
 <translation id="5097468150760963273">‏‎27 x 39 انچ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">‏‫AI وضع کی درخواست کرنے کیلئے ٹیب پھر Enter دبائیں</translation>
+<translation id="5105442806410269908">‏دیگر Google ڈیٹا نظم کریں</translation>
 <translation id="510644072453496781">کارڈ بورڈ (اینڈ)</translation>
 <translation id="5106648964679263509">ورچوئل کارڈ <ph name="BNPL_ISSUER_NAME" /> کے لیے پر کیا گیا</translation>
 <translation id="5108567515277121477">لائلٹی کارڈ</translation>
@@ -2709,6 +2718,7 @@
 <translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chromium کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="5323043727018853753">سرایت کردہ مواد کی اجازت ہے</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />، <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">‏اپنے Google اکاؤنٹ میں نظم کریں</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329858041417644019">آپ کا براؤزر زیر انتظام نہیں ہے</translation>
 <translation id="5331585574693522196">بطور ڈیفالٹ سیٹ کریں</translation>
@@ -2752,6 +2762,7 @@
 <translation id="5394069166371280357">‏خاندان پر مرتکز TV شوز</translation>
 <translation id="5396631636586785122">دائیں طرف کنارے کی سلائی</translation>
 <translation id="5397794290049113714">آپ</translation>
+<translation id="5398461103557553443">‏اگلی بار اس IBAN کو آٹو فل کرنے کے لیے، اسے Google والٹ میں محفوظ کریں</translation>
 <translation id="5398772614898833570">اشتہارات مسدود ہیں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5401344472773249513">مشہور شخصیات اور تفریح کی خبریں</translation>
@@ -3021,6 +3032,7 @@
 <translation id="5843987376989109187">یہ زبان ابھی تک تعاون یافتہ نہیں ہے۔
     <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">پاور سپلائیز</translation>
+<translation id="5848445080378515710">‏اپنے آرڈر کا جائزہ لینے کے بعد، آپ کو <ph name="BNPL_ISSUER_NAME" /> کے ساتھ اکاؤنٹ میں سائن ان کرنا ہوگا یا نیا تخلیق کرنا ہوگا۔ یہ اکاؤنٹ خودکار طور پر Google والٹ میں لنک ہو جائے گا۔</translation>
 <translation id="584902713199270089">ڈیٹنگ اور ذاتیات</translation>
 <translation id="5851548754964597211">ٹیب کی فہرست</translation>
 <translation id="5851868085455377790">جاری کنندہ</translation>
@@ -3859,6 +3871,7 @@
 <translation id="7162277662076933695">اسمارٹ کارڈ ریڈر</translation>
 <translation id="7163295244162773898">{0,plural, =1{رازدارانہ فائل کو کاپی کریں؟}other{رازدارانہ فائلز کو کاپی کریں؟}}</translation>
 <translation id="7168625890036931112">اس پلیٹ فارم پر "<ph name="DATA_CONTROLS_RESTRICTION" />" ایک تعاون یافتہ پابندی نہیں ہے</translation>
+<translation id="7170930892977483182">‏آپ کے آلے اور Google والٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7173338713290252554">ویب پر قیمت کی سرگزشت</translation>
 <translation id="7174545416324379297">ضم کردہ</translation>
@@ -3914,6 +3927,7 @@
 <translation id="7251437084390964440">‏نیٹ ورک کنفیگریشن ONC معیار کی تعمیل نہیں کرتی ہے۔ کنفیگریشن کے حصوں کو درآمد نہیں کیا جا سکتا ہے۔
 اضافی معلومات:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">اس ڈیٹا کو حذف کرنے کے لیے، اس کی نظم و نسق کی ترتیبات پر جائیں</translation>
 <translation id="7255540419660272073">‏اظہار ناپسندیدگی کا بٹن، آپ کیوں ناپسند کرتے ہیں، اس سے متعلق مفصل تاثرات جمع کرانے کی ایک فارم کھولنے کیلئے Enter دبائیں، <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">پچھلا ٹرے</translation>
 <translation id="7257453341537973799">کیریئر کے وسائل اور پلاننگ</translation>
@@ -4012,6 +4026,7 @@
 <translation id="7408613996403626141">کھلونے</translation>
 <translation id="7410852728357935715">آلہ میں کاسٹ کریں</translation>
 <translation id="741204030948306876">ہاں، میں شامل ہوں</translation>
+<translation id="7412081313067625215">‏آپ کا کارڈ Google والٹ میں محفوظ ہے، اسلئے آپ آئندہ کی خریداریوں کیلئے اسے آٹو فل کر سکتے ہیں</translation>
 <translation id="7416351320495623771">پاس ورڈز کا نظم کریں…</translation>
 <translation id="7416898721136759658">گرانٹس، اسکالرشپس اور مالی مدد</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4041,6 +4056,7 @@
 <translation id="7450577240311017924">‏مطابقت پذیری کا نظم کریں بٹن، آپ Chrome ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کرنے کے لئے فعال کریں</translation>
 <translation id="7451311239929941790">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جاننے کی<ph name="END_LINK" />۔</translation>
 <translation id="745208957946308667">‏‫Dino گیم، کھیلنے کے لیے اسپیس دبائیں</translation>
+<translation id="7453032093368223821">دیگر ڈیٹا کا نظم کریں</translation>
 <translation id="7453849010505253492">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chrome یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />سرٹیفکیٹ دیکھیں<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">کلاؤڈ اکاؤنٹ</translation>
 <translation id="7455133967321480974">گلوبل ڈیفالٹ استعمال کریں (مسدود کریں)</translation>
@@ -4145,6 +4161,7 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> فی الحال اس درخواست کو نمٹانے سے قاصر ہے۔</translation>
 <translation id="7599089013883397081">ڈاؤن لوڈ کا وقت ختم ہو گیا</translation>
 <translation id="7602868996817972616">‏اس صفحہ کے بارے میں Google سے پوچھیں</translation>
+<translation id="7606123685356405076">‏‫Gemini 3 ماڈلز</translation>
 <translation id="7610193165460212391">قدر رینج سے باہر کی ہے <ph name="VALUE" />۔</translation>
 <translation id="761261689936461781">موٹا</translation>
 <translation id="7613889955535752492">‏اختتامی تاریخ: ‎<ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" />‎</translation>

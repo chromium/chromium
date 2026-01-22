@@ -86,6 +86,9 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2788811701191021538">Opens the payment methods setting page in Chrome.</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">You reached Google Chrome's limit of <ph name="LIMIT" /> bookmarks, so some of your bookmarks haven't been saved in your Google Account yet.
+
+New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="2922914028977213693">Tap here to get the most out of Chrome on your iPad.</translation>
 <translation id="292371311537977079">Chrome settings</translation>
 <translation id="2923827943290349720">Lock incognito tabs when you close Chrome</translation>

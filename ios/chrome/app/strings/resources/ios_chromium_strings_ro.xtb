@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Folosește Chromium oricând atingi linkuri în mesaje sau alte aplicații.</translation>
 <translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Un feed personalizat creat pentru tine</translation>
+<translation id="1761196287436320018">Ai atins limita de <ph name="LIMIT" /> marcaje pentru Chromium, așadar unele dintre marcaje nu au fost salvate încă în Contul Google.
+
+Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>
 <translation id="1811860791247653035">Pentru a beneficia de personalizare și alte funcții, include Chromium în <ph name="FEATURE_NAME_1" /> și <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="1839447949248872139">Deschide linkurile în Chromium în mod prestabilit</translation>

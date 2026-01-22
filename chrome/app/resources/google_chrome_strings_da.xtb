@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">Chrome skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
+<translation id="4280647692742956593">Download Chrome på din telefon for at åbne eller oprette nye fanegrupper på farten.</translation>
 <translation id="4281844954008187215">Servicevilkår</translation>
 <translation id="4293420128516039005">Log ind for at synkronisere og personligt tilpasse Chrome på alle dine enheder</translation>
 <translation id="430327780270213103">Tillad, at udvidelsen viser adgangsanmodninger på Chrome-værktøjslinjen</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">Billedet er kopieret</translation>
 <translation id="4926882258455737990">Hvis du vil bruge en anden Google-konto med Gemini i Chrome, skal du <ph name="BEGIN_LINK" />oprette en ny profil<ph name="END_LINK" /> og logge ind med den konto, du vil bruge</translation>
 <translation id="492720062778050435">Chrome anbefaler, at du gennemgår denne udvidelse</translation>
-<translation id="4946912144186040233">Chrome forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er deaktiveret.</translation>
 <translation id="4953650215774548573">Angiv Google Chrome som din standardbrowser</translation>
 <translation id="495931528404527476">I Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex kunne ikke synkronisere dine data, da loginoplysningerne for din konto er forældede.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">Vælg en Chrome-profil, hvor du vil bruge <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Chrome sender dine interaktioner med disse funktioner til Google for at hjælpe med at forbedre dem. Disse data læses, behandles og annoteres muligvis af menneskelige kontrollanter.</translation>
 <translation id="5524890928877629608">øverste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, øverste <ph name="TOP" /> %</translation>
-<translation id="5530733413481476019">Gør Chrome hurtigere</translation>
 <translation id="5550137307985173298">Klik på knappen Tilpas Chrome på siden Ny fane for at give Chrome et nyt udseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine eksisterende Chrome-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
+<translation id="7285990705317078173">Download Chrome på din telefon for at overvåge priser og få underretninger, når prisen falder på et website</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
+<translation id="7379321689415048316">Chrome kan udfylde svære felter, som standardautofyld muligvis ikke kan</translation>
 <translation id="7386878009611068389">Hvis du vil være mere sikker online med dine forældres valg, skal du skifte til din Chrome-profil, hvor du allerede er logget ind som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7412494426921990001">Klik på Chrome-menuen</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
 <translation id="7496017508659652909">Chrome forudindlæser sider, hvilket gør det hurtigere at browse og søge. <ph name="BEGIN_LINK" />Få flere oplysninger om forudindlæsning af sider<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome forstår formularer bedre og kan udfylde dem automatisk for dig. Denne indstilling er aktiveret.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>

@@ -265,6 +265,7 @@
 <translation id="1408787208417187241">상단 트리플 스테이플</translation>
 <translation id="1410365862999780287">이 기기를 사용하는 다른 사용자가 내 활동을 볼 수 없으므로 비공개로 탐색할 수 있습니다. 방문하는 웹사이트와 Google을 비롯하여 해당 웹사이트에서 사용하는 서비스에서 데이터를 수집하는 방식은 변경되지 않습니다. 다운로드, 북마크, 읽기 목록 항목은 계속해서 저장됩니다</translation>
 <translation id="1410941016594047814">봉투 Invite</translation>
+<translation id="1413235258620101697">더 빠른 결제를 위해 이 카드의 CVC가 암호화되고 Google 월렛에 저장됩니다.</translation>
 <translation id="1413809658975081374">개인 정보 보호 오류</translation>
 <translation id="1414134146594747368">유치원</translation>
 <translation id="1419305130220238697">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 활성화하세요.</translation>
@@ -286,6 +287,7 @@
 <translation id="1433225466058025572">파일을 다시 이동해 보세요.</translation>
 <translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1436185428532214179">기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
+<translation id="1442054921249164535">기타 데이터</translation>
 <translation id="1442386063175183758">오른쪽 게이트 폴드</translation>
 <translation id="1442987760062738829">펀칭</translation>
 <translation id="1445896388055045436">결제 시 사용 가능한 카드 혜택 및 리워드를 표시합니다. 발급기관의 약관이 적용됩니다.</translation>
@@ -939,6 +941,7 @@
 <translation id="24699311393038040">용지(코팅됨)</translation>
 <translation id="2471632709106952369">비교 테이블</translation>
 <translation id="2473810985261856484">법률 서비스</translation>
+<translation id="2477607419416067650">기타 Google 데이터</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2479410451996844060">검색 URL이 잘못됨</translation>
 <translation id="2480300195898055381">Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다</translation>
@@ -993,6 +996,7 @@
 <translation id="2552246211866555379">엽서</translation>
 <translation id="2552295903035773204">지금부터 화면 잠금을 사용하여 카드 확인</translation>
 <translation id="2552532158894206888">오른쪽 키</translation>
+<translation id="2553352788023127673">관리 설정에서 검색 기록과 비밀번호를 삭제할 수 있습니다</translation>
 <translation id="2553853292994445426">보안 DNS 설정을 확인하세요. 연결되지 않는 보안 DNS 서버를 설정했을 수도 있습니다.</translation>
 <translation id="255497580849974774">업데이트 중에는 기기를 충전기에 연결해 두세요.</translation>
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3407789382767355356">서드 파티 로그인</translation>
 <translation id="340924996148642843">지금은 비교 기능을 사용할 수 없습니다</translation>
 <translation id="3409896703495473338">보안 설정 관리</translation>
+<translation id="3410151451624226773">Google 비밀번호 관리자에서 관리</translation>
 <translation id="3411091017011773343"><ph name="HOURS" />시간 후 업로드</translation>
 <translation id="341134412449102894">정보는 <ph name="ACCOUNT" /> 계정의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장됩니다.</translation>
 <translation id="3413466783792948876">공용 네트워크를 사용 중이라면 나중에 이 사이트를 방문하는 것이 가장 안전합니다. 집이나 직장 Wi-Fi와 같이 신뢰할 수 있는 네트워크를 사용하면 위험이 적습니다.</translation>
@@ -2158,12 +2163,14 @@
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
 <translation id="4407758156081352648">보안을 유지하기 위해 조직에서는 Chrome에서 비밀번호를 재사용하는 것을 허용하지 않습니다. Chrome의 비밀번호는 사용자 개인 정보를 보호하기 위해 암호화됩니다.</translation>
+<translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4409556632583862731">새 대화목록</translation>
 <translation id="4412074349188076601">이 구성은 설치 가능으로 표시되지만 이 아키텍처에 제공된 이미지가 없으므로 설치할 수 없습니다.</translation>
 <translation id="4412377069090572315">다른 사람들의 의견</translation>
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
 <translation id="4415426530740016218">픽업 주소</translation>
+<translation id="4419287616181386201">관리 설정에서 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="4424024547088906515">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chrome에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4425750422187370446">운동복</translation>
 <translation id="443121186588148776">직렬 포트</translation>
@@ -2482,6 +2489,7 @@
 <translation id="4950898438188848926">탭 전환 버튼, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> 열린 탭으로 전환하려면 Enter를 누르세요</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953689047182316270">접근성 이벤트에 응답</translation>
+<translation id="4954891067389874142">카드를 저장하면 더 빠르게 결제할 수 있습니다. 카드 세부정보는 Google 월렛에 암호화되어 저장됩니다.</translation>
 <translation id="4957080528849277028">Chrome 방문 기록 보기 버튼, Chrome 설정에서 방문 기록을 보고 관리하려면 활성화하세요.</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{외 사이트 1개}other{외 사이트 #개}}</translation>
 <translation id="4958444002117714549">펼치기 목록</translation>
@@ -2569,6 +2577,7 @@
 <translation id="5097468150760963273">27x39인치</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Tab 키를 누른 후 Enter 키를 눌러 AI 모드에 질문하세요</translation>
+<translation id="5105442806410269908">기타 Google 데이터 관리</translation>
 <translation id="510644072453496781">골판지(끝)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> 가상 카드 입력됨</translation>
 <translation id="5108567515277121477">포인트 카드</translation>
@@ -2708,6 +2717,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />기본 검색엔진을 사용하면 웹 검색 및 Chromium 기능<ph name="END_BOLD" />(예: 주소 표시줄 및 웹페이지의 이미지 검색)을 사용할 수 있습니다. 사용 중인 검색엔진에서 Chromium 기능을 지원하지 않으면 Chromium 기능이 제공되지 않을 수도 있습니다.</translation>
 <translation id="5323043727018853753">삽입된 콘텐츠가 허용됩니다.</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Google 계정에서 관리</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
 <translation id="5331585574693522196">기본값으로 설정</translation>
@@ -2751,6 +2761,7 @@
 <translation id="5394069166371280357">가족용 TV 프로그램</translation>
 <translation id="5396631636586785122">오른쪽 에지 스티치</translation>
 <translation id="5397794290049113714">나</translation>
+<translation id="5398461103557553443">다음번에 이 IBAN을 자동 완성하려면 Google 월렛에 저장하세요.</translation>
 <translation id="5398772614898833570">광고 차단됨</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="5401344472773249513">유명인 및 연예 소식</translation>
@@ -3020,6 +3031,7 @@
 <translation id="5843987376989109187">아직 지원되지 않는 언어입니다.
     <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">전원 공급 장치</translation>
+<translation id="5848445080378515710">주문을 검토한 후에는 <ph name="BNPL_ISSUER_NAME" />에 로그인하거나 계정을 만들어야 합니다. 이 계정은 Google 월렛에 자동으로 연결됩니다.</translation>
 <translation id="584902713199270089">만남 및 데이트</translation>
 <translation id="5851548754964597211">탭 목록</translation>
 <translation id="5851868085455377790">발행기관</translation>
@@ -3858,6 +3870,7 @@
 <translation id="7162277662076933695">스마트 카드 리더</translation>
 <translation id="7163295244162773898">{0,plural, =1{기밀 파일을 복사하시겠습니까?}other{기밀 파일을 복사하시겠습니까?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />"은(는) 이 플랫폼에서 지원되는 제한이 아닙니다.</translation>
+<translation id="7170930892977483182">기기 및 Google 월렛에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7173338713290252554">웹에서의 가격 변동 내역</translation>
 <translation id="7174545416324379297">병합됨</translation>
@@ -3913,6 +3926,7 @@
 <translation id="7251437084390964440">네트워크 설정이 ONC 표준을 준수하지 않습니다. 일부 설정을 가져오지 못했을 수도 있습니다.
 추가 세부정보:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">이 데이터를 삭제하려면 데이터의 관리 설정으로 이동하세요.</translation>
 <translation id="7255540419660272073">싫어요 버튼, 양식을 열어 다음 추천이 마음에 들지 않는 이유에 관한 자세한 의견을 제출하려면 Enter 키를 누르세요. <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">후면 트레이</translation>
 <translation id="7257453341537973799">이직 정보 및 계획</translation>
@@ -4010,6 +4024,7 @@
 <translation id="7408613996403626141">장난감</translation>
 <translation id="7410852728357935715">기기로 전송</translation>
 <translation id="741204030948306876">사용</translation>
+<translation id="7412081313067625215">카드가 Google 월렛에 저장되었므로 향후 구매 시 자동으로 입력됩니다.</translation>
 <translation id="7416351320495623771">비밀번호 관리...</translation>
 <translation id="7416898721136759658">보조금, 장학금, 재정 지원</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4039,6 +4054,7 @@
 <translation id="7450577240311017924">동기화 관리 버튼, Chrome 설정에서 내가 동기화하는 정보를 관리하려면 활성화하세요.</translation>
 <translation id="7451311239929941790">이 문제를 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="745208957946308667">공룡 게임입니다, 스페이스바를 눌러 플레이하세요</translation>
+<translation id="7453032093368223821">기타 데이터 관리</translation>
 <translation id="7453849010505253492">이 서버가 Chrome이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />인증서 보기<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud 계정</translation>
 <translation id="7455133967321480974">전체 기본값 사용(차단)</translation>
@@ -4143,6 +4159,7 @@
 <translation id="759889825892636187">현재 <ph name="HOST_NAME" />에서 요청을 처리할 수 없습니다.</translation>
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7602868996817972616">이 페이지에 대해 Google에 질문하기</translation>
+<translation id="7606123685356405076">Gemini 3 모델</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
 <translation id="761261689936461781">굵게</translation>
 <translation id="7613889955535752492">만료일: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

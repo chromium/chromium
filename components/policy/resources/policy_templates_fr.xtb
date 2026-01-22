@@ -4974,6 +4974,19 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4501388411278568771">Des mises à niveau HTTPS peuvent être appliquées en fonction de l'état du lancement des fonctionnalités.</translation>
 <translation id="45036050223225148">Désactiver le test TLS Encrypted ClientHello</translation>
 <translation id="4503935079903510542">Image de disque de démarrage UEFI utilisé pour installer la VM sur des appareils x86_64.</translation>
+<translation id="4505299160236615603">Cette règle permet d'autoriser l'accès en mode navigation privée aux URL de la liste. Utilisez-la pour définir des exceptions à certains formats d'URL définis dans <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, à l'aide du format spécifié sur ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Si cette règle et <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, les règles générales <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sont utilisées comme règles de remplacement.
+
+Si cette règle est configurée et que <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> ne l'est pas, toute URL ne figurant pas dans la liste d'autorisation est bloquée en mode navigation privée.
+
+Si <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> est défini sur "Interdire" (valeur 1), mais que cette règle est configurée, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation.
+
+Si cette règle n'est pas configurée, aucune exception à <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> et <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> n'est autorisée.
+
+Cette règle ne concerne que le mode navigation privée. Pour autoriser les URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
 <translation id="4510131075424939993">Spécifier une valeur de salage à utiliser dans <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> lors de l'évaluation des informations d'identification</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
@@ -5260,6 +5273,17 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
 <translation id="4658380868451934335">Activer la dictée sur l'écran de connexion</translation>
 <translation id="4658420696622830453">Commandes pour le contenu protégé</translation>
+<translation id="4660251990929524821">Si vous définissez la règle <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger en mode navigation privée. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Découvrez les formats d'URL à respecter ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Si cette règle et la règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de la liste de blocage, mais pas à un format de la liste d'autorisation, elle est bloquée. Si une URL ne correspond à aucun format des deux listes, les règles générales <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> sont utilisées comme règles de remplacement.
+
+Si la règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> est configurée et que cette règle ne l'est pas, toute URL ne figurant pas sur la liste d'autorisation est bloquée en mode navigation privée.
+
+Si la règle <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> est définie sur "Interdire" (valeur 1), mais que la règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> est configurée, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation.
+
+Cette règle ne concerne que le mode navigation privée. Pour bloquer des URL pour tous les profils utilisateur, veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="4660356908994631271">Afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="4661885151480410620">Les changements de comportement peuvent prendre effet en fonction du processus de lancement des fonctionnalités.</translation>
 <translation id="4661889655253181651">L'option "Paramètres de contenu" permet d'indiquer la manière dont le contenu d'un type spécifique (par exemple, cookies, images ou JavaScript) est géré.</translation>
@@ -6556,17 +6580,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Pour en savoir plus, veuillez consulter l'article du centre d'aide https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Si cette règle est activée, il est recommandé d'activer par défaut l'envoi à Google de rapports anonymes sur les données liées à l'utilisation et aux plantages de <ph name="PRODUCT_NAME" />. Les utilisateurs pourront toujours modifier ce paramètre.
-
-Si cette règle est désactivée, l'envoi de rapports anonymes est désactivé, et aucune donnée liée à l'utilisation ou aux plantages n'est envoyée à Google. Les utilisateurs ne pourront pas modifier ce paramètre.
-
-Si cette règle n'est pas configurée, les utilisateurs peuvent opter pour la création de rapports anonymes lors de l'installation ou de la première exécution, puis changer ce paramètre ultérieurement.
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-(Pour <ph name="PRODUCT_OS_NAME" />, consultez <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)</translation>
 <translation id="5486917900445838803">Si cette règle est activée ou qu'elle n'est pas configurée, l'accélération graphique est activée si elle est disponible.
 
       Si cette règle est désactivée, l'accélération graphique l'est également.</translation>
@@ -7487,35 +7500,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
 <translation id="6087413944876892918">Utiliser l'algorithme <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
-<translation id="6089118101413877627">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes (qui ont ensuite été renommés <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
-
-Chaque ensemble figurant dans la liste des ensembles internes du navigateur doit respecter les exigences liées aux ensembles internes.
-Un ensemble interne doit contenir un site principal et au moins un site membre.
-Un ensemble peut également contenir une liste de sites de services dont il est propriétaire, ainsi qu'un mappage entre un site et toutes ses variantes ccTLD.
-Pour en savoir plus sur les ensembles internes qu'utilise <ph name="PRODUCT_NAME" />, rendez-vous sur https://github.com/WICG/first-party-sets.
-
-Tous les sites d'un ensemble interne doivent être des domaines enregistrables diffusés sur HTTPS. Chaque site d'un ensemble interne doit aussi être unique (il ne peut pas figurer plusieurs fois dans un ensemble interne).
-
-Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles internes.
-
-Pour tous les sites appartenant à un ensemble interne de la liste <ph name="REPLACEMENTS" /> : si un site figure aussi dans un ensemble interne de la liste du navigateur, il sera supprimé de l'ensemble interne du navigateur.
-L'ensemble interne de la règle sera alors ajouté à la liste des ensembles internes du navigateur.
-
-Pour tous les sites appartenant à un ensemble interne de la liste <ph name="ADDITIONS" /> : si un site figure aussi dans un ensemble interne de la liste du navigateur, l'ensemble interne du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble interne à la liste du navigateur. Une fois la liste du navigateur mise à jour, l'ensemble interne de la règle est ajouté à la liste des ensembles internes du navigateur.
-
-La liste des ensembles internes du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition s'applique aussi aux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />. De même, un site ne peut pas figurer dans les deux listes <ph name="REPLACEMENTS" /> et <ph name="ADDITIONS" />.
-
-Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble interne de ces listes.
-
-Tous les ensembles que cette règle fournit doivent être des ensembles internes valides sous peine de générer une erreur.
-
-Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" /> ou à <ph name="MS_AAD_NAME" />, ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Il s'agit de l'équivalent de la règle <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Vous pouvez utiliser l'une ou l'autre de ces règles, car elles ont le même effet sur le comportement du navigateur.
-Ces deux règles sont obsolètes suite à l'abandon de la fonctionnalité liée aux <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> dans la version 144 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
 <translation id="6091233616732024397">Obliger les utilisateurs à se connecter pour se servir du navigateur</translation>
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
@@ -10135,6 +10119,17 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
       Si cette règle est désactivée, les utilisateurs ne peuvent pas passer les pages d'avertissement.</translation>
 <translation id="7750991880413385988">Ouvrir la page Nouvel onglet</translation>
 <translation id="7752154519644940493">Paramètres de la fonctionnalité d'IA générative Inline Image</translation>
+<translation id="7752654588237652882">Indique si l'utilisateur est autorisé à ouvrir des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
+
+      Si la règle est activée ou n'est pas définie, l'utilisateur peut ouvrir des pages en mode navigation privée.
+
+      Si elle est désactivée, l'utilisateur ne peut pas le faire.
+
+      Si elle est imposée, l'utilisateur peut ouvrir des pages UNIQUEMENT en mode navigation privée. Cette dernière option ne fonctionne pas sur Android dans Chrome.
+
+      La règle <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> est prioritaire sur cette règle et peut réactiver le mode navigation privée pour des URL spécifiques. Lorsque le mode navigation privée est désactivé par cette règle et qu'une liste d'autorisation est fournie, le mode navigation privée n'est disponible que pour les URL correspondant à la liste d'autorisation, tandis que toutes les autres pages sont bloquées.
+
+      Remarque : Sur iOS, si cette règle est modifiée en cours de session, la modification ne prend effet qu'au redémarrage du navigateur.</translation>
 <translation id="7753678409577376761">Activer le point d'entrée de la barre d'outils pour accéder aux fonctionnalités expérimentales du navigateur</translation>
 <translation id="7754704193130578113">Toujours demander où enregistrer les fichiers</translation>
 <translation id="7754893969683595513">Cette règle permet d'indiquer, en millisecondes, la fréquence à laquelle le service de gestion des appareils est interrogé en vue d'obtenir des informations sur les règles relatives aux utilisateurs. Les valeurs valides sont comprises entre 1 800 000 (30 minutes) et 86,4 millions (1 jour). Toute valeur en dehors de cette plage sera remplacée par la valeur minimale ou maximale la plus proche autorisée.
@@ -11229,11 +11224,6 @@ Pour en savoir plus sur <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, consult
 Si cette règle est activée ou si elle n'est pas configurée, les logiciels tiers ne peuvent pas injecter de code exécutable dans les processus de <ph name="PRODUCT_NAME" />.
 
       Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8503018573167958506">Détermine si un utilisateur est autorisé à configurer le nom d'hôte de l'appareil.
-
-      Si <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> est configurée, l'administrateur détermine le nom d'hôte et l'utilisateur n'est pas autorisé à en choisir un, peu importe ce sur quoi cette règle est définie.
-      Si cette règle est définie sur "True" et si <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> n'est pas configurée, l'administrateur ne détermine pas de nom d'hôte et l'utilisateur peut en choisir un.
-      Si cette règle est définie sur "False" et si <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> n'est pas configurée, l'administrateur ne détermine pas de nom d'hôte et l'utilisateur n'est pas autorisé à en choisir un. Le nom par défaut est alors appliqué.</translation>
 <translation id="8504243661032323176">Cette règle permet de définir le nombre minimal de caractères que peut contenir un code. (Les valeurs inférieures à 1, qui correspond à la longueur minimale, sont arrondies à ce chiffre.)
 
       Si cette règle n'est pas configurée, la longueur du code ne pourra pas être inférieure à six chiffres, la longueur minimale recommandée.</translation>

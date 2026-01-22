@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Defnyddiwch Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon neu apiau eraill.</translation>
 <translation id="1722370509450468186">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Ffrwd wedi'i theilwra ar eich cyfer chi</translation>
+<translation id="1761196287436320018">Rydych wedi cyrraedd terfyn Chromium o <ph name="LIMIT" /> nod tudalen, felly nid yw rhai o'ch nodau tudalen wedi'u cadw yn eich Cyfrif Google eto.
+
+Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os byddwch yn allgofnodi nawr, bydd nodau tudalen sydd heb eu cadw yn cael eu dileu.</translation>
 <translation id="1811860791247653035">I gael personoleiddio a nodweddion eraill, cynhwyswch Chromium yn <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Gwnaeth Chromium ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="1839447949248872139">Agor dolenni yn Chromium yn ddiofyn</translation>

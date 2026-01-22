@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">მისამართთა ზოლზე გადასვლა</translation>
 <translation id="2888126860611144412">Chrome-ის შესახებ</translation>
 <translation id="2891154217021530873">გვერდის ჩატვირთვის შეწყვეტა</translation>
+<translation id="2893168226686371498">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="2894821468041866720">საგრძნობლად არ ანელებს თქვენს ბრაუზერსა თუ მოწყობილობას.</translation>
 <translation id="2895521649038438824">ამ გვერდს შეგიძლიათ მოუსმინოთ</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, ჩამაგრებული ჩანართი კონტენტის მოსასმენად</translation>
@@ -1467,6 +1468,7 @@
 ამ პარამეტრის შესაცვლელად, <ph name="BEGIN_LINK" />წაშალეთ Chrome მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">შეიტყვეთ, თუ რატომ ბლოკავს Chrome ზოგიერთ ფაილს</translation>
 <translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
+<translation id="7170930892977483182">თქვენს მოწყობილობასა და Google საფულეში შენახული უსაფრთხოების ყველა კოდი წაიშლება</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7173338713290252554">ფასის ისტორია ვებში</translation>
 <translation id="7177466738963138057">ამის მოგვიანებით შეცვლა შეგიძლიათ პარამეტრებიდან</translation>

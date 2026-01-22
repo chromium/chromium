@@ -3,7 +3,6 @@
 <translationbundle lang="de">
 <translation id="1026101648481255140">Installation fortsetzen</translation>
 <translation id="1029669172902658969">Neu starten, um &amp;Chromium OS zu aktualisieren</translation>
-<translation id="103359417695385097">Chromium erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen. Diese Einstellung ist deaktiviert.</translation>
 <translation id="1040916596585577953">Chromium empfiehlt, diese Erweiterung zu überprüfen</translation>
 <translation id="1042552502243217427">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chromium dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
 <translation id="1051793555070215510">Hilf uns, den Inkognitomodus zu verbessern, indem du dir 1 Minute Zeit für diese Umfrage nimmst.</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">Wenn du Chromium das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="18552579716432081">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Lade Chromium auf dein Smartphone herunter, um Tabgruppen unterwegs zu öffnen oder zu erstellen.</translation>
 <translation id="185970820835152459">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chromium-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Mit der Bildersuche suchen</translation>
 <translation id="1880677175115548835">Text auswählen</translation>
@@ -159,6 +159,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2753623023919742414">Zum Suchen klicken</translation>
 <translation id="2768103863314748511">Chromium als standardmäßigen PDF-Viewer festlegen</translation>
+<translation id="277828055419948999">Chromium kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="2785438272836277133">Diese Erweiterung enthält Malware und ist nicht sicher. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2803971713792056305">Mein Chromium</translation>
@@ -335,7 +336,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="4613863813562375431">Chromium OS-Version</translation>
 <translation id="4621240073146040695">Fast fertig! Starte Chromium neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="4625064703209785397">Websites werden mit der V8-Engine von Chromium beschleunigt, Chromium wird dadurch aber etwas anfälliger für Angriffe</translation>
-<translation id="4654936675281451226">Chromium erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen. Diese Einstellung ist aktiviert.</translation>
 <translation id="4665829708273112819">Achtung: Chromium kann nicht verhindern, dass dein Browserverlauf von Erweiterungen protokolliert wird. Du kannst diese Erweiterung für den Inkognitomodus deaktivieren, indem du die Auswahl für die entsprechende Option aufhebst.</translation>
 <translation id="4673151026126227699">Wenn du Chromium-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chromium neu starten.</translation>
@@ -439,7 +439,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6063093106622310249">In Chr&amp;omium öffnen</translation>
 <translation id="6069027071882229820">Als Bild kopieren</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> wurde zu Chromium hinzugefügt</translation>
-<translation id="6072463441809498330">Chromium noch schneller machen</translation>
 <translation id="6096348254544841612">Chromium anpassen und Einstellungen festlegen. Ein Update ist verfügbar.</translation>
 <translation id="6107893135096467929">Aktiviert • Chromium kann nicht bestätigen, woher diese Erweiterung stammt</translation>
 <translation id="611228897408671387">Mein Konto in Chromium</translation>
@@ -484,6 +483,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6436260184216827876">Die Bildersuche ist nicht verfügbar. Versuche es später noch einmal.</translation>
 <translation id="6442900851116057561">Chromium OS neu starten</translation>
 <translation id="6443470774889161065">Chromium lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
+<translation id="6450948450282634257">Lade Chromium auf dein Smartphone herunter, um Preise zu beobachten und bei Preissenkungen auf Websites benachrichtigt zu werden</translation>
 <translation id="645458117210240797">Deaktiviert • Chromium kann nicht bestätigen, woher diese Erweiterung stammt</translation>
 <translation id="6455857529632101747">Willkommen bei den Chromium-Profilen</translation>
 <translation id="6466344609055215035">Konto aus Chromium entfernen</translation>

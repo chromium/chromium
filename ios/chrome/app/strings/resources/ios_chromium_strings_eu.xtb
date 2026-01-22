@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Erabili Chromium mezuetako edo beste aplikazioetako estekak sakatzen dituzunean.</translation>
 <translation id="1722370509450468186">Pasahitza kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Zuretzat sortutako jario pertsonalizatua</translation>
+<translation id="1761196287436320018">Chromium-ek onartzen dituen laster-marken mugara iritsi zara (<ph name="LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
+
+Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan. Orain saioa amaitzen baduzu, gorde gabeko laster-markak ezabatuko dira.</translation>
 <translation id="1811860791247653035">Pertsonalizazioa eta beste eginbide batzuk eskuratzeko, sartu Chromium hauen barruan: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chromium-ek.</translation>
 <translation id="1839447949248872139">Ireki estekak Chromium-en modu lehenetsian</translation>

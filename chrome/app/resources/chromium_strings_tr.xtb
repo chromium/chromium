@@ -3,7 +3,6 @@
 <translationbundle lang="tr">
 <translation id="1026101648481255140">Yüklemeyi Devam Ettir</translation>
 <translation id="1029669172902658969">&amp;ChromiumOS'i güncellemek için yeniden başlat</translation>
-<translation id="103359417695385097">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar kapalı.</translation>
 <translation id="1040916596585577953">Chromium bu uzantıyı incelemenizi öneriyor.</translation>
 <translation id="1042552502243217427">Bir site kendi sayfasındaki bağlantıları gizli olarak önceden yüklemek istediğinde Chromium, Google sunucularını kullanır. Bu şekilde kimliğiniz önceden yüklenmiş siteden gizlenmiş olur, ancak Google hangi sitelerin önceden yüklendiğini öğrenir.</translation>
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> cihazınızda, Chromium'u bir sonraki açışınızda Google Şifre Yöneticisi'ni kullanmanız için bir istem görürsünüz.</translation>
 <translation id="1838374766361614909">Aramayı temizle</translation>
 <translation id="18552579716432081">Tarama verilerini yalnızca bu cihazdan silip Google Hesabınızda tutmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Hareket halindeyken sekme gruplarını açmak veya yenilerini oluşturmak için telefonunuza Chromium'u indirin.</translation>
 <translation id="185970820835152459">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chromium tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Görsel Arama ile ara</translation>
 <translation id="1880677175115548835">Metin seç</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
 <translation id="2768103863314748511">Chromium'u varsayılan PDF görüntüleyiciniz olarak ayarlayın</translation>
+<translation id="277828055419948999">Chromium, standart otomatik doldurma özelliğinin atlayabileceği zor alanları otomatik olarak doldurabilir.</translation>
 <translation id="2785438272836277133">Bu uzantı kötü amaçlı yazılım içerdiği için güvenli değil. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chromium'dan kaldırın.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2803971713792056305">Chromium'unuz</translation>
@@ -333,7 +334,6 @@
 <translation id="4613863813562375431">ChromiumOS sürümü</translation>
 <translation id="4621240073146040695">Az kaldı! Güncellemeyi tamamlamak için Chromium'u yeniden başlatın.</translation>
 <translation id="4625064703209785397">Chromium'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chromium, saldırılara karşı biraz daha dirençsiz hale gelir.</translation>
-<translation id="4654936675281451226">Chromium, formları daha iyi anlar ve sizin için daha hızlı bir şekilde otomatik olarak doldurabilir. Bu ayar açık.</translation>
 <translation id="4665829708273112819">Uyarı: Chromium, uzantıların tarama geçmişinizi kaydetmesini engelleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="4673151026126227699">Chrome kullanım raporlarını da paylaşıyorsanız, ziyaret ettiğiniz URL'ler de bu raporlar kapsamında paylaşılır</translation>
 <translation id="4677944499843243528">Profilin başka bir bilgisayarda (<ph name="HOST_NAME" />) başka bir Chromium işlemi (<ph name="PROCESS_ID" />) tarafından kullanıldığı anlaşılıyor. Chromium, profili bozulmaması için kilitledi. Bu profili başka hiçbir işlemin kullanmadığından eminseniz profilin kilidini açabilir ve Chromium'u tekrar başlatabilirsiniz.</translation>
@@ -437,7 +437,6 @@
 <translation id="6063093106622310249">&amp;Chromium'da aç</translation>
 <translation id="6069027071882229820">Resim olarak kopyala</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'a eklendi</translation>
-<translation id="6072463441809498330">Chromium'u Daha Hızlı Hale Getirin</translation>
 <translation id="6096348254544841612">Chromium'u özelleştirin ve kontrol edin. Güncelleme mevcut.</translation>
 <translation id="6107893135096467929">Açık • Chromium, bu uzantının kaynağını doğrulayamıyor</translation>
 <translation id="611228897408671387">Chromium'daki hesabınız</translation>
@@ -482,6 +481,7 @@
 <translation id="6436260184216827876">Görsel Arama kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="6442900851116057561">ChromiumOS'i yeniden başlatın</translation>
 <translation id="6443470774889161065">Chromium, ziyaret etme olasılığınızın yüksek olduğu daha fazla sayfayı önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
+<translation id="6450948450282634257">Fiyatları takip etmek ve herhangi bir sitede fiyat düştüğünde uyarı almak için telefonunuza Chromium'u indirin.</translation>
 <translation id="645458117210240797">Kapalı • Chromium, bu uzantının kaynağını doğrulayamıyor</translation>
 <translation id="6455857529632101747">Chromium profillerine hoş geldiniz</translation>
 <translation id="6466344609055215035">Hesabı Chromium'dan kaldır</translation>

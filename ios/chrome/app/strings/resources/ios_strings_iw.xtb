@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">הסתרת סיסמה</translation>
 <translation id="4568230126482344545">הסתרת הכרטיסיות האחרונות</translation>
 <translation id="4578835633387306383">הפעלה…</translation>
+<translation id="4580621046861724270">חלק מהסימניות לא נשמרו</translation>
 <translation id="4580716718466706433">מעבר אל "מנהל הסיסמאות"</translation>
 <translation id="4585751637295612750">אפשר לפתוח כרטיסייה חדשה כדי להוסיף אותה לשאלה</translation>
 <translation id="4587589328781138893">אתרים</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">כבר מתבצע מעקב אחר המוצר הזה.</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5329451663851195956">אפשר למשוך למטה כדי לרענן.</translation>
+<translation id="5336910966955551309">כדי לסמן למעקב את האתרים האהובים עליך, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="5338512273860059533">הכניסה מתבצעת.</translation>
 <translation id="5343472494710226394">חדשות, ספורט ותוכן על סמך תחומי העניין שלך.</translation>
 <translation id="5352128922772839949">שמירת קובץ</translation>
@@ -2004,6 +2006,7 @@
 <translation id="8319282042900445670">הוגדרה תזכורת לשעה <ph name="TIME" />, בתאריך <ph name="DATE" /></translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="8325455175867928593">הסתרת האפשרות "ביקורות על סמך תחומי העניין שלך"</translation>
+<translation id="8328777765163860529">סגירת הכול</translation>
 <translation id="833647236762414178">אפשר ליצור, לשמור ולנהל סיסמאות ומפתחות גישה כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר.</translation>
 <translation id="8348530355586151720">לוחצים על סמל האפשרויות הנוספות (3 נקודות)</translation>

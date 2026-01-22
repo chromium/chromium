@@ -433,6 +433,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2885355868600171871">Přejít na adresní řádek</translation>
 <translation id="2888126860611144412">O aplikaci Chrome</translation>
 <translation id="2891154217021530873">Zastavit načítání stránky</translation>
+<translation id="2893168226686371498">Výchozí prohlížeč</translation>
 <translation id="2894821468041866720">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
 <translation id="2895521649038438824">Tuto stránku si můžete poslechnout</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, připnutá slyšitelná karta</translation>
@@ -1467,6 +1468,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Další informace o tom, proč Chrome některé soubory blokuje</translation>
 <translation id="7168323970702333693">Jste přihlášeni jako <ph name="USER_NAME" />. Otevře nastavení.</translation>
+<translation id="7170930892977483182">Všechny bezpečnostní kódy uložené v zařízení a v Peněžence Google se vymažou</translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>
 <translation id="7173338713290252554">Historie cen na webu</translation>
 <translation id="7177466738963138057">Svoji volbu můžete později změnit v nabídce Nastavení</translation>

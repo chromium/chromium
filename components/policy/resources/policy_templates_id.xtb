@@ -2339,7 +2339,7 @@ Catatan: Jika nilai suatu kolom tidak ditetapkan, semua nilai akan cocok untuk k
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
-<translation id="2571353268726025696">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
+<translation id="2571353268726025696">Kebijakan ini disediakan sebagai cara untuk menonaktifkan fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
 
 Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
 
@@ -5165,6 +5165,19 @@ Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau ti
 <translation id="4501388411278568771">Upgrade HTTPS dapat diterapkan bergantung pada status peluncuran fitur.</translation>
 <translation id="45036050223225148">Nonaktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="4503935079903510542">Disk image yang dapat di-booting UEFI digunakan untuk menginstal VM di perangkat x86_64p.</translation>
+<translation id="4505299160236615603">Jika kebijakan ini disetel, akses ke URL yang tercantum akan diberikan di mode Samaran. Gunakan kebijakan ini untuk membuka pengecualian untuk pola URL tertentu yang ditentukan dalam <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Jika kebijakan ini dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika URL cocok dengan pola di daftar yang diizinkan, URL tersebut akan diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan umum <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> akan digunakan sebagai penggantian.
+
+Jika kebijakan ini disetel dan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir dalam mode Samaran.
+
+Jika <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> disetel ke tidak diizinkan (nilai 1), tetapi kebijakan ini dikonfigurasi, mode Samaran hanya akan tersedia untuk URL yang cocok dengan daftar yang diizinkan.
+
+Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> dan <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini hanya memengaruhi mode Samaran. Untuk mengizinkan URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4508728400492074981">Mengontrol kebijakan untuk fitur Set Pihak Pertama.</translation>
 <translation id="4510131075424939993">Menentukan nilai salt yang akan digunakan di <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> saat mengevaluasi informasi identitas</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
@@ -5463,6 +5476,17 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
       Catatan: Setelan ini menggantikan <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, jika ada.</translation>
 <translation id="4658380868451934335">Aktifkan dikte di layar login</translation>
 <translation id="4658420696622830453">Kontrol konten yang dilindungi</translation>
+<translation id="4660251990929524821">Jika kebijakan <ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" /> disetel, pemuatan halaman web yang berisi URL terlarang akan dihentikan di mode Samaran. Administrator dapat menentukan daftar pola URL yang akan diblokir. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+Jika kebijakan ini dan kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika URL cocok dengan pola di daftar yang diizinkan, URL tersebut akan diizinkan. Jika cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL tidak cocok dengan keduanya, kebijakan umum <ph name="URL_BLOCKLIST_POLICY_NAME" />/<ph name="URL_ALLOWLIST_POLICY_NAME" /> akan digunakan sebagai penggantian.
+
+Jika kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> disetel dan kebijakan ini tidak disetel, URL apa pun yang tidak ada dalam daftar yang diizinkan akan diblokir dalam mode Samaran.
+
+Jika <ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" /> disetel ke tidak diizinkan (nilai 1), tetapi kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> dikonfigurasi, mode Samaran hanya akan tersedia untuk URL yang cocok dengan daftar yang diizinkan.
+
+Kebijakan ini hanya memengaruhi mode Samaran. Untuk memblokir URL bagi semua profil pengguna, gunakan kebijakan <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="4660356908994631271">Tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="4661885151480410620">Perubahan perilaku mungkin berlaku, bergantung pada proses peluncuran fitur.</translation>
 <translation id="4661889655253181651">Setelan konten memungkinkan Anda menentukan bagaimana konten jenis tertentu (misalnya, Cookie, Gambar, atau JavaScript) ditangani.</translation>
@@ -6811,17 +6835,6 @@ Nilai 1 = Integrasi Gemini tidak akan tersedia untuk pengguna.
 Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Untuk mengetahui informasi selengkapnya, buka artikel Pusat Bantuan https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Jika kebijakan ini Diaktifkan, pelaporan anonim terkait data penggunaan dan data terkait error <ph name="PRODUCT_NAME" /> ke Google direkomendasikan untuk diaktifkan secara default. Pengguna tetap dapat mengubah setelan ini.
-
-Jika kebijakan ini Dinonaktifkan, pelaporan anonim akan dinonaktifkan dan tidak ada data penggunaan atau data terkait error yang akan dikirim ke Google. Pengguna tidak akan dapat mengubah setelan ini.
-
-Jika kebijakan ini tidak disetel, pengguna dapat memilih perilaku pelaporan anonim saat penginstalan atau pertama kali dijalankan, dan dapat mengubah setelan ini nanti.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-(Untuk <ph name="PRODUCT_OS_NAME" />, lihat <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.)</translation>
 <translation id="5486917900445838803">Jika kebijakan disetel ke Aktif atau tidak disetel, akselerasi grafis akan diaktifkan jika tersedia.
 
       Jika kebijakan disetel ke Nonaktif, akselerasi grafis akan dinonaktifkan.</translation>
@@ -7763,44 +7776,6 @@ kebijakan ini saat browser berjalan.</translation>
 <translation id="6083631234867522991">Windows (klien Windows):</translation>
 <translation id="6087413944876892918">Menggunakan algoritma <ph name="HAPPY_EYEBALLS_V3" /></translation>
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
-<translation id="6089118101413877627">Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama (yang kemudian diganti namanya menjadi fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
-
-Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
-Set Pihak Pertama harus berisi situs utama dan satu atau beberapa situs anggota.
-Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
-Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait Set Pihak Pertama yang digunakan oleh <ph name="PRODUCT_NAME" />.
-
-Semua situs dalam Set Pihak Pertama harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Pihak Pertama juga harus unik.
-Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Pihak Pertama.
-
-Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
-
-Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
-di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
-Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
-di Set Pihak Pertama dalam daftar browser, Set Pihak Pertama browser akan diperbarui agar
-Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
-Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
-lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
-dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
-<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
-
-Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
-
-Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
-error yang sesuai akan ditampilkan.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Kebijakan ini setara dengan kebijakan <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Kedua kebijakan tersebut dapat digunakan dengan efek yang sama pada perilaku browser.
-Kedua kebijakan ini tidak digunakan lagi setelah penghentian penggunaan fitur <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> di <ph name="PRODUCT_NAME" /> versi 144.</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
@@ -10581,6 +10556,17 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengklik halaman peringatan apa pun.</translation>
 <translation id="7750991880413385988">Buka Halaman Tab Baru</translation>
 <translation id="7752154519644940493">Setelan untuk fitur Gambar Inline GenAI</translation>
+<translation id="7752654588237652882">Menentukan apakah pengguna dapat membuka halaman dalam mode Samaran di <ph name="PRODUCT_NAME" />.
+
+      Jika 'Enabled' dipilih atau kebijakan tidak disetel, halaman dapat dibuka dalam mode Samaran.
+
+      Jika 'Disabled' dipilih, halaman tidak dapat dibuka dalam mode Samaran.
+
+      Jika 'Forced' dipilih, halaman dapat dibuka HANYA dalam mode Samaran. Perhatikan bahwa 'Dipaksa' tidak berfungsi untuk Android di Chrome
+
+      Kebijakan <ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" /> lebih diutamakan daripada kebijakan ini dan dapat mengaktifkan kembali mode Samaran untuk URL tertentu. Jika mode Samaran dinonaktifkan oleh kebijakan ini saat daftar yang diizinkan diberikan, mode Samaran hanya tersedia untuk URL yang cocok dengan daftar yang diizinkan, sedangkan semua halaman lainnya diblokir.
+
+      Catatan: Di iOS, jika kebijakan diubah selama sesi, perubahan hanya akan diterapkan saat peluncuran ulang.</translation>
 <translation id="7753678409577376761">Nonaktifkan entrypoint toolbar fitur eksperimental browser</translation>
 <translation id="7754704193130578113">Tanyakan lokasi penyimpanan setiap file sebelum mendownload</translation>
 <translation id="7754893969683595513">Jika kebijakan disetel, periode dalam milidetik akan ditentukan guna mengkueri layanan pengelolaan perangkat untuk informasi kebijakan pengguna. Nilai yang valid berkisar dari 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dikunci ke masing-masing batas.
@@ -11713,11 +11699,6 @@ Informasi selengkapnya tentang <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> d
 Jika kebijakan disetel ke Aktif atau tidak disetel, software pihak ketiga tidak akan dapat memasukkan kode yang dapat dieksekusi ke dalam proses <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
-<translation id="8503018573167958506">Menentukan apakah pengguna diizinkan mengonfigurasi nama host perangkat.
-
-      Jika <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> disetel, administrator akan menyetel nama host dan pengguna tidak dapat memilih, terlepas dari nilai yang disetel untuk kebijakan ini.
-      Jika kebijakan ini disetel ke Benar (True) dan <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> tidak disetel, administrator tidak akan menyetel nama host dan pengguna dapat memilihnya.
-      Jika kebijakan ini disetel ke Salah (False) dan <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> tidak disetel, administrator tidak akan menyetel nama host dan pengguna tidak dapat memilih nama host, sehingga yang digunakan adalah nama default.</translation>
 <translation id="8504243661032323176">Menyetel kebijakan akan menerapkan panjang PIN minimum yang dipilih. (Nilai di bawah 1 akan dibulatkan ke atas ke minimum 1).
 
       Tidak menyetel kebijakan akan membatalkan penerapan panjang PIN minimum 6 digit, yakni nilai minimum yang direkomendasikan.</translation>

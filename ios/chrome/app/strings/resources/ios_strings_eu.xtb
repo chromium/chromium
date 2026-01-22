@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
 <translation id="4568230126482344545">Ezkutatu "Azkenaldiko fitxak"</translation>
 <translation id="4578835633387306383">Aktibatu…</translation>
+<translation id="4580621046861724270">Laster-marka batzuk ez dira gorde</translation>
 <translation id="4580716718466706433">Joan "Pasahitz-kudeatzailea" atalera.</translation>
 <translation id="4585751637295612750">Ireki beste fitxa bat galderan gehitzeko</translation>
 <translation id="4587589328781138893">Webguneak</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Produktuaren jarraipena egiten ari zara jada.</translation>
 <translation id="5327248766486351172">Izena</translation>
 <translation id="5329451663851195956">Freskatzeko, tiratu beherantz.</translation>
+<translation id="5336910966955551309">Eduki sakatuta gogoko dituzun webguneak ainguratzeko</translation>
 <translation id="5338512273860059533">Saio-hasiera abian da.</translation>
 <translation id="5343472494710226394">Albisteak, kirolak eta edukia, zure interesetan oinarrituta.</translation>
 <translation id="5352128922772839949">Gorde fitxategia</translation>
@@ -2004,6 +2006,7 @@
 <translation id="8319282042900445670">Ordu honetan emango da gogorarazpena: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Azkenaldiko jarduerak</translation>
 <translation id="8325455175867928593">Ezkutatu Zure interesetan oinarritutako iritziak</translation>
+<translation id="8328777765163860529">Itxi guztiak</translation>
 <translation id="833647236762414178">Sortu, gorde eta kudeatu pasahitzak eta sarbide-gakoak webgune eta aplikazioetan saioa erraz hasteko. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun.</translation>
 <translation id="8348530355586151720">Sakatu 3 puntuko menua.</translation>
@@ -2030,7 +2033,7 @@
 <translation id="8428045167754449968">Hiria/Udalerria</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8428634594422941299">Ados</translation>
-<translation id="8429455911440977338">Piztu kamera</translation>
+<translation id="8429455911440977338">Aktibatu kamera</translation>
 <translation id="8434837876193928924">Fitxa taldearen xehetasunak</translation>
 <translation id="8438566539970814960">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>

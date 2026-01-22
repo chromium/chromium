@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">מעבר לסרגל הכתובות</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
 <translation id="2891154217021530873">הפסקת טעינת הדף</translation>
+<translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
 <translation id="2894821468041866720">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
 <translation id="2895521649038438824">יש אפשרות להאזין לדף הזה</translation>
 <translation id="289596984386220317">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת עם תוכן שאפשר לשמוע</translation>
@@ -1467,6 +1468,7 @@
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">‏מידע נוסף על חסימה של קבצים מסוימים ב-Chrome</translation>
 <translation id="7168323970702333693">נכנסת לחשבון בתור <ph name="USER_NAME" />. ההגדרות ייפתחו.</translation>
+<translation id="7170930892977483182">‏כל קודי האבטחה ששמורים במכשיר וב-Google Wallet יימחקו</translation>
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7173338713290252554">היסטוריית המחירים באינטרנט</translation>
 <translation id="7177466738963138057">אפשר לשנות את ההגדרה הזו מאוחר יותר ב"הגדרות"</translation>

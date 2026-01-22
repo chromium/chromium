@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">查看其他裝置上的記錄</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「您電腦上的軟件正阻止 Chrome 建立安全網絡連線」(僅限 Windows 電腦)</translation>
-<translation id="1293154089865862473">系統會與 Google 分享結帳頁面內容，以提供這些選項。如要隱藏自動填入的「稍後付款」選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293797321964802402">9 x 11 吋信封</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
@@ -266,7 +265,7 @@
 <translation id="1408787208417187241">三釘 (頂端)</translation>
 <translation id="1410365862999780287">此裝置的其他使用者不會看到你的活動，瀏覽活動記錄的私隱更有保障。無痕模式不會影響網站及其使用的服務 (包括 Google) 收集資料的方式，且下載檔案、書籤和閱讀清單項目仍會保留在裝置上。</translation>
 <translation id="1410941016594047814">Invite 信封</translation>
-<translation id="1413235258620101697">為加快結帳速度，這張卡片的驗證碼會加密儲存在 Google 錢包中</translation>
+<translation id="1413235258620101697">此付款卡的 CVC 經已加密並儲存至「Google 錢包」，方便快速結帳</translation>
 <translation id="1413809658975081374">私隱設定發生錯誤</translation>
 <translation id="1414134146594747368">幼兒園</translation>
 <translation id="1419305130220238697">管理 Chrome 嘅下載項目按鈕，啟動之後就可以管理您喺 Chrome 度下載嘅檔案</translation>
@@ -288,6 +287,7 @@
 <translation id="1433225466058025572">嘗試再次移動檔案</translation>
 <translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
+<translation id="1442054921249164535">其他資料</translation>
 <translation id="1442386063175183758">右半邊對摺</translation>
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1445896388055045436">結帳時顯示可用的付款卡禮遇和獎賞。受發卡機構條款約束。</translation>
@@ -941,6 +941,7 @@
 <translation id="24699311393038040">紙 (粉紙)</translation>
 <translation id="2471632709106952369">比較表格</translation>
 <translation id="2473810985261856484">法律服務</translation>
+<translation id="2477607419416067650">其他 Google 資料</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
 <translation id="2480300195898055381">儲存在 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
@@ -995,6 +996,7 @@
 <translation id="2552246211866555379">Hagaki 紙匣</translation>
 <translation id="2552295903035773204">由現在開始，使用螢幕鎖定即可確認付款卡</translation>
 <translation id="2552532158894206888">右鍵</translation>
+<translation id="2553352788023127673">搜尋記錄和密碼可以在相應的管理設定中刪除</translation>
 <translation id="2553853292994445426">請檢查您的安全 DNS 設定。您可能設定了一個無法連線的安全 DNS 伺服器。</translation>
 <translation id="255497580849974774">請在更新期間將裝置連接電源。</translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
@@ -1126,7 +1128,6 @@
 <translation id="2782088940970074970">租車</translation>
 <translation id="278436560439594386">家庭電器</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">系統會與 Google 分享結帳頁面內容，以提供這些選項。</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">單車和配件</translation>
 <translation id="2792012897584536778">此裝置的管理員已設定安全性憑證，這些憑證可允許管理員查看您瀏覽的網站內容。</translation>
@@ -1500,6 +1501,7 @@
 <translation id="3407789382767355356">第三方登入</translation>
 <translation id="340924996148642843">目前無法使用比較功能</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
+<translation id="3410151451624226773">在「Google 密碼管理工具」中管理</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小時後上載</translation>
 <translation id="341134412449102894">你的資料會儲存到 <ph name="ACCOUNT" /> 的「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」</translation>
 <translation id="3413466783792948876">如果你正使用公共網絡，最安全的做法是稍後才瀏覽此網站。可信的網絡 (例如家用或公司 Wi-Fi) 的風險相對較低。</translation>
@@ -1590,6 +1592,7 @@
 <translation id="3549904448933807997">瀏覽器和設定檔資料 (包括個人和工作設定檔)</translation>
 <translation id="3552155506104542239">警告：此政策與 <ph name="POLICY_NAME" /> 互相衝突，對 Android 應用程式不會有任何效果。否則，此政策會運作正常。</translation>
 <translation id="3552297013052089404">Sans-serif 字型</translation>
+<translation id="3558335486599406178">IBAN 已儲存至「Google 錢包」</translation>
 <translation id="3558573058928565255">日間</translation>
 <translation id="3559897352860026926">請要求管理員檢查「<ph name="CLOUD_PROVIDER" />」的配置設定。</translation>
 <translation id="3560824484345057728">查看相關網站</translation>
@@ -2160,12 +2163,14 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4407758156081352648">為確保安全，你的機構不允許在 Chrome 重用密碼。Chrome  會將密碼加密，以保護使用者私隱。</translation>
+<translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4409556632583862731">新訊息串</translation>
 <translation id="4412074349188076601">此設定已標記為可安裝，但沒有映像可供此架構使用，因此無法安裝。</translation>
 <translation id="4412377069090572315">其他人的評論</translation>
 <translation id="4414515549596849729">Cookie 和網站數據</translation>
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
 <translation id="4415426530740016218">取貨地址</translation>
+<translation id="4419287616181386201">密碼可以在相應的管理設定中刪除</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4425750422187370446">運動服裝</translation>
 <translation id="443121186588148776">序列連接埠</translation>
@@ -2572,6 +2577,7 @@
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">㩒一下 Tab 鍵，然後㩒一下 Enter 鍵問 AI 模式</translation>
+<translation id="5105442806410269908">管理其他 Google 資料</translation>
 <translation id="510644072453496781">硬卡紙 (封邊)</translation>
 <translation id="5106648964679263509">已填入 <ph name="BNPL_ISSUER_NAME" /> 虛擬卡資料</translation>
 <translation id="5108567515277121477">會員卡</translation>
@@ -2711,6 +2717,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />預設搜尋引擎可方便你搜尋網站並支援 Chromium 功能<ph name="END_BOLD" />，例如讓你在網址列搜尋，以及在網頁使用圖片搜尋。搜尋引擎不支援的功能將無法使用。</translation>
 <translation id="5323043727018853753">批准嵌入嘅內容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 個入面嘅第 <ph name="MATCH_POSITION" /> 個</translation>
+<translation id="5323501626199324454">在 Google 帳戶管理</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">您的瀏覽器未受管理</translation>
 <translation id="5331585574693522196">設定為預設</translation>
@@ -2754,6 +2761,7 @@
 <translation id="5394069166371280357">合家歡電視節目</translation>
 <translation id="5396631636586785122">邊緣釘裝 (右側)</translation>
 <translation id="5397794290049113714">您</translation>
+<translation id="5398461103557553443">如想下次自動填入此 IBAN，請先儲存至「Google 錢包」</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="5401344472773249513">名人和娛樂新聞</translation>
@@ -3023,7 +3031,7 @@
 <translation id="5843987376989109187">目前不支援此語言。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">電力供應</translation>
-<translation id="5848445080378515710">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google 錢包。</translation>
+<translation id="5848445080378515710">檢查訂單後，你必須登入或建立 <ph name="BNPL_ISSUER_NAME" /> 帳戶。此帳戶會自動連結至「Google 錢包」。</translation>
 <translation id="584902713199270089">約會和交友</translation>
 <translation id="5851548754964597211">分頁清單</translation>
 <translation id="5851868085455377790">發行者</translation>
@@ -3862,6 +3870,7 @@
 <translation id="7162277662076933695">智能讀卡器</translation>
 <translation id="7163295244162773898">{0,plural, =1{要複製機密檔案嗎？}other{要複製機密檔案嗎？}}</translation>
 <translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」不是此平台可支援的限制項目</translation>
+<translation id="7170930892977483182">系統將刪除已儲存在裝置上和「Google 錢包」中的所有安全碼</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">網絡上的價格記錄</translation>
 <translation id="7174545416324379297">已合併</translation>
@@ -3917,6 +3926,7 @@
 <translation id="7251437084390964440">網絡設定未遵循 ONC 標準，系統可能無法匯入部分設定。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">如要刪除這類資料，請前往相關管理設定</translation>
 <translation id="7255540419660272073">唔鍾意掣，㩒 Enter 鍵就可以打開意見表格，詳細解釋唔鍾意「<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」嘅原因</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="7257453341537973799">就業資源和職業生涯規劃</translation>
@@ -4045,6 +4055,7 @@
 <translation id="7450577240311017924">管理同步功能按鈕，啟動之後就可以喺 Chrome 設定度管理同步邊啲資料</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
 <translation id="745208957946308667">㩒空白鍵就可以暢玩恐龍遊戲</translation>
+<translation id="7453032093368223821">管理其他資料</translation>
 <translation id="7453849010505253492">伺服器所用的安全性憑證未受 Chrome 或系統網絡流量加密設定的信任，因此無法證明屬於 <ph name="DOMAIN" /> 網域。這可能是由於設定錯誤，或有攻擊者攔截你的連線。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看憑證<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">雲端帳戶</translation>
 <translation id="7455133967321480974">使用全域預設值 (封鎖)</translation>

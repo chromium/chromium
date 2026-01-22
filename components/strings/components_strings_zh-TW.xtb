@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">查看其他裝置上的歷史記錄</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「你的電腦上有軟體阻止 Chrome 建立安全的網路連線」(僅限 Windows 電腦)</translation>
-<translation id="1293154089865862473">系統會將結帳頁面的內容提供給 Google，以便提供這些選項。如要隱藏自動填入功能中的先買後付選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />。</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
@@ -288,6 +287,7 @@
 <translation id="1433225466058025572">再次嘗試移動檔案</translation>
 <translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1436185428532214179">可以要求編輯裝置上的檔案和資料夾</translation>
+<translation id="1442054921249164535">其他資料</translation>
 <translation id="1442386063175183758">右半邊對折</translation>
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1445896388055045436">結帳時顯示可用的卡片福利和獎勵 (適用發卡機構的條款規定)。</translation>
@@ -940,6 +940,7 @@
 <translation id="24699311393038040">紙 (塗布紙)</translation>
 <translation id="2471632709106952369">比較表</translation>
 <translation id="2473810985261856484">法律服務</translation>
+<translation id="2477607419416067650">其他 Google 資料</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2479410451996844060">無效的搜尋網址。</translation>
 <translation id="2480300195898055381">儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)</translation>
@@ -994,6 +995,7 @@
 <translation id="2552246211866555379">Hagaki 紙匣</translation>
 <translation id="2552295903035773204">開始使用螢幕鎖定功能驗證卡片</translation>
 <translation id="2552532158894206888">右鍵</translation>
+<translation id="2553352788023127673">搜尋記錄和密碼可以在相關管理設定中刪除</translation>
 <translation id="2553853292994445426">請檢查你的安全 DNS 設定。可能是已設定的安全 DNS 伺服器導致連線失敗。</translation>
 <translation id="255497580849974774">請將裝置接上電源，在更新期間不要拔除。</translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
@@ -1125,7 +1127,6 @@
 <translation id="2782088940970074970">租車</translation>
 <translation id="278436560439594386">家電</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">系統會將結帳頁面的內容提供給 Google，以便提供這些選項。</translation>
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">腳踏車與配件</translation>
 <translation id="2792012897584536778">這個裝置的系統管理員已設定安全憑證，這些憑證將允許系統管理員檢視你所造訪的網站內容。</translation>
@@ -1498,6 +1499,7 @@
 <translation id="3407789382767355356">第三方登入</translation>
 <translation id="340924996148642843">目前無法使用比較功能。</translation>
 <translation id="3409896703495473338">管理安全性設定</translation>
+<translation id="3410151451624226773">在 Google 密碼管理工具中控管</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> 小時後上傳</translation>
 <translation id="341134412449102894">這項資訊會儲存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3413466783792948876">如果使用公用網路，最保險的做法是不要造訪這個網站，等到連上可信任的網路 (例如住家或公司的 Wi-Fi) 時再造訪，風險會比較低。</translation>
@@ -1589,6 +1591,7 @@
 <translation id="3549904448933807997">瀏覽器和設定檔資訊 (包括個人和工作設定檔)</translation>
 <translation id="3552155506104542239">警告：這項政策與 <ph name="POLICY_NAME" /> 相衝突，對 Android 應用程式沒有任何作用。否則，這項政策會正常運作。</translation>
 <translation id="3552297013052089404">Sans Serif 字型</translation>
+<translation id="3558335486599406178">IBAN 已儲存至 Google 錢包</translation>
 <translation id="3558573058928565255">白天</translation>
 <translation id="3559897352860026926">請要求系統管理員確認「<ph name="CLOUD_PROVIDER" />」設定。</translation>
 <translation id="3560824484345057728">查看相關網站</translation>
@@ -2159,12 +2162,14 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
 <translation id="4407758156081352648">為維護安全性，貴機構不允許在 Chrome 中重複使用密碼。Chrome 會將密碼加密處理，以保護使用者隱私。</translation>
+<translation id="4409271659088619928">你的搜尋引擎是 <ph name="DSE" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="4409556632583862731">發起討論串</translation>
 <translation id="4412074349188076601">這項設定標示為可安裝，但沒有映像檔可供這個架構使用，因此無法安裝。</translation>
 <translation id="4412377069090572315">使用者評論</translation>
 <translation id="4414515549596849729">Cookie 和網站資料</translation>
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
 <translation id="4415426530740016218">取件地址</translation>
+<translation id="4419287616181386201">前往相關管理設定即可刪除密碼</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="4425750422187370446">運動服飾</translation>
 <translation id="443121186588148776">序列埠</translation>
@@ -2571,6 +2576,7 @@
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">依序按下 Tab 鍵和 Enter 鍵，即可在 AI 模式中提問</translation>
+<translation id="5105442806410269908">管理其他 Google 資料</translation>
 <translation id="510644072453496781">紙板 (封邊)</translation>
 <translation id="5106648964679263509">已填入「<ph name="BNPL_ISSUER_NAME" />」的虛擬卡片資訊</translation>
 <translation id="5108567515277121477">會員卡</translation>
@@ -2710,6 +2716,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chromium 功能<ph name="END_BOLD" />，例如使用網址列和網頁上的圖片進行搜尋。請注意，功能可用與否取決於搜尋引擎是否支援該功能。</translation>
 <translation id="5323043727018853753">允許內嵌的內容</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />，<ph name="NUM_MATCHES" /> 之 <ph name="MATCH_POSITION" /></translation>
+<translation id="5323501626199324454">在 Google 帳戶中管理</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329858041417644019">你的瀏覽器未受管理</translation>
 <translation id="5331585574693522196">設為預設</translation>
@@ -2753,6 +2760,7 @@
 <translation id="5394069166371280357">適合闔家觀賞的電視節目</translation>
 <translation id="5396631636586785122">邊緣裝訂 (右側)</translation>
 <translation id="5397794290049113714">你</translation>
+<translation id="5398461103557553443">將 IBAN 儲存到 Google 錢包，下次就會自動填入</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5401344472773249513">名人與娛樂新聞</translation>
@@ -3861,6 +3869,7 @@
 <translation id="7162277662076933695">智慧型讀卡機</translation>
 <translation id="7163295244162773898">{0,plural, =1{要複製機密檔案嗎？}other{要複製機密檔案嗎？}}</translation>
 <translation id="7168625890036931112">「<ph name="DATA_CONTROLS_RESTRICTION" />」不是這個平台可支援的限制項目</translation>
+<translation id="7170930892977483182">存在裝置和 Google 錢包的安全碼會全數刪除</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">網路上的價格記錄</translation>
 <translation id="7174545416324379297">已合併</translation>
@@ -3916,6 +3925,7 @@
 <translation id="7251437084390964440">網路設定未遵循 ONC 標準，系統可能無法匯入部分設定。
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">如要刪除這類資料，請前往相關管理設定</translation>
 <translation id="7255540419660272073">「不喜歡」按鈕，按下 Enter 鍵即可開啟意見回饋表單，詳細說明為何不喜歡「<ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
 <translation id="7256634549594854023">後端托盤</translation>
 <translation id="7257453341537973799">職業資源與規劃</translation>
@@ -4044,6 +4054,7 @@
 <translation id="7450577240311017924">「管理同步功能」按鈕，啟動後即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />這個問題。</translation>
 <translation id="745208957946308667">恐龍遊戲，按下空白鍵即可遊玩</translation>
+<translation id="7453032093368223821">管理其他資料</translation>
 <translation id="7453849010505253492">這個伺服器的安全性憑證未取得 Chrome 或系統網路流量加密設定的信任，因此無法證明其屬於「<ph name="DOMAIN" />」網域。這可能是因為設定錯誤，或是有攻擊者攔截連線。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看憑證<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">雲端帳戶</translation>
 <translation id="7455133967321480974">使用全域預設值 (封鎖)</translation>

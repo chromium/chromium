@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">Chrome necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
+<translation id="4280647692742956593">Baixa Chrome al telèfon per obrir o crear grups de pestanyes nous siguis on siguis.</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
 <translation id="4293420128516039005">Inicia la sessió per sincronitzar i personalitzar Chrome en tots els teus dispositius</translation>
 <translation id="430327780270213103">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chrome</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">La imatge s'ha copiat</translation>
 <translation id="4926882258455737990">Per utilitzar un altre Compte de Google amb Gemini a Chrome, <ph name="BEGIN_LINK" />crea un perfil nou<ph name="END_LINK" /> i inicia la sessió amb el compte que vulguis</translation>
 <translation id="492720062778050435">Chrome et recomana que revisis aquesta extensió</translation>
-<translation id="4946912144186040233">Chrome entén millor els formularis i pot emplenar-los automàticament més de pressa. Aquesta opció de configuració està desactivada.</translation>
 <translation id="4953650215774548573">Defineix Google Chrome com a navegador predeterminat</translation>
 <translation id="495931528404527476">A Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex no ha pogut sincronitzar les teves dades perquè els detalls d'inici de sessió del compte no estan actualitzats.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">Tria un perfil de Chrome per utilitzar-lo amb <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Per ajudar a millorar aquestes funcions, Chrome envia a Google les interaccions que hi mantinguis. És possible que revisors humans llegeixin, tractin i anotin aquestes dades.</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
-<translation id="5530733413481476019">Fes que Chrome sigui més ràpid</translation>
 <translation id="5550137307985173298">Per renovar l'aspecte de Chrome, a la pàgina Pestanya nova, fes clic al botó Personalitza Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">La teva organització tanca Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Esteu a punt d'iniciar la sessió amb un compte gestionat i d'atorgar el control del vostre perfil de Google Chrome a l'administrador corresponent. Les vostres dades de Chrome, com ara aplicacions, adreces d'interès, historial, contrasenyes i altres configuracions, s'enllaçaran permanentment amb <ph name="USER_NAME" />. Podreu suprimir aquestes dades mitjançant el Tauler de Comptes de Google, però no les podreu associar amb un altre compte. De manera opcional, podeu crear un perfil nou per mantenir les vostres dades de Chrome a part. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> gestiona Chrome</translation>
+<translation id="7285990705317078173">Baixa Chrome al telèfon per fer un seguiment dels preus i rebre alertes quan un preu baixi en qualsevol lloc web</translation>
 <translation id="7288567540154601580">Pestanyes i extensions</translation>
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7302361266603927550">Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7379321689415048316">Chrome pot emplenar automàticament els camps difícils que l'emplenament automàtic estàndard podria ometre</translation>
 <translation id="7386878009611068389">Per protegir-te més en línia amb les opcions del teu pare o mare, canvia al perfil de Chrome en què ja tens la sessió iniciada amb <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Teníeu la sessió iniciada a Chrome com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar-hi a iniciar la sessió.</translation>
 <translation id="7412494426921990001">Fes clic al menú de Chrome</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="749228101751499733">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
 <translation id="7496017508659652909">Chrome precarrega les pàgines perquè la navegació i la cerca siguin més ràpides. <ph name="BEGIN_LINK" />Obtén més informació sobre la precàrrega de pàgines<ph name="END_LINK" />.</translation>
-<translation id="7510927761955779701">Chrome entén millor els formularis i pot emplenar-los automàticament més de pressa. Aquesta opció de configuració està activada.</translation>
 <translation id="7514258452813684157">Servei de l'actualitzador de Google</translation>
 <translation id="7515191208480168435">Pots fixar Google Lens per accedir-hi fàcilment</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

@@ -433,6 +433,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2885355868600171871">Passer à la barre d'adresse</translation>
 <translation id="2888126860611144412">À propos de Google Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
+<translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2894821468041866720">Ne ralentit pas de manière perceptible votre navigateur ou votre appareil.</translation>
 <translation id="2895521649038438824">Vous pouvez écouter cette page</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, onglet épinglé avec son</translation>
@@ -1467,6 +1468,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">En savoir plus sur les raisons pour lesquelles Chrome bloque certains fichiers</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
+<translation id="7170930892977483182">Tous les codes de sécurité enregistrés sur votre appareil et dans Google Portefeuille seront supprimés</translation>
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>
 <translation id="7173338713290252554">Historique des prix sur le Web</translation>
 <translation id="7177466738963138057">Vous pourrez modifier cet élément plus tard dans les paramètres</translation>
@@ -1653,7 +1655,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7919123827536834358">Traduire automatiquement ces langues</translation>
 <translation id="7921782882718083488">Résumer cette page</translation>
 <translation id="7926975587469166629">Pseudo de la carte</translation>
-<translation id="7927073875790626822">RE</translation>
+<translation id="7927073875790626822">XR</translation>
 <translation id="7929587383660661825">Chrome supprime automatiquement les autorisations des sites qui abusent des notifications ou que vous n'avez pas visités récemment</translation>
 <translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> n'est pas à jour.</translation>

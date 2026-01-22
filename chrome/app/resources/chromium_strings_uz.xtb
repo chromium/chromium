@@ -3,7 +3,6 @@
 <translationbundle lang="uz">
 <translation id="1026101648481255140">Oʻrnatishda davom etish</translation>
 <translation id="1029669172902658969">ChromiumOS tizimini yangilash uchun qayta ishga tushiring</translation>
-<translation id="103359417695385097">Chromium shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin Bu sozlama oʻchiq.</translation>
 <translation id="1040916596585577953">Chromium bu kengaytmani tekshirishni tavsiya qiladi</translation>
 <translation id="1042552502243217427">Birorta sayt havolalarni maxfiy tarzda sahifalarida oldindan yuklashni soʻrasa, Chromium Google xizmatlaridan foydalanadi. Bunda, oldindan yuklangan saytda shaxsingiz berkitiladi, lekin Google qaysi saytlar oldindan yuklanishini oʻrganadi.</translation>
 <translation id="1051793555070215510">1 daqiqalik soʻrovnoma orqali Inkognito rejimini yaxshilashimizga yordam bering.</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasini ochganingizda Google Parollar menejeridan foydalanish taklifi chiqadi.</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="18552579716432081">Brauzer maʼlumotlarini faqat shu qurilmadan oʻchirish va Google hisobingizda saqlash uchun <ph name="BEGIN_LINK" />Chromium hisobingizdan chiqing<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Istalgan joyda varaqlar guruhini ochish va yaratish uchun telefonga Chromium ilovasini yuklab oling.</translation>
 <translation id="185970820835152459">Kirilgan Google hisoblaringizni boshqarishingiz mumkin. Google hisoblaringizdan Chromium brauzeri, Play Market va Gmail kabilardan foydalaniladi. Oila aʼzosi kabi biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, yangi shaxsni <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Rasm orqali qidiruv</translation>
 <translation id="1880677175115548835">Matnni belgilash</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2753623023919742414">Qidirish uchun bosing</translation>
 <translation id="2768103863314748511">Chromium birlamchi PDF fayllarni koʻrish vositasi etib tayinlansin</translation>
+<translation id="277828055419948999">Chromium standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
 <translation id="2785438272836277133">Bu kengaytma tarkibida zararli kod bor va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromiumdan olib tashlang.</translation>
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2803971713792056305">Sizning Chromium</translation>
@@ -333,7 +334,6 @@
 <translation id="4613863813562375431">ChromiumOS versiyasi</translation>
 <translation id="4621240073146040695">Yangilashni yakunlash uchun Chromium brauzerini qayta ishga tushiring.</translation>
 <translation id="4625064703209785397">Chromium V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chromium brauzerining hujumlardan himoyasini biroz pasaytiradi</translation>
-<translation id="4654936675281451226">Chromium shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin Bu sozlama yoniq.</translation>
 <translation id="4665829708273112819">Diqqat! Chromium kengaytmalarga brauzer tarixini yozib olishni taqiqlay olmaydi. Kengaytmani inkognito rejimida faolsizlantirish uchun bayroqchani olib tashlang.</translation>
 <translation id="4673151026126227699">Shuningdek, Chromium foydalanish statistikasini ham ulashsangiz, bu hisobotlarga siz tashrif qilgan URL manzillar ham kiradi</translation>
 <translation id="4677944499843243528">Profil boshqa kompyuterdagi (<ph name="HOST_NAME" />) boshqa Chromium jarayonida (<ph name="PROCESS_ID" />) foydalanilayotgan ko‘rinadi. Ishdan chiqishlarni oldini olish maqsadida profil qulflandi. Agar aniq o‘zingiz foydalanayotgan bo‘lsangiz, qulfdan yeching va Chromium‘ni qaytadan ishga tushiring.</translation>
@@ -437,7 +437,6 @@
 <translation id="6063093106622310249">&amp;Chromiumda ochish</translation>
 <translation id="6069027071882229820">Rasm sifatida nusxalash</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> kengaytmasi Chromiumga o‘rnatildi</translation>
-<translation id="6072463441809498330">Chromiumni tezlashtirish</translation>
 <translation id="6096348254544841612">Chromium uchun yangilanish chiqdi.</translation>
 <translation id="6107893135096467929">Yoniq • Chromium bu kengaytma manbasini tekshira olmadi</translation>
 <translation id="611228897408671387">Chromiumdagi hisobingiz</translation>
@@ -482,6 +481,7 @@
 <translation id="6436260184216827876">Rasm orqali qidiruv ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="6442900851116057561">ChromiumOS tizimini ishga tushirish</translation>
 <translation id="6443470774889161065">Chromium siz tashrif buyurishingiz mumkin boʻlgan koʻplab sahifalarni oldindan yuklaydi, shunda ular tashrif buyurganingizda tezroq yuklanadi.</translation>
+<translation id="6450948450282634257">Narxlarni kuzatish va istalgan saytda narx pasayishi haqida xabar olish uchun telefonga Chromium ilovasini yuklab oling</translation>
 <translation id="645458117210240797">Oʻchiq • Chromium bu kengaytma manbasini tekshira olmadi</translation>
 <translation id="6455857529632101747">Chromium profillariga xush kelibsiz</translation>
 <translation id="6466344609055215035">Hisobni Chromiumdan chiqarish</translation>

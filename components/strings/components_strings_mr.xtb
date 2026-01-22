@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">इतर डिव्हाइसवर तुमचा इतिहास पहा</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तुमच्या कॉंप्युटरवरील सॉफ्टवेअर Chrome ला सुरक्षितपणे वेबशी कनेक्ट होण्यापासून थांबवत आहे" (फक्‍त Windows कॉंप्युटरचा)</translation>
-<translation id="1293154089865862473">हे पर्याय देण्यासाठी चेकआउट पेजवरील पेज आशय Google सोबत शेअर केला जातो. ऑटोफिलमध्ये नंतर पेमेंट करण्याचे पर्याय लपवण्यासाठी, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> वर जा.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">एन्व्हलप ९ x ११ इंच</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
@@ -288,6 +287,7 @@
 <translation id="1433225466058025572">तुमच्या फाइल हलवण्याचा पुन्हा प्रयत्न करा</translation>
 <translation id="1433478348197382180">वाचन मोड</translation>
 <translation id="1436185428532214179">तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्याची विनंती करू शकते</translation>
+<translation id="1442054921249164535">अन्य डेटा</translation>
 <translation id="1442386063175183758">राइट गेट फोल्ड</translation>
 <translation id="1442987760062738829">पंच</translation>
 <translation id="1445896388055045436">चेकआउट करताना उपलब्ध कार्डचे फायदे आणि रिवॉर्ड दाखवा. जारीकर्त्यांच्या अटी लागू.</translation>
@@ -941,6 +941,7 @@
 <translation id="24699311393038040">पेपर (कोटेड)</translation>
 <translation id="2471632709106952369">तुलना सारण्या</translation>
 <translation id="2473810985261856484">कायद्याशी संबंधित सेवा</translation>
+<translation id="2477607419416067650">इतर Google डेटा</translation>
 <translation id="2479148705183875116">सेटिंग्ज वर जा</translation>
 <translation id="2479410451996844060">चुकीचे शोध URL.</translation>
 <translation id="2480300195898055381">तुमच्या Google खाते मध्ये, <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@
 <translation id="2552246211866555379">हगाकी</translation>
 <translation id="2552295903035773204">यापुढे कार्डे निश्चित करण्यासाठी स्क्रीन लॉक वापरा</translation>
 <translation id="2552532158894206888">राइट की</translation>
+<translation id="2553352788023127673">Search इतिहास आणि पासवर्ड त्यांच्या व्यवस्थापन सेटिंग्जमधून हटवता येऊ शकतात</translation>
 <translation id="2553853292994445426">तुमची सुरक्षित DNS सेटिंग्ज तपासा. तुम्ही कदाचित कनेक्ट करता येत नसलेला एखादा सुरक्षित DNS सर्व्हर कॉन्फिगर केला आहे.</translation>
 <translation id="255497580849974774">अपडेटदरम्यान कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट केलेले ठेवा.</translation>
 <translation id="2556876185419854533">&amp; संपादित करा पूर्ववत करा</translation>
@@ -1126,7 +1128,6 @@
 <translation id="2782088940970074970">कार रेंटल</translation>
 <translation id="278436560439594386">घरातील उपकरणे</translation>
 <translation id="2784474685437057136">B5 अतिरिक्त</translation>
-<translation id="2784540996156451674">हे पर्याय देण्यासाठी चेकआउट पेजवरील पेज आशय Google सोबत शेअर केला जातो.</translation>
 <translation id="2784949926578158345">कनेक्शन रीसेट केले.</translation>
 <translation id="2786008859124691917">सायकल आणि अ‍ॅक्सेसरी</translation>
 <translation id="2792012897584536778">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने सुरक्षा सर्टिफिकेट सेट केले आहे जे त्यांना तुम्ही भेट देत असलेल्या वेबसाइटचा आशय पाहण्याची परवानगी देऊ शकतात.</translation>
@@ -1500,6 +1501,7 @@
 <translation id="3407789382767355356">तृतीय पक्ष साइन इन</translation>
 <translation id="340924996148642843">तुलना करणे सध्या उपलब्ध नाही</translation>
 <translation id="3409896703495473338">सुरक्षा सेटिंग्ज व्यवस्थापित करा</translation>
+<translation id="3410151451624226773">Google Password Manager मध्ये व्यवस्थापित करा</translation>
 <translation id="3411091017011773343"><ph name="HOURS" /> तासांनी अपलोड करा</translation>
 <translation id="341134412449102894"><ph name="ACCOUNT" /> साठी तुमची माहिती <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे</translation>
 <translation id="3413466783792948876">तुम्ही सार्वजनिक नेटवर्क वापरत असल्यास, या साइटला नंतर भेट देणे सर्वात सुरक्षित आहे. तुमच्या घरामधील किंवा ऑफिसमधील वाय-फाय यासारखे विश्वसनीय नेटवर्क वापरण्यात कमी जोखीम असते.</translation>
@@ -1590,6 +1592,7 @@
 <translation id="3549904448933807997">ब्राउझर आणि प्रोफाइल यांसंबंधित माहिती (वैयक्तिक व कार्य प्रोफाइल यांसह)</translation>
 <translation id="3552155506104542239">चेतावणी: हे धोरण <ph name="POLICY_NAME" /> सह विरोधाभासी आहे आणि Android ॲप्सवर त्याचा कोणताही परिणाम होणार नाही. अन्यथा, हे धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
 <translation id="3552297013052089404">Sans-Serif फॉंट</translation>
+<translation id="3558335486599406178">IBAN Google Wallet मध्ये सेव्ह केला आहे</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
 <translation id="3559897352860026926">तुमच्या अ‍ॅडमिनिस्ट्रेटरला त्यांच्या <ph name="CLOUD_PROVIDER" /> कॉन्फिगरेशन सेटिंग्जची पडताळणी करण्यास सांगा.</translation>
 <translation id="3560824484345057728">संबंधित साइट पहा</translation>
@@ -2160,12 +2163,14 @@
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406896451731180161">शोध परिणाम</translation>
 <translation id="4407758156081352648">सुरक्षा राखण्यासाठी, तुमची संस्था Chrome मध्ये पासवर्ड पुन्हा वापरण्याची अनुमती देत ​​नाही. वापरकर्त्याच्या गोपनीयतेचे संरक्षण करण्यासाठी Chrome मधील पासवर्ड एन्क्रिप्ट केलेले आहेत.</translation>
+<translation id="4409271659088619928"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
 <translation id="4409556632583862731">नवीन थ्रेड</translation>
 <translation id="4412074349188076601">हे कॉन्फिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
 <translation id="4412377069090572315">लोक काय म्हणत आहेत</translation>
 <translation id="4414515549596849729">कुकी आणि साइट डेटा</translation>
 <translation id="4415156962929755728">प्लॅस्टिक (हाय ग्लॉस)</translation>
 <translation id="4415426530740016218">घेण्याचा पत्ता</translation>
+<translation id="4419287616181386201">पासवर्ड त्यांच्या व्यवस्थापन सेटिंग्जमधून हटवता येऊ शकतात</translation>
 <translation id="4424024547088906515">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट Chrome द्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="4425750422187370446">ॲथलेटिक पोशाख</translation>
 <translation id="443121186588148776">सिरीअल पोर्ट</translation>
@@ -2572,6 +2577,7 @@
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">AI मोड ला विचारण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
+<translation id="5105442806410269908">इतर Google डेटा व्यवस्थापित करा</translation>
 <translation id="510644072453496781">कार्डबोर्ड (एंड)</translation>
 <translation id="5106648964679263509">व्हर्चुअल कार्ड <ph name="BNPL_ISSUER_NAME" /> साठी भरले आहे</translation>
 <translation id="5108567515277121477">लॉयल्‍टी कार्ड</translation>
@@ -2711,6 +2717,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />तुमचे डीफॉल्ट शोध इंजीन तुम्हाला वेबवर शोधू देते आणि Chromium वैशिष्ट्यांना प्रभावी बनवते<ph name="END_BOLD" />, जसे की ॲड्रेस बारवरून व वेब पेजवरील इमेजवरून शोधणे. तुमचे शोध इंजीन त्यास सपोर्ट करत नसल्यास, एखादे वैशिष्ट्य कदाचित उपलब्ध होणार नाही.</translation>
 <translation id="5323043727018853753">एंबेड केलेल्या आशायाला अनुमती आहे</translation>
 <translation id="5323105697514565458"><ph name="NUM_MATCHES" /> पैकी <ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /></translation>
+<translation id="5323501626199324454">तुमच्या Google खाते मध्ये व्यवस्थापित करा</translation>
 <translation id="5327248766486351172">नाव</translation>
 <translation id="5329858041417644019">तुमचे ब्राउझर व्यवस्थापित केलेले नाही</translation>
 <translation id="5331585574693522196">डीफॉल्ट म्हणून सेट करा</translation>
@@ -2754,6 +2761,7 @@
 <translation id="5394069166371280357">टीव्हीवरील कुटुंब अभिमुख शो</translation>
 <translation id="5396631636586785122">एज स्टिच राइट</translation>
 <translation id="5397794290049113714">तुम्ही</translation>
+<translation id="5398461103557553443">पुढच्या वेळी हा IBAN ऑटोफिल करण्यासाठी, तो Google Wallet मध्ये सेव्ह करा</translation>
 <translation id="5398772614898833570">जाहिराती ब्लॉक केल्या</translation>
 <translation id="5400836586163650660">राखाडी</translation>
 <translation id="5401344472773249513">सेलिब्रिटी आणि मनोरंजनासंबंधित बातम्या</translation>
@@ -3863,6 +3871,7 @@
 <translation id="7162277662076933695">स्‍मार्ट कार्ड रीडर</translation>
 <translation id="7163295244162773898">{0,plural, =1{गोपनीय फाइल कॉपी करायची आहे का?}other{गोपनीय फाइल कॉपी करायच्या आहेत का?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" हा या प्लॅटफॉर्मवर सपोर्ट असलेला निर्बंध नाही</translation>
+<translation id="7170930892977483182">तुमच्या डिव्हाइसवर आणि Google Wallet मध्ये सेव्ह केलेले सर्व सुरक्षा कोड हटवले जातील</translation>
 <translation id="717330890047184534">Gaia आयडी:</translation>
 <translation id="7173338713290252554">संपूर्ण वेबवरील किमतीचा इतिहास</translation>
 <translation id="7174545416324379297">मर्ज केले</translation>
@@ -3918,6 +3927,7 @@
 <translation id="7251437084390964440">नेटवर्क कॉन्फिगरेशन ONC स्टँडर्डचे पालन करत नाही. कॉन्फिगरेशनचे भाग कदाचित इंपोर्ट करता येणार नाहीत.
 अतिरिक्त तपशील:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">हा डेटा हटवण्यासाठी, त्याच्या व्यवस्थापन सेटिंग्जवर जा</translation>
 <translation id="7255540419660272073">थंब्स डाउन बटण, तुम्हाला का आवडले नाही याबद्दल तपशीलवार फीडबॅक सबमिट करण्यासाठी फॉर्म उघडण्याकरिता एंटर प्रेस करा, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">मागील ट्रे</translation>
 <translation id="7257453341537973799">करिअर स्रोत आणि नियोजन</translation>
@@ -4046,6 +4056,7 @@
 <translation id="7450577240311017924">सिंक व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="7451311239929941790">या समस्येविषयी <ph name="BEGIN_LINK" />अधिक जाणून घेणे<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">Dino गेम, खेळण्यासाठी स्पेस प्रेस करा</translation>
+<translation id="7453032093368223821">इतर डेटा व्यवस्थापित करा</translation>
 <translation id="7453849010505253492">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chrome द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />प्रमाणपत्र पहा<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">क्लाउड खाते</translation>
 <translation id="7455133967321480974">ग्लोबल डीफॉल्‍ट वापरा (ब्लॉक करा)</translation>

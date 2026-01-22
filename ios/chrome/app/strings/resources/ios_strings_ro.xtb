@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Ascunde parola</translation>
 <translation id="4568230126482344545">Ascunde filele recente</translation>
 <translation id="4578835633387306383">Activează…</translation>
+<translation id="4580621046861724270">Unele marcaje nu s-au salvat</translation>
 <translation id="4580716718466706433">Accesează Managerul de parole</translation>
 <translation id="4585751637295612750">Deschide o filă nouă pentru a o adăuga la întrebare</translation>
 <translation id="4587589328781138893">Site-uri</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Urmărești deja acest produs.</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5329451663851195956">Poți să tragi în jos pentru a actualiza.</translation>
+<translation id="5336910966955551309">Atinge lung pentru a fixa site-urile preferate</translation>
 <translation id="5338512273860059533">Conectare în curs.</translation>
 <translation id="5343472494710226394">Știri, sport și conținut pe baza intereselor tale.</translation>
 <translation id="5352128922772839949">Salvează fișierul</translation>
@@ -2004,6 +2006,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8319282042900445670">Memento setat pentru <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Activitate recentă</translation>
 <translation id="8325455175867928593">Ascunde cardul Recenzii bazate pe interesele tale</translation>
+<translation id="8328777765163860529">Închideți toate</translation>
 <translation id="833647236762414178">Creează, salvează și gestionează parolele și cheile de acces pentru a te conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
 <translation id="8348530355586151720">Atinge meniul cu trei puncte</translation>
@@ -2239,7 +2242,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="914781932147356857">Marchează-le pe toate…</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9149866541089851383">Editează...</translation>
-<translation id="9152637745605628097">Alege dintre teme, culori sau încarcă o imagine.</translation>
+<translation id="9152637745605628097">Alege dintre teme și culori sau încarcă o imagine.</translation>
 <translation id="9159628751968616911">Trimite pagina web</translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
 <translation id="9165320910061267720">Pentru a primi notificări privind alertele de scădere de preț, trebuie să activezi notificările din setările iOS.</translation>

@@ -433,6 +433,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2885355868600171871">Pređite na traku za adresu</translation>
 <translation id="2888126860611144412">O Chrome pregledaču</translation>
 <translation id="2891154217021530873">Zaustavi učitavanje stranice</translation>
+<translation id="2893168226686371498">Podrazumevani pregledač</translation>
 <translation id="2894821468041866720">Ne usporava primetno pregledač ili uređaj.</translation>
 <translation id="2895521649038438824">Možete da slušate ovu stranicu</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, zakačena kartica sa zvukom</translation>
@@ -1467,6 +1468,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Saznajte više o tome zašto Chrome blokira neke fajlove</translation>
 <translation id="7168323970702333693">Prijavljeni ste kao <ph name="USER_NAME" />. Otvara podešavanja.</translation>
+<translation id="7170930892977483182">Svi bezbednosni kodovi sačuvani na uređaju i u Google novčaniku biće izbrisani</translation>
 <translation id="7173114856073700355">Otvori Podešavanja</translation>
 <translation id="7173338713290252554">Istorija cena širom veba</translation>
 <translation id="7177466738963138057">To možete da promenite kasnije u podešavanjima</translation>

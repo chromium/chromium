@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer "Onglets récents"</translation>
 <translation id="4578835633387306383">Activer…</translation>
+<translation id="4580621046861724270">Certains favoris ne sont pas enregistrés</translation>
 <translation id="4580716718466706433">Accédez au Gestionnaire de mots de passe</translation>
 <translation id="4585751637295612750">Ouvrez un nouvel onglet pour l'ajouter à votre question</translation>
 <translation id="4587589328781138893">Sites</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329451663851195956">Faites glisser l'écran vers le bas pour actualiser.</translation>
+<translation id="5336910966955551309">Appuyez de manière prolongée pour épingler vos sites préférés</translation>
 <translation id="5338512273860059533">Connexion en cours.</translation>
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
@@ -2004,6 +2006,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8319282042900445670">Rappel défini pour <ph name="TIME" /> le <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Activité récente</translation>
 <translation id="8325455175867928593">Masquer "Avis basés sur vos centres d'intérêt"</translation>
+<translation id="8328777765163860529">Tout fermer</translation>
 <translation id="833647236762414178">Créez, enregistrez et gérez vos mots de passe et clés d'accès pour vous connecter facilement à des sites et applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil.</translation>
 <translation id="8348530355586151720">Appuyez sur l'icône du menu à trois points</translation>

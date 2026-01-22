@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Gunakan Chromium kapan saja dengan mengetuk link di pesan atau aplikasi lainnya.</translation>
 <translation id="1722370509450468186">Sandi akan disimpan di Akun Anda (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Feed kustom yang dibuat untuk Anda</translation>
+<translation id="1761196287436320018">Anda telah mencapai batas <ph name="LIMIT" /> bookmark Chromium, sehingga beberapa bookmark belum disimpan di Akun Google Anda.
+
+Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>
 <translation id="1811860791247653035">Untuk mendapatkan personalisasi dan fitur lainnya, sertakan Chromium di <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium memverifikasi bahwa <ph name="ISSUER" /> menerbitkan sertifikat situs web ini.</translation>
 <translation id="1839447949248872139">Buka link di Chromium secara Default</translation>

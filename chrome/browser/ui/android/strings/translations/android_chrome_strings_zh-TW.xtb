@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">跳到網址列</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
+<translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2894821468041866720">不會大幅降低瀏覽器或裝置運作速度。</translation>
 <translation id="2895521649038438824">Chrome 可以朗讀本頁內容</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />，固定的分頁，正在播放音訊</translation>
@@ -1467,6 +1468,7 @@
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="7165972437814027679">進一步瞭解為何 Chrome 會封鎖某些檔案</translation>
 <translation id="7168323970702333693">目前登入的帳戶是<ph name="USER_NAME" />。開啟設定。</translation>
+<translation id="7170930892977483182">存在裝置和 Google 錢包的安全碼會全數刪除</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7173338713290252554">網路上的價格記錄</translation>
 <translation id="7177466738963138057">日後可前往設定頁面進行變更</translation>

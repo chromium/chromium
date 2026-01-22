@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">Погледајте историју на другим уређајима</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
-<translation id="1293154089865862473">Садржај странице са странице за плаћање дели се са Google-ом да би Google пружао ове опције. Да бисте сакрили опције за касније плаћање у аутоматском попуњавању, идите на <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="1293556467332435079">Фајлови</translation>
 <translation id="1293797321964802402">Коверта 23×28 cm</translation>
 <translation id="129553762522093515">Недавно затворено</translation>
@@ -288,6 +287,7 @@
 <translation id="1433225466058025572">Пробајте да поново преместите фајлове</translation>
 <translation id="1433478348197382180">Режим читања</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
+<translation id="1442054921249164535">Други подаци</translation>
 <translation id="1442386063175183758">Пресавијање на десној страни у облику прозора</translation>
 <translation id="1442987760062738829">Бушење</translation>
 <translation id="1445896388055045436">Прикажи доступне предности и награде за картицу при плаћању. Важе услови издавача.</translation>
@@ -941,6 +941,7 @@
 <translation id="24699311393038040">Папир (премаз)</translation>
 <translation id="2471632709106952369">Табеле за поређење</translation>
 <translation id="2473810985261856484">Правне услуге</translation>
+<translation id="2477607419416067650">Други Google подаци</translation>
 <translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2479410451996844060">Неважећа URL адреса претраге.</translation>
 <translation id="2480300195898055381">На Google налогу, <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@
 <translation id="2552246211866555379">Разгледница</translation>
 <translation id="2552295903035773204">Од сада користи откључавање екрана за потврду картица</translation>
 <translation id="2552532158894206888">десни тастер</translation>
+<translation id="2553352788023127673">Историја претраге и лозинке могу да се бришу у подешавањима управљања</translation>
 <translation id="2553853292994445426">Проверите подешавања за безбедан DNS. Можда сте конфигурисали безбедан DNS сервер са којим не успевате да се повежете.</translation>
 <translation id="255497580849974774">Нека уређај буде повезан са пуњачем током ажурирања.</translation>
 <translation id="2556876185419854533">&amp;Опозови измену</translation>
@@ -1126,7 +1128,6 @@
 <translation id="2782088940970074970">Изнајмљивање аутомобила</translation>
 <translation id="278436560439594386">Кућни апарати</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Садржај странице са странице за плаћање дели се са Google-ом да би Google пружао ове опције.</translation>
 <translation id="2784949926578158345">Веза је враћена на почетне вредности.</translation>
 <translation id="2786008859124691917">Бицикли и опрема</translation>
 <translation id="2792012897584536778">Администратори овог уређаја су подесили безбедносне сертификате који могу да им омогуће да виде садржај веб-сајтова које посећујете.</translation>
@@ -1500,6 +1501,7 @@
 <translation id="3407789382767355356">пријављивање треће стране</translation>
 <translation id="340924996148642843">Поређење тренутно није доступно</translation>
 <translation id="3409896703495473338">Управљајте безбедносним подешавањима</translation>
+<translation id="3410151451624226773">Управљајте у Google менаџеру лозинки</translation>
 <translation id="3411091017011773343">Отпреми за <ph name="HOURS" /> с</translation>
 <translation id="341134412449102894">Информације се чувају у <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-у за <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Најбезбедније је да посетите овај сајт касније ако користите јавну мрежу. Ризик је мањи са поуздане мреже, попут кућне или пословне WiFi мреже.</translation>
@@ -1591,6 +1593,7 @@
 <translation id="3549904448933807997">Информације о прегледачима и профилима (укључујући личне и пословне профиле)</translation>
 <translation id="3552155506104542239">Упозорење: Ове смернице су неусаглашене са документом <ph name="POLICY_NAME" /> и неће имати утицаја на Android апликације. У супротном, ове смернице раде као што је предвиђено.</translation>
 <translation id="3552297013052089404">Фонт Sans Serif</translation>
+<translation id="3558335486599406178">IBAN је сачуван у Google новчанику</translation>
 <translation id="3558573058928565255">Време дана</translation>
 <translation id="3559897352860026926">Затражите од администратора да верификује подешавања конфигурације за <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="3560824484345057728">Прикажи сродне сајтове</translation>
@@ -2161,12 +2164,14 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4406896451731180161">резултати претраге</translation>
 <translation id="4407758156081352648">Организација не дозвољава поновно коришћење лозинки у Chrome-у из безбедносних разлога. Лозинке у Chrome-у се шифрују да би се заштитила приватност корисника.</translation>
+<translation id="4409271659088619928">Ваш претраживач је <ph name="DSE" />. Погледајте упутства тог претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="4409556632583862731">Нова конверзација</translation>
 <translation id="4412074349188076601">Ова конфигурација је означена као да може да се инсталира, али за ову архитектуру није наведена слика, па не може да се инсталира.</translation>
 <translation id="4412377069090572315">Шта кажу људи</translation>
 <translation id="4414515549596849729">колачићи и подаци о сајтовима</translation>
 <translation id="4415156962929755728">Пластика (високи сјај)</translation>
 <translation id="4415426530740016218">Адреса преузимања</translation>
+<translation id="4419287616181386201">Лозинке могу да се бришу у подешавањима управљања</translation>
 <translation id="4424024547088906515">Овај сервер не може да докаже да је <ph name="DOMAIN" />; Chrome нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="4425750422187370446">Одећа за спорт</translation>
 <translation id="443121186588148776">Серијски порт</translation>
@@ -2573,6 +2578,7 @@
 <translation id="5097468150760963273">27×39 in</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Притисните Tab, па Enter да бисте упитали режим вештачке интелигенције</translation>
+<translation id="5105442806410269908">Управљајте другим Google подацима</translation>
 <translation id="510644072453496781">Картон (крај)</translation>
 <translation id="5106648964679263509">Виртуелна картица за <ph name="BNPL_ISSUER_NAME" /> је попуњена</translation>
 <translation id="5108567515277121477">Картица лојалности</translation>
@@ -2712,6 +2718,7 @@
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chromium функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="5323043727018853753">Уграђен садржај је дозвољен</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />. од <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Управљајте на Google налогу</translation>
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5329858041417644019">Прегледачем нико не управља</translation>
 <translation id="5331585574693522196">Подеси као подразумевано</translation>
@@ -2755,6 +2762,7 @@
 <translation id="5394069166371280357">Породичне ТВ емисије</translation>
 <translation id="5396631636586785122">Спајање ивица шавом на десној страни</translation>
 <translation id="5397794290049113714">Ви</translation>
+<translation id="5398461103557553443">Да бисте следећи пут аутоматски попунили овај IBAN, сачувајте га у Google новчанику</translation>
 <translation id="5398772614898833570">Огласи су блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5401344472773249513">Познате личности и вести из света забаве</translation>
@@ -3862,6 +3870,7 @@
 <translation id="7162277662076933695">Читач паметних картица</translation>
 <translation id="7163295244162773898">{0,plural, =1{Желите да копирате поверљиви фајл?}one{Желите да копирате поверљиве фајлове?}few{Желите да копирате поверљиве фајлове?}other{Желите да копирате поверљиве фајлове?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ није подржано ограничење на овој платформи</translation>
+<translation id="7170930892977483182">Сви безбедносни кодови сачувани на уређају и у Google новчанику биће избрисани</translation>
 <translation id="717330890047184534">Gaia ИД:</translation>
 <translation id="7173338713290252554">Историја цена широм веба</translation>
 <translation id="7174545416324379297">Обједињено</translation>
@@ -3917,6 +3926,7 @@
 <translation id="7251437084390964440">Конфигурација мреже није у складу са ONC стандардом. Делови конфигурације можда нису увезени.
 Додатни детаљи:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Да бисте избрисали ове податке, идите у подешавања управљања</translation>
 <translation id="7255540419660272073">Дугме Не свиђа ми се, притисните Enter да бисте отворили образац за слање детаљних повратних информација о томе зашто вам се не свиђа, <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Задња фиока</translation>
 <translation id="7257453341537973799">Ресурси за каријеру и планирање каријере</translation>
@@ -4045,6 +4055,7 @@
 <translation id="7450577240311017924">Дугме Управљај синхронизацијом, активирајте га да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
 <translation id="745208957946308667">Игра са диносаурусом, притискајте тастер за размак да бисте играли</translation>
+<translation id="7453032093368223821">Управљајте другим подацима</translation>
 <translation id="7453849010505253492">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chrome или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прикажи сертификат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Налог у клауду</translation>
 <translation id="7455133967321480974">Користи глобалну подразумевану вредност (Блокирај)</translation>

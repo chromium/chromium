@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
 <translation id="4578835633387306383">Aktivera …</translation>
+<translation id="4580621046861724270">Vissa bokmärken har inte sparats</translation>
 <translation id="4580716718466706433">Öppna Lösenordshantering</translation>
 <translation id="4585751637295612750">Öppna en ny flik för att lägga till den i din fråga</translation>
 <translation id="4587589328781138893">Webbplatser</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Du bevakar redan den här produkten.</translation>
 <translation id="5327248766486351172">Namn</translation>
 <translation id="5329451663851195956">Du kan dra nedåt för att uppdatera.</translation>
+<translation id="5336910966955551309">Tryck länge för att fästa dina favoritwebbplatser</translation>
 <translation id="5338512273860059533">Inloggning pågår.</translation>
 <translation id="5343472494710226394">Nyheter, sport och innehåll utifrån dina intressen.</translation>
 <translation id="5352128922772839949">Spara fil</translation>
@@ -2004,6 +2006,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8319282042900445670">Påminnelse har ställts in på kl. <ph name="TIME" /> den <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Senaste aktiviteter</translation>
 <translation id="8325455175867928593">Dölj Recensioner baserade på dina intressen</translation>
+<translation id="8328777765163860529">Stäng alla</translation>
 <translation id="833647236762414178">Skapa, spara och hantera dina lösenord och nycklar för att enkelt logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8348530355586151720">Tryck på menyn med tre punkter</translation>

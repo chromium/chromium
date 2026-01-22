@@ -186,7 +186,6 @@
 <translation id="1289129165308566697">سابقه‌تان را در دستگاه‌های دیگر ببینید</translation>
 <translation id="1292571435393770077">سینی ۱۶</translation>
 <translation id="1292701964462482250">‏«نرم‌افزاری در رایانه شما مانع از اتصال ایمن Chrome به وب می‌شود» (فقط رایانه‌های Windows)</translation>
-<translation id="1293154089865862473">‏محتوای صفحه از صفحه تسویه‌حساب با Google هم‌رسانی می‌شود تا این گزینه‌ها ارائه شود. برای پنهان کردن گزینه‌های «بعداً پرداخت شود» در «تکمیل خودکار»، به <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> بروید.</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">پاکت ۱۱×۹ اینچی</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
@@ -288,6 +287,7 @@
 <translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
 <translation id="1433478348197382180">حالت خواندن</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
+<translation id="1442054921249164535">سایر داده‌ها</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
 <translation id="1442987760062738829">سوراخ کردن</translation>
 <translation id="1445896388055045436">مزايا و پاداش‌های دردسترس کارت را هنگام تسویه‌حساب نمایش می‌دهد. شرایط صادرکننده اعمال می‌شود.</translation>
@@ -942,6 +942,7 @@
 <translation id="24699311393038040">کاغذ (روکش‌دار)</translation>
 <translation id="2471632709106952369">جدول‌های مقایسه</translation>
 <translation id="2473810985261856484">خدمات حقوقی</translation>
+<translation id="2477607419416067650">‏سایر داده‌های Google</translation>
 <translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2479410451996844060">‏URL جستجو نامعتبر است.</translation>
 <translation id="2480300195898055381">‏در «حساب Google» شما، <ph name="USER_EMAIL" /></translation>
@@ -996,6 +997,7 @@
 <translation id="2552246211866555379">کارت‌پستال</translation>
 <translation id="2552295903035773204">ازاین‌به‌بعد برای تأیید رساندن کارت‌ها از قفل صفحه استفاده کنید</translation>
 <translation id="2552532158894206888">کلید راست</translation>
+<translation id="2553352788023127673">سابقه جستجو و گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن حذف کرد</translation>
 <translation id="2553853292994445426">‏تنظیمات DNS امن را بررسی کنید. ممکن است سرور DNS امنی را پیکربندی کرده باشید که اتصال به آن انجام نمی‌شود.</translation>
 <translation id="255497580849974774">لطفاً دستگاهتان را درطول به‌روزرسانی به شارژر متصل نگه دارید.</translation>
 <translation id="2556876185419854533">&amp;واگرد ویرایش</translation>
@@ -1127,7 +1129,6 @@
 <translation id="2782088940970074970">اجاره خودرو</translation>
 <translation id="278436560439594386">لوازم خانگی</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">‏محتوای صفحه از صفحه تسویه‌حساب با Google هم‌رسانی می‌شود تا این گزینه‌ها ارائه شود.</translation>
 <translation id="2784949926578158345">اتصال مجدداً برقرار شد.</translation>
 <translation id="2786008859124691917">دوچرخه و لوازم جانبی</translation>
 <translation id="2792012897584536778">سرپرستان این دستگاه چند گواهینامه امنیتی راه‌اندازی کرده‌اند که می‌تواند به آن‌ها اجازه دهد محتوای وب‌سایت‌هایی را که بازدید می‌کنید، ببینند.</translation>
@@ -1135,7 +1136,7 @@
 <translation id="2794629552137076216">شیشه (مسطح)</translation>
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2799758406651937857">لباس مردانه</translation>
-<translation id="2803320044666896137">چون کاربر وابسته نیست، این مقدار خط‌مشی نادیده گرفته می‌شود.</translation>
+<translation id="2803320044666896137">این مقدار خط‌مشی نادیده گرفته می‌شود زیرا کاربر وابسته نیست.</translation>
 <translation id="2807052079800581569">‏موقعیت Y تصویر</translation>
 <translation id="2808278141522721006">‏می‌توانید Windows Hello را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
 <translation id="2818338148457093657">خدمات زیبایی و اسپا</translation>
@@ -1501,6 +1502,7 @@
 <translation id="3407789382767355356">ورود به سیستم شخص ثالث</translation>
 <translation id="340924996148642843">مقایسه درحال‌حاضر دردسترس نیست</translation>
 <translation id="3409896703495473338">مدیریت تنظیمات ایمنی</translation>
+<translation id="3410151451624226773">‏مدیریت در «مدیر گذرواژه Google»</translation>
 <translation id="3411091017011773343">بارگذاری کردن تا <ph name="HOURS" /> ساعت دیگر</translation>
 <translation id="341134412449102894">اطلاعات شما در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود</translation>
 <translation id="3413466783792948876">‏اگر از شبکه عمومی استفاده می‌کنید، ایمن‌تر است که بعداً از این سایت بازدید کنید. استفاده از شبکه‌های مورداعتماد مثل Wi-Fi خانه یا محل کار خطر کمتری دارند.</translation>
@@ -1592,6 +1594,7 @@
 <translation id="3549904448933807997">اطلاعات مرورگرها و نمایه‌ها (ازجمله نمایه‌های شخصی و کاری)</translation>
 <translation id="3552155506104542239">‏هشدار: این خط‌مشی با <ph name="POLICY_NAME" /> مغایرت دارد و اثری در برنامه‌های Android نخواهد داشت. به‌جز این مورد، این خط‌مشی همان‌طور که درنظر گرفته شده است کار می‌کند.</translation>
 <translation id="3552297013052089404">قلم سن‌سریف</translation>
+<translation id="3558335486599406178">‏‫IBAN در «کیف پول Google» ذخیره شد.</translation>
 <translation id="3558573058928565255">ساعت از روز</translation>
 <translation id="3559897352860026926">از سرپرستتان بخواهید تنظیمات پیکربندی <ph name="CLOUD_PROVIDER" /> را بررسی کند.</translation>
 <translation id="3560824484345057728">دیدن سایت‌های مرتبط</translation>
@@ -2162,12 +2165,14 @@
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4406896451731180161">نتایج جستجو</translation>
 <translation id="4407758156081352648">‏برای حفظ امنیت، سازمانتان اجازه استفاده مجدد از گذرواژه‌ها را در Chrome نمی‌دهد. گذرواژه‌ها در Chrome برای محافظت از حریم خصوصی کاربران رمزگذاری می‌شوند.</translation>
+<translation id="4409271659088619928">موتور جستجوی شما <ph name="DSE" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، دستورالعمل‌های آن موتور جستجو را ببینید.</translation>
 <translation id="4409556632583862731">رشته جدید</translation>
 <translation id="4412074349188076601">این پیکربندی به‌عنوان نصب‌شدنی علامت‌گذاری شده است اما هیچ تصویری برای این معماری ارائه نشده است، بنابراین نمی‌توان آن را نصب کرد.</translation>
 <translation id="4412377069090572315">نظرات دیگران</translation>
 <translation id="4414515549596849729">کوکی‌ها و داده‌های سایت</translation>
 <translation id="4415156962929755728">پلاستیک (خیلی براق)</translation>
 <translation id="4415426530740016218">نشانی تحویل گرفتن</translation>
+<translation id="4419287616181386201">گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن‌ها حذف کرد</translation>
 <translation id="4424024547088906515">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد Chrome نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="4425750422187370446">پوشاک ورزشی</translation>
 <translation id="443121186588148776">درگاه سریالی</translation>
@@ -2574,6 +2579,7 @@
 <translation id="5097468150760963273">۳۹ × ۲۷ اینچ</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">‏برای پرسیدن از «حالت هوشواره‌ای»، کلید Tab و سپس Enter را فشار دهید</translation>
+<translation id="5105442806410269908">‏مدیریت سایر داده‌های Google</translation>
 <translation id="510644072453496781">مقوا (نهایی)</translation>
 <translation id="5106648964679263509">کارت مجازی <ph name="BNPL_ISSUER_NAME" /> تکمیل شد</translation>
 <translation id="5108567515277121477">کارت وفاداری</translation>
@@ -2713,6 +2719,7 @@
 <translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />موتور جستجوی پیش‌فرض به شما امکان می‌دهد در وب جستجو کنید و ویژگی‌های Chromium را تقویت می‌کند<ph name="END_BOLD" />، مثلاً جستجو از نوار نشانی و از تصاویر موجود در صفحه‌های وب. اگر موتور جستجوی شما از ویژگی خاصی پشتیبانی نکند، شاید آن ویژگی دردسترس نباشد.</translation>
 <translation id="5323043727018853753">محتوای جاسازی‌شده مجاز است</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> از <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">‏مدیریت در «حساب Google»</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329858041417644019">مرورگرتان مدیریت نمی‌شود</translation>
 <translation id="5331585574693522196">تنظیم به‌عنوان پیش‌فرض</translation>
@@ -2756,6 +2763,7 @@
 <translation id="5394069166371280357">نمایش تلویزیونی خانوادگی</translation>
 <translation id="5396631636586785122">دوختن لبه راست</translation>
 <translation id="5397794290049113714">شما</translation>
+<translation id="5398461103557553443">‏برای اینکه این IBAN دفعه بعد به‌طور خودکار تکمیل شود، آن را در «کیف پول Google» ذخیره کنید</translation>
 <translation id="5398772614898833570">آگهی‌ها مسدود شدند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="5401344472773249513">اخبار مشاهیر و سرگرمی</translation>
@@ -3864,6 +3872,7 @@
 <translation id="7162277662076933695">کارت‌خوان هوشمند</translation>
 <translation id="7163295244162773898">{0,plural, =1{فایل محرمانه کپی شود؟}one{فایل محرمانه کپی شود؟}other{فایل‌های محرمانه کپی شود؟}}</translation>
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» محدودیت پشتیبانی‌شده‌ای در این پلاتفرم نیست</translation>
+<translation id="7170930892977483182">‏همه کدهای امنیتی ذخیره‌شده در دستگاهتان و «کیف پول Google» حذف خواهد شد</translation>
 <translation id="717330890047184534">‏شناسه Gaia:</translation>
 <translation id="7173338713290252554">سابقه قیمت در سراسر وب</translation>
 <translation id="7174545416324379297">ادغام شد</translation>
@@ -3919,6 +3928,7 @@
 <translation id="7251437084390964440">‏پیکربندی شبکه با استاندارد ONC مطابقت ندارد. ممکن است بعضی از قسمت‌های پیکربندی وارد نشود.
 توضیحات بیشتر:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">برای حذف کردن این داده‌ها، به تنظیمات مدیریت آن بروید</translation>
 <translation id="7255540419660272073">‏دکمه رأی مخالف. برای باز کردن فرم ارسال بازخورد دقیق درباره دلیل نپسندیدن، کلید Enter را فشار دهید، <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">سینی عقب</translation>
 <translation id="7257453341537973799">برنامه‌ریزی و منابع شغلی</translation>
@@ -4047,6 +4057,7 @@
 <translation id="7450577240311017924">‏دکمه مدیریت همگام‌سازی؛ فعال کنید تا اطلاعاتی را که همگام‌سازی می‌کنید در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="7451311239929941790">درباره این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
 <translation id="745208957946308667">بازی دایناسور، برای بازی فاصله را فشار دهید</translation>
+<translation id="7453032093368223821">مدیریت داده‌های دیگر</translation>
 <translation id="7453849010505253492">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chrome یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />مشاهده گواهینامه<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">حساب ابری</translation>
 <translation id="7455133967321480974">استفاده از پیش‌فرض جهانی (مسدود)</translation>

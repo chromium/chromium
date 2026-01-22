@@ -265,6 +265,7 @@
 <translation id="1408787208417187241">3 סיכות הידוק בחלק העליון</translation>
 <translation id="1410365862999780287">‏משתמשים אחרים במכשיר הזה לא יראו את הפעילות שלך, לכן ניתן לגלוש באופן פרטי יותר. אין לכך השפעה על דרכי איסוף הנתונים באתרים שבהם ביקרת והשירותים שפועלים בהם, כולל Google. עדיין תתבצע שמירה של הורדות, סימניות ופריטים מרשימת הקריאה.</translation>
 <translation id="1410941016594047814">מעטפה – הזמנה</translation>
+<translation id="1413235258620101697">‏כדי שהתשלום בקופה יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר ב-Google Wallet</translation>
 <translation id="1413809658975081374">שגיאת פרטיות</translation>
 <translation id="1414134146594747368">גיל הגן</translation>
 <translation id="1419305130220238697">‏הכפתור לניהול הורדות ב-Chrome, מפעילים אותו כדי לנהל את הקבצים שהורדת ב-Chrome</translation>
@@ -286,6 +287,7 @@
 <translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
 <translation id="1433478348197382180">מצב קריאה</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
+<translation id="1442054921249164535">נתונים אחרים</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
 <translation id="1442987760062738829">ניקוב</translation>
 <translation id="1445896388055045436">צפייה בהטבות ובפרסים הזמינים של הכרטיס בזמן התשלום. בכפוף לתנאי המוסד המנפיק.</translation>
@@ -939,6 +941,7 @@
 <translation id="24699311393038040">Paper (Coated)</translation>
 <translation id="2471632709106952369">טבלאות השוואה</translation>
 <translation id="2473810985261856484">שירותים משפטיים</translation>
+<translation id="2477607419416067650">‏נתונים אחרים של Google</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
 <translation id="2479410451996844060">‏כתובת URL לא חוקית לחיפוש</translation>
 <translation id="2480300195898055381">‏בחשבון Google שלך, <ph name="USER_EMAIL" /></translation>
@@ -993,6 +996,7 @@
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">אני רוצה להשתמש בנעילת מסך כדי לאשר כרטיסים מעכשיו ואילך</translation>
 <translation id="2552532158894206888">מקש ימני</translation>
+<translation id="2553352788023127673">אפשר למחוק את היסטוריית החיפושים ואת הסיסמאות בהגדרות הניהול שלהן</translation>
 <translation id="2553853292994445426">‏יש לבדוק את הגדרות ה-DNS המאובטח. ייתכן שהגדרת שרת DNS מאובטח שההתחברות אליו נכשלת.</translation>
 <translation id="255497580849974774">חשוב לוודא שהמכשיר מחובר למטען במהלך העדכון.</translation>
 <translation id="2556876185419854533">&amp;ביטול עריכה</translation>
@@ -1497,6 +1501,7 @@
 <translation id="3407789382767355356">כניסה של צד שלישי</translation>
 <translation id="340924996148642843">אין גישה להשוואה כרגע.</translation>
 <translation id="3409896703495473338">ניהול הגדרות האבטחה</translation>
+<translation id="3410151451624226773">‏ניהול במנהל הסיסמאות של Google</translation>
 <translation id="3411091017011773343">העלאה בעוד <ph name="HOURS" /> שע'</translation>
 <translation id="341134412449102894">הפרטים שלך נשמרו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">‏אם משתמשים ברשת ציבורית, מומלץ להיכנס לאתר אחר כך כדי לשמור על הבטיחות. הסיכון נמוך יותר ברשת מהימנה, כמו ה-Wi-Fi בבית או במקום העבודה.</translation>
@@ -2158,12 +2163,14 @@
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
 <translation id="4407758156081352648">‏מטעמי אבטחה, הארגון שלך לא מאפשר שימוש חוזר בסיסמאות ב-Chrome. הסיסמאות ב-Chrome מוצפנות כדי להגן על פרטיות המשתמשים.</translation>
+<translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
 <translation id="4409556632583862731">שרשור חדש</translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
 <translation id="4412377069090572315">מה אנשים אומרים</translation>
 <translation id="4414515549596849729">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
 <translation id="4415426530740016218">כתובת איסוף</translation>
+<translation id="4419287616181386201">אפשר למחוק את הסיסמאות בהגדרות הניהול שלהן</translation>
 <translation id="4424024547088906515">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי Chrome. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="4425750422187370446">ביגוד לספורט</translation>
 <translation id="443121186588148776">יציאה טורית</translation>
@@ -2486,6 +2493,7 @@ Del</translation>
 <translation id="4950898438188848926">‏כפתור החלפת כרטיסיות, יש ללחוץ על Enter כדי לעבור לכרטיסייה הפתוחה, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">פעולות</translation>
 <translation id="4953689047182316270">להגיב לאירועי נגישות</translation>
+<translation id="4954891067389874142">‏אפשר לשלם מהר יותר עם כרטיס שנשמר. פרטי הכרטיס מוצפנים ב-Google Wallet.</translation>
 <translation id="4957080528849277028">‏הכפתור להצגת ההיסטוריה ב-Chrome, מפעילים אותו כדי להציג ולנהל את היסטוריית הגלישה בהגדרות Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
@@ -2573,6 +2581,7 @@ Del</translation>
 <translation id="5097468150760963273">‏27x39 אינץ'</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">‏כדי לשאול במצב AI, לוחצים על Tab ואז על Enter</translation>
+<translation id="5105442806410269908">‏ניהול נתונים אחרים בחשבון Google</translation>
 <translation id="510644072453496781">Cardboard (End)</translation>
 <translation id="5106648964679263509">מספר הכרטיס הווירטואלי ל-<ph name="BNPL_ISSUER_NAME" /> הוזן</translation>
 <translation id="5108567515277121477">כרטיס מועדון לקוחות</translation>
@@ -2712,6 +2721,7 @@ Del</translation>
 <translation id="531996107159483074">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל הוא המנוע שבאמצעותו מתבצע החיפוש באינטרנט והחיפוש דרך תכונות שונות של  Chromium<ph name="END_BOLD" />, כמו חיפוש בדפי אינטרנט מתמונות ומסרגל הכתובות. אם מנוע החיפוש שבחרת לא תומך בתכונות מסוימות, הן לא יהיו זמינות.</translation>
 <translation id="5323043727018853753">ניתנה הרשאה לתוכן מוטמע</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> מתוך <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">‏לניהול בחשבון שלך ב-Google</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5329858041417644019">הדפדפן שלך לא מנוהל</translation>
 <translation id="5331585574693522196">הגדרה כברירת המחדל</translation>
@@ -2755,6 +2765,7 @@ Del</translation>
 <translation id="5394069166371280357">תוכניות טלוויזיה לכל המשפחה</translation>
 <translation id="5396631636586785122">הידוק קצוות בצד ימין</translation>
 <translation id="5397794290049113714">את/ה</translation>
+<translation id="5398461103557553443">‏כדי לאפשר מילוי אוטומטי של מספר ה-IBAN הזה בפעם הבאה, צריך לשמור אותו ב-Google Wallet</translation>
 <translation id="5398772614898833570">מודעות חסומות</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="5401344472773249513">חדשות בידור וידוענים</translation>
@@ -3025,6 +3036,7 @@ Del</translation>
 <translation id="5843987376989109187">עדיין אין תמיכה בשפה הזו.
     <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">ספקי כוח</translation>
+<translation id="5848445080378515710">‏אחרי שבודקים את ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש אצל הספק הזה. החשבון הזה יקושר באופן אוטומטי ב-Google Wallet.</translation>
 <translation id="584902713199270089">שידוכים והכרויות</translation>
 <translation id="5851548754964597211">רשימת כרטיסיות</translation>
 <translation id="5851868085455377790">מנפיק</translation>
@@ -3863,6 +3875,7 @@ Del</translation>
 <translation id="7162277662076933695">קורא כרטיסים חכמים</translation>
 <translation id="7163295244162773898">{0,plural, =1{להעתיק את הקובץ הסודי?}one{להעתיק את הקבצים הסודיים?}two{להעתיק את הקבצים הסודיים?}other{להעתיק את הקבצים הסודיים?}}</translation>
 <translation id="7168625890036931112">ההגבלה '<ph name="DATA_CONTROLS_RESTRICTION" />' לא נתמכת בפלטפורמה הזו</translation>
+<translation id="7170930892977483182">‏כל קודי האבטחה ששמורים במכשיר וב-Google Wallet יימחקו</translation>
 <translation id="717330890047184534">‏מזהה GAIA:</translation>
 <translation id="7173338713290252554">היסטוריית המחירים באינטרנט</translation>
 <translation id="7174545416324379297">משולבת</translation>
@@ -3918,6 +3931,7 @@ Del</translation>
 <translation id="7251437084390964440">‏תצורת הרשת אינה תואמת לתקן ONC. ייתכן שחלקים מהתצורה לא ייכללו בייבוא.
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">כדי למחוק את הנתונים האלה, צריך לעבור להגדרות הניהול שלהם</translation>
 <translation id="7255540419660272073">‏כפתור 'לא אהבתי', לוחצים על Enter כדי לפתוח טופס לשליחה של משוב מפורט על הסיבה לכך שלא אהבת את <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">המגש האחורי</translation>
 <translation id="7257453341537973799">משאבים ותכנון לקריירה</translation>
@@ -4016,6 +4030,7 @@ Del</translation>
 <translation id="7408613996403626141">צעצועים</translation>
 <translation id="7410852728357935715">‏הפעלת Cast למכשיר</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
+<translation id="7412081313067625215">‏הכרטיס שלך נשמר ב-Google Wallet, כך שיהיה אפשר למלא אוטומטית את הפרטים שלו ברכישות עתידיות</translation>
 <translation id="7416351320495623771">ניהול סיסמאות…</translation>
 <translation id="7416898721136759658">מענקים, מלגות לימוד וסיוע כספי</translation>
 <translation id="741772962178517671">Affirm</translation>
@@ -4045,6 +4060,7 @@ Del</translation>
 <translation id="7450577240311017924">‏הכפתור לניהול הסנכרון, מפעילים אותו כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /> על בעיה זו.</translation>
 <translation id="745208957946308667">‏המשחק Dino, צריך להקיש על מקש הרווח כדי לשחק</translation>
+<translation id="7453032093368223821">ניהול נתונים אחרים</translation>
 <translation id="7453849010505253492">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chrome או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />לצפייה באישור<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">חשבון בענן</translation>
 <translation id="7455133967321480974">שימוש בברירת המחדל הכללית (חסימה)</translation>
@@ -4149,6 +4165,7 @@ Del</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> לא יכול לטפל כרגע בבקשה הזו.</translation>
 <translation id="7599089013883397081">פג הזמן הקצוב להורדה</translation>
 <translation id="7602868996817972616">‏שאלה ל-Google לגבי הדף הזה</translation>
+<translation id="7606123685356405076">‏מודלים של Gemini 3</translation>
 <translation id="7610193165460212391">הערך מחוץ לטווח <ph name="VALUE" />.</translation>
 <translation id="761261689936461781">עבה</translation>
 <translation id="7613889955535752492">תפוגה: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>

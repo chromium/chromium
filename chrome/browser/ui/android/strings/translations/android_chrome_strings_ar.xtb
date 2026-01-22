@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">الانتقال إلى شريط العناوين</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="2891154217021530873">إيقاف تحميل الصفحة</translation>
+<translation id="2893168226686371498">المتصفح التلقائي</translation>
 <translation id="2894821468041866720">لا يؤدي هذا الإعداد إلى أي بطء ملحوظ في المتصفِّح أو الجهاز.</translation>
 <translation id="2895521649038438824">يمكنك الاستماع إلى هذه الصفحة</translation>
 <translation id="289596984386220317">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تشغّل صوتًا</translation>
@@ -1468,6 +1469,7 @@
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">‏مزيد من المعلومات حول سبب حظر Chrome لبعض الملفات</translation>
 <translation id="7168323970702333693">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". يفتح هذا الزر صفحة الإعدادات.</translation>
+<translation id="7170930892977483182">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي "محفظة Google"</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7173338713290252554">سجلّ سعر المنتج على الويب</translation>
 <translation id="7177466738963138057">يمكنك تغيير ذلك لاحقًا من "الإعدادات"</translation>

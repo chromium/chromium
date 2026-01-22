@@ -485,7 +485,7 @@
 <translation id="2761788987260570878">Сликајте претрагу</translation>
 <translation id="2761898608071930085">Користите други налог</translation>
 <translation id="2762000892062317888">малопре</translation>
-<translation id="2766178952536179189">{COUNT,plural, =1{Додајте до 1 слику}one{Додајте до {COUNT} слику}few{Додајте до {COUNT} слике}other{Додајте до {COUNT} слика}}</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Додајте највише 1 слику}one{Додајте највише {COUNT} слику}few{Додајте највише {COUNT} слике}other{Додајте највише {COUNT} слика}}</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Обавештења имејлом</translation>
 <translation id="2781331604911854368">Укључено</translation>
@@ -1164,6 +1164,7 @@
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5329451663851195956">Можете да превучете надоле да бисте освежили.</translation>
+<translation id="5336910966955551309">Додирните и задржите да бисте закачили омиљене сајтове</translation>
 <translation id="5338512273860059533">Пријављивање је у току.</translation>
 <translation id="5343472494710226394">Вести, спорт и садржај на основу интересовања.</translation>
 <translation id="5352128922772839949">Сачувајте фајл</translation>
@@ -2005,6 +2006,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8319282042900445670">Подсетник је подешен за <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Недавна активност</translation>
 <translation id="8325455175867928593">Сакриј Рецензије на основу интересовања</translation>
+<translation id="8328777765163860529">Затвори све</translation>
 <translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8348530355586151720">Додирните мени са три тачке</translation>

@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4568230126482344545">إخفاء "علامات التبويب الأخيرة"</translation>
 <translation id="4578835633387306383">تفعيل…</translation>
+<translation id="4580621046861724270">لم يتم حفظ بعض الإشارات المرجعية</translation>
 <translation id="4580716718466706433">الانتقال إلى "مدير كلمات المرور"</translation>
 <translation id="4585751637295612750">يمكنك فتح علامة تبويب جديدة لإضافتها إلى سؤالك</translation>
 <translation id="4587589328781138893">المواقع</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
 <translation id="5327248766486351172">الاسم</translation>
 <translation id="5329451663851195956">يمكنك السحب للأسفل لإعادة التحميل.</translation>
+<translation id="5336910966955551309">لتثبيت مواقعك الإلكترونية المفضّلة، عليك النقر مع الاستمرار عليها</translation>
 <translation id="5338512273860059533">يجري تسجيل الدخول.</translation>
 <translation id="5343472494710226394">الأخبار والرياضة وغيرهما من المحتوى استنادًا إلى اهتماماتك</translation>
 <translation id="5352128922772839949">حفظ الملف</translation>
@@ -2003,6 +2005,7 @@
 <translation id="8319282042900445670">‏تم ضبط التذكير على <ph name="TIME" />، ‎<ph name="DATE" /></translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>
 <translation id="8325455175867928593">إخفاء "مراجعات مقترَحة بناءً على اهتماماتك"</translation>
+<translation id="8328777765163860529">إغلاق الكل</translation>
 <translation id="833647236762414178">يمكنك إنشاء كلمات المرور ومفاتيح المرور وحفظها وإدارتها لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8348530355586151720">انقر على قائمة الخيارات الإضافية</translation>

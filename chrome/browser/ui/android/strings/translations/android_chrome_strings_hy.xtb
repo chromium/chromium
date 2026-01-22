@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">Անցնել հասցեագոտի</translation>
 <translation id="2888126860611144412">Chrome-ի մասին</translation>
 <translation id="2891154217021530873">Կանգնեցնել էջի բեռնումը</translation>
+<translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
 <translation id="2894821468041866720">Չի հանգեցնում դիտարկիչի կամ սարքի աշխատանքի զգալի դանդաղեցմանը։</translation>
 <translation id="2895521649038438824">Դուք կարող եք լսել այս էջի բովանդակությունը</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, ամրացված ներդիր, որում ձայն է նվագարկվում</translation>
@@ -1467,6 +1468,7 @@
 Այս կարգավորումը փոխելու համար <ph name="BEGIN_LINK" />ջնջեք Chrome-ի տվյալները ձեր հաշվում<ph name="END_LINK" />։</translation>
 <translation id="7165972437814027679">Իմանալ ավելին այն մասին, թե ինչու է Chrome-ը արգելափակում որոշ ֆայլեր</translation>
 <translation id="7168323970702333693">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ Բացել կարգավորումները:</translation>
+<translation id="7170930892977483182">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google Wallet-ում, կջնջվեն</translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7173338713290252554">Գնի պատմությունը համացանցում</translation>
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>

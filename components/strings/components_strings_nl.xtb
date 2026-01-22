@@ -186,7 +186,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1289129165308566697">Bekijk je geschiedenis op andere apparaten</translation>
 <translation id="1292571435393770077">Lade 16</translation>
 <translation id="1292701964462482250">'Software op je computer voorkomt dat Chrome veilig verbinding kan maken met internet' (alleen Windows-computers)</translation>
-<translation id="1293154089865862473">Paginacontent van de betaalpagina wordt gedeeld met Google om deze opties aan te bieden. Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor later betalen te verbergen in Automatisch invullen.</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1293797321964802402">Envelop 9 x 11 inch</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
@@ -266,6 +265,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1408787208417187241">Drie nietjes boven</translation>
 <translation id="1410365862999780287">Anderen die dit apparaat gebruiken, kunnen je activiteit niet zien, dus je kunt beter privé browsen. Dit heeft geen invloed op de manier waarop gegevens worden verzameld door websites die je bezoekt en de services die ze gebruiken, waaronder Google. Downloads, bookmarks en items op je leeslijst worden opgeslagen.</translation>
 <translation id="1410941016594047814">Envelop Invite</translation>
+<translation id="1413235258620101697">De CVC van deze kaart wordt versleuteld en opgeslagen in Google Wallet zodat je sneller kunt betalen</translation>
 <translation id="1413809658975081374">Privacyfout</translation>
 <translation id="1414134146594747368">Peuterschool</translation>
 <translation id="1419305130220238697">Knop Downloads in Chrome beheren. Activeer deze om bestanden te beheren die je hebt gedownload in Chrome.</translation>
@@ -287,6 +287,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
 <translation id="1433478348197382180">Leesmodus</translation>
 <translation id="1436185428532214179">Kan vragen of deze site bestanden en mappen op je apparaat mag bewerken</translation>
+<translation id="1442054921249164535">Andere gegevens</translation>
 <translation id="1442386063175183758">Gatefold rechts</translation>
 <translation id="1442987760062738829">Perforeren</translation>
 <translation id="1445896388055045436">Toon beschikbare kaartvoordelen en -beloningen bij het afrekenen. Er zijn voorwaarden van de uitgever van toepassing.</translation>
@@ -940,6 +941,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="24699311393038040">Papier (gecoat)</translation>
 <translation id="2471632709106952369">Vergelijkingstabellen</translation>
 <translation id="2473810985261856484">Juridische dienstverlening</translation>
+<translation id="2477607419416067650">Andere Google-gegevens</translation>
 <translation id="2479148705183875116">Naar Instellingen</translation>
 <translation id="2479410451996844060">Ongeldige zoek-URL.</translation>
 <translation id="2480300195898055381">In je Google-account <ph name="USER_EMAIL" /></translation>
@@ -994,6 +996,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Schermvergrendeling gebruiken om kaarten vanaf nu te bevestigen</translation>
 <translation id="2552532158894206888">rechtertoets</translation>
+<translation id="2553352788023127673">Zoekgeschiedenis en wachtwoorden kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="2553853292994445426">Controleer je instellingen voor beveiligde DNS. Mogelijk heb je een beveiligde DNS-server geconfigureerd waarmee geen verbinding kan worden gemaakt.</translation>
 <translation id="255497580849974774">Zorg dat je apparaat tijdens de update is aangesloten op een oplader.</translation>
 <translation id="2556876185419854533">&amp;Bewerken ongedaan maken</translation>
@@ -1125,7 +1128,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2782088940970074970">Autoverhuur</translation>
 <translation id="278436560439594386">Huishoudelijke apparatuur</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Paginacontent van de betaalpagina wordt gedeeld met Google om deze opties aan te bieden.</translation>
 <translation id="2784949926578158345">De verbinding is opnieuw ingesteld.</translation>
 <translation id="2786008859124691917">Fietsen en accessoires</translation>
 <translation id="2792012897584536778">De beheerders van dit apparaat hebben beveiligingscertificaten ingesteld waarmee ze de content kunnen bekijken van websites die je bezoekt.</translation>
@@ -1496,6 +1498,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3407789382767355356">externe login</translation>
 <translation id="340924996148642843">Vergelijken is op dit moment niet beschikbaar.</translation>
 <translation id="3409896703495473338">Beveiligingsinstellingen beheren</translation>
+<translation id="3410151451624226773">Beheren in Google Wachtwoordmanager</translation>
 <translation id="3411091017011773343">Upload over <ph name="HOURS" /> uur</translation>
 <translation id="341134412449102894">Je informatie wordt opgeslagen in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Het is het veiligst om deze site later te bezoeken als je nu een openbaar netwerk gebruikt. Je loopt minder risico als je een vertrouwd netwerk, zoals je wifi-netwerk thuis of op het werk, gebruikt.</translation>
@@ -1586,6 +1589,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3549904448933807997">Informatie over browsers en profielen (waaronder persoonlijke en werkprofielen)</translation>
 <translation id="3552155506104542239">Waarschuwing: Dit beleid is in strijd met <ph name="POLICY_NAME" /> en heeft geen invloed op Android-apps. Verder werkt dit beleid zoals bedoeld.</translation>
 <translation id="3552297013052089404">Sans-serif-lettertype</translation>
+<translation id="3558335486599406178">IBAN opgeslagen in Google Wallet</translation>
 <translation id="3558573058928565255">Tijd van de dag</translation>
 <translation id="3559897352860026926">Vraag je beheerder om de configuratie-instellingen van <ph name="CLOUD_PROVIDER" /> te verifiëren.</translation>
 <translation id="3560824484345057728">Gerelateerde sites bekijken</translation>
@@ -2154,12 +2158,14 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4406896451731180161">zoekresultaten</translation>
 <translation id="4407758156081352648">Je organisatie staat niet toe dat wachtwoorden worden hergebruikt in Chrome om de beveiliging te behouden. Wachtwoorden in Chrome worden versleuteld om de privacy van gebruikers te beschermen.</translation>
+<translation id="4409271659088619928">Je zoekmachine is <ph name="DSE" />. Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschiedenis (indien van toepassing).</translation>
 <translation id="4409556632583862731">Nieuwe contextuele taak</translation>
 <translation id="4412074349188076601">Deze configuratie is gemarkeerd als installeerbaar, maar er is geen image opgegeven voor deze architectuur, dus deze kan niet worden geïnstalleerd.</translation>
 <translation id="4412377069090572315">Wat mensen zeggen</translation>
 <translation id="4414515549596849729">cookies en sitegegevens</translation>
 <translation id="4415156962929755728">Plastic (hoogglans)</translation>
 <translation id="4415426530740016218">Ophaaladres</translation>
+<translation id="4419287616181386201">Wachtwoorden kunnen worden verwijderd in de beheerinstellingen</translation>
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="4425750422187370446">Sportkleding</translation>
 <translation id="443121186588148776">Seriële poort</translation>
@@ -2566,6 +2572,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5097468150760963273">27 x 39 inch</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Druk op Tab en daarna op Enter om het aan de AI-modus te vragen</translation>
+<translation id="5105442806410269908">Andere Google-gegevens beheren</translation>
 <translation id="510644072453496781">Karton (einde)</translation>
 <translation id="5106648964679263509">Virtuele kaart voor <ph name="BNPL_ISSUER_NAME" /> ingevuld</translation>
 <translation id="5108567515277121477">Klantenkaart</translation>
@@ -2705,6 +2712,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Met je standaard zoekmachine kun je op internet zoeken en Chromium-functies gebruiken<ph name="END_BOLD" />, zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's. Een functie is misschien niet beschikbaar als je zoekmachine deze niet ondersteunt.</translation>
 <translation id="5323043727018853753">Ingesloten content toegestaan</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> van <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Beheren in je Google-account</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329858041417644019">Je browser wordt niet beheerd.</translation>
 <translation id="5331585574693522196">Instellen als standaard</translation>
@@ -2748,6 +2756,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5394069166371280357">Tv-programma's voor het hele gezin</translation>
 <translation id="5396631636586785122">Inbinden met nietjes rechts</translation>
 <translation id="5397794290049113714">Jij</translation>
+<translation id="5398461103557553443">Sla dit IBAN op in Google Wallet om het de volgende keer automatisch in te vullen</translation>
 <translation id="5398772614898833570">Advertenties geblokkeerd</translation>
 <translation id="5400836586163650660">Grijs</translation>
 <translation id="5401344472773249513">Entertainment- en celebritynieuws</translation>
@@ -3017,6 +3026,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5843987376989109187">Deze taal wordt nog niet ondersteund.
     <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5847181246682413476">Stroomvoorziening</translation>
+<translation id="5848445080378515710">Nadat je je bestelling hebt gecontroleerd, moet je inloggen of een account maken bij <ph name="BNPL_ISSUER_NAME" />. Dit account wordt automatisch gekoppeld in Google Wallet.</translation>
 <translation id="584902713199270089">Daten en contactadvertenties</translation>
 <translation id="5851548754964597211">Tabbladlijst</translation>
 <translation id="5851868085455377790">Uitgever</translation>
@@ -3854,6 +3864,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7162277662076933695">Smartkaartlezer</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vertrouwelijk bestand kopiëren?}other{Vertrouwelijke bestanden kopiëren?}}</translation>
 <translation id="7168625890036931112"><ph name="DATA_CONTROLS_RESTRICTION" /> is geen ondersteunde beperking op dit platform</translation>
+<translation id="7170930892977483182">Alle beveiligingscodes die zijn opgeslagen op je apparaat en in Google Wallet, worden verwijderd</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7173338713290252554">Prijsgeschiedenis op internet</translation>
 <translation id="7174545416324379297">Samengevoegd</translation>
@@ -3909,6 +3920,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7251437084390964440">De netwerkconfiguratie voldoet niet aan de ONC-standaard. Delen van de configuratie worden mogelijk niet geïmporteerd.
 Aanvullende informatie:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Ga naar de beheerinstellingen om deze gegevens te verwijderen</translation>
 <translation id="7255540419660272073">Knop Niet leuk, druk op Enter om een formulier te openen waarin je gedetailleerde feedback kunt geven over waarom je <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> niet leuk vindt</translation>
 <translation id="7256634549594854023">Achterste lade</translation>
 <translation id="7257453341537973799">Loopbaanbronnen en -planning</translation>
@@ -4037,6 +4049,7 @@ Aanvullende informatie:
 <translation id="7450577240311017924">Knop Synchronisatie beheren. Activeer deze om de informatie die je synchroniseert te beheren in de Chrome-instellingen.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
 <translation id="745208957946308667">Dino-game, druk op de spatiebalk om te spelen</translation>
+<translation id="7453032093368223821">Andere gegevens beheren</translation>
 <translation id="7453849010505253492">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is, omdat de server een beveiligingscertificaat gebruikt dat niet wordt vertrouwd door Chrome of je systeemconfiguratie voor versleuteling van webverkeer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Certificaat bekijken<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cloud-account</translation>
 <translation id="7455133967321480974">Algemene standaardinstelling gebruiken (Blokkeren)</translation>

@@ -309,6 +309,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4242034826641750751">„Chrome“ reikalingi fotoaparato ir mikrofono leidimai šioje svetainėje</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4251615635259297716">Susisieti „Chrome“ duomenis su šia paskyra?</translation>
+<translation id="4280647692742956593">Atsisiųskite „Chrome“ į telefoną, kad galėtumėte atidaryti arba kurti naujas skirtukų grupes keliaudami.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="4293420128516039005">Prisijunkite, kad galėtumėte sinchronizuoti ir suasmeninti „Chrome“ skirtinguose įrenginiuose</translation>
 <translation id="430327780270213103">Leisti plėtiniui rodyti prieigos užklausas „Chrome“ įrankių juostoje</translation>
@@ -364,7 +365,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4918844574251943176">Vaizdas nukopijuotas</translation>
 <translation id="4926882258455737990">Jei norite naudoti kitą „Google“ paskyrą su „Gemini“ naršyklėje „Chrome“, <ph name="BEGIN_LINK" />sukurkite naują profilį<ph name="END_LINK" /> ir prisijunkite naudodami norimą paskyrą</translation>
 <translation id="492720062778050435">„Chrome“ rekomenduoja peržiūrėti šį plėtinį</translation>
-<translation id="4946912144186040233">„Chrome“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti. Šis nustatymas išjungtas.</translation>
 <translation id="4953650215774548573">Nustatyti „Google Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="495931528404527476">Naudojant „Chrome“</translation>
 <translation id="4969674060580488087">„ChromeOS Flex“ negali sinchronizuoti jūsų duomenų, nes paskyros išsami prisijungimo informacija yra pasenusi.</translation>
@@ -415,7 +415,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5465210843490471889">Pasirinkite „Chrome“ profilį, kurį norite naudoti su <ph name="START_GLIC_STYLING" />„Gemini“<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Kad padėtų tobulinti šias funkcijas, „Chrome“ siunčia jūsų sąveikas su jomis sistemai „Google“. Šiuos duomenis gali skaityti, apdoroti ir komentuoti tikrinantys žmonės.</translation>
 <translation id="5524890928877629608">viršutinis kairysis paieškos srities kampas: kairė – <ph name="LEFT" /> %, viršus – <ph name="TOP" /> %</translation>
-<translation id="5530733413481476019">Paspartinkite „Chrome“</translation>
 <translation id="5550137307985173298">Spustelėkite mygtuką „Tinkinti „Chrome“ naujo skirtuko puslapyje, kad suteiktumėte „Chrome“ naują išvaizdą</translation>
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
 <translation id="5579324208890605088">Paleisties klaida: diegimo programą paleiskite kaip įprastas naudotojas, o ne administratorius.</translation>
@@ -596,12 +595,14 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7193885263065350793">Organizacija uždaro „Chrome“, kai ji nenaudojama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Google Chrome“ profilį. „Chrome“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chrome“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" />“ tvarko „Chrome“</translation>
+<translation id="7285990705317078173">Atsisiųskite „Chrome“ į telefoną, kad galėtumėte stebėti kainas ir gauti įspėjimus, kai kaina sumažės bet kurioje svetainėje</translation>
 <translation id="7288567540154601580">Skirtukai ir plėtiniai</translation>
 <translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
 <translation id="7302361266603927550">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje. Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="7308322188646931570">„Chrome“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7352651011704765696">Kažkas negerai</translation>
+<translation id="7379321689415048316">„Chrome“ gali automatiškai užpildyti sudėtingus laukus, kurių standartinė automatinio pildymo funkcija gali nepastebėti</translation>
 <translation id="7386878009611068389">Jei norite būti saugesni internete naudodami vieno iš tėvų pasirinkimus, perjunkite į savo „Chrome“ profilį, kuriame jau esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Buvote prisijungę prie „Chrome“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
 <translation id="7412494426921990001">Spustelėkite „Chrome“ meniu</translation>
@@ -616,7 +617,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7481213027396403996">Patikimiausios „Chrome“ saugos užtikrinimas</translation>
 <translation id="749228101751499733">Kai esate prisijungę, galite naudoti slaptažodžius ir daugiau iš „Google“ paskyros „Chrome“ įrenginyje. Paspaudę <ph name="SHORTCUT" /> galite pakeisti „Google“ paslaugų nustatymus.</translation>
 <translation id="7496017508659652909">„Chrome“ iš anksto įkelia puslapius, kad būtų galima sparčiau naršyti ir ieškoti. <ph name="BEGIN_LINK" />Sužinokite daugiau apie išankstinį puslapių įkėlimą<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">„Chrome“ geriau supranta formas ir gali greičiau jas automatiškai užpildyti. Šis nustatymas įjungtas.</translation>
 <translation id="7514258452813684157">„Google“ atnaujinimo priemonės paslauga</translation>
 <translation id="7515191208480168435">Galite prisegti „Google Lens“, kad lengvai pasiektumėte</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

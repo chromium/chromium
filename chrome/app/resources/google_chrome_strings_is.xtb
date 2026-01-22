@@ -309,6 +309,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4242034826641750751">Chrome verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4251615635259297716">Tengja Chrome gögnin þín við þennan reikning?</translation>
+<translation id="4280647692742956593">Sæktu Chrome í símann þinn til að opna eða búa til nýja flipahópa á ferðinni.</translation>
 <translation id="4281844954008187215">Þjónustuskilmálar</translation>
 <translation id="4293420128516039005">Skráðu þig inn til að samstilla Chrome í tækjunum þínum og gera það að þínu</translation>
 <translation id="430327780270213103">Leyfa viðbót að sýna aðgangsbeiðnir í tækjastiku Chrome</translation>
@@ -364,7 +365,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4918844574251943176">Mynd afrituð</translation>
 <translation id="4926882258455737990">Til að nota annan Google-reikning með Gemini í Chrome skaltu <ph name="BEGIN_LINK" />búa til nýjan prófíl<ph name="END_LINK" /> og skrá þig inn með reikningnum sem þú vilt nota</translation>
 <translation id="492720062778050435">Chrome mælir með að þú farir yfir þessa viðbót</translation>
-<translation id="4946912144186040233">Chrome áttar sig betur á eyðublöðum og getur fyllt þau út fyrir þig með fljótlegri hætti. Slökkt er á þessari stillingu.</translation>
 <translation id="4953650215774548573">Stilla Google Chrome sem sjálfgefinn vafra</translation>
 <translation id="495931528404527476">Í Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>
@@ -415,7 +415,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5465210843490471889">Veldu Chrome-prófíl til að nota með <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Til að hjálpa til við að bæta þessa eiginleika sendir Chrome upplýsingar um notkun þína á þeim til Google. Mennskir yfirlesarar kunna að lesa, vinna úr og skrifa skýringar við þessi gögn.</translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Láttu Chrome vinna hraðar</translation>
 <translation id="5550137307985173298">Smelltu á hnappinn „Sérsníða Chrome“ á síðu nýrra flipa til að gefa Chrome nýtt útlit</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
@@ -596,12 +595,14 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7193885263065350793">Fyrirtækið þitt lokar Chrome eftir aðgerðaleysi í <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google-reikninga en getur ekki tengt þau öðrum reikningi. Einnig getur þú búið til nýjan prófíl til að halda eldri gögnum þínum á Chrome aðskildum. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> hefur umsjón með Chrome</translation>
+<translation id="7285990705317078173">Sæktu Chrome í símanum þínum til að rekja verð og fá tilkynningar þegar verðið lækkar á einhverri síðu</translation>
 <translation id="7288567540154601580">Flipar og viðbætur</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
+<translation id="7379321689415048316">Chrome getur fyllt út erfiða reiti sem stöðluð sjálfvirk útfylling gæti misst af</translation>
 <translation id="7386878009611068389">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chrome-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7412494426921990001">Smelltu á Chrome-valmyndina</translation>
@@ -616,7 +617,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7481213027396403996">Njóttu hámarksöryggis Chrome</translation>
 <translation id="749228101751499733">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome. <ph name="SHORTCUT" /> getur breytt stillingum þínum fyrir Google-þjónustur.</translation>
 <translation id="7496017508659652909">Chrome forhleður síðum sem tryggir þér hraða vefskoðun og leit. <ph name="BEGIN_LINK" />Nánar um að forhlaða síðum<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome áttar sig betur á eyðublöðum og getur fyllt þau út fyrir þig með fljótlegri hætti. Kveikt er á þessari stillingu.</translation>
 <translation id="7514258452813684157">Uppfærsluþjónusta Google</translation>
 <translation id="7515191208480168435">Þú getur fest Google-linsu til að auðvelda þér aðgang að henni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

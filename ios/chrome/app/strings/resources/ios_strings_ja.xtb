@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4568230126482344545">最近使ったタブを非表示</translation>
 <translation id="4578835633387306383">オンにする…</translation>
+<translation id="4580621046861724270">一部のブックマークは保存されません</translation>
 <translation id="4580716718466706433">[パスワード マネージャー] に移動します</translation>
 <translation id="4585751637295612750">質問に追加するには新しいタブを開いてください</translation>
 <translation id="4587589328781138893">ウェブサイト</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329451663851195956">下にスワイプして更新できます。</translation>
+<translation id="5336910966955551309">長押ししてお気に入りのサイトを固定できます</translation>
 <translation id="5338512273860059533">ログインを処理しています。</translation>
 <translation id="5343472494710226394">興味や関心に基づくニュース、スポーツ、コンテンツ。</translation>
 <translation id="5352128922772839949">ファイルを保存</translation>
@@ -2004,6 +2006,7 @@
 <translation id="8319282042900445670"><ph name="DATE" /> <ph name="TIME" /> にリマインダーを設定しました</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="8325455175867928593">[興味 / 関心に基づくレビュー] を非表示にする</translation>
+<translation id="8328777765163860529">すべて閉じる</translation>
 <translation id="833647236762414178">パスワードとパスキーを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="8348530355586151720">その他メニューをタップ</translation>

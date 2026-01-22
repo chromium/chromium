@@ -86,6 +86,9 @@ Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar,
 <translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
 <translation id="2788811701191021538">Atidaromas „Chrome“ mokėjimo metodų nustatymo puslapis.</translation>
 <translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Pasiekėte „Google Chrome“ žymių apribojimą (<ph name="LIMIT" />), todėl kai kurios žymės dar neišsaugotos „Google“ paskyroje.
+
+Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes. Jei atsijungsite dabar, neišsaugotos žymės bus ištrintos.</translation>
 <translation id="2922914028977213693">Palieskite čia, kad išnaudotumėte visas „Chrome“ galimybes „iPad“ įrenginyje.</translation>
 <translation id="292371311537977079">„Chrome“ nustatymai</translation>
 <translation id="2923827943290349720">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>

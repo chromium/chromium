@@ -3,7 +3,6 @@
 <translationbundle lang="zh-CN">
 <translation id="1026101648481255140">继续安装</translation>
 <translation id="1029669172902658969">重新启动以更新 Chromium 操作系统(&amp;C)</translation>
-<translation id="103359417695385097">Chromium 可以更好地理解表单，并更快地为您自动填充表单。此设置已关闭。</translation>
 <translation id="1040916596585577953">Chromium 建议您检查此扩展程序</translation>
 <translation id="1042552502243217427">当某个网站请求以私密方式预加载其网页上的链接时，Chromium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
 <translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
@@ -69,6 +68,7 @@
 <translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
+<translation id="1857749206890802997">在手机上下载 Chromium，随时随地打开现有标签页分组或创建新标签页分组。</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用图片搜索功能进行搜索</translation>
 <translation id="1880677175115548835">选择文字</translation>
@@ -159,6 +159,7 @@
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
+<translation id="277828055419948999">Chromium 可自动填充标准自动填充功能可能会遗漏的复杂字段</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2803971713792056305">您的 Chromium</translation>
@@ -335,7 +336,6 @@
 <translation id="4613863813562375431">Chromium 操作系统版本</translation>
 <translation id="4621240073146040695">即将更新到最新版本！重新启动 Chromium 即可完成更新。</translation>
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快网站速度，但 Chromium 的防范攻击能力会略微降低</translation>
-<translation id="4654936675281451226">Chromium 可以更好地理解表单，并更快地为您自动填充表单。此设置已开启。</translation>
 <translation id="4665829708273112819">警告：Chromium 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="4673151026126227699">如果您还分享 Chromium 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="4677944499843243528">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Chromium 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chromium 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chromium。</translation>
@@ -439,7 +439,6 @@
 <translation id="6063093106622310249">在 Chromium 中打开(&amp;O)</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6072279588547424923">“<ph name="EXTENSION_NAME" />”已添加到 Chromium</translation>
-<translation id="6072463441809498330">提高 Chromium 的运行速度</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="611228897408671387">设置 Chromium 账号</translation>
@@ -484,6 +483,7 @@
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
 <translation id="6443470774889161065">Chromium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
+<translation id="6450948450282634257">在手机上下载 Chromium，即可跟踪价格并在有网站降价时收到提醒</translation>
 <translation id="645458117210240797">已关闭 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6466344609055215035">从 Chromium 中移除账号</translation>

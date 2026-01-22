@@ -304,6 +304,7 @@
 <translation id="4242034826641750751">Chrome benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251615635259297716">Deine Chrome-Daten mit diesem Konto verknüpfen?</translation>
+<translation id="4280647692742956593">Lade Chrome auf dein Smartphone herunter, um Tabgruppen unterwegs zu öffnen oder zu erstellen.</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4293420128516039005">Wenn du dich anmeldest, wird Chrome auf allen deinen Geräten synchronisiert und personalisiert</translation>
 <translation id="430327780270213103">Zulassen, dass die Erweiterung Zugriffsanfragen in der Chrome-Symbolleiste anzeigt</translation>
@@ -359,7 +360,6 @@
 <translation id="4918844574251943176">Bild kopiert</translation>
 <translation id="4926882258455737990">Wenn du ein anderes Google-Konto mit Gemini in Chrome verwenden möchtest, <ph name="BEGIN_LINK" />erstelle ein neues Profil<ph name="END_LINK" /> und melde dich mit dem gewünschten Konto an</translation>
 <translation id="492720062778050435">Chrome empfiehlt, diese Erweiterung zu überprüfen</translation>
-<translation id="4946912144186040233">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen. Diese Einstellung ist deaktiviert.</translation>
 <translation id="4953650215774548573">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex konnte deine Daten nicht synchronisieren, da deine Anmeldedaten für das Konto nicht mehr aktuell sind.</translation>
@@ -406,7 +406,6 @@
 <translation id="5465210843490471889">Wähle ein Chrome-Profil aus, das du mit <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> verwenden möchtest</translation>
 <translation id="5468572406162360320">Damit wir diese Funktionen verbessern können, sendet Chrome deine Interaktionen mit ihnen an Google. Diese Daten können von Prüfern gelesen, verarbeitet und mit Anmerkungen versehen werden.</translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
-<translation id="5530733413481476019">Chrome noch schneller machen</translation>
 <translation id="5550137307985173298">Wenn du Chrome einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chrome anpassen“</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Fehler beim Starten: Achte darauf, dass du das Installationsprogramm nicht als Admin ausführst.</translation>
@@ -587,12 +586,14 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7193885263065350793">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen.</translation>
 <translation id="7242029209006116544">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chrome-Daten getrennt halten möchtest, kannst du stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome wird von <ph name="MANAGER" /> verwaltet</translation>
+<translation id="7285990705317078173">Lade Chrome auf dein Smartphone herunter, um Preise zu beobachten und bei Preissenkungen auf Websites benachrichtigt zu werden</translation>
 <translation id="7288567540154601580">Tabs und Erweiterungen</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
 <translation id="7302361266603927550">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
+<translation id="7379321689415048316">Chrome kann auch Felder automatisch ausfüllen, die von der Standard-Autofill-Funktion möglicherweise nicht erkannt werden</translation>
 <translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsle zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist.</translation>
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7412494426921990001">Klicke auf das Chrome-Menü</translation>
@@ -607,7 +608,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="749228101751499733">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Mithilfe des Shortcuts <ph name="SHORTCUT" /> kannst du die Einstellungen für Google‑Dienste jederzeit ändern.</translation>
 <translation id="7496017508659652909">In Chrome werden Seiten vorab geladen, um das Surfen und die Suche zu beschleunigen. <ph name="BEGIN_LINK" />Weitere Informationen zum Vorabladen von Seiten<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen. Diese Einstellung ist aktiviert.</translation>
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4568230126482344545">Skrýt možnost Nedávno použité karty</translation>
 <translation id="4578835633387306383">Zapnout…</translation>
+<translation id="4580621046861724270">Některé záložky nejsou uložené</translation>
 <translation id="4580716718466706433">Přejděte do Správce hesel</translation>
 <translation id="4585751637295612750">Otevřete novou kartu a přidejte ji do otázky</translation>
 <translation id="4587589328781138893">Weby</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Tento produkt již měříte.</translation>
 <translation id="5327248766486351172">Jméno</translation>
 <translation id="5329451663851195956">Přetažením dolů obnovíte stránku.</translation>
+<translation id="5336910966955551309">Klepnutím a podržením si oblíbené weby můžete připnout</translation>
 <translation id="5338512273860059533">Probíhá přihlašování.</translation>
 <translation id="5343472494710226394">Zprávy, sporty a obsah podle vašich zájmů.</translation>
 <translation id="5352128922772839949">Uložit soubor</translation>
@@ -2004,6 +2006,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8319282042900445670">Bylo nastaveno připomenutí na <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedávná aktivita</translation>
 <translation id="8325455175867928593">Skrýt modul Recenze na základě vašich zájmů</translation>
+<translation id="8328777765163860529">Zavřít vše</translation>
 <translation id="833647236762414178">Vytváření, ukládání a správa hesel a přístupových klíčů pro snadné přihlašování na weby a do aplikací. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte si data a používejte je na libovolném zařízení.</translation>
 <translation id="8348530355586151720">Klepněte na nabídku se třemi tečkami</translation>

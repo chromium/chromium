@@ -433,6 +433,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2885355868600171871">Ir para a barra de endereço</translation>
 <translation id="2888126860611144412">Sobre o Chrome</translation>
 <translation id="2891154217021530873">Para de carregar a página</translation>
+<translation id="2893168226686371498">Navegador padrão</translation>
 <translation id="2894821468041866720">Não deixa o navegador ou dispositivo lento.</translation>
 <translation id="2895521649038438824">Você pode ouvir esta página</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, guia fixada com áudio</translation>
@@ -1468,6 +1469,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Saiba por que o Chrome bloqueia alguns arquivos</translation>
 <translation id="7168323970702333693">Login feito como <ph name="USER_NAME" />. Abre as configurações.</translation>
+<translation id="7170930892977483182">Todos os códigos de segurança salvos no seu dispositivo e na Carteira do Google serão excluídos</translation>
 <translation id="7173114856073700355">Configurações</translation>
 <translation id="7173338713290252554">Histórico de preços na Web</translation>
 <translation id="7177466738963138057">Você poderá alterar isso mais tarde nas configurações</translation>

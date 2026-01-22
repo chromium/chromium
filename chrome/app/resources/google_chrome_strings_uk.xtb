@@ -305,6 +305,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4242034826641750751">Веб-переглядачу Chrome потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4251615635259297716">Пов’язати ваші дані Chrome із цим обліковим записом?</translation>
+<translation id="4280647692742956593">Завантажте Chrome на телефон, щоб створювати або відкривати нові групи вкладок, де б ви не були.</translation>
 <translation id="4281844954008187215">Умови використання</translation>
 <translation id="4293420128516039005">Увійдіть, щоб синхронізувати та персоналізувати роботу Chrome на всіх своїх пристроях</translation>
 <translation id="430327780270213103">Дозволити розширенню показувати запити на доступ на панелі інструментів Chrome</translation>
@@ -360,7 +361,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4918844574251943176">Зображення скопійовано</translation>
 <translation id="4926882258455737990">Щоб використовувати інший обліковий запис Google із Gemini у Chrome, увійдіть у нього, <ph name="BEGIN_LINK" />створивши новий профіль<ph name="END_LINK" /></translation>
 <translation id="492720062778050435">Chrome радить перевірити це розширення</translation>
-<translation id="4946912144186040233">Chrome краще визначає форми й швидше заповнює їх. Це налаштування вимкнено.</translation>
 <translation id="4953650215774548573">Зробити Google Chrome веб-переглядачем за умовчанням</translation>
 <translation id="495931528404527476">У Chrome</translation>
 <translation id="4969674060580488087">ОС Chrome Flex не змогла синхронізувати вашу інформацію, оскільки облікові дані застаріли.</translation>
@@ -407,7 +407,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5465210843490471889">Виберіть профіль Chrome, у якому хочете використовувати <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Щоб покращити ці функції, Chrome надсилає дані про вашу взаємодію з ними в Google. Наші спеціалісти можуть читати, обробляти й коментувати ці дані.</translation>
 <translation id="5524890928877629608">лівий верхній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="TOP" />% згори</translation>
-<translation id="5530733413481476019">Пришвидшіть роботу Chrome</translation>
 <translation id="5550137307985173298">Натисніть кнопку "Налаштувати Chrome" на сторінці нової вкладки, щоб змінити вигляд вебпереглядача</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Помилка: запустіть програму встановлення як звичайний користувач, а не з правами адміністратора.</translation>
@@ -588,12 +587,14 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7193885263065350793">Ваша організація закриває веб-переглядач Chrome, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Ви входите, використовуючи дані облікового запису, яким керує адміністратор. Адміністратор може контролювати ваш профіль Google Chrome. Ваші дані Chrome, як-от програми, закладки, історія, паролі й інші налаштування, буде назавжди пов’язано з обліковим записом <ph name="USER_NAME" />. Ці дані можна видалити на інформаційній панелі Облікових записів Google, але ви не зможете пов’язати їх з іншим обліковим записом. Проте ви можете створити новий профіль, щоб зберігати наявні дані Chrome окремо. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Вебпереглядачем Chrome керує <ph name="MANAGER" /></translation>
+<translation id="7285990705317078173">Завантажте Chrome на телефон, щоб відстежувати ціни й отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
 <translation id="7288567540154601580">Вкладки й розширення</translation>
 <translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
 <translation id="7302361266603927550">Деякі дані Chrome іще не збережено у вашому обліковому записі Google. Зачекайте кілька хвилин, перш ніж виходити з облікового запису. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7308322188646931570">Chrome потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
+<translation id="7379321689415048316">Chrome може автоматично заповнювати складні поля, які не заповнюються за допомогою стандартної функції</translation>
 <translation id="7386878009611068389">Щоб користуватися безпечнішими налаштуваннями, які вибрали твої батьки, перейди в профіль Chrome, у який уже виконано вхід за допомогою електронної адреси <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Ви ввійшли в Chrome як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7412494426921990001">Натисніть значок меню Chrome</translation>
@@ -608,7 +609,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7481213027396403996">Отримайте найвищий рівень безпеки в Chrome</translation>
 <translation id="749228101751499733">Увійшовши в Chrome, ви можете використовувати паролі й інші дані з облікового запису Google. Налаштування сервісів Google можна змінити за допомогою комбінації клавіш <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">Chrome попередньо завантажує сторінки, щоб ви могли швидше переглядати й шукати контент. <ph name="BEGIN_LINK" />Докладніше про попереднє завантаження сторінок.<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome краще визначає форми й швидше заповнює їх. Це налаштування ввімкнено.</translation>
 <translation id="7514258452813684157">Сервіс оновлення Google</translation>
 <translation id="7515191208480168435">Google Об’єктив можна закріпити для швидкого доступу</translation>
 <translation id="7535429826459677826">Версія Google Chrome для розробників</translation>

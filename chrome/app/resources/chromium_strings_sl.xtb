@@ -3,7 +3,6 @@
 <translationbundle lang="sl">
 <translation id="1026101648481255140">Nadaljuj namestitev</translation>
 <translation id="1029669172902658969">Znova zaženite, če želite posodobiti &amp;Chromium OS</translation>
-<translation id="103359417695385097">Chromium bolje razume obrazce in jih lahko hitreje samodejno izpolni. Ta nastavitev je izklopljena.</translation>
 <translation id="1040916596585577953">Chromium priporoča, da pregledate to razširitev</translation>
 <translation id="1042552502243217427">Ko spletno mesto zahteva zasebno vnaprejšnje nalaganje povezav na svoji strani, Chromium uporabi Googlove strežnike. S tem je vaša identiteta skrita pred vnaprej naloženim mestom, vendar Google izve, katera spletna mesta se vnaprej nalagajo.</translation>
 <translation id="1051793555070215510">Izpolnite to enominutno anketo in nam pomagajte izboljšati anonimni način.</translation>
@@ -72,6 +71,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="183031085822326697">Ko boste naslednjič odprli Chromium v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za uporabo Googlovega upravitelja gesel.</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
 <translation id="18552579716432081">Če želite izbrisati podatke brskanja samo iz te naprave, v računu Google pa jih želite ohraniti, <ph name="BEGIN_LINK" />se odjavite iz Chromiuma<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Prenesite Chromium v telefon, da boste lahko na poti odpirali ali ustvarjali nove skupine zavihkov.</translation>
 <translation id="185970820835152459">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chromium, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Iskanje s slikovnim iskanjem</translation>
 <translation id="1880677175115548835">Izbira besedila</translation>
@@ -162,6 +162,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2738871930057338499">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »403 Forbidden«. Preverite konfiguracijo strežnika proxy configuration.</translation>
 <translation id="2753623023919742414">Kliknite, če želite iskati</translation>
 <translation id="2768103863314748511">Nastavite Chromium kot privzeti pregledovalnik PDF-jev</translation>
+<translation id="277828055419948999">Chromium lahko samodejno izpolni zahtevna polja, ki jih standardno samodejno izpolnjevanje morda ne zazna</translation>
 <translation id="2785438272836277133">Ta razširitev vsebuje zlonamerno programsko opremo in ni varna. Odstranite jo iz Chromiuma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
@@ -338,7 +339,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4613863813562375431">Različica sistema Chromium OS</translation>
 <translation id="4621240073146040695">Samo še malo. Znova zaženite Chromium, da dokončate posodobitev.</translation>
 <translation id="4625064703209785397">S Chromiumovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chromium zato nekoliko manj odporen proti napadom</translation>
-<translation id="4654936675281451226">Chromium bolje razume obrazce in jih lahko hitreje samodejno izpolni. Ta nastavitev je vklopljena.</translation>
 <translation id="4665829708273112819">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
 <translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
@@ -442,7 +442,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6063093106622310249">&amp;Odpri v Chromiumu</translation>
 <translation id="6069027071882229820">Kopiraj kot sliko</translation>
 <translation id="6072279588547424923">Razširitev <ph name="EXTENSION_NAME" /> je dodana v Chromium</translation>
-<translation id="6072463441809498330">Pospešite Chromium</translation>
 <translation id="6096348254544841612">Prilagodite in nadzirajte Chromium. Posodobitev je na voljo.</translation>
 <translation id="6107893135096467929">Vklopljeno • Chromium ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="611228897408671387">Vaš račun v Chromiumu</translation>
@@ -487,6 +486,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6436260184216827876">Slikovno iskanje ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="6442900851116057561">Vnovičen zagon sistema Chromium OS</translation>
 <translation id="6443470774889161065">Chromium vnaprej naloži še več strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
+<translation id="6450948450282634257">Prenesite Chromium v telefon, če želite spremljati cene in prejemati opozorila, ko se cena zniža na katerem koli spletnem mestu</translation>
 <translation id="645458117210240797">Izklopljeno • Chromium ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="6455857529632101747">Pozdravljeni v profilih za Chromium</translation>
 <translation id="6466344609055215035">Odstranitev računa iz Chromiuma</translation>

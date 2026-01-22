@@ -86,6 +86,9 @@ Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas d
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2788811701191021538">Öppnar inställningssidan för betalningsmetoder i Chrome.</translation>
 <translation id="2876628302275096482">Läs mer om <ph name="BEGIN_LINK" />hur Chrome skyddar din data<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Du har nått gränsen på <ph name="LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
+
+Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
 <translation id="2922914028977213693">Tryck här för att få ut mesta möjliga av Chrome på din iPad.</translation>
 <translation id="292371311537977079">Inställningar för Chrome</translation>
 <translation id="2923827943290349720">Lås inkognitoflikar när du stänger Chrome</translation>

@@ -433,6 +433,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2885355868600171871">Prelazak na adresnu traku</translation>
 <translation id="2888126860611144412">O Chromeu</translation>
 <translation id="2891154217021530873">Zaustavljanje učitavanja stranice</translation>
+<translation id="2893168226686371498">Zadani preglednik</translation>
 <translation id="2894821468041866720">Ne usporava primjetno preglednik ili uređaj.</translation>
 <translation id="2895521649038438824">Možete poslušati sadržaj ove stranice</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, prikvačena kartica koja reproducira zvuk</translation>
@@ -1467,6 +1468,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na svom računu<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Saznajte više o tome zašto Chrome blokira neke datoteke</translation>
 <translation id="7168323970702333693">Prijavljeni ste kao <ph name="USER_NAME" />. Otvara postavke.</translation>
+<translation id="7170930892977483182">Izbrisat će se svi sigurnosni kodovi koji su spremljeni na vašem uređaju i u Google Walletu</translation>
 <translation id="7173114856073700355">Otvorite Postavke</translation>
 <translation id="7173338713290252554">Povijest cijena na webu</translation>
 <translation id="7177466738963138057">Kasnije to možete promijeniti u odjeljku Postavke</translation>

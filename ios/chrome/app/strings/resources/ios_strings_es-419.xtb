@@ -936,6 +936,7 @@
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4568230126482344545">Ocultar la opción Pestañas recientes</translation>
 <translation id="4578835633387306383">Activar…</translation>
+<translation id="4580621046861724270">No se guardaron algunos favoritos</translation>
 <translation id="4580716718466706433">Ve al "Administrador de contraseñas"</translation>
 <translation id="4585751637295612750">Abre una pestaña nueva para agregarla a tu pregunta</translation>
 <translation id="4587589328781138893">Sitios</translation>
@@ -1163,6 +1164,7 @@
 <translation id="5318298563956633672">Ya estás realizando un seguimiento de este producto.</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5329451663851195956">Desliza hacia abajo si quieres actualizar la pestaña.</translation>
+<translation id="5336910966955551309">Mantén presionado para fijar tus sitios favoritos</translation>
 <translation id="5338512273860059533">Acceso en curso.</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
@@ -2004,6 +2006,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8319282042900445670">Se estableció el recordatorio para las <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8325455175867928593">Ocultar "Opiniones basadas en tus intereses"</translation>
+<translation id="8328777765163860529">Cerrar todas</translation>
 <translation id="833647236762414178">Crea, guarda y administra tus contraseñas y llaves de acceso para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
 <translation id="8348530355586151720">Presiona el menú de tres puntos.</translation>

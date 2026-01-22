@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">Chrome bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4251615635259297716">Chrome ma’lumotlari bu hisobga bog‘lansinmi?</translation>
+<translation id="4280647692742956593">Istalgan joyda varaqlar guruhini ochish va yaratish uchun telefonga Chrome yuklab oling.</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4293420128516039005">Chrome brauzerini barcha qurilmalringizda sinxronlash va o‘zingizga moslab olish uchun hisobingizga kiring</translation>
 <translation id="430327780270213103">Kengaytma Chrome asboblar panelida ruxsat soʻrovlarini chiqarishiga ruxsat bering</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">Rasmdan nusxa olindi</translation>
 <translation id="4926882258455737990">Boshqa Google hisobidan Chrome ichida Gemini ishlatish uchun <ph name="BEGIN_LINK" />yangi profil yarating<ph name="END_LINK" /> va istalgan hisobdan kiring</translation>
 <translation id="492720062778050435">Chrome bu kengaytmani tekshirishni tavsiya qiladi</translation>
-<translation id="4946912144186040233">Chrome shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin. Bu sozlama oʻchiq.</translation>
 <translation id="4953650215774548573">Google Chrome‘ni standart brauzer etib tayinlash</translation>
 <translation id="495931528404527476">Chrome brauzerida</translation>
 <translation id="4969674060580488087">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
@@ -411,7 +411,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> bilan ishlatiladigan Chrome profilini tanlang</translation>
 <translation id="5468572406162360320">Funksiyalarni yaxshilash maqsadida Chrome ulardan foydalanish axborotingizni Googlega yuboradi. Bu axborot xodimlar tomonidan oʻqilishi, qayta ishlanishi va izohlanishi mumkin.</translation>
 <translation id="5524890928877629608">qidiruv hududining yuqori chap burchagi: chap <ph name="LEFT" />%, yuqori <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Chromeni tezlashtirish</translation>
 <translation id="5550137307985173298">Chromega yangi qiyofa berish uchun yangi varaq sahifasidagi Chromeni moslash tugmasini bosing</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
@@ -592,12 +591,14 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7193885263065350793">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Chrome <ph name="MANAGER" /> boshqaruvida</translation>
+<translation id="7285990705317078173">Narxlarni kuzatish va istalgan saytda narx pasayishi haqida xabar olish uchun telefonga Chrome ilovasini yuklab oling</translation>
 <translation id="7288567540154601580">Varaqlar va kengaytmalar</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7302361266603927550">Ayrim Chrome maʼlumotlari Google hisobingizga hali saqlanmagan. Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
+<translation id="7379321689415048316">Chrome standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
 <translation id="7386878009611068389">Ota-onangiz belgilagan sozlamalar asosida internetni xavfsiz kezishingiz uchun <ph name="USER_EMAIL_ADDRESS" /> hisobiga kirilgan Chrome profilingizga almashing</translation>
 <translation id="7398801000654795464">Siz Chrome brauzeriga <ph name="USER_EMAIL_ADDRESS" /> hisobi orqali kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7412494426921990001">Chrome menyusiga bosing</translation>
@@ -612,7 +613,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7481213027396403996">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="749228101751499733">Chromeda hisobdan chiqmasangiz, Google hisobingizdagi parollar va boshqa maʼlumotlardan foydalana olasiz. <ph name="SHORTCUT" /> Google xizmatlari sozlamalarini oʻzgartirishi mumkin.</translation>
 <translation id="7496017508659652909">Chrome kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi. <ph name="BEGIN_LINK" />Sahifalarni oldindan yuklash haqida batafsil<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin. Bu sozlama yoniq.</translation>
 <translation id="7514258452813684157">Google Updater xizmati</translation>
 <translation id="7515191208480168435">Tezkor ochish uchun Google Lensni mahkamlash mumkin</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

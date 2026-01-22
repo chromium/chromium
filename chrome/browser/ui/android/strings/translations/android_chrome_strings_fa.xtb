@@ -433,6 +433,7 @@
 <translation id="2885355868600171871">رفتن به نوار نشانی</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
+<translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
 <translation id="2894821468041866720">باعث کاهش قابل‌توجه سرعت مرورگر یا دستگاه شما نمی‌شود.</translation>
 <translation id="2895521649038438824">می‌توانید به این صفحه گوش دهید</translation>
 <translation id="289596984386220317">‫<ph name="TAB_TITLE" />، زبانه شنیداری سنجاق‌شده</translation>
@@ -851,7 +852,7 @@
 <translation id="4698757800236023795">فعال (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
 <translation id="4710167854527459075">ترتیب براساس جدیدترین</translation>
-<translation id="4718044610319080485">«دستیار هوش مصنوعی» را فراخوانی می‌کند</translation>
+<translation id="4718044610319080485">«دستیار هوشواره‌ای» را فراخوانی می‌کند</translation>
 <translation id="4719927025381752090">پیشنهاد برای ترجمه</translation>
 <translation id="4720556299488643018">لغو اشتراک</translation>
 <translation id="4732120983431207637">گره‌گشای پشته</translation>
@@ -1018,7 +1019,7 @@
 <translation id="539881862970320163">گذرواژه قوی‌ای پیشنهاد شد. صفحه‌کلید پنهان است.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5410300144953132176">‫<ph name="OWNER_FULL_NAME" />‏ (<ph name="OWNER_EMAIL" />) از شما می‌خواهد به یک گروه زبانه بپیوندید. هر کسی پیوند را داشته باشد می‌تواند همه زبانه‌ها را ویرایش کند، پس بااحتیاط بپیوندید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
-<translation id="5412388166586147626">دستیار هوش مصنوعی باز نشد. دوباره امتحان کنید.</translation>
+<translation id="5412388166586147626">دستیار هوشواره‌ای باز نشد. دوباره امتحان کنید.</translation>
 <translation id="5414836363063783498">در حال تأیید کردن…</translation>
 <translation id="5415871492522952905">سابقه و برگه‌هایتان را در همه دستگاه‌هایتان دراختیار خواهید داشت تا بتوانید به کاری که انجام می‌دادید ادامه دهید</translation>
 <translation id="542073632571549028">‫<ph name="MEMBER_FULL_NAME" />‏ (<ph name="EMAIL" />) دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهد</translation>
@@ -1467,6 +1468,7 @@
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">‏اطلاعات بیشتر درباره اینکه چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="7168323970702333693">با <ph name="USER_NAME" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
+<translation id="7170930892977483182">‏همه کدهای امنیتی ذخیره‌شده در دستگاهتان و «کیف پول Google» حذف خواهد شد</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
 <translation id="7173338713290252554">سابقه قیمت در سراسر وب</translation>
 <translation id="7177466738963138057">می‌توانید بعداً این مورد را در تنظیمات تغییر دهید</translation>

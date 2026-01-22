@@ -186,7 +186,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1289129165308566697">Se loggen din på andre enheter</translation>
 <translation id="1292571435393770077">Skuff 16</translation>
 <translation id="1292701964462482250">«Det er programvare på datamaskinen din som hindrer Chrome i å koble trygt til Internett» (bare på Windows-datamaskiner)</translation>
-<translation id="1293154089865862473">Sideinnhold fra betalingssiden deles med Google for å tilby disse alternativene. Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> For å skjule alternativene for betaling senere i autofyll.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1293797321964802402">Konvolutt 9 x 11 tommer</translation>
 <translation id="129553762522093515">Nylig lukket</translation>
@@ -288,6 +287,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
+<translation id="1442054921249164535">Andre data</translation>
 <translation id="1442386063175183758">Høyre vindusfals</translation>
 <translation id="1442987760062738829">Hull</translation>
 <translation id="1445896388055045436">Vis tilgjengelige kortfordeler og -belønninger i kassen. Utstederens vilkår gjelder.</translation>
@@ -941,6 +941,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="24699311393038040">Papir (belagt)</translation>
 <translation id="2471632709106952369">Sammenligningstabeller</translation>
 <translation id="2473810985261856484">Juridiske tjenester</translation>
+<translation id="2477607419416067650">Andre Google-data</translation>
 <translation id="2479148705183875116">Gå til Innstillinger</translation>
 <translation id="2479410451996844060">Ugyldig nettadresse for søk.</translation>
 <translation id="2480300195898055381">I Google-kontoen din, <ph name="USER_EMAIL" /></translation>
@@ -995,6 +996,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Bruk skjermlås til å bekrefte kort fra nå av</translation>
 <translation id="2552532158894206888">høyretast</translation>
+<translation id="2553352788023127673">Søkeloggen og passordene kan slettes i innstillingene for administrering</translation>
 <translation id="2553853292994445426">Kontroller innstillingene for sikker DNS. Det er mulig du har konfigurert en sikker DNS-tjener som vi ikke klarer å koble til.</translation>
 <translation id="255497580849974774">Hold enheten koblet til en lader under oppdateringen.</translation>
 <translation id="2556876185419854533">&amp;Angre endringen</translation>
@@ -1126,7 +1128,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2782088940970074970">Bilutleie</translation>
 <translation id="278436560439594386">Hvitevarer</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784540996156451674">Sideinnhold fra betalingssiden deles med Google for å tilby disse alternativene.</translation>
 <translation id="2784949926578158345">Tilkoblingen ble tilbakestilt.</translation>
 <translation id="2786008859124691917">Sykler og tilbehør</translation>
 <translation id="2792012897584536778">Enhetsadministratorene har satt opp sikkerhetssertifikater som kan gjøre det mulig for dem å se innholdet på nettsteder du besøker.</translation>
@@ -1500,6 +1501,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3407789382767355356">tredjepartspålogging</translation>
 <translation id="340924996148642843">Sammenligning er ikke tilgjengelig akkurat nå</translation>
 <translation id="3409896703495473338">Administrer sikkerhetsinnstillinger</translation>
+<translation id="3410151451624226773">Administrer i Google Passordlagring</translation>
 <translation id="3411091017011773343">Last opp om <ph name="HOURS" /> t</translation>
 <translation id="341134412449102894">Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="3413466783792948876">Det er tryggest å besøke dette nettstedet senere hvis du bruker et offentlig nettverk. Pålitelige nettverk har lavere risiko, for eksempel wifi-nettverket hjemme eller på jobb.</translation>
@@ -1591,6 +1593,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3549904448933807997">informasjon om nettlesere og profiler (inkludert personlige profiler og jobbprofiler)</translation>
 <translation id="3552155506104542239">Advarsel: Denne regelen er i konflikt med <ph name="POLICY_NAME" /> og har ingen innvirkning på Android-apper. Ellers fungerer denne regelen som den skal.</translation>
 <translation id="3552297013052089404">Sans-serif-skrifttype</translation>
+<translation id="3558335486599406178">IBAN er lagret i Google Wallet</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="3559897352860026926">Be administratoren din om å sjekke konfigurasjonsinnstillingene for <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="3560824484345057728">Se relaterte nettsteder</translation>
@@ -2161,12 +2164,14 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4406883609789734330">Direkteteksting</translation>
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4407758156081352648">For å opprettholde sikkerheten tillater ikke organisasjonen din at passord gjenbrukes i Chrome. Passord i Chrome krypteres for å beskytte brukernes personvern.</translation>
+<translation id="4409271659088619928">Søkemotoren din er <ph name="DSE" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="4409556632583862731">Ny tråd</translation>
 <translation id="4412074349188076601">Denne konfigurasjonen er merket som installerbar, men det finnes ingen avbildning for denne arkitekturen, så den kan ikke installeres.</translation>
 <translation id="4412377069090572315">Dette sier andre</translation>
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415156962929755728">Plast (høy glans)</translation>
 <translation id="4415426530740016218">Henteadresse</translation>
+<translation id="4419287616181386201">Passord kan slettes i innstillingene for administrering</translation>
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="4425750422187370446">Sportsklær</translation>
 <translation id="443121186588148776">Seriell port</translation>
@@ -2573,6 +2578,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5097468150760963273">27 x 39 tommer</translation>
 <translation id="5097501891273180634">A2</translation>
 <translation id="5102512728737175215">Trykk på Tab og deretter på Enter for å spørre AI-modus</translation>
+<translation id="5105442806410269908">Administrer andre Google-data</translation>
 <translation id="510644072453496781">Kartong (ende)</translation>
 <translation id="5106648964679263509">Virtuelt kort for <ph name="BNPL_ISSUER_NAME" /> er fylt ut</translation>
 <translation id="5108567515277121477">Stamkundekort</translation>
@@ -2712,6 +2718,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="531996107159483074"><ph name="BEGIN_BOLD" />Med standardsøkemotoren din kan du søke på nettet og dra nytte av Chromium-funksjoner<ph name="END_BOLD" /> som søk i adressefeltet og via bilder på nettsider. Det kan hende at enkelte funksjoner ikke er tilgjengelige hvis søkemotoren din ikke støtter dem.</translation>
 <translation id="5323043727018853753">Innebygd innhold er tillatt</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> av <ph name="NUM_MATCHES" /></translation>
+<translation id="5323501626199324454">Administrer i Google-kontoen din</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5329858041417644019">Nettleseren din administreres ikke</translation>
 <translation id="5331585574693522196">Angi som standard</translation>
@@ -2755,6 +2762,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5394069166371280357">Familievennlige TV-programmer</translation>
 <translation id="5396631636586785122">Kantstifting høyre</translation>
 <translation id="5397794290049113714">Deg</translation>
+<translation id="5398461103557553443">Lagre det i Google Wallet for å fylle ut dette IBAN-nummeret automatisk neste gang</translation>
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="5401344472773249513">Kjendis- og underholdningsnyheter</translation>
@@ -3863,6 +3871,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7162277662076933695">Smartkortleser</translation>
 <translation id="7163295244162773898">{0,plural, =1{Vil du kopiere den konfidensielle filen?}other{Vil du kopiere de konfidensielle filene?}}</translation>
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» er ikke en støttet begrensning på denne plattformen</translation>
+<translation id="7170930892977483182">Alle sikkerhetskoder som er lagret på enheten og i Google Wallet, slettes</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7173338713290252554">Prishistorikk på nettet</translation>
 <translation id="7174545416324379297">Slått sammen</translation>
@@ -3917,6 +3926,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7250174481516136841"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om kortfordeler</translation>
 <translation id="7251437084390964440">Nettverkskonfigurasjonen overholder ikke ONC-standarden. Deler av konfigurasjonen kan muligens ikke importeres. Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7252424535852086046">Gå til innstillingene for administrering for å slette disse dataene</translation>
 <translation id="7255540419660272073">Tommel ned-knapp – trykk på Enter for å åpne et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="7256634549594854023">Bakskuff</translation>
 <translation id="7257453341537973799">Karriereressurser og -planlegging</translation>
@@ -4045,6 +4055,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7450577240311017924">Knappen «Administrer synkronisering» – aktiver for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om dette problemet.</translation>
 <translation id="745208957946308667">Dino-spillet – trykk på mellomrom for å spille</translation>
+<translation id="7453032093368223821">Administrer andre data</translation>
 <translation id="7453849010505253492">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chrome eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Vis sertifikatet<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Skykonto</translation>
 <translation id="7455133967321480974">Bruk global standardinnstilling (Blokkér)</translation>

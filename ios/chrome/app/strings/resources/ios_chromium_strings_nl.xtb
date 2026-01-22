@@ -41,6 +41,9 @@
 <translation id="1707458603865303524">Gebruik Chromium als je op links in berichten of andere apps tikt.</translation>
 <translation id="1722370509450468186">Je wachtwoord wordt opgeslagen in je account (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Een aangepaste feed voor jou</translation>
+<translation id="1761196287436320018">Je hebt de limiet van Chromium van <ph name="LIMIT" /> bookmarks bereikt. Sommige van je bookmarks zijn daarom nog niet opgeslagen in je Google-account.
+
+Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
 <translation id="1811860791247653035">Als je personalisatie en andere functies wilt krijgen, neem je Chromium op in <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium heeft bevestigd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
 <translation id="1839447949248872139">Open links standaard in Chromium</translation>

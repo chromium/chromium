@@ -309,6 +309,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4242034826641750751">Chrome potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251615635259297716">Želite svoje podatke v Chromu povezati s tem računom?</translation>
+<translation id="4280647692742956593">Prenesite Chrome v telefon, da boste lahko na poti odpirali ali ustvarjali nove skupine zavihkov.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4293420128516039005">Prijavite se, da boste lahko Chrome sinhronizirali in prilagodili v vseh svojih napravah</translation>
 <translation id="430327780270213103">Omogočanje razširitve za prikaz zahtev za dostop v orodni vrstici Chroma</translation>
@@ -364,7 +365,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4926882258455737990">Če želite z Geminijem v Chromu uporabljati drug račun Google, <ph name="BEGIN_LINK" />ustvarite nov profil<ph name="END_LINK" /> in se prijavite z želenim računom</translation>
 <translation id="492720062778050435">Chrome priporoča, da pregledate to razširitev</translation>
-<translation id="4946912144186040233">Chrome bolje razume obrazce in jih lahko hitreje samodejno izpolni. Ta nastavitev je izklopljena.</translation>
 <translation id="4953650215774548573">Nastavitev Google Chroma za privzeti brskalnik</translation>
 <translation id="495931528404527476">V Chromu</translation>
 <translation id="4969674060580488087">ChromeOS Flex ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
@@ -415,7 +415,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5465210843490471889">Izberite profil v Chromu, ki ga želite uporabljati z <ph name="START_GLIC_STYLING" />Geminijem<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Zaradi izboljšanja teh funkcij Chrome vaše interakcije z njimi pošilja Googlu. Pregledovalci lahko te podatke pregledajo, obdelajo in označijo.</translation>
 <translation id="5524890928877629608">zgornji levi kot območja za iskanje: levo <ph name="LEFT" /> %, zgoraj <ph name="TOP" /> %</translation>
-<translation id="5530733413481476019">Pospešite Chrome</translation>
 <translation id="5550137307985173298">Kliknite gumb za prilagajanje Chroma na strani »Nov zavihek«, da bo Chrome videti drugače</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Napaka pri zagonu: Zaženite namestitveni program kot običajni uporabnik, ne kot skrbnik.</translation>
@@ -596,12 +595,14 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7193885263065350793">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromu ostali ločeni. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome</translation>
+<translation id="7285990705317078173">Prenesite Chrome v telefon, če želite spremljati cene in prejemati opozorila, ko se cena zniža na katerem koli spletnem mestu</translation>
 <translation id="7288567540154601580">Zavihki in razširitve</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
 <translation id="7302361266603927550">Nekateri podatki v Chromu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="7308322188646931570">Chrome za prenos datotek potrebuje dostop do shrambe</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
+<translation id="7379321689415048316">Chrome lahko samodejno izpolni zahtevna polja, ki jih standardno samodejno izpolnjevanje morda ne zazna</translation>
 <translation id="7386878009611068389">Zaradi večje varnosti v spletu s starševimi izbirami preklopi na svoj profil v Chromu, kjer si že prijavljen(-a) kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7398801000654795464">V Chrome ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7412494426921990001">Kliknite Chromov meni</translation>
@@ -616,7 +617,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="749228101751499733">Ko ste prijavljeni, lahko v Chromu uporabljate gesla in drugo iz računa Google. <ph name="SHORTCUT" /> lahko spremeni nastavitve Googlovih storitev.</translation>
 <translation id="7496017508659652909">Chrome vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje. <ph name="BEGIN_LINK" />Preberite več o vnaprejšnjem nalaganju strani<ph name="END_LINK" />.</translation>
-<translation id="7510927761955779701">Chrome bolje razume obrazce in jih lahko hitreje samodejno izpolni. Ta nastavitev je vklopljena.</translation>
 <translation id="7514258452813684157">Googlova storitev za posodabljanje</translation>
 <translation id="7515191208480168435">Google Lens lahko pripnete za preprost dostop</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

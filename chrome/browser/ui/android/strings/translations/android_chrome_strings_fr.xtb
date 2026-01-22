@@ -433,6 +433,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2885355868600171871">Accéder à la barre d'adresse</translation>
 <translation id="2888126860611144412">À propos de Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
+<translation id="2893168226686371498">Navigateur par défaut</translation>
 <translation id="2894821468041866720">Ne ralentit pas sensiblement votre navigateur ni votre appareil.</translation>
 <translation id="2895521649038438824">Vous pouvez écouter cette page</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, onglet épinglé avec audio</translation>
@@ -1467,6 +1468,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
+<translation id="7170930892977483182">Tous les codes de sécurité enregistrés sur votre appareil et dans Google Wallet seront supprimés</translation>
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7173338713290252554">Historique des prix sur le Web</translation>
 <translation id="7177466738963138057">Vous pourrez modifier le moteur de recherche plus tard dans les paramètres</translation>

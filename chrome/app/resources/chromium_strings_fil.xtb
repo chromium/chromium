@@ -3,7 +3,6 @@
 <translationbundle lang="fil">
 <translation id="1026101648481255140">Ituloy ang Pag-install</translation>
 <translation id="1029669172902658969">Ilunsad ulit para ma-update ang &amp;ChromiumOS</translation>
-<translation id="103359417695385097">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-off ang setting na ito.</translation>
 <translation id="1040916596585577953">Inirerekomenda ng Chromium na suriin mo ang extension na ito</translation>
 <translation id="1042552502243217427">Kapag humiling ang isang site na pribadong mag-preload ng mga link sa page nito, gumagamit ang Chromium ng mga server ng Google. Maitatago nito ang iyong pagkakakilanlan sa na-preload na site, pero malalaman ng Google kung anong mga site ang na-preload.</translation>
 <translation id="1051793555070215510">Tulungan kaming pahusayin ang Incognito sa pamamagitan ng pagsagot sa 1 minutong survey na ito.</translation>
@@ -72,6 +71,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="183031085822326697">Sa susunod na buksan mo ang Chromium sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt na gamitin ang Google Password Manager.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="18552579716432081">Para ma-delete ang data mula sa pag-browse sa device lang na ito, habang pinapanatili ito sa iyong Google Account, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">I-download ang Chromium sa iyong telepono para magbukas o gumawa ng mga bagong grupo ng tab nang on the go.</translation>
 <translation id="185970820835152459">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chromium browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Maghanap gamit ang Paghahanap ng Larawan</translation>
 <translation id="1880677175115548835">Piliin ang text</translation>
@@ -162,6 +162,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2738871930057338499">Hindi makakonekta sa Internet. HTTP 403 Forbidden. Tingnan ang configuration ng iyong proxy.</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
 <translation id="2768103863314748511">Itakda ang Chromium bilang iyong default na viewer ng PDF</translation>
+<translation id="277828055419948999">Mao-autofill ng Chromium ang mahihirap na field na posibleng mapalampas ng karaniwang autofill</translation>
 <translation id="2785438272836277133">May malware ang extension na ito at hindi ito ligtas. Alisin ito sa Chromium para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="2799223571221894425">Ilunsad Muli</translation>
 <translation id="2803971713792056305">Iyong Chromium</translation>
@@ -338,7 +339,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4613863813562375431">Bersyon ng ChromiumOS</translation>
 <translation id="4621240073146040695">Halos napapanahon na! Muling ilunsad ang Chromium upang tapusin ang pag-a-update.</translation>
 <translation id="4625064703209785397">Pinapabilis ang mga site gamit ang V8 na engine ng Chromium pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chromium</translation>
-<translation id="4654936675281451226">Mas naiintindihan ng Chromium ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo. Naka-on ang setting na ito.</translation>
 <translation id="4665829708273112819">Babala: Hindi mapipigilan ng Chromium ang pag-record ng mga extension sa iyong history ng pag-browse. Para i-disable ang extension na ito sa Incognito mode, i-unselect ang opsyong ito.</translation>
 <translation id="4673151026126227699">Kung magbabahagi ka rin ng mga ulat ng paggamit sa Chromium, isasama sa mga ulat na iyon ang mga URL na binibisita mo</translation>
 <translation id="4677944499843243528">Mukhang ginagamit ang profile ng iba pang proseso ng Chromium (<ph name="PROCESS_ID" />) sa iba pang computer (<ph name="HOST_NAME" />).  Ni-lock ng Chromium ang profile upang hindi ito ma-corrupt.  Kung nakakatiyak ka na walang ibang mga proseso ang gumagamit sa profile na ito, maaari mong i-unlock ang profile at ilunsad muli ang Chromium.</translation>
@@ -442,7 +442,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6063093106622310249">&amp;Buksan sa Chromium</translation>
 <translation id="6069027071882229820">Kopyahin bilang larawan</translation>
 <translation id="6072279588547424923">Naidagdag na ang <ph name="EXTENSION_NAME" /> sa Chromium</translation>
-<translation id="6072463441809498330">Pabilisin ang Chromium</translation>
 <translation id="6096348254544841612">I-customize at kontrolin ang Chromium. May available na update.</translation>
 <translation id="6107893135096467929">Naka-on • Hindi ma-verify ng Chromium kung saan galing ang extension na ito</translation>
 <translation id="611228897408671387">Iyong account sa Chromium</translation>
@@ -487,6 +486,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6436260184216827876">Hindi available ang Paghahanap ng Larawan. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6442900851116057561">I-restart ang ChromiumOS</translation>
 <translation id="6443470774889161065">Nagpi-preload ang Chromium ng mas marami pang page na malamang na bibisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo.</translation>
+<translation id="6450948450282634257">I-download ang Chromium sa iyong telepono para i-track ang mga presyo at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="645458117210240797">Naka-off • Hindi ma-verify ng Chromium kung saan galing ang extension na ito</translation>
 <translation id="6455857529632101747">Welcome sa mga profile sa Chromium</translation>
 <translation id="6466344609055215035">Alisin ang Account sa Chromium</translation>

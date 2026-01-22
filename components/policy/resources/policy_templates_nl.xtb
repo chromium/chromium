@@ -6547,17 +6547,6 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Ga voor meer informatie naar het Helpcentrum-artikel https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
-
-Als je dit beleid niet toepast, staat anonieme rapportage uit en worden er geen gebruiks- of crashgegevens naar Google gestuurd. Gebruikers kunnen deze instelling niet wijzigen.
-
-Als dit beleid niet is ingesteld, kunnen gebruikers het gedrag voor anonieme rapportage kiezen tijdens de installatie of de eerste uitvoering. Ze kunnen deze instelling later wijzigen.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-(Zie <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" /> voor <ph name="PRODUCT_OS_NAME" />.)</translation>
 <translation id="5486917900445838803">Als je dit beleid toepast of niet instelt, wordt grafische versnelling gebruikt als dit beschikbaar is.
 
 Als je het beleid niet toepast, wordt grafische versnelling niet gebruikt.</translation>
@@ -7468,35 +7457,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
 <translation id="6087413944876892918">Het algoritme <ph name="HAPPY_EYEBALLS_V3" /> gebruiken</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
-<translation id="6089118101413877627">Dit beleid biedt een manier om de lijst met sets te overschrijven die de browser gebruikt voor first-party sets-functies (die later is omgedoopt tot de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />).
-
-Elke set in de lijst met first-party sets van de browser moet voldoen aan de vereisten van een first-party set.
-Een first-party set moet een primaire site en een of meer lidsites bevatten.
-Een set kan ook een lijst bevatten van servicesites waarvan de set de eigenaar is, evenals een routebeschrijving van een site naar alle ccTLD-varianten.
-Ga naar https://github.com/WICG/first-party-sets voor meer informatie over hoe <ph name="PRODUCT_NAME" /> first-party sets gebruikt.
-
-Alle sites in een first-party set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost. Elke site in een first-party set moet ook uniek zijn. Dit betekent dat een site niet meer dan één keer kan worden vermeld in een first-party set.
-
-Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met first-party sets.
-
-Voor alle sites in een first-party set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, die site wordt verwijderd uit de first-party set van de browser.
-Daarna wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
-
-Voor alle sites in een first-party set uit de lijst <ph name="ADDITIONS" /> geldt dat als een site ook aanwezig is in een first-party set in de lijst van de browser, een update voor de first-party set van de browser wordt doorgevoerd zodat de nieuwe first-party set kan worden toegevoegd aan de lijst van de browser. Nadat een update voor de lijst van de browser is doorgevoerd, wordt de first-party set van het beleid toegevoegd aan de lijst met first-party sets van de browser.
-
-De lijst met first-party sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan één set is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
-
-Jokertekens (*) worden zowel in first-party sets als in deze lijsten niet ondersteund als beleidswaarde.
-
-Alle sets die in dit beleid worden vermeld, moeten geldige first-party sets zijn. Zo niet, dan krijg je de relevante foutmelding.
-
-In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Dit is het equivalent van het beleid <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Beide beleidsregels kunnen worden gebruikt en hebben hetzelfde effect op het gedrag van de browser.
-Beide beleidsregels zijn beëindigd na de beëindiging van de functie <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" /> in <ph name="PRODUCT_NAME" /> versie 144.</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
@@ -11213,11 +11173,6 @@ Ga naar https://chromeenterprise.google/policies/?policy=DownloadRestrictions vo
 Als je dit beleid toepast of niet instelt, wordt voorkomen dat software van derden uitvoerbare code in de processen van <ph name="PRODUCT_NAME" /> injecteert.
 
       Als je het beleid niet toepast, kan deze software dergelijke code in de processen van <ph name="PRODUCT_NAME" /> injecteren.</translation>
-<translation id="8503018573167958506">Bepaal of een gebruiker de hostnaam van het apparaat mag instellen.
-
-      Als je <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> instelt, stelt de beheerder de hostnaam in en kan de gebruiker geen hostnaam kiezen, ongeacht de instelling van dit beleid.
-      Als je dit beleid instelt op True en <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> niet is ingesteld, stelt de beheerder geen hostnaam in en kan de gebruiker een hostnaam kiezen.
-      Als je dit beleid instelt op False en <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> niet is ingesteld, stelt de beheerder geen hostnaam in en kan de gebruiker geen hostnaam kiezen. Daarom wordt de standaardnaam gebruikt.</translation>
 <translation id="8504243661032323176">Als je dit beleid instelt, wordt de gekozen minimumlengte van pincodes afgedwongen. (Waarden lager dan 1 worden afgerond naar het minimum van 1.)
 
       Als je het beleid niet instelt, wordt een minimale pincodelengte van 6 tekens (het aanbevolen minimum) afgedwongen.</translation>

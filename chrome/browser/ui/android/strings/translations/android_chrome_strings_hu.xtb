@@ -433,6 +433,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2885355868600171871">Ugrás a címsávra</translation>
 <translation id="2888126860611144412">A Chrome névjegye</translation>
 <translation id="2891154217021530873">Oldal betöltésének leállítása</translation>
+<translation id="2893168226686371498">Alapértelmezett böngésző</translation>
 <translation id="2894821468041866720">Nem lassítja jelentősen a böngészőt vagy az eszközt.</translation>
 <translation id="2895521649038438824">Meghallgathatja ennek az oldalnak a tartalmát</translation>
 <translation id="289596984386220317"><ph name="TAB_TITLE" />, rögzített, hangot lejátszó lap</translation>
@@ -1467,6 +1468,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="7165972437814027679">További információ arról, hogy miért tilt le bizonyos fájlokat a Chrome</translation>
 <translation id="7168323970702333693">Bejelentkezve a következőként: <ph name="USER_NAME" />. Megnyitja a beállításokat.</translation>
+<translation id="7170930892977483182">Az eszközére és a Google Walletbe mentett biztonsági kódok is törlődnek</translation>
 <translation id="7173114856073700355">Beállítások megnyitása</translation>
 <translation id="7173338713290252554">Árelőzmények az interneten</translation>
 <translation id="7177466738963138057">Ezt később módosíthatja a beállítások között.</translation>

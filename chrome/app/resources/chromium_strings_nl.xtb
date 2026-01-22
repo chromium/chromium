@@ -3,7 +3,6 @@
 <translationbundle lang="nl">
 <translation id="1026101648481255140">Installatie hervatten</translation>
 <translation id="1029669172902658969">Opnieuw opstarten om &amp;Chromium OS te updaten</translation>
-<translation id="103359417695385097">Chromium begrijpt formulieren beter en kan ze sneller automatisch voor je invullen. Deze instelling staat uit.</translation>
 <translation id="1040916596585577953">Chromium raadt je aan deze extensie te checken</translation>
 <translation id="1042552502243217427">Als een site vraagt om links op de sitepagina privé vooraf te laden, gebruikt Chromium de servers van Google. Je identiteit wordt dan verborgen voor de vooraf geladen site, maar Google leert welke sites vooraf worden geladen.</translation>
 <translation id="1051793555070215510">Help ons Incognito te verbeteren door deze enquête van 1 minuut in te vullen.</translation>
@@ -71,6 +70,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="183031085822326697">De volgende keer dat je Chromium op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om Google Wachtwoordmanager te gebruiken.</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="18552579716432081">Als je browsegegevens alleen van dit apparaat wilt verwijderen, maar ze in je Google-account wilt houden, <ph name="BEGIN_LINK" />log je uit van Chromium<ph name="END_LINK" />.</translation>
+<translation id="1857749206890802997">Download Chromium op je telefoon om onderweg nieuwe tabbladgroepen te openen of te maken.</translation>
 <translation id="185970820835152459">Je kunt je ingelogde Google-accounts beheren. Je Google-accounts worden gebruikt voor onder andere de Chromium-browser, Play Store, en Gmail. Als je een account wilt toevoegen voor iemand anders, bijvoorbeeld een gezinslid, voeg je een nieuw persoon toe aan je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Zoeken met afbeelding</translation>
 <translation id="1880677175115548835">Tekst selecteren</translation>
@@ -161,6 +161,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2753623023919742414">Klik om te zoeken</translation>
 <translation id="2768103863314748511">Chromium instellen als standaard pdf-viewer</translation>
+<translation id="277828055419948999">Chromium kan moeilijke velden automatisch invullen die standaard automatisch invullen misschien niet herkent</translation>
 <translation id="2785438272836277133">Deze extensie bevat malware en is onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2803971713792056305">Je Chromium</translation>
@@ -337,7 +338,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="4613863813562375431">Chromium OS-versie</translation>
 <translation id="4621240073146040695">Updaten bijna voltooid. Start Chromium opnieuw op om de update te voltooien.</translation>
 <translation id="4625064703209785397">Versnelt sites met de V8-engine van Chromium, maar maakt Chromium iets minder goed bestand tegen aanvallen</translation>
-<translation id="4654936675281451226">Chromium begrijpt formulieren beter en kan ze sneller automatisch voor je invullen. Deze instelling staat aan.</translation>
 <translation id="4665829708273112819">Waarschuwing: Chromium kan niet voorkomen dat extensies je browsegeschiedenis registreren. Als je deze extensie in de incognitomodus wilt uitzetten, vink je deze optie uit.</translation>
 <translation id="4673151026126227699">Als je ook Chromium-gebruiksrapporten deelt, bevatten die rapporten de URL's die je bezoekt</translation>
 <translation id="4677944499843243528">Het profiel lijkt te worden gebruikt door een ander proces in Chromium (<ph name="PROCESS_ID" />) op een andere computer (<ph name="HOST_NAME" />). Het profiel is vergrendeld zodat het niet wordt beschadigd. Als je zeker weet dat dit profiel niet door andere processen wordt gebruikt, kun je het profiel ontgrendelen en Chromium opnieuw starten.</translation>
@@ -441,7 +441,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6063093106622310249">&amp;Openen in Chromium</translation>
 <translation id="6069027071882229820">Kopiëren als afbeelding</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is toegevoegd aan Chromium</translation>
-<translation id="6072463441809498330">Maak Chromium sneller</translation>
 <translation id="6096348254544841612">Chromium aanpassen en beheren. Update is beschikbaar</translation>
 <translation id="6107893135096467929">Aan • Chromium kan niet verifiëren waar deze extensie vandaan komt</translation>
 <translation id="611228897408671387">Je account in Chromium</translation>
@@ -486,6 +485,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6436260184216827876">Zoeken met afbeelding is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="6442900851116057561">Chromium OS opnieuw opstarten</translation>
 <translation id="6443470774889161065">Chromium laadt vooraf nog meer pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt.</translation>
+<translation id="6450948450282634257">Download Chromium op je telefoon om prijzen te volgen en meldingen te krijgen als de prijs daalt op een site</translation>
 <translation id="645458117210240797">Uit • Chromium kan niet verifiëren waar deze extensie vandaan komt</translation>
 <translation id="6455857529632101747">Welkom bij Chromium-profielen</translation>
 <translation id="6466344609055215035">Account verwijderen uit Chromium</translation>

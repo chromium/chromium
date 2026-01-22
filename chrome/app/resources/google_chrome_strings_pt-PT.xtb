@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">O Chrome necessita das autorizações da câmara e do microfone para este site</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
 <translation id="4251615635259297716">Associar os seus dados do Chrome a esta conta?</translation>
+<translation id="4280647692742956593">Transfira o Chrome para o seu telemóvel para abrir ou criar novos grupos de separadores em qualquer lugar.</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4293420128516039005">Inicie sessão para sincronizar e personalizar o Chrome em todos os dispositivos.</translation>
 <translation id="430327780270213103">Permitir que a extensão mostre pedidos de acesso na barra de ferramentas do Chrome</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">Imagem copiada</translation>
 <translation id="4926882258455737990">Para usar uma Conta Google diferente com o Gemini no Chrome, <ph name="BEGIN_LINK" />crie um novo perfil<ph name="END_LINK" /> e inicie sessão com a conta que quer</translation>
 <translation id="492720062778050435">O Chrome recomenda que reveja esta extensão</translation>
-<translation id="4946912144186040233">O Chrome compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida. Esta definição está desativada.</translation>
 <translation id="4953650215774548573">Definir o Google Chrome como o navegador predefinido</translation>
 <translation id="495931528404527476">No Chrome</translation>
 <translation id="4969674060580488087">O ChromeOS Flex não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">Escolha um perfil do Chrome para usar com o <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Para ajudar a melhorar estas funcionalidades, o Chrome envia as suas interações com as funcionalidades para a Google. Estes dados podem ser lidos, processados e anotados por revisores humanos.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte superior <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Torne o Chrome mais rápido</translation>
 <translation id="5550137307985173298">Clique no botão Personalizar o Chrome na página Novo separador para dar um novo aspeto ao Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">A sua organização fecha o Chrome quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Google Chrome. Os seus dados do Chrome, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. Opcionalmente, pode criar um perfil novo para manter os seus dados atuais do Chrome em separado. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">A <ph name="MANAGER" /> gere o Chrome</translation>
+<translation id="7285990705317078173">Transfira o Chrome para o seu telemóvel para acompanhar os preços e receber alertas quando o preço descer em qualquer site</translation>
 <translation id="7288567540154601580">Separadores e extensões</translation>
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
+<translation id="7379321689415048316">O Chrome pode preencher automaticamente campos difíceis que o preenchimento automático padrão pode não preencher</translation>
 <translation id="7386878009611068389">Para teres mais segurança online com as escolhas dos teus pais, muda para o teu perfil do Chrome onde já tens sessão iniciada como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Iniciou sessão no Chrome com a conta <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7412494426921990001">Clique no menu do Chrome</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="749228101751499733">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chrome. <ph name="SHORTCUT" /> pode alterar as suas definições dos serviços Google.</translation>
 <translation id="7496017508659652909">O Chrome pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">O Chrome compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida. Esta definição está ativada.</translation>
 <translation id="7514258452813684157">Serviço do Google Updater</translation>
 <translation id="7515191208480168435">Pode fixar o Google Lens para acesso fácil</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

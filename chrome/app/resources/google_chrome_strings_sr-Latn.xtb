@@ -309,6 +309,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4242034826641750751">Chrome-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4251615635259297716">Želite li da povežete Chrome podatke sa ovim nalogom?</translation>
+<translation id="4280647692742956593">Preuzmite Chrome na telefon da biste u pokretu otvarali ili pravili nove grupe kartica.</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4293420128516039005">Prijavite se da biste sinhronizovali i personalizovali Chrome na svim uređajima</translation>
 <translation id="430327780270213103">Dozvoli dodatku da prikazuje zahteve za pristup na Chrome traci s alatkama</translation>
@@ -364,7 +365,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4918844574251943176">Slika je kopirana</translation>
 <translation id="4926882258455737990">Da biste koristili drugi Google nalog sa Gemini-jem u Chrome-u, <ph name="BEGIN_LINK" />napravite novi profil<ph name="END_LINK" /> i prijavite se pomoću željenog naloga</translation>
 <translation id="492720062778050435">Chrome vam preporučuje da pregledate ovaj dodatak</translation>
-<translation id="4946912144186040233">Chrome bolje razume obrasce i može brže automatski da ih popunjava za vas. Ovo podešavanje je isključeno.</translation>
 <translation id="4953650215774548573">Podesi Google Chrome kao podrazumevani pregledač</translation>
 <translation id="495931528404527476">U Chrome-u</translation>
 <translation id="4969674060580488087">Chrome OS Flex ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
@@ -415,7 +415,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5465210843490471889">Odaberite Chrome profil koji ćete koristiti sa <ph name="START_GLIC_STYLING" />Gemini-jem<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Da bi poboljšao ove funkcije, Chrome Google-u šalje vaše interakcije sa njima. Osobe koje pregledaju mogu da čitaju, obrađuju i komentarišu ove podatke.</translation>
 <translation id="5524890928877629608">gornji levi ugao oblasti pretrage: ulevo <ph name="LEFT" />%, nagore <ph name="TOP" />%</translation>
-<translation id="5530733413481476019">Ubrzajte Chrome</translation>
 <translation id="5550137307985173298">Kliknite na dugme Prilagodi Chrome na stranici nove kartice da biste Chrome-u dali nov izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Greška pri pokretanju: pokrenite program za instalaciju kao redovan korisnik, a ne kao administrator.</translation>
@@ -596,12 +595,14 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7193885263065350793">Organizacija zatvara Chrome kada se ne koristi <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Google Chrome profilom. Chrome podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. Možete opcionalno da napravite novi profil da bi postojeći Chrome podaci ostali odvojeni. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome-om</translation>
+<translation id="7285990705317078173">Preuzmite Chrome na telefon da biste pratili cene i dobijali obaveštenja kada cena padne na bilo kom sajtu</translation>
 <translation id="7288567540154601580">Kartice i dodaci</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
 <translation id="7302361266603927550">Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
+<translation id="7379321689415048316">Chrome može automatski da popunjava teška polja koja standardno automatsko popunjavanje možda neće popuniti</translation>
 <translation id="7386878009611068389">Ako želiš veću bezbednost onlajn uz izbore roditelja, pređi na svoj Chrome profil na kom si već prijavljen/a kao <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bili ste prijavljeni u Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7412494426921990001">Kliknite na Chrome meni</translation>
@@ -616,7 +617,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7481213027396403996">Nabavite najjaču Chrome zaštitu</translation>
 <translation id="749228101751499733">Dok ste prijavljeni, možete da koristite lozinke i drugo sa Google naloga u Chrome-u. <ph name="SHORTCUT" /> može da menja podešavanja Google usluga.</translation>
 <translation id="7496017508659652909">Chrome predučitava stranice, što ubrzava pregledanje i pretraživanje. <ph name="BEGIN_LINK" />Saznajte više o predučitavanju stranica<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">Chrome bolje razume obrasce i može brže automatski da ih popunjava za vas. Ovo podešavanje je uključeno.</translation>
 <translation id="7514258452813684157">Usluga ažuriranja Google-a</translation>
 <translation id="7515191208480168435">Možete da zakačite Google objektiv radi jednostavnog pristupa</translation>
 <translation id="7535429826459677826">Programerska verzija Google Chrome-a</translation>

@@ -305,6 +305,7 @@
 <translation id="4242034826641750751">‏נדרשות הרשאות גישה למצלמה ולמיקרופון ב-Chrome עבור האתר הזה</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4251615635259297716">‏האם לקשר את הנתונים שלך ב-Chrome לחשבון זה?</translation>
+<translation id="4280647692742956593">‏כדי לפתוח או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה, צריך להוריד את Chrome לטלפון שלך.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4293420128516039005">‏כניסה לחשבון תסנכרן ותתאים אישית את Chrome בכל המכשירים שברשותך</translation>
 <translation id="430327780270213103">‏מתן הרשאה לתוסף להציג בקשות גישה בסרגל הכלים של Chrome</translation>
@@ -360,7 +361,6 @@
 <translation id="4918844574251943176">התמונה הועתקה</translation>
 <translation id="4926882258455737990">‏כדי להשתמש בחשבון Google אחר עם Gemini ב-Chrome, צריך <ph name="BEGIN_LINK" />ליצור פרופיל חדש<ph name="END_LINK" /> ולהיכנס באמצעות החשבון הרצוי</translation>
 <translation id="492720062778050435">‏לפי המלצת Chrome, כדאי לבדוק את התוסף הזה</translation>
-<translation id="4946912144186040233">‏‫Chrome מבין את הטפסים טוב יותר ויכול למלא אותם אוטומטית מהר יותר. ההגדרה הזו מושבתת.</translation>
 <translation id="4953650215774548573">‏הגדרת Google Chrome כדפדפן ברירת המחדל</translation>
 <translation id="495931528404527476">‏ב-Chrome</translation>
 <translation id="4969674060580488087">‏לא ניתן לסנכרן את הנתונים שלך ב-ChromeOS Flex כי פרטי הכניסה של החשבון שלך לא מעודכנים.</translation>
@@ -407,7 +407,6 @@
 <translation id="5465210843490471889">‏בחירת פרופיל ב-Chrome לשימוש עם <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏כדי לשפר את התכונות האלו, Chrome שולח את האינטראקציות שלך איתן ל-Google. בודקים אנושיים יכולים לקרוא את הנתונים האלה, לעבד אותם ולהוסיף להם הערות.</translation>
 <translation id="5524890928877629608">‏הפינה השמאלית העליונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="TOP" />%‎ מלמעלה</translation>
-<translation id="5530733413481476019">‏שיפור המהירות ב-Chrome</translation>
 <translation id="5550137307985173298">‏אפשר ללחוץ על הכפתור "התאמה אישית של Chrome" בדף הכרטיסייה החדשה כדי לשנות את המראה של Chrome</translation>
 <translation id="5566025111015594046">‏Google Chrome‏ (mDNS-In)</translation>
 <translation id="5579324208890605088">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כמשתמש רגיל ולא כאדמין.</translation>
@@ -588,12 +587,14 @@
 <translation id="7193885263065350793">‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">‏בחרת להיכנס לחשבון מנוהל, ויינתן למנהל המערכת שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
+<translation id="7285990705317078173">‏כדי לעקוב אחרי מחירים ולקבל התראות על ירידות במחיר באתר מסוים, כדאי להוריד את Chrome לטלפון שלך</translation>
 <translation id="7288567540154601580">כרטיסיות ותוספים</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7302361266603927550">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="7308322188646931570">‏Chrome זקוק לגישה לאחסון כדי להוריד קבצים</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
+<translation id="7379321689415048316">‏‫Chrome יכול למלא אוטומטית שדות בעייתיים שהמילוי האוטומטי הרגיל עלול לפספס</translation>
 <translation id="7386878009611068389">‏כדי לשמור על הבטיחות אונליין בהתאם לאפשרויות שנבחרו על ידי ההורה שלך, עליך לעבור לפרופיל Chrome שבו כבר נכנסת לחשבון עם האימייל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">‏התחברת ל-Chrome כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
 <translation id="7412494426921990001">‏לוחצים על תפריט Chrome</translation>
@@ -608,7 +609,6 @@
 <translation id="7481213027396403996">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chrome?</translation>
 <translation id="749228101751499733">‏כשמחוברים לחשבון, אפשר להשתמש בסיסמאות ובפרטים נוספים מחשבון Google ב-Chrome. אפשר לשנות את ההגדרות של שירותי Google באמצעות קיצור הדרך <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">‏‫Chrome טוען מראש דפים וכך ניתן לגלוש ולחפש מהר יותר. <ph name="BEGIN_LINK" />מידע נוסף על טעינה מראש של דפים<ph name="END_LINK" /></translation>
-<translation id="7510927761955779701">‏‫Chrome מבין את הטפסים טוב יותר ויכול למלא אותם אוטומטית מהר יותר. ההגדרה הזו פועלת.</translation>
 <translation id="7514258452813684157">‏שירות העדכון של Google</translation>
 <translation id="7515191208480168435">‏אפשר להצמיד את Google Lens כדי לאפשר גישה נוחה</translation>
 <translation id="7535429826459677826">‏גרסת הפיתוח של Google Chrome</translation>

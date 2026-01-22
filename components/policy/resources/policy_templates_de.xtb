@@ -4973,6 +4973,19 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="4501388411278568771">Je nach Funktionseinführungsstatus können HTTPS-Upgrades angewendet werden.</translation>
 <translation id="45036050223225148">Test für Encrypted ClientHello deaktivieren</translation>
 <translation id="4503935079903510542">Das Image des UEFI-Bootlaufwerks, das zum Installieren der VM auf x86_64-Geräten verwendet wird.</translation>
+<translation id="4505299160236615603">Mit dieser Richtlinie kann im Inkognitomodus auf die aufgeführten URLs zugegriffen werden. Mit dieser Richtlinie lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte in „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ definierte URL-Muster festlegen.
+
+Wenn sowohl diese Richtlinie als auch „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ konfiguriert sind, hat die Zulassungsliste Vorrang. Wenn eine URL mit einem Muster auf der Zulassungsliste übereinstimmt, wird sie zugelassen. Wenn eine URL mit einem Muster übereinstimmt, das auf der Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Wenn eine URL mit keinem Muster der beiden Listen übereinstimmt, werden die allgemeinen Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ / „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn diese Richtlinie konfiguriert ist und „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ nicht, werden alle URLs, die nicht auf der Zulassungsliste stehen, im Inkognitomodus blockiert.
+
+Wenn „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“ auf „Nicht zulassen“ (Wert 1) festgelegt ist, diese Richtlinie aber konfiguriert ist, ist der Inkognitomodus nur für die URLs verfügbar, die mit der Zulassungsliste übereinstimmen.
+
+Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ und „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“ möglich.
+
+Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Wenn du URLs für alle Nutzerprofile zulassen möchtest, verwende die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="4508728400492074981">Hiermit werden die Richtlinien für die Funktion „First-Party-Sets“ gesteuert.</translation>
 <translation id="4510131075424939993">Gib einen Salt-Wert an, der in „<ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />“ zur Auswertung von Identitätsinformationen verwendet werden soll</translation>
 <translation id="4510923771103268849">Nutzer hat Root-Zugriff auf Crostini-Container</translation>
@@ -5249,6 +5262,17 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
       Hinweis: Diese Einstellung überschreibt <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_POLICY_NAME" />, sofern vorhanden.</translation>
 <translation id="4658380868451934335">„Spracheingabe“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="4658420696622830453">Einstellungen für geschützte Inhalte</translation>
+<translation id="4660251990929524821">Wenn die Richtlinie „<ph name="INCOGNITO_MODE_URL_BLOCKLIST_POLICY_NAME" />“ konfiguriert ist, wird verhindert, dass Webseiten mit unzulässigen URLs im Inkognitomodus geladen werden. Administratoren können eine Liste mit URL-Mustern angeben, die blockiert werden sollen. Wie ein URL-Muster formatiert wird, erfährst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Wenn sowohl diese Richtlinie als auch „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ festgelegt sind, hat die Zulassungsliste Vorrang. Wenn eine URL mit einem Muster auf der Zulassungsliste übereinstimmt, wird sie zugelassen. Wenn eine URL mit einem Muster übereinstimmt, das auf der Sperrliste (aber nicht auf der Zulassungsliste) steht, wird sie blockiert. Wenn eine URL mit keinem Muster der beiden Listen übereinstimmt, werden die allgemeinen Richtlinien „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ / „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ als Fallback verwendet.
+
+Wenn die Richtlinie „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ konfiguriert ist und diese Richtlinie nicht, werden alle URLs, die nicht auf der Zulassungsliste stehen, im Inkognitomodus blockiert.
+
+Wenn „<ph name="INCOGNITO_MODE_AVAILABILITY_POLICY_NAME" />“ auf „Nicht zulassen“ (Wert 1) festgelegt ist, aber die Richtlinie „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ konfiguriert ist, ist der Inkognitomodus nur für die URLs verfügbar, die mit der Zulassungsliste übereinstimmen.
+
+Diese Richtlinie wirkt sich nur auf den Inkognitomodus aus. Verwende die Richtlinie „<ph name="URL_BLOCKLIST_POLICY_NAME" />“, um URLs für alle Nutzerprofile zu blockieren.
+
+Diese Richtlinie ist auf 1.000 Einträge beschränkt.</translation>
 <translation id="4660356908994631271">Schaltfläche „Google Lens“ im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="4661885151480410620">Verhaltensänderungen können abhängig vom Funktionseinführungsprozess wirksam werden.</translation>
 <translation id="4661889655253181651">Unter "Inhaltseinstellungen" kannst du angeben, wie Inhalte bestimmter Typen (z. B. Cookies, Bilder oder JavaScript) verarbeitet werden.</translation>
@@ -6551,17 +6575,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
 
 Weitere Informationen findest du im Hilfeartikel unter https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
-<translation id="5486352219019836984">Ist diese Richtlinie aktiviert, solltest du auch anonyme Berichte aktivieren. Nutzungs- und Absturzdaten für <ph name="PRODUCT_NAME" /> werden dann standardmäßig an Google gesendet. Nutzer können diese Einstellung weiterhin ändern.
-
-Ist diese Richtlinie deaktiviert, sind auch anonyme Berichte deaktiviert. Es werden keine Nutzungs- und Absturzdaten an Google gesendet. Nutzer können diese Einstellung nicht ändern.
-
-Wird diese Richtlinie nicht konfiguriert, können Nutzer die anonymen Berichte bei der Installation oder beim ersten Ausführen auswählen und diese Einstellung später ändern.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-(Informationen zu <ph name="PRODUCT_OS_NAME" /> findest du unter „<ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />“.)</translation>
 <translation id="5486917900445838803">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird die Grafikbeschleunigung aktiviert (sofern verfügbar).
 
       Ist die Richtlinie deaktiviert, wird die Grafikbeschleunigung deaktiviert.</translation>
@@ -7473,35 +7486,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="6083631234867522991">Windows (Windows-Clients):</translation>
 <translation id="6087413944876892918"><ph name="HAPPY_EYEBALLS_V3" />-Algorithmus verwenden</translation>
 <translation id="608788685013546076">Schwellenwert des Akkus für das Umschalten bei Leistungsspitzen in Prozent festlegen</translation>
-<translation id="6089118101413877627">Mit dieser Richtlinie wird die Liste der Sets überschrieben, die der Browser für die „First-Party-Sets“-Funktionen verwendet (die später in die Funktion „<ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />“ umbenannt wurden).
-
-Jedes Set auf der Liste der First-Party-Sets muss die Anforderungen eines First-Party-Sets erfüllen.
-Ein First-Party-Set muss eine primäre Website und mindestens eine Mitgliedswebsite enthalten.
-Es kann auch eine Liste mit Dienstwebsites enthalten, deren Inhaber es ist, sowie eine Zuordnung einer Website zu allen seinen ccTLD-Varianten.
-Unter https://github.com/WICG/first-party-sets findest du weitere Informationen dazu, welche First-Party-Sets in <ph name="PRODUCT_NAME" /> verwendet werden.
-
-Bei allen Websites in einem First-Party-Set muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden. Außerdem müssen alle Websites in einem First-Party-Set eindeutig sein, dürfen also nicht mehrmals in einem First-Party-Set aufgeführt sein.
-
-Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet der Browser die öffentlichen First-Party-Sets.
-
-Wenn eine Website eines First-Party-Sets in der <ph name="REPLACEMENTS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird sie aus dem First-Party-Set des Browsers entfernt.
-Anschließend wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
-
-Wenn eine Website eines First-Party-Sets in der <ph name="ADDITIONS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird das First-Party-Set des Browsers aktualisiert, damit das neue First-Party-Set zur Liste des Browsers hinzugefügt werden kann. Nachdem die Liste des Browsers aktualisiert wurde, wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
-
-Alle Websites in der Liste der First-Party-Sets des Browsers dürfen nur jeweils Teil eines Sets sein. Dies gilt auch für die <ph name="REPLACEMENTS" />-Liste und die <ph name="ADDITIONS" />-Liste. Eine Website darf außerdem nicht gleichzeitig in der <ph name="REPLACEMENTS" />-Liste und der <ph name="ADDITIONS" />-Liste stehen.
-
-Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in First-Party-Sets in diesen Listen verwendet werden.
-
-Alle in dieser Richtlinie angegebenen Sets müssen gültige First-Party-Sets sein. Andernfalls wird ein entsprechender Fehler ausgegeben.
-
-Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
-
-Dies entspricht der Richtlinie „<ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />“.
-Beide Richtlinien haben die gleiche Auswirkung auf das Browserverhalten.
-Beide Richtlinien werden nach der Einstellung der <ph name="RELATED_WEBSITE_SETS_FEATURE_NAME" />-Funktion in <ph name="PRODUCT_NAME" />-Version 144 nicht mehr unterstützt.</translation>
 <translation id="6089679180657323464">Legt die Einstellungen für Wilco Diagnostics and Telemetry Controller fest.</translation>
 <translation id="6091233616732024397">Erzwingen, dass Nutzer sich im Browser anmelden müssen</translation>
 <translation id="6092073071805297119">Verwendung des Barrierefreiheitsfilters zur Leistungsverbesserung zulassen.</translation>
@@ -10117,6 +10101,16 @@ werden abgelehnt.</translation>
       Ist die Richtlinie deaktiviert, ist das nicht möglich.</translation>
 <translation id="7750991880413385988">"Neuer Tab"-Seite öffnen</translation>
 <translation id="7752154519644940493">Einstellungen für die GenAI-Funktion „Inline Image“</translation>
+<translation id="7752654588237652882">Gibt an, ob der Nutzer Seiten in <ph name="PRODUCT_NAME" /> im Inkognitomodus öffnen kann.
+
+      Ist diese Richtlinie aktiviert oder nicht konfiguriert, können Seiten im Inkognitomodus geöffnet werden.
+
+      Wenn sie deaktiviert ist, können Seiten nicht im Inkognitomodus geöffnet werden.
+
+      Wenn die Option „Erzwungen“ ausgewählt ist, können Seiten ausschließlich im Inkognitomodus geöffnet werden. Die Option „Erzwungen“ funktioniert nicht bei Android-Apps, die auf Chrome ausgeführt werden.
+      Die Richtlinie „<ph name="INCOGNITO_MODE_URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor dieser Richtlinie und kann den Inkognitomodus für bestimmte URLs wieder aktivieren. Wenn der Inkognitomodus durch diese Richtlinie deaktiviert wird, während eine Zulassungsliste angegeben ist, ist der Inkognitomodus nur für URLs verfügbar, die mit der Zulassungsliste übereinstimmen. Alle anderen Seiten werden blockiert.
+
+      Hinweis: Wenn die Richtlinie unter iOS während einer Sitzung geändert wird, gilt sie erst beim Neustart.</translation>
 <translation id="7753678409577376761">Eintrittspunkt für experimentelle Browserfunktionen auf Symbolleiste aktivieren</translation>
 <translation id="7754704193130578113">Vor dem Download von Dateien nach dem Speicherort fragen</translation>
 <translation id="7754893969683595513">Wenn die Richtlinie konfiguriert ist, wird der Zeitraum in Millisekunden angegeben, in dem Nutzerrichtlinieninformationen vom Geräteverwaltungsdienst abgefragt werden. Gültige Werte für diese Richtlinie liegen im Bereich zwischen 1.800.000 (30 Minuten) und 86.400.000 (1 Tag). Alle Werte, die nicht in diesem Bereich liegen, werden auf den jeweiligen Grenzwert gesetzt.
@@ -11209,11 +11203,6 @@ Weitere Informationen zur Richtlinie „<ph name="DOWNLOAD_RESTRICTIONS_POLICY_N
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einfügen.
 
       Ist sie deaktiviert, kann diese Software ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einfügen.</translation>
-<translation id="8503018573167958506">Mit dieser Richtlinie wird festgelegt, ob ein Nutzer den Gerätehostnamen konfigurieren darf.
-
-      Wenn <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> konfiguriert ist, legt der Administrator den Hostnamen fest und der Nutzer kann ihn nicht konfigurieren, unabhängig davon, worauf diese Richtlinie festgelegt ist.
-      Ist die Richtlinie auf „true“ gesetzt und <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> nicht konfiguriert, legt der Administrator den Hostnamen nicht fest. Der Nutzer kann das dann selbst tun.
-      Wenn sie auf „false“ festgelegt und <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> nicht konfiguriert ist, legt der Administrator den Hostnamen nicht fest und der Nutzer kann das auch nicht tun. In diesem Fall wird der Standardname verwendet.</translation>
 <translation id="8504243661032323176">Wenn diese Richtlinie konfiguriert ist, wird die eingestellte minimale PIN-Länge erzwungen. Werte unter 1 werden auf den Mindestwert von 1 aufgerundet.
 
       Ist diese Richtlinie nicht konfiguriert, wird eine Mindestlänge von 6 Ziffern für die PIN erzwungen. Dies ist die empfohlene Mindestlänge.</translation>
