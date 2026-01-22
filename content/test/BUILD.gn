@@ -1647,6 +1647,7 @@ test("content_browsertests") {
     "../browser/network/sandboxed_network_list_browsertest.cc",
     "../browser/network/sandboxed_nqe_browsertest.cc",
     "../browser/network/shared_dictionary_browsertest.cc",
+    "../browser/network/socket_broker_impl_browsertest.cc",
     "../browser/network/split_cache_browsertest.cc",
     "../browser/network/transferable_socket_browsertest.cc",
     "../browser/network/trust_token_browsertest.cc",
