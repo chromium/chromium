@@ -33,6 +33,7 @@ class AccessibilityAnnotatorServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace accessibility_annotator

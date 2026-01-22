@@ -28,22 +28,25 @@ TEST_F(AccessibilityAnnotatorServiceFactoryTest,
        CreatesServiceWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       accessibility_annotator::kAccessibilityAnnotator);
+  TestingProfile profile;
   EXPECT_NE(nullptr,
-            AccessibilityAnnotatorServiceFactory::GetForProfile(&profile_));
+            AccessibilityAnnotatorServiceFactory::GetForProfile(&profile));
 }
 
 TEST_F(AccessibilityAnnotatorServiceFactoryTest, NoServiceWithFlagDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
       accessibility_annotator::kAccessibilityAnnotator);
+  TestingProfile profile;
   EXPECT_EQ(nullptr,
-            AccessibilityAnnotatorServiceFactory::GetForProfile(&profile_));
+            AccessibilityAnnotatorServiceFactory::GetForProfile(&profile));
 }
 
 TEST_F(AccessibilityAnnotatorServiceFactoryTest,
        NoServiceForIncognitoWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       accessibility_annotator::kAccessibilityAnnotator);
-  Profile* otr_profile = profile_.GetOffTheRecordProfile(
+  TestingProfile profile;
+  Profile* otr_profile = profile.GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   EXPECT_EQ(nullptr,
             AccessibilityAnnotatorServiceFactory::GetForProfile(otr_profile));

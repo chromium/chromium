@@ -45,4 +45,9 @@ AccessibilityAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
       Profile::FromBrowserContext(context));
 }
 
+bool AccessibilityAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
+
 }  // namespace accessibility_annotator
