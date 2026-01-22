@@ -26,6 +26,7 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -202,6 +203,7 @@ export class ComposeboxElement extends I18nMixinLit
       disableComposeboxAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
       canSubmitFilesAndInput_: {type: Boolean},
+      inputState_: {type: Object},
     };
   }
 
@@ -254,6 +256,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor transcript_: string = '';
   protected accessor receivedSpeech_: boolean = false;
   protected accessor canSubmitFilesAndInput_: boolean = true;
+  protected accessor inputState_: InputState|null = null;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
@@ -322,6 +325,8 @@ export class ComposeboxElement extends I18nMixinLit
           this.addFileContextFromBrowser_.bind(this)),
       this.searchboxCallbackRouter_.updateAutoSuggestedTabContext.addListener(
           this.updateAutoSuggestedTabContext_.bind(this)),
+      this.searchboxCallbackRouter_.onInputStateChanged.addListener(
+          this.onInputStateChanged_.bind(this)),
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
@@ -700,6 +705,10 @@ export class ComposeboxElement extends I18nMixinLit
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
     this.$.context.updateAutoActiveTabContext(tab);
+  }
+
+  private onInputStateChanged_(inputState: InputState) {
+    this.inputState_ = inputState;
   }
 
   protected async addTabContext_(e: CustomEvent<{

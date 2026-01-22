@@ -73,6 +73,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
                std::optional<composebox_query::mojom::FileUploadErrorType>));
   MOCK_METHOD(void, OnTabStripChanged, ());
   MOCK_METHOD(void,
+              OnInputStateChanged,
+              (composebox_query::mojom::InputStatePtr),
+              (override));
+  MOCK_METHOD(void,
               AddFileContext,
               (const base::UnguessableToken&,
                searchbox::mojom::SelectedFileInfoPtr));
