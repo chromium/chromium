@@ -159,6 +159,19 @@ class ChromeScopedBrowserContextKeepAlive
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
+std::unique_ptr<ScopedBrowserContextKeepAlive> CreateExtensionKeepAlive(
+    content::BrowserContext* context,
+    ProfileKeepAliveOrigin type) {
+  auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+      Profile::FromBrowserContext(context), type);
+  if (!profile_keep_alive) {
+    return nullptr;
+  }
+
+  return std::make_unique<ChromeScopedBrowserContextKeepAlive>(
+      std::move(profile_keep_alive));
+}
+
 bool ShouldLogExtensionAction(content::BrowserContext* browser_context,
                               const ExtensionId& extension_id) {
   // We only send these IPCs if activity logging is enabled, but due to race
@@ -637,15 +650,15 @@ ChromeExtensionsBrowserClient::CreateUpdateClientConfigurator(
 std::unique_ptr<ScopedBrowserContextKeepAlive>
 ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
     content::BrowserContext* context) {
-  auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
-      Profile::FromBrowserContext(context),
-      ProfileKeepAliveOrigin::kExtensionUpdater);
-  if (!profile_keep_alive) {
-    return nullptr;
-  }
+  return CreateExtensionKeepAlive(context,
+                                  ProfileKeepAliveOrigin::kExtensionUpdater);
+}
 
-  return std::make_unique<ChromeScopedBrowserContextKeepAlive>(
-      std::move(profile_keep_alive));
+std::unique_ptr<ScopedBrowserContextKeepAlive>
+ChromeExtensionsBrowserClient::CreateCrxInstallerKeepAlive(
+    content::BrowserContext* context) {
+  return CreateExtensionKeepAlive(context,
+                                  ProfileKeepAliveOrigin::kCrxInstaller);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(

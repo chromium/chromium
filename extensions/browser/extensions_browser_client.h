@@ -408,6 +408,11 @@ class ExtensionsBrowserClient {
   virtual std::unique_ptr<ScopedBrowserContextKeepAlive> CreateUpdaterKeepAlive(
       content::BrowserContext* context);
 
+  // Returns a new ScopedBrowserContextKeepAlive, or nullptr if the embedder
+  // does not support keeping the context alive while the installer is running.
+  virtual std::unique_ptr<ScopedBrowserContextKeepAlive>
+  CreateCrxInstallerKeepAlive(content::BrowserContext* context);
+
   // Returns true if activity logging is enabled for the given `context`.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);
 

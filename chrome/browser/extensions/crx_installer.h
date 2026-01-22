@@ -35,7 +35,6 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionServiceTest;
-class ScopedProfileKeepAlive;
 class SkBitmap;
 
 namespace base {
@@ -54,6 +53,7 @@ struct InstallApproval;
 enum class InstallationStage;
 class MockCrxInstaller;
 class PreloadCheckGroup;
+class ScopedBrowserContextKeepAlive;
 
 // This class installs a crx file into a profile.
 //
@@ -407,7 +407,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Prevent Profile destruction until the CrxInstaller is done.
-  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  std::unique_ptr<ScopedBrowserContextKeepAlive> profile_keep_alive_;
+
   // ... but `profile_` could still get destroyed early, if Chrome shuts down
   // completely. We need to perform some cleanup if that happens.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

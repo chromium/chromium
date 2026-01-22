@@ -64,6 +64,7 @@
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
+#include "extensions/browser/scoped_extension_keep_alive.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -1089,8 +1090,8 @@ bool CrxInstaller::AcquireKeepAlive() {
     return false;
   }
 
-  profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(
-      profile_, ProfileKeepAliveOrigin::kCrxInstaller);
+  profile_keep_alive_ =
+      ExtensionsBrowserClient::Get()->CreateUpdaterKeepAlive(profile_);
 
   if (!profile_keep_alive_) {
     RunInstallerCallbacks(

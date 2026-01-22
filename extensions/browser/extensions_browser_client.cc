@@ -76,6 +76,12 @@ ExtensionsBrowserClient::CreateUpdaterKeepAlive(
   return nullptr;
 }
 
+std::unique_ptr<ScopedBrowserContextKeepAlive>
+ExtensionsBrowserClient::CreateCrxInstallerKeepAlive(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
 void ExtensionsBrowserClient::ReportError(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionError> error) {
