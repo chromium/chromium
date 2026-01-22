@@ -396,7 +396,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
     ++i;
   }
   EXPECT_TRUE(info->permissions.runtime_host_permissions);
-  EXPECT_TRUE(info->permissions.can_access_site_data);
 
   ASSERT_EQ(2u, info->runtime_errors.size());
   const api::developer_private::RuntimeError& runtime_error =
@@ -671,7 +670,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RuntimeHostPermissions) {
       "no urls", base::Value::List(), ManifestLocation::kInternal);
   info = GenerateExtensionInfo(no_urls_extension->id());
   EXPECT_FALSE(info->permissions.runtime_host_permissions);
-  EXPECT_FALSE(info->permissions.can_access_site_data);
 }
 
 // Tests that specific_site_controls is correctly populated when permissions
@@ -950,26 +948,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ActiveTabFileUrls) {
   EXPECT_TRUE(extension->wants_file_access());
   EXPECT_TRUE(info->file_access.is_enabled);
   EXPECT_FALSE(info->file_access.is_active);
-}
-
-// Test that `permissions.can_access_site_data` is set to true for extensions
-// with API permissions that can access site data, without specifying host
-// permissions.
-TEST_F(ExtensionInfoGeneratorUnitTest,
-       CanAccessSiteDataWithoutHostPermissions) {
-  scoped_refptr<const Extension> active_tab_extension =
-      CreateExtension("activeTab", base::Value::List().Append("activeTab"),
-                      ManifestLocation::kInternal);
-  std::unique_ptr<developer::ExtensionInfo> active_tab_info =
-      GenerateExtensionInfo(active_tab_extension->id());
-  EXPECT_TRUE(active_tab_info->permissions.can_access_site_data);
-
-  scoped_refptr<const Extension> debugger_extension =
-      CreateExtension("activeTab", base::Value::List().Append("debugger"),
-                      ManifestLocation::kInternal);
-  std::unique_ptr<developer::ExtensionInfo> debugger_info =
-      GenerateExtensionInfo(debugger_extension->id());
-  EXPECT_TRUE(debugger_info->permissions.can_access_site_data);
 }
 
 // Tests that the granted optional API permissions, when revoked, are not

@@ -210,10 +210,6 @@ namespace developerPrivate {
     // Only populated for extensions that can be affected by the runtime host
     // permissions feature.
     RuntimeHostPermissions? runtimeHostPermissions;
-
-    // True if the extension can access site data through host permissions or
-    // API permissions such as activeTab.
-    boolean canAccessSiteData;
   };
 
   dictionary ExtensionInfo {

@@ -5,8 +5,7 @@
 /** @fileoverview Suite of tests for extension-item. */
 
 import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
-import {Mv2ExperimentStage, navigation, Page, TooltipPosition} from 'chrome://extensions/extensions.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {Mv2ExperimentStage, navigation, Page} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -687,56 +686,6 @@ suite('ExtensionItemTest', function() {
         item.shadowRoot
             .querySelector<HTMLElement>(
                 '#inspect-views a:first-of-type')!.textContent.trim());
-  });
-
-  // Test that the correct tooltip text is shown when the enable toggle is
-  // hovered over, depending on if the extension is enabled/disabled and its
-  // permissions.
-  test('EnableExtensionToggleTooltips', async () => {
-    const crTooltip =
-        item.shadowRoot.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
-    testVisible(item, '#enable-toggle-tooltip', false);
-
-    item.$.enableToggle.dispatchEvent(
-        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
-    await microtasksFinished();
-    testVisible(item, '#enable-toggle-tooltip', true);
-    assertEquals(
-        loadTimeData.getString('enableToggleTooltipEnabled'),
-        crTooltip.textContent.trim());
-    assertEquals(TooltipPosition.LEFT, crTooltip.getAttribute('position'));
-
-    let data = createExtensionInfo(item.data);
-    data.permissions = {
-      simplePermissions: [{message: 'activeTab', submessages: []}],
-      canAccessSiteData: true,
-    };
-    item.data = data;
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('enableToggleTooltipEnabledWithSiteAccess'),
-        crTooltip.textContent.trim());
-
-    data = createExtensionInfo(item.data);
-    data.state = chrome.developerPrivate.ExtensionState.DISABLED;
-    item.data = data;
-    await microtasksFinished();
-    assertEquals(
-        loadTimeData.getString('enableToggleTooltipDisabled'),
-        crTooltip.textContent.trim());
-  });
-
-  test('EnableExtensionToggleTooltipPositions', () => {
-    let crTooltip =
-        item.shadowRoot.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
-    assertEquals(TooltipPosition.LEFT, crTooltip.getAttribute('position'));
-
-    document.dir = 'rtl';
-    const rtlItem = document.createElement('extensions-item');
-    document.body.appendChild(rtlItem);
-    crTooltip = rtlItem.shadowRoot.querySelector<HTMLElement>(
-        '#enable-toggle-tooltip')!;
-    assertEquals(TooltipPosition.RIGHT, crTooltip.getAttribute('position'));
   });
 
   test('CanUploadAsAccountExtension', async () => {
