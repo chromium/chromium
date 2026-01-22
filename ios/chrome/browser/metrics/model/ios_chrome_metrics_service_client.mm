@@ -77,6 +77,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "components/version_info/version_info.h"
 #import "google_apis/google_api_keys.h"
+#import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/metrics/model/demographics_client.h"
@@ -87,6 +88,7 @@
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_push_notifications_metrics_provider.h"
+#import "ios/chrome/browser/metrics/model/mobile_session_crash_helper_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
 #import "ios/chrome/browser/regional_capabilities/model/ios_regional_capabilities_metrics_provider.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -533,6 +535,10 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
 }
 
 void IOSChromeMetricsServiceClient::RegisterForNotifications() {
+  crash_helper_subscription_ =
+      crash_helper::AddProcessIntermediateDumpsFinishedCallback(
+          base::BindRepeating(
+              &mobile_session_metrics::OnProcessIntermediateDumpsFinished));
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
           base::BindRepeating(

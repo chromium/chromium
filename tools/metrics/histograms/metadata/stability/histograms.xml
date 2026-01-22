@@ -513,12 +513,16 @@ chromium-metrics-reviews@google.com.
     The number of tabs opened in the previous session when the app starts after
     {Event}. Can be used to understand if there is a correlation between
     increase of number of tabs and decline in stability. iOS Only.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
   <token key="Event">
     <variant name="CleanShutdown" summary="a clean shutdown"/>
     <variant name="Crash"
-        summary="a crash. This metric is a superset of these 3 metrics:
-                 Stability.iOS.TabCountBeforeFreeze,
+        summary="a crash. This metric is a superset of these 2 metrics:
                  Stability.iOS.TabCountBeforeSignalCrash,
                  Stability.iOS.TabCountBeforeUTE"/>
     <variant name="Freeze" summary="a UI thread freeze"/>
@@ -545,6 +549,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The thermal state of the device when a crash occured. Logged on application
     launch if the last session terminated in an unclean state.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -556,6 +565,11 @@ chromium-metrics-reviews@google.com.
     Indicates whether or not one of the Stability.iOS.UTE.* metrics could
     explain the cause of the UTE which terminated the previous session. Logged
     on application launch if the last session terminated in an unclean state.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -567,6 +581,11 @@ chromium-metrics-reviews@google.com.
     Recorded when app starts after Unexplained Termination Event (UTE) or
     Explained Termination Event (XTE). Values other than Active indicate that
     prefs::kLastSessionExitedCleanly was not properly stored.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -580,6 +599,11 @@ chromium-metrics-reviews@google.com.
     finish writing prefs. This histogram should help to understand if prefs did
     not get written during normal app termination sequence when
     ApplicationWillTerminate notification was called.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -592,6 +616,11 @@ chromium-metrics-reviews@google.com.
     Explained Termination Event (XTE). UTEs/XTEs can be caused by large memory
     allocations and this histogram provides information which memory heavy
     operation has being performed before UTE/XTE.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -603,6 +632,11 @@ chromium-metrics-reviews@google.com.
     true if OS was restarted after the previous session. Logged on application
     launch if the last session terminated in an unclean state. If this is false
     then UTE was not caused by OS restart or shutdown.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -615,6 +649,11 @@ chromium-metrics-reviews@google.com.
     between the OS version of the session which crashed and the current OS
     version. Logged on application launch if the last session terminated in an
     unclean state.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -626,6 +665,11 @@ chromium-metrics-reviews@google.com.
     The estimated amount of time between when a crash occurred and when the user
     relaunched the application. Logged on application launch if the last session
     terminated in an unclean state.
+
+    Since this metric attributes the previous session's shutdown type to the
+    current session's logs, configuration changes (e.g., OS version, Finch
+    configurations) that might have affected the shutdown may not be correctly
+    logged with the session they occurred in.
   </summary>
 </histogram>
 
@@ -678,32 +722,21 @@ chromium-metrics-reviews@google.com.
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    Type of the shutdown. This histogram is recorded at startup and logs a
-    sample for the previous session. A clean shutdown is one where the app
-    enters the background before being killed. Other shutdowns are all some sort
-    of crash. The absence of a crash log indicates that the app was killed by
-    the OS, normally due to memory pressure. If memory pressure is extremely
-    high, the app may not have had a chance to response to a memory warning
-    before being killed. For first launch after upgrade, the crash reports may
-    be discarded before this histogram is written to so it's not possible to
-    determine if there's a valid crash log present or not.
-  </summary>
-</histogram>
-
-<histogram name="Stability.MobileSessionShutdownType2"
-    enum="MobileSessionShutdownType" expires_after="2026-07-05">
-  <owner>justincohen@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    Type of the shutdown. This histogram is recorded after processing Crashpad
-    intermediate dumps, and is otherwise identical to
-    Stability.MobileSessionShutdownType, which is recorded at startup and before
-    Crashpad dumps are processed. Because this histogram is not recorded in time
-    for the initial stability log, the histogram will appear in a log that lists
-    the current Chrome version (and other browser metadata), not the Chrome
-    version at the time the crash occurred. The earlier histogram
-    Stability.MobileSessionShutdownType should be in the stability log, which
-    will list the Chrome version at the time of the crash.
+    Type of the shutdown. Prior to M146, this was recorded at startup and logs a
+    sample for the previous session. Starting in M146, this is recorded at least
+    3 seconds after startup and attributed to the current session. Clean
+    shutdowns are where the app enters the background before being killed. Other
+    shutdowns are all some sort of crash. The absence of a crash log indicates
+    that the app was killed by the OS, normally due to memory pressure. If
+    memory pressure is extremely high, the app may not have had a chance to
+    response to a memory warning before being killed. For first launch after
+    upgrade discard this metric for unclear shutdowns, as the log is not
+    recorded for the previous session. Prior to M146 this was also discarded,
+    but recorded regardless of an unclear shutdown or not. Since this metric
+    attributes the previous session's shutdown type to the current session's
+    logs, configuration changes (e.g., OS version, Finch configurations) that
+    might have affected the shutdown may not be correctly logged with the
+    session they occurred in.
   </summary>
 </histogram>
 

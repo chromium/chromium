@@ -700,7 +700,9 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Shutdown in foreground; no log; with memory warning"/>
   <int value="4" label="Shutdown in foreground; with log; with memory warning"/>
   <int value="5" label="First launch after upgrade"/>
-  <int value="6" label="Shutdown in foreground, main thread not responding"/>
+  <int value="6"
+      label="(Obsolete Jan 2026) Shutdown in foreground, main thread not
+             responding"/>
 </enum>
 
 <enum name="OOMShutdownHint">

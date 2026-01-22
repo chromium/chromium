@@ -266,6 +266,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
 
+  // Subscription for crash helper events.
+  base::CallbackListSubscription crash_helper_subscription_;
+
   // Subscription for receiving callbacks when the number of incognito tabs
   // open in the application transition from 0 to 1 or 1 to 0.
   base::CallbackListSubscription incognito_session_tracker_subscription_;
