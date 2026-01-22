@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/bookmarks/browser",
   "+components/commerce/core/proto",
   "+components/commerce/ios/browser",
@@ -14,4 +15,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tips_manager/model",
+  # keep-sorted end
 ]

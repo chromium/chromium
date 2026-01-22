@@ -7,9 +7,11 @@ specific_include_rules = {
 }
 
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/signin/model/fake_system_identity.h",
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
+  # keep-sorted end
 ]

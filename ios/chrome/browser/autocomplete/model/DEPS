@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+components/omnibox/resources",
   "+components/saved_tab_groups",
+  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/omnibox/public",
@@ -9,5 +11,5 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
+  # keep-sorted end
 ]

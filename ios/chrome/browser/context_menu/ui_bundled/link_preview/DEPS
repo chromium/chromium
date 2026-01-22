@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/history/model/history_tab_helper.h",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled",
+  # keep-sorted end
 ]
