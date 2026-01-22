@@ -763,6 +763,7 @@ prefs when the profile is loaded.  -->
     {AndroidGetAccountsTypes}
   </summary>
   <token key="AndroidGetAccountsTypes">
+    <variant name="" summary="Using any API"/>
     <variant name="_AccountManager" summary="Using Android AccountManager API"/>
     <variant name="_GoogleAuthClient" summary="Using GoogleAuthClient API"/>
     <variant name="_GoogleAuthUtil" summary="Using GoogleAuthUtil API"/>
