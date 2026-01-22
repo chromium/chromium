@@ -659,7 +659,11 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The {@link SupportedProfileType} of the instance.
      */
     public static @SupportedProfileType int readProfileType(int instanceId) {
-        return MultiInstancePersistentStore.readProfileType(instanceId);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            return MultiInstancePersistentStore.readProfileType(instanceId);
+        } else {
+            return SupportedProfileType.MIXED;
+        }
     }
 
     /**
