@@ -35,10 +35,11 @@ bool Group::CanAdd(const AutocompleteMatch& match) const {
   DCHECK(match.suggestion_group_id.has_value());
   const auto group_id = match.suggestion_group_id.value();
   // Check if `group_id` is permitted in this `Group`.
-  if (!group_id_limits_and_counts_.contains(group_id)) {
+  auto it = group_id_limits_and_counts_.find(group_id);
+  if (it == group_id_limits_and_counts_.end()) {
     return false;
   }
-  const auto& limit_and_count = group_id_limits_and_counts_.at(group_id);
+  const auto& limit_and_count = it->second;
   // Check this `Group`'s total limit and the limit for the `group_id`. For a
   // default group, also check if the match is `allowed_to_be_default_match`.
   return count_ < limit_ && limit_and_count.count < limit_and_count.limit &&
