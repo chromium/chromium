@@ -34,6 +34,7 @@ include_rules = [
   "+google_apis",
   "+ios/chrome/app",
   "+ios/chrome/browser",
+  "+ios/chrome/common",
   "+ios/components/security_interstitials/safe_browsing",
   "+ios/components/webui",
   "+ios/public/provider/chrome",

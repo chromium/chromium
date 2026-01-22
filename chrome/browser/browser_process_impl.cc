@@ -167,6 +167,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
+#include "chrome/installer/util/install_util.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #elif BUILDFLAG(IS_MAC)
@@ -1328,7 +1329,14 @@ activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
             system_network_context_manager()->GetSharedURLLoaderFactory(),
             // Never send cookies for activity reports.
             base::BindRepeating([](const GURL& url) { return false; })),
-        base::BindRepeating(&updater::SetActive));
+        base::BindRepeating(&chrome::GetChannel),
+        base::BindRepeating(&updater::SetActive),
+#if BUILDFLAG(IS_WIN)
+        InstallUtil::IsPerUserInstall()
+#else
+        false
+#endif
+    );
   }
   return activity_reporter_.get();
 }

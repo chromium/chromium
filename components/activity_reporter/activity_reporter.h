@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/version_info/channel.h"
 
 class PrefService;
 
@@ -45,7 +46,9 @@ class ActivityReporter {
 std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
-    base::RepeatingClosure updater_active_callback);
+    base::RepeatingCallback<version_info::Channel()> channel_provider,
+    base::RepeatingClosure updater_active_callback,
+    bool per_user_install);
 
 // Must be called on a SequencedTaskRunner. Creates an ActivityReporter that
 // does nothing.
