@@ -122,10 +122,7 @@ bool FieldValueMatchesPrecedingField(const ValueForImport& current_values,
       current_values.value_for_import) {
     field_values_match = true;
   }
-
-  // TODO(crbug.com/40735892) Remove feature check when launched.
-  return field_values_match &&
-         base::FeatureList::IsEnabled(features::kAutofillRelaxAddressImport);
+  return field_values_match;
 }
 
 // Return true if the `field_type` and `current_values` are valid within the

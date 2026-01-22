@@ -4382,17 +4382,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
-// Test fixture with flag "AutofillRelaxAddressImport" enabled.
-class FormDataImporterTest_RelaxAddressImport : public FormDataImporterTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillRelaxAddressImport};
-};
-
 // Tests that duplicate fields with identical field values are valid. They would
 // thus not abandon the import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       DuplicateFieldsWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
                   AutofillPredictionSource::kHeuristics);
@@ -4408,8 +4400,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 
 // Tests that duplicate fields with different field values are invalid. They
 // would thus abandon the import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       DuplicateFieldsWithDifferentValuesAreInvalid) {
+TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
                   AutofillPredictionSource::kHeuristics);
@@ -4427,8 +4418,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 // case where a <select> field follows an <input> field and the input field's
 // value is the selected option's value. They would thus not abandon the import
 // of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       InputFollowedBySelectWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
@@ -4452,8 +4442,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 // case where a <select> field is followed by an <input> field and the input
 // field's value is the selected option's value. They would thus not abandon the
 // import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       SelectFollowedByInputWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, SelectFollowedByInputWithIdenticalValuesAreValid) {
   AutofillField field(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));
