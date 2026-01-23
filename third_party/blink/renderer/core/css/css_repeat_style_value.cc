@@ -64,6 +64,10 @@ bool CSSRepeatStyleValue::IsRepeat() const {
          y_->GetValueID() == CSSValueID::kRepeat;
 }
 
+bool CSSRepeatStyleValue::HasRandomFunctions() const {
+  return (x_ && x_->HasRandomFunctions()) || (y_ && y_->HasRandomFunctions());
+}
+
 void CSSRepeatStyleValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(x_);
   visitor->Trace(y_);

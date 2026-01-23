@@ -32,6 +32,11 @@ bool CSSScrollValue::Equals(const CSSScrollValue& other) const {
          base::ValuesEquivalent(axis_, other.axis_);
 }
 
+bool CSSScrollValue::HasRandomFunctions() const {
+  return (scroller_ && scroller_->HasRandomFunctions()) ||
+         (axis_ && axis_->HasRandomFunctions());
+}
+
 void CSSScrollValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
   visitor->Trace(scroller_);

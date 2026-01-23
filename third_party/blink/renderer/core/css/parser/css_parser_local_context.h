@@ -83,7 +83,8 @@ class CORE_EXPORT CSSParserLocalContext {
 
   // TODO(crbug.com/40068516): We use this constructor to create a local
   // context for all css_parsing_utils::Consume* calls from inspector classes.
-  // Figure out if we actually need property context for random() in there.
+  // Since we don't support resolution of random() functions in DevTools for now
+  // we don't need property context for random() in there.
   static CSSParserLocalContext CreateWithoutPropertyForInspector() {
     return CSSParserLocalContext();
   }

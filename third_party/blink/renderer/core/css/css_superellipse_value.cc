@@ -21,6 +21,10 @@ String CSSSuperellipseValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+bool CSSSuperellipseValue::HasRandomFunctions() const {
+  return param_ && param_->HasRandomFunctions();
+}
+
 void CSSSuperellipseValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(param_);
   CSSValue::TraceAfterDispatch(visitor);

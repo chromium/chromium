@@ -86,6 +86,8 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

@@ -64,6 +64,8 @@ class CSSCounterContentValue : public CSSValue {
 
   String CustomCSSText() const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

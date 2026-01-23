@@ -63,6 +63,8 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
       const StyleResolverState&) const;
   CSSCrossfadeValue& ResolveValuesIfNeeded(const StyleResolverState&);
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(Visitor*) const;
 
  private:

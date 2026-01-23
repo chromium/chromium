@@ -23,6 +23,7 @@ class CORE_EXPORT CSSViewValue : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSViewValue&) const;
+  bool HasRandomFunctions() const;
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

@@ -52,6 +52,8 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
 
   bool Equals(const CSSCustomIdentValue& other) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

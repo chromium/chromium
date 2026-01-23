@@ -70,6 +70,8 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
                     HashInts(first_->Hash(), second_->Hash()));
   }
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:

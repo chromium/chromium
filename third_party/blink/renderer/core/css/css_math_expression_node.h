@@ -301,16 +301,26 @@ class CORE_EXPORT CSSMathExpressionNode
     }
   }
 
-  bool IsNestedCalc() const { return is_nested_calc_; }
-  void SetIsNestedCalc() { is_nested_calc_ = true; }
+  bool IsNestedCalc() const { return value_feature_flags_ & kIsNestedCalc; }
+  void SetIsNestedCalc() { value_feature_flags_ |= kIsNestedCalc; }
 
-  bool HasComparisons() const { return has_comparisons_; }
-  bool HasAnchorFunctions() const { return has_anchor_functions_; }
-  bool IsScopedValue() const { return !needs_tree_scope_population_; }
+  bool HasComparisons() const {
+    return value_feature_flags_ & ValueFeatureFlag::kHasComparisons;
+  }
+  bool HasAnchorFunctions() const {
+    return value_feature_flags_ & ValueFeatureFlag::kHasAnchorFunctions;
+  }
+  bool HasRandomFunctions() const {
+    return value_feature_flags_ & ValueFeatureFlag::kHasRandomFunctions;
+  }
+  bool IsScopedValue() const {
+    return !(value_feature_flags_ &
+             ValueFeatureFlag::kNeedsTreeScopePopulation);
+  }
 
   const CSSMathExpressionNode& EnsureScopedValue(
       const TreeScope* tree_scope) const {
-    if (!needs_tree_scope_population_) {
+    if (IsScopedValue()) {
       return *this;
     }
     return PopulateWithTreeScope(tree_scope);
@@ -341,14 +351,18 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
-  CSSMathExpressionNode(CalculationResultCategory category,
-                        bool has_comparisons,
-                        bool has_anchor_functions,
-                        bool needs_tree_scope_population)
-      : category_(category),
-        has_comparisons_(has_comparisons),
-        has_anchor_functions_(has_anchor_functions),
-        needs_tree_scope_population_(needs_tree_scope_population) {
+  enum ValueFeatureFlag : uint8_t {
+    kNoValueFeatures = 0,
+    kIsNestedCalc = 1 << 0,
+    kHasComparisons = 1 << 1,
+    kHasAnchorFunctions = 1 << 2,
+    kHasRandomFunctions = 1 << 3,
+    kNeedsTreeScopePopulation = 1 << 4,
+  };
+  using ValueFeatureFlags = uint8_t;
+
+  explicit CSSMathExpressionNode(CalculationResultCategory category)
+      : category_(category) {
     DCHECK_NE(category, kCalcOther);
   }
 
@@ -360,10 +374,7 @@ class CORE_EXPORT CSSMathExpressionNode
   }
 
   CalculationResultCategory category_;
-  bool is_nested_calc_ = false;
-  bool has_comparisons_;
-  bool has_anchor_functions_;
-  bool needs_tree_scope_population_;
+  ValueFeatureFlags value_feature_flags_ : 5 = kNoValueFeatures;
 };
 
 class CORE_EXPORT CSSMathExpressionNumericLiteral final
@@ -1057,11 +1068,9 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
  public:
   explicit CSSMathExpressionSiblingFunction(
       const cssvalue::CSSScopedKeywordValue* function)
-      : CSSMathExpressionNode(kCalcNumber,
-                              /*has_comparisons=*/false,
-                              /*has_anchor_functions=*/false,
-                              /*needs_tree_scope_population=*/true),
-        function_(function) {}
+      : CSSMathExpressionNode(kCalcNumber), function_(function) {
+    value_feature_flags_ = kNeedsTreeScopePopulation;
+  }
 
   // TODO(crbug.com/40059176): This is not entirely correct, since "math
   // function" should refer to functions defined in [1]. We may need to clean up

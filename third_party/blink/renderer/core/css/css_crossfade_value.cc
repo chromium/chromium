@@ -190,6 +190,15 @@ CSSCrossfadeValue& CSSCrossfadeValue::ResolveValuesIfNeeded(
   return *this;
 }
 
+bool CSSCrossfadeValue::HasRandomFunctions() const {
+  for (auto& img_percent : image_and_percentages_) {
+    if (img_percent.second->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void CSSCrossfadeValue::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(image_and_percentages_);
   visitor->Trace(observer_proxy_);

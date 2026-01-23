@@ -49,5 +49,9 @@ CSSTriggerAttachmentValue::PopulateWithTreeScope(
   return *populated;
 }
 
+bool CSSTriggerAttachmentValue::HasRandomFunctions() const {
+  return trigger_name_ && trigger_name_->HasRandomFunctions();
+}
+
 }  // namespace cssvalue
 }  // namespace blink

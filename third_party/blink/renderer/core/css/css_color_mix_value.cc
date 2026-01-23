@@ -154,6 +154,13 @@ String CSSColorMixValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+bool CSSColorMixValue::HasRandomFunctions() const {
+  return (color1_ && color1_->HasRandomFunctions()) ||
+         (color2_ && color2_->HasRandomFunctions()) ||
+         (percentage1_ && percentage1_->HasRandomFunctions()) ||
+         (percentage2_ && percentage2_->HasRandomFunctions());
+}
+
 void CSSColorMixValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(color1_);
   visitor->Trace(color2_);

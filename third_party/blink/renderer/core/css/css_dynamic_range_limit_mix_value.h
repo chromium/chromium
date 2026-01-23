@@ -33,6 +33,7 @@ class CORE_EXPORT CSSDynamicRangeLimitMixValue : public CSSValue {
   const HeapVector<Member<const CSSPrimitiveValue>>& Percentages() const {
     return percentages_;
   }
+  bool HasRandomFunctions() const;
 
  private:
   const HeapVector<Member<const CSSValue>> limits_;

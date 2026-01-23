@@ -6,6 +6,11 @@
 
 namespace blink {
 
+bool CSSValuePair::HasRandomFunctions() const {
+  return (first_ && first_->HasRandomFunctions()) ||
+         (second_ && second_->HasRandomFunctions());
+}
+
 void CSSValuePair::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(first_);
   visitor->Trace(second_);

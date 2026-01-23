@@ -220,6 +220,15 @@ void CSSValueList::ReResolveUrl(const Document& document) const {
   }
 }
 
+bool CSSValueList::HasRandomFunctions() const {
+  for (const auto& value : values_) {
+    if (value->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void CSSValueList::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(values_);
   CSSValue::TraceAfterDispatch(visitor);

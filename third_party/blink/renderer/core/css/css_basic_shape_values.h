@@ -57,6 +57,12 @@ class CSSBasicShapeCircleValue final : public CSSValue {
   void SetCenterY(CSSValue* center_y) { center_y_ = center_y; }
   void SetRadius(CSSValue* radius) { radius_ = radius; }
 
+  bool HasRandomFunctions() const {
+    return (center_x_ && center_x_->HasRandomFunctions()) ||
+           (center_y_ && center_y_->HasRandomFunctions()) ||
+           (radius_ && radius_->HasRandomFunctions());
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -82,6 +88,13 @@ class CSSBasicShapeEllipseValue final : public CSSValue {
   void SetCenterY(CSSValue* center_y) { center_y_ = center_y; }
   void SetRadiusX(CSSValue* radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(CSSValue* radius_y) { radius_y_ = radius_y; }
+
+  bool HasRandomFunctions() const {
+    return (center_x_ && center_x_->HasRandomFunctions()) ||
+           (center_y_ && center_y_->HasRandomFunctions()) ||
+           (radius_x_ && radius_x_->HasRandomFunctions()) ||
+           (radius_y_ && radius_y_->HasRandomFunctions());
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -118,6 +131,15 @@ class CSSBasicShapePolygonValue final : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapePolygonValue&) const;
+
+  bool HasRandomFunctions() const {
+    for (const CSSPrimitiveValue* value : values_) {
+      if (value && value->HasRandomFunctions()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -182,6 +204,18 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapeInsetValue&) const;
 
+  bool HasRandomFunctions() const {
+    return (top_ && top_->HasRandomFunctions()) ||
+           (right_ && right_->HasRandomFunctions()) ||
+           (bottom_ && bottom_->HasRandomFunctions()) ||
+           (left_ && left_->HasRandomFunctions()) ||
+           (top_left_radius_ && top_left_radius_->HasRandomFunctions()) ||
+           (top_right_radius_ && top_right_radius_->HasRandomFunctions()) ||
+           (bottom_right_radius_ &&
+            bottom_right_radius_->HasRandomFunctions()) ||
+           (bottom_left_radius_ && bottom_left_radius_->HasRandomFunctions());
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -231,6 +265,18 @@ class CSSBasicShapeRectValue final : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapeRectValue&) const;
+
+  bool HasRandomFunctions() const {
+    return (top_ && top_->HasRandomFunctions()) ||
+           (right_ && right_->HasRandomFunctions()) ||
+           (bottom_ && bottom_->HasRandomFunctions()) ||
+           (left_ && left_->HasRandomFunctions()) ||
+           (top_left_radius_ && top_left_radius_->HasRandomFunctions()) ||
+           (top_right_radius_ && top_right_radius_->HasRandomFunctions()) ||
+           (bottom_right_radius_ &&
+            bottom_right_radius_->HasRandomFunctions()) ||
+           (bottom_left_radius_ && bottom_left_radius_->HasRandomFunctions());
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -283,6 +329,18 @@ class CSSBasicShapeXYWHValue final : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSBasicShapeXYWHValue&) const;
+
+  bool HasRandomFunctions() const {
+    return (x_ && x_->HasRandomFunctions()) ||
+           (y_ && y_->HasRandomFunctions()) ||
+           (width_ && width_->HasRandomFunctions()) ||
+           (height_ && height_->HasRandomFunctions()) ||
+           (top_left_radius_ && top_left_radius_->HasRandomFunctions()) ||
+           (top_right_radius_ && top_right_radius_->HasRandomFunctions()) ||
+           (bottom_right_radius_ &&
+            bottom_right_radius_->HasRandomFunctions()) ||
+           (bottom_left_radius_ && bottom_left_radius_->HasRandomFunctions());
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

@@ -261,6 +261,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   String ClassTypeToString() const;
 #endif
 
+  // Checks if a CSS random() function is present in the value.
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
 

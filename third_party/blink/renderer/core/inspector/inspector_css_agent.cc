@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -2518,6 +2519,10 @@ protocol::Response InspectorCSSAgent::resolveValues(
     const CSSValue* computed_value = nullptr;
     if (parsed_value) {
       DCHECK(property_name);
+      if (parsed_value->HasRandomFunctions()) {
+        (*results)->emplace_back(value);
+        continue;
+      }
       computed_value =
           StyleResolver::ComputeValue(element, *property_name, *parsed_value);
       if (String resolved_value = ResolvePercentagesValues(
@@ -2531,7 +2536,7 @@ protocol::Response InspectorCSSAgent::resolveValues(
       // provided.
       parsed_value = temporary_custom_property.Parse(
           substituted->CssText(), *parser_context, local_context);
-      if (!parsed_value) {
+      if (!parsed_value || parsed_value->HasRandomFunctions()) {
         (*results)->emplace_back(value);
         continue;
       }

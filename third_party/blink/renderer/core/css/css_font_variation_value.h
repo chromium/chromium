@@ -24,6 +24,8 @@ class CSSFontVariationValue : public CSSValue {
 
   bool Equals(const CSSFontVariationValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(value_);
     CSSValue::TraceAfterDispatch(visitor);

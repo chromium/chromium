@@ -50,6 +50,10 @@ bool CSSFontStyleRangeValue::Equals(const CSSFontStyleRangeValue& other) const {
          *oblique_values_ == *other.oblique_values_;
 }
 
+bool CSSFontStyleRangeValue::HasRandomFunctions() const {
+  return oblique_values_ && oblique_values_->HasRandomFunctions();
+}
+
 void CSSFontStyleRangeValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(font_style_value_);
   visitor->Trace(oblique_values_);

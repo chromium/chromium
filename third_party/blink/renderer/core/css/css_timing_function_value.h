@@ -110,6 +110,10 @@ class CSSStepsTimingFunctionValue : public CSSValue {
 
   bool Equals(const CSSStepsTimingFunctionValue&) const;
 
+  bool HasRandomFunctions() const {
+    return steps_ && steps_->HasRandomFunctions();
+  }
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(steps_);
     CSSValue::TraceAfterDispatch(visitor);

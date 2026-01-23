@@ -32,6 +32,11 @@ bool CSSViewValue::Equals(const CSSViewValue& other) const {
          base::ValuesEquivalent(inset_, other.inset_);
 }
 
+bool CSSViewValue::HasRandomFunctions() const {
+  return (inset_ && inset_->HasRandomFunctions()) ||
+         (axis_ && axis_->HasRandomFunctions());
+}
+
 void CSSViewValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
   visitor->Trace(axis_);

@@ -1141,4 +1141,111 @@ String CSSValue::ClassTypeToString() const {
 }
 #endif
 
+bool CSSValue::HasRandomFunctions() const {
+  switch (GetClassType()) {
+    case kMathFunctionClass:
+      return To<CSSMathFunctionValue>(this)->HasRandomFunctions();
+    case kUnresolvedColorClass:
+      return To<cssvalue::CSSUnresolvedColorValue>(this)->HasRandomFunctions();
+    case kColorMixClass:
+      return To<cssvalue::CSSColorMixValue>(this)->HasRandomFunctions();
+    case kRelativeColorClass:
+      return To<cssvalue::CSSRelativeColorValue>(this)->HasRandomFunctions();
+    case kPaletteMixClass:
+      return To<cssvalue::CSSPaletteMixValue>(this)->HasRandomFunctions();
+    case kCustomIdentClass:
+      return To<CSSCustomIdentValue>(this)->HasRandomFunctions();
+    case kValueListClass:
+    case kAxisClass:
+    case kFunctionClass:
+    case kGridLineNamesClass:
+      return To<CSSValueList>(this)->HasRandomFunctions();
+    case kRepeatClass:
+      return To<cssvalue::CSSRepeatValue>(this)->HasRandomFunctions();
+    case kValuePairClass:
+    case kLightDarkValuePairClass:
+      return To<CSSValuePair>(this)->HasRandomFunctions();
+    case kGridIntegerRepeatClass:
+      return To<cssvalue::CSSGridIntegerRepeatValue>(this)
+          ->HasRandomFunctions();
+    case kFontFeatureClass:
+      return To<cssvalue::CSSFontFeatureValue>(this)->HasRandomFunctions();
+    case kFontStyleRangeClass:
+      return To<cssvalue::CSSFontStyleRangeValue>(this)->HasRandomFunctions();
+    case kFontVariationClass:
+      return To<cssvalue::CSSFontVariationValue>(this)->HasRandomFunctions();
+    case kLayoutFunctionClass:
+      return To<cssvalue::CSSLayoutFunctionValue>(this)->HasRandomFunctions();
+    case kAlternateClass:
+      return To<cssvalue::CSSAlternateValue>(this)->HasRandomFunctions();
+    case kTriggerAttachmentClass:
+      return To<cssvalue::CSSTriggerAttachmentValue>(this)
+          ->HasRandomFunctions();
+    case kSuperellipseClass:
+      return To<cssvalue::CSSSuperellipseValue>(this)->HasRandomFunctions();
+    case kPaintClass:
+      return To<CSSPaintValue>(this)->HasRandomFunctions();
+    case kCounterClass:
+      return To<cssvalue::CSSCounterValue>(this)->HasRandomFunctions();
+    case kCounterContentClass:
+      return To<cssvalue::CSSCounterContentValue>(this)->HasRandomFunctions();
+    case kQuadClass:
+      return To<CSSQuadValue>(this)->HasRandomFunctions();
+    case kScrollClass:
+      return To<cssvalue::CSSScrollValue>(this)->HasRandomFunctions();
+    case kViewClass:
+      return To<cssvalue::CSSViewValue>(this)->HasRandomFunctions();
+    case kRatioClass:
+      return To<cssvalue::CSSRatioValue>(this)->HasRandomFunctions();
+    case kCrossfadeClass:
+      return To<cssvalue::CSSCrossfadeValue>(this)->HasRandomFunctions();
+    case kBorderImageSliceClass:
+      return To<cssvalue::CSSBorderImageSliceValue>(this)->HasRandomFunctions();
+    case kReflectClass:
+      return To<cssvalue::CSSReflectValue>(this)->HasRandomFunctions();
+    case kImageSetOptionClass:
+      return To<CSSImageSetOptionValue>(this)->HasRandomFunctions();
+    case kImageSetClass:
+      return To<CSSImageSetValue>(this)->HasRandomFunctions();
+    case kRepeatStyleClass:
+      return To<CSSRepeatStyleValue>(this)->HasRandomFunctions();
+    case kDynamicRangeLimitMixClass:
+      return To<cssvalue::CSSDynamicRangeLimitMixValue>(this)
+          ->HasRandomFunctions();
+    case kBasicShapeCircleClass:
+      return To<cssvalue::CSSBasicShapeCircleValue>(this)->HasRandomFunctions();
+    case kBasicShapeEllipseClass:
+      return To<cssvalue::CSSBasicShapeEllipseValue>(this)
+          ->HasRandomFunctions();
+    case kBasicShapePolygonClass:
+      return To<cssvalue::CSSBasicShapePolygonValue>(this)
+          ->HasRandomFunctions();
+    case kBasicShapeInsetClass:
+      return To<cssvalue::CSSBasicShapeInsetValue>(this)->HasRandomFunctions();
+    case kBasicShapeRectClass:
+      return To<cssvalue::CSSBasicShapeRectValue>(this)->HasRandomFunctions();
+    case kBasicShapeXYWHClass:
+      return To<cssvalue::CSSBasicShapeXYWHValue>(this)->HasRandomFunctions();
+    case kShapeClass:
+      return To<cssvalue::CSSShapeValue>(this)->HasRandomFunctions();
+    case kLinearGradientClass:
+      return To<cssvalue::CSSLinearGradientValue>(this)->HasRandomFunctions();
+    case kRadialGradientClass:
+      return To<cssvalue::CSSRadialGradientValue>(this)->HasRandomFunctions();
+    case kConicGradientClass:
+      return To<cssvalue::CSSConicGradientValue>(this)->HasRandomFunctions();
+    case kConstantGradientClass:
+      return To<cssvalue::CSSConstantGradientValue>(this)->HasRandomFunctions();
+    case kStepsTimingFunctionClass:
+      return To<cssvalue::CSSStepsTimingFunctionValue>(this)
+          ->HasRandomFunctions();
+    case kShadowClass:
+      return To<CSSShadowValue>(this)->HasRandomFunctions();
+    case kRayClass:
+      return To<cssvalue::CSSRayValue>(this)->HasRandomFunctions();
+    default:
+      return false;
+  }
+}
+
 }  // namespace blink

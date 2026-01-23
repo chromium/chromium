@@ -38,6 +38,8 @@ class CORE_EXPORT CSSGridIntegerRepeatValue : public CSSValueList {
   std::optional<wtf_size_t> GetRepetitionsIfKnown() const;
   wtf_size_t ComputeRepetitions(const CSSLengthResolver& resolver) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(repetitions_);
     CSSValueList::TraceAfterDispatch(visitor);

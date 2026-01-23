@@ -62,6 +62,8 @@ class CSSCounterValue final : public CSSValue {
 
   String CustomCSSText() const;
 
+  bool HasRandomFunctions() const;
+
  private:
   Member<const CSSCustomIdentValue> identifier_;
   Member<const CSSPrimitiveValue> value_;

@@ -1203,11 +1203,7 @@ CSSMathExpressionNumericLiteral* CSSMathExpressionNumericLiteral::Create(
 
 CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
     const CSSNumericLiteralValue* value)
-    : CSSMathExpressionNode(UnitCategory(value->GetType()),
-                            false /* has_comparisons*/,
-                            false /* has_anchor_functions*/,
-                            false /* needs_tree_scope_population*/),
-      value_(value) {
+    : CSSMathExpressionNode(UnitCategory(value->GetType())), value_(value) {
   if (!value_->IsNumber() && CanEagerlySimplify(this)) {
     // "If root is a dimension that is not expressed in its canonical unit, and
     // there is enough information available to convert it to the canonical
@@ -1530,10 +1526,7 @@ static CalculationResultCategory DetermineCalcSizeCategory(
 
 CSSMathExpressionIdentifierLiteral::CSSMathExpressionIdentifierLiteral(
     AtomicString identifier)
-    : CSSMathExpressionNode(UnitCategory(CSSPrimitiveValue::UnitType::kIdent),
-                            false /* has_comparisons*/,
-                            false /* has_anchor_unctions*/,
-                            false /* needs_tree_scope_population*/),
+    : CSSMathExpressionNode(UnitCategory(CSSPrimitiveValue::UnitType::kIdent)),
       identifier_(std::move(identifier)) {}
 
 const CalculationExpressionNode*
@@ -1626,10 +1619,7 @@ CalculationResultCategory DetermineKeywordCategory(
 CSSMathExpressionKeywordLiteral::CSSMathExpressionKeywordLiteral(
     CSSValueID keyword,
     Context context)
-    : CSSMathExpressionNode(DetermineKeywordCategory(keyword, context),
-                            false /* has_comparisons*/,
-                            false /* has_anchor_unctions*/,
-                            false /* needs_tree_scope_population*/),
+    : CSSMathExpressionNode(DetermineKeywordCategory(keyword, context)),
       keyword_(keyword),
       context_(context) {}
 
@@ -2599,15 +2589,23 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     CSSMathOperator op,
     CalculationResultCategory category,
     CSSMathType type)
-    : CSSMathExpressionNode(
-          category,
-          left_side->HasComparisons() || right_side->HasComparisons(),
-          left_side->HasAnchorFunctions() || right_side->HasAnchorFunctions(),
-          !left_side->IsScopedValue() || !right_side->IsScopedValue()),
+    : CSSMathExpressionNode(category),
       operands_({left_side, right_side}),
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  if (left_side->HasComparisons() || right_side->HasComparisons()) {
+    value_feature_flags_ = kHasComparisons;
+  }
+  if (left_side->HasAnchorFunctions() || right_side->HasAnchorFunctions()) {
+    value_feature_flags_ |= kHasAnchorFunctions;
+  }
+  if (left_side->HasRandomFunctions() || right_side->HasRandomFunctions()) {
+    value_feature_flags_ |= kHasRandomFunctions;
+  }
+  if (!left_side->IsScopedValue() || !right_side->IsScopedValue()) {
+    value_feature_flags_ |= kNeedsTreeScopePopulation;
+  }
   has_nested_intermediate_result_ = type_.IsIntermediateResult();
   has_nested_intermediate_result_ |= NodeHasNestedIntermediateResult(left_side);
   has_nested_intermediate_result_ |=
@@ -2670,6 +2668,16 @@ static bool AnyOperandHasAnchorFunctions(
   return false;
 }
 
+static bool AnyOperandHasRandom(
+    CSSMathExpressionOperation::Operands& operands) {
+  for (const CSSMathExpressionNode* operand : operands) {
+    if (operand->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static bool AnyOperandNeedsTreeScopePopulation(
     CSSMathExpressionOperation::Operands& operands) {
   for (const CSSMathExpressionNode* operand : operands) {
@@ -2685,15 +2693,23 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     Operands&& operands,
     CSSMathOperator op,
     CSSMathType type)
-    : CSSMathExpressionNode(
-          category,
-          IsComparison(op) || AnyOperandHasComparisons(operands),
-          AnyOperandHasAnchorFunctions(operands),
-          AnyOperandNeedsTreeScopePopulation(operands)),
+    : CSSMathExpressionNode(category),
       operands_(std::move(operands)),
       operator_(op),
       type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  if (IsComparison(operator_) || AnyOperandHasComparisons(operands_)) {
+    value_feature_flags_ = kHasComparisons;
+  }
+  if (AnyOperandHasAnchorFunctions(operands_)) {
+    value_feature_flags_ |= kHasAnchorFunctions;
+  }
+  if (AnyOperandHasRandom(operands_)) {
+    value_feature_flags_ |= kHasRandomFunctions;
+  }
+  if (AnyOperandNeedsTreeScopePopulation(operands_)) {
+    value_feature_flags_ |= kNeedsTreeScopePopulation;
+  }
   has_nested_intermediate_result_ = type_.IsIntermediateResult();
   if (IsArithmeticOperation()) {
     has_nested_intermediate_result_ |=
@@ -2707,13 +2723,11 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
     CSSMathOperator op,
     CSSMathType type)
-    : CSSMathExpressionNode(category,
-                            IsComparison(op),
-                            false /*has_anchor_functions*/,
-                            false),
-      operator_(op),
-      type_(std::move(type)) {
+    : CSSMathExpressionNode(category), operator_(op), type_(std::move(type)) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
+  if (IsComparison(operator_)) {
+    value_feature_flags_ = kHasComparisons;
+  }
   has_nested_intermediate_result_ = type_.IsIntermediateResult();
 }
 
@@ -3645,15 +3659,13 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
 CSSMathExpressionContainerFeature::CSSMathExpressionContainerFeature(
     const CSSIdentifierValue* size_feature,
     const CSSCustomIdentValue* container_name)
-    : CSSMathExpressionNode(
-          CalculationResultCategory::kCalcLength,
-          /*has_comparisons =*/false,
-          /*has_anchor_functions =*/false,
-          /*needs_tree_scope_population =*/
-          (container_name && !container_name->IsScopedValue())),
+    : CSSMathExpressionNode(CalculationResultCategory::kCalcLength),
       size_feature_(size_feature),
       container_name_(container_name) {
   CHECK(size_feature);
+  if (container_name_ && !container_name_->IsScopedValue()) {
+    value_feature_flags_ = kNeedsTreeScopePopulation;
+  }
 }
 
 String CSSMathExpressionContainerFeature::CustomCSSText() const {
@@ -3716,16 +3728,17 @@ CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     const CSSValue* anchor_specifier,
     const CSSValue* value,
     const CSSPrimitiveValue* fallback)
-    : CSSMathExpressionNode(
-          AnchorQueryCategory(fallback),
-          false /* has_comparisons */,
-          true /* has_anchor_functions */,
-          (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
-              (fallback && !fallback->IsScopedValue())),
+    : CSSMathExpressionNode(AnchorQueryCategory(fallback)),
       type_(type),
       anchor_specifier_(anchor_specifier),
       value_(value),
-      fallback_(fallback) {}
+      fallback_(fallback) {
+  value_feature_flags_ = kHasAnchorFunctions;
+  if ((anchor_specifier_ && !anchor_specifier_->IsScopedValue()) ||
+      (fallback_ && !fallback_->IsScopedValue())) {
+    value_feature_flags_ |= kNeedsTreeScopePopulation;
+  }
+}
 
 double CSSMathExpressionAnchorQuery::DoubleValue() const {
   NOTREACHED();
@@ -5456,14 +5469,12 @@ CSSMathExpressionRandomFunction::CSSMathExpressionRandomFunction(
     const CSSMathExpressionNode* min,
     const CSSMathExpressionNode* max,
     const CSSMathExpressionNode* step)
-    : CSSMathExpressionNode(category,
-                            /*has_comparisons=*/false,
-                            /*has_anchor_functions=*/false,
-                            /*needs_tree_scope_population=*/false),
+    : CSSMathExpressionNode(category),
       random_value_sharing_(random_value_sharing),
       min_(min),
       max_(max),
       step_(step) {
+  value_feature_flags_ = kHasRandomFunctions;
 }
 
 CSSMathExpressionRandomFunction* CSSMathExpressionRandomFunction::Create(

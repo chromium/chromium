@@ -254,6 +254,10 @@ bool CSSPaintValue::Equals(const CSSPaintValue& other) const {
          CustomCSSText() == other.CustomCSSText();
 }
 
+bool CSSPaintValue::HasRandomFunctions() const {
+  return name_ && name_->HasRandomFunctions();
+}
+
 void CSSPaintValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(name_);
   visitor->Trace(generators_);

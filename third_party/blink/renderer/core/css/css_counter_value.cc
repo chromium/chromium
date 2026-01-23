@@ -25,4 +25,9 @@ String CSSCounterValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+bool CSSCounterValue::HasRandomFunctions() const {
+  return (identifier_ && identifier_->HasRandomFunctions()) ||
+         (value_ && value_->HasRandomFunctions());
+}
+
 }  // namespace blink::cssvalue

@@ -66,6 +66,8 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
       const StyleResolverState&) const;
   CSSImageSetValue& ResolveValuesIfNeeded(const StyleResolverState&);
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

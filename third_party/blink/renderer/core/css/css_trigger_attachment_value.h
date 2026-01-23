@@ -52,6 +52,7 @@ class CSSTriggerAttachmentValue : public CSSValue {
 
   const CSSTriggerAttachmentValue& PopulateWithTreeScope(
       const TreeScope* tree_scope) const;
+  bool HasRandomFunctions() const;
 
  private:
   Member<const CSSCustomIdentValue> trigger_name_;

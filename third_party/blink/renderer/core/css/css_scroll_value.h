@@ -22,6 +22,7 @@ class CORE_EXPORT CSSScrollValue : public CSSValue {
 
   String CustomCSSText() const;
   bool Equals(const CSSScrollValue&) const;
+  bool HasRandomFunctions() const;
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

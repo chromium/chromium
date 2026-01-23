@@ -213,6 +213,14 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   bool IsUsingCurrentColor() const;
   bool IsUsingContainerRelativeUnits() const;
 
+  bool HasRandomFunctions() const {
+    return (first_x_ && first_x_->HasRandomFunctions()) ||
+           (first_y_ && first_y_->HasRandomFunctions()) ||
+           (second_x_ && second_x_->HasRandomFunctions()) ||
+           (second_y_ && second_y_->HasRandomFunctions()) ||
+           (angle_ && angle_->HasRandomFunctions());
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -321,6 +329,20 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
   bool IsUsingCurrentColor() const;
   bool IsUsingContainerRelativeUnits() const;
 
+  bool HasRandomFunctions() const {
+    return (first_x_ && first_x_->HasRandomFunctions()) ||
+           (first_y_ && first_y_->HasRandomFunctions()) ||
+           (second_x_ && second_x_->HasRandomFunctions()) ||
+           (second_y_ && second_y_->HasRandomFunctions()) ||
+           (first_radius_ && first_radius_->HasRandomFunctions()) ||
+           (second_radius_ && second_radius_->HasRandomFunctions()) ||
+           (shape_ && shape_->HasRandomFunctions()) ||
+           (sizing_behavior_ && sizing_behavior_->HasRandomFunctions()) ||
+           (end_horizontal_size_ &&
+            end_horizontal_size_->HasRandomFunctions()) ||
+           (end_vertical_size_ && end_vertical_size_->HasRandomFunctions());
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -377,6 +399,12 @@ class CSSConicGradientValue final : public CSSGradientValue {
   bool IsUsingCurrentColor() const;
   bool IsUsingContainerRelativeUnits() const;
 
+  bool HasRandomFunctions() const {
+    return (x_ && x_->HasRandomFunctions()) ||
+           (y_ && y_->HasRandomFunctions()) ||
+           (from_angle_ && from_angle_->HasRandomFunctions());
+  }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
@@ -418,6 +446,10 @@ class CSSConstantGradientValue final : public CSSGradientValue {
   const CSSConstantGradientValue& ResolveValuesIfNeeded(
       const StyleResolverState&) const;
   CSSConstantGradientValue& ResolveValuesIfNeeded(const StyleResolverState&);
+
+  bool HasRandomFunctions() const {
+    return color_ && color_->HasRandomFunctions();
+  }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

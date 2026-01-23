@@ -54,5 +54,9 @@ bool CSSFontFeatureValue::Equals(const CSSFontFeatureValue& other) const {
   return tag_ == other.tag_ && *value_ == *other.value_;
 }
 
+bool CSSFontFeatureValue::HasRandomFunctions() const {
+  return value_ && value_->HasRandomFunctions();
+}
+
 }  // namespace cssvalue
 }  // namespace blink

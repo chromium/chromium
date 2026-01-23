@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -186,6 +187,18 @@ CSSImageSetValue& CSSImageSetValue::ResolveValuesIfNeeded(
     return *resolved;
   }
   return *this;
+}
+
+bool CSSImageSetValue::HasRandomFunctions() const {
+  if (CSSValueList::HasRandomFunctions()) {
+    return true;
+  }
+  for (const auto& option : options_) {
+    if (option && option->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {

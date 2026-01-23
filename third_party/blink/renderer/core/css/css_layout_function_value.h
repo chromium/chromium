@@ -24,6 +24,7 @@ class CSSLayoutFunctionValue : public CSSValue {
   bool IsInline() const { return is_inline_; }
 
   bool Equals(const CSSLayoutFunctionValue&) const;
+  bool HasRandomFunctions() const;
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

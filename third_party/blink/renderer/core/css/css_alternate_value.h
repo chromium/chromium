@@ -27,6 +27,8 @@ class CORE_EXPORT CSSAlternateValue : public CSSValue {
   String CustomCSSText() const;
   bool Equals(const CSSAlternateValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(function_);
     visitor->Trace(aliases_);

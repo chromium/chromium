@@ -4,9 +4,10 @@
   const lengthExpressions = ["calc(1em + 10px)", "calc(1em + 3em)", "calc(3px + 2.54cm)", "clamp(10px, calc(10rem + 10rex), 30px)", "max(100px, 30em)", "calc(100px * cos(60deg))"];
   const invalidLengthValues = ["calc(", "em", "calc(10 + 20)", "red", "calc(10ms + 5s)"];
   const validNumberValues = ["100", "log(1000, 10)", "calc(10 + 30)"];
-  const testValues = ["invalid", "1em", "1rem", "calc(3px + 3px)", "calc(1em + 1px)"];
+  const testValues = ["invalid", "1em", "1rem", "calc(3px + 3px)", "calc(1em + 1px)", "random(10px, 30px)"];
   const cssWideKeywords = ["initial", "inherit", "unset"];
-  const validColorValues = ["aqua", "peachpuff", "blanchedalmond", "rgb(255, 0, 0)", "#0f5ffe", "color-mix(in srgb, plum, #f00)"];
+  const validColorValues = ["aqua", "peachpuff", "blanchedalmond", "rgb(255, 0, 0)", "#0f5ffe", "color-mix(in srgb, plum, #f00)",
+                            "rgb(random(30, 10) random(60, 10) random(90, 10))", "color-mix(in srgb, rgb(random(30, 10) 0 0), rgb(random(21, 10) 0 0))"];
   const validPercentageExpressions = ["10%", "50%", "calc(10% + 10%)", "calc(10% - 10%)", "calc(10px + 10% - 10%)", "calc(10px + 10px)", "calc(10px + 0%)", "calc(10px + 10%)", "calc(1em + 10%)"];
   const invalidPercentageExpressions = ["calc(", "%", "calc(10 + 20)%", "calc(10 + 30%"];
   const arbSubs = ["var(--x)", "attr(data-foo type(<length>))", "attr(invalid, 3px)", "var(--invalid, 3px)", "var(--cycle1)"];

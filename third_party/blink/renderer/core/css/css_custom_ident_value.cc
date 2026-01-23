@@ -125,6 +125,10 @@ bool CSSCustomIdentValue::Equals(const CSSCustomIdentValue& other) const {
          string_ == other.string_;
 }
 
+bool CSSCustomIdentValue::HasRandomFunctions() const {
+  return ident_function_ && ident_function_->HasRandomFunctions();
+}
+
 void CSSCustomIdentValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(ident_function_);

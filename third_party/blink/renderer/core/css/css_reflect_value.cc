@@ -45,6 +45,11 @@ bool CSSReflectValue::Equals(const CSSReflectValue& other) const {
          base::ValuesEquivalent(mask_, other.mask_);
 }
 
+bool CSSReflectValue::HasRandomFunctions() const {
+  return (offset_ && offset_->HasRandomFunctions()) ||
+         (mask_ && mask_->HasRandomFunctions());
+}
+
 void CSSReflectValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(direction_);
   visitor->Trace(offset_);

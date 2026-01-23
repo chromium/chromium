@@ -46,6 +46,11 @@ String CSSPaletteMixValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+bool CSSPaletteMixValue::HasRandomFunctions() const {
+  return (percentage1_ && percentage1_->HasRandomFunctions()) ||
+         (percentage2_ && percentage2_->HasRandomFunctions());
+}
+
 void CSSPaletteMixValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(palette1_);
   visitor->Trace(palette2_);

@@ -66,6 +66,7 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
            base::ValuesEquivalent(left_, other.left_) &&
            base::ValuesEquivalent(bottom_, other.bottom_);
   }
+  bool HasRandomFunctions() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
