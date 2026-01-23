@@ -217,6 +217,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "task_manager.icon",
     "task_spark.icon",
     "text_analysis.icon",
+    "timer.icon",
     "toolbar_chrome_refresh.icon",
     "top_panel_close.icon",
     "trailing_scroll.icon",
