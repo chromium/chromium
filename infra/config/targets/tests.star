@@ -965,10 +965,6 @@ targets.tests.gtest_test(
     name = "crashpad_tests",
 )
 
-targets.tests.isolated_script_test(
-    name = "cronet_python_unittests",
-)
-
 targets.tests.gtest_test(
     name = "cronet_sample_test_apk",
 )

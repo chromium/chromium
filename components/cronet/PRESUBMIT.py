@@ -8,15 +8,9 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import os
-import sys
+
 PRESUBMIT_VERSION = '2.0.0'
 
-REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname('__file__'), os.pardir, os.pardir))
-
-sys.path.insert(0, REPOSITORY_ROOT)
-
-import components.cronet.tools.breakages_constants as breakages_constants  # pylint: disable=wrong-import-position
 
 def CheckPyLint(input_api, output_api):
     pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
@@ -32,6 +26,12 @@ def CheckUnittestsOnCommit(input_api, output_api):
                          'cronet'),
             files_to_check=['.*test\\.py$'],
             files_to_skip=[]))
+
+
+GOOD_CHANGE_IDS_TXT = 'good_change_ids'
+BAD_CHANGE_ID_TXT = 'bad_change_id'
+BUG_TXT = 'bugs'
+COMMENT_TXT = 'comment'
 
 
 def _GetBreakagesFilePathIfChanged(change):
@@ -61,7 +61,7 @@ def _GetInvalidChangeIdText(input_api, breakage, key):
         if not _IsValidChangeId(input_api, change_id):
             return '\t - entry has invalid %s: %s\n' % (key, breakage[key])
         return ''
-    if key == breakages_constants.GOOD_CHANGE_IDS_TXT:
+    if key == GOOD_CHANGE_IDS_TXT:
         problems = ''
         for change_id in breakage[key]:
            problems += _VerifyChangeIdHelper(change_id)
@@ -76,30 +76,30 @@ def _GetMissingKeyText(breakage, key):
 
 
 def _GetGoodWithoutBadChangeIdText(breakage):
-    if breakages_constants.GOOD_CHANGE_IDS_TXT in breakage and breakages_constants.BAD_CHANGE_ID_TXT not in breakage:
+    if GOOD_CHANGE_IDS_TXT in breakage and BAD_CHANGE_ID_TXT not in breakage:
         return '\t - entry cannot have %s without %s\n' % \
-          (breakages_constants.GOOD_CHANGE_IDS_TXT, breakages_constants.BAD_CHANGE_ID_TXT)
+          (GOOD_CHANGE_IDS_TXT, BAD_CHANGE_ID_TXT)
     return ''
 
 def _GetGoodChangeIdIsNotAListText(breakage):
-    if not isinstance(breakage[breakages_constants.GOOD_CHANGE_IDS_TXT], list):
-        return (f'\t - {breakages_constants.GOOD_CHANGE_IDS_TXT} value must be a container (e.g. list). '
-               f'Found {type(breakage[breakages_constants.GOOD_CHANGE_IDS_TXT])}\n')
+    if not isinstance(breakage[GOOD_CHANGE_IDS_TXT], list):
+        return (f'\t - {GOOD_CHANGE_IDS_TXT} value must be a container (e.g. list). '
+               f'Found {type(breakage[GOOD_CHANGE_IDS_TXT])}\n')
     return ''
 
 def _GetUnknownKeyText(breakage):
     unknown_keys = []
     for key in breakage:
         if (key.startswith('_') or  # ignore comments
-                key == breakages_constants.BAD_CHANGE_ID_TXT or key == breakages_constants.GOOD_CHANGE_IDS_TXT or
-                key == breakages_constants.BUG_TXT or key == breakages_constants.COMMENT_TXT):
+                key == BAD_CHANGE_ID_TXT or key == GOOD_CHANGE_IDS_TXT or
+                key == BUG_TXT or key == COMMENT_TXT):
             continue
         unknown_keys.append(key)
 
     if unknown_keys:
         return (f'\t - entry contains unknown key(s): {unknown_keys}. '
-                f'Expected either {breakages_constants.GOOD_CHANGE_IDS_TXT}, {breakages_constants.BUG_TXT} or '
-                f'{breakages_constants.COMMENT_TXT}\n')
+                f'Expected either {GOOD_CHANGE_IDS_TXT}, {BUG_TXT} or '
+                f'{COMMENT_TXT}\n')
     return ''
 
 
@@ -116,18 +116,18 @@ def CheckBreakagesFile(input_api, output_api):
         # ensures that the entries, where existing are valid and that there are
         # no unknown keys.
         problem += _GetInvalidChangeIdText(input_api, breakage,
-                                           breakages_constants.BAD_CHANGE_ID_TXT)
+                                           BAD_CHANGE_ID_TXT)
         is_good_change_id_a_list_problems = _GetGoodChangeIdIsNotAListText(breakage)
         problem += is_good_change_id_a_list_problems
-        # Skip checking the breakages_constants.GOOD_CHANGE_IDS_TXT if they're not in a format of a
+        # Skip checking the GOOD_CHANGE_IDS_TXT if they're not in a format of a
         # list.
         if not is_good_change_id_a_list_problems:
             problem += _GetInvalidChangeIdText(input_api, breakage,
-                                           breakages_constants.GOOD_CHANGE_IDS_TXT)
+                                           GOOD_CHANGE_IDS_TXT)
         else:
-            problem += f'\t - Skipped checking integrity of {breakages_constants.GOOD_CHANGE_IDS_TXT}.'
+            problem += f'\t - Skipped checking integrity of {GOOD_CHANGE_IDS_TXT}.'
         problem += _GetGoodWithoutBadChangeIdText(breakage)
-        problem += _GetMissingKeyText(breakage, breakages_constants.breakages_constants.BUG_TXT)
+        problem += _GetMissingKeyText(breakage, BUG_TXT)
         problem += _GetUnknownKeyText(breakage)
 
         if problem:
