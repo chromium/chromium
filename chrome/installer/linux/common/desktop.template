@@ -113,6 +113,7 @@ Type=Application
 Categories=Network;WebBrowser;
 MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;@@URI_SCHEME@@
 Actions=new-window;new-private-window;
+@@EXTRA_DESKTOP_ENTRIES@@
 
 [Desktop Action new-window]
 Name=New Window
@@ -219,4 +220,3 @@ Name[vi]=Cửa sổ ẩn danh mới
 Name[zh_CN]=新建隐身窗口
 Name[zh_TW]=新增無痕式視窗
 Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --incognito
-@@EXTRA_DESKTOP_ENTRIES@@
