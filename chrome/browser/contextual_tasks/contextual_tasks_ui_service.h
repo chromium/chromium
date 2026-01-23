@@ -141,7 +141,7 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
   // Returns whether the provided URL is to an AI page.
-  bool IsAiUrl(const GURL& url);
+  virtual bool IsAiUrl(const GURL& url);
 
   // Returns whether the provided URL is to a contextual tasks WebUI page.
   bool IsContextualTasksUrl(const GURL& url);
@@ -174,19 +174,19 @@ class ContextualTasksUiService : public KeyedService {
 
   // Called when a tab in the sources menu is clicked. Switches to the tab or
   // reopens the tab depending on whether the tab is already open on tab strip.
-  void OnTabClickedFromSourcesMenu(int32_t tab_id,
-                                   const GURL& url,
-                                   BrowserWindowInterface* browser);
+  virtual void OnTabClickedFromSourcesMenu(int32_t tab_id,
+                                           const GURL& url,
+                                           BrowserWindowInterface* browser);
 
   // Called when a file in the sources menu is clicked. Opens the file in a new
   // foreground tab.
-  void OnFileClickedFromSourcesMenu(const GURL& url,
-                                    BrowserWindowInterface* browser);
+  virtual void OnFileClickedFromSourcesMenu(const GURL& url,
+                                            BrowserWindowInterface* browser);
 
   // Called when an image in the sources menu is clicked. Opens the image in a
   // new foreground tab.
-  void OnImageClickedFromSourcesMenu(const GURL& url,
-                                     BrowserWindowInterface* browser);
+  virtual void OnImageClickedFromSourcesMenu(const GURL& url,
+                                             BrowserWindowInterface* browser);
 
   void set_auto_tab_context_suggestion_enabled(bool enabled) {
     auto_tab_context_suggestion_enabled_ = enabled;

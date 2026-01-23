@@ -149,7 +149,7 @@ class ContextualTasksUI
 
   // Lazily creates and returns a reference to the owned contextual search
   // session handle for `composebox_handler_`.
-  contextual_search::ContextualSearchSessionHandle*
+  virtual contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
 
   void BindInterface(
