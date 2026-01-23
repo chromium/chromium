@@ -552,21 +552,24 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
 
   // TODO(khushalsagar): Remove once the callers are setting up this ID
   // correctly.
-  std::string document_identifier;
+  std::optional<base::UnguessableToken> document_identifier;
   if (action.has_document_identifier()) {
-    document_identifier = action.document_identifier().serialized_token();
+    document_identifier = base::UnguessableToken::DeserializeFromString(
+        action.document_identifier().serialized_token());
   } else {
     auto* main_rfh = tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-    document_identifier = DocumentIdentifierUserData::GetDocumentIdentifier(
-                              main_rfh->GetGlobalFrameToken())
-                              .value_or("");
+    document_identifier = optimization_guide::DocumentIdentifierUserData::
+                              GetOrCreateForCurrentDocument(main_rfh)
+                                  ->token();
   }
 
-  return std::make_unique<ScriptToolRequest>(
-      tab_handle,
-      DomNode{.node_id = kRootElementDomNodeId,
-              .document_identifier = document_identifier},
-      action.tool_name(), action.input_arguments());
+  if (!document_identifier) {
+    return nullptr;
+  }
+
+  return std::make_unique<ScriptToolRequest>(tab_handle, *document_identifier,
+                                             action.tool_name(),
+                                             action.input_arguments());
 }
 
 std::unique_ptr<ToolRequest> CreateMediaControlRequest(
@@ -1150,6 +1153,16 @@ CreateActorJournalFetchPageProgressListener(
     TaskId task_id) {
   return std::make_unique<ActorJournalFetchPageProgressListener>(journal, url,
                                                                  task_id);
+}
+
+std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
+    tabs::TabInterface* tab_interface) {
+  if (!tab_interface || tab_interface->GetContents()->IsBeingDestroyed()) {
+    return mojom::ActionResultCode::kTabWentAway;
+  } else if (tab_interface->GetContents()->IsCrashed()) {
+    return mojom::ActionResultCode::kRendererCrashed;
+  }
+  return std::nullopt;
 }
 
 }  // namespace actor

@@ -563,10 +563,9 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     const std::string& input_arguments) {
   return std::make_unique<ScriptToolRequest>(
       GetTabHandleForFrame(rfh),
-      DomNode{.node_id = kRootElementDomNodeId,
-              .document_identifier =
-                  *DocumentIdentifierUserData::GetDocumentIdentifier(
-                      rfh.GetGlobalFrameToken())},
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(&rfh)
+              ->token(),
       name, input_arguments);
 }
 

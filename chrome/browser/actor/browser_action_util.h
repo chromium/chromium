@@ -124,6 +124,9 @@ CreateActorJournalFetchPageProgressListener(
 
 std::string ToBase64(const optimization_guide::proto::Actions& actions);
 
+std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
+    tabs::TabInterface* tab);
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_BROWSER_ACTION_UTIL_H_

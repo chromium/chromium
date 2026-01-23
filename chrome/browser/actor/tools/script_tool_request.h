@@ -13,15 +13,13 @@
 
 namespace actor {
 
-struct DomNode;
-
 // Executes a script tool in the renderer.
-class ScriptToolRequest : public PageToolRequest {
+class ScriptToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "ScriptTool";
 
   ScriptToolRequest(tabs::TabHandle tab_handle,
-                    const DomNode& target,
+                    const base::UnguessableToken& target_document_id,
                     const std::string& name,
                     const std::string& input_arguments);
   ~ScriptToolRequest() override;
@@ -29,13 +27,12 @@ class ScriptToolRequest : public PageToolRequest {
   // ToolRequest
   std::string_view Name() const override;
   void Apply(ToolRequestVisitorFunctor&) const override;
-
-  // PageToolRequest
-  mojom::ToolActionPtr ToMojoToolAction(
-      content::RenderFrameHost& frame) const override;
-  std::unique_ptr<PageToolRequest> Clone() const override;
+  ToolRequest::CreateToolResult CreateTool(
+      TaskId task_id,
+      ToolDelegate& tool_delegate) const override;
 
  private:
+  base::UnguessableToken target_document_id_;
   std::string name_;
   std::string input_arguments_;
 };

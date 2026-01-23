@@ -112,6 +112,8 @@ source_set("impl") {
     "tools/page_tool.cc",
     "tools/page_tool.h",
     "tools/page_tool_request.cc",
+    "tools/script_tool_host.cc",
+    "tools/script_tool_host.h",
     "tools/script_tool_request.cc",
     "tools/scroll_to_tool_request.cc",
     "tools/scroll_tool_request.cc",

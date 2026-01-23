@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
@@ -405,9 +406,9 @@ tabs::TabHandle PageTool::GetTargetTab() const {
 void PageTool::OnRenderFrameHostChanged() {
   // Return error if tab itself is closed or the WebContents hosted in the tab
   // is being destroyed.
-  if (!request_->GetTabHandle().Get() ||
-      request_->GetTabHandle().Get()->GetContents()->IsBeingDestroyed()) {
-    FinishInvoke(MakeResult(mojom::ActionResultCode::kTabWentAway));
+  if (auto tab_error =
+          MaybeGetErrorCodeForTab(request_->GetTabHandle().Get())) {
+    FinishInvoke(MakeResult(*tab_error));
     return;
   }
 
@@ -420,12 +421,9 @@ void PageTool::OnRenderFrameHostChanged() {
 void PageTool::OnRenderFrameGone() {
   auto* tab_interface = request_->GetTabHandle().Get();
 
-  mojom::ActionResultCode result_code = mojom::ActionResultCode::kFrameWentAway;
-  if (!tab_interface || tab_interface->GetContents()->IsBeingDestroyed()) {
-    result_code = mojom::ActionResultCode::kTabWentAway;
-  } else if (tab_interface->GetContents()->IsCrashed()) {
-    result_code = mojom::ActionResultCode::kRendererCrashed;
-  }
+  mojom::ActionResultCode result_code =
+      MaybeGetErrorCodeForTab(tab_interface)
+          .value_or(mojom::ActionResultCode::kFrameWentAway);
   FinishInvoke(MakeResult(result_code));
 }
 
