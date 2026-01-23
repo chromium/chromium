@@ -17,8 +17,13 @@
 // Responsible for processing the selection of tab picker.
 @protocol ComposeboxTabPickerSelectionDelegate
 
-// Returns the associated IDs for currently attached tabs.
-- (std::set<web::WebStateID>)webStateIDsForAttachedTabs;
+// Returns the associated IDs for all currently attached tabs.
+- (std::set<web::WebStateID>)allAttachedWebStateIDs;
+
+// Returns the associated IDs for currently attached tabs from the current web
+// state context. Tabs attached from different web states (not visible in the
+// tab picker) will be excluded.
+- (std::set<web::WebStateID>)attachedWebStateIDsInCurrentContext;
 
 // Returns the number of non-tab attachments.
 - (NSUInteger)nonTabAttachmentCount;

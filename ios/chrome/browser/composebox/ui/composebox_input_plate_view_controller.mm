@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -1684,9 +1686,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   BOOL willAllowPDFDrop = [self willAllowPDFDrop:session];
   BOOL willAllowImageDrop = [self willAllowImageDrop:session];
+  BOOL willAllowTabDrop = [self willAllowTabDrop:session];
   BOOL willAllowTextDrop = [self willAllowTextDrop:session];
 
-  return willAllowPDFDrop || willAllowImageDrop || willAllowTextDrop;
+  return willAllowPDFDrop || willAllowImageDrop || willAllowTabDrop ||
+         willAllowTextDrop;
 }
 
 /// Returns whether a text drop will be allowed.
@@ -1709,6 +1713,27 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
 
   return YES;
+}
+
+/// Returns whether a tab drop will be allowed.
+- (BOOL)willAllowTabDrop:(id<UIDropSession>)session {
+  if (_attachTabActionsDisabled || _attachTabActionsHidden) {
+    return NO;
+  }
+
+  for (UIDragItem* item in session.items) {
+    if ([item.localObject isKindOfClass:[TabInfo class]]) {
+      // Disallow tab drops between profiles and between incognito and
+      // non-incognito sessions.
+      TabInfo* tab = item.localObject;
+
+      if ([self.delegate tabExistsOnCurrentProfile:tab]) {
+        return YES;
+      }
+    }
+  }
+
+  return NO;
 }
 
 /// Returns whether a PDF drop will be allowed based on the Composebox mode,
@@ -1739,6 +1764,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                [item.itemProvider
                    hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
       [self performDropForImage:item.itemProvider];
+    } else if ([self willAllowTabDrop:session] &&
+               [item.localObject isKindOfClass:[TabInfo class]]) {
+      [self performDropForTab:item.localObject];
     } else if ([self willAllowTextDrop:session] &&
                [item.itemProvider
                    hasItemConformingToTypeIdentifier:UTTypeText.identifier]) {
@@ -1758,6 +1786,21 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                 completionHandler:^(NSString* text, NSError* error) {
                   [weakSelf handleTextDrop:text error:error];
                 }];
+}
+
+/// Performs a drop for a dragged tab with `tabInfo`.
+- (void)performDropForTab:(TabInfo*)tabInfo {
+  CHECK(self.mutator);
+  CHECK(tabInfo);
+  CHECK_EQ(tabInfo.incognito, _theme.incognito);
+  web::WebState* webState =
+      [self.delegate webStateForTabOnCurrentProfile:tabInfo];
+
+  if (!webState) {
+    return;
+  }
+
+  [self.mutator processTab:webState webStateID:tabInfo.tabID];
 }
 
 /// Performs a drop for a dragged image file from a given `itemProvider`.
@@ -1787,6 +1830,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                             }];
 }
 
+/// Helper for `-performDropForText`. handles a drop action for dragged text.
 - (void)handleTextDrop:(NSString*)text error:(NSError*)error {
   CHECK(self.mutator);
 

@@ -91,7 +91,7 @@
 }
 
 - (std::set<web::WebStateID>)preselectedWebStateIDs {
-  return [self.delegate webStateIDsForAttachedTabs];
+  return [self.delegate attachedWebStateIDsInCurrentContext];
 }
 
 - (NSUInteger)nonTabAttachmentCount {
