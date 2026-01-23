@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] XRCompositionLayer interface: attribute quality
   assert_true: The prototype object must have a property "quality" expected true got false
 [FAIL] XRWebGLBinding interface: operation createQuadLayer(optional XRQuadLayerInit)
@@ -30,7 +30,5 @@ Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
 [FAIL] XRMediaBinding interface: operation createEquirectLayer(HTMLVideoElement, optional XRMediaEquirectLayerInit)
   assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
-[FAIL] XRSession interface: attribute maxRenderLayers
-  assert_true: The prototype object must have a property "maxRenderLayers" expected true got false
 Harness: the test ran to completion.
 
