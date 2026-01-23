@@ -5,7 +5,6 @@
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index.h"
 
 #include <tuple>
-#include <unordered_set>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/logger.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -130,8 +130,8 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
   ChildTrackersByParent trackers_by_parent;
 
   // Set up links from parent tracker to child trackers.
-  for (size_t i = 0; i < contents->file_trackers.size(); ++i) {
-    const FileTracker& tracker = *contents->file_trackers[i];
+  for (const auto& file_tracker : contents->file_trackers) {
+    const FileTracker& tracker = *file_tracker;
     int64_t parent_tracker_id = tracker.parent_tracker_id();
     int64_t tracker_id = tracker.tracker_id();
 
@@ -139,8 +139,8 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
   }
 
   // Drop links from inactive trackers.
-  for (size_t i = 0; i < contents->file_trackers.size(); ++i) {
-    const FileTracker& tracker = *contents->file_trackers[i];
+  for (const auto& file_tracker : contents->file_trackers) {
+    const FileTracker& tracker = *file_tracker;
 
     if (!tracker.active())
       trackers_by_parent.erase(tracker.tracker_id());
@@ -151,7 +151,7 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
     pending.push_back(sync_root_tracker_id);
 
   // Traverse tracker tree from sync-root.
-  std::set<int64_t> visited_trackers;
+  absl::flat_hash_set<int64_t> visited_trackers;
   while (!pending.empty()) {
     int64_t tracker_id = pending.back();
     DCHECK_NE(kInvalidTrackerID, tracker_id);
@@ -168,8 +168,7 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
 
   // Delete all unreachable trackers.
   std::vector<std::unique_ptr<FileTracker>> reachable_trackers;
-  for (size_t i = 0; i < contents->file_trackers.size(); ++i) {
-    std::unique_ptr<FileTracker>& tracker = contents->file_trackers[i];
+  for (auto& tracker : contents->file_trackers) {
     if (visited_trackers.contains(tracker->tracker_id())) {
       reachable_trackers.push_back(std::move(tracker));
     } else {
@@ -179,14 +178,15 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
   contents->file_trackers = std::move(reachable_trackers);
 
   // List all |file_id| referred by a tracker.
-  std::unordered_set<std::string> referred_file_ids;
-  for (size_t i = 0; i < contents->file_trackers.size(); ++i)
-    referred_file_ids.insert(contents->file_trackers[i]->file_id());
+  absl::flat_hash_set<std::string> referred_file_ids;
+  referred_file_ids.reserve(contents->file_trackers.size());
+  for (const auto& file_tracker : contents->file_trackers) {
+    referred_file_ids.insert(file_tracker->file_id());
+  }
 
   // Delete all unreferred metadata.
   std::vector<std::unique_ptr<FileMetadata>> referred_file_metadata;
-  for (size_t i = 0; i < contents->file_metadata.size(); ++i) {
-    std::unique_ptr<FileMetadata>& metadata = contents->file_metadata[i];
+  for (auto& metadata : contents->file_metadata) {
     if (referred_file_ids.contains(metadata->file_id())) {
       referred_file_metadata.push_back(std::move(metadata));
     } else {
