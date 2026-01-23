@@ -4559,6 +4559,21 @@ const FeatureEntry::Choice kGlicSetG1ForMultiInstance[] = {
     {"Force non-G1 status", switches::kGlicForceG1StatusForMultiInstance,
      "false"},
 };
+
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
+    {"glic-guest-url-preset-type", "0"}};
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypePreprod[] = {
+    {"glic-guest-url-preset-type", "1"}};
+const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeProd[] = {
+    {"glic-guest-url-preset-type", "2"}};
+
+const FeatureEntry::FeatureVariation kGlicGuestUrlPresetTypes[] = {
+    {"Auto-push", kGlicGuestUrlPresetTypeAutopush,
+     std::size(kGlicGuestUrlPresetTypeAutopush), nullptr},
+    {"Pre-prod", kGlicGuestUrlPresetTypePreprod,
+     std::size(kGlicGuestUrlPresetTypePreprod), nullptr},
+    {"Prod", kGlicGuestUrlPresetTypeProd,
+     std::size(kGlicGuestUrlPresetTypeProd), nullptr}};
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
@@ -11510,6 +11525,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicForceG1StatusForMultiInstanceName,
      flag_descriptions::kGlicForceG1StatusForMultiInstanceDescription,
      kOsDesktop, MULTI_VALUE_TYPE(kGlicSetG1ForMultiInstance)},
+
+    {"glic-guest-url-presets", flag_descriptions::kGlicGuestUrlPresetsName,
+     flag_descriptions::kGlicGuestUrlPresetsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicGuestUrlPresets,
+                                    kGlicGuestUrlPresetTypes,
+                                    "GlicGuestUrlPresets")},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,

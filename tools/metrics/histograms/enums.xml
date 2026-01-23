@@ -10679,6 +10679,7 @@ from previous Chrome versions.
   <int value="-1265374554" label="CctSignInPrompt:disabled"/>
   <int value="-1264634670" label="HideTabOnTabSwitcher:disabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
+  <int value="-1262577267" label="GlicGuestUrlPresets:enabled"/>
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
   <int value="-1262302650" label="StorageBuckets:disabled"/>
   <int value="-1262152606" label="disable-lock-screen-apps"/>
@@ -13150,6 +13151,7 @@ from previous Chrome versions.
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
   <int value="-403473326" label="VCLightIntensity:disabled"/>
   <int value="-402485105" label="PlatformKeysChangesWave1:disabled"/>
+  <int value="-402255536" label="GlicGuestUrlPresets:disabled"/>
   <int value="-402038055"
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:enabled"/>
   <int value="-401170566"

@@ -1410,6 +1410,10 @@ inline constexpr char kGlicForceG1StatusForMultiInstanceName[] =
 inline constexpr char kGlicForceG1StatusForMultiInstanceDescription[] =
     "Overrides actual AI subscription tier by forcing G1 status, specifically "
     "for multi-instance enablement. Intended for testing only.";
+inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
+inline constexpr char kGlicGuestUrlPresetsDescription[] =
+    "Overrides the Bluebird environment URL used for Glic with user-configured "
+    "values. Intended for manual testing only.";
 
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";

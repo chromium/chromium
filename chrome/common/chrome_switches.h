@@ -313,6 +313,9 @@ extern const char kGlicAdminRedirectPatterns[];
 extern const char kGlicAlwaysShowWebActuationToggle[];
 extern const char kGlicResetMultiInstanceEnabledByTier[];
 extern const char kGlicForceG1StatusForMultiInstance[];
+extern const char kGlicGuestUrlPresetAutopush[];
+extern const char kGlicGuestUrlPresetPreprod[];
+extern const char kGlicGuestUrlPresetProd[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
