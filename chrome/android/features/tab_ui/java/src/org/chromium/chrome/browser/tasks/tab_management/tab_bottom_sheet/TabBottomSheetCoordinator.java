@@ -97,6 +97,17 @@ public class TabBottomSheetCoordinator {
     }
 
     private void cleanupSheetResources() {
+        // If we inflated content and attached external views, remove them from
+        // their containers so those views can be reused later.
+        if (mContentView != null) {
+            ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
+            ViewGroup webUiContainer = mContentView.findViewById(R.id.web_ui_container);
+            ViewGroup fuseboxContainer = mContentView.findViewById(R.id.fusebox_container);
+            if (toolbarContainer != null) toolbarContainer.removeAllViews();
+            if (webUiContainer != null) webUiContainer.removeAllViews();
+            if (fuseboxContainer != null) fuseboxContainer.removeAllViews();
+            mContentView = null;
+        }
         if (mSheetObserver != null && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
