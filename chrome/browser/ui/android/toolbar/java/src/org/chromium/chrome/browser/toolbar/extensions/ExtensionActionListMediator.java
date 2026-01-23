@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -21,7 +23,6 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.content_public.browser.WebContents;
@@ -37,16 +38,17 @@ class ExtensionActionListMediator implements Destroyable {
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModels;
     private final ChromeAndroidTask mTask;
-    private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
-    private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
-
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ExtensionActionListContainer mContainer;
+
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
-    private final ToolbarDelegate mDelegate = new ToolbarDelegate();
+    private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
+    private final ToolbarObserver mToolbarObserver = new ToolbarObserver();
 
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     @Nullable private ExtensionActionPopup mCurrentPopup;
+    @Nullable private String mCurrentPopupActionId;
 
     public ExtensionActionListMediator(
             Context context,
@@ -60,23 +62,148 @@ class ExtensionActionListMediator implements Destroyable {
         mWindowAndroid = windowAndroid;
         mModels = models;
         mTask = task;
+        mCurrentTabSupplier = currentTabSupplier;
         mContainer = container;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
 
-        mExtensionActionsUpdateHelper =
-                new ExtensionActionsUpdateHelper(
-                        mModels, task, currentTabSupplier, mActionsUpdateDelegate);
-
-        mExtensionsToolbarBridge.setDelegate(mDelegate);
+        mExtensionsToolbarBridge.setDelegate(mToolbarDelegate);
+        mExtensionsToolbarBridge.addObserver(mToolbarObserver);
+        reconcileActionItems();
     }
 
     @Override
     public void destroy() {
         closePopup();
         assert mCurrentPopup == null;
+        mExtensionsToolbarBridge.removeObserver(mToolbarObserver);
         mExtensionsToolbarBridge.setDelegate(null);
-        mExtensionActionsUpdateHelper.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+    }
+
+    // Reconciles the current list of models with the list of IDs from the
+    // bridge. This handles additions, removals, and reordering without
+    // rebuilding the whole list.
+    @VisibleForTesting
+    void reconcileActionItems() {
+        String[] actionIds = mExtensionsToolbarBridge.getAllActionIds();
+
+        Tab currentTab = mCurrentTabSupplier.get();
+        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
+
+        // O(N^2).
+        int currentModelIndex = 0;
+        for (String actionId : actionIds) {
+            ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
+            if (action == null) {
+                continue;
+            }
+
+            if (currentModelIndex < mModels.size()
+                    && getActionIdForIndex(currentModelIndex).equals(actionId)) {
+                currentModelIndex++;
+                continue;
+            }
+
+            int indexInModels = findIndexForId(actionId, currentModelIndex + 1);
+
+            if (indexInModels != -1) {
+                mModels.move(indexInModels, currentModelIndex);
+            } else {
+                mModels.add(currentModelIndex, createListItem(action, webContents));
+            }
+
+            currentModelIndex++;
+        }
+
+        while (mModels.size() > currentModelIndex) {
+            if (getActionIdForIndex(currentModelIndex).equals(mCurrentPopupActionId)) {
+                closePopup();
+            }
+            mModels.removeAt(currentModelIndex);
+        }
+    }
+
+    private ListItem createListItem(ExtensionAction action, @Nullable WebContents webContents) {
+        String actionId = action.getId();
+
+        Bitmap icon = getIconForAction(actionId, webContents);
+
+        return new ListItem(
+                ListItemType.EXTENSION_ACTION,
+                new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
+                        .with(ExtensionActionButtonProperties.ICON, icon)
+                        .with(ExtensionActionButtonProperties.ID, actionId)
+                        .with(
+                                ExtensionActionButtonProperties.ON_CLICK_LISTENER,
+                                (view) -> onPrimaryClick(actionId))
+                        .with(
+                                ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
+                                (view) -> {
+                                    onContextClick((ListMenuButton) view, actionId);
+                                    return false;
+                                })
+                        .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
+                        .build());
+    }
+
+    @VisibleForTesting
+    Bitmap getIconForAction(String actionId, @Nullable WebContents webContents) {
+        Bitmap icon =
+                ExtensionActionIconUtil.getIcon(
+                        mContext, mExtensionsToolbarBridge, actionId, webContents);
+        assert icon != null;
+        return icon;
+    }
+
+    @VisibleForTesting
+    void removeActionItem(String actionId) {
+        if (mCurrentPopupActionId != null && mCurrentPopupActionId.equals(actionId)) {
+            closePopup();
+        }
+
+        int index = findIndexForId(actionId, 0);
+        if (index != -1) {
+            mModels.removeAt(index);
+        }
+    }
+
+    // Updates model properties while keeping it in place.
+    @VisibleForTesting
+    void updateActionProperties(String actionId) {
+        Tab currentTab = mCurrentTabSupplier.get();
+        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
+
+        int index = findIndexForId(actionId, 0);
+        if (index == -1) {
+            return;
+        }
+
+        ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
+        if (action == null) {
+            return;
+        }
+
+        Bitmap icon = getIconForAction(actionId, webContents);
+        mModels.get(index).model.set(ExtensionActionButtonProperties.ICON, icon);
+
+        mModels.get(index).model.set(ExtensionActionButtonProperties.TITLE, action.getTitle());
+    }
+
+    // Finds the model for {@code actionId} inside {@code mModels}, and returns
+    // the index if it exists. If not, returns -1.
+    private int findIndexForId(String actionId, int startIndex) {
+        for (int i = startIndex; i < mModels.size(); i++) {
+            if (getActionIdForIndex(i).equals(actionId)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Returns the {@code actionId} for the {@code index}th model inside {@code mModels}.
+    private String getActionIdForIndex(int index) {
+        assert index < mModels.size();
+        return mModels.get(index).model.get(ExtensionActionButtonProperties.ID);
     }
 
     private void onPrimaryClick(String actionId) {
@@ -100,6 +227,7 @@ class ExtensionActionListMediator implements Destroyable {
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
         mCurrentPopup.loadInitialPage();
         mCurrentPopup.addOnDismissListener(this::closePopup);
+        mCurrentPopupActionId = actionId;
     }
 
     @Nullable
@@ -114,7 +242,7 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void onContextClick(ListMenuButton buttonView, String actionId) {
-        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+        Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null) {
             return;
         }
@@ -136,56 +264,39 @@ class ExtensionActionListMediator implements Destroyable {
         if (mCurrentPopup == null) {
             return;
         }
-        assert mExtensionActionsUpdateHelper.getExtensionActionsBridge() != null;
 
         // Clear mCurrentPopup now to avoid calling closePopup recursively via OnDismissListener.
         ExtensionActionPopup popup = mCurrentPopup;
         mCurrentPopup = null;
         popup.destroy();
+        mCurrentPopupActionId = null;
     }
 
-    private class ActionsUpdateDelegate
-            implements ExtensionActionsUpdateHelper.ActionsUpdateDelegate {
+    private class ToolbarObserver implements ExtensionsToolbarBridge.Observer {
         @Override
-        public void onUpdateStarted() {
-            closePopup();
-            assert mCurrentPopup == null;
+        public void onActionsInitialized() {
+            reconcileActionItems();
         }
 
         @Override
-        public ListItem createActionModel(
-                ExtensionActionsBridge extensionActionsBridge, int tabId, String actionId) {
-            ExtensionAction action = extensionActionsBridge.getAction(actionId, tabId);
-            assert action != null;
-
-            Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-            WebContents webContents = currentTab == null ? null : currentTab.getWebContents();
-
-            Bitmap icon =
-                    ExtensionActionIconUtil.getActionIcon(
-                            mContext, extensionActionsBridge, actionId, tabId, webContents);
-            assert icon != null;
-
-            return new ListItem(
-                    ListItemType.EXTENSION_ACTION,
-                    new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
-                            .with(ExtensionActionButtonProperties.ICON, icon)
-                            .with(ExtensionActionButtonProperties.ID, action.getId())
-                            .with(
-                                    ExtensionActionButtonProperties.ON_CLICK_LISTENER,
-                                    (view) -> onPrimaryClick(actionId))
-                            .with(
-                                    ExtensionActionButtonProperties.ON_CONTEXT_CLICK_LISTENER,
-                                    (view) -> {
-                                        onContextClick((ListMenuButton) view, actionId);
-                                        return false;
-                                    })
-                            .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
-                            .build());
+        public void onActionAdded(String actionId) {
+            reconcileActionItems();
         }
 
         @Override
-        public void onUpdateFinished() {}
+        public void onActionRemoved(String actionId) {
+            removeActionItem(actionId);
+        }
+
+        @Override
+        public void onActionUpdated(String actionId) {
+            updateActionProperties(actionId);
+        }
+
+        @Override
+        public void onPinnedActionsChanged() {
+            reconcileActionItems();
+        }
     }
 
     private class ToolbarDelegate implements ExtensionsToolbarBridge.Delegate {

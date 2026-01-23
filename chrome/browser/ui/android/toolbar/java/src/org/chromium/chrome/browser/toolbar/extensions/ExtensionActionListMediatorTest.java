@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,20 +39,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
@@ -60,11 +61,39 @@ import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class ExtensionActionListMediatorTest {
-    private static final int TAB1_ID = 111;
-    private static final int TAB2_ID = 222;
+
+    /** An representation of an extension action. */
+    private static class ActionData {
+        private final String mId;
+        private final String mTitle;
+        private final Bitmap mIcon;
+
+        public ActionData(String id, String title, Bitmap icon) {
+            mId = id;
+            mTitle = title;
+            mIcon = icon;
+        }
+
+        public String getId() {
+            return mId;
+        }
+
+        public String getTitle() {
+            return mTitle;
+        }
+
+        public Bitmap getIcon() {
+            return mIcon;
+        }
+    }
+
+    private static final int TAB_ID = 111;
     private static final long BROWSER_WINDOW_POINTER = 1000L;
     private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
 
@@ -73,6 +102,17 @@ public class ExtensionActionListMediatorTest {
     private static final Bitmap ICON_GREEN = createSimpleIcon(Color.GREEN);
     private static final Bitmap ICON_CYAN = createSimpleIcon(Color.CYAN);
     private static final Bitmap ICON_MAGENTA = createSimpleIcon(Color.MAGENTA);
+
+    private static final String ACTION1_ID = "aaaaa";
+    private static final String ACTION2_ID = "bbbbb";
+    private static final String ACTION3_ID = "ccccc";
+
+    private final Map<String, ActionData> mActions = new HashMap<>();
+
+    private ExtensionActionListMediator mMediator;
+    private ModelList mModels;
+    private MockTab mTab;
+    private ObservableSupplierImpl<@Nullable Tab> mCurrentTabSupplier;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeAndroidTask mTask;
@@ -86,16 +126,7 @@ public class ExtensionActionListMediatorTest {
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
-    @Rule
-    public final FakeExtensionActionsBridgeRule mFakeBridgeRule =
-            new FakeExtensionActionsBridgeRule();
-
-    private FakeExtensionActionsBridge.TaskModel mTaskModel;
-    private MockTab mTab1;
-    private MockTab mTab2;
-    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
-    private ModelList mModels;
-    private ExtensionActionListMediator mMediator;
+    @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Delegate> mBridgeDelegateCaptor;
 
     @Before
     public void setUp() {
@@ -104,7 +135,7 @@ public class ExtensionActionListMediatorTest {
         // Mock AndroidChromeTask.
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
 
-        // Mock {@link ExtensionActionsBridge}.
+        // Mock JNI for Context Menu Bridge.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
         when(mActionContextMenuBridgeJniMock.init(anyLong(), any(), any(), anyInt()))
                 .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
@@ -112,15 +143,37 @@ public class ExtensionActionListMediatorTest {
                 .thenReturn(mMenuModelBridge);
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
 
-        setUpTaskModel();
+        // Set up default actions.
+        ActionData action1 = new ActionData(ACTION1_ID, "title of action 1", ICON_RED);
+        ActionData action2 = new ActionData(ACTION2_ID, "title of action 2", ICON_BLUE);
+        ActionData action3 = new ActionData(ACTION3_ID, "title of action 3", ICON_GREEN);
+
+        mActions.put(ACTION1_ID, action1);
+        mActions.put(ACTION2_ID, action2);
+        mActions.put(ACTION3_ID, action3);
+
+        when(mExtensionsToolbarBridge.getAction(anyString()))
+                .thenAnswer(
+                        invocation -> {
+                            String id = invocation.getArgument(0);
+
+                            ActionData action = mActions.get(id);
+                            assert action != null;
+
+                            return new ExtensionAction(action.getId(), action.getTitle());
+                        });
+
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID});
 
         // Initialize common objects.
-        mTab1 = new MockTab(TAB1_ID, mProfile);
-        mTab2 = new MockTab(TAB2_ID, mProfile);
-        mTab1.setWebContentsOverrideForTesting(mWebContents);
-        mTab2.setWebContentsOverrideForTesting(mWebContents);
-        mCurrentTabSupplier = ObservableSuppliers.createNullable();
+        mTab = new MockTab(TAB_ID, mProfile);
+        mTab.setWebContentsOverrideForTesting(mWebContents);
+        mCurrentTabSupplier = new ObservableSupplierImpl<>();
+        mCurrentTabSupplier.set(mTab);
+
         mModels = new ModelList();
+
         mMediator =
                 new ExtensionActionListMediator(
                         context,
@@ -129,9 +182,18 @@ public class ExtensionActionListMediatorTest {
                         mTask,
                         mCurrentTabSupplier,
                         mContainer,
-                        mExtensionsToolbarBridge);
+                        mExtensionsToolbarBridge) {
+                    @Override
+                    Bitmap getIconForAction(String actionId, WebContents webContents) {
+                        ActionData action = mActions.get(actionId);
+                        assert action != null;
 
-        // Wait for the main thread to settle.
+                        return action.getIcon();
+                    }
+                };
+
+        verify(mExtensionsToolbarBridge).setDelegate(mBridgeDelegateCaptor.capture());
+
         shadowOf(Looper.getMainLooper()).idle();
     }
 
@@ -141,47 +203,141 @@ public class ExtensionActionListMediatorTest {
     }
 
     @Test
-    public void testUpdateModels() {
-        setUpTaskModel();
+    public void testUpdateModels_onInitialized() {
+        mMediator.reconcileActionItems();
 
-        // Set the current tab.
-        mCurrentTabSupplier.set(mTab1);
-
-        // The model should have been updated.
+        // The models should be updated.
         assertEquals(2, mModels.size());
-        assertItemAt(0, "a", "title of a", ICON_RED);
-        assertItemAt(1, "b", "title of b", ICON_GREEN);
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
     }
 
     @Test
-    public void testUpdateModels_noTab() {
-        // The current tab is not available yet.
-        assertTrue(mModels.isEmpty());
+    public void testUpdateModels_onActionAddedOrRemovedWithReconcile() {
+        mMediator.reconcileActionItems();
+
+        // The models should be updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+
+        // Save the {@link ListItem} instances.
+        ListItem itemForAction1 = mModels.get(0);
+        ListItem itemForAction2 = mModels.get(1);
+
+        // Add action 3 to the list of IDs.
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION2_ID, ACTION3_ID});
+        mMediator.reconcileActionItems();
+
+        // The models should have the additional item.
+        assertEquals(3, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+        assertItemAt(2, ACTION3_ID, "title of action 3", ICON_GREEN);
+
+        // Save the {@link ListItem} instance.
+        ListItem itemForAction3 = mModels.get(2);
+
+        // The same models should be used for existing actions.
+        assertSame("The item object should be reused", itemForAction1, mModels.get(0));
+        assertSame("The item object should be reused", itemForAction2, mModels.get(1));
+
+        // Remove action 2 from the list of IDs.
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION1_ID, ACTION3_ID});
+        mMediator.reconcileActionItems();
+
+        // The models should have 2 items.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION3_ID, "title of action 3", ICON_GREEN);
+
+        // The same models should be used for existing actions.
+        assertSame("The item object should be reused", itemForAction1, mModels.get(0));
+        assertSame("The item object should be reused", itemForAction3, mModels.get(1));
     }
 
     @Test
-    public void testUpdateModels_tabChanged() {
-        // Set the current tab.
-        mCurrentTabSupplier.set(mTab1);
+    public void testUpdateModels_onActionMoved() {
+        mMediator.reconcileActionItems();
 
-        // The model should have been updated.
+        // The models should be updated.
         assertEquals(2, mModels.size());
-        assertItemAt(0, "a", "title of a", ICON_RED);
-        assertItemAt(1, "b", "title of b", ICON_GREEN);
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
 
-        // Simulate changing the tab.
-        mCurrentTabSupplier.set(mTab2);
+        // Save the {@link ListItem} instances.
+        ListItem itemForAction1 = mModels.get(0);
+        ListItem itemForAction2 = mModels.get(1);
 
-        // The model should have been updated.
+        // Swap action 1 and action 2.
+        when(mExtensionsToolbarBridge.getAllActionIds())
+                .thenReturn(new String[] {ACTION2_ID, ACTION1_ID});
+        mMediator.reconcileActionItems();
+
+        // The models should have the additional item.
         assertEquals(2, mModels.size());
-        assertItemAt(0, "a", "another title of a", ICON_CYAN);
-        assertItemAt(1, "b", "another title of b", ICON_MAGENTA);
+        assertItemAt(0, ACTION2_ID, "title of action 2", ICON_BLUE);
+        assertItemAt(1, ACTION1_ID, "title of action 1", ICON_RED);
+
+        // The same models should be used for existing actions.
+        assertSame("The item object should be reused", itemForAction2, mModels.get(0));
+        assertSame("The item object should be reused", itemForAction1, mModels.get(1));
+    }
+
+    @Test
+    public void testUpdateModels_onActionRemoved() {
+        mMediator.reconcileActionItems();
+
+        // The models should be updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+
+        // Save the {@link ListItem} instance.
+        ListItem itemForAction1 = mModels.get(0);
+
+        // Remove action 2 from the list of IDs.
+        mMediator.removeActionItem(ACTION2_ID);
+
+        // The models should have the additional item.
+        assertEquals(1, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+
+        // The same model should be used for existing actions.
+        assertSame("The item object should be reused", itemForAction1, mModels.get(0));
+    }
+
+    @Test
+    public void testUpdateModels_onActionUpdated() {
+        mMediator.reconcileActionItems();
+
+        // The models should be updated.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, ACTION1_ID, "title of action 1", ICON_RED);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+
+        // Save the {@link ListItem} instances.
+        ListItem itemForAction1 = mModels.get(0);
+        ListItem itemForAction2 = mModels.get(1);
+
+        mActions.put(ACTION1_ID, new ActionData(ACTION1_ID, "new title of action 1", ICON_CYAN));
+        mMediator.updateActionProperties(ACTION1_ID);
+
+        // The models should have the additional item.
+        assertEquals(2, mModels.size());
+        assertItemAt(0, ACTION1_ID, "new title of action 1", ICON_CYAN);
+        assertItemAt(1, ACTION2_ID, "title of action 2", ICON_BLUE);
+
+        // The same models should be used for existing actions.
+        assertSame("The item object should be reused", itemForAction1, mModels.get(0));
+        assertSame("The item object should be reused", itemForAction2, mModels.get(1));
     }
 
     @Test
     public void testContextClick_showMenu() {
-        // Set the current tab.
-        mCurrentTabSupplier.set(mTab1);
+        mMediator.reconcileActionItems();
 
         ListItem item = mModels.get(0);
         View.OnContextClickListener listener =
@@ -205,7 +361,7 @@ public class ExtensionActionListMediatorTest {
         verify(mActionContextMenuBridgeJniMock)
                 .init(
                         eq(BROWSER_WINDOW_POINTER),
-                        eq("a"),
+                        eq(ACTION1_ID),
                         eq(mWebContents),
                         eq(ContextMenuSource.TOOLBAR_ACTION));
 
@@ -216,42 +372,6 @@ public class ExtensionActionListMediatorTest {
         verify(mockButton).addPopupListener(mPopupListenerCaptor.capture());
         mPopupListenerCaptor.getValue().onPopupMenuDismissed();
         verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
-    }
-
-    private void setUpTaskModel() {
-        mTaskModel = mFakeBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask);
-        mTaskModel.setInitialized(true);
-
-        mTaskModel.putAction(
-                "a",
-                (tabId) -> {
-                    if (tabId == TAB1_ID) {
-                        return new FakeExtensionActionsBridge.ActionData.Builder()
-                                .setTitle("title of a")
-                                .setIcon(ICON_RED)
-                                .build();
-                    } else {
-                        return new FakeExtensionActionsBridge.ActionData.Builder()
-                                .setTitle("another title of a")
-                                .setIcon(ICON_CYAN)
-                                .build();
-                    }
-                });
-        mTaskModel.putAction(
-                "b",
-                (tabId) -> {
-                    if (tabId == TAB1_ID) {
-                        return new FakeExtensionActionsBridge.ActionData.Builder()
-                                .setTitle("title of b")
-                                .setIcon(ICON_GREEN)
-                                .build();
-                    } else {
-                        return new FakeExtensionActionsBridge.ActionData.Builder()
-                                .setTitle("another title of b")
-                                .setIcon(ICON_MAGENTA)
-                                .build();
-                    }
-                });
     }
 
     private static Bitmap createSimpleIcon(int color) {
