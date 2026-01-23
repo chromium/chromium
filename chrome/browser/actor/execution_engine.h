@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/origin_checker.h"
@@ -108,6 +109,9 @@ class ExecutionEngine : public ToolDelegate {
   };
 
   explicit ExecutionEngine(Profile* profile);
+  ExecutionEngine(base::PassKey<ExecutionEngine>,
+                  Profile* profile,
+                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine() override;
@@ -216,9 +220,6 @@ class ExecutionEngine : public ToolDelegate {
 
  private:
   class NewTabWebContentsObserver;
-  // Used by tests only.
-  ExecutionEngine(Profile* profile,
-                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   void SetState(State state);
 

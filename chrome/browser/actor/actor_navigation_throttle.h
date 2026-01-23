@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_NAVIGATION_THROTTLE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor/task_id.h"
@@ -32,6 +33,9 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
   static ActorNavigationThrottle CreateForTesting(
       content::NavigationThrottleRegistry& registry,
       const ActorTask& task);
+  ActorNavigationThrottle(base::PassKey<ActorNavigationThrottle>,
+                          content::NavigationThrottleRegistry& registry,
+                          const ActorTask& task);
   static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ActorNavigationThrottle(const ActorNavigationThrottle&) = delete;
@@ -48,9 +52,6 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  explicit ActorNavigationThrottle(
-      content::NavigationThrottleRegistry& registry,
-      const ActorTask& task);
 
   content::NavigationThrottle::ThrottleCheckResult WillStartOrRedirectRequest(
       bool is_redirection);

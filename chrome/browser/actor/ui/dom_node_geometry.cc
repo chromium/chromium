@@ -4,8 +4,8 @@
 
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
@@ -52,12 +52,14 @@ std::unique_ptr<DomNodeGeometry> DomNodeGeometry::InitFromApc(
   TRACE_EVENT("actor", "DomNodeGeometry::InitFromApc");
   if (!apc.has_main_frame_data() ||
       !apc.main_frame_data().has_document_identifier()) {
-    return base::WrapUnique(
-        new DomNodeGeometry(GetDomNodeResult::kNoApcMainFrameData));
+    return std::make_unique<DomNodeGeometry>(
+        base::PassKey<DomNodeGeometry>(),
+        GetDomNodeResult::kNoApcMainFrameData);
   }
   auto map = BuildNodeMap(apc.main_frame_data().document_identifier(),
                           apc.root_node());
-  return base::WrapUnique(new DomNodeGeometry(std::move(map)));
+  return std::make_unique<DomNodeGeometry>(base::PassKey<DomNodeGeometry>(),
+                                           std::move(map));
 }
 
 base::expected<gfx::Point, GetDomNodeResult> DomNodeGeometry::GetDomNode(
@@ -91,10 +93,12 @@ DomNodeGeometry::InternalGetDomNode(const DomNode& node) const {
   return gfx::Point(x, y);
 }
 
-DomNodeGeometry::DomNodeGeometry(GetDomNodeResult init_error)
+DomNodeGeometry::DomNodeGeometry(base::PassKey<DomNodeGeometry>,
+                                 GetDomNodeResult init_error)
     : init_error_(init_error), node_map_() {}
 
-DomNodeGeometry::DomNodeGeometry(NodeGeomMap node_map)
+DomNodeGeometry::DomNodeGeometry(base::PassKey<DomNodeGeometry>,
+                                 NodeGeomMap node_map)
     : init_error_(std::nullopt), node_map_(std::move(node_map)) {}
 
 DomNodeGeometry::~DomNodeGeometry() = default;

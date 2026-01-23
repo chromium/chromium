@@ -25,6 +25,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -138,15 +139,14 @@ ToolDelegate::CredentialWithPermission::operator=(CredentialWithPermission&&) =
 ToolDelegate::CredentialWithPermission::~CredentialWithPermission() = default;
 
 ExecutionEngine::ExecutionEngine(Profile* profile)
-    : profile_(profile),
-      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
-      ui_event_dispatcher_(ui::NewUiEventDispatcher(
-          ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
-  TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
-  CHECK(profile_);
-}
+    : ExecutionEngine(
+          base::PassKey<ExecutionEngine>(),
+          profile,
+          ui::NewUiEventDispatcher(
+              ActorKeyedService::Get(profile)->GetActorUiStateManager())) {}
 
 ExecutionEngine::ExecutionEngine(
+    base::PassKey<ExecutionEngine>,
     Profile* profile,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
     : profile_(profile),
@@ -159,8 +159,9 @@ ExecutionEngine::ExecutionEngine(
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
     Profile* profile,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
-  return base::WrapUnique<ExecutionEngine>(
-      new ExecutionEngine(profile, std::move(ui_event_dispatcher)));
+  return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
+                                           profile,
+                                           std::move(ui_event_dispatcher));
 }
 
 ExecutionEngine::~ExecutionEngine() {

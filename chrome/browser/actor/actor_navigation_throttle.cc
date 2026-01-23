@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/memory/ptr_util.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -72,17 +72,19 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  registry.AddThrottle(base::WrapUnique(
-      new ActorNavigationThrottle(registry, *task_it->second)));
+  registry.AddThrottle(std::make_unique<ActorNavigationThrottle>(
+      base::PassKey<ActorNavigationThrottle>(), registry, *task_it->second));
 }
 
 ActorNavigationThrottle ActorNavigationThrottle::CreateForTesting(
     content::NavigationThrottleRegistry& registry,
     const ActorTask& task) {
-  return ActorNavigationThrottle(registry, task);
+  return ActorNavigationThrottle(base::PassKey<ActorNavigationThrottle>(),
+                                 registry, task);
 }
 
 ActorNavigationThrottle::ActorNavigationThrottle(
+    base::PassKey<ActorNavigationThrottle>,
     content::NavigationThrottleRegistry& registry,
     const ActorTask& task)
     : content::NavigationThrottle(registry),
