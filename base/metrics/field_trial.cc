@@ -932,9 +932,7 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     pickle.WriteString(group_name);
     pickle.WriteBool(is_overridden);
 
-    if (prev_entry->pickle_size == pickle.size() &&
-        UNSAFE_TODO(memcmp(prev_entry->GetPickledDataPtr(), pickle.data(),
-                           pickle.size())) == 0) {
+    if (prev_entry->GetPickledDataAsSpan() == base::span(pickle)) {
       // If the new entry is going to be the exact same as the existing one,
       // then simply keep the existing one to avoid taking extra space in the
       // allocator. This should mean that this trial has no params.
@@ -956,9 +954,8 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     new_entry->pickle_size = pickle.size();
 
     // TODO(lawrencewu): Modify base::Pickle to be able to write over a section
-    // in memory, so we can avoid this memcpy.
-    UNSAFE_TODO(
-        memcpy(new_entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
+    // in memory, so we can avoid this copy.
+    new_entry->GetPickledDataAsSpan().copy_from(pickle);
 
     // Update the ref on the field trial and add it to the list to be made
     // iterable.
@@ -1155,8 +1152,8 @@ void FieldTrialList::AddToAllocatorWhileLocked(
   entry->pickle_size = pickle.size();
 
   // TODO(lawrencewu): Modify base::Pickle to be able to write over a section in
-  // memory, so we can avoid this memcpy.
-  UNSAFE_TODO(memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size()));
+  // memory, so we can avoid this copy.
+  entry->GetPickledDataAsSpan().copy_from(pickle);
 
   allocator->MakeIterable(ref);
   field_trial->ref_ = ref;

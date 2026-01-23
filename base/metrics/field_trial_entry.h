@@ -17,6 +17,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 
 namespace base::internal {
@@ -38,12 +39,20 @@ struct BASE_EXPORT FieldTrialEntry {
   GetAllFieldTrialsFromPersistentAllocator(
       const PersistentMemoryAllocator& allocator);
 
-  // Return a pointer to the data area immediately following the entry.
-  uint8_t* GetPickledDataPtr() {
-    return UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1));
+  // Returns a span over the pickled data.
+  base::span<uint8_t> GetPickledDataAsSpan() {
+    // SAFETY: `pickle_size` is from a trusted shared memory source, and
+    // `GetPickledDataPtr()` points to the data immediately following the
+    // struct.
+    return UNSAFE_BUFFERS(base::span(GetPickledDataPtr(),
+                                     base::checked_cast<size_t>(pickle_size)));
   }
-  const uint8_t* GetPickledDataPtr() const {
-    return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this + 1));
+  base::span<const uint8_t> GetPickledDataAsSpan() const {
+    // SAFETY: `pickle_size` is from a trusted shared memory source, and
+    // `GetPickledDataPtr()` points to the data immediately following the
+    // struct.
+    return UNSAFE_BUFFERS(base::span(GetPickledDataPtr(),
+                                     base::checked_cast<size_t>(pickle_size)));
   }
 
   // Whether or not this field trial is activated. This is really just a
@@ -87,6 +96,14 @@ struct BASE_EXPORT FieldTrialEntry {
                   std::string_view& trial_name,
                   std::string_view& group_name,
                   bool& is_overridden) const;
+
+  // Return a pointer to the data area immediately following the entry.
+  uint8_t* GetPickledDataPtr() {
+    return UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1));
+  }
+  const uint8_t* GetPickledDataPtr() const {
+    return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this + 1));
+  }
 };
 
 }  // namespace base::internal
