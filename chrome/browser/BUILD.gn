@@ -3103,6 +3103,8 @@ static_library("browser") {
       "media/android/router/chrome_media_router_client.cc",
       "media/android/router/chrome_media_router_client.h",
       "memory_details_android.cc",
+      "metrics/android/background_upload_task.cc",
+      "metrics/android/background_upload_task.h",
       "metrics/chrome_android_metrics_provider.cc",
       "metrics/chrome_android_metrics_provider.h",
       "metrics/incognito_observer_android.cc",

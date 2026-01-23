@@ -786,6 +786,11 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Safety Hub fetch task"/>
   <int value="33" label="Auxiliary search donate task"/>
   <int value="34" label="Chrome signals reporting task"/>
+  <int value="35" label="UMA upload task"/>
+  <int value="36" label="UKM upload task"/>
+  <int value="37" label="DWA upload task"/>
+  <int value="38" label="PUMA upload task"/>
+  <int value="39" label="Structured Metrics upload task"/>
 </enum>
 
 <enum name="BackPressConsumer">

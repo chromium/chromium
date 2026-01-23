@@ -50,8 +50,13 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_SAFETY_HUB = 32;
     public static final int BACKGROUND_AUXILIARY_SEARCH_DONATE = 33;
     public static final int BACKGROUND_CHROME_SIGNALS_REPORTING = 34;
+    public static final int BACKGROUND_UMA_UPLOAD = 35;
+    public static final int BACKGROUND_UKM_UPLOAD = 36;
+    public static final int BACKGROUND_DWA_UPLOAD = 37;
+    public static final int BACKGROUND_PUMA_UPLOAD = 38;
+    public static final int BACKGROUND_STRUCTURED_METRICS_UPLOAD = 39;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 35;
+    public static final int BACKGROUND_TASK_COUNT = 40;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -141,6 +146,16 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_AUXILIARY_SEARCH_DONATE;
             case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
                 return BACKGROUND_CHROME_SIGNALS_REPORTING;
+            case TaskIds.UMA_UPLOAD_JOB_ID:
+                return BACKGROUND_UMA_UPLOAD;
+            case TaskIds.UKM_UPLOAD_JOB_ID:
+                return BACKGROUND_UKM_UPLOAD;
+            case TaskIds.DWA_UPLOAD_JOB_ID:
+                return BACKGROUND_DWA_UPLOAD;
+            case TaskIds.PUMA_UPLOAD_JOB_ID:
+                return BACKGROUND_PUMA_UPLOAD;
+            case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
+                return BACKGROUND_STRUCTURED_METRICS_UPLOAD;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -212,6 +227,16 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "AuxiliarySearchDonate";
             case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
                 return "ChromeSignalsReporting";
+            case TaskIds.UMA_UPLOAD_JOB_ID:
+                return "UmaUpload";
+            case TaskIds.UKM_UPLOAD_JOB_ID:
+                return "UkmUpload";
+            case TaskIds.DWA_UPLOAD_JOB_ID:
+                return "DwaUpload";
+            case TaskIds.PUMA_UPLOAD_JOB_ID:
+                return "PumaUpload";
+            case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
+                return "StructuredMetricsUpload";
         }
         assert false;
         return null;

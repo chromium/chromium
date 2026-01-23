@@ -96,6 +96,11 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
             case TaskIds.WEBFEEDS_REFRESH_JOB_ID:
+            case TaskIds.UMA_UPLOAD_JOB_ID:
+            case TaskIds.UKM_UPLOAD_JOB_ID:
+            case TaskIds.DWA_UPLOAD_JOB_ID:
+            case TaskIds.PUMA_UPLOAD_JOB_ID:
+            case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
                 return new ProxyNativeTask();
             // When adding a new job id with a BackgroundTask, remember to add a specific case
             // for it here.

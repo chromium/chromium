@@ -313,6 +313,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DownloadCleanup" summary="DownloadCleanup"/>
   <variant name="DownloadLater" summary="DownloadLater"/>
   <variant name="DownloadService" summary="DownloadService"/>
+  <variant name="DwaUpload" summary="DwaUpload"/>
   <variant name="ExploreSitesRefresh" summary="ExploreSitesRefresh"/>
   <variant name="FeedRefresh" summary="FeedRefresh"/>
   <variant name="FeedV2Refresh" summary="FeedV2Refresh"/>
@@ -326,9 +327,13 @@ chromium-metrics-reviews@google.com.
   <variant name="Omaha" summary="Omaha"/>
   <variant name="PeriodicBackgroundSyncChromeWakeup"
       summary="PeriodicBackgroundSyncChromeWakeup"/>
+  <variant name="PumaUpload" summary="PumaUpload"/>
   <variant name="QueryTile" summary="QueryTile"/>
   <variant name="SafetyHub" summary="SafetyHub"/>
+  <variant name="StructuredMetricsUpload" summary="StructuredMetricsUpload"/>
   <variant name="Test" summary="Test"/>
+  <variant name="UkmUpload" summary="UkmUpload"/>
+  <variant name="UmaUpload" summary="UmaUpload"/>
   <variant name="WebApkUpdate" summary="WebApkUpdate"/>
   <variant name="WebviewComponentUpdate" summary="WebviewComponentUpdate"/>
   <variant name="WebviewMinidumpUploading" summary="WebviewMinidumpUploading"/>

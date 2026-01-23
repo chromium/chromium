@@ -157,7 +157,23 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.BACKGROUND_CHROME_SIGNALS_REPORTING,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 35);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_UMA_UPLOAD,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.UMA_UPLOAD_JOB_ID));
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_UKM_UPLOAD,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.UKM_UPLOAD_JOB_ID));
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_DWA_UPLOAD,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.DWA_UPLOAD_JOB_ID));
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_PUMA_UPLOAD,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.PUMA_UPLOAD_JOB_ID));
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_STRUCTURED_METRICS_UPLOAD,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 40);
     }
 
     @Test
