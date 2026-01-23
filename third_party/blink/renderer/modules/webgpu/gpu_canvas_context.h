@@ -118,8 +118,6 @@ class GPUCanvasContext : public ScriptWrappable,
 
  private:
   CanvasResourceProviderSharedImage* GetOrCreateCanvasResourceProvider();
-  CanvasResourceProviderSharedImage* PaintRenderingResultsToCanvas(
-      SourceDrawingBuffer);
   scoped_refptr<WebGPUMailboxTexture> GetFrontBufferMailboxTexture();
   void DetachSwapBuffers();
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
