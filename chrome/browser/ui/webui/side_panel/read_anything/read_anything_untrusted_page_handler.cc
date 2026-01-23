@@ -1278,6 +1278,9 @@ void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
   if (!url.SchemeIsHTTPOrHTTPS()) {
     VLOG(1) << kReadAnythingPrefix << ": URL is not HTTP/HTTPS, skipping for "
             << url.spec();
+    // Call UpdateContent with empty values so status can be updated from show
+    // loading to no content.
+    page_->UpdateContent("", "");
     return;
   }
 

@@ -716,13 +716,11 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   model_.set_requires_distillation(false);
   model_.set_page_finished_loading(false);
 
-  // TODO(crbug.com/459144990): Handle showLoading scenario for readability
-  // path.
+  ExecuteJavaScript("chrome.readingMode.showLoading();");
+
   if (features::IsReadAnythingWithReadabilityEnabled()) {
     return;
   }
-
-  ExecuteJavaScript("chrome.readingMode.showLoading();");
 
   // After the active tree has changed, start a timer for logging distillation
   // success or failures. Logging this via a timer reduces duplicate
