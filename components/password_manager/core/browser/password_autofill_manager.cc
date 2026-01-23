@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -77,7 +78,6 @@ using autofill::SuggestionType;
 using autofill::password_generation::PasswordGenerationType;
 using SuggestionMetadata =
     autofill::AutofillSuggestionDelegate::SuggestionMetadata;
-using IsLoading = autofill::Suggestion::IsLoading;
 
 bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
   switch (type) {
@@ -158,22 +158,6 @@ std::string GetGuidFromSuggestion(const Suggestion& suggestion) {
   return std::holds_alternative<Suggestion::Guid>(suggestion.payload)
              ? suggestion.GetPayload<Suggestion::Guid>().value()
              : std::string();
-}
-
-std::vector<Suggestion> PrepareLoadingStateSuggestions(
-    std::vector<Suggestion> current_suggestions,
-    const Suggestion& selected_suggestion) {
-  auto modifier_fun = [&selected_suggestion](auto& suggestion) {
-    using enum Suggestion::Acceptability;
-    if (suggestion == selected_suggestion) {
-      suggestion.acceptability = kUnacceptable;
-      suggestion.is_loading = IsLoading(true);
-    } else {
-      suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
-    }
-  };
-  std::ranges::for_each(current_suggestions, modifier_fun);
-  return current_suggestions;
 }
 
 bool AreNewSuggestionsTheSame(
@@ -317,7 +301,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       // This is used for passkey entries, and it is
       // `WebAuthnCredentialsDelegate`s responsibility to dismiss the popup
       // (e.g. when the passkey response is received from the enclave).
-      UpdatePopup(PrepareLoadingStateSuggestions(
+      UpdatePopup(autofill::PrepareLoadingStateSuggestions(
           std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
@@ -351,7 +335,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                 },
                 weak_ptr_factory_.GetWeakPtr()));
       }
-      UpdatePopup(PrepareLoadingStateSuggestions(
+      UpdatePopup(autofill::PrepareLoadingStateSuggestions(
           std::move(last_popup_open_args_).suggestions, suggestion));
       break;
     }
