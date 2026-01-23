@@ -278,7 +278,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected get shouldShowDivider_(): boolean {
     // TODO(b/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
-        this.searchboxLayoutMode === 'TallBottomContext') {
+        this.searchboxLayoutMode === 'TallBottomContext' &&
+        !this.showFileCarousel_) {
       return false;
     }
 
