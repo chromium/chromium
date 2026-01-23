@@ -49,15 +49,6 @@ AbstractTextureAndroid::CreateForPassthrough(gfx::Size size) {
   return std::make_unique<AbstractTextureAndroid>(std::move(texture), size);
 }
 
-std::unique_ptr<AbstractTextureAndroid>
-AbstractTextureAndroid::CreateForTesting(GLuint texture_id) {
-  auto texture = std::make_unique<gpu::TextureBase>(texture_id);
-  return std::make_unique<AbstractTextureAndroid>(std::move(texture));
-}
-
-AbstractTextureAndroid::AbstractTextureAndroid(
-    std::unique_ptr<gpu::TextureBase> texture)
-    : texture_for_testing_(std::move(texture)) {}
 AbstractTextureAndroid::AbstractTextureAndroid(gles2::Texture* texture)
     : texture_(texture), api_(gl::g_current_gl_context) {}
 AbstractTextureAndroid::AbstractTextureAndroid(
@@ -89,39 +80,12 @@ void AbstractTextureAndroid::NotifyOnContextLost() {
   have_context_ = false;
 }
 
-void AbstractTextureAndroid::BindToServiceId(GLuint service_id) {
-  if (texture_) {
-    texture_->BindToServiceId(service_id);
-    texture_->SetLevelCleared(texture_->target(), /*level=*/0, true);
-  } else if (texture_passthrough_) {
-    texture_passthrough_->BindToServiceId(service_id);
-
-    if (gl::g_current_gl_driver->ext.b_GL_ANGLE_texture_external_update) {
-      // Notify the texture that its size has changed.
-      unsigned int target = texture_passthrough_->target();
-      GLint prev_texture = 0;
-      glGetIntegerv(gles2::GetTextureBindingQuery(target), &prev_texture);
-      glBindTexture(target, texture_passthrough_->service_id());
-
-      glTexImage2DExternalANGLE(
-          target, /*level=*/0, /*internalformat=*/GL_RGBA,
-          texture_passthrough_size_.width(), texture_passthrough_size_.height(),
-          /*border=*/0, /*format=*/GL_RGBA, /*type=*/GL_UNSIGNED_BYTE);
-
-      glBindTexture(target, prev_texture);
-    }
-  }
-}
-
 TextureBase* AbstractTextureAndroid::GetTextureBase() const {
   if (texture_) {
     return texture_;
   }
   if (texture_passthrough_) {
     return texture_passthrough_.get();
-  }
-  if (texture_for_testing_) {
-    return texture_for_testing_.get();
   }
   return nullptr;
 }

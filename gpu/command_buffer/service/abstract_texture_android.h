@@ -37,10 +37,7 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid final {
       gfx::Size size);
   static std::unique_ptr<AbstractTextureAndroid> CreateForPassthrough(
       gfx::Size size);
-  static std::unique_ptr<AbstractTextureAndroid> CreateForTesting(
-      GLuint texture_id);
 
-  explicit AbstractTextureAndroid(std::unique_ptr<TextureBase> texture);
   explicit AbstractTextureAndroid(gles2::Texture* texture);
   explicit AbstractTextureAndroid(
       scoped_refptr<gles2::TexturePassthrough> texture,
@@ -54,27 +51,14 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid final {
   // return null if the texture has been destroyed.
   TextureBase* GetTextureBase() const;
 
-  // Binds the texture to |service_id|. This will do nothing if the texture has
-  // been destroyed.
-  //
-  // It is not required to SetCleared() if one calls this method.
-  //
-  // The context must be current.
-  void BindToServiceId(GLuint service_id);
-
   // Used to notify the AbstractTexture if the context is lost.
   void NotifyOnContextLost();
 
   unsigned int service_id() const { return GetTextureBase()->service_id(); }
 
-  base::WeakPtr<AbstractTextureAndroid> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
   bool have_context_ = true;
 
-  std::unique_ptr<TextureBase> texture_for_testing_;
   raw_ptr<gles2::Texture> texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   gfx::Size texture_passthrough_size_;
