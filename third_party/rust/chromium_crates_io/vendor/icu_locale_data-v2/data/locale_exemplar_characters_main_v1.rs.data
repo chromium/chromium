@@ -5,7 +5,7 @@
 ///
 /// Using this implementation will embed the following data in the binary's data segment:
 /// * 896B for the lookup data structure (181 data identifiers)
-/// * 74305B[^1] for the actual data (166 unique structs)
+/// * 74297B[^1] for the actual data (166 unique structs)
 ///
 /// [^1]: these numbers can be smaller in practice due to linker deduplication
 ///
@@ -763,9 +763,9 @@ macro_rules! __impl_locale_exemplar_characters_main_v1 {
                     icu::locale::provider::ExemplarCharactersData(icu::collections::codepointinvliststringlist::CodePointInversionListAndStringList::from_parts_unchecked(
                         unsafe {
                             #[allow(unused_unsafe)]
-                            icu::collections::codepointinvlist::CodePointInversionList::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"\x05\n\0\x0B\n\0\x0F\n\0\x11\n\0\x13\n\0)\n\0*\n\x001\n\x002\n\x003\n\x005\n\x006\n\08\n\0:\n\0<\n\0=\n\0>\n\0C\n\0G\n\0I\n\0K\n\0N\n\0\\\n\0]\n\0f\n\0p\n\0q\n\0u\n\0") }, 67u32)
+                            icu::collections::codepointinvlist::CodePointInversionList::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"\x02\n\0\x03\n\0\x05\n\0\x0B\n\0\x0F\n\0\x11\n\0\x13\n\0)\n\0*\n\x001\n\x002\n\x003\n\x005\n\x006\n\08\n\0:\n\0<\n\0=\n\0>\n\0C\n\0G\n\0I\n\0K\n\0N\n\0\\\n\0]\n\0f\n\0u\n\0") }, 69u32)
                         },
-                        unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x07\0\x06\0\x0C\0\x12\0\x18\0\x1E\0$\0\xE0\xA8\x96\xE0\xA8\xBC\xE0\xA8\x97\xE0\xA8\xBC\xE0\xA8\x9C\xE0\xA8\xBC\xE0\xA8\xAB\xE0\xA8\xBC\xE0\xA8\xB2\xE0\xA8\xBC\xE0\xA8\xB8\xE0\xA8\xBC\xE0\xA9\xB0\xE0\xA8\x82") },
+                        unsafe { zerovec::vecs::VarZeroVec16::from_bytes_unchecked(b"\x06\0\x06\0\x0C\0\x12\0\x18\0\x1E\0\xE0\xA8\x96\xE0\xA8\xBC\xE0\xA8\x97\xE0\xA8\xBC\xE0\xA8\x9C\xE0\xA8\xBC\xE0\xA8\xAB\xE0\xA8\xBC\xE0\xA8\xB2\xE0\xA8\xBC\xE0\xA8\xB8\xE0\xA8\xBC") },
                     )),
                     icu::locale::provider::ExemplarCharactersData(icu::collections::codepointinvliststringlist::CodePointInversionListAndStringList::from_parts_unchecked(
                         unsafe {

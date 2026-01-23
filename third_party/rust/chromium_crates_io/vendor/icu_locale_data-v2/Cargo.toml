@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.83"
 name = "icu_locale_data"
-version = "2.1.1"
+version = "2.1.2"
 authors = ["The ICU4X Project Developers"]
 build = "build.rs"
 include = [
@@ -40,7 +40,7 @@ license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
 [package.metadata.sources.cldr]
-tagged = "48.0.0"
+tagged = "48.1.0"
 
 [package.metadata.sources.icuexport]
 tagged = "release-78.1rc"
