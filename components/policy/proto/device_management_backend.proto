@@ -690,6 +690,11 @@ message PolicyFetchRequest {
 message DisabledState {
   // A message to the finder/thief that should be shown on the screen.
   optional string message = 1;
+
+  // When location tracking is enabled, a special message will be shown on the
+  // disabled screen to warn the user that administrators might be trying to
+  // access the geolocation of the device.
+  optional bool location_tracking_enabled = 2;
 }
 
 message DeviceState {
