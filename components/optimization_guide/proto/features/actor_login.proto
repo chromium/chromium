@@ -37,6 +37,13 @@ message ActorLoginQuality {
 
   PermissionOption permission_picked = 6 [features = { field_presence: EXPLICIT }];
 
+  // True if a successful login was detected for a submitted form.
+  bool successful_login_detected = 7 [features = { field_presence: EXPLICIT }];
+
+  // The time from the first attempt login call to the successful login
+  // detection. Only set if successful_login_detected is true.
+  int64 time_until_successful_login_ms = 8 [features = { field_presence: EXPLICIT }];
+
   message FormData {
     // The signature of the form. This is the hash identifier used to denote
     // this field for query and voting purposes. See
