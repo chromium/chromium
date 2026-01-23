@@ -26,7 +26,7 @@ bool IsAppConfigForCastStreaming(
 }
 
 std::string GetMessagePortOriginForAppId(const std::string& app_id) {
-  const std::optional<base::Value::Dict>& config =
+  const std::optional<base::DictValue>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (!config) {
     return kCastStreamingMessagePortOrigin;
@@ -34,7 +34,7 @@ std::string GetMessagePortOriginForAppId(const std::string& app_id) {
 
   constexpr char kEnableVideoOnlyReceiverSwitch[] =
       "enable-video-only-receiver-for-app-ids";
-  const base::Value::List* app_id_list =
+  const base::ListValue* app_id_list =
       config->FindList(kEnableVideoOnlyReceiverSwitch);
   if (!app_id_list) {
     return kCastStreamingMessagePortOrigin;

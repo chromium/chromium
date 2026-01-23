@@ -97,9 +97,9 @@ KeyEvent CreateKeyEvent(Key key,
                         event_type, options);
 }
 
-base::Value::List FuchsiaModifiersToWebModifiers(
+base::ListValue FuchsiaModifiersToWebModifiers(
     const std::vector<fuchsia_ui_input3::Modifiers> fuchsia_modifiers) {
-  base::Value::List web_modifiers;
+  base::ListValue web_modifiers;
   for (const auto modifier : fuchsia_modifiers) {
     if (modifier == fuchsia_ui_input3::Modifiers::kAlt) {
       web_modifiers.Append("Alt");
@@ -128,7 +128,7 @@ base::Value ExpectedKeyValue(std::string_view code,
                              std::string_view key,
                              std::string_view type,
                              KeyEventOptions options = {}) {
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set("code", code);
   expected.Set("key", key);
   expected.Set("type", type);
@@ -249,7 +249,7 @@ class KeyboardInputTest : public WebEngineBrowserTest {
     command_line->AppendSwitch("allow-pre-commit-input");
   }
 
-  void ExpectKeyEventsEqual(base::Value::List expected) {
+  void ExpectKeyEventsEqual(base::ListValue expected) {
     frame_for_test_.navigation_listener().RunUntilTitleEquals(
         base::NumberToString(expected.size()));
 
@@ -260,7 +260,7 @@ class KeyboardInputTest : public WebEngineBrowserTest {
 
   template <typename... Args>
   void ExpectKeyEventsEqual(Args... events) {
-    base::Value::List expected =
+    base::ListValue expected =
         content::ListValueOf(std::forward<Args>(events)...).TakeList();
     ExpectKeyEventsEqual(std::move(expected));
   }
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllSupportedWebModifierKeys) {
         Key::kM, 'm', KeyEventType::kPressed, {.modifiers = {modifier}}));
   }
 
-  base::Value::List expected_events;
+  base::ListValue expected_events;
   for (const auto& modifier : kAllSupportedModifiers) {
     expected_events.Append(
         ExpectedKeyValue("KeyM", "m", kKeyDown, {.modifiers = {modifier}}));
@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, AllUnsupportedWebModifierKeys) {
         Key::kM, 'm', KeyEventType::kPressed, {.modifiers = {modifier}}));
   }
 
-  base::Value::List expected_events;
+  base::ListValue expected_events;
   for (size_t i = 0; i < kAllUnsupportedModifiers.size(); ++i) {
     expected_events.Append(ExpectedKeyValue("KeyM", "m", kKeyDown, {}));
     expected_events.Append(ExpectedKeyValue("KeyM", "m", kKeyPress, {}));

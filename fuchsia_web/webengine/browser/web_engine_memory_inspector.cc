@@ -19,13 +19,12 @@
 namespace {
 
 std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
-  const std::optional<base::Value::Dict>& config =
+  const std::optional<base::DictValue>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (!config)
     return {};
 
-  const base::Value::List* names_list =
-      config->FindList("allocator-dump-names");
+  const base::ListValue* names_list = config->FindList("allocator-dump-names");
   if (!names_list)
     return {};
 

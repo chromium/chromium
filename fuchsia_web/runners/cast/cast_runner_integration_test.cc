@@ -591,7 +591,7 @@ TEST_F(CastRunnerIntegrationTest, RemoteDebugging) {
   component.StartCastComponentWithQueryApi();
 
   // Connect to the debug service and ensure we get the proper response.
-  base::Value::List devtools_list =
+  base::ListValue devtools_list =
       GetDevToolsListFromPort(CastRunner::kRemoteDebuggingPort);
   EXPECT_EQ(devtools_list.size(), 1u);
 
@@ -1055,7 +1055,7 @@ TEST_F(CastRunnerIntegrationTest, FrameHostDebugging) {
   dev_tools_listener.RunUntilNumberOfPortsIs(1);
   uint16_t remote_debugging_port = *(dev_tools_listener.debug_ports().begin());
 
-  base::Value::List devtools_list =
+  base::ListValue devtools_list =
       GetDevToolsListFromPort(remote_debugging_port);
   EXPECT_EQ(devtools_list.size(), 1u);
   {

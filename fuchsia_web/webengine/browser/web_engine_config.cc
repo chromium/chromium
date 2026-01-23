@@ -70,9 +70,9 @@ void AppendToSwitch(std::string_view switch_name,
   command_line->AppendSwitchNative(switch_name, new_value);
 }
 
-bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
+bool AddCommandLineArgsFromConfig(const base::DictValue& config,
                                   base::CommandLine* command_line) {
-  const base::Value::Dict* args = config.FindDict("command-line-args");
+  const base::DictValue* args = config.FindDict("command-line-args");
   if (!args) {
     return true;
   }
@@ -182,7 +182,7 @@ std::vector<ContentSettingsPattern> GetProtectedServiceWorkers() {
 
 }  // namespace
 
-bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
+bool UpdateCommandLineFromConfigFile(const base::DictValue& config,
                                      base::CommandLine* command_line) {
   // The FieldTrialList should be initialized only after config is loaded.
   CHECK(!base::FieldTrialList::GetInstance());

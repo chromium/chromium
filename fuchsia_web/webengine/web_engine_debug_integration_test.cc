@@ -118,7 +118,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugService) {
   // Test the debug information is correct.
   ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
 
-  base::Value::List devtools_list =
+  base::ListValue devtools_list =
       GetDevToolsListFromPort(*dev_tools_listener_.debug_ports().begin());
   EXPECT_EQ(devtools_list.size(), 1u);
 
@@ -147,7 +147,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
   uint16_t port1 = *dev_tools_listener_.debug_ports().begin();
 
-  base::Value::List devtools_list1 = GetDevToolsListFromPort(port1);
+  base::ListValue devtools_list1 = GetDevToolsListFromPort(port1);
   EXPECT_EQ(devtools_list1.size(), 1u);
 
   const auto& devtools_dict1 = devtools_list1[0].GetDict();
@@ -182,7 +182,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_NE(port1, port2);
   ASSERT_TRUE(dev_tools_listener_.debug_ports().contains(port2));
 
-  base::Value::List devtools_list2 = GetDevToolsListFromPort(port2);
+  base::ListValue devtools_list2 = GetDevToolsListFromPort(port2);
   EXPECT_EQ(devtools_list2.size(), 1u);
 
   const auto& devtools_dict2 = devtools_list2[0].GetDict();
@@ -226,7 +226,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   ASSERT_EQ(remote_debugging_port, *dev_tools_listener_.debug_ports().begin());
 
   // Test the debug information is correct.
-  base::Value::List devtools_list =
+  base::ListValue devtools_list =
       GetDevToolsListFromPort(remote_debugging_port);
   EXPECT_EQ(devtools_list.size(), 1u);
 
