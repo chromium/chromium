@@ -654,13 +654,6 @@ BASE_FEATURE(kOriginIsolationHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 // History navigation in response to horizontal overscroll (aka gesture-nav).
 BASE_FEATURE(kOverscrollHistoryNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
-// processes, including blocking storage and cookie access for them.
-//
-// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
-// enforcements are verified not to cause problems.
-BASE_FEATURE(kPdfEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
 

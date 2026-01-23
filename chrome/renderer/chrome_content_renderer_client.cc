@@ -842,10 +842,6 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
 }
 
 bool ChromeContentRendererClient::IsDomStorageDisabled() const {
-  if (!base::FeatureList::IsEnabled(features::kPdfEnforcements)) {
-    return false;
-  }
-
 #if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_EXTENSIONS)
   // PDF renderers shouldn't need to access DOM storage interfaces. Note that
   // it's still possible to access localStorage or sessionStorage in a PDF

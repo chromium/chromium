@@ -75,10 +75,6 @@ BASE_FEATURE(kAdditionalNavigationCommitChecks,
 BASE_FEATURE(kDumpWithoutCrashingForMissingSecurityState,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/325410297): Remove this killswitch once the new
-// sandboxed frame enforcements finish rolling out.
-BASE_FEATURE(kSandboxedFrameEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
 
 namespace content {
@@ -2019,10 +2015,6 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
     const GURL& url,
     bool url_is_for_opaque_origin,
     AccessType access_type) {
-  if (!base::FeatureList::IsEnabled(features::kSandboxedFrameEnforcements)) {
-    return true;
-  }
-
   switch (access_type) {
     case AccessType::kCanCommitNewOrigin:
       // TODO(crbug.com/325410297): Sandboxed frames may commit normal URLs, as
@@ -2048,10 +2040,6 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
 
 bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
     AccessType access_type) {
-  if (!base::FeatureList::IsEnabled(features::kPdfEnforcements)) {
-    return true;
-  }
-
   // PDF processes are allowed to commit normal URLs, and they should be able to
   // claim that they host a regular origin for things like verifying source
   // origins for postMessage. However, PDF renderers should never need to access
