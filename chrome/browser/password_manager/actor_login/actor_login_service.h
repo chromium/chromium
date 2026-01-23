@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_ACTOR_LOGIN_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -42,6 +43,7 @@ class ActorLoginService {
       const Credential& credential,
       bool should_store_permission,
       base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      base::TimeTicks attempt_login_tool_start_time,
       LoginStatusResultOrErrorReply callback) = 0;
 };
 

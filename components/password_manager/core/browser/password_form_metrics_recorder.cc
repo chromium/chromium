@@ -550,6 +550,14 @@ void PasswordFormMetricsRecorder::LogSubmitPassed() {
           metrics_util::PASSWORD_SUBMITTED);
     }
   }
+
+  if (actor_login_start_time_.has_value()) {
+    base::TimeDelta duration =
+        base::TimeTicks::Now() - actor_login_start_time_.value();
+    base::UmaHistogramMediumTimes(
+        "PasswordManager.ActorLogin.TimeFromAttemptToSuccess", duration);
+  }
+
   base::RecordAction(base::UserMetricsAction("PasswordManager_LoginPassed"));
   ukm_entry_builder_.SetSubmission_Observed(1 /*true*/);
   ukm_entry_builder_.SetSubmission_SubmissionResult(
@@ -596,6 +604,11 @@ void PasswordFormMetricsRecorder::SetSubmittedFormType(
 void PasswordFormMetricsRecorder::SetSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   ukm_entry_builder_.SetSubmission_Indicator(static_cast<int>(event));
+}
+
+void PasswordFormMetricsRecorder::SetActorLoginStartTime(
+    base::TimeTicks start_time) {
+  actor_login_start_time_ = start_time;
 }
 
 void PasswordFormMetricsRecorder::RecordDetailedUserAction(

@@ -176,7 +176,7 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginInvalidTabInterface) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   EXPECT_CALL(mock_delegate_, AttemptLogin).Times(0);
   service_->AttemptLogin(&mock_tab, credential, false, mqls_logger(),
-                         future.GetCallback());
+                         base::TimeTicks::Now(), future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kInvalidTabInterface);
@@ -193,9 +193,9 @@ TEST_F(ActorLoginServiceImplTest, AttemptLoginDelegatesToActorLoginDelegate) {
   EXPECT_CALL(mock_tab, GetContents()).WillRepeatedly(Return(web_contents));
   Credential credential = CreateTestCredential();
 
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _));
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _, _));
   service_->AttemptLogin(&mock_tab, credential, false, mqls_logger(),
-                         base::DoNothing());
+                         base::TimeTicks::Now(), base::DoNothing());
 }
 
 TEST_F(ActorLoginServiceImplTest, AttemptLogin_ServiceBusy) {
@@ -207,11 +207,11 @@ TEST_F(ActorLoginServiceImplTest, AttemptLogin_ServiceBusy) {
   Credential credential = CreateTestCredential();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _))
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _, _))
       .WillOnce(
-          RunOnceCallback<3>(base::unexpected(ActorLoginError::kServiceBusy)));
+          RunOnceCallback<4>(base::unexpected(ActorLoginError::kServiceBusy)));
   service_->AttemptLogin(&mock_tab, credential, false, mqls_logger(),
-                         future.GetCallback());
+                         base::TimeTicks::Now(), future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kServiceBusy);
@@ -230,11 +230,11 @@ TEST_F(ActorLoginServiceImplTest, AttemptLogin_FillingNotAllowed) {
   Credential credential = CreateTestCredential();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _))
-      .WillOnce(RunOnceCallback<3>(
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _, _))
+      .WillOnce(RunOnceCallback<4>(
           base::unexpected(ActorLoginError::kFillingNotAllowed)));
   service_->AttemptLogin(&mock_tab, credential, false, mqls_logger(),
-                         future.GetCallback());
+                         base::TimeTicks::Now(), future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(future.Get().error(), ActorLoginError::kFillingNotAllowed);
@@ -258,10 +258,10 @@ TEST_P(ActorLoginServiceImplAttemptLoginTest, AttemptLoginResults) {
   Credential credential = CreateTestCredential();
 
   base::test::TestFuture<LoginStatusResultOrError> future;
-  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _))
-      .WillOnce(RunOnceCallback<3>(test_case.result));
+  EXPECT_CALL(mock_delegate_, AttemptLogin(Eq(credential), _, _, _, _))
+      .WillOnce(RunOnceCallback<4>(test_case.result));
   service_->AttemptLogin(&mock_tab, credential, false, mqls_logger(),
-                         future.GetCallback());
+                         base::TimeTicks::Now(), future.GetCallback());
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get().value(), test_case.result);

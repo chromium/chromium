@@ -112,6 +112,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     bool should_store_permission,
     PasswordManagerClient* client,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_start_time,
     IsTaskInFocus is_task_in_focus,
     LoginStatusResultOrErrorReply callback)
     : origin_(main_frame_origin),
@@ -120,6 +121,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
       client_(client),
       mqls_logger_(mqls_logger),
       start_time_(base::TimeTicks::Now()),
+      attempt_login_start_time_(attempt_login_start_time),
       login_form_finder_(std::make_unique<ActorLoginFormFinder>(client_)),
       is_task_in_focus_(std::move(is_task_in_focus)),
       callback_(std::move(callback)) {}
@@ -379,6 +381,13 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
   }
 
   for (PasswordFormManager* manager : eligible_managers) {
+    if (manager->GetMetricsRecorder()) {
+      // Sets the time in which the attempt login started to compute
+      // how long it took until a successful login submission.
+      manager->GetMetricsRecorder()->SetActorLoginStartTime(
+          attempt_login_start_time_);
+    }
+
     bool stored_credential_belongs_to_manager = std::ranges::any_of(
         manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
         [&stored_credential](const PasswordForm& best_match) {

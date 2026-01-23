@@ -31,6 +31,7 @@ class MockActorLoginDelegate : public ActorLoginDelegate {
               (const Credential& credential,
                bool should_store_permission,
                base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+               base::TimeTicks attempt_login_tool_start_time,
                LoginStatusResultOrErrorReply callback),
               (override));
 };

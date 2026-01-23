@@ -291,7 +291,8 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -327,7 +328,8 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_CrossSiteIframe) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -354,7 +356,8 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
   filler.AttemptLogin(&mock_password_manager_);
@@ -376,7 +379,8 @@ TEST_P(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -402,7 +406,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -441,7 +446,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
   filler.AttemptLogin(&mock_password_manager_);
@@ -471,7 +477,8 @@ TEST_P(
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       request_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -507,7 +514,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_affiliation_service_, GetAffiliationsAndBranding)
       .WillOnce(base::test::RunOnceCallback<1>(
           std::vector<affiliations::Facet>{}, true));
@@ -535,7 +543,8 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillFencedFrameForm) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -575,7 +584,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   ;
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -612,7 +622,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_driver_,
@@ -677,7 +688,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -727,7 +739,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
 
@@ -763,7 +776,8 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillSameSiteNestedIframe) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(false));
@@ -814,7 +828,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -920,7 +935,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1037,7 +1053,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1131,7 +1148,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1216,7 +1234,8 @@ TEST_P(ActorLoginCredentialFillerTest, StoresPermissionWhenFillingAllFields) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1346,7 +1365,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyUsernameInAllEligibleFields) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1446,7 +1466,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillOnlyPasswordInAllEligibleFields) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1545,7 +1566,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillingFailsInAllEligibleFields) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
@@ -1624,7 +1646,8 @@ TEST_P(ActorLoginCredentialFillerTest, FillingIsDisabled) {
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), mock_callback.Get());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
               Run(Eq(base::unexpected(ActorLoginError::kFillingNotAllowed))));
@@ -1661,7 +1684,8 @@ TEST_P(ActorLoginCredentialFillerTest, RequestsReauthBeforeFillingAllFields) {
   ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(true));
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -1726,7 +1750,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
   EXPECT_CALL(mock_driver_, CheckViewAreaVisible(
@@ -1844,7 +1869,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   ON_CALL(mock_form_cache_, GetFormManagers)
       .WillByDefault(Return(base::span(form_managers)));
   EXPECT_CALL(mock_driver_, CheckViewAreaVisible(
@@ -1947,7 +1973,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
   EXPECT_CALL(mock_driver_, CheckViewAreaVisible(
@@ -1998,7 +2025,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   EXPECT_CALL(mock_is_task_in_focus_, Run).WillOnce(Return(false));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -2045,7 +2073,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(false));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -2098,7 +2127,8 @@ TEST_P(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   ON_CALL(mock_is_task_in_focus_, Run).WillByDefault(Return(true));
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
 
@@ -2160,7 +2190,8 @@ TEST_P(ActorLoginCredentialFillerTest, AffiliatedOrigin_FillSuccess) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       current_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -2225,7 +2256,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       current_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -2301,7 +2333,8 @@ TEST_P(ActorLoginCredentialFillerTest,
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       current_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillRepeatedly(Return(base::span(form_managers)));
@@ -2346,7 +2379,8 @@ TEST_P(ActorLoginCredentialFillerTest, UnrelatedOrigin_FillFails) {
   base::test::TestFuture<LoginStatusResultOrError> future;
   auto filler = std::make_unique<ActorLoginCredentialFiller>(
       current_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), mock_is_task_in_focus_.Get(), future.GetCallback());
+      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
+      future.GetCallback());
   std::vector<affiliations::Facet> affiliations;
   affiliations.emplace_back(affiliations::FacetURI::FromPotentiallyInvalidSpec(
       "https://example.com"));

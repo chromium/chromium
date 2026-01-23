@@ -630,6 +630,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ActorLogin.TimeFromAttemptToSuccess"
+    units="ms" expires_after="2026-07-05">
+  <owner>fiorellab@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records the time elapsed between the creation of an Actor Login attempt and
+    the successful submission of the login form. Recorded when the login is
+    detected as successful.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
     enum="AddCredentialFromSettingsUserInteractions" expires_after="2026-01-25">
   <owner>vidhanj@google.com</owner>

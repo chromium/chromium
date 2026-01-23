@@ -78,7 +78,9 @@ mojom::ActionResultCode LoginResultToActorResult(
 AttemptLoginTool::AttemptLoginTool(TaskId task_id,
                                    ToolDelegate& tool_delegate,
                                    tabs::TabInterface& tab)
-    : Tool(task_id, tool_delegate), tab_handle_(tab.GetHandle()) {}
+    : Tool(task_id, tool_delegate),
+      tab_handle_(tab.GetHandle()),
+      attempt_login_tool_start_time_(base::TimeTicks::Now()) {}
 
 AttemptLoginTool::~AttemptLoginTool() {
   // Uploading the quality log on the destruction of the tool.
@@ -141,6 +143,7 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
     GetActorLoginService().AttemptLogin(
         tab, user_selected_credential_and_pemission->credential,
         should_store_permission, quality_logger_.AsWeakPtr(),
+        attempt_login_tool_start_time_,
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr(),
                        user_selected_credential_and_pemission->credential,
@@ -375,7 +378,7 @@ void AttemptLoginTool::OnCredentialCachingDone(
       webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow;
   GetActorLoginService().AttemptLogin(
       tab, selected_credential, should_store_permission,
-      quality_logger_.AsWeakPtr(),
+      quality_logger_.AsWeakPtr(), attempt_login_tool_start_time_,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr(), selected_credential,
                      should_store_permission));
@@ -478,6 +481,7 @@ void AttemptLoginTool::MaybeRetryCredentialNeedingFocus() {
   GetActorLoginService().AttemptLogin(
       tab, credential_awaiting_task_focus_->first,
       credential_awaiting_task_focus_->second, quality_logger_.AsWeakPtr(),
+      attempt_login_tool_start_time_,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                      weak_ptr_factory_.GetWeakPtr(),
                      credential_awaiting_task_focus_->first,

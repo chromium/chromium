@@ -1999,6 +1999,38 @@ TEST_F(PasswordFormMetricsRecorderTest, FormParsingDifferenceUsername) {
           PasswordFormMetricsRecorder::ParsingDifference::kUsernameDiff));
 }
 
+TEST_F(PasswordFormMetricsRecorderTest, ActorLoginLatencyRecorded) {
+  base::HistogramTester histogram_tester;
+  auto recorder = CreatePasswordFormMetricsRecorder(
+      /*is_main_frame_secure=*/true, &pref_service_);
+  base::TimeDelta expected_latency = base::Seconds(5);
+  recorder->SetActorLoginStartTime(base::TimeTicks::Now() - expected_latency);
+  recorder->LogSubmitPassed();
+  histogram_tester.ExpectUniqueTimeSample(
+      "PasswordManager.ActorLogin.TimeFromAttemptToSuccess", expected_latency,
+      1);
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ActorLoginLatencyNotRecordedIfStartMissing) {
+  base::HistogramTester histogram_tester;
+  auto recorder = CreatePasswordFormMetricsRecorder(
+      /*is_main_frame_secure=*/true, &pref_service_);
+  recorder->LogSubmitPassed();
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeFromAttemptToSuccess", 0);
+}
+
+TEST_F(PasswordFormMetricsRecorderTest, ActorLoginLatencyNotRecordedOnFailure) {
+  base::HistogramTester histogram_tester;
+  auto recorder = CreatePasswordFormMetricsRecorder(
+      /*is_main_frame_secure=*/true, &pref_service_);
+  recorder->SetActorLoginStartTime(base::TimeTicks::Now());
+  recorder->LogSubmitFailed();
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.ActorLogin.TimeFromAttemptToSuccess", 0);
+}
+
 // Verify that the difference between parsing during filling and saving is
 // calculated and recorded correctly when password fields are detected
 // differently.
