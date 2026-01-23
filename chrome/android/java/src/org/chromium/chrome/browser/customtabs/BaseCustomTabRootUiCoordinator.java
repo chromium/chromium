@@ -76,6 +76,8 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFa
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.open_in_app.CustomTabOpenInAppEntryPoint;
+import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
@@ -335,6 +337,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (ChromeFeatureList.sCctTabModalDialog.isEnabled()) {
             getAppBrowserControlsVisibilityDelegate()
                     .addDelegate(browserControlsManager.getBrowserVisibilityDelegate());
+        }
+
+        if (OpenInAppUtils.isOpenInAppAvailable()) {
+            mOpenInAppEntryPoint =
+                    new CustomTabOpenInAppEntryPoint(mActivityTabProvider.asObservable());
         }
     }
 

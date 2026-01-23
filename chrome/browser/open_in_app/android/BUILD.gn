@@ -6,8 +6,12 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/open_in_app/CustomTabOpenInAppEntryPoint.java",
     "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppDelegate.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppEntryPoint.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppMenuItemProvider.java",
     "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppUtils.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/TabbedOpenInAppEntryPoint.java",
   ]
 
   deps = [

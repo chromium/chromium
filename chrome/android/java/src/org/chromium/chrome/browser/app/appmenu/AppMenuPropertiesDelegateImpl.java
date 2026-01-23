@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
+import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -118,6 +119,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     private int mReadAloudPos;
     protected @Nullable Runnable mReadAloudAppMenuResetter;
     private boolean mHasReadAloudInserted;
+    protected final @Nullable OpenInAppMenuItemProvider mOpenInAppMenuItemProvider;
 
     @VisibleForTesting
     @IntDef({
@@ -175,7 +177,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      * @param layoutStateProvidersSupplier An {@link MonotonicObservableSupplier} for the {@link
      *     LayoutStateProvider} associated with the containing activity.
      * @param bookmarkModelSupplier An {@link MonotonicObservableSupplier} for the {@link
-     *     BookmarkModel}
+     *     BookmarkModel}.
+     * @param openInAppMenuItemProvider The {@link OpenInAppMenuItemProvider} that may provide an
+     *     open in app item.
      */
     protected AppMenuPropertiesDelegateImpl(
             Context context,
@@ -186,7 +190,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            Supplier<ReadAloudController> readAloudControllerSupplier) {
+            Supplier<ReadAloudController> readAloudControllerSupplier,
+            @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -205,6 +210,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
+        mOpenInAppMenuItemProvider = openInAppMenuItemProvider;
     }
 
     @SuppressWarnings("NullAway")
@@ -1313,5 +1319,17 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             return hasGroups ? R.string.menu_add_tab_to_group : R.string.menu_add_tab_to_new_group;
         }
         return R.string.menu_add_tab_to_group;
+    }
+
+    /** Returns whether to show the open in app menu item. */
+    protected boolean shouldShowOpenInAppItem() {
+        return mOpenInAppMenuItemProvider != null
+                && mOpenInAppMenuItemProvider.getOpenInAppInfo() != null;
+    }
+
+    /** Returns a new open in app menu item. */
+    protected ListItem buildOpenInAppItem() {
+        // TODO(crbug.com/450253146): Build the actual item.
+        return new ListItem(AppMenuItemType.STANDARD, new PropertyModel());
     }
 }

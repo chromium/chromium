@@ -133,6 +133,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
+import org.chromium.chrome.browser.open_in_app.TabbedOpenInAppEntryPoint;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -917,6 +919,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         getScrimManager(),
                         mActivity.findViewById(R.id.loading_fullscreen_container));
+
+        if (OpenInAppUtils.isOpenInAppAvailable()) {
+            mOpenInAppEntryPoint =
+                    new TabbedOpenInAppEntryPoint(mActivityTabProvider.asObservable());
+        }
     }
 
     @Override

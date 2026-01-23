@@ -153,7 +153,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
-                        /* hasClientPackage= */ false);
+                        /* hasClientPackage= */ false,
+                        /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.enable_price_tracking_menu_id));
         assertFalse(isMenuItemPresent(modelList, R.id.disable_price_tracking_menu_id));
@@ -189,7 +190,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         () -> cpac,
-                        /* hasClientPackage= */ false);
+                        /* hasClientPackage= */ false,
+                        /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.price_insights_menu_id));
     }
@@ -220,7 +222,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
-                        /* hasClientPackage= */ false);
+                        /* hasClientPackage= */ false,
+                        /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
         assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));
@@ -259,7 +262,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         /* isStartIconMenu= */ true,
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier */ () -> null,
-                        /* hasClientPackage= */ false);
+                        /* hasClientPackage= */ false,
+                        /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
         assertTrue(isMenuItemPresent(modelList, R.id.find_in_page_id));

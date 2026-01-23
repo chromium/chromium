@@ -1061,7 +1061,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),
                 mBaseCustomTabRootUiCoordinator::getContextualPageActionController,
-                mIntentDataProvider.getClientPackageNameIdentitySharing() != null);
+                mIntentDataProvider.getClientPackageNameIdentitySharing() != null,
+                mBaseCustomTabRootUiCoordinator.getOpenInAppMenuItemProvider());
     }
 
     @Override

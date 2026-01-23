@@ -124,6 +124,8 @@ import org.chromium.chrome.browser.omnibox.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.open_in_app.OpenInAppEntryPoint;
+import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
@@ -409,6 +411,7 @@ public class RootUiCoordinator
     private @Nullable AppHeaderObserver mAppHeaderObserver;
     protected final SettableMonotonicObservableSupplier<ReaderModeIphController>
             mReaderModeIphControllerSupplier = ObservableSuppliers.createMonotonic();
+    protected @Nullable OpenInAppEntryPoint mOpenInAppEntryPoint;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -2578,5 +2581,9 @@ public class RootUiCoordinator
 
     public @Nullable ExclusiveAccessManager getExclusiveAccessManager() {
         return mExclusiveAccessManager;
+    }
+
+    public @Nullable OpenInAppMenuItemProvider getOpenInAppMenuItemProvider() {
+        return mOpenInAppEntryPoint;
     }
 }

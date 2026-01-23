@@ -205,7 +205,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mDecorView,
                                 mLayoutStateProviderSupplier,
                                 mBookmarkModelSupplier,
-                                mReadAloudControllerSupplier) {
+                                mReadAloudControllerSupplier,
+                                /* openInAppMenuItemProvider= */ null) {
                             @Override
                             public MVCListAdapter.ModelList buildMenuModelList() {
                                 return new MVCListAdapter.ModelList();

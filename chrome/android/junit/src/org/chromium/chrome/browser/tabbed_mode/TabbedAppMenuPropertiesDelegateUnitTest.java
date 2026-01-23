@@ -366,7 +366,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         mSnackbarManager,
                         mIncognitoReauthControllerSupplier,
                         mReadAloudControllerSupplier,
-                        mPageZoomManagerMock);
+                        mPageZoomManagerMock,
+                        /* openInAppMenuItemProvider= */ null);
         BaseRobolectricTestRule.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
     }
