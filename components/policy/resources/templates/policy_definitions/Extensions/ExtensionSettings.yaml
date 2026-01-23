@@ -7,6 +7,9 @@ desc: |-
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> instances, apps and extensions from outside the Chrome Web Store can only be forced installed if the instance is joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
   On <ph name="MAC_OS_NAME">macOS</ph> instances, apps and extensions from outside the Chrome Web Store can only be force installed if the instance is managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+  Note: This policy only applies to platforms that support extensions.
+
 example_value:
   '*':
     allowed_types:
@@ -60,8 +63,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
 owners:
 - finnur@chromium.org
 - file://extensions/OWNERS
@@ -144,6 +145,7 @@ schema:
 supported_on:
 - chrome.*:62-
 - chrome_os:62-
+- android:146-
 tags: []
 type: dict
 url_schema: https://www.chromium.org/administrators/policy-list-3/extension-settings-full

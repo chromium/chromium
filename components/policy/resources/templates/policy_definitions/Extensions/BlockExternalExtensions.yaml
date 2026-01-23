@@ -9,12 +9,12 @@ desc: |-
 
   External extensions and their installation are documented at https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.
 
+  Note: This policy only applies to platforms that support extensions.
+
 example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- android
 items:
 - caption: Block installation of external extensions
   value: true
@@ -27,5 +27,6 @@ schema:
   type: boolean
 supported_on:
 - chrome.*:80-
+- android:146-
 tags: []
 type: main

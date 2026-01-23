@@ -2,34 +2,35 @@ caption: Configure allowed app/extension types
 desc: |-
   Setting the policy controls which apps and extensions may be installed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, which hosts they can interact with, and limits runtime access.
 
-        Leaving the policy unset results in no restrictions on the acceptable extension and app types.
+  Leaving the policy unset results in no restrictions on the acceptable extension and app types.
 
-        Extensions and apps which have a type that's not on the list won't be installed. Each value should be one of these strings:
+  Extensions and apps which have a type that's not on the list won't be installed. Each value should be one of these strings:
 
-        * "extension"
+    * "extension"
 
-        * "theme"
+    * "theme"
 
-        * "user_script"
+    * "user_script"
 
-        * "hosted_app"
+    * "hosted_app"
 
-        * "legacy_packaged_app"
+    * "legacy_packaged_app"
 
-        * "platform_app"
+    * "platform_app"
 
-        See the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extensions documentation for more information on these types.
+  See the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extensions documentation for more information on these types.
 
-        Versions earlier than 75 that use multiple comma separated extension IDs aren't supported and are skipped. The rest of the policy applies.
+  Versions earlier than 75 that use multiple comma separated extension IDs aren't supported and are skipped. The rest of the policy applies.
 
-        Note: This policy also affects extensions and apps to be force-installed using <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph>.
+  Note: This policy also affects extensions and apps to be force-installed using <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph>.
+
+  Note: This policy only applies to platforms that support extensions.
+
 example_value:
 - hosted_app
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
 items:
 - caption: Extension
   name: extension
@@ -57,5 +58,6 @@ schema:
 supported_on:
 - chrome.*:25-
 - chrome_os:25-
+- android:146-
 tags: []
 type: string-enum-list
