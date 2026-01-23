@@ -26,7 +26,7 @@ bool IsExactlyRepresentableByDouble(T value) {
 }
 
 // Pops values from |reader| and appends them to |list_value|.
-bool PopListElements(MessageReader* reader, base::Value::List& list_value) {
+bool PopListElements(MessageReader* reader, base::ListValue& list_value) {
   while (reader->HasMoreData()) {
     base::Value element_value = PopDataAsValue(reader);
     if (element_value.is_none())
@@ -38,7 +38,7 @@ bool PopListElements(MessageReader* reader, base::Value::List& list_value) {
 
 // Pops dict-entries from |reader| and sets them to |dictionary_value|
 bool PopDictionaryEntries(MessageReader* reader,
-                          base::Value::Dict& dictionary_value) {
+                          base::DictValue& dictionary_value) {
   while (reader->HasMoreData()) {
     DCHECK_EQ(Message::DICT_ENTRY, reader->GetDataType());
     MessageReader entry_reader(nullptr);
@@ -85,9 +85,9 @@ std::string GetTypeSignature(base::ValueView value) {
 
     std::string operator()(const base::Value::BlobStorage&) { return "ay"; }
 
-    std::string operator()(const base::Value::Dict&) { return "a{sv}"; }
+    std::string operator()(const base::DictValue&) { return "a{sv}"; }
 
-    std::string operator()(const base::Value::List&) { return "av"; }
+    std::string operator()(const base::ListValue&) { return "av"; }
   };
   return value.Visit(Visitor());
 }
@@ -181,14 +181,14 @@ base::Value PopDataAsValue(MessageReader* reader) {
       MessageReader sub_reader(nullptr);
       if (reader->PopArray(&sub_reader)) {
         // If the type of the array's element is DICT_ENTRY, create a
-        // Value with type base::Value::Dict, otherwise create a
-        // Value with type base::Value::List.
+        // Value with type base::DictValue, otherwise create a
+        // Value with type base::ListValue.
         if (sub_reader.GetDataType() == Message::DICT_ENTRY) {
-          base::Value::Dict dictionary_value;
+          base::DictValue dictionary_value;
           if (PopDictionaryEntries(&sub_reader, dictionary_value))
             result = base::Value(std::move(dictionary_value));
         } else {
-          base::Value::List list_value;
+          base::ListValue list_value;
           if (PopListElements(&sub_reader, list_value))
             result = base::Value(std::move(list_value));
         }
@@ -198,7 +198,7 @@ base::Value PopDataAsValue(MessageReader* reader) {
     case Message::STRUCT: {
       MessageReader sub_reader(nullptr);
       if (reader->PopStruct(&sub_reader)) {
-        base::Value::List list_value;
+        base::ListValue list_value;
         if (PopListElements(&sub_reader, list_value))
           result = base::Value(std::move(list_value));
       }
@@ -239,11 +239,11 @@ void AppendBasicTypeValueData(MessageWriter* writer, base::ValueView value) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;
     }
 
-    void operator()(const base::Value::Dict&) {
+    void operator()(const base::DictValue&) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::DICT;
     }
 
-    void operator()(const base::Value::List&) {
+    void operator()(const base::ListValue&) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::LIST;
     }
   };
@@ -287,7 +287,7 @@ void AppendValueData(MessageWriter* writer, base::ValueView value) {
       DLOG(ERROR) << "Unexpected type: " << base::Value::Type::BINARY;
     }
 
-    void operator()(const base::Value::Dict& value) {
+    void operator()(const base::DictValue& value) {
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("{sv}", &array_writer);
       for (auto item : value) {
@@ -300,7 +300,7 @@ void AppendValueData(MessageWriter* writer, base::ValueView value) {
       writer->CloseContainer(&array_writer);
     }
 
-    void operator()(const base::Value::List& value) {
+    void operator()(const base::ListValue& value) {
       dbus::MessageWriter array_writer(nullptr);
       writer->OpenArray("v", &array_writer);
       for (const auto& value_in_list : value) {
