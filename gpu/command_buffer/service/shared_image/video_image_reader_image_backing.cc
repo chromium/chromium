@@ -636,9 +636,7 @@ VideoImageReaderImageBacking::ProduceGLTexture(SharedImageManager* manager,
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(/*passthrough=*/false);
-  if (!texture)
-    return nullptr;
+  auto texture = AbstractTextureAndroid::CreateForValidating(size());
 
   return std::make_unique<GLTextureVideoImageRepresentation>(
       manager, this, tracker, std::move(texture), GetDrDcLock());
@@ -657,9 +655,7 @@ VideoImageReaderImageBacking::ProduceGLTexturePassthrough(
     return nullptr;
 
   // Generate an abstract texture.
-  auto texture = GenAbstractTexture(/*passthrough=*/true);
-  if (!texture)
-    return nullptr;
+  auto texture = AbstractTextureAndroid::CreateForPassthrough(size());
 
   return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
       manager, this, tracker, std::move(texture), GetDrDcLock());
@@ -690,16 +686,15 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
   gles2::FeatureInfo* feature_info = context_state->feature_info();
   const bool passthrough =
       (feature_info && feature_info->is_passthrough_cmd_decoder());
-  auto texture = GenAbstractTexture(passthrough);
-  if (!texture)
-    return nullptr;
 
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
+    auto texture = AbstractTextureAndroid::CreateForPassthrough(size());
     gl_representation =
         std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
             manager, this, tracker, std::move(texture), GetDrDcLock());
   } else {
+    auto texture = AbstractTextureAndroid::CreateForValidating(size());
     gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
         manager, this, tracker, std::move(texture), GetDrDcLock());
   }

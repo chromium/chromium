@@ -21,7 +21,6 @@ namespace gpu {
 class DawnContextProvider;
 struct Mailbox;
 struct VulkanYCbCrInfo;
-class AbstractTextureAndroid;
 class RefCountedLock;
 class StreamTextureSharedImageInterface;
 class SharedContextState;
@@ -70,9 +69,6 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
                            SkAlphaType alpha_type,
                            std::string debug_label,
                            bool is_thread_safe);
-
-  std::unique_ptr<AbstractTextureAndroid> GenAbstractTexture(
-      const bool passthrough);
 };
 
 }  // namespace gpu
