@@ -16,7 +16,6 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <unordered_set>
 #include <vector>
 
 #include "base/check.h"
@@ -47,6 +46,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -90,7 +90,7 @@ void SaveMetricsForRequestedAdditionalHttpsRecord(const RecordParsed& record) {
 // using `weight` with higher weighted objects more likely to go first.
 std::vector<HostPortPair> SortServiceTargets(
     const std::vector<const SrvRecordRdata*>& rdatas) {
-  std::map<uint16_t, std::unordered_set<const SrvRecordRdata*>>
+  std::map<uint16_t, absl::flat_hash_set<const SrvRecordRdata*>>
       ordered_by_priority;
   for (const SrvRecordRdata* rdata : rdatas) {
     ordered_by_priority[rdata->priority()].insert(rdata);
