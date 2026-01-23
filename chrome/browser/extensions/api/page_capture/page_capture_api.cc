@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_util.h"
@@ -227,8 +228,10 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
     return;
   }
 
-  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(source_process_id(),
-                                                           mhtml_path_);
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
+      content::ChildProcessId::FromUnsafeValue(source_process_id()),
+      mhtml_path_);
 
   base::Value::Dict response;
   response.Set("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());

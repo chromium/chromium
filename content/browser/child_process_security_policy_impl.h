@@ -138,13 +138,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RegisterWebSafeScheme(const std::string& scheme) override;
   void RegisterWebSafeIsolatedScheme(const std::string& scheme) override;
   bool IsWebSafeScheme(const std::string& scheme) override;
-  void GrantReadFile(int child_id, const base::FilePath& file) override;
+  void GrantReadFile(ChildProcessId child_id,
+                     const base::FilePath& file) override;
   void GrantCreateReadWriteFile(int child_id,
                                 const base::FilePath& file) override;
   void GrantCopyInto(int child_id, const base::FilePath& dir) override;
   void GrantDeleteFrom(int child_id, const base::FilePath& dir) override;
+  // TODO(crbug.com/379869738) Remove this method and add the ChildProcessId
+  // version to the public API instead when usages are ported.
   void GrantReadFileSystem(int child_id,
                            const std::string& filesystem_id) override;
+  void GrantReadFileSystem(ChildProcessId child_id,
+                           const std::string& filesystem_id);
   void GrantWriteFileSystem(int child_id,
                             const std::string& filesystem_id) override;
   void GrantCreateFileForFileSystem(int child_id,
@@ -160,7 +165,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantRequestOrigin(int child_id, const url::Origin& origin) override;
   void GrantRequestScheme(int child_id, const std::string& scheme) override;
   bool CanRequestURL(int child_id, const GURL& url) override;
-  bool CanReadFile(int child_id, const base::FilePath& file) override;
+  bool CanReadFile(ChildProcessId child_id,
+                   const base::FilePath& file) override;
   bool CanCreateReadWriteFile(int child_id,
                               const base::FilePath& file) override;
   bool CanReadFileSystem(int child_id,
@@ -358,12 +364,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const url::Origin& process_lock_origin);
 
   // Returns if |child_id| can read all of the |files|.
-  bool CanReadAllFiles(int child_id, const std::vector<base::FilePath>& files);
+  bool CanReadAllFiles(ChildProcessId child_id,
+                       const std::vector<base::FilePath>& files);
 
   // Validate that |child_id| in |file_system_context| is allowed to access
   // data in the POST body specified by |body|.  Can be called on any thread.
   bool CanReadRequestBody(
-      int child_id,
+      ChildProcessId child_id,
       const storage::FileSystemContext* file_system_context,
       const scoped_refptr<network::ResourceRequestBody>& body);
 
@@ -427,10 +434,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // this method to grant the child process the capability to request this one
   // file:// URL (or content:// URL in android), but not all urls of the file://
   // scheme.
-  void GrantRequestOfSpecificFile(int child_id, const base::FilePath& file);
+  void GrantRequestOfSpecificFile(ChildProcessId child_id,
+                                  const base::FilePath& file);
 
   // Revokes all permissions granted to the given file.
-  void RevokeAllPermissionsForFile(int child_id, const base::FilePath& file);
+  void RevokeAllPermissionsForFile(ChildProcessId child_id,
+                                   const base::FilePath& file);
 
   // Grant the child process the ability to use Web UI Bindings.
   void GrantWebUIBindings(int child_id, BindingsPolicySet bindings);
@@ -458,23 +467,23 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                          const url::Origin& origin);
 
   // Explicit permissions checks for FileSystemURL specified files.
-  bool CanReadFileSystemFile(int child_id,
+  bool CanReadFileSystemFile(ChildProcessId child_id,
                              const storage::FileSystemURL& filesystem_url);
-  bool CanWriteFileSystemFile(int child_id,
+  bool CanWriteFileSystemFile(ChildProcessId child_id,
                               const storage::FileSystemURL& filesystem_url);
-  bool CanCreateFileSystemFile(int child_id,
+  bool CanCreateFileSystemFile(ChildProcessId child_id,
                                const storage::FileSystemURL& filesystem_url);
   bool CanCreateReadWriteFileSystemFile(
-      int child_id,
+      ChildProcessId child_id,
       const storage::FileSystemURL& filesystem_url);
-  bool CanCopyIntoFileSystemFile(int child_id,
+  bool CanCopyIntoFileSystemFile(ChildProcessId child_id,
                                  const storage::FileSystemURL& filesystem_url);
-  bool CanDeleteFileSystemFile(int child_id,
+  bool CanDeleteFileSystemFile(ChildProcessId child_id,
                                const storage::FileSystemURL& filesystem_url);
-  bool CanMoveFileSystemFile(int child_id,
+  bool CanMoveFileSystemFile(ChildProcessId child_id,
                              const storage::FileSystemURL& src_url,
                              const storage::FileSystemURL& dest_url);
-  bool CanCopyFileSystemFile(int child_id,
+  bool CanCopyFileSystemFile(ChildProcessId child_id,
                              const storage::FileSystemURL& src_url,
                              const storage::FileSystemURL& dest_url);
 

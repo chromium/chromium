@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -66,7 +67,8 @@ class ChildProcessSecurityPolicy {
   // Whenever the user picks a file from a <input type="file"> element, the
   // browser should call this function to grant the child process the capability
   // to upload the file to the web. Grants FILE_PERMISSION_READ_ONLY.
-  virtual void GrantReadFile(int child_id, const base::FilePath& file) = 0;
+  virtual void GrantReadFile(ChildProcessId child_id,
+                             const base::FilePath& file) = 0;
 
   // This permission grants creation, read, and full write access to a file,
   // including attributes.
@@ -97,7 +99,8 @@ class ChildProcessSecurityPolicy {
   // Before servicing a child process's request to upload a file to the web, the
   // browser should call this method to determine whether the process has the
   // capability to upload the requested file.
-  virtual bool CanReadFile(int child_id, const base::FilePath& file) = 0;
+  virtual bool CanReadFile(ChildProcessId child_id,
+                           const base::FilePath& file) = 0;
   virtual bool CanCreateReadWriteFile(int child_id,
                                       const base::FilePath& file) = 0;
 

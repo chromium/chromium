@@ -2898,7 +2898,7 @@ void RenderWidgetHostImpl::StartDragging(
   //    renderer for any file paths in the drop.
   filtered_data.filenames.clear();
   for (const auto& file_info : drop_data.filenames) {
-    if (policy->CanReadFile(GetProcess()->GetDeprecatedID(), file_info.path)) {
+    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path)) {
       filtered_data.filenames.push_back(file_info);
     }
   }
@@ -2921,8 +2921,7 @@ void RenderWidgetHostImpl::StartDragging(
       continue;
     }
 
-    if (policy->CanReadFileSystemFile(GetProcess()->GetDeprecatedID(),
-                                      file_system_url)) {
+    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url)) {
       filtered_data.file_system_files.push_back(file_system_file);
     }
   }
@@ -3646,8 +3645,7 @@ void RenderWidgetHostImpl::GrantFileAccessFromDropData(DropData* drop_data) {
   RenderProcessHost* process = GetProcess();
   PrepareDropDataForChildProcess(
       drop_data, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetDeprecatedID(),
-      process->GetStoragePartition()->GetFileSystemContext());
+      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
 }
 
 void RenderWidgetHostImpl::RequestCompositionUpdates(bool immediate_request,

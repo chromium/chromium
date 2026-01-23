@@ -193,7 +193,7 @@ std::optional<base::Value::List> ConstructFileSystemList(
     if (has_read_permission) {
       content::ChildProcessSecurityPolicy* policy =
           content::ChildProcessSecurityPolicy::GetInstance();
-      policy->GrantReadFile(child_id, filesystem.path);
+      policy->GrantReadFile(rfh->GetProcess()->GetID(), filesystem.path);
       if (has_delete_permission) {
         policy->GrantDeleteFrom(child_id, filesystem.path);
         if (has_copy_to_permission) {

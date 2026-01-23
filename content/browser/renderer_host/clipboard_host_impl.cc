@@ -414,8 +414,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   RenderProcessHost* process = render_frame_host().GetProcess();
   result->file_system_id = PrepareDataTransferFilenamesForChildProcess(
       filenames, ChildProcessSecurityPolicyImpl::GetInstance(),
-      process->GetDeprecatedID(),
-      process->GetStoragePartition()->GetFileSystemContext());
+      process->GetID(), process->GetStoragePartition()->GetFileSystemContext());
 
   // Convert to DataTransferFiles which creates the access token for each file.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(

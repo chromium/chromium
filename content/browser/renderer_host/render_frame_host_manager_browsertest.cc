@@ -60,6 +60,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -2495,11 +2496,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DontSelectInvalidFiles) {
   // Navigate and try to get page to reference this file in its PageState.
   GURL url1(embedded_test_server()->GetURL("/file_input.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  int process_id = shell()
-                       ->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
+  ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file, run_loop.QuitClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
@@ -2530,11 +2528,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DontSelectInvalidFiles) {
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       file));
 
   // The renderer process should not have been killed.  This is the important
@@ -2570,7 +2564,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Navigate to url and get it to reference a file in its PageState.
   GURL url1(embedded_test_server()->GetURL("/file_input.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  int process_id = wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  ChildProcessId process_id = wc->GetPrimaryMainFrame()->GetProcess()->GetID();
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file, run_loop.QuitClosure()));
   wc->SetDelegate(delegate.get());
@@ -2596,7 +2590,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(), file));
+      wc->GetPrimaryMainFrame()->GetProcess()->GetID(), file));
 
   // Ensure that the file ended up in the PageState of the previous entry.
   NavigationEntry* prev_entry = wc->GetController().GetEntryAtIndex(0);
@@ -2610,12 +2604,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   TestNavigationObserver back_nav_load_observer(wc);
   wc->GetController().GoBack();
   back_nav_load_observer.Wait();
-  EXPECT_NE(process_id,
-            wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+  EXPECT_NE(process_id, wc->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Ensure that the file access still exists in the new process ID.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(), file));
+      wc->GetPrimaryMainFrame()->GetProcess()->GetID(), file));
 
   // Navigate to a same site page to trigger a PageState update and ensure the
   // renderer is not killed.
@@ -2638,7 +2631,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Navigate to url and get it to reference a file in its PageState.
   GURL url1(embedded_test_server()->GetURL("/file_input.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
-  int process_id = wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  ChildProcessId process_id = wc->GetPrimaryMainFrame()->GetProcess()->GetID();
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file, run_loop.QuitClosure()));
   wc->SetDelegate(delegate.get());
@@ -2683,7 +2676,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // The renderer process is still allowed to read the file, even if it is
   // crashed.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(), file));
+      wc->GetPrimaryMainFrame()->GetProcess()->GetID(), file));
 
   // Reload
   wc->GetController().Reload(ReloadType::NORMAL, false);
@@ -2692,7 +2685,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // After recovering from the crash, the renderer process is allowed to read
   // the file.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(), file));
+      wc->GetPrimaryMainFrame()->GetProcess()->GetID(), file));
 
   // Same-document history back navigation.
   {
@@ -2703,7 +2696,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Ensure that the file access still exists in the new process ID.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      wc->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(), file));
+      wc->GetPrimaryMainFrame()->GetProcess()->GetID(), file));
 
   // Navigate to a same site page to trigger a PageState update and ensure the
   // renderer is not killed.
@@ -2725,11 +2718,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
-  int process_id = shell()
-                       ->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
+  ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   std::unique_ptr<FileChooserDelegate> delegate(
       new FileChooserDelegate(file, run_loop.QuitClosure()));
   shell()->web_contents()->SetDelegate(delegate.get());
@@ -2768,11 +2758,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetCrossSiteURL("/title1.html")));
   exit_observer.Wait();
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       file));
 
   // Ensure that the file ended up in the PageState of the previous entry.
@@ -2788,19 +2774,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   TestNavigationObserver back_nav_load_observer(shell()->web_contents());
   shell()->web_contents()->GetController().GoToIndex(0);
   back_nav_load_observer.Wait();
-  EXPECT_NE(process_id, shell()
-                            ->web_contents()
-                            ->GetPrimaryMainFrame()
-                            ->GetProcess()
-                            ->GetDeprecatedID());
+  EXPECT_NE(
+      process_id,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // Ensure that the file access still exists in the new process ID.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      shell()
-          ->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetProcess()
-          ->GetDeprecatedID(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       file));
 
   // Do another in-page navigation in the child to make sure we hear a PageState
@@ -2860,7 +2840,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // Ensure that the file access exists in the new process ID.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      new_root->current_frame_host()->GetProcess()->GetDeprecatedID(), file));
+      new_root->current_frame_host()->GetProcess()->GetID(), file));
 
   // Also, extract the file from the renderer process to ensure that the
   // response made it over successfully and the proper filename is set.
@@ -4736,11 +4716,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
   EXPECT_EQ(1, nav_controller.GetLastCommittedEntryIndex());
-  int process_id = shell()
-                       ->web_contents()
-                       ->GetPrimaryMainFrame()
-                       ->GetProcess()
-                       ->GetDeprecatedID();
+  ChildProcessId process_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(HasErrorPageProcessLock(
       shell()->web_contents()->GetPrimaryMainFrame()->GetSiteInstance()));
   EXPECT_TRUE(IsMainFrameOriginOpaqueAndCompatibleWithURL(shell(), error_url));
@@ -4754,11 +4731,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
-  EXPECT_EQ(process_id, shell()
-                            ->web_contents()
-                            ->GetPrimaryMainFrame()
-                            ->GetProcess()
-                            ->GetDeprecatedID());
+  EXPECT_EQ(
+      process_id,
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
   EXPECT_TRUE(IsMainFrameOriginOpaqueAndCompatibleWithURL(shell(), error_url));
 
   // Reload the error page after clearing the error condition, such that the

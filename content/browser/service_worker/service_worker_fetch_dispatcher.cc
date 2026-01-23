@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -300,8 +301,11 @@ void GrantFileAccessToProcess(int process_id,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   for (const auto& file : file_paths) {
-    if (!policy->CanReadFile(process_id, file))
-      policy->GrantReadFile(process_id, file);
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+    ChildProcessId child_id = ChildProcessId::FromUnsafeValue(process_id);
+    if (!policy->CanReadFile(child_id, file)) {
+      policy->GrantReadFile(child_id, file);
+    }
   }
 }
 

@@ -47,13 +47,13 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_index_context.h"
@@ -70,6 +70,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/blink_test_browser_support.h"
@@ -1782,10 +1783,10 @@ void WebTestControlHost::WebTestRuntimeFlagsChanged(
 void WebTestControlHost::RegisterIsolatedFileSystem(
     const std::vector<base::FilePath>& file_paths,
     RegisterIsolatedFileSystemCallback callback) {
-  const int render_process_id = receiver_bindings_.current_context();
+  const ChildProcessId render_process_id(receiver_bindings_.current_context());
 
-  ChildProcessSecurityPolicy* policy =
-      ChildProcessSecurityPolicy::GetInstance();
+  ChildProcessSecurityPolicyImpl* policy =
+      ChildProcessSecurityPolicyImpl::GetInstance();
 
   storage::IsolatedContext::FileInfoSet file_info_set;
   for (auto& path : file_paths) {

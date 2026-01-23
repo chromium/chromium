@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   // Ensure that the process is allowed to access to the chosen file and
   // does not have access to the other file name.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path));
+      current_frame_host()->GetProcess()->GetID(), file_path));
 
   // Revoke the access to the file and submit the form. The renderer process
   // should be terminated.
@@ -1011,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   security_policy->RevokeAllPermissionsForFile(
-      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path);
+      current_frame_host()->GetProcess()->GetID(), file_path);
 
   // Use EvalJs and respond back to the browser process before doing the actual
   // submission. This will ensure that the process termination is guaranteed to

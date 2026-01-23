@@ -334,8 +334,7 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanReadFile(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  return policy->CanReadFile(child_id_.GetUnsafeValue(), file);
+  return policy->CanReadFile(child_id_, file);
 }
 
 bool ChildProcessSecurityPolicyImpl::Handle::CanReadFileSystemFile(
@@ -345,8 +344,7 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanReadFileSystemFile(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-  return policy->CanReadFileSystemFile(child_id_.GetUnsafeValue(), url);
+  return policy->CanReadFileSystemFile(child_id_, url);
 }
 
 bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
@@ -1166,12 +1164,10 @@ void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
 }
 
 void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
-    int child_id,
+    ChildProcessId child_id,
     const base::FilePath& path) {
   base::AutoLock lock(lock_);
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  auto* state = security_states_.GetSecurityStateForMutation(
-      ChildProcessId::FromUnsafeValue(child_id));
+  auto* state = security_states_.GetSecurityStateForMutation(child_id);
   if (!state) {
     return;
   }
@@ -1193,11 +1189,9 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOfSpecificFile(
   }
 }
 
-void ChildProcessSecurityPolicyImpl::GrantReadFile(int child_id,
+void ChildProcessSecurityPolicyImpl::GrantReadFile(ChildProcessId child_id,
                                                    const base::FilePath& file) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  GrantPermissionsForFile(ChildProcessId::FromUnsafeValue(child_id), file,
-                          READ_FILE_GRANT);
+  GrantPermissionsForFile(child_id, file, READ_FILE_GRANT);
 }
 
 void ChildProcessSecurityPolicyImpl::GrantCreateReadWriteFile(
@@ -1235,13 +1229,11 @@ void ChildProcessSecurityPolicyImpl::GrantPermissionsForFile(
 }
 
 void ChildProcessSecurityPolicyImpl::RevokeAllPermissionsForFile(
-    int child_id,
+    ChildProcessId child_id,
     const base::FilePath& file) {
   base::AutoLock lock(lock_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = security_states_.GetSecurityStateForMutation(
-          ChildProcessId::FromUnsafeValue(child_id))) {
+  if (auto* state = security_states_.GetSecurityStateForMutation(child_id)) {
     state->RevokeAllPermissionsForFile(file);
   }
 }
@@ -1250,8 +1242,13 @@ void ChildProcessSecurityPolicyImpl::GrantReadFileSystem(
     int child_id,
     const std::string& filesystem_id) {
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  GrantPermissionsForFileSystem(ChildProcessId::FromUnsafeValue(child_id),
-                                filesystem_id, READ_FILE_GRANT);
+  GrantReadFileSystem(ChildProcessId::FromUnsafeValue(child_id), filesystem_id);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantReadFileSystem(
+    ChildProcessId child_id,
+    const std::string& filesystem_id) {
+  GrantPermissionsForFileSystem(child_id, filesystem_id, READ_FILE_GRANT);
 }
 
 void ChildProcessSecurityPolicyImpl::GrantWriteFileSystem(
@@ -1591,15 +1588,13 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
   }
 }
 
-bool ChildProcessSecurityPolicyImpl::CanReadFile(int child_id,
+bool ChildProcessSecurityPolicyImpl::CanReadFile(ChildProcessId child_id,
                                                  const base::FilePath& file) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFile(ChildProcessId::FromUnsafeValue(child_id), file,
-                               READ_FILE_GRANT);
+  return HasPermissionsForFile(child_id, file, READ_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadAllFiles(
-    int child_id,
+    ChildProcessId child_id,
     const std::vector<base::FilePath>& files) {
   return std::ranges::all_of(files,
                              [this, child_id](const base::FilePath& file) {
@@ -1608,7 +1603,7 @@ bool ChildProcessSecurityPolicyImpl::CanReadAllFiles(
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context,
     const scoped_refptr<network::ResourceRequestBody>& body) {
   if (!body) {
@@ -1647,8 +1642,8 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return CanReadRequestBody(
-      process->GetDeprecatedID(),
-      process->GetStoragePartition()->GetFileSystemContext(), body);
+      process->GetID(), process->GetStoragePartition()->GetFileSystemContext(),
+      body);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCreateReadWriteFile(
@@ -1767,86 +1762,64 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystemFile(
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      READ_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         READ_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanWriteFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      WRITE_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         WRITE_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCreateFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      CREATE_NEW_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         CREATE_NEW_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCreateReadWriteFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      CREATE_READ_WRITE_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         CREATE_READ_WRITE_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCopyIntoFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      COPY_INTO_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         COPY_INTO_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanDeleteFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& filesystem_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-      ChildProcessId::FromUnsafeValue(child_id), filesystem_url,
-      DELETE_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, filesystem_url,
+                                         DELETE_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanMoveFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-             ChildProcessId::FromUnsafeValue(child_id), dest_url,
-             CREATE_NEW_FILE_GRANT) &&
-         HasPermissionsForFileSystemFile(
-             ChildProcessId::FromUnsafeValue(child_id), src_url,
-             READ_FILE_GRANT) &&
-         HasPermissionsForFileSystemFile(
-             ChildProcessId::FromUnsafeValue(child_id), src_url,
-             DELETE_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, dest_url,
+                                         CREATE_NEW_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, src_url, READ_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, src_url, DELETE_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanCopyFileSystemFile(
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  return HasPermissionsForFileSystemFile(
-             ChildProcessId::FromUnsafeValue(child_id), src_url,
-             READ_FILE_GRANT) &&
-         HasPermissionsForFileSystemFile(
-             ChildProcessId::FromUnsafeValue(child_id), dest_url,
-             COPY_INTO_FILE_GRANT);
+  return HasPermissionsForFileSystemFile(child_id, src_url, READ_FILE_GRANT) &&
+         HasPermissionsForFileSystemFile(child_id, dest_url,
+                                         COPY_INTO_FILE_GRANT);
 }
 
 bool ChildProcessSecurityPolicyImpl::HasWebUIBindings(int child_id) {

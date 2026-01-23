@@ -18,6 +18,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 #include "extensions/browser/api/file_system/consent_provider.h"
@@ -131,7 +132,9 @@ void OnConsentReceived(content::BrowserContext* browser_context,
 
   const auto process_id = requester->source_process_id();
   // Read-only permisisons.
-  policy->GrantReadFile(process_id, volume->mount_path());
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  policy->GrantReadFile(content::ChildProcessId::FromUnsafeValue(process_id),
+                        volume->mount_path());
   policy->GrantReadFileSystem(process_id, file_system.id());
 
   // Additional write permissions.

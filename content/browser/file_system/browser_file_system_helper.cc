@@ -64,7 +64,7 @@ FileSystemOptions CreateBrowserFileSystemOptions(bool is_incognito) {
                            additional_allowed_schemes);
 }
 
-bool CheckCanReadFileSystemFileOnUIThread(int process_id,
+bool CheckCanReadFileSystemFileOnUIThread(ChildProcessId process_id,
                                           const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChildProcessSecurityPolicyImpl* policy =
@@ -72,7 +72,7 @@ bool CheckCanReadFileSystemFileOnUIThread(int process_id,
   return policy->CanReadFileSystemFile(process_id, url);
 }
 
-void GrantReadAccessOnUIThread(int process_id,
+void GrantReadAccessOnUIThread(ChildProcessId process_id,
                                const base::FilePath& platform_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChildProcessSecurityPolicyImpl* policy =
@@ -86,7 +86,7 @@ void GrantReadAccessOnUIThread(int process_id,
 // path, grant read access, and send return the path via a callback.
 void GetPlatformPathOnFileThread(
     scoped_refptr<storage::FileSystemContext> context,
-    int process_id,
+    ChildProcessId process_id,
     const storage::FileSystemURL& url,
     DoGetPlatformPathCB callback,
     bool can_read_filesystem_file) {
@@ -155,7 +155,7 @@ bool FileSystemURLIsValid(storage::FileSystemContext* context,
 }
 
 void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
-                       int process_id,
+                       ChildProcessId process_id,
                        const GURL& path,
                        const blink::StorageKey& storage_key,
                        DoGetPlatformPathCB callback) {
@@ -184,7 +184,7 @@ void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
 void PrepareDropDataForChildProcess(
     DropData* drop_data,
     ChildProcessSecurityPolicyImpl* security_policy,
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context) {
 #if BUILDFLAG(IS_CHROMEOS)
   // The externalfile:// scheme is used in Chrome OS to open external files in a
@@ -196,7 +196,8 @@ void PrepareDropDataForChildProcess(
   if (!drop_data->url_infos.empty()) {
     const GURL& url = drop_data->url_infos.front().url;
     if (url.SchemeIs(content::kExternalFileScheme)) {
-      security_policy->GrantCommitURL(child_id, url);
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+      security_policy->GrantCommitURL(child_id.GetUnsafeValue(), url);
     }
   }
 #endif
@@ -244,7 +245,7 @@ void PrepareDropDataForChildProcess(
 std::string PrepareDataTransferFilenamesForChildProcess(
     std::vector<ui::FileInfo>& filenames,
     ChildProcessSecurityPolicyImpl* security_policy,
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context) {
   // The filenames vector represents a capability to access the given files.
   storage::IsolatedContext::FileInfoSet files;

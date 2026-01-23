@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/network_context_client_base.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
@@ -43,7 +44,9 @@ struct UploadResponse {
 };
 
 void GrantAccess(const base::FilePath& file, int process_id) {
-  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(process_id, file);
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
+      ChildProcessId::FromUnsafeValue(process_id), file);
 }
 
 void CreateFile(const base::FilePath& path, std::string_view content) {

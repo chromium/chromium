@@ -222,12 +222,15 @@ void ServiceWorkerClient::EnsureFileAccess(
   // The controller might have legitimately been lost due to
   // NotifyControllerLost(), so don't ReportBadMessage() here.
   if (version) {
-    int controller_process_id = version->embedded_worker()->process_id();
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+    ChildProcessId controller_process_id = ChildProcessId::FromUnsafeValue(
+        version->embedded_worker()->process_id());
+    ChildProcessId process_id = ChildProcessId::FromUnsafeValue(GetProcessId());
 
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
     for (const auto& file : file_paths) {
-      if (!policy->CanReadFile(GetProcessId(), file)) {
+      if (!policy->CanReadFile(process_id, file)) {
         mojo::ReportBadMessage(
             "The renderer doesn't have access to the file "
             "but it tried to grant access to the controller.");

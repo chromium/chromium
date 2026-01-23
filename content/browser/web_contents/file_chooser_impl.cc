@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -210,7 +211,7 @@ void FileChooserImpl::EnumerateChosenDirectory(
   auto listener = base::MakeRefCounted<FileSelectListenerImpl>(this);
   listener_impl_ = listener.get();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (policy->CanReadFile(render_frame_host()->GetProcess()->GetDeprecatedID(),
+  if (policy->CanReadFile(render_frame_host()->GetProcess()->GetID(),
                           directory_path)) {
     WebContentsImpl::FromRenderFrameHostImpl(render_frame_host())
         ->EnumerateDirectory(GetWeakPtr(), render_frame_host(),
@@ -237,7 +238,7 @@ void FileChooserImpl::FileSelected(
     return;
   }
   storage::FileSystemContext* file_system_context = nullptr;
-  const int pid = render_frame_host()->GetProcess()->GetDeprecatedID();
+  const ChildProcessId pid = render_frame_host()->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // Grant the security access requested to the given files.
   for (const auto& file : files) {

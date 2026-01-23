@@ -54,7 +54,7 @@ namespace content {
 
 namespace {
 
-void RevokeFilePermission(int child_id, const base::FilePath& path) {
+void RevokeFilePermission(ChildProcessId child_id, const base::FilePath& path) {
   ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
       child_id, path);
 }
@@ -175,7 +175,7 @@ struct FileSystemManagerImpl::ReadDirectorySyncCallbackEntry {
 };
 
 FileSystemManagerImpl::FileSystemManagerImpl(
-    int process_id,
+    ChildProcessId process_id,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context)
     : process_id_(process_id),
@@ -213,10 +213,11 @@ void FileSystemManagerImpl::Open(const url::Origin& origin,
 
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       base::BindOnce(
           &ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin,
           base::Unretained(ChildProcessSecurityPolicyImpl::GetInstance()),
-          process_id_, origin),
+          process_id_.GetUnsafeValue(), origin),
       base::BindOnce(&FileSystemManagerImpl::ContinueOpen,
                      weak_factory_.GetWeakPtr(), origin, file_system_type,
                      receivers_.GetBadMessageCallback(), std::move(callback),
@@ -1214,8 +1215,8 @@ void FileSystemManagerImpl::DidCreateSnapshot(
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](ChildProcessSecurityPolicyImpl* security_policy, int process_id,
-             const base::FilePath& platform_path) {
+          [](ChildProcessSecurityPolicyImpl* security_policy,
+             ChildProcessId process_id, const base::FilePath& platform_path) {
             bool can_read_file =
                 security_policy->CanReadFile(process_id, platform_path);
             if (!can_read_file) {
@@ -1289,7 +1290,7 @@ void FileSystemManagerImpl::DidGetPlatformPath(
 // static
 void FileSystemManagerImpl::GetPlatformPathOnFileThread(
     const GURL& path,
-    int process_id,
+    ChildProcessId process_id,
     scoped_refptr<storage::FileSystemContext> context,
     base::WeakPtr<FileSystemManagerImpl> file_system_manager,
     const blink::StorageKey& storage_key,

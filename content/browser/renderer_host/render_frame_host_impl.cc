@@ -514,7 +514,7 @@ class ScopedCommitStateResetter {
   bool disabled_ = false;
 };
 
-void GrantFileAccess(int child_id,
+void GrantFileAccess(ChildProcessId child_id,
                      const std::vector<base::FilePath>& file_paths) {
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -13697,12 +13697,12 @@ RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
 bool RenderFrameHostImpl::CanAccessFilesOfPageState(
     const blink::PageState& state) {
   return ChildProcessSecurityPolicyImpl::GetInstance()->CanReadAllFiles(
-      GetProcess()->GetDeprecatedID(), state.GetReferencedFiles());
+      GetProcess()->GetID(), state.GetReferencedFiles());
 }
 
 void RenderFrameHostImpl::GrantFileAccessFromPageState(
     const blink::PageState& state) {
-  GrantFileAccess(GetProcess()->GetDeprecatedID(), state.GetReferencedFiles());
+  GrantFileAccess(GetProcess()->GetID(), state.GetReferencedFiles());
 }
 
 void RenderFrameHostImpl::SetHasPendingLifecycleStateUpdate(
@@ -13725,7 +13725,7 @@ void RenderFrameHostImpl::SetHasPendingLifecycleStateUpdate(
 
 void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
     const network::ResourceRequestBody& body) {
-  GrantFileAccess(GetProcess()->GetDeprecatedID(), body.GetReferencedFiles());
+  GrantFileAccess(GetProcess()->GetID(), body.GetReferencedFiles());
 }
 
 void RenderFrameHostImpl::UpdatePermissionsForNavigation(

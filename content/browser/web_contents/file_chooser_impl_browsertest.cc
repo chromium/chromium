@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
 
   // Ensure renderer doesn't have access initially.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetDeprecatedID(), test_file));
+  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetID(), test_file));
 
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   files.emplace_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(FileChooserImplBrowserTest,
                         std::move(files));
 
   // Verify renderer STILL doesn't have access.
-  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetDeprecatedID(), test_file));
+  EXPECT_FALSE(policy->CanReadFile(rfh->GetProcess()->GetID(), test_file));
 }
 
 }  // namespace content
