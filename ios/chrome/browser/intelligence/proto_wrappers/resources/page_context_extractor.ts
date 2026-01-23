@@ -91,7 +91,8 @@ const constructSameOriginInnerTextTree =
             node.querySelectorAll<HTMLAnchorElement>('a[href]');
         anchorElements.forEach((anchor) => {
           linksArray.push({
-            href: anchor.href,
+            href: (anchor instanceof SVGAElement) ? anchor.href.baseVal :
+                                                    anchor.href,
             linkText: anchor.textContent,
           });
         });

@@ -173,7 +173,7 @@ const linksArray = [];
 const anchorElements = node.querySelectorAll('a[href]');
 anchorElements.forEach((anchor) => {
     linksArray.push({
-        href: anchor.href,
+        href: (anchor instanceof SVGAElement) ? anchor.href.baseVal : anchor.href,
         linkText: anchor.textContent
     });
 });
