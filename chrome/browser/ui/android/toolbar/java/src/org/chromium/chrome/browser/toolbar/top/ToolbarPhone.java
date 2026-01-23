@@ -3059,9 +3059,19 @@ public class ToolbarPhone extends ToolbarLayout
 
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 (ViewGroup.MarginLayoutParams) getLayoutParams();
-        marginLayoutParams.height =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + effectiveTopPadding;
+
+        // During screen rotation, onToEdgeChange() is called and may reset the toolbar height.
+        // When URL has focus, the toolbar should use WRAP_CONTENT to support multiline omnibox,
+        // instead of being reset to a fixed height.
+        if (urlHasFocus()
+                && (OmniboxFeatures.allowMultilineEditField()
+                        || ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled())) {
+            marginLayoutParams.height = LayoutParams.WRAP_CONTENT;
+        } else {
+            marginLayoutParams.height =
+                    getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                            + effectiveTopPadding;
+        }
 
         setPaddingRelative(
                 getPaddingStart(), effectiveTopPadding, getPaddingEnd(), getPaddingBottom());
