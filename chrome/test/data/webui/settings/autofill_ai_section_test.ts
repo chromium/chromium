@@ -5,17 +5,17 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import { flushTasks } from 'chrome://webui-test/polymer_test_util.js';
+import { assertEquals, assertFalse, assertTrue } from 'chrome://webui-test/chai_assert.js';
 // <if expr="is_win or is_macosx or is_chromeos">
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import { isVisible } from 'chrome://webui-test/test_util.js';
 // </if>
-import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import type {SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import { CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue } from 'chrome://settings/settings.js';
+import type { SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement } from 'chrome://settings/settings.js';
+import type { SettingsAutofillAiSectionElement } from 'chrome://settings/lazy_load.js';
+import { AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
 
-import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
+import { TestEntityDataManagerProxy } from './test_entity_data_manager_proxy.js';
 // clang-format on
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
@@ -301,7 +301,6 @@ suite('AutofillAiSectionUiTest', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
-
   });
 
   teardown(function() {
@@ -520,6 +519,11 @@ suite('AutofillAiSectionUiTest', function() {
             '#optInAuthenticationToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
+
+    toggle.click();
+    await flushTasks();
+    assertEquals(
+        0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
   });
   // </if>
 });

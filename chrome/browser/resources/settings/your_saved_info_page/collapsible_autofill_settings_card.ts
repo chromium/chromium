@@ -207,7 +207,9 @@ export class CollapsibleCardElement extends SettingsViewMixin
 
   private onChangeAuthenticationRequirementClicked_(e: Event) {
     e.preventDefault();
-
+    if (!this.enhancedAutofillEligibleUser_) {
+      return;
+    }
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
   }
 

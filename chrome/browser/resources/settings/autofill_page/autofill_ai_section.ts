@@ -202,7 +202,9 @@ export class SettingsAutofillAiSectionElement extends
 
   private onChangeAuthenticationRequirementClicked_(e: Event) {
     e.preventDefault();
-
+    if (this.ineligibleUser) {
+      return;
+    }
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
   }
 

@@ -502,6 +502,11 @@ suite('CollapsibleAutofillSettingsCard', function() {
         '#optInAuthenticationToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
+
+    toggle.click();
+    await flushTasks();
+    assertEquals(
+        0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
   });
   // </if>
 });
