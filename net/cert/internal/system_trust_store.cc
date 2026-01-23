@@ -172,6 +172,11 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->GetConstraintsForCert(cert);
   }
 
+  const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const override {
+    return trust_store_chrome_->GetMTCAnchorData(log_id);
+  }
+
   bssl::TrustStore* eutl_trust_store() override {
     return trust_store_chrome_->eutl_trust_store();
   }

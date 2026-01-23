@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -365,6 +366,11 @@ class CertVerifyProcTrustStore {
     return system_trust_store_->GetChromeRootConstraints(cert);
   }
 
+  const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const {
+    return system_trust_store_->GetMTCAnchorData(log_id);
+  }
+
   bool IsNonChromeRootStoreTrustAnchor(
       const bssl::ParsedCertificate* trust_anchor) const {
     return additional_trust_store_->GetTrust(trust_anchor).IsTrustAnchor() ||
@@ -547,7 +553,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     if (path->trust_anchor.MTCAnchor()) {
       // MTCs don't use traditional revocation checks or certificate
       // transparency.
-      // TODO(crbug.com/452986180): use MTC revoked_indices
+      CheckMTCRevocation(path);
       return;
     }
 
@@ -565,6 +571,37 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
                                   &delegate_data->stapled_ocsp_verify_result);
 
     CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
+  }
+
+  void CheckMTCRevocation(bssl::CertPathBuilderResultPath* path) {
+    // Revocation information for MTCs is distributed in the PKI Metadata
+    // Fastpush component, which is part of the Chrome Root Store. This method
+    // should never be reached in the non-CRS case since we also would not have
+    // any MTC anchors configured. If we ever support non-CRS MTC anchors, we
+    // may need to pull the revocation information definitions out of CRS code
+    // into a place that can be shared by both.
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
+        trust_store_->GetMTCAnchorData(
+            path->trust_anchor.MTCAnchor()->log_id());
+    if (!mtc_anchor_data) {
+      return;
+    }
+
+    const auto& leaf = path->certs.front();
+    uint64_t index;
+    // This method is only called on MTCs that boringssl verified successfully,
+    // so the serial number is already known to be valid and we don't need to
+    // gracefully handle a failure here.
+    CHECK(bssl::der::ParseUint64(leaf->tbs().serial_number, &index));
+
+    auto it = mtc_anchor_data->revoked_indices.upper_bound(index);
+    if (it != mtc_anchor_data->revoked_indices.end() && index >= it->second) {
+      path->errors.GetErrorsForCert(0)->AddError(
+          bssl::cert_errors::kCertificateRevoked);
+      return;
+    }
+#endif
   }
 
   void CheckCertificateTransparency(

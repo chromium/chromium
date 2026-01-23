@@ -227,6 +227,11 @@ class DummySystemTrustStore : public net::SystemTrustStore {
     return {};
   }
 
+  const net::TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const override {
+    return nullptr;
+  }
+
   bssl::TrustStore* eutl_trust_store() override { return &empty_trust_store_; }
 #endif
 

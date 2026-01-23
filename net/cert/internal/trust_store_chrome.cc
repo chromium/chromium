@@ -351,6 +351,20 @@ ChromeRootStoreData::ChromeRootStoreData(
   }
 }
 
+TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData() = default;
+TrustStoreChrome::MtcAnchorExtraData::~MtcAnchorExtraData() = default;
+
+TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData(
+    const TrustStoreChrome::MtcAnchorExtraData& other) = default;
+TrustStoreChrome::MtcAnchorExtraData::MtcAnchorExtraData(
+    TrustStoreChrome::MtcAnchorExtraData&& other) = default;
+TrustStoreChrome::MtcAnchorExtraData&
+TrustStoreChrome::MtcAnchorExtraData::operator=(
+    const TrustStoreChrome::MtcAnchorExtraData& other) = default;
+TrustStoreChrome::MtcAnchorExtraData&
+TrustStoreChrome::MtcAnchorExtraData::operator=(
+    TrustStoreChrome::MtcAnchorExtraData&& other) = default;
+
 TrustStoreChrome::TrustStoreChrome()
     : TrustStoreChrome(ChromeRootStoreData::CreateFromCompiledRootStore(),
                        /*mtc_metadata=*/nullptr,
@@ -424,10 +438,16 @@ TrustStoreChrome::TrustStoreChrome(
             mtc_anchor.log_id, mtc_anchor_data.trusted_subtrees);
         CHECK(trust_store_.AddMTCTrustAnchor(std::move(bssl_mtc_anchor)));
 
-        if (!mtc_anchor.constraints.empty()) {
+        if (!mtc_anchor.constraints.empty() ||
+            !mtc_anchor_data.revoked_indices.empty()) {
+          TrustStoreChrome::MtcAnchorExtraData trust_store_anchor_data;
           // TODO(crbug.com/452986180): enforce MTC anchor constraints in the
           // verifier.
-          mtc_constraints_[mtc_anchor.log_id] = mtc_anchor.constraints;
+          trust_store_anchor_data.constraints = mtc_anchor.constraints;
+          trust_store_anchor_data.revoked_indices =
+              mtc_anchor_data.revoked_indices;
+          mtc_anchor_extra_data_[mtc_anchor.log_id] =
+              std::move(trust_store_anchor_data);
         }
       }
     }
@@ -574,6 +594,15 @@ TrustStoreChrome::GetConstraintsForCert(
   return {};
 }
 
+const TrustStoreChrome::MtcAnchorExtraData* TrustStoreChrome::GetMTCAnchorData(
+    base::span<const uint8_t> log_id) const {
+  auto it = mtc_anchor_extra_data_.find(log_id);
+  if (it == mtc_anchor_extra_data_.end()) {
+    return nullptr;
+  }
+  return &it->second;
+}
+
 // static
 std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     base::span<const ChromeRootCertInfo> certs,
@@ -667,7 +696,18 @@ std::optional<ChromeRootStoreMtcMetadata::MtcAnchorData> CreateMtcAnchorData(
     mtc_anchor_data.trusted_subtrees.push_back(std::move(trusted_subtree));
   }
 
-  // TODO(crbug.com/452986179): handle revoked_indices too
+  std::vector<std::pair<uint64_t, uint64_t>> revoked_indices_storage;
+  revoked_indices_storage.reserve(proto_mtc_anchor_data.revoked_indices_size());
+  for (const auto& revoked_range : proto_mtc_anchor_data.revoked_indices()) {
+    if (!revoked_range.has_end_exclusive() ||
+        !revoked_range.has_start_inclusive()) {
+      return std::nullopt;
+    }
+    revoked_indices_storage.emplace_back(revoked_range.end_exclusive(),
+                                         revoked_range.start_inclusive());
+  }
+  mtc_anchor_data.revoked_indices =
+      base::flat_map<uint64_t, uint64_t>(std::move(revoked_indices_storage));
 
   return mtc_anchor_data;
 }

@@ -175,7 +175,7 @@ class NET_EXPORT ChromeRootStoreData {
 // Store data which is updated by the MtcMetadata proto.
 class NET_EXPORT ChromeRootStoreMtcMetadata {
  public:
-  struct MtcAnchorData {
+  struct NET_EXPORT MtcAnchorData {
     MtcAnchorData();
     ~MtcAnchorData();
     MtcAnchorData(const MtcAnchorData& other);
@@ -193,7 +193,9 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
 
     std::vector<bssl::TrustedSubtree> trusted_subtrees;
 
-    // TODO(crbug.com/452986179): include revoked_indices too
+    // The revocation map key is the end index (exclusive) and the value is the
+    // start index (inclusive).
+    base::flat_map<uint64_t, uint64_t> revoked_indices;
   };
 
   // CreateFromMtcMetadataProto converts |proto| into a usable
@@ -219,7 +221,7 @@ class NET_EXPORT ChromeRootStoreMtcMetadata {
  private:
   ChromeRootStoreMtcMetadata();
 
-  // Map from a Merkle Tree Anchor log_id to the metadata for that anchor.
+  // Map from a Merkle Tree Anchor log_id to the data for that anchor.
   absl::flat_hash_map<std::vector<uint8_t>, MtcAnchorData> mtc_anchor_data_;
   base::Time update_time_;
 };
@@ -231,6 +233,25 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   using ConstraintOverrideMap =
       base::flat_map<std::array<uint8_t, crypto::kSHA256Length>,
                      std::vector<ChromeRootCertConstraints>>;
+
+  // Additional data about MTC anchors that isn't represented in
+  // bssl::MTCAnchor.
+  struct NET_EXPORT MtcAnchorExtraData {
+    MtcAnchorExtraData();
+    ~MtcAnchorExtraData();
+    MtcAnchorExtraData(const MtcAnchorExtraData& other);
+    MtcAnchorExtraData(MtcAnchorExtraData&& other);
+    MtcAnchorExtraData& operator=(const MtcAnchorExtraData& other);
+    MtcAnchorExtraData& operator=(MtcAnchorExtraData&& other);
+
+    // The revocation map key is the end index (exclusive) and the value is the
+    // start index (inclusive).
+    base::flat_map<uint64_t, uint64_t> revoked_indices;
+
+    std::vector<ChromeRootCertConstraints> constraints;
+
+    // TODO(crbug.com/452986180): support constraint overrides for MTC anchors.
+  };
 
   // Commandline switch that can be used to specify constraints for testing
   // purposes.
@@ -306,6 +327,11 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   base::span<const ChromeRootCertConstraints> GetConstraintsForCert(
       const bssl::ParsedCertificate* cert) const;
 
+  // Returns additional data about the MTC anchor with log id `log_id`, or null
+  // if the anchor isn't known or has no additional data.
+  const MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const;
+
   int64_t version() const { return version_; }
   std::optional<base::Time> mtc_metadata_update_time() const {
     return mtc_metadata_update_time_;
@@ -327,6 +353,19 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 
   bssl::TrustStoreInMemory trust_store_;
 
+  // Hasher that allows heterogeneous lookup from span<const uint8_t>.
+  struct ByteSpanHash
+      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
+    using is_transparent = void;
+  };
+  // Map from log_id to additional data for the MTC anchor with the
+  // matching log id. This stores data that isn't handled in bssl:MTCAnchor.
+  absl::flat_hash_map<std::vector<uint8_t>,
+                      MtcAnchorExtraData,
+                      ByteSpanHash,
+                      std::ranges::equal_to>
+      mtc_anchor_extra_data_;
+
   // Map from certificate DER bytes to additional constraints (if any) for that
   // certificate. The DER bytes of the key are owned by the ParsedCertificate
   // stored in `trust_store_`, so this must be below `trust_store_` in the
@@ -334,17 +373,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
   base::flat_map<std::string_view, std::vector<ChromeRootCertConstraints>>
       constraints_;
 
-  // Map from log_id to additional constraints for the MTC anchor with the
-  // matching id.
-  absl::flat_hash_map<std::vector<uint8_t>,
-                      std::vector<ChromeRootCertConstraints>>
-      mtc_constraints_;
-
   // Map from certificate SHA256 hash to constraints. If a certificate has an
   // entry in this map, it will override the entry in `constraints_` (if any).
   const ConstraintOverrideMap override_constraints_;
-
-  // TODO(crbug.com/452986180): support constraint overrides for MTC anchors.
 
   bssl::TrustStoreInMemory eutl_trust_store_;
 

@@ -16,6 +16,10 @@
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
+#endif  // CHROME_ROOT_STORE_SUPPORTED
+
 namespace net {
 
 struct ChromeRootCertConstraints;
@@ -72,6 +76,9 @@ class SystemTrustStore {
   virtual base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
       const bssl::ParsedCertificate* cert) const = 0;
 
+  virtual const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
+      base::span<const uint8_t> log_id) const = 0;
+
   virtual bssl::TrustStore* eutl_trust_store() = 0;
 #endif
 };
@@ -83,8 +90,6 @@ NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-class TrustStoreChrome;
-
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
 // trust store for user added roots, but uses the Chrome Root Store trust
 // anchors. This cannot return nullptr.
