@@ -18,6 +18,7 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_management_policy.h"
@@ -192,6 +193,46 @@ TEST_P(UnpackedInstallerUnitTest,
       /*expected_count=*/1);
 }
 #endif
+
+class MockLoadErrorReporterObserver : public LoadErrorReporter::Observer {
+ public:
+  explicit MockLoadErrorReporterObserver(base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  void OnLoadFailure(content::BrowserContext* browser_context,
+                     const base::FilePath& file_path,
+                     const std::u16string& error) override {
+    last_file_path_ = file_path;
+    last_error_ = error;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  base::FilePath last_file_path_;
+  std::u16string last_error_;
+  base::OnceClosure quit_closure_;
+};
+
+TEST_P(UnpackedInstallerUnitTest, LoadNonExistentPathPreservesPath) {
+  InitializeEmptyExtensionService();
+
+  // Setup error LoadErrorReporter observer.
+  base::RunLoop run_loop;
+  MockLoadErrorReporterObserver observer(run_loop.QuitClosure());
+  LoadErrorReporter::GetInstance()->AddObserver(&observer);
+
+  base::FilePath non_existent_path = data_dir().AppendASCII("not_exist");
+  extensions::UnpackedInstaller::Create(profile())->Load(non_existent_path);
+
+  // Wait for the error to be reported.
+  run_loop.Run();
+
+  EXPECT_EQ(observer.last_file_path_, non_existent_path);
+  EXPECT_EQ(observer.last_error_, u"File path cannot be resolved.");
+
+  LoadErrorReporter::GetInstance()->RemoveObserver(&observer);
+}
 
 INSTANTIATE_TEST_SUITE_P(All, UnpackedInstallerUnitTest, testing::Bool());
 

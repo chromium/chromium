@@ -72,6 +72,7 @@ const char16_t kImportMinVersionNewer[] =
     u"'import' version requested is newer than what is installed.";
 const char16_t kImportMissing[] = u"'import' extension is not installed.";
 const char16_t kImportNotSharedModule[] = u"'import' is not a shared module.";
+const char16_t kFilePathResolvedError[] = u"File path cannot be resolved.";
 
 class BrowserContextShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
@@ -354,8 +355,23 @@ bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
 }
 
 void UnpackedInstaller::GetAbsolutePathOnFileThread() {
-  extension_path_ = base::MakeAbsoluteFilePath(extension_path_);
+  base::FilePath resolved_absolute_path =
+      base::MakeAbsoluteFilePath(extension_path_);
 
+  // If the path doesn't exist, we report the error immediately.
+  // We're not overwriting extension_path_, so the error message will contain
+  // the path we attempted to load.
+  if (resolved_absolute_path.empty() ||
+      !base::PathExists(resolved_absolute_path)) {
+    // Set priority explicitly to avoid unwanted task priority inheritance.
+    content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&UnpackedInstaller::ReportExtensionLoadError,
+                                  this, kFilePathResolvedError));
+    return;
+  }
+
+  extension_path_ = resolved_absolute_path;
   // Set priority explicitly to avoid unwanted task priority inheritance.
   content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
       ->PostTask(
