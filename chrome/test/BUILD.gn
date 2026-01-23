@@ -4119,6 +4119,7 @@ if (!is_android) {
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/tabs/back_to_opener:browser_tests",
       "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/tabs/organization:browser_tests",
       "//chrome/browser/ui/tabs/saved_tab_groups",

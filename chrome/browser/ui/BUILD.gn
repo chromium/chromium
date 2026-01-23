@@ -1545,6 +1545,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/tabs/alert:impl",
       "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/tabs/back_to_opener",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:impl",
       "//chrome/browser/ui/toasts/api:toasts",

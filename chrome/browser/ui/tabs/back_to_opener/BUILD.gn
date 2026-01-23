@@ -49,3 +49,21 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "back_to_opener_browsertest.cc" ]
+  deps = [
+    ":back_to_opener",
+    ":impl",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/test:test_support",
+    "//components/tabs:public",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

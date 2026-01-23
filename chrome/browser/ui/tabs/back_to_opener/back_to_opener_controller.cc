@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -70,14 +69,17 @@ TabCloseObserver* TabCloseObserver::CreateForWebContents(
     content::WebContents* web_contents,
     base::WeakPtr<content::WebContents> opener_web_contents,
     base::TimeTicks close_start_time) {
-  TabCloseObserver* existing = FromWebContents(web_contents);
-  if (existing) {
+  if (auto* existing = FromWebContents(web_contents)) {
     existing->close_start_time_ = close_start_time;
+    existing->opener_web_contents_ = opener_web_contents;
     return existing;
   }
 
-  return new TabCloseObserver(web_contents, opener_web_contents,
-                              close_start_time);
+  web_contents->SetUserData(
+      UserDataKey(), base::WrapUnique(new TabCloseObserver(
+                         web_contents, opener_web_contents, close_start_time)));
+
+  return FromWebContents(web_contents);
 }
 
 TabCloseObserver::TabCloseObserver(
@@ -218,8 +220,11 @@ void BackToOpenerController::OnPinnedStateChanged(tabs::TabInterface* tab,
 }
 
 void BackToOpenerController::NotifyUIStateChanged() {
-  // TODO(crbug.com/448173940): Update back button state (Back button
-  // Interaction).
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+  web_contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
 }
 
 void BackToOpenerController::ReadyToCommitNavigation(

@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/new_tab_grouping_user_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
@@ -813,22 +814,58 @@ void OpenURLOffTheRecord(Profile* profile, const GURL& url) {
   AddSelectedTabWithURL(displayer.browser(), url, ui::PAGE_TRANSITION_LINK);
 }
 
+namespace {
+
+bool CanGoBackToOpener(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return false;
+  }
+
+  const back_to_opener::BackToOpenerController* controller =
+      back_to_opener::BackToOpenerController::From(tab);
+  return controller && controller->CanGoBackToOpener();
+}
+
+}  // namespace
+
 bool CanGoBack(const Browser* browser) {
-  return browser->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .CanGoBack();
+  return CanGoBack(browser->tab_strip_model()->GetActiveWebContents());
 }
 
 bool CanGoBack(content::WebContents* web_contents) {
-  return web_contents->GetController().CanGoBack();
+  if (!web_contents) {
+    return false;
+  }
+
+  // Check for regular back navigation first.
+  if (web_contents->GetController().CanGoBack()) {
+    return true;
+  }
+
+  // If no regular back navigation, check for back-to-opener.
+  return CanGoBackToOpener(web_contents);
 }
 
 bool ShouldEnableBackButton(const Browser* browser) {
-  return browser->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .ShouldEnableBackButton();
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  // Check for regular back navigation first.
+  if (web_contents->GetController().ShouldEnableBackButton()) {
+    return true;
+  }
+
+  // If no regular back navigation, check for back-to-opener.
+  return CanGoBackToOpener(web_contents);
 }
 
 enum class BackNavigationMenuIPHTrigger : int {
@@ -876,23 +913,35 @@ void MaybeShowFeatureBackNavigationMenuPromo(Browser* browser,
 }
 
 void GoBack(Browser* browser, WindowOpenDisposition disposition) {
-  base::RecordAction(UserMetricsAction("Back"));
-
-  if (CanGoBack(browser)) {
-    WebContents* new_tab = GetTabAndRevertIfNecessary(browser, disposition);
-    new_tab->GetController().GoBack();
-    MaybeShowFeatureBackNavigationMenuPromo(browser, new_tab);
-  }
+  GoBack(GetTabAndRevertIfNecessary(browser, disposition));
 }
 
 void GoBack(content::WebContents* web_contents) {
   base::RecordAction(UserMetricsAction("Back"));
 
-  if (CanGoBack(web_contents)) {
+  if (!web_contents) {
+    return;
+  }
+
+  // Try regular back navigation first.
+  if (web_contents->GetController().CanGoBack()) {
     web_contents->GetController().GoBack();
     Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
       MaybeShowFeatureBackNavigationMenuPromo(browser, web_contents);
+    }
+    return;
+  }
+
+  // If no regular back navigation, try back-to-opener.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab) {
+    back_to_opener::BackToOpenerController* controller =
+        back_to_opener::BackToOpenerController::From(tab);
+    if (controller && controller->CanGoBackToOpener()) {
+      controller->GoBackToOpener();
+      return;
     }
   }
 }
