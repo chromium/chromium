@@ -641,16 +641,14 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
     }
   }
 
-  if (!success) {
-    // If we can't get a mailbox, return an transparent black ImageBitmap.
-    // The only situation in which this could happen is when two or more calls
-    // to transferToImageBitmap are made back-to-back, if the framebuffer is
-    // incomplete (likely due to a failed buffer allocation), or when the
-    // context gets lost.
-    sk_sp<SkSurface> surface = SkSurfaces::Raster(
-        SkImageInfo::MakeN32Premul(size_.width(), size_.height()));
-    return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
-  }
+  // If we can't get a mailbox, simply crash here since the image returned
+  // by the current function will be used in XRFrameProvider::SubmitLayer()
+  // later, where an UnacceleratedStaticBitmapImage will cause a crash anyway.
+  // The only situation in which this could happen is when two or more calls
+  // to transferToImageBitmap are made back-to-back, if the framebuffer is
+  // incomplete (likely due to a failed buffer allocation), or when the
+  // context gets lost.
+  CHECK(success) << "WebXR requires hardware-accelerated rendering to texture";
 
   // This holds a ref on the XRWebGLDrawingBuffer that will keep it alive
   // until the mailbox is released (and while the callback is running).
