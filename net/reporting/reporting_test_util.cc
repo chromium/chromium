@@ -351,7 +351,7 @@ void TestReportingService::QueueReport(
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
-    base::Value::Dict body,
+    base::DictValue body,
     int depth,
     ReportingTargetType target_type) {
   reports_.emplace_back(

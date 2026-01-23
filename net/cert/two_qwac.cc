@@ -59,7 +59,7 @@ base::expected<Jades2QwacHeader, std::string> ParseJades2QwacHeader(
   // last duplicate member name, as specified in "The JSON Object" section of
   // the ECMAScript standard. base::JSONReader chooses this second option for
   // compliance with standards.
-  base::Value::Dict& header = header_value->GetDict();
+  base::DictValue& header = header_value->GetDict();
 
   // "alg" (Algorithm) parameter - RFC 7515, section 4.1.1
   //

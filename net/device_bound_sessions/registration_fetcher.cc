@@ -783,7 +783,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
             return IsForRefreshRequest() ? "refreshed" : "registered";
           }});
 
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("status", std::move(result));
       return dict;
     });

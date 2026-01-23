@@ -25,10 +25,9 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogQuicSessionPoolJobParams(
-    const QuicSessionAliasKey* key) {
+base::DictValue NetLogQuicSessionPoolJobParams(const QuicSessionAliasKey* key) {
   const ProxyChain& proxy_chain = key->session_key().proxy_chain();
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("host", key->server_id().host())
       .Set("port", key->server_id().port())
       .Set("privacy_mode",

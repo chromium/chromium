@@ -120,11 +120,11 @@ int ResolveOnWorkerThread(scoped_refptr<HostResolverProc> resolver_proc,
 }
 
 // Creates NetLog parameters when the resolve failed.
-base::Value::Dict NetLogHostResolverSystemTaskFailedParams(
+base::DictValue NetLogHostResolverSystemTaskFailedParams(
     uint32_t attempt_number,
     int net_error,
     int os_error) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (attempt_number)
     dict.Set("attempt_number", base::saturated_cast<int>(attempt_number));
 

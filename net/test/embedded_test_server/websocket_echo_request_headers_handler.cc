@@ -23,7 +23,7 @@ void WebSocketEchoRequestHeadersHandler::OnHandshake(
     const HttpRequest& request) {
   CHECK(connection());
 
-  base::Value::Dict headers_dict;
+  base::DictValue headers_dict;
 
   // Convert headers to lowercase keys while retaining original values.
   for (const auto& header : request.headers) {

@@ -277,25 +277,25 @@ base::Value HttpNetworkSession::SpdySessionPoolInfoToValue() const {
 }
 
 base::Value HttpNetworkSession::QuicInfoToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("sessions", quic_session_pool_.QuicSessionPoolInfoToValue());
   dict.Set("quic_enabled", IsQuicEnabled());
 
   const QuicParams* quic_params = context_.quic_context->params();
 
-  base::Value::List connection_options;
+  base::ListValue connection_options;
   for (const auto& option : quic_params->connection_options) {
     connection_options.Append(quic::QuicTagToString(option));
   }
   dict.Set("connection_options", std::move(connection_options));
 
-  base::Value::List supported_versions;
+  base::ListValue supported_versions;
   for (const auto& version : quic_params->supported_versions) {
     supported_versions.Append(ParsedQuicVersionToString(version));
   }
   dict.Set("supported_versions", std::move(supported_versions));
 
-  base::Value::List origins_to_force_quic_on;
+  base::ListValue origins_to_force_quic_on;
   if (quic_params->force_quic_everywhere) {
     origins_to_force_quic_on.Append("<everywhere>");
   } else {

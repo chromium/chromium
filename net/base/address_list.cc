@@ -115,15 +115,15 @@ void AddressList::AppendDnsAliases(std::vector<std::string> aliases) {
                       std::move_iterator<iter_t>(aliases.end()));
 }
 
-base::Value::Dict AddressList::NetLogParams() const {
-  base::Value::Dict dict;
+base::DictValue AddressList::NetLogParams() const {
+  base::DictValue dict;
 
-  base::Value::List address_list;
+  base::ListValue address_list;
   for (const auto& ip_endpoint : *this)
     address_list.Append(ip_endpoint.ToString());
   dict.Set("address_list", std::move(address_list));
 
-  base::Value::List alias_list;
+  base::ListValue alias_list;
   for (const std::string& alias : dns_aliases_)
     alias_list.Append(alias);
   dict.Set("aliases", std::move(alias_list));

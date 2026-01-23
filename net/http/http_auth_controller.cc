@@ -60,10 +60,10 @@ AuthTarget DetermineAuthTarget(const HttpAuthHandler* handler) {
   }
 }
 
-base::Value::Dict ControllerParamsToValue(HttpAuth::Target target,
-                                          const GURL& url,
-                                          NetLogCaptureMode capture_mode) {
-  base::Value::Dict params;
+base::DictValue ControllerParamsToValue(HttpAuth::Target target,
+                                        const GURL& url,
+                                        NetLogCaptureMode capture_mode) {
+  base::DictValue params;
   params.Set("target", HttpAuth::GetAuthTargetString(target));
   params.Set("url", SanitizeUrlForNetLog(url, capture_mode));
   return params;

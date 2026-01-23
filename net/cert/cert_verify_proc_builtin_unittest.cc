@@ -148,7 +148,7 @@ std::vector<uint8_t> ParsePemCertificate(const std::string* pem_value) {
 }
 
 std::vector<std::string> ParseNetLogCertificatesList(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   std::vector<std::string> result;
   for (const auto& pem_value : list) {
     if (!pem_value.is_string()) {
@@ -172,7 +172,7 @@ std::vector<std::string> ParseNetLogCertificatesList(
 }
 
 std::vector<std::string> ParseNetLogCertificatesDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   auto* cert_list = dict.FindList("certificates");
   if (!cert_list) {
     ADD_FAILURE() << "no cerificates key in dict";
@@ -2686,7 +2686,7 @@ TEST_P(CertVerifyProcBuiltin1QwacTest, OneQwacCanBuildAlternatePath) {
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
   EXPECT_EQ(true, event->params.FindBool("is_valid"));
-  base::Value::List* pem_certs = event->params.FindList("certificates");
+  base::ListValue* pem_certs = event->params.FindList("certificates");
   ASSERT_TRUE(pem_certs);
   // The CERT_VERIFY_PROC_PATH_BUILT netlog for the main verification should
   // contain the TLS cert chain.
@@ -3106,8 +3106,7 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestValidBinding) {
   EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
 
   EXPECT_FALSE(event->params.Find("net_error"));
-  base::Value::Dict* pem_verified_certs =
-      event->params.FindDict("verified_cert");
+  base::DictValue* pem_verified_certs = event->params.FindDict("verified_cert");
   ASSERT_TRUE(pem_verified_certs);
   EXPECT_THAT(ParseNetLogCertificatesDict(*pem_verified_certs),
               testing::ElementsAre(binding_builder.GetLeafBuilder()->GetDER(),

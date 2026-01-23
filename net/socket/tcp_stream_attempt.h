@@ -37,7 +37,7 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   LoadState GetLoadState() const override;
 
-  base::Value::Dict GetInfoAsValue() const override;
+  base::DictValue GetInfoAsValue() const override;
 
  private:
   enum class State {
@@ -49,7 +49,7 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   // StreamAttempt methods:
   int StartInternal() override;
-  base::Value::Dict GetNetLogStartParams() override;
+  base::DictValue GetNetLogStartParams() override;
 
   void HandleCompletion(int rv);
 

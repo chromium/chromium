@@ -41,7 +41,7 @@ class HttpStreamPool::QuicAttempt {
   void Start();
 
   // Retrieves information on the current state of `this` as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
   base::TimeTicks start_time() const { return start_time_; }
 

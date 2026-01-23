@@ -179,7 +179,7 @@ base::Value HostResolverCache::Serialize() const {
 }
 
 bool HostResolverCache::RestoreFromValue(const base::Value& value) {
-  const base::Value::List* list = value.GetIfList();
+  const base::ListValue* list = value.GetIfList();
   if (!list) {
     return false;
   }
@@ -191,7 +191,7 @@ bool HostResolverCache::RestoreFromValue(const base::Value& value) {
       return true;
     }
 
-    const base::Value::Dict* dict = list_value.GetIfDict();
+    const base::DictValue* dict = list_value.GetIfDict();
     if (!dict) {
       return false;
     }
@@ -236,7 +236,7 @@ bool HostResolverCache::RestoreFromValue(const base::Value& value) {
 }
 
 base::Value HostResolverCache::SerializeForLogging() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set(kMaxEntriesKey, base::checked_cast<int>(max_entries_));
   dict.Set(kStalenessGenerationKey, staleness_generation_);
@@ -417,10 +417,10 @@ void HostResolverCache::EvictEntries() {
 base::Value HostResolverCache::SerializeEntries(
     bool serialize_staleness_generation,
     bool require_persistable_anonymization_key) const {
-  base::Value::List list;
+  base::ListValue list;
 
   for (const auto& [key, entry] : entries_) {
-    base::Value::Dict dict;
+    base::DictValue dict;
 
     if (serialize_staleness_generation) {
       dict.Set(kStalenessGenerationKey, entry.staleness_generation);

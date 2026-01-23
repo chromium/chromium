@@ -95,8 +95,8 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
 }
 
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
-base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
-  base::Value::Dict dict;
+base::DictValue NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
+  base::DictValue dict;
 
   dict.Set("proto", NextProtoToString(negotiated_protocol));
   return dict;
@@ -225,7 +225,7 @@ void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
   const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
   if (delegate_net_log) {
     net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
-      base::Value::Dict dict;
+      base::DictValue dict;
       const auto& source = delegate_net_log->source();
       if (source.IsValid()) {
         source.AddToEventParameters(dict);

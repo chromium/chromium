@@ -56,12 +56,12 @@ namespace {
 static constexpr int kHoursInOneWeek = 24 * 7;
 static constexpr int kHoursInOneYear = 24 * 365;
 
-base::Value::Dict CookieKeyedLoadNetLogParams(
+base::DictValue CookieKeyedLoadNetLogParams(
     const std::string& key,
     net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value::Dict();
-  base::Value::Dict dict;
+    return base::DictValue();
+  base::DictValue dict;
   dict.Set("key", key);
   return dict;
 }

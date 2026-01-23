@@ -13,7 +13,7 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-std::string FindStringWithDefault(const base::Value::Dict& dict,
+std::string FindStringWithDefault(const base::DictValue& dict,
                                   std::string_view key,
                                   std::string_view default_value) {
   const std::string* value = dict.FindString(key);
@@ -25,7 +25,7 @@ std::string FindStringWithDefault(const base::Value::Dict& dict,
 }
 
 base::expected<SessionParams::Scope, SessionError> ParseScope(
-    const base::Value::Dict& scope_dict) {
+    const base::DictValue& scope_dict) {
   SessionParams::Scope scope;
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
@@ -36,14 +36,14 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
   scope.include_site = *include_site;
   const std::string* origin = scope_dict.FindString("origin");
   scope.origin = origin ? *origin : "";
-  const base::Value::List* specifications_list =
+  const base::ListValue* specifications_list =
       scope_dict.FindList("scope_specification");
   if (!specifications_list) {
     return scope;
   }
 
   for (const auto& specification : *specifications_list) {
-    const base::Value::Dict* specification_dict = specification.GetIfDict();
+    const base::DictValue* specification_dict = specification.GetIfDict();
     if (!specification_dict) {
       return base::unexpected(
           SessionError{SessionError::kInvalidScopeSpecification});
@@ -84,11 +84,11 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
 }
 
 base::expected<std::vector<SessionParams::Credential>, SessionError>
-ParseCredentials(const base::Value::List& credentials_list) {
+ParseCredentials(const base::ListValue& credentials_list) {
   std::vector<SessionParams::Credential> cookie_credentials;
   for (const auto& json_credential : credentials_list) {
     SessionParams::Credential credential;
-    const base::Value::Dict* credential_dict = json_credential.GetIfDict();
+    const base::DictValue* credential_dict = json_credential.GetIfDict();
     if (!credential_dict) {
       return base::unexpected(
           SessionError{SessionError::kInvalidCredentialsConfig});
@@ -120,7 +120,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     unexportable_keys::UnexportableKeyId key_id,
     std::optional<std::string> expected_session_id,
     std::string_view response_json) {
-  std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> maybe_root = base::JSONReader::ReadDict(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
     return base::unexpected(SessionError{SessionError::kInvalidConfigJson});
@@ -141,7 +141,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
         SessionError{SessionError::kServerRequestedTermination});
   }
 
-  base::Value::Dict* scope_dict = maybe_root->FindDict("scope");
+  base::DictValue* scope_dict = maybe_root->FindDict("scope");
   if (!scope_dict) {
     return base::unexpected(SessionError{SessionError::kMissingScope});
   }
@@ -150,7 +150,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
   std::string* refresh_url = maybe_root->FindString("refresh_url");
 
   std::vector<SessionParams::Credential> credentials;
-  base::Value::List* credentials_list = maybe_root->FindList("credentials");
+  base::ListValue* credentials_list = maybe_root->FindList("credentials");
 
   if (credentials_list) {
     ASSIGN_OR_RETURN(credentials, ParseCredentials(*credentials_list));
@@ -161,7 +161,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
   }
 
   std::vector<std::string> allowed_refresh_initiators;
-  if (base::Value::List* initiator_list =
+  if (base::ListValue* initiator_list =
           maybe_root->FindList("allowed_refresh_initiators");
       initiator_list) {
     for (base::Value& initiator : *initiator_list) {
@@ -182,7 +182,7 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
 
 std::optional<WellKnownParams> ParseWellKnownJson(
     std::string_view response_json) {
-  std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> maybe_root = base::JSONReader::ReadDict(
       response_json, base::JSON_PARSE_RFC, /*max_depth=*/5u);
   if (!maybe_root) {
     return std::nullopt;
@@ -192,7 +192,7 @@ std::optional<WellKnownParams> ParseWellKnownJson(
   const base::Value* registering_origins =
       maybe_root->Find("registering_origins");
   if (registering_origins) {
-    const base::Value::List* registering_origins_list =
+    const base::ListValue* registering_origins_list =
         registering_origins->GetIfList();
     if (!registering_origins_list) {
       return std::nullopt;
@@ -213,8 +213,7 @@ std::optional<WellKnownParams> ParseWellKnownJson(
 
   const base::Value* relying_origins = maybe_root->Find("relying_origins");
   if (relying_origins) {
-    const base::Value::List* relying_origins_list =
-        relying_origins->GetIfList();
+    const base::ListValue* relying_origins_list = relying_origins->GetIfList();
     if (!relying_origins_list) {
       return std::nullopt;
     }

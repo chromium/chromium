@@ -44,7 +44,7 @@ std::vector<uint8_t> SerializeEdeOpt(uint16_t info_code,
 }
 
 std::optional<std::string> GetFilteringDetailsString(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view key) {
   const std::string* val = dict.FindString(key);
   if (!val) {
@@ -64,7 +64,7 @@ std::vector<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
   if (!value || !value->is_dict()) {
     return {};
   }
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   const base::ListValue* dbs = dict.FindList("fdbs");
   if (!dbs) {
     return {};
@@ -74,7 +74,7 @@ std::vector<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
     if (!fdb.is_dict()) {
       continue;
     }
-    const base::Value::Dict& entry = fdb.GetDict();
+    const base::DictValue& entry = fdb.GetDict();
     auto db = GetFilteringDetailsString(entry, "db");
     auto id = GetFilteringDetailsString(entry, "id");
     if (db && id) {

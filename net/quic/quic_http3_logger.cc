@@ -22,8 +22,8 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogSettingsParams(const quic::SettingsFrame& frame) {
-  base::Value::Dict dict;
+base::DictValue NetLogSettingsParams(const quic::SettingsFrame& frame) {
+  base::DictValue dict;
   for (auto setting : frame.values) {
     dict.Set(
         quic::H3SettingsToString(
@@ -33,39 +33,39 @@ base::Value::Dict NetLogSettingsParams(const quic::SettingsFrame& frame) {
   return dict;
 }
 
-base::Value::Dict NetLogPriorityUpdateParams(
+base::DictValue NetLogPriorityUpdateParams(
     const quic::PriorityUpdateFrame& frame) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("prioritized_element_id",
            NetLogNumberValue(frame.prioritized_element_id))
       .Set("priority_field_value", frame.priority_field_value);
 }
 
-base::Value::Dict NetLogTwoIntParams(std::string_view name1,
-                                     uint64_t value1,
-                                     std::string_view name2,
-                                     uint64_t value2) {
-  return base::Value::Dict()
+base::DictValue NetLogTwoIntParams(std::string_view name1,
+                                   uint64_t value1,
+                                   std::string_view name2,
+                                   uint64_t value2) {
+  return base::DictValue()
       .Set(name1, NetLogNumberValue(value1))
       .Set(name2, NetLogNumberValue(value2));
 }
 
-base::Value::Dict NetLogThreeIntParams(std::string_view name1,
-                                       uint64_t value1,
-                                       std::string_view name2,
-                                       uint64_t value2,
-                                       std::string_view name3,
-                                       uint64_t value3) {
-  return base::Value::Dict()
+base::DictValue NetLogThreeIntParams(std::string_view name1,
+                                     uint64_t value1,
+                                     std::string_view name2,
+                                     uint64_t value2,
+                                     std::string_view name3,
+                                     uint64_t value3) {
+  return base::DictValue()
       .Set(name1, NetLogNumberValue(value1))
       .Set(name2, NetLogNumberValue(value2))
       .Set(name3, NetLogNumberValue(value3));
 }
 
-base::Value::List ElideQuicHeaderListForNetLog(
+base::ListValue ElideQuicHeaderListForNetLog(
     const quic::QuicHeaderList& headers,
     NetLogCaptureMode capture_mode) {
-  base::Value::List headers_list;
+  base::ListValue headers_list;
   for (const auto& header : headers) {
     std::string_view key = header.first;
     std::string_view value = header.second;
@@ -229,7 +229,7 @@ void QuicHttp3Logger::OnHeadersDecoded(quic::QuicStreamId stream_id,
   net_log_.AddEvent(
       NetLogEventType::HTTP3_HEADERS_DECODED,
       [stream_id, &headers](NetLogCaptureMode capture_mode) {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("stream_id",
                  NetLogNumberValue(static_cast<uint64_t>(stream_id)))
             .Set("headers",
@@ -304,7 +304,7 @@ void QuicHttp3Logger::OnHeadersFrameSent(
   net_log_.AddEvent(
       NetLogEventType::HTTP3_HEADERS_SENT,
       [stream_id, &header_block](NetLogCaptureMode capture_mode) {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("stream_id",
                  NetLogNumberValue(static_cast<uint64_t>(stream_id)))
             .Set("headers",

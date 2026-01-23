@@ -30,14 +30,14 @@ namespace net {
 class SiteForCookies;
 
 // Returns a Value containing NetLog parameters for constructing a URLRequest.
-NET_EXPORT base::Value::Dict NetLogURLRequestConstructorParams(
+NET_EXPORT base::DictValue NetLogURLRequestConstructorParams(
     const GURL& url,
     RequestPriority priority,
     NetworkTrafficAnnotationTag traffic_annotation,
     NetLogCaptureMode capture_mode);
 
 // Returns a Value containing NetLog parameters for starting a URLRequest.
-NET_EXPORT base::Value::Dict NetLogURLRequestStartParams(
+NET_EXPORT base::DictValue NetLogURLRequestStartParams(
     const GURL& url,
     const std::string& method,
     int load_flags,

@@ -384,7 +384,7 @@ HostCache* StaleHostResolver::GetHostCache() {
   return inner_resolver_->GetHostCache();
 }
 
-base::Value::Dict StaleHostResolver::GetDnsConfigAsValue() const {
+base::DictValue StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
 }
 

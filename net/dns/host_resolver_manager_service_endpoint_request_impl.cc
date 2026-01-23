@@ -387,11 +387,11 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
     if (!stale_endpoints_.empty()) {
       net_log_.AddEvent(
           NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_STALE_RESULTS, [&] {
-            base::Value::List endpoints;
+            base::ListValue endpoints;
             for (const auto& endpoint : stale_endpoints_) {
               endpoints.Append(endpoint.ToValue());
             }
-            return base::Value::Dict().Set("endpoints", std::move(endpoints));
+            return base::DictValue().Set("endpoints", std::move(endpoints));
           });
 
       // Notify delegate of stale results asynchronously because notifying

@@ -12,7 +12,7 @@ ResolveHostResult::ResolveHostResult(
     : result_code(result_code),
       is_address_list_empty(completed_request.GetAddressResults().empty()) {}
 
-void ResolveHostResult::AddToDict(base::Value::Dict& dict) const {
+void ResolveHostResult::AddToDict(base::DictValue& dict) const {
   dict.Set("net_error", result_code);
   dict.Set("is_address_list_empty", is_address_list_empty);
 }

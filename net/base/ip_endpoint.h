@@ -119,7 +119,7 @@ class NET_EXPORT IPEndPoint {
 
   // Returns a scope ID from `dict` when `dict` has a valid interface name that
   // can be converted to an interface index.
-  static std::optional<uint32_t> ScopeIdFromDict(const base::Value::Dict& dict);
+  static std::optional<uint32_t> ScopeIdFromDict(const base::DictValue& dict);
 
   // Converts `scope_id` to an interface name as a base::Value.
   static base::Value ScopeIdToValue(std::optional<uint32_t> scope_id);

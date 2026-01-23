@@ -243,9 +243,9 @@ class HttpStreamPool::AttemptManager
   void OnQuicAttemptSlow();
 
   // Retrieves information on the current state of `this` as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
-  base::Value::Dict GetStatesAsNetLogParams() const;
+  base::DictValue GetStatesAsNetLogParams() const;
 
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
@@ -533,7 +533,7 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
-  base::Value::Dict GetTcpBasedAttemptSlotsAsValue() const;
+  base::DictValue GetTcpBasedAttemptSlotsAsValue() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;

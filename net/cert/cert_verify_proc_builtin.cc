@@ -94,9 +94,9 @@ DEFINE_CERT_ERROR_ID(kPathLacksQwacPolicy, "Path does not have QWAC policies");
 DEFINE_CERT_ERROR_ID(kChromeRootConstraintsFailed,
                      "Path does not satisfy CRS constraints");
 
-base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
-                                   const bssl::CertErrors& errors) {
-  base::Value::Dict results;
+base::DictValue NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
+                                 const bssl::CertErrors& errors) {
+  base::DictValue results;
 
   std::string pem_encoded;
   if (X509Certificate::GetPEMEncodedFromDER(
@@ -111,19 +111,19 @@ base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
   return results;
 }
 
-base::Value::Dict NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
-                                       const bssl::CertificateTrust& trust,
-                                       const bssl::CertErrors& errors) {
-  base::Value::Dict results = NetLogCertParams(cert_handle, errors);
+base::DictValue NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
+                                     const bssl::CertificateTrust& trust,
+                                     const bssl::CertErrors& errors) {
+  base::DictValue results = NetLogCertParams(cert_handle, errors);
   results.Set("trust", trust.ToDebugString());
   return results;
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-base::Value::Dict NetLogChromeRootStoreVersion(
+base::DictValue NetLogChromeRootStoreVersion(
     int64_t chrome_root_store_version,
     std::optional<base::Time> mtc_metadata_update_time) {
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set("version_major", NetLogNumberValue(chrome_root_store_version));
   if (mtc_metadata_update_time.has_value()) {
     results.Set(
@@ -203,8 +203,8 @@ QwacQcStatementsStatus GetQwacQcStatementsStatus(
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
-base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
-  base::Value::List value;
+base::ListValue PEMCertValueList(const bssl::ParsedCertificateList& certs) {
+  base::ListValue value;
   for (const auto& cert : certs) {
     std::string pem;
     X509Certificate::GetPEMEncodedFromDER(
@@ -214,9 +214,9 @@ base::Value::List PEMCertValueList(const bssl::ParsedCertificateList& certs) {
   return value;
 }
 
-base::Value::Dict NetLogPathBuilderResultPath(
+base::DictValue NetLogPathBuilderResultPath(
     const bssl::CertPathBuilderResultPath& result_path) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is_valid", result_path.IsValid());
   dict.Set("last_cert_trust",
            result_path.trust_anchor.CertTrust().ToDebugString());
@@ -229,9 +229,9 @@ base::Value::Dict NetLogPathBuilderResultPath(
   return dict;
 }
 
-base::Value::Dict NetLogPathBuilderResult(
+base::DictValue NetLogPathBuilderResult(
     const bssl::CertPathBuilder::Result& result) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   // TODO(crbug.com/40479281): include debug data (or just have things netlog it
   // directly).
   dict.Set("has_valid_path", result.HasValidPath());
@@ -1076,7 +1076,7 @@ CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     additional_trust_store_.AddDistrustedCertificateBySPKI(
         std::string(base::as_string_view(spki)));
     net_log.AddEvent(NetLogEventType::CERT_VERIFY_PROC_ADDITIONAL_CERT, [&] {
-      base::Value::Dict results;
+      base::DictValue results;
       results.Set("spki", NetLogBinaryValue(base::span(spki)));
       results.Set("trust",
                   bssl::CertificateTrust::ForDistrusted().ToDebugString());
@@ -1603,7 +1603,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
     cur_attempt = attempts[cur_attempt_index];
     net_log.BeginEvent(
         NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-          base::Value::Dict results;
+          base::DictValue results;
           if (cur_attempt.verification_type == VerificationType::kEV) {
             results.Set("is_ev_attempt", true);
           }
@@ -1702,7 +1702,7 @@ void NetLog2QwacBindingError(const NetLogWithSource& net_log,
                              std::string_view message,
                              std::string_view details = {}) {
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     // Including a net_error will cause the netlog-viewer to display this event
     // as an error.
     dict.Set("net_error", ERR_FAILED);
@@ -1722,7 +1722,7 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
     base::span<const uint8_t> tls_cert,
     const NetLogWithSource& net_log) {
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("binding", NetLogStringValue(binding));
     dict.Set("host", NetLogStringValue(hostname));
 
@@ -1764,7 +1764,7 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
   }
   HistogramVerify2QwacResult(Verify2QwacBindingResult::kValid2QwacBinding);
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("is_valid_2qwac_binding", true);
     return dict;
   });
@@ -1779,7 +1779,7 @@ int CertVerifyProcBuiltin::Verify2Qwac(X509Certificate* cert,
   CHECK(verify_result);
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("host", NetLogStringValue(hostname));
     dict.Set("certificates", NetLogX509CertificateList(cert));
     return dict;
@@ -1886,7 +1886,7 @@ int CertVerifyProcBuiltin::Verify2QwacInternal(
   }
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     results.Set("is_qwac_attempt", true);
     return results;
   });
@@ -2000,7 +2000,7 @@ void CertVerifyProcBuiltin::MaybeVerify1QWAC(
   OneQwacPathBuilderDelegateImpl path_builder_delegate(net_log);
 
   net_log.BeginEvent(NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-    base::Value::Dict results;
+    base::DictValue results;
     results.Set("is_qwac_attempt", true);
     return results;
   });

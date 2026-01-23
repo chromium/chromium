@@ -504,7 +504,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Returns a partial representation of the request's state as a value, for
   // debugging.
-  base::Value::Dict GetStateAsValue(NetLogCaptureMode capture_mode) const;
+  base::DictValue GetStateAsValue(NetLogCaptureMode capture_mode) const;
 
   // Logs information about what external object currently blocking the
   // request. LogUnblocked must be called before resuming the request. This

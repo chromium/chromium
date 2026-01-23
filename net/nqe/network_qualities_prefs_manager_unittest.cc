@@ -36,7 +36,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  void SetDictionaryValue(const base::Value::Dict& dict) override {
+  void SetDictionaryValue(const base::DictValue& dict) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     write_count_++;
@@ -44,7 +44,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
     ASSERT_EQ(dict.size(), value_.size());
   }
 
-  base::Value::Dict GetDictionaryValue() override {
+  base::DictValue GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     read_count_++;
@@ -67,7 +67,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   size_t read_count_ = 0;
 
   // Current value of the prefs.
-  base::Value::Dict value_;
+  base::DictValue value_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

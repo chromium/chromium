@@ -73,7 +73,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
       const HostPortPair& host,
       DnsQueryType query_type) override;
   HostCache* GetHostCache() override;
-  base::Value::Dict GetDnsConfigAsValue() const override;
+  base::DictValue GetDnsConfigAsValue() const override;
   void SetRequestContext(URLRequestContext* request_context) override;
   bool IsHappyEyeballsV3Enabled() const override;
   HostResolverManager* GetManagerForTesting() override;

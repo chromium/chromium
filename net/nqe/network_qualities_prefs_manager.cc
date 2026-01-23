@@ -30,7 +30,7 @@ constexpr size_t kMaxCacheSize = 20u;
 
 // Parses |value| into a map of NetworkIDs and CachedNetworkQualities,
 // and returns the map.
-ParsedPrefs ConvertDictionaryValueToMap(const base::Value::Dict& value) {
+ParsedPrefs ConvertDictionaryValueToMap(const base::DictValue& value) {
   DCHECK_GE(kMaxCacheSize, value.size());
 
   ParsedPrefs read_prefs;
@@ -151,7 +151,7 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
 
 ParsedPrefs NetworkQualitiesPrefsManager::ForceReadPrefsForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict value = pref_delegate_->GetDictionaryValue();
+  base::DictValue value = pref_delegate_->GetDictionaryValue();
   return ConvertDictionaryValueToMap(value);
 }
 

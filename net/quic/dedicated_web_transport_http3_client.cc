@@ -127,12 +127,12 @@ void RecordNetLogQuicSessionClientStateChanged(
     const std::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        auto dict = base::Value::Dict()
+        auto dict = base::DictValue()
                         .Set("last_state", WebTransportStateString(last_state))
                         .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
           dict.Set("error",
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("net_error", error->net_error)
                        .Set("quic_error", static_cast<int>(error->quic_error))
                        .Set("details", error->details));
@@ -389,7 +389,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
   ConfigureQuicCryptoClientConfig(crypto_config_);
   net_log_.BeginEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("url", url.possibly_invalid_spec());
         dict.Set("network_anonymization_key",
                  anonymization_key.ToDebugString());
@@ -895,7 +895,7 @@ void DedicatedWebTransportHttp3Client::OnSessionReady() {
   RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_WEBTRANSPORT_SESSION_READY,
                     [&] {
-                      base::Value::Dict dict;
+                      base::DictValue dict;
                       dict.Set("http_datagram_version",
                                quic::HttpDatagramSupportToString(
                                    session_->http_datagram_support()));

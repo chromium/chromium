@@ -230,7 +230,7 @@ void LogFindMatchingIpSessionResult(const NetLogWithSource& net_log,
       break;
   }
   net_log.AddEvent(type, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("destination", destination.Serialize());
     if (session != nullptr) {
       session->net_log().source().AddToEventParameters(dict);
@@ -297,7 +297,7 @@ void LogUsingExistingSession(const NetLogWithSource& request_net_log,
                              const url::SchemeHostPort& destination) {
   request_net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_POOL_USE_EXISTING_SESSION, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("destination", destination.Serialize());
         session->net_log().source().AddToEventParameters(dict);
         return dict;
@@ -1030,7 +1030,7 @@ void QuicSessionPool::CloseAllSessions(int error,
   // TODO(crbug.com/347984574): Remove before/after counts once we identified
   // the cause.
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_CLOSE_ALL_SESSIONS, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("net_error", error);
     dict.Set("quic_error", quic::QuicErrorCodeToString(quic_error));
     dict.Set("before_active_sessions_size",
@@ -1045,7 +1045,7 @@ void QuicSessionPool::CloseAllSessions(int error,
 }
 
 base::Value QuicSessionPool::QuicSessionPoolInfoToValue() const {
-  base::Value::List list;
+  base::ListValue list;
 
   for (const auto& active_session : active_sessions_) {
     const quic::QuicServerId& server_id = active_session.first.server_id();
@@ -1341,7 +1341,7 @@ void QuicSessionPool::OnNetworkConnected(handles::NetworkHandle network) {
   if (params_.migrate_sessions_on_network_change_v2) {
     net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_PLATFORM_NOTIFICATION,
                       [&] {
-                        base::Value::Dict dict;
+                        base::DictValue dict;
                         dict.Set("signal", "OnNetworkConnected");
                         dict.Set("network", base::NumberToString(network));
                         return dict;
@@ -1364,7 +1364,7 @@ void QuicSessionPool::OnNetworkDisconnected(handles::NetworkHandle network) {
   if (params_.migrate_sessions_on_network_change_v2) {
     net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_PLATFORM_NOTIFICATION,
                       [&] {
-                        base::Value::Dict dict;
+                        base::DictValue dict;
                         dict.Set("signal", "OnNetworkDisconnected");
                         dict.Set("network", base::NumberToString(network));
                         return dict;
@@ -1408,7 +1408,7 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
   if (params_.migrate_sessions_on_network_change_v2) {
     net_log_.AddEvent(NetLogEventType::QUIC_SESSION_POOL_PLATFORM_NOTIFICATION,
                       [&] {
-                        base::Value::Dict dict;
+                        base::DictValue dict;
                         dict.Set("signal", "OnNetworkMadeDefault");
                         dict.Set("network", base::NumberToString(network));
                         return dict;

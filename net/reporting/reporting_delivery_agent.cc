@@ -51,7 +51,7 @@ void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
 }
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
-  base::Value::List reports_value;
+  base::ListValue reports_value;
   const bool can_exclude_report_with_large_body =
       base::FeatureList::IsEnabled(features::kExcludeLargeBodyReports);
   const size_t max_body_size_bytes =
@@ -73,7 +73,7 @@ std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
       continue;
     }
 
-    base::Value::Dict report_value;
+    base::DictValue report_value;
 
     report_value.Set("age", base::saturated_cast<int>(
                                 (now - report->queued).InMilliseconds()));

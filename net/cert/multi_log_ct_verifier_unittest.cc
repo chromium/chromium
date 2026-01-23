@@ -76,7 +76,7 @@ class MultiLogCTVerifierTest : public ::testing::Test {
       return false;
     }
 
-    const base::Value::List* scts = parsed.params.FindList("scts");
+    const base::ListValue* scts = parsed.params.FindList("scts");
     if (!scts || scts->size() != 1)
       return false;
 

@@ -115,10 +115,10 @@ HttpStreamPool::Job::Job(Delegate* delegate,
       create_time_(base::TimeTicks::Now()) {
   CHECK(attempt_manager_);
   job_net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("stream_key", group->stream_key().ToValue());
     dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
-    base::Value::List allowed_alpn_list;
+    base::ListValue allowed_alpn_list;
     for (const auto alpn : allowed_alpns_) {
       allowed_alpn_list.Append(NextProtoToString(alpn));
     }
@@ -267,7 +267,7 @@ void HttpStreamPool::Job::OnDone(std::optional<int> result) {
   }
 
   job_net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     if (result_.has_value()) {
       // Use "net_error" for the result as the NetLog viewer converts the value
       // to a human-readable string.

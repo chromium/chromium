@@ -47,7 +47,7 @@ struct TraceEntryInfo {
   std::string source_type;
 };
 
-TraceEntryInfo GetTraceEntryInfoFromValue(const base::Value::Dict& value) {
+TraceEntryInfo GetTraceEntryInfoFromValue(const base::DictValue& value) {
   TraceEntryInfo info;
   // See perfetto::trace_processor::json::JsonExporter::ExportSlices() for where
   // these values come from.
@@ -156,9 +156,9 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     trace_net_log_observer_ = std::move(trace_net_log_observer);
   }
 
-  static base::Value::List FilterNetLogTraceEvents(
-      const base::Value::List& trace_events) {
-    base::Value::List filtered_trace_events;
+  static base::ListValue FilterNetLogTraceEvents(
+      const base::ListValue& trace_events) {
+    base::ListValue filtered_trace_events;
 
     for (const auto& event : trace_events) {
       if (!event.is_dict()) {
@@ -185,7 +185,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     return filtered_trace_events;
   }
 
-  const base::Value::List& trace_events() const { return trace_events_; }
+  const base::ListValue& trace_events() const { return trace_events_; }
 
   void clear_trace_events() {
     trace_events_.clear();
@@ -202,7 +202,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
 
  private:
   base::test::TracingEnvironment tracing_environment_;
-  base::Value::List trace_events_;
+  base::ListValue trace_events_;
   base::trace_event::TraceResultBuffer trace_buffer_;
   base::trace_event::TraceResultBuffer::SimpleOutput json_output_;
   RecordingNetLogObserver net_log_observer_;
@@ -447,7 +447,7 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   EXPECT_NE(item1_param_source_start_time, nullptr);
 
   // Events emitted by TraceNetLogObserver always have params.
-  const base::Value::Dict* item2_args =
+  const base::DictValue* item2_args =
       item2->GetDict().FindDictByDottedPath("args");
   EXPECT_TRUE(item2_args->contains("params"));
   const std::string* item2_param_source_start_time =

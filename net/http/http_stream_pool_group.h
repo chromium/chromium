@@ -187,7 +187,7 @@ class HttpStreamPool::Group {
   void OnAttemptManagerComplete(AttemptManager* attempt_manager);
 
   // Retrieves information on the current state of the group as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
   // Returns true when `this` can be deleted.
   // TODO(crbug.com/346835898): This is public for consistency checks. Make this

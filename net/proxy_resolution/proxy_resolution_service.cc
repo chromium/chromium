@@ -42,13 +42,13 @@ void ProxyResolutionService::ProcessProxyRetryInfo(
 }
 
 // static
-base::Value::List ProxyResolutionService::BuildBadProxiesList(
+base::ListValue ProxyResolutionService::BuildBadProxiesList(
     const ProxyRetryInfoMap& proxy_retry_info) {
-  base::Value::List list;
+  base::ListValue list;
   list.reserve(proxy_retry_info.size());
 
   for (const auto& [proxy_chain, retry_info] : proxy_retry_info) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("proxy_chain_uri", proxy_chain.ToDebugString());
     dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
 

@@ -76,8 +76,8 @@ std::string HttpStreamKey::ToString() const {
            : ""});
 }
 
-base::Value::Dict HttpStreamKey::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamKey::ToValue() const {
+  base::DictValue dict;
   dict.Set("destination", destination_.Serialize());
   dict.Set("privacy_mode", PrivacyModeToDebugString(privacy_mode_));
   dict.Set("network_anonymization_key",

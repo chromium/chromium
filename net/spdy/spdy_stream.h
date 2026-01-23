@@ -398,7 +398,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   bool detect_broken_connection() const { return detect_broken_connection_; }
 
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
  private:
   friend class test::SpdyStreamTest;

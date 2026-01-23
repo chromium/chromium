@@ -1567,10 +1567,10 @@ bool HttpResponseHeaders::GetContentRangeFor206(
       *content_range, first_byte_position, last_byte_position, instance_length);
 }
 
-base::Value::Dict HttpResponseHeaders::NetLogParams(
+base::DictValue HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
-  base::Value::Dict dict;
-  base::Value::List headers;
+  base::DictValue dict;
+  base::ListValue headers;
   headers.Append(NetLogStringValue(GetStatusLine()));
   size_t iterator = 0;
   std::string name;

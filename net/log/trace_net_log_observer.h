@@ -75,11 +75,11 @@ class NET_EXPORT TraceNetLogObserver
   void AddEntry(const NetLogEntry& entry,
                 perfetto::StaticString entry_type_string,
                 perfetto::StaticString source_type_string,
-                base::Value::Dict params);
+                base::DictValue params);
   void AddEntryVerbose(const NetLogEntry& entry,
                        perfetto::StaticString entry_type_string,
                        perfetto::StaticString source_type_string,
-                       base::Value::Dict params);
+                       base::DictValue params);
 
   // The "root track" is used as the parent track of all NetLog event tracks.
   // Folding all NetLog tracks under a root track serves a number of purposes:

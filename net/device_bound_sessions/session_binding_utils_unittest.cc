@@ -71,16 +71,16 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue()
           .Set("alg", "RS256")
           .Set("typ", "dbsc+jwt")
           .Set("jwk",
                base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                    .value());
-  base::Value::Dict expected_payload = base::Value::Dict()
-                                           .Set("jti", "test_challenge")
-                                           .Set("authorization", "auth");
+  base::DictValue expected_payload = base::DictValue()
+                                         .Set("jti", "test_challenge")
+                                         .Set("authorization", "auth");
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
@@ -104,15 +104,15 @@ TEST(SessionBindingUtilsTest,
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue()
           .Set("alg", "RS256")
           .Set("typ", "dbsc+jwt")
           .Set("jwk",
                base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                    .value());
-  base::Value::Dict expected_payload =
-      base::Value::Dict().Set("jti", "test_challenge");
+  base::DictValue expected_payload =
+      base::DictValue().Set("jti", "test_challenge");
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
@@ -136,15 +136,15 @@ TEST(SessionBindingUtilsTest,
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict()
+  base::DictValue expected_header =
+      base::DictValue()
           .Set("alg", "RS256")
           .Set("typ", "dbsc+jwt")
           .Set("jwk",
                base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                    .value());
-  base::Value::Dict expected_payload =
-      base::Value::Dict().Set("authorization", "authorization");
+  base::DictValue expected_payload =
+      base::DictValue().Set("authorization", "authorization");
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
@@ -164,10 +164,10 @@ TEST(SessionBindingUtilsTest, CreateKeyRefreshHeaderAndPayload) {
   base::Value actual_payload =
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
-  base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "RS256").Set("typ", "dbsc+jwt");
-  base::Value::Dict expected_payload =
-      base::Value::Dict().Set("jti", "test_challenge");
+  base::DictValue expected_header =
+      base::DictValue().Set("alg", "RS256").Set("typ", "dbsc+jwt");
+  base::DictValue expected_payload =
+      base::DictValue().Set("jti", "test_challenge");
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);

@@ -295,7 +295,7 @@ class NET_EXPORT HostResolver {
     HttpsSvcbOptions& operator=(HttpsSvcbOptions&&) = default;
     ~HttpsSvcbOptions();
 
-    static HttpsSvcbOptions FromDict(const base::Value::Dict& dict);
+    static HttpsSvcbOptions FromDict(const base::DictValue& dict);
     static HttpsSvcbOptions FromFeatures();
 
     base::TimeDelta insecure_extra_time_max;
@@ -549,7 +549,7 @@ class NET_EXPORT HostResolver {
   virtual HostCache* GetHostCache();
 
   // Returns the current DNS configuration |this| is using, as a Value.
-  virtual base::Value::Dict GetDnsConfigAsValue() const;
+  virtual base::DictValue GetDnsConfigAsValue() const;
 
   // Set the associated URLRequestContext, generally expected to be called by
   // URLRequestContextBuilder on passing ownership of |this| to a context. May

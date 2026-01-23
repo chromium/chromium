@@ -294,11 +294,11 @@ bool Session::IsInScope(DbscRequest& request) {
 
   request.net_log().AddEvent(
       net::NetLogEventType::DBSC_REQUEST, [&](NetLogCaptureMode capture_mode) {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("refresh_url", refresh_url_.spec());
         dict.Set("scope", inclusion_rules_.DebugString());
 
-        base::Value::List credentials;
+        base::ListValue credentials;
         for (const CookieCraving& craving : cookie_cravings_) {
           credentials.Append(craving.DebugString());
         }
@@ -318,7 +318,7 @@ bool Session::IsInScope(DbscRequest& request) {
     request.net_log().AddEvent(
         net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
         [&](NetLogCaptureMode capture_mode) {
-          base::Value::Dict dict;
+          base::DictValue dict;
           dict.Set("refresh_required_reason",
                    "refresh_not_allowed_for_initiator");
           return dict;
@@ -406,7 +406,7 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
       request.net_log().AddEvent(
           net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
           [&](NetLogCaptureMode capture_mode) {
-            base::Value::Dict dict;
+            base::DictValue dict;
             dict.Set("refresh_required_reason", "missing_cookie");
 
             if (NetLogCaptureIncludesSensitive(capture_mode)) {
@@ -428,7 +428,7 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
 
   request.net_log().AddEvent(net::NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED,
                              [&](NetLogCaptureMode capture_mode) {
-                               base::Value::Dict dict;
+                               base::DictValue dict;
                                dict.Set("refresh_required_reason",
                                         "refresh_not_required");
                                return dict;

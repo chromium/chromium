@@ -41,14 +41,14 @@ std::vector<std::optional<DnsOverHttpsServerConfig>> ParseTemplates(
 
 constexpr std::string_view kJsonKeyServers("servers");
 
-std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
-  base::Value::List* servers_value = value.FindList(kJsonKeyServers);
+std::optional<DnsOverHttpsConfig> FromValue(base::DictValue value) {
+  base::ListValue* servers_value = value.FindList(kJsonKeyServers);
   if (!servers_value)
     return std::nullopt;
   std::vector<DnsOverHttpsServerConfig> servers;
   servers.reserve(servers_value->size());
   for (base::Value& elt : *servers_value) {
-    base::Value::Dict* dict = elt.GetIfDict();
+    base::DictValue* dict = elt.GetIfDict();
     if (!dict)
       return std::nullopt;
     auto parsed = DnsOverHttpsServerConfig::FromValue(std::move(*dict));
@@ -60,7 +60,7 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
 }
 
 std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
@@ -151,13 +151,13 @@ std::string DnsOverHttpsConfig::ToString() const {
   return json;
 }
 
-base::Value::Dict DnsOverHttpsConfig::ToValue() const {
-  base::Value::List list;
+base::DictValue DnsOverHttpsConfig::ToValue() const {
+  base::ListValue list;
   list.reserve(servers().size());
   for (const auto& server : servers()) {
     list.Append(server.ToValue());
   }
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kJsonKeyServers, std::move(list));
   return dict;
 }

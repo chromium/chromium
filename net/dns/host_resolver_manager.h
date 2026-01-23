@@ -190,7 +190,7 @@ class NET_EXPORT HostResolverManager
   virtual void SetInsecureDnsClientEnabled(bool enabled,
                                            bool additional_dns_types_enabled);
 
-  base::Value::Dict GetDnsConfigAsValue() const;
+  base::DictValue GetDnsConfigAsValue() const;
 
   // Sets overriding configuration that will replace or add to configuration
   // read from the system for DnsClient resolution.

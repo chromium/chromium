@@ -35,7 +35,7 @@ void ReportingCacheImpl::AddReport(
     const std::string& user_agent,
     const std::string& group_name,
     const std::string& type,
-    base::Value::Dict body,
+    base::DictValue body,
     int depth,
     base::TimeTicks queued,
     ReportingTargetType target_type) {
@@ -101,9 +101,9 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
                      std::tie(report2->queued, report2->url);
             });
 
-  base::Value::List report_list;
+  base::ListValue report_list;
   for (const ReportingReport* report : sorted_reports) {
-    base::Value::Dict report_dict;
+    base::DictValue report_dict;
     report_dict.Set("network_anonymization_key",
                     report->network_anonymization_key.ToDebugString());
     report_dict.Set("url", report->url.spec());
@@ -802,7 +802,7 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
 
 base::Value ReportingCacheImpl::GetClientsAsValue() const {
   ConsistencyCheckClients();
-  base::Value::List client_list;
+  base::ListValue client_list;
   for (const auto& domain_and_client : clients_) {
     const Client& client = domain_and_client.second;
     client_list.Append(GetClientAsValue(client));
@@ -1663,12 +1663,12 @@ void ReportingCacheImpl::RemoveEndpointItFromIndex(
 }
 
 base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
-  base::Value::Dict client_dict;
+  base::DictValue client_dict;
   client_dict.Set("network_anonymization_key",
                   client.network_anonymization_key.ToDebugString());
   client_dict.Set("origin", client.origin.Serialize());
 
-  base::Value::List group_list;
+  base::ListValue group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
     // The target_type is set to kDeveloper because enterprise endpoints
     // follow a different path.
@@ -1686,13 +1686,13 @@ base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
 
 base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
     const CachedReportingEndpointGroup& group) const {
-  base::Value::Dict group_dict;
+  base::DictValue group_dict;
   group_dict.Set("name", group.group_key.group_name);
   group_dict.Set("expires", NetLog::TimeToString(group.expires));
   group_dict.Set("includeSubdomains",
                  group.include_subdomains == OriginSubdomains::INCLUDE);
 
-  base::Value::List endpoint_list;
+  base::ListValue endpoint_list;
 
   const auto group_range = endpoints_.equal_range(group.group_key);
   for (auto it = group_range.first; it != group_range.second; ++it) {
@@ -1707,18 +1707,18 @@ base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
 
 base::Value ReportingCacheImpl::GetEndpointAsValue(
     const ReportingEndpoint& endpoint) const {
-  base::Value::Dict endpoint_dict;
+  base::DictValue endpoint_dict;
   endpoint_dict.Set("url", endpoint.info.url.spec());
   endpoint_dict.Set("priority", endpoint.info.priority);
   endpoint_dict.Set("weight", endpoint.info.weight);
 
   const ReportingEndpoint::Statistics& stats = endpoint.stats;
-  base::Value::Dict successful_dict;
+  base::DictValue successful_dict;
   successful_dict.Set("uploads", stats.successful_uploads);
   successful_dict.Set("reports", stats.successful_reports);
   endpoint_dict.Set("successful", std::move(successful_dict));
 
-  base::Value::Dict failed_dict;
+  base::DictValue failed_dict;
   failed_dict.Set("uploads",
                   stats.attempted_uploads - stats.successful_uploads);
   failed_dict.Set("reports",

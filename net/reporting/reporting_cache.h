@@ -75,7 +75,7 @@ class NET_EXPORT ReportingCache {
       const std::string& user_agent,
       const std::string& group_name,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       base::TimeTicks queued,
       ReportingTargetType target_type) = 0;

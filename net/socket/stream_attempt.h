@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // Returns the load state of this attempt.
   virtual LoadState GetLoadState() const = 0;
 
-  virtual base::Value::Dict GetInfoAsValue() const = 0;
+  virtual base::DictValue GetInfoAsValue() const = 0;
 
   // If the attempt failed with ERR_SSL_CLIENT_AUTH_CERT_NEEDED, returns the
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
@@ -101,7 +101,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   // Called when `this` is started. Subclasses should implement this method
   // to record a useful NetLog event.
-  virtual base::Value::Dict GetNetLogStartParams() = 0;
+  virtual base::DictValue GetNetLogStartParams() = 0;
 
   const StreamAttemptParams& params() { return *params_; }
 

@@ -424,7 +424,7 @@ class MockDnsClient : public DnsClient {
   AddressSorter* GetAddressSorter() override;
   void IncrementInsecureFallbackFailures() override;
   void ClearInsecureFallbackFailures() override;
-  base::Value::Dict GetDnsConfigAsValueForNetLog() const override;
+  base::DictValue GetDnsConfigAsValueForNetLog() const override;
   std::optional<DnsConfig> GetSystemConfigForTesting() const override;
   DnsConfigOverrides GetConfigOverridesForTesting() const override;
   void SetTransactionFactoryForTesting(

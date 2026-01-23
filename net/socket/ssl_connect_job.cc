@@ -391,7 +391,7 @@ int SSLConnectJob::DoSSLConnect() {
   }
 
   net_log().AddEvent(NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("ech_enabled", ssl_client_context()->config().ech_enabled);
     dict.Set("ech_config_list", NetLogBinaryValue(ssl_config.ech_config_list));
     return dict;
@@ -451,8 +451,8 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     ech_retry_configs_ = ssl_socket_->GetECHRetryConfigs();
     net_log().AddEvent(
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
-          return base::Value::Dict().Set(
-              "bytes", NetLogBinaryValue(*ech_retry_configs_));
+          return base::DictValue().Set("bytes",
+                                       NetLogBinaryValue(*ech_retry_configs_));
         });
 
     ResetStateForRestart();

@@ -46,7 +46,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   // TODO(chlily): Take NAK.
   void AddReport(const GURL& url) {
     cache()->AddReport(std::nullopt, NetworkAnonymizationKey(), url,
-                       kUserAgent_, kGroup_, kType_, base::Value::Dict(), 0,
+                       kUserAgent_, kGroup_, kType_, base::DictValue(), 0,
                        tick_clock()->NowTicks(),
                        ReportingTargetType::kDeveloper);
   }

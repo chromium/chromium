@@ -39,33 +39,33 @@ bool AreCertificatesEqual(const scoped_refptr<X509Certificate>& first_cert,
                : first_cert->EqualsExcludingChain(second_cert.get())));
 }
 
-// Returns a base::Value::Dict value NetLog parameter with the expected format
+// Returns a base::DictValue value NetLog parameter with the expected format
 // for events of type CLEAR_CACHED_CLIENT_CERT.
-base::Value::Dict NetLogClearCachedClientCertParams(
+base::DictValue NetLogClearCachedClientCertParams(
     const net::HostPortPair& host,
     const scoped_refptr<net::X509Certificate>& cert,
     bool is_cleared) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("host", host.ToString())
       .Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
-                                : base::Value(base::Value::List()))
+                                : base::Value(base::ListValue()))
       .Set("is_cleared", is_cleared);
 }
 
-// Returns a base::Value::Dict value NetLog parameter with the expected format
+// Returns a base::DictValue value NetLog parameter with the expected format
 // for events of type CLEAR_MATCHING_CACHED_CLIENT_CERT.
-base::Value::Dict NetLogClearMatchingCachedClientCertParams(
+base::DictValue NetLogClearMatchingCachedClientCertParams(
     const base::flat_set<net::HostPortPair>& hosts,
     const scoped_refptr<net::X509Certificate>& cert) {
-  base::Value::List hosts_values;
+  base::ListValue hosts_values;
   for (const auto& host : hosts) {
     hosts_values.Append(host.ToString());
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("hosts", base::Value(std::move(hosts_values)))
       .Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
-                                : base::Value(base::Value::List()));
+                                : base::Value(base::ListValue()));
 }
 
 }  // namespace

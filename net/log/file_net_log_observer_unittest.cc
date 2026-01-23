@@ -103,20 +103,20 @@ void AddEntries(FileNetLogObserver* logger,
 struct ParsedNetLog {
   base::expected<void, std::string> InitFromFileContents(
       const std::string& input);
-  const base::Value::Dict* GetEvent(size_t i) const;
+  const base::DictValue* GetEvent(size_t i) const;
 
   // Initializes the ParsedNetLog by parsing a JSON file.
   // Owner for the Value tree and a dictionary for the entire netlog.
   base::Value root;
 
   // The constants dictionary.
-  raw_ptr<const base::Value::Dict> constants = nullptr;
+  raw_ptr<const base::DictValue> constants = nullptr;
 
   // The events list.
-  raw_ptr<const base::Value::List> events = nullptr;
+  raw_ptr<const base::ListValue> events = nullptr;
 
   // The optional polled data (may be nullptr).
-  raw_ptr<const base::Value::Dict> polled_data = nullptr;
+  raw_ptr<const base::DictValue> polled_data = nullptr;
 };
 
 base::expected<void, std::string> ParsedNetLog::InitFromFileContents(
@@ -130,7 +130,7 @@ base::expected<void, std::string> ParsedNetLog::InitFromFileContents(
                        input, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                    &base::JSONReader::Error::message);
 
-  const base::Value::Dict* dict = root.GetIfDict();
+  const base::DictValue* dict = root.GetIfDict();
   if (!dict) {
     return base::unexpected("Not a dictionary");
   }
@@ -152,7 +152,7 @@ base::expected<void, std::string> ParsedNetLog::InitFromFileContents(
 }
 
 // Returns the event at index |i|, or nullptr if there is none.
-const base::Value::Dict* ParsedNetLog::GetEvent(size_t i) const {
+const base::DictValue* ParsedNetLog::GetEvent(size_t i) const {
   if (!events || i >= events->size())
     return nullptr;
 
@@ -189,7 +189,7 @@ void VerifyEventsInLog(const ParsedNetLog* log,
   // The last |num_events_saved| should all be sequential, with the last one
   // being numbered |num_events_emitted - 1|.
   for (size_t i = 0; i < num_events_saved; ++i) {
-    const base::Value::Dict* event = log->GetEvent(i);
+    const base::DictValue* event = log->GetEvent(i);
     ASSERT_TRUE(event);
 
     size_t expected_source_id = num_events_emitted - num_events_saved + i;
@@ -201,7 +201,7 @@ void VerifyEventsInLog(const ParsedNetLog* log,
 
 // Helper that checks whether |dict| has a string property at |key| having
 // |value|.
-void ExpectDictionaryContainsProperty(const base::Value::Dict& dict,
+void ExpectDictionaryContainsProperty(const base::DictValue& dict,
                                       const std::string& key,
                                       const std::string& value) {
   const std::string* actual_value = dict.FindStringByDottedPath(key);
@@ -227,7 +227,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
   bool IsBounded() const { return GetParam(); }
 
   void CreateAndStartObserving(
-      std::unique_ptr<base::Value::Dict> constants,
+      std::unique_ptr<base::DictValue> constants,
       NetLogCaptureMode capture_mode = NetLogCaptureMode::kDefault) {
     if (IsBounded()) {
       logger_ = FileNetLogObserver::CreateBoundedForTests(
@@ -243,7 +243,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
 
   void CreateAndStartObservingBoundedFile(
       int max_file_size,
-      std::unique_ptr<base::Value::Dict> constants) {
+      std::unique_ptr<base::DictValue> constants) {
     base::File file(log_path_,
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     EXPECT_TRUE(file.IsValid());
@@ -258,7 +258,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
   }
 
   void CreateAndStartObservingPreExisting(
-      std::unique_ptr<base::Value::Dict> constants) {
+      std::unique_ptr<base::DictValue> constants) {
     ASSERT_TRUE(scratch_dir_.CreateUniqueTempDir());
 
     base::File file(log_path_,
@@ -309,7 +309,7 @@ class FileNetLogObserverBoundedTest : public ::testing::Test,
     RunUntilIdle();
   }
 
-  void CreateAndStartObserving(std::unique_ptr<base::Value::Dict> constants,
+  void CreateAndStartObserving(std::unique_ptr<base::DictValue> constants,
                                uint64_t total_file_size,
                                int num_files) {
     logger_ = FileNetLogObserver::CreateBoundedForTests(
@@ -596,11 +596,11 @@ TEST_P(FileNetLogObserverTest, CustomConstants) {
 
   const char kConstantKey[] = "magic";
   const char kConstantString[] = "poney";
-  base::Value::Dict constants;
+  base::DictValue constants;
   constants.SetByDottedPath(kConstantKey, kConstantString);
 
   CreateAndStartObserving(
-      std::make_unique<base::Value::Dict>(std::move(constants)));
+      std::make_unique<base::DictValue>(std::move(constants)));
 
   logger_->StopObserving(nullptr, closure.closure());
 
@@ -623,7 +623,7 @@ TEST_P(FileNetLogObserverTest, GeneratesValidJSONWithPolledData) {
   // Create dummy polled data
   const char kDummyPolledDataPath[] = "dummy_path";
   const char kDummyPolledDataString[] = "dummy_info";
-  base::Value::Dict dummy_polled_data;
+  base::DictValue dummy_polled_data;
   dummy_polled_data.SetByDottedPath(kDummyPolledDataPath,
                                     kDummyPolledDataString);
 

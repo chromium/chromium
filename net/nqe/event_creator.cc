@@ -19,12 +19,12 @@ namespace net::nqe::internal {
 
 namespace {
 
-base::Value::Dict NetworkQualityChangedNetLogParams(
+base::DictValue NetworkQualityChangedNetLogParams(
     base::TimeDelta http_rtt,
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps,
     EffectiveConnectionType effective_connection_type) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("http_rtt_ms", static_cast<int>(http_rtt.InMilliseconds()));
   value.Set("transport_rtt_ms",
             static_cast<int>(transport_rtt.InMilliseconds()));

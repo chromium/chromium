@@ -115,7 +115,7 @@ HostCache* MappedHostResolver::GetHostCache() {
   return impl_->GetHostCache();
 }
 
-base::Value::Dict MappedHostResolver::GetDnsConfigAsValue() const {
+base::DictValue MappedHostResolver::GetDnsConfigAsValue() const {
   return impl_->GetDnsConfigAsValue();
 }
 

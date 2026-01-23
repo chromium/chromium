@@ -540,11 +540,11 @@ void HttpServerProperties::OnDefaultNetworkChanged() {
 base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
   const base::Time now = clock_->Now();
   const base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  base::Value::List dict_list;
+  base::ListValue dict_list;
   for (const auto& server_info : server_info_map_) {
     if (!server_info.second.alternative_services.has_value())
       continue;
-    base::Value::List alternative_service_list;
+    base::ListValue alternative_service_list;
     const ServerInfoMapKey& key = server_info.first;
     for (const AlternativeServiceInfo& alternative_service_info :
          server_info.second.alternative_services.value()) {
@@ -583,7 +583,7 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
     }
     if (alternative_service_list.empty())
       continue;
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("server", key.server.Serialize());
     dict.Set("network_anonymization_key",
              key.network_anonymization_key.ToDebugString());

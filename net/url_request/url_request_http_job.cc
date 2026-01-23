@@ -122,10 +122,10 @@ namespace net {
 
 namespace {
 
-base::Value::Dict FirstPartySetMetadataNetLogParams(
+base::DictValue FirstPartySetMetadataNetLogParams(
     const FirstPartySetMetadata& first_party_set_metadata,
     const int64_t* const fps_cache_filter) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   auto entry_or_empty =
       [](const std::optional<FirstPartySetEntry>& entry) -> std::string {
     return entry.has_value() ? entry->GetDebugString() : "none";
@@ -140,7 +140,7 @@ base::Value::Dict FirstPartySetMetadataNetLogParams(
   return dict;
 }
 
-base::Value::Dict CookieInclusionStatusNetLogParams(
+base::DictValue CookieInclusionStatusNetLogParams(
     const std::string& operation,
     const std::string& cookie_name,
     const std::string& cookie_domain,
@@ -148,7 +148,7 @@ base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::optional<CookiePartitionKey>& partition_key,
     const CookieInclusionStatus& status,
     NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("operation", operation);
   dict.Set("status", status.GetDebugString());
   if (NetLogCaptureIncludesSensitive(capture_mode)) {

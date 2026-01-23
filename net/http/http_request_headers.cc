@@ -214,12 +214,12 @@ std::string HttpRequestHeaders::ToString() const {
   return base::StrCat(pieces);
 }
 
-base::Value::Dict HttpRequestHeaders::NetLogParams(
+base::DictValue HttpRequestHeaders::NetLogParams(
     const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("line", NetLogStringValue(request_line));
-  base::Value::List headers;
+  base::ListValue headers;
   for (const auto& header : headers_) {
     std::string log_value =
         ElideHeaderValueForNetLog(capture_mode, header.key, header.value);

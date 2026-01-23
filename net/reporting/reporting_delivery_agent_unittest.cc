@@ -72,7 +72,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   }
 
   void AddReportWithBody(const std::string& body) {
-    base::Value::Dict report_body;
+    base::DictValue report_body;
     report_body.Set("key", body);  // Use the provided body string
 
     cache()->AddReport(std::nullopt, kNak_, kUrl_, kUserAgent_, kGroup_, kType_,
@@ -85,7 +85,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
                  const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& group) {
-    base::Value::Dict report_body;
+    base::DictValue report_body;
     report_body.Set("key", "value");
     cache()->AddReport(reporting_source, network_anonymization_key, url,
                        kUserAgent_, group, kType_, std::move(report_body),
@@ -94,7 +94,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   }
 
   void AddEnterpriseReport(const GURL& url, const std::string& group) {
-    base::Value::Dict report_body;
+    base::DictValue report_body;
     report_body.Set("key", "value");
     cache()->AddReport(
         /*reporting_source=*/std::nullopt, net::NetworkAnonymizationKey(), url,
@@ -205,13 +205,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   ASSERT_EQ(1u, pending_uploads().size());
   EXPECT_EQ(kEndpoint_, pending_uploads()[0]->url());
   EXPECT_THAT(pending_uploads()[0]->GetValue(),
-              Optional(IsJson(base::Value::List().Append(
-                  base::Value::Dict()
+              Optional(IsJson(base::ListValue().Append(
+                  base::DictValue()
                       .Set("age", 0)
                       .Set("type", kType_)
                       .Set("url", kUrl_.spec())
                       .Set("user_agent", kUserAgent_)
-                      .Set("body", base::Value::Dict().Set("key", "value"))))));
+                      .Set("body", base::DictValue().Set("key", "value"))))));
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
@@ -272,13 +272,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
   ASSERT_EQ(1u, pending_uploads().size());
   EXPECT_EQ(kEndpoint_, pending_uploads()[0]->url());
   EXPECT_THAT(pending_uploads()[0]->GetValue(),
-              Optional(IsJson(base::Value::List().Append(
-                  base::Value::Dict()
+              Optional(IsJson(base::ListValue().Append(
+                  base::DictValue()
                       .Set("age", 0)
                       .Set("type", kType_)
                       .Set("url", kUrl_.spec())
                       .Set("user_agent", kUserAgent_)
-                      .Set("body", base::Value::Dict().Set("key", "value"))))));
+                      .Set("body", base::DictValue().Set("key", "value"))))));
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
@@ -342,13 +342,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   ASSERT_EQ(1u, pending_uploads().size());
   EXPECT_EQ(kEndpoint_, pending_uploads()[0]->url());
   EXPECT_THAT(pending_uploads()[0]->GetValue(),
-              Optional(IsJson(base::Value::List().Append(
-                  base::Value::Dict()
+              Optional(IsJson(base::ListValue().Append(
+                  base::DictValue()
                       .Set("age", 0)
                       .Set("type", kType_)
                       .Set("url", kSubdomainUrl_.spec())
                       .Set("user_agent", kUserAgent_)
-                      .Set("body", base::Value::Dict().Set("key", "value"))))));
+                      .Set("body", base::DictValue().Set("key", "value"))))));
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
@@ -412,13 +412,13 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   ASSERT_EQ(1u, pending_uploads().size());
   EXPECT_EQ(kEndpoint_, pending_uploads()[0]->url());
   EXPECT_THAT(pending_uploads()[0]->GetValue(),
-              Optional(IsJson(base::Value::List().Append(
-                  base::Value::Dict()
+              Optional(IsJson(base::ListValue().Append(
+                  base::DictValue()
                       .Set("age", 0)
                       .Set("type", kType_)
                       .Set("url", kUrl_.spec())
                       .Set("user_agent", kUserAgent_)
-                      .Set("body", base::Value::Dict().Set("key", "value"))))));
+                      .Set("body", base::DictValue().Set("key", "value"))))));
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   {

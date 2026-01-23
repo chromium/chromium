@@ -37,18 +37,18 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
-                                      NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetLogHeadersParams(const quiche::HttpHeaderBlock* headers,
+                                    NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("headers", ElideHttpHeaderBlockForNetLog(*headers, capture_mode));
   return dict;
 }
 
-base::Value::Dict NetLogParams(const GURL& url,
-                               const std::string& method,
-                               const HttpRequestHeaders* headers,
-                               NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetLogParams(const GURL& url,
+                             const std::string& method,
+                             const HttpRequestHeaders* headers,
+                             NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("url", url.possibly_invalid_spec());
   dict.Set("method", method);
   base::Value headers_param(

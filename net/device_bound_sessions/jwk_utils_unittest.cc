@@ -23,7 +23,7 @@ constexpr uint8_t kES256Spki[] = {
     0x46, 0x7F, 0x2F, 0xB4, 0x3B, 0x46, 0x7E};
 
 TEST(JWKUtilsTest, InvalidSpki) {
-  base::Value::Dict converted =
+  base::DictValue converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::ECDSA_SHA256, {});
   EXPECT_TRUE(converted.empty());
 }
@@ -54,7 +54,7 @@ TEST(JWKUtilsTest, UnsupportedAlgo) {
       0xC8, 0x7F, 0x42, 0xEB, 0x9F, 0xCA, 0x98, 0xF9, 0xB8, 0x34, 0xDB, 0x83,
       0x11, 0x02, 0x03, 0x01, 0x00, 0x01};
 
-  base::Value::Dict converted =
+  base::DictValue converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::RSA_PKCS1_SHA1, kSpki);
   EXPECT_TRUE(converted.empty());
 }
@@ -64,7 +64,7 @@ TEST(JWKUtilsTest, RS256) {
 
   base::Value expected =
       base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS).value();
-  base::Value::Dict converted =
+  base::DictValue converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::RSA_PKCS1_SHA256, spki);
   EXPECT_EQ(converted, expected);
 }
@@ -79,7 +79,7 @@ TEST(JWKUtilsTest, ES256) {
   base::Value expected =
       base::JSONReader::Read(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
-  base::Value::Dict converted =
+  base::DictValue converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::ECDSA_SHA256, kES256Spki);
   EXPECT_EQ(converted, expected);
 }

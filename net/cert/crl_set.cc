@@ -74,7 +74,7 @@ std::optional<base::Value> ReadHeader(std::string_view* data) {
   const std::string_view header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
-  std::optional<base::Value::Dict> header = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> header = base::JSONReader::ReadDict(
       header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!header) {
     return std::nullopt;
@@ -132,10 +132,10 @@ bool ReadCRL(std::string_view* data,
 // the given |key| (without path expansion) in |header_dict| and sets |*out|
 // to the decoded values. It's not an error if |key| is not found in
 // |header_dict|.
-bool CopyHashListFromHeader(const base::Value::Dict& header_dict,
+bool CopyHashListFromHeader(const base::DictValue& header_dict,
                             const char* key,
                             std::vector<std::string>* out) {
-  const base::Value::List* list = header_dict.FindList(key);
+  const base::ListValue* list = header_dict.FindList(key);
   if (!list) {
     // Hash lists are optional so it's not an error if not present.
     return true;
@@ -167,12 +167,12 @@ bool CopyHashListFromHeader(const base::Value::Dict& header_dict,
 // hashes to lists of the same, from the given |key| in |header_dict|. It
 // copies the map data into |out| (after base64-decoding).
 bool CopyHashToHashesMapFromHeader(
-    const base::Value::Dict& header_dict,
+    const base::DictValue& header_dict,
     const char* key,
     std::unordered_map<std::string, std::vector<std::string>>* out) {
   out->clear();
 
-  const base::Value::Dict* dict = header_dict.FindDict(key);
+  const base::DictValue* dict = header_dict.FindDict(key);
   if (dict == nullptr) {
     // Maps are optional so it's not an error if not present.
     return true;
@@ -227,7 +227,7 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
     return false;
   }
 
-  const base::Value::Dict& header_dict = header_value->GetDict();
+  const base::DictValue& header_dict = header_value->GetDict();
 
   const std::string* contents = header_dict.FindString("ContentType");
   if (!contents || (*contents != "CRLSet"))

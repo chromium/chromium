@@ -274,43 +274,43 @@ void LogConnectionDurationMetrics(
   }
 }
 
-base::Value::Dict NetLogQuicMigrationFailureParams(
+base::DictValue NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     std::string_view reason) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("connection_id", connection_id.ToString())
       .Set("reason", reason);
 }
 
-base::Value::Dict NetLogQuicMigrationSuccessParams(
+base::DictValue NetLogQuicMigrationSuccessParams(
     quic::QuicConnectionId connection_id) {
-  return base::Value::Dict().Set("connection_id", connection_id.ToString());
+  return base::DictValue().Set("connection_id", connection_id.ToString());
 }
 
-base::Value::Dict NetLogProbingResultParams(
+base::DictValue NetLogProbingResultParams(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress* peer_address,
     bool is_success) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("network", base::NumberToString(network))
       .Set("peer address", peer_address->ToString())
       .Set("is_success", is_success);
 }
 
-base::Value::Dict NetLogAcceptChFrameReceivedParams(
+base::DictValue NetLogAcceptChFrameReceivedParams(
     spdy::AcceptChOriginValuePair entry) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("origin", entry.origin)
       .Set("accept_ch", entry.value);
 }
 
-base::Value::Dict NetLogReceivedOrigins(
+base::DictValue NetLogReceivedOrigins(
     const std::set<url::SchemeHostPort>& received_origins) {
-  base::Value::List origins;
+  base::ListValue origins;
   for (const auto& origin : received_origins) {
     origins.Append(origin.Serialize());
   }
-  return base::Value::Dict().Set("origins", std::move(origins));
+  return base::DictValue().Set("origins", std::move(origins));
 }
 
 // Histogram for recording the different reasons that a QUIC session is unable
@@ -390,7 +390,7 @@ std::string MigrationCauseToString(MigrationCause cause) {
   return "InvalidCause";
 }
 
-base::Value::Dict NetLogQuicClientSessionParams(
+base::DictValue NetLogQuicClientSessionParams(
     const NetLogWithSource& net_log,
     const QuicSessionKey* session_key,
     const quic::QuicConnectionId& connection_id,
@@ -400,7 +400,7 @@ base::Value::Dict NetLogQuicClientSessionParams(
     bool require_confirmation,
     base::span<const uint8_t> ech_config_list) {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("host", session_key->server_id().host())
           .Set("port", session_key->server_id().port())
           .Set("connection_id", connection_id.ToString())
@@ -1861,7 +1861,7 @@ void QuicChromiumClientSession::LogZeroRttStats() {
   }
 
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_STATE, [&] {
-    return base::Value::Dict().Set("state", ZeroRttStateToString(state));
+    return base::DictValue().Set("state", ZeroRttStateToString(state));
   });
 }
 
@@ -3856,13 +3856,13 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
   LogMigrationResultToHistogram(MIGRATION_STATUS_SUCCESS);
 }
 
-base::Value::Dict QuicChromiumClientSession::GetInfoAsValue(
+base::DictValue QuicChromiumClientSession::GetInfoAsValue(
     const std::set<HostPortPair>& aliases) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("version", ParsedQuicVersionToString(connection()->version()));
   dict.Set("open_streams", static_cast<int>(GetNumActiveStreams()));
 
-  base::Value::List stream_list;
+  base::ListValue stream_list;
   auto* stream_list_ptr = &stream_list;
 
   PerformActionOnActiveStreams([stream_list_ptr](quic::QuicStream* stream) {
@@ -3888,7 +3888,7 @@ base::Value::Dict QuicChromiumClientSession::GetInfoAsValue(
   dict.Set("packets_lost", static_cast<int>(stats.packets_lost));
   SSLInfo ssl_info;
 
-  base::Value::List alias_list;
+  base::ListValue alias_list;
   for (const auto& alias : aliases) {
     alias_list.Append(alias.ToString());
   }

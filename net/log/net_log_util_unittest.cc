@@ -62,7 +62,7 @@ TEST(NetLogUtil, GetNetInfo) {
 
   // Get NetInfo when there's no cache backend (It's only created on first use).
   EXPECT_FALSE(http_cache->GetCurrentBackend());
-  base::Value::Dict net_info_without_cache(GetNetInfo(context.get()));
+  base::DictValue net_info_without_cache(GetNetInfo(context.get()));
   EXPECT_FALSE(http_cache->GetCurrentBackend());
   EXPECT_GT(net_info_without_cache.size(), 0u);
 
@@ -71,7 +71,7 @@ TEST(NetLogUtil, GetNetInfo) {
       TestGetBackendCompletionCallback().callback());
   EXPECT_EQ(OK, rv);
   EXPECT_TRUE(http_cache->GetCurrentBackend());
-  base::Value::Dict net_info_with_cache = GetNetInfo(context.get());
+  base::DictValue net_info_with_cache = GetNetInfo(context.get());
   EXPECT_GT(net_info_with_cache.size(), 0u);
 
   EXPECT_EQ(net_info_without_cache.size(), net_info_with_cache.size());
@@ -95,7 +95,7 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
 
   // Verify that the returned information reflects the new trial.
   ASSERT_TRUE(net_info.is_dict());
-  base::Value::List* trials =
+  base::ListValue* trials =
       net_info.GetDict().FindList("activeFieldTrialGroups");
   ASSERT_NE(nullptr, trials);
   EXPECT_EQ(1u, trials->size());
@@ -131,7 +131,7 @@ TEST(NetLogUtil, GetNetInfoIncludesDisabledDohProviders) {
     auto context = CreateTestURLRequestContextBuilder()->Build();
     base::Value net_info(GetNetInfo(context.get()));
     ASSERT_TRUE(net_info.is_dict());
-    const base::Value::List* disabled_doh_providers_list =
+    const base::ListValue* disabled_doh_providers_list =
         net_info.GetDict().FindList(kNetInfoDohProvidersDisabledDueToFeature);
     CHECK(disabled_doh_providers_list);
     EXPECT_EQ(!provider_enabled,

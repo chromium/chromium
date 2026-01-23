@@ -23,7 +23,7 @@ namespace {
 // description |key|.
 void SetBinaryData(const char* key,
                    std::string_view value,
-                   base::Value::Dict& dict) {
+                   base::DictValue& dict) {
   std::string b64_value = base::Base64Encode(value);
 
   dict.Set(key, b64_value);
@@ -34,7 +34,7 @@ void SetBinaryData(const char* key,
 // outputting a de-serialized SCT to the NetLog.
 base::Value SCTToDictionary(const ct::SignedCertificateTimestamp& sct,
                             ct::SCTVerifyStatus status) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("origin", OriginToString(sct.origin));
   dict.Set("verification_status", StatusToString(status));
@@ -58,9 +58,9 @@ base::Value SCTToDictionary(const ct::SignedCertificateTimestamp& sct,
 
 // Given a list of SCTs and their statuses, return a list Value where each item
 // is a dictionary created by SCTToDictionary.
-base::Value::List SCTListToPrintableValues(
+base::ListValue SCTListToPrintableValues(
     const SignedCertificateTimestampAndStatusList& sct_and_status_list) {
-  base::Value::List output_scts;
+  base::ListValue output_scts;
   for (const auto& sct_and_status : sct_and_status_list) {
     output_scts.Append(
         SCTToDictionary(*(sct_and_status.sct.get()), sct_and_status.status));
@@ -71,20 +71,20 @@ base::Value::List SCTListToPrintableValues(
 
 }  // namespace
 
-base::Value::Dict NetLogSignedCertificateTimestampParams(
+base::DictValue NetLogSignedCertificateTimestampParams(
     const SignedCertificateTimestampAndStatusList* scts) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("scts", SCTListToPrintableValues(*scts));
 
   return dict;
 }
 
-base::Value::Dict NetLogRawSignedCertificateTimestampParams(
+base::DictValue NetLogRawSignedCertificateTimestampParams(
     std::string_view embedded_scts,
     std::string_view sct_list_from_ocsp,
     std::string_view sct_list_from_tls_extension) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   SetBinaryData("embedded_scts", embedded_scts, dict);
   SetBinaryData("scts_from_ocsp_response", sct_list_from_ocsp, dict);

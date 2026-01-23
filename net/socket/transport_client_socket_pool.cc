@@ -42,10 +42,10 @@ namespace {
 // after a certain timeout has passed without receiving an ACK.
 bool g_connect_backup_jobs_enabled = true;
 
-base::Value::Dict NetLogCreateConnectJobParams(
+base::DictValue NetLogCreateConnectJobParams(
     bool backup_job,
     const ClientSocketPool::GroupId* group_id) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("backup_job", backup_job)
       .Set("group_id", group_id->ToString());
 }
@@ -699,7 +699,7 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
     const std::string& type) const {
   // TODO(mmenke): This currently doesn't return bound Requests or ConnectJobs.
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", name)
           .Set("type", type)
           .Set("handed_out_socket_count",
@@ -715,24 +715,24 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
   if (group_map_.empty())
     return base::Value(std::move(dict));
 
-  base::Value::Dict all_groups_dict;
+  base::DictValue all_groups_dict;
   for (const auto& entry : group_map_) {
     const Group* group = entry.second;
 
-    base::Value::List idle_socket_list;
+    base::ListValue idle_socket_list;
     for (const auto& idle_socket : group->idle_sockets()) {
       int source_id = idle_socket.socket->NetLog().source().id;
       idle_socket_list.Append(source_id);
     }
 
-    base::Value::List connect_jobs_list;
+    base::ListValue connect_jobs_list;
     for (const auto& job : group->jobs()) {
       int source_id = job->net_log().source().id;
       connect_jobs_list.Append(source_id);
     }
 
     auto group_dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set("pending_request_count",
                  static_cast<int>(group->unbound_request_count()))
             .Set("active_socket_count",

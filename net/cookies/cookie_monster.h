@@ -70,10 +70,10 @@ class NET_EXPORT CookieMonster : public CookieStore {
     virtual ~PrefDelegate() = default;
 
     // Returns a dict of all domains under legacy mode.
-    virtual const base::Value::Dict& GetLegacyDomains() const = 0;
+    virtual const base::DictValue& GetLegacyDomains() const = 0;
 
     // Sets a dict of domain names under legacy scope mode.
-    virtual void SetLegacyDomains(base::Value::Dict dict) = 0;
+    virtual void SetLegacyDomains(base::DictValue dict) = 0;
 
     // Starts listening for prefs to be loaded. If prefs are already loaded,
     // `pref_loaded_callback` will be invoked asynchronously. Callback will be
@@ -897,7 +897,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   const base::TimeDelta last_access_threshold_;
 
   // Local copy of pref's dictionary.
-  std::unique_ptr<base::Value::Dict> pref_delegate_dict_;
+  std::unique_ptr<base::DictValue> pref_delegate_dict_;
 
   // Approximate date of access time of least recently accessed cookie
   // in |cookies_|.  Note that this is not guaranteed to be accurate, only a)

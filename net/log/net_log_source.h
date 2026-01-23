@@ -30,11 +30,11 @@ struct NET_EXPORT NetLogSource {
 
   // Adds the source to a dictionary containing event parameters,
   // using the name "source_dependency".
-  void AddToEventParameters(base::Value::Dict& event_params) const;
+  void AddToEventParameters(base::DictValue& event_params) const;
 
   // Returns a dictionary with a single entry named "source_dependency" that
   // describes |this|.
-  base::Value::Dict ToEventParameters() const;
+  base::DictValue ToEventParameters() const;
 
   NetLogSourceType type;
   uint32_t id;

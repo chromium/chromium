@@ -40,65 +40,63 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
-base::Value::Dict ConvertES256PkeySpkiToJwk(
-    base::span<const uint8_t> pkey_spki) {
+base::DictValue ConvertES256PkeySpkiToJwk(base::span<const uint8_t> pkey_spki) {
   bssl::UniquePtr<EVP_PKEY> pkey = crypto::evp::PublicKeyFromBytes(pkey_spki);
   if (!pkey || EVP_PKEY_id(pkey.get()) != EVP_PKEY_EC) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(pkey.get());
   if (!ec_key) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   const EC_GROUP* group = EC_KEY_get0_group(ec_key);
   const EC_POINT* point = EC_KEY_get0_public_key(ec_key);
   if (!group || !point) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   bssl::UniquePtr<BIGNUM> x(BN_new());
   bssl::UniquePtr<BIGNUM> y(BN_new());
   if (!x || !y) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   if (!EC_POINT_get_affine_coordinates_GFp(group, point, x.get(), y.get(),
                                            nullptr)) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   std::vector<uint8_t> x_bytes(32);
   std::vector<uint8_t> y_bytes(32);
   if (!BN_bn2bin_padded(x_bytes.data(), x_bytes.size(), x.get()) ||
       !BN_bn2bin_padded(y_bytes.data(), y_bytes.size(), y.get())) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kKeyTypeParam, kEcKeyType)
       .Set(kEcCurve, kEcCurveP256)
       .Set(kEcCoordinateX, Base64UrlEncode(x_bytes))
       .Set(kEcCoordinateY, Base64UrlEncode(y_bytes));
 }
 
-base::Value::Dict ConvertRS256PkeySpkiToJwk(
-    base::span<const uint8_t> pkey_spki) {
+base::DictValue ConvertRS256PkeySpkiToJwk(base::span<const uint8_t> pkey_spki) {
   std::optional<crypto::keypair::PublicKey> key =
       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pkey_spki);
   if (!key || !key->IsRsa()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kKeyTypeParam, kRsaKeyType)
       .Set(kRsaModulus, Base64UrlEncode(key->GetRsaModulus()))
       .Set(kRsaExponent, Base64UrlEncode(key->GetRsaExponent()));
 }
 }  // namespace
 
-base::Value::Dict ConvertPkeySpkiToJwk(
+base::DictValue ConvertPkeySpkiToJwk(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pkey_spki) {
   switch (algorithm) {
@@ -107,20 +105,20 @@ base::Value::Dict ConvertPkeySpkiToJwk(
     case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
       return ConvertES256PkeySpkiToJwk(pkey_spki);
     default:
-      return base::Value::Dict();
+      return base::DictValue();
   }
 }
 
 std::string CreateJwkThumbprint(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pkey_spki) {
-  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pkey_spki);
+  base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pkey_spki);
   if (jwk.empty()) {
     return "";
   }
 
   // Move only the required fields from `jwk` to `canonical_jwk`.
-  base::Value::Dict canonical_jwk;
+  base::DictValue canonical_jwk;
   switch (algorithm) {
     case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
       canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
@@ -140,7 +138,7 @@ std::string CreateJwkThumbprint(
   }
 
   // The canonical representation of the JWK requires the keys to be sorted
-  // alphabetically. `base::Value::Dict` is already sorted.
+  // alphabetically. `base::DictValue` is already sorted.
   std::string canonical_jwk_string;
   CHECK(base::JSONWriter::Write(canonical_jwk, &canonical_jwk_string));
 

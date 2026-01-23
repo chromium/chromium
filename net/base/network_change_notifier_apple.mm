@@ -105,9 +105,9 @@ GetNetworkInterfaceListForNetworkChangeCheck(
   return interfaces;
 }
 
-base::Value::Dict GetNetworkInterfaceValueDict(
+base::DictValue GetNetworkInterfaceValueDict(
     const NetworkInterface& interface) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("name", interface.name);
   dict.Set("friendly_name", interface.friendly_name);
   dict.Set("interface_index", static_cast<int>(interface.interface_index));
@@ -121,16 +121,16 @@ base::Value::Dict GetNetworkInterfaceValueDict(
   return dict;
 }
 
-base::Value::List GetNetworkInterfacesValueList(
+base::ListValue GetNetworkInterfacesValueList(
     const NetworkInterfaceList& interfaces) {
-  base::Value::List list;
+  base::ListValue list;
   for (const NetworkInterface& interface : interfaces) {
     list.Append(GetNetworkInterfaceValueDict(interface));
   }
   return list;
 }
 
-base::Value::Dict NetLogOsConfigChangedParams(
+base::DictValue NetLogOsConfigChangedParams(
     const std::string& result,
     bool net_ipv4_key_found,
     bool net_ipv6_key_found,
@@ -142,7 +142,7 @@ base::Value::Dict NetLogOsConfigChangedParams(
     const std::string& new_ipv6_primary_interface_name,
     const std::optional<NetworkInterfaceList>& old_interfaces,
     const std::optional<NetworkInterfaceList>& new_interfaces) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("result", result);
   dict.Set("net_ipv4_key", net_ipv4_key_found);
   dict.Set("net_ipv6_key", net_ipv6_key_found);

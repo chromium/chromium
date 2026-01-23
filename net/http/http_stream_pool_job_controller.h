@@ -93,7 +93,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   int RestartTunnelWithProxyAuth() override;
   void SetPriority(RequestPriority priority) override;
 
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
  private:
   // Represents an alternative endpoint for the request.

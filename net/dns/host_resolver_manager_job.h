@@ -216,7 +216,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     std::array<size_t, NUM_PRIORITIES> counts_ = {};
   };
 
-  base::Value::Dict NetLogJobCreationParams(const NetLogSource& source);
+  base::DictValue NetLogJobCreationParams(const NetLogSource& source);
 
   void Finish();
 

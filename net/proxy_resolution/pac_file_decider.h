@@ -122,7 +122,7 @@ class NET_EXPORT_PRIVATE PacFileDecider {
     // Returns a Value representing the PacSource.  |effective_pac_url| is the
     // URL derived from information contained in
     // |this|, if Type is not WPAD_DHCP.
-    base::Value::Dict NetLogParams(const GURL& effective_pac_url) const;
+    base::DictValue NetLogParams(const GURL& effective_pac_url) const;
 
     Type type;
     GURL url;  // Empty unless |type == PAC_SOURCE_CUSTOM|.

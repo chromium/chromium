@@ -427,7 +427,7 @@ std::optional<std::string> GetRequestChallenge(
                              &payload)) {
     return std::nullopt;
   }
-  const std::optional<base::Value::Dict> payload_json =
+  const std::optional<base::DictValue> payload_json =
       base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json.has_value()) {
     return std::nullopt;

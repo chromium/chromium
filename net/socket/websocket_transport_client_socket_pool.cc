@@ -250,7 +250,7 @@ base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
     const std::string& name,
     const std::string& type) const {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", name)
           .Set("type", type)
           .Set("handed_out_socket_count",

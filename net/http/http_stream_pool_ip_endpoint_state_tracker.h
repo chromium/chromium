@@ -100,7 +100,7 @@ class HttpStreamPool::IPEndPointStateTracker {
   //    the endpoint.
   std::optional<IPEndPoint> GetIPEndPointToAttemptTcpBased();
 
-  base::Value::List GetInfoAsValue() const;
+  base::ListValue GetInfoAsValue() const;
 
  private:
   void FindBetterIPEndPoint(const std::vector<IPEndPoint>& ip_endpoints,

@@ -79,9 +79,9 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
 }
 
 // Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
-base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
-                                        RequestPriority priority) {
-  base::Value::Dict dict;
+base::DictValue NetLogJobAttachParams(const NetLogSource& source,
+                                      RequestPriority priority) {
+  base::DictValue dict;
   source.AddToEventParameters(dict);
   dict.Set("priority", RequestPriorityToString(priority));
   return dict;
@@ -477,17 +477,17 @@ void HostResolverManager::Job::RunNextTask() {
   }
 }
 
-base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
+base::DictValue HostResolverManager::Job::NetLogJobCreationParams(
     const NetLogSource& source) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   source.AddToEventParameters(dict);
   dict.Set("host", key_.host.ToString());
-  base::Value::List query_types_list;
+  base::ListValue query_types_list;
   for (DnsQueryType query_type : key_.query_types) {
     query_types_list.Append(kDnsQueryTypes.at(query_type));
   }
   dict.Set("dns_query_types", std::move(query_types_list));
-  base::Value::List tasks_list;
+  base::ListValue tasks_list;
   for (TaskType task : tasks_) {
     tasks_list.Append(static_cast<int>(task));
   }

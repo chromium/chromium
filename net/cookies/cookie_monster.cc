@@ -2685,10 +2685,10 @@ CookieScopeSemantics CookieMonster::CheckAndActivateLegacyScopeBehavior(
   if (!pref_delegate_dict_) {
     // TODO(crbug.com/378827534) Add CHECK once callbacks are supported.
     if (pref_delegate_ && pref_delegate_->IsPrefReady()) {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>(
+      pref_delegate_dict_ = std::make_unique<base::DictValue>(
           pref_delegate_->GetLegacyDomains().Clone());
     } else {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>();
+      pref_delegate_dict_ = std::make_unique<base::DictValue>();
     }
   }
   bool is_in_pref = pref_delegate_dict_->Find(cookie_key);

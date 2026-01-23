@@ -1269,7 +1269,7 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
   int count = 0;
   base::Value dict = pool->GetInfoAsValue("", "");
   EXPECT_TRUE(dict.is_dict());
-  const base::Value::Dict* groups = dict.GetDict().FindDict("groups");
+  const base::DictValue* groups = dict.GetDict().FindDict("groups");
   if (groups) {
     count = groups->size();
   }
@@ -1277,8 +1277,8 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
 }
 
 int GetHttpStreamPoolGroupCount(HttpNetworkSession* session) {
-  base::Value::Dict dict = session->http_stream_pool()->GetInfoAsValue();
-  const base::Value::Dict* groups = dict.FindDict("groups");
+  base::DictValue dict = session->http_stream_pool()->GetInfoAsValue();
+  const base::DictValue* groups = dict.FindDict("groups");
   if (groups) {
     return groups->size();
   }
@@ -1316,7 +1316,7 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
 }
 
 int GetHttpStreamPoolHandedOutCount(HttpNetworkSession* session) {
-  base::Value::Dict dict = session->http_stream_pool()->GetInfoAsValue();
+  base::DictValue dict = session->http_stream_pool()->GetInfoAsValue();
   return dict.FindInt("handed_out_socket_count").value_or(-1);
 }
 
@@ -1336,7 +1336,7 @@ int GetHandedOutCount(HttpNetworkSession* session,
 // Return count of distinct QUIC sessions.
 int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value dict(session->QuicInfoToValue());
-  base::Value::List* session_list = dict.GetDict().FindList("sessions");
+  base::ListValue* session_list = dict.GetDict().FindList("sessions");
   if (!session_list) {
     return -1;
   }

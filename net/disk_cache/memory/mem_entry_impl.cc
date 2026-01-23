@@ -57,8 +57,8 @@ std::string GenerateChildName(const std::string& base_name, int64_t child_id) {
 
 // Returns NetLog parameters for the creation of a MemEntryImpl. A separate
 // function is needed because child entries don't store their key().
-base::Value::Dict NetLogEntryCreationParams(const MemEntryImpl* entry) {
-  base::Value::Dict dict;
+base::DictValue NetLogEntryCreationParams(const MemEntryImpl* entry) {
+  base::DictValue dict;
   std::string key;
   switch (entry->type()) {
     case MemEntryImpl::EntryType::kParent:

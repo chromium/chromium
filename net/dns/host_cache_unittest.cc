@@ -1301,7 +1301,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithExpirations) {
   // Advance to t=12, and serialize/deserialize the cache.
   now += base::Seconds(7);
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1375,7 +1375,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithChanges) {
   EXPECT_EQ(2u, cache.size());
 
   // Serialize the cache.
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1476,7 +1476,7 @@ TEST(HostCacheTest, SerializeAndDeserializeAddresses) {
   // Advance to t=12, ansd serialize the cache.
   now += base::Seconds(7);
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1562,7 +1562,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEntryWithoutScheme) {
   ASSERT_TRUE(cache.Lookup(key, now));
   ASSERT_EQ(cache.size(), 1u);
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, /*include_staleness=*/false,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1608,7 +1608,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkAnonymizationKey) {
             cache.Lookup(key2, now)->first.network_anonymization_key);
   EXPECT_EQ(2u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1644,7 +1644,7 @@ TEST(HostCacheTest, SerializeForDebugging) {
             cache.Lookup(key, now)->first.network_anonymization_key);
   EXPECT_EQ(1u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kDebug);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1674,7 +1674,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   cache.Set(key, entry, now, ttl);
   EXPECT_EQ(1u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1705,7 +1705,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   cache.Set(key, entry, now, ttl);
   EXPECT_EQ(1u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -1777,7 +1777,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   cache.Set(key, merged_entry, now, ttl);
   EXPECT_EQ(1u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
@@ -2691,7 +2691,7 @@ TEST(HostCacheTest, SerializeTrustAnchorIDs) {
   cache.Set(key, metadata_entry, now, ttl);
   ASSERT_EQ(1u, cache.size());
 
-  base::Value::List serialized_cache;
+  base::ListValue serialized_cache;
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);

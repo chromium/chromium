@@ -530,7 +530,7 @@ void SpdySessionPool::MakeCurrentSessionsGoingAway(Error error) {
 }
 
 base::Value SpdySessionPool::SpdySessionPoolInfoToValue() const {
-  auto list = base::Value::List::with_capacity(sessions_.size());
+  auto list = base::ListValue::with_capacity(sessions_.size());
 
   for (const auto& session : sessions_) {
     list.Append(session->GetInfoAsValue());

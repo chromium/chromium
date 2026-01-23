@@ -55,7 +55,7 @@ Also consider the maximum size of any string parameters:
 NetLog parameters are specified as a JSON serializable `base::Value` which does
 not support 64-bit integers.
 
-Be careful when using `base::Value::Dict::Set()` as it will truncate 64-bit
+Be careful when using `base::DictValue::Set()` as it will truncate 64-bit
 values to 32-bits.
 
 Instead use `NetLogNumberValue()`.
@@ -123,8 +123,8 @@ at all capture modes.
 
 ```
 net_log.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
-  base::Value::Dict dict;
-  base::Value::List certs;
+  base::DictValue dict;
+  base::ListValue certs;
   std::vector<std::string> encoded_chain;
   server_cert_->GetPEMEncodedChain(&encoded_chain);
   for (auto& pem : encoded_chain)
@@ -156,7 +156,7 @@ net_log.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_ADDED,
                  [&](NetLogCaptureMode capture_mode) {
                    if (!NetLogCaptureIncludesSensitive(capture_mode))
                      return base::Value();
-                   base::Value::Dict dict;
+                   base::DictValue dict;
                    dict.Set("name", cookie->Name());
                    dict.Set("value", cookie->Value());
                    return base::Value(std::move(dict));

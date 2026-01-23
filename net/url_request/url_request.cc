@@ -303,13 +303,13 @@ LoadStateWithParam URLRequest::GetLoadState() const {
                             std::u16string());
 }
 
-base::Value::Dict URLRequest::GetStateAsValue(
+base::DictValue URLRequest::GetStateAsValue(
     NetLogCaptureMode capture_mode) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("url", SanitizeUrlForNetLog(original_url(), capture_mode));
 
   if (url_chain_.size() > 1) {
-    base::Value::List list;
+    base::ListValue list;
     for (const GURL& url : url_chain_) {
       list.Append(url.possibly_invalid_spec());
     }

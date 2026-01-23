@@ -1265,7 +1265,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // OK, otherwise the cache will end up with an active entry without any
   // transaction attached.
   net_log_.EndEvent(NetLogEventType::HTTP_CACHE_OPEN_OR_CREATE_ENTRY, [&] {
-    base::Value::Dict params;
+    base::DictValue params;
     if (result == OK) {
       params.Set("result", new_entry_->opened() ? "opened" : "created");
     } else {
@@ -4235,7 +4235,7 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   NoVarySearchCache::LookupResult result = std::move(maybe_result).value();
   net_log_.BeginEvent(
       NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("request_url", request_->url.spec())
             .Set("cached_url", result.original_url.spec());
       });
@@ -4261,7 +4261,7 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
   no_vary_search_use_result_ = restart_reason;
   net_log_.EndEvent(
       NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
-        return base::Value::Dict().Set(
+        return base::DictValue().Set(
             "restart_reason", NoVarySearchUseResultToString(restart_reason));
       });
   if (entry_action == RestartCacheEntryAction::kErase) {

@@ -114,7 +114,7 @@ class NET_EXPORT DnsClient {
   // Return the effective DNS configuration as a value that can be recorded in
   // the NetLog. This also synthesizes interpretative data to the Value, e.g.
   // whether secure and insecure transactions are enabled.
-  virtual base::Value::Dict GetDnsConfigAsValueForNetLog() const = 0;
+  virtual base::DictValue GetDnsConfigAsValueForNetLog() const = 0;
 
   virtual std::optional<DnsConfig> GetSystemConfigForTesting() const = 0;
   virtual DnsConfigOverrides GetConfigOverridesForTesting() const = 0;

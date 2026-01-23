@@ -71,9 +71,8 @@ namespace net {
 
 namespace {
 
-base::Value::Dict CertVerifierParams(
-    const CertVerifier::RequestParams& params) {
-  base::Value::Dict dict;
+base::DictValue CertVerifierParams(const CertVerifier::RequestParams& params) {
+  base::DictValue dict;
   dict.Set("certificates",
            NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {

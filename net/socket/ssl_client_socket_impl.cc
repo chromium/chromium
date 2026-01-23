@@ -83,24 +83,24 @@ const int kCertVerifyPending = 1;
 // Default size of the internal BoringSSL buffers.
 const int kDefaultOpenSSLBufferSize = 17 * 1024;
 
-base::Value::Dict NetLogPrivateKeyOperationParams(uint16_t algorithm,
-                                                  SSLPrivateKey* key) {
-  return base::Value::Dict()
+base::DictValue NetLogPrivateKeyOperationParams(uint16_t algorithm,
+                                                SSLPrivateKey* key) {
+  return base::DictValue()
       .Set("algorithm",
            SSL_get_signature_algorithm_name(algorithm, 0 /* exclude curve */))
       .Set("provider", key->GetProviderName());
 }
 
-base::Value::Dict NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
+base::DictValue NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
   SSLInfo ssl_info;
   if (!socket->GetSSLInfo(&ssl_info)) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   const char* version_str;
   SSLVersionToString(&version_str,
                      SSLConnectionStatusToVersion(ssl_info.connection_status));
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("version", version_str)
       .Set("is_resumed", ssl_info.handshake_type == SSLInfo::HANDSHAKE_RESUME)
       .Set("cipher_suite",
@@ -111,19 +111,19 @@ base::Value::Dict NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
       .Set("next_proto", NextProtoToString(socket->GetNegotiatedProtocol()));
 }
 
-base::Value::Dict NetLogSSLAlertParams(const void* bytes, size_t len) {
-  return base::Value::Dict().Set("bytes", NetLogBinaryValue(bytes, len));
+base::DictValue NetLogSSLAlertParams(const void* bytes, size_t len) {
+  return base::DictValue().Set("bytes", NetLogBinaryValue(bytes, len));
 }
 
-base::Value::Dict NetLogSSLMessageParams(bool is_write,
-                                         const void* bytes,
-                                         size_t len,
-                                         NetLogCaptureMode capture_mode) {
+base::DictValue NetLogSSLMessageParams(bool is_write,
+                                       const void* bytes,
+                                       size_t len,
+                                       NetLogCaptureMode capture_mode) {
   if (len == 0) {
     NOTREACHED();
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   // The handshake message type is the first byte. Include it so elided messages
   // still report their type.
   uint8_t type = reinterpret_cast<const uint8_t*>(bytes)[0];
@@ -834,7 +834,7 @@ int SSLClientSocketImpl::Init() {
   if (!ssl_config_.ech_config_list.empty()) {
     DCHECK(context_->config().ech_enabled);
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
-      return base::Value::Dict().Set(
+      return base::DictValue().Set(
           "bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
     });
     if (!SSL_set1_ech_config_list(ssl_.get(),
@@ -1060,8 +1060,8 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   }
 
   net_log_.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
-    return base::Value::Dict().Set(
-        "certificates", NetLogX509CertificateList(server_cert_.get()));
+    return base::DictValue().Set("certificates",
+                                 NetLogX509CertificateList(server_cert_.get()));
   });
 
   // If the certificate is bad and has been previously accepted, use
@@ -1415,7 +1415,7 @@ void SSLClientSocketImpl::DoPeek() {
                                 ssl_early_data_reason_max_value + 1);
     }
     net_log_.AddEvent(NetLogEventType::SSL_HANDSHAKE_EARLY_DATA_REASON, [&] {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("early_data_reason", early_data_reason);
       return dict;
     });

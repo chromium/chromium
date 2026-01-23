@@ -91,7 +91,7 @@ void RecordingNetLogObserver::Clear() {
 }
 
 void RecordingNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
-  base::Value::Dict params = entry.params.Clone();
+  base::DictValue params = entry.params.Clone();
   base::RepeatingClosure add_entry_callback;
   {
     // Only need to acquire the lock when accessing class variables.
@@ -117,7 +117,7 @@ void RecordingNetLogObserver::SetThreadsafeAddEntryCallback(
 }
 
 std::string RecordingNetLogObserver::GetJson() const {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& entry : entry_list_) {
     list.Append(entry.ToDict());
   }

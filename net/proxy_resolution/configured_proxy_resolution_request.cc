@@ -31,11 +31,11 @@ bool CheckDnsCondition(
   }
 }
 
-base::Value::Dict CreateEndHostResolutionNetLogParams(
+base::DictValue CreateEndHostResolutionNetLogParams(
     const url::SchemeHostPort& host,
     const ResolveHostResult& result,
     bool was_resolved_sync) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("host", host.Serialize());
   dict.Set("was_resolved_sync", was_resolved_sync);
   result.AddToDict(dict);

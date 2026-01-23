@@ -165,7 +165,7 @@ class NET_EXPORT NetLog {
                                               const NetLogSource& source,
                                               NetLogEventPhase phase,
                                               base::TimeTicks time,
-                                              base::Value::Dict params);
+                                              base::DictValue params);
 
    private:
     // Friend NetLog so that AddCaptureModeObserver/RemoveCaptureModeObserver
@@ -328,7 +328,7 @@ class NET_EXPORT NetLog {
       NetLogEventType type,
       const NetLogSource& source,
       NetLogEventPhase phase,
-      base::FunctionRef<base::Value::Dict(NetLogCaptureMode)> get_params);
+      base::FunctionRef<base::DictValue(NetLogCaptureMode)> get_params);
 
   // Returns the set of all capture modes being observed.
   NetLogCaptureModeSet GetObserverCaptureModes() const {
@@ -344,7 +344,7 @@ class NET_EXPORT NetLog {
   void AddEntryWithMaterializedParams(NetLogEventType type,
                                       const NetLogSource& source,
                                       NetLogEventPhase phase,
-                                      base::Value::Dict params);
+                                      base::DictValue params);
 
   // Adds an entry at a certain time, using already materialized parameters,
   // when it is already known that the log is capturing (goes straight to
@@ -353,7 +353,7 @@ class NET_EXPORT NetLog {
                                             const NetLogSource& source,
                                             NetLogEventPhase phase,
                                             base::TimeTicks time,
-                                            base::Value::Dict params);
+                                            base::DictValue params);
 
   // Called whenever an observer is added or removed, to update
   // |observer_capture_modes_|. Must have acquired |lock_| prior to calling.

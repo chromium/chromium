@@ -36,7 +36,7 @@ class NET_EXPORT DnsOverHttpsServerConfig {
       Endpoints endpoints = {});
 
   static std::optional<DnsOverHttpsServerConfig> FromValue(
-      base::Value::Dict value);
+      base::DictValue value);
 
   bool operator==(const DnsOverHttpsServerConfig& other) const;
   bool operator<(const DnsOverHttpsServerConfig& other) const;
@@ -49,7 +49,7 @@ class NET_EXPORT DnsOverHttpsServerConfig {
   // Returns true if this server config can be represented as just a template.
   bool IsSimple() const;
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
  private:
   DnsOverHttpsServerConfig(std::string server_template,

@@ -20,7 +20,7 @@ namespace net {
 
 namespace {
 
-void HeavilyRedactParams(base::Value::Dict& params) {
+void HeavilyRedactParams(base::DictValue& params) {
   static const base::NoDestructor<absl::flat_hash_set<std::string_view>>
       kAllowlist(kNetLogHeavilyRedactedParamAllowlist.cbegin(),
                  kNetLogHeavilyRedactedParamAllowlist.cend());
@@ -69,7 +69,7 @@ void NetLog::ThreadSafeCaptureModeObserver::
                                          const NetLogSource& source,
                                          NetLogEventPhase phase,
                                          base::TimeTicks time,
-                                         base::Value::Dict params) {
+                                         base::DictValue params) {
   DCHECK(net_log_);
   net_log_->AddEntryAtTimeWithMaterializedParams(type, source, phase, time,
                                                  std::move(params));
@@ -87,7 +87,7 @@ NetLog::NetLog(base::PassKey<NetLogWithSource>) {}
 void NetLog::AddEntry(NetLogEventType type,
                       const NetLogSource& source,
                       NetLogEventPhase phase) {
-  AddEntry(type, source, phase, [] { return base::Value::Dict(); });
+  AddEntry(type, source, phase, [] { return base::DictValue(); });
 }
 
 void NetLog::AddGlobalEntry(NetLogEventType type) {
@@ -204,7 +204,7 @@ std::string NetLog::TimeToString(base::Time time) {
 
 // static
 base::Value NetLog::GetEventTypesAsValue() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (int i = 0; i < static_cast<int>(NetLogEventType::COUNT); ++i) {
     dict.Set(NetLogEventTypeToString(static_cast<NetLogEventType>(i)), i);
   }
@@ -226,7 +226,7 @@ const char* NetLog::SourceTypeToString(NetLogSourceType source) {
 
 // static
 base::Value NetLog::GetSourceTypesAsValue() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (int i = 0; i < static_cast<int>(NetLogSourceType::COUNT); ++i) {
     dict.Set(SourceTypeToString(static_cast<NetLogSourceType>(i)), i);
   }
@@ -257,7 +257,7 @@ void NetLog::AddEntryInternal(
     NetLogEventType type,
     const NetLogSource& source,
     NetLogEventPhase phase,
-    base::FunctionRef<base::Value::Dict(NetLogCaptureMode)> get_params) {
+    base::FunctionRef<base::DictValue(NetLogCaptureMode)> get_params) {
   NetLogCaptureModeSet observer_capture_modes = GetObserverCaptureModes();
 
   for (int i = 0; i <= static_cast<int>(NetLogCaptureMode::kLast); ++i) {
@@ -266,7 +266,7 @@ void NetLog::AddEntryInternal(
       continue;
     }
 
-    base::Value::Dict params = get_params(capture_mode);
+    base::DictValue params = get_params(capture_mode);
     if (capture_mode == NetLogCaptureMode::kHeavilyRedacted) {
       HeavilyRedactParams(params);
     }
@@ -287,7 +287,7 @@ void NetLog::AddEntryInternal(
 void NetLog::AddEntryWithMaterializedParams(NetLogEventType type,
                                             const NetLogSource& source,
                                             NetLogEventPhase phase,
-                                            base::Value::Dict params) {
+                                            base::DictValue params) {
   AddEntryAtTimeWithMaterializedParams(
       type, source, phase, base::TimeTicks::Now(), std::move(params));
 }
@@ -296,7 +296,7 @@ void NetLog::AddEntryAtTimeWithMaterializedParams(NetLogEventType type,
                                                   const NetLogSource& source,
                                                   NetLogEventPhase phase,
                                                   base::TimeTicks time,
-                                                  base::Value::Dict params) {
+                                                  base::DictValue params) {
   const NetLogCaptureModeSet capture_modes = GetObserverCaptureModes();
   const NetLogCaptureModeSet heavily_redacted_bit =
       NetLogCaptureModeToBit(NetLogCaptureMode::kHeavilyRedacted);

@@ -35,14 +35,14 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogParamsForCreateAuth(
+base::DictValue NetLogParamsForCreateAuth(
     std::string_view scheme,
     std::string_view challenge,
     const int net_error,
     const url::SchemeHostPort& scheme_host_port,
     const std::optional<bool>& allows_default_credentials,
     NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("scheme", NetLogStringValue(scheme));
   if (NetLogCaptureIncludesSensitive(capture_mode)) {
     dict.Set("challenge", NetLogStringValue(challenge));

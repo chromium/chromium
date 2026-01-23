@@ -177,8 +177,8 @@ bool ConfigureAsyncDnsNoFallbackFieldTrial() {
   return kDefault;
 }
 
-base::Value::Dict NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
-  base::Value::Dict dict;
+base::DictValue NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
+  base::DictValue dict;
   dict.Set("ipv6_available", ipv6_available);
   dict.Set("cached", cached);
   return dict;
@@ -244,20 +244,20 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   return limits;
 }
 
-base::Value::Dict NetLogResults(const HostCache::Entry& results) {
-  base::Value::Dict dict;
+base::DictValue NetLogResults(const HostCache::Entry& results) {
+  base::DictValue dict;
   dict.Set("results", results.NetLogParams());
   return dict;
 }
 
-base::Value::Dict NetLogResults(
+base::DictValue NetLogResults(
     const std::set<std::unique_ptr<HostResolverInternalResult>>& results) {
-  auto list = base::Value::List::with_capacity(results.size());
+  auto list = base::ListValue::with_capacity(results.size());
   for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
     list.Append(result->ToValue());
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("results", std::move(list));
   return dict;
 }
@@ -627,10 +627,10 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
   }
 }
 
-base::Value::Dict HostResolverManager::GetDnsConfigAsValue() const {
+base::DictValue HostResolverManager::GetDnsConfigAsValue() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return dns_client_ ? dns_client_->GetDnsConfigAsValueForNetLog()
-                     : base::Value::Dict();
+                     : base::DictValue();
 }
 
 void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
@@ -825,11 +825,11 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   CreateTaskSequence(job_key, cache_usage, secure_dns_policy, out_tasks);
   source_net_log.AddEvent(
       NetLogEventType::HOST_RESOLVER_MANAGER_TASK_SEQUENCE_CREATED, [&] {
-        base::Value::List tasks_list;
+        base::ListValue tasks_list;
         for (TaskType task : *out_tasks) {
           tasks_list.Append(static_cast<int>(task));
         }
-        return base::Value::Dict().Set("tasks", std::move(tasks_list));
+        return base::DictValue().Set("tasks", std::move(tasks_list));
       });
 
   if (!ip_address.IsValid()) {

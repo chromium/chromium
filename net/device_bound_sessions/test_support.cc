@@ -46,7 +46,7 @@ constexpr std::array<uint8_t, 64> kTestOriginTrialPrivateKey = {
     0x90, 0x8,  0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x4,  0xd0};
 
 std::string GetOriginTrialToken(const GURL& base_url) {
-  base::Value::Dict token_data;
+  base::DictValue token_data;
   token_data.Set("origin", url::Origin::Create(base_url).Serialize());
   token_data.Set("feature", "DeviceBoundSessionCredentials");
   base::Time expiry = base::Time::Now() + base::Days(1);
@@ -116,20 +116,20 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
         base::StringPrintf("/dbsc_refresh_session?%s", query_params);
 
     const auto registration_response =
-        base::Value::Dict()
+        base::DictValue()
             .Set("session_identifier", session_id)
             .Set("refresh_url", base_url.Resolve(refresh_path).spec())
-            .Set("scope", base::Value::Dict()
+            .Set("scope", base::DictValue()
                               .Set("include_site", false)
                               .Set("scope_specification",
-                                   base::Value::List().Append(
-                                       base::Value::Dict()
+                                   base::ListValue().Append(
+                                       base::DictValue()
                                            .Set("type", "exclude")
                                            .Set("domain", base_url.GetHost())
                                            .Set("path", "/favicon.ico"))))
             .Set("credentials",
-                 base::Value::List().Append(
-                     base::Value::Dict()
+                 base::ListValue().Append(
+                     base::DictValue()
                          .Set("type", "cookie")
                          .Set("name", cookie_name)
                          .Set("attributes", "SameSite=None; Secure")));
@@ -182,8 +182,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
   return nullptr;
 }
 
-std::optional<std::vector<uint8_t>> Es256JwkToSpki(
-    const base::Value::Dict& jwk) {
+std::optional<std::vector<uint8_t>> Es256JwkToSpki(const base::DictValue& jwk) {
   const std::string* x = jwk.FindString("x");
   const std::string* y = jwk.FindString("y");
   if (!x || !y) {
@@ -334,19 +333,19 @@ bool VerifyEs256Jwt(std::string_view jwt) {
     return false;
   }
 
-  const std::optional<base::Value::Dict> header_json =
+  const std::optional<base::DictValue> header_json =
       base::JSONReader::ReadDict(header, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!header_json) {
     return false;
   }
-  const std::optional<base::Value::Dict> payload_json =
+  const std::optional<base::DictValue> payload_json =
       base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json) {
     return false;
   }
 
   // Extract the JWK.
-  const base::Value::Dict* jwk = header_json->FindDict("jwk");
+  const base::DictValue* jwk = header_json->FindDict("jwk");
   if (!jwk) {
     return false;
   }

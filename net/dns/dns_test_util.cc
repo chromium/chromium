@@ -806,9 +806,9 @@ const DnsConfig* MockDnsClient::GetEffectiveConfig() const {
   return effective_config_.has_value() ? &effective_config_.value() : nullptr;
 }
 
-base::Value::Dict MockDnsClient::GetDnsConfigAsValueForNetLog() const {
+base::DictValue MockDnsClient::GetDnsConfigAsValueForNetLog() const {
   // This is just a stub implementation that never produces a meaningful value.
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 const DnsHosts* MockDnsClient::GetHosts() const {

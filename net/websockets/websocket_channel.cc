@@ -128,10 +128,10 @@ void GetFrameTypeForOpcode(WebSocketFrameHeader::OpCode opcode,
   return;
 }
 
-base::Value::Dict NetLogFailParam(uint16_t code,
-                                  std::string_view reason,
-                                  std::string_view message) {
-  base::Value::Dict dict;
+base::DictValue NetLogFailParam(uint16_t code,
+                                std::string_view reason,
+                                std::string_view message) {
+  base::DictValue dict;
   dict.Set("code", code);
   dict.Set("reason", reason);
   dict.Set("internal_reason", message);

@@ -77,8 +77,8 @@ LoadState TlsStreamAttempt::GetLoadState() const {
   }
 }
 
-base::Value::Dict TlsStreamAttempt::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue TlsStreamAttempt::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("next_state", StateToString(next_state_));
   dict.Set("tcp_handshake_completed", tcp_handshake_completed_);
   dict.Set("tls_handshake_started", tls_handshake_started_);
@@ -99,8 +99,8 @@ int TlsStreamAttempt::StartInternal() {
   return DoLoop(OK);
 }
 
-base::Value::Dict TlsStreamAttempt::GetNetLogStartParams() {
-  base::Value::Dict dict;
+base::DictValue TlsStreamAttempt::GetNetLogStartParams() {
+  base::DictValue dict;
   dict.Set("host_port", host_port_pair_.ToString());
   return dict;
 }

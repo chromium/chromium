@@ -18,7 +18,7 @@ NetLogEntry::NetLogEntry(NetLogEventType type,
                          NetLogSource source,
                          NetLogEventPhase phase,
                          base::TimeTicks time,
-                         base::Value::Dict params)
+                         base::DictValue params)
     : type(type),
       source(source),
       phase(phase),
@@ -30,13 +30,13 @@ NetLogEntry::~NetLogEntry() = default;
 NetLogEntry::NetLogEntry(NetLogEntry&& entry) = default;
 NetLogEntry& NetLogEntry::operator=(NetLogEntry&& entry) = default;
 
-base::Value::Dict NetLogEntry::ToDict() const {
-  base::Value::Dict entry_dict;
+base::DictValue NetLogEntry::ToDict() const {
+  base::DictValue entry_dict;
 
   entry_dict.Set("time", NetLog::TickCountToString(time));
 
   // Set the entry source.
-  base::Value::Dict source_dict;
+  base::DictValue source_dict;
   source_dict.Set("id", static_cast<int>(source.id));
   source_dict.Set("type", static_cast<int>(source.type));
   source_dict.Set("start_time", NetLog::TickCountToString(source.start_time));

@@ -180,7 +180,7 @@ TEST(DnsOverHttpsServerConfigTest, FromValueWithUnknownKey) {
 
 TEST(DnsOverHttpsServerConfigTest, FromValueInvalid) {
   // Empty dict
-  EXPECT_FALSE(DnsOverHttpsServerConfig::FromValue(base::Value::Dict()));
+  EXPECT_FALSE(DnsOverHttpsServerConfig::FromValue(base::DictValue()));
 
   // Wrong scheme
   std::string_view input = R"(

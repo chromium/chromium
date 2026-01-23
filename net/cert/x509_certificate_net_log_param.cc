@@ -16,7 +16,7 @@
 namespace net {
 
 base::Value NetLogX509CertificateList(const X509Certificate* certificate) {
-  base::Value::List certs;
+  base::ListValue certs;
   std::vector<std::string> encoded_chain;
   certificate->GetPEMEncodedChain(&encoded_chain);
   for (auto& pem : encoded_chain)

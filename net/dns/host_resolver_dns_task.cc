@@ -44,24 +44,24 @@ DnsResponse CreateFakeEmptyResponse(std::string_view hostname,
       DnsQueryTypeToQtype(query_type));
 }
 
-base::Value::Dict NetLogDnsTaskExtractionFailureParams(
+base::DictValue NetLogDnsTaskExtractionFailureParams(
     DnsResponseResultExtractor::ExtractionError extraction_error,
     DnsQueryType dns_query_type) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("extraction_error", base::strict_cast<int>(extraction_error));
   dict.Set("dns_query_type", kDnsQueryTypes.at(dns_query_type));
   return dict;
 }
 
 // Creates NetLog parameters when the DnsTask failed.
-base::Value::Dict NetLogDnsTaskFailedParams(
+base::DictValue NetLogDnsTaskFailedParams(
     const HostResolverInternalErrorResult& failure_result,
     const HostResolverDnsTask::Results& saved_results) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("failure_result", failure_result.ToValue());
 
   if (!saved_results.empty()) {
-    base::Value::List list;
+    base::ListValue list;
     for (const std::unique_ptr<HostResolverInternalResult>& result :
          saved_results) {
       list.Append(result->ToValue());
@@ -72,13 +72,13 @@ base::Value::Dict NetLogDnsTaskFailedParams(
   return dict;
 }
 
-base::Value::Dict NetLogResults(const HostResolverDnsTask::Results& results) {
-  base::Value::List list;
+base::DictValue NetLogResults(const HostResolverDnsTask::Results& results) {
+  base::ListValue list;
   for (const std::unique_ptr<HostResolverInternalResult>& result : results) {
     list.Append(result->ToValue());
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("results", std::move(list));
   return dict;
 }
@@ -311,13 +311,13 @@ void HostResolverDnsTask::StartNextTransaction() {
   CreateAndStartTransaction(std::move(transaction_info));
 }
 
-base::Value::Dict HostResolverDnsTask::NetLogDnsTaskCreationParams() {
-  base::Value::Dict dict;
+base::DictValue HostResolverDnsTask::NetLogDnsTaskCreationParams() {
+  base::DictValue dict;
   dict.Set("secure", secure());
 
-  base::Value::List transactions_needed_value;
+  base::ListValue transactions_needed_value;
   for (const TransactionInfo& info : transactions_needed_) {
-    base::Value::Dict transaction_dict;
+    base::DictValue transaction_dict;
     transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
     transactions_needed_value.Append(std::move(transaction_dict));
   }
@@ -326,13 +326,13 @@ base::Value::Dict HostResolverDnsTask::NetLogDnsTaskCreationParams() {
   return dict;
 }
 
-base::Value::Dict HostResolverDnsTask::NetLogDnsTaskTimeoutParams() {
-  base::Value::Dict dict;
+base::DictValue HostResolverDnsTask::NetLogDnsTaskTimeoutParams() {
+  base::DictValue dict;
 
   if (!transactions_in_progress_.empty()) {
-    base::Value::List list;
+    base::ListValue list;
     for (const TransactionInfo& info : transactions_in_progress_) {
-      base::Value::Dict transaction_dict;
+      base::DictValue transaction_dict;
       transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
       list.Append(std::move(transaction_dict));
     }
@@ -340,9 +340,9 @@ base::Value::Dict HostResolverDnsTask::NetLogDnsTaskTimeoutParams() {
   }
 
   if (!transactions_needed_.empty()) {
-    base::Value::List list;
+    base::ListValue list;
     for (const TransactionInfo& info : transactions_needed_) {
-      base::Value::Dict transaction_dict;
+      base::DictValue transaction_dict;
       transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
       list.Append(std::move(transaction_dict));
     }
@@ -588,12 +588,12 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
   CHECK(results.has_value());
   net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS,
                     [&] {
-                      base::Value::List list;
+                      base::ListValue list;
                       list.reserve(results.value().size());
                       for (const auto& result : results.value()) {
                         list.Append(result->ToValue());
                       }
-                      base::Value::Dict dict;
+                      base::DictValue dict;
                       dict.Set("results", std::move(list));
                       return dict;
                     });

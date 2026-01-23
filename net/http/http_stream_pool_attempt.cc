@@ -260,7 +260,7 @@ void HttpStreamPool::Attempt::StartAttempt(IPEndPoint ip_endpoint) {
   TcpAttempt* raw_attempt = attempt.get();
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("ip_endpoint", raw_attempt->ip_endpoint().ToString());
         raw_attempt->stream_attempt().net_log().source().AddToEventParameters(
             dict);
@@ -378,7 +378,7 @@ void HttpStreamPool::Attempt::OnTcpAttemptSlow(TcpAttempt* attempt) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_SLOW,
       [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("ip_endpoint", attempt->ip_endpoint().ToString());
         attempt->stream_attempt().net_log().source().AddToEventParameters(dict);
         return dict;
@@ -391,7 +391,7 @@ void HttpStreamPool::Attempt::OnTcpAttemptComplete(TcpAttempt* attempt,
                                                    int rv) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("ip_endpoint", attempt->ip_endpoint().ToString());
         dict.Set("net_error", rv);
         attempt->stream_attempt().net_log().source().AddToEventParameters(dict);

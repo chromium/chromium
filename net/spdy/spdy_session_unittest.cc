@@ -1922,9 +1922,9 @@ TEST_F(SpdySessionTest, ChangeStreamRequestPriority) {
 // Attempts to extract a NetLogSource from a set of event parameters.  Returns
 // true and writes the result to |source| on success.  Returns false and
 // makes |source| an invalid source on failure.
-bool NetLogSourceFromEventParameters(const base::Value::Dict* event_params,
+bool NetLogSourceFromEventParameters(const base::DictValue* event_params,
                                      NetLogSource* source) {
-  const base::Value::Dict* source_dict = nullptr;
+  const base::DictValue* source_dict = nullptr;
   int source_id = -1;
   int source_type = static_cast<int>(NetLogSourceType::COUNT);
   if (!event_params) {

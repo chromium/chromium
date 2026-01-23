@@ -91,7 +91,7 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       ReportingTargetType target_type) override {
     DCHECK(context_);
@@ -163,7 +163,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   base::Value StatusAsValue() const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("reportingEnabled", true);
     dict.Set("clients", context_->cache()->GetClientsAsValue());
     dict.Set("reports", context_->cache()->GetReportsAsValue());
@@ -223,7 +223,7 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       base::TimeTicks queued_ticks,
       ReportingTargetType target_type) {

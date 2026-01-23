@@ -96,7 +96,7 @@ HostPortPair HostPortPair::FromString(std::string_view str) {
 
 // static
 std::optional<HostPortPair> HostPortPair::FromValue(const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict)
     return std::nullopt;
 
@@ -138,7 +138,7 @@ std::string HostPortPair::HostForURL() const {
 }
 
 base::Value HostPortPair::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kValueHostKey, host_);
   dict.Set(kValuePortKey, port_);
 

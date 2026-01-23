@@ -42,7 +42,7 @@ struct NET_EXPORT DnsConfig {
 
   // Returns a Dict representation of |this|. For performance reasons, the
   // Dict only contains the number of hosts rather than the full list.
-  base::Value::Dict ToDict() const;
+  base::DictValue ToDict() const;
 
   bool IsValid() const {
     return !nameservers.empty() || !doh_config.servers().empty();

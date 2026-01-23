@@ -254,10 +254,10 @@ bool TransportSecurityState::ShouldSSLErrorsBeFatal(std::string_view host) {
   return GetSTSState(host, &unused_sts) || GetPKPState(host, &unused_pkp);
 }
 
-base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
+base::DictValue TransportSecurityState::NetLogUpgradeToSSLParam(
     std::string_view host) {
   STSState sts_state;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("host", host);
   dict.Set("get_sts_state_result", GetSTSState(host, &sts_state));
   dict.Set("should_upgrade_to_ssl", sts_state.ShouldUpgradeToSSL());

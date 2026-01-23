@@ -83,7 +83,7 @@ DEFINE_PROTO_FUZZER(const host_cache_fuzzer_proto::JsonOrBytes& input) {
     return;
 
   // Serialize the HostCache.
-  base::Value::List serialized;
+  base::ListValue serialized;
   host_cache.GetList(
       serialized /* entry_list */, true /* include_staleness */,
       HostCache::SerializationType::kRestorable /* serialization_type */);

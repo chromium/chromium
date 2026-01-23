@@ -53,9 +53,9 @@ namespace net {
 namespace {
 
 // Returns parameters associated with the proxy resolution.
-base::Value::Dict NetLogHttpStreamJobProxyChainResolved(
+base::DictValue NetLogHttpStreamJobProxyChainResolved(
     const ProxyChain& proxy_chain) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("proxy_chain",
            proxy_chain.IsValid() ? proxy_chain.ToDebugString() : std::string());
@@ -120,9 +120,9 @@ AlternativeService GetAlternativeServiceForDnsJob(const GURL& url) {
   return AlternativeService(NextProto::kProtoQUIC, HostPortPair::FromURL(url));
 }
 
-base::Value::Dict NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
-                                     bool is_broken) {
-  base::Value::Dict dict;
+base::DictValue NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
+                                   bool is_broken) {
+  base::DictValue dict;
   dict.Set("alt_svc", alt_svc_info->ToString());
   dict.Set("is_broken", is_broken);
   return dict;
@@ -177,12 +177,12 @@ HttpStreamFactory::JobController::JobController(
          request_info_.url.SchemeIsWSOrWSS());
 
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("url", request_info_.url.possibly_invalid_spec());
     dict.Set("is_preconnect", is_preconnect_);
     dict.Set("privacy_mode",
              PrivacyModeToDebugString(request_info_.privacy_mode));
-    base::Value::List allowed_bad_certs_list;
+    base::ListValue allowed_bad_certs_list;
     for (const auto& cert_and_status : allowed_bad_certs_) {
       allowed_bad_certs_list.Append(
           cert_and_status.cert->subject().GetDisplayName());

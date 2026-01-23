@@ -81,7 +81,7 @@ class NET_EXPORT ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       ReportingTargetType target_type) = 0;
 

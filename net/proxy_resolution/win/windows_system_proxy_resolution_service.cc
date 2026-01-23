@@ -126,12 +126,12 @@ const ProxyRetryInfoMap& WindowsSystemProxyResolutionService::proxy_retry_info()
   return proxy_retry_info_;
 }
 
-base::Value::Dict WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
-  base::Value::Dict net_info_dict;
+base::DictValue WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
+  base::DictValue net_info_dict;
 
   // Log proxy settings - Windows system proxy uses the system configuration
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("source", "system");
     dict.Set("description", "Windows system proxy configuration");
     net_info_dict.Set(kNetInfoProxySettings, std::move(dict));
@@ -177,7 +177,7 @@ int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
   // Log the diagnostic information about the WinHTTP resolution
   net_log.AddEvent(
       NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
-        base::Value::Dict resolution_dict;
+        base::DictValue resolution_dict;
         resolution_dict.Set("winhttp_status", static_cast<int>(winhttp_status));
         resolution_dict.Set("windows_error", windows_error);
         if (winhttp_status == WinHttpStatus::kOk) {

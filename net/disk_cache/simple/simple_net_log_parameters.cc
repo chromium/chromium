@@ -18,18 +18,18 @@
 
 namespace {
 
-base::Value::Dict NetLogSimpleEntryConstructionParams(
+base::DictValue NetLogSimpleEntryConstructionParams(
     const disk_cache::SimpleEntryImpl* entry) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("entry_hash",
            base::StringPrintf("0x%016" PRIx64, entry->entry_hash()));
   return dict;
 }
 
-base::Value::Dict NetLogSimpleEntryCreationParams(
+base::DictValue NetLogSimpleEntryCreationParams(
     const disk_cache::SimpleEntryImpl* entry,
     int net_error) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("net_error", net_error);
   if (net_error == net::OK)
     dict.Set("key", entry->key().value_or("(nullopt)"));

@@ -71,7 +71,7 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
 
   std::string ToString() const;
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   // Calculate a SpdySessionKey from `this`. Unlike
   // CalculateQuicSessionAliasKey(), this method doesn't take an optional

@@ -18,14 +18,14 @@ namespace net {
 
 // Helpers to construct dictionaries with a single key and value. Useful for
 // building parameters to include in a NetLog.
-NET_EXPORT base::Value::Dict NetLogParamsWithInt(std::string_view name,
-                                                 int value);
-NET_EXPORT base::Value::Dict NetLogParamsWithInt64(std::string_view name,
-                                                   int64_t value);
-NET_EXPORT base::Value::Dict NetLogParamsWithBool(std::string_view name,
-                                                  bool value);
-NET_EXPORT base::Value::Dict NetLogParamsWithString(std::string_view name,
-                                                    std::string_view value);
+NET_EXPORT base::DictValue NetLogParamsWithInt(std::string_view name,
+                                               int value);
+NET_EXPORT base::DictValue NetLogParamsWithInt64(std::string_view name,
+                                                 int64_t value);
+NET_EXPORT base::DictValue NetLogParamsWithBool(std::string_view name,
+                                                bool value);
+NET_EXPORT base::DictValue NetLogParamsWithString(std::string_view name,
+                                                  std::string_view value);
 
 // Creates a base::Value() to represent the byte string |raw| when adding it to
 // the NetLog.

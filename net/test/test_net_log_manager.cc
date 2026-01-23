@@ -84,8 +84,8 @@ void TestNetLogManager::Start(NetLog* net_log, NetLogCaptureMode capture_mode) {
     return;
   }
 
-  auto constants = std::make_unique<base::Value::Dict>(GetNetConstants());
-  base::Value::Dict client_info;
+  auto constants = std::make_unique<base::DictValue>(GetNetConstants());
+  base::DictValue client_info;
   client_info.Set("name", "net_unittests");
   base::CommandLine::StringType command_line_string =
       command_line->GetCommandLineString();

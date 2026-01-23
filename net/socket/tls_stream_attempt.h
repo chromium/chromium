@@ -85,7 +85,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   // StreamAttempt implementations:
   LoadState GetLoadState() const override;
-  base::Value::Dict GetInfoAsValue() const override;
+  base::DictValue GetInfoAsValue() const override;
   scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
 
   bool IsTcpHandshakeCompleted() { return tcp_handshake_completed_; }
@@ -105,7 +105,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   // StreamAttempt methods:
   int StartInternal() override;
-  base::Value::Dict GetNetLogStartParams() override;
+  base::DictValue GetNetLogStartParams() override;
 
   void OnIOComplete(int rv);
 

@@ -44,8 +44,8 @@ base::Value CaptureModeToValue(NetLogCaptureMode capture_mode) {
   return base::Value(CaptureModeToInt(capture_mode));
 }
 
-base::Value::Dict NetCaptureModeParams(NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetCaptureModeParams(NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("capture_mode", CaptureModeToValue(capture_mode));
   return dict;
 }
@@ -103,7 +103,7 @@ TEST_P(NetLogAddEntryTest, StripsNonAllowlistedParamsInHeavilyRedactedMode) {
   RecordingNetLogObserver default_net_log_observer(NetLogCaptureMode::kDefault);
   RecordingNetLogObserver heavily_redacted_net_log_observer(
       NetLogCaptureMode::kHeavilyRedacted);
-  auto params = base::Value::Dict()
+  auto params = base::DictValue()
                     .Set("should_be_stripped", "should_be_stripped_value")
                     .Set("method", "method_value");
 
@@ -279,20 +279,18 @@ class LoggingObserver : public NetLog::ThreadSafeObserver {
 
   void OnAddEntry(const NetLogEntry& entry) override {
     // TODO(crbug.com/40257546): This should be updated to be a
-    // base::Value::Dict instead of a std::unique_ptr.
-    std::unique_ptr<base::Value::Dict> dict =
-        std::make_unique<base::Value::Dict>(entry.ToDict());
+    // base::DictValue instead of a std::unique_ptr.
+    std::unique_ptr<base::DictValue> dict =
+        std::make_unique<base::DictValue>(entry.ToDict());
     ASSERT_TRUE(dict);
     values_.push_back(std::move(dict));
   }
 
   size_t GetNumValues() const { return values_.size(); }
-  base::Value::Dict* GetDict(size_t index) const {
-    return values_[index].get();
-  }
+  base::DictValue* GetDict(size_t index) const { return values_[index].get(); }
 
  private:
-  std::vector<std::unique_ptr<base::Value::Dict>> values_;
+  std::vector<std::unique_ptr<base::DictValue>> values_;
 };
 
 void AddEvent(NetLog* net_log) {
@@ -532,7 +530,7 @@ TEST(NetLogTest, NetLogEntryToValueEmptyParams) {
   // NetLogEntry with no params.
   NetLogEntry entry1(NetLogEventType::REQUEST_ALIVE, NetLogSource(),
                      NetLogEventPhase::BEGIN, base::TimeTicks(),
-                     base::Value::Dict());
+                     base::DictValue());
 
   ASSERT_TRUE(entry1.params.empty());
   ASSERT_FALSE(entry1.ToDict().Find("params"));
