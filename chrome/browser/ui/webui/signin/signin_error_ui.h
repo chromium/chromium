@@ -39,10 +39,6 @@ class SigninErrorUI : public SigninWebDialogUI {
 
   // SigninWebDialogUI:
   void InitializeMessageHandlerWithBrowser(Browser* browser) override;
-
- private:
-  void InitializeMessageHandlerForProfilePicker();
-  void Initialize(Browser* browser, bool from_profile_picker);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_

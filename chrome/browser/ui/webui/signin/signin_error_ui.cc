@@ -18,12 +18,10 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
@@ -46,21 +44,7 @@ bool SigninErrorUIConfig::IsWebUIEnabled(
 }
 
 SigninErrorUI::SigninErrorUI(content::WebUI* web_ui)
-    : SigninWebDialogUI(web_ui) {
-  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
-  if (HasFromProfilePickerURLParameter(url)) {
-    InitializeMessageHandlerForProfilePicker();
-  }
-}
-
-void SigninErrorUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
-  DCHECK(browser);
-  Initialize(browser, /*from_profile_picker=*/false);
-}
-
-void SigninErrorUI::InitializeMessageHandlerForProfilePicker() {
-  Initialize(nullptr, /*from_profile_picker=*/true);
-}
+    : SigninWebDialogUI(web_ui) {}
 
 // static
 std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
@@ -73,10 +57,11 @@ std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
   }
 }
 
-void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
+void SigninErrorUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
+  DCHECK(browser);
   Profile* webui_profile = Profile::FromWebUI(web_ui());
   std::unique_ptr<SigninErrorHandler> handler =
-      std::make_unique<SigninErrorHandler>(browser, from_profile_picker);
+      std::make_unique<SigninErrorHandler>(browser);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       webui_profile, chrome::kChromeUISigninErrorHost);
@@ -95,7 +80,6 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
-  source->AddBoolean("fromProfilePicker", from_profile_picker);
 
   // Retrieve the last signin error message and email used.
   LoginUIService* login_ui_service =
@@ -106,9 +90,8 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
   // Tweak the dialog UI depending on whether the signin error is
   // username-in-use error and the error UI is shown with a browser window.
   std::u16string existing_name;
-  if (!from_profile_picker &&
-      last_login_error.type() ==
-          SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+  if (last_login_error.type() ==
+      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

@@ -19,11 +19,7 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
  public:
   // Constructor of a message handler that handles messages from the
   // sign-in error WebUI.
-  // If |from_profile_picker| is true, then the sign-in error dialog was
-  // presented from the user manager and |browser| is null. Otherwise, the
-  // sign-in error dialog was presented on a browser window and |browser| must
-  // not be null.
-  SigninErrorHandler(Browser* browser, bool from_profile_picker);
+  explicit SigninErrorHandler(Browser* browser);
 
   SigninErrorHandler(const SigninErrorHandler&) = delete;
   SigninErrorHandler& operator=(const SigninErrorHandler&) = delete;
@@ -78,9 +74,6 @@ class SigninErrorHandler : public content::WebUIMessageHandler,
   // This is null when this sign-in error dialog is presented from the user
   // manager.
   raw_ptr<Browser> browser_;
-
-  // True when this sign-in error dialog is presented from the user manager.
-  const bool from_profile_picker_;
 
   base::FilePath duplicate_profile_path_;
 

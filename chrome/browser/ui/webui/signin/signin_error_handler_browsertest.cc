@@ -24,10 +24,8 @@ const char kSigninErrorLearnMoreUrl[] =
 
 class TestingSigninErrorHandler : public SigninErrorHandler {
  public:
-  TestingSigninErrorHandler(Browser* browser,
-                            bool is_system_profile,
-                            content::WebUI* web_ui)
-      : SigninErrorHandler(browser, is_system_profile) {
+  TestingSigninErrorHandler(Browser* browser, content::WebUI* web_ui)
+      : SigninErrorHandler(browser) {
     set_web_ui(web_ui);
   }
 
@@ -78,18 +76,10 @@ class SigninErrorHandlerTest : public InProcessBrowserTest {
 
   void CreateHandlerInBrowser() {
     DCHECK(!handler_);
-    auto handler = std::make_unique<TestingSigninErrorHandler>(
-        browser(), false /* is_system_profile */, web_ui());
+    auto handler =
+        std::make_unique<TestingSigninErrorHandler>(browser(), web_ui());
     handler_ = handler.get();
     signin_error_ui_ = std::make_unique<SigninErrorUI>(web_ui());
-    web_ui()->AddMessageHandler(std::move(handler));
-  }
-
-  void CreateHandlerInProfilePicker() {
-    DCHECK(!handler_);
-    auto handler = std::make_unique<TestingSigninErrorHandler>(
-        nullptr /* browser */, true /* is_system_profile */, web_ui());
-    handler_ = handler.get();
     web_ui()->AddMessageHandler(std::move(handler));
   }
 

@@ -12,8 +12,7 @@ export function getHtml(this: SigninErrorAppElement) {
   <div id="normal-error-message" class="details"
       ?hidden="${this.hideNormalError_}">
     <p>$i18nRaw{signinErrorMessage}</p>
-    <a id="learnMoreLink" href="#" @click="${this.onLearnMore_}"
-           ?hidden="${this.fromProfilePicker_}">
+    <a id="learnMoreLink" href="#" @click="${this.onLearnMore_}">
       $i18nRaw{signinErrorLearnMore}
     </a>
   </div>
