@@ -59,6 +59,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -224,11 +225,12 @@ std::string ExecutionEngine::StateToString(State state) {
   }
 }
 
-bool ExecutionEngine::ShouldDeferNavigation(
+content::NavigationThrottle::ThrottleAction
+ExecutionEngine::ShouldDeferNavigation(
     content::NavigationHandle& navigation_handle,
     ExecutionEngine::NavigationDecisionCallback callback) {
   if (!IsNavigationGatingEnabled()) {
-    return false;
+    return content::NavigationThrottle::PROCEED;
   }
 
   CHECK(navigation_handle.GetNavigatingFrameType() ==
@@ -252,15 +254,12 @@ bool ExecutionEngine::ShouldDeferNavigation(
       LogNavigationGating(
           /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
           navigation_handle.GetURL(), /*applied_gate=*/false);
-      return false;
+      return content::NavigationThrottle::PROCEED;
     case GatingDecision::kBlockByStaticList:
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), /*may_continue=*/false));
       LogNavigationGating(
           /*initiator_origin=*/navigation_handle.GetInitiatorOrigin(),
           navigation_handle.GetURL(), /*applied_gate=*/true);
-      return true;
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
     case GatingDecision::kNeedsAsyncCheck: {
       bool skip_prompt = navigation_handle.IsInPrerenderedMainFrame();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -269,7 +268,7 @@ bool ExecutionEngine::ShouldDeferNavigation(
                          GetWeakPtr(), navigation_handle.GetInitiatorOrigin(),
                          navigation_handle.GetURL(), skip_prompt,
                          std::move(callback)));
-      return true;
+      return content::NavigationThrottle::DEFER;
     }
   }
 

@@ -29,6 +29,9 @@ class ExecutionEngine;
 // intercepted here.
 class ActorNavigationThrottle : public content::NavigationThrottle {
  public:
+  static ActorNavigationThrottle CreateForTesting(
+      content::NavigationThrottleRegistry& registry,
+      const ActorTask& task);
   static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ActorNavigationThrottle(const ActorNavigationThrottle&) = delete;
@@ -56,7 +59,9 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
       std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry,
       MayActOnUrlBlockReason block_reason);
 
-  void OnNavigationConfirmationDecision(bool may_continue);
+  // Adds to the journal and resumes/cancels the navigation if needed. Must not
+  // be called for prerendered main frame navigations.
+  void OnNavigationConfirmationDecision(bool was_deferred, bool may_continue);
 
   Profile* GetProfile();
   AggregatedJournal& GetJournal();

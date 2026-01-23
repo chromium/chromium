@@ -941,8 +941,9 @@ TEST_F(ExecutionEngineNavigationGatingTest,
   content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
   navigation_handle.set_initiator_origin(kInitiatorOrigin);
 
-  EXPECT_FALSE(task_->GetExecutionEngine()->ShouldDeferNavigation(
-      navigation_handle, base::NullCallback()));
+  EXPECT_EQ(task_->GetExecutionEngine()->ShouldDeferNavigation(
+                navigation_handle, base::NullCallback()),
+            content::NavigationThrottle::PROCEED);
 
   histograms_.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision",
@@ -977,11 +978,9 @@ TEST_F(ExecutionEngineNavigationGatingTest,
   content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
   navigation_handle.set_initiator_origin(kInitiatorOrigin);
 
-  base::test::TestFuture<bool> future;
-  EXPECT_TRUE(task_->GetExecutionEngine()->ShouldDeferNavigation(
-      navigation_handle, future.GetCallback()));
-
-  ASSERT_FALSE(future.Get());
+  EXPECT_EQ(task_->GetExecutionEngine()->ShouldDeferNavigation(
+                navigation_handle, base::NullCallback()),
+            content::NavigationThrottle::CANCEL_AND_IGNORE);
 
   histograms_.ExpectUniqueSample(
       "Actor.NavigationGating.GatingDecision",
