@@ -1053,10 +1053,6 @@ class ManualFillingMediator
 
         int minimumVerticalSpacePx = Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
 
-        // TODO(crbug.com/40285164): google-java-format did not introduce '{}'s as expected in the
-        // if
-        // construct below (see crbug.com/1505284 for failure). Investigate why and fix it or file a
-        // corresponding bug.
         if (visibleViewportHeightPx >= minimumVerticalSpacePx) {
             return; // Sheet height needs no adjustment!
         }
