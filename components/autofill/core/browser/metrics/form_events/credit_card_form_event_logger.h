@@ -164,7 +164,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const override;
   DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
       const FormStructure& form,
-      bool suppress_if_ac_unrecognized) const override;
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;

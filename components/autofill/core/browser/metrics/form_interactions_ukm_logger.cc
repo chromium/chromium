@@ -707,13 +707,13 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
     FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
     base::TimeTicks form_submitted_timestamp,
-    bool suppress_if_ac_unrecognized) {
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
 
   DenseSet<FormTypeNameForLogging> form_type_names_for_logging =
-      GetFormTypesForLogging(form_structure, suppress_if_ac_unrecognized);
+      GetFormTypesForLogging(form_structure, ac_unrecognized_behavior);
 
   // To save bandwidth, only forms are reported that are a
   // kPostalAddressForm or a kCreditCardForm.

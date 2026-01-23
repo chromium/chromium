@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -102,9 +103,8 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
 void FormEventLoggerBase::OnDidIdentifyForm(
     const FormStructure& form,
     FormIdentificationTime identification_time) {
-  DenseSet<FormTypeNameForLogging> form_types = GetFormTypesForLogging(
-      form,
-      /*suppress_if_ac_unrecognized=*/!owner_->client().IsTabInActorMode());
+  DenseSet<FormTypeNameForLogging> form_types =
+      GetFormTypesForLogging(form, GetAcUnrecognizedBehavior(owner_->client()));
   CHECK(!form_types.empty());
   switch (identification_time) {
     case FormIdentificationTime::kAfterLocalHeuristics:
@@ -179,9 +179,8 @@ void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   if (has_logged_will_submit_)
     return;
   has_logged_will_submit_ = true;
-  submitted_form_types_ = GetFormTypesForLogging(
-      form,
-      /*suppress_if_ac_unrecognized=*/!owner_->client().IsTabInActorMode());
+  submitted_form_types_ =
+      GetFormTypesForLogging(form, GetAcUnrecognizedBehavior(owner_->client()));
 
   // Determine whether logging of email-heuristic only metrics is required.
   is_heuristic_only_email_form_ =
@@ -251,10 +250,8 @@ void FormEventLoggerBase::
 void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   DCHECK_LT(event, NUM_FORM_EVENTS);
   form_events_set_[form.global_id()].insert(event);
-  for (FormTypeNameForLogging form_type :
-       GetFormTypesForLogging(form,
-                              /*suppress_if_ac_unrecognized=*/!owner_->client()
-                                  .IsTabInActorMode())) {
+  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(
+           form, GetAcUnrecognizedBehavior(owner_->client()))) {
     std::string name(
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));
@@ -270,8 +267,7 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
     client().GetFormInteractionsUkmLogger().LogFormEvent(
         driver().GetPageUkmSourceId(), event,
         GetFormTypesForLogging(form,
-                               /*suppress_if_ac_unrecognized=*/!owner_->client()
-                                   .IsTabInActorMode()),
+                               GetAcUnrecognizedBehavior(owner_->client())),
         form.form_parsed_timestamp());
   }
 }

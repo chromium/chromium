@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 
@@ -308,10 +309,12 @@ class AutofillField : public FormFieldData {
   // suggestions and filling are suppressed on Desktop. This function can be
   // used to determine whether suggestions and filling should be suppressed for
   // this field (independently of the predicted type).
-  // `suppress_if_ac_unrecognized` denotes whether fields with unrecognized
-  // autocomplete value can have suppressed suggestions in general.
+  // `ac_unrecognized_behavior` describes the general behavior (as per
+  // `AutofillClient`) whether fields with unrecognized autocomplete value can
+  // have suppressed suggestions in general. The concrete behavior is influenced
+  // by the concrete `AutofillField` and the operating system.
   bool ShouldSuppressSuggestionsAndFillingByDefault(
-      bool suppress_if_ac_unrecognized) const;
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const;
 
   // Returns the current value, formatted as desired for import:
   // (1) If the field value hasn't changed since it was seen and the field is a

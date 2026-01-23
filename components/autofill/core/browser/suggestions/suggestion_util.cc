@@ -10,14 +10,20 @@
 
 namespace autofill {
 
+AutocompleteUnrecognizedBehavior GetAcUnrecognizedBehavior(
+    const AutofillClient& autofill_client) {
+  return autofill_client.IsTabInActorMode()
+             ? AutocompleteUnrecognizedBehavior::kSuggestionsAllowed
+             : AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed;
+}
+
 bool SuppressSuggestionsForAutocompleteUnrecognizedField(
     const AutofillField& field,
-    bool suppress_if_ac_unrecognized) {
+    AutocompleteUnrecognizedBehavior behavior) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return false;
 #else
-  return field.ShouldSuppressSuggestionsAndFillingByDefault(
-      suppress_if_ac_unrecognized);
+  return field.ShouldSuppressSuggestionsAndFillingByDefault(behavior);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 

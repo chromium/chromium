@@ -75,19 +75,18 @@ void AutocompleteSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  auto is_autofillable = [suppress_if_ac_unrecognized =
-                              !client.IsTabInActorMode()](
+  auto is_autofillable = [ac_unrecognized_behavior =
+                              GetAcUnrecognizedBehavior(client)](
                              const std::unique_ptr<AutofillField>& field) {
     return !field->ShouldSuppressSuggestionsAndFillingByDefault(
-               suppress_if_ac_unrecognized) &&
+               ac_unrecognized_behavior) &&
            !field->Type().GetTypes().contains(UNKNOWN_TYPE);
   };
   // If Autofill (not Autocomplete) suggestions may be shown on some other field
   // of the form, we want to suppress Autocomplete suggestions on this field.
   if (trigger_autofill_field &&
       SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field,
-          /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode()) &&
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client)) &&
       std::ranges::any_of(*form_structure, is_autofillable)) {
     std::move(callback).Run({SuggestionDataSource::kAutocomplete, {}});
     return;

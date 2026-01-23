@@ -73,8 +73,8 @@ OtpFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 
 DenseSet<FormTypeNameForLogging> OtpFormEventLogger::GetFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) const {
-  return GetOneTimePasswordTypesForLogging(form, suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
+  return GetOneTimePasswordTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 }  // namespace autofill::autofill_metrics

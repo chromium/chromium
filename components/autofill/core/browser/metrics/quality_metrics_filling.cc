@@ -45,8 +45,9 @@ constexpr FieldTypeSet kFieldTypesRepresentingSmallNumbers = {
     ADDRESS_HOME_FLOOR};
 
 // Records the percentage of input text field characters that were autofilled.
-void LogAutomationRate(const FormStructure& form,
-                       bool suppress_if_ac_unrecognized) {
+void LogAutomationRate(
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   size_t total_length_autofilled_fields = 0;
   size_t total_length = 0;
   for (const auto& field : form.fields()) {
@@ -70,7 +71,7 @@ void LogAutomationRate(const FormStructure& form,
   }
   if (total_length > 0) {
     for (const auto form_type :
-         GetFormTypesForLogging(form, suppress_if_ac_unrecognized)) {
+         GetFormTypesForLogging(form, ac_unrecognized_behavior)) {
       base::UmaHistogramPercentage(
           base::StrCat({"Autofill.AutomationRate.",
                         FormTypeNameForLoggingToStringView(form_type)}),
@@ -192,9 +193,10 @@ void LogDataUtilization(const FormStructure& form) {
 
 }  // namespace
 
-void LogFillingQualityMetrics(const FormStructure& form,
-                              bool suppress_if_ac_unrecognized) {
-  LogAutomationRate(form, suppress_if_ac_unrecognized);
+void LogFillingQualityMetrics(
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  LogAutomationRate(form, ac_unrecognized_behavior);
   LogDataUtilization(form);
 }
 

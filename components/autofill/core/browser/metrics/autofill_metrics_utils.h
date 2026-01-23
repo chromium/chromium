@@ -95,31 +95,31 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
 // Returns the set of all fillable form types for `form.`
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kAddressForm`.
 DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kOneTimePasswordForm`.
 DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kLoyaltyCardForm`.
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 // Returns GetFormTypesForLogging() where entries need to correspond to
 // `FormType::kCreditCardForm` or `FormType::kStandaloneCvcForm`.
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 // Returns true if `profile` has at least 2 fields of the types
 // `ADDRESS_HOME_CITY`, `ADDRESS_HOME_STATE`, `ADDRESS_HOME_STREET_ADDRESS` or

@@ -85,7 +85,7 @@ class AddressFormEventLogger : public FormEventLoggerBase {
       const override;
   DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
       const FormStructure& form,
-      bool suppress_if_ac_unrecognized) const override;
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const override;
 
  private:
   // All profile categories for which the user has at least one profile stored.

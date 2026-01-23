@@ -212,8 +212,9 @@ FormGroupFillingStats GetFormFillingStatsForFormType(
   return filling_stats_for_form_type;
 }
 
-void LogFieldFillingStatsAndScore(const FormStructure& form,
-                                  bool suppress_if_ac_unrecognized) {
+void LogFieldFillingStatsAndScore(
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   // Tracks how many fields are filled, unfilled or corrected.
   FormGroupFillingStats address_field_stats;
   FormGroupFillingStats postal_address_field_stats;
@@ -254,7 +255,7 @@ void LogFieldFillingStatsAndScore(const FormStructure& form,
         (field->filling_product() == FillingProduct::kAddress ||
          field->filling_product() == FillingProduct::kNone) &&
         field->ShouldSuppressSuggestionsAndFillingByDefault(
-            suppress_if_ac_unrecognized)) {
+            ac_unrecognized_behavior)) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
           GetFieldFillingStatus(*field));
     }

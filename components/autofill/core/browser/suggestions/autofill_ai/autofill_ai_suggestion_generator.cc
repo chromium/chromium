@@ -547,8 +547,7 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
   if (!GetFieldsFillableByAutofillAi(*form_structure, client)
            .contains(trigger_field.global_id()) ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field,
-          /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode())) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     callback({SuggestionDataSource::kAutofillAi, {}});
     return;
   }

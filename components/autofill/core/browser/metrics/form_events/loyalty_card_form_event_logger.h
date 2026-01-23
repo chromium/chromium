@@ -63,7 +63,7 @@ class LoyaltyCardFormEventLogger : public FormEventLoggerBase {
       const override;
   DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
       const FormStructure& form,
-      bool suppress_if_ac_unrecognized) const override;
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const override;
 
  private:
   size_t record_type_count_ = 0;

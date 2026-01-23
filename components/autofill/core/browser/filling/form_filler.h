@@ -118,7 +118,7 @@ class FormFiller {
       base::flat_map<FieldType, size_t>& type_count,
       const base::flat_set<FieldGlobalId>& blocked_fields,
       FillingProduct filling_product,
-      bool suppress_if_ac_unrecognized);
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
   // Resets states that FormFiller holds and maintains.
   void Reset();

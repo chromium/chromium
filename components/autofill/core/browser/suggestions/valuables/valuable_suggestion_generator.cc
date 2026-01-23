@@ -313,8 +313,7 @@ void LoyaltyCardSuggestionGenerator::FetchSuggestionData(
   }
 
   if (SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field,
-          /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode())) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     callback({SuggestionDataSource::kLoyaltyCard, {}});
     return;
   }

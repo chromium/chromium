@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/per_fill_metrics.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -508,7 +509,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     base::flat_map<FieldType, size_t>& type_count,
     const base::flat_set<FieldGlobalId>& blocked_fields,
     FillingProduct filling_product,
-    bool suppress_if_ac_unrecognized) {
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
@@ -535,7 +536,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   // when it is the field triggering the filling operation.
   add_if(!is_trigger_field &&
              autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(
-                 suppress_if_ac_unrecognized),
+                 ac_unrecognized_behavior),
          FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
   // Skip if the form has changed in the meantime, which may happen with
@@ -646,8 +647,7 @@ FormFiller::GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
             field, *autofill_field, trigger_field, refill_options, type_count,
-            blocked_fields, filling_product,
-            /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode());
+            blocked_fields, filling_product, GetAcUnrecognizedBehavior(client));
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be

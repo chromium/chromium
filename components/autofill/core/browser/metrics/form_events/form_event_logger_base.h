@@ -200,7 +200,7 @@ class FormEventLoggerBase {
   // `form.`
   virtual DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
       const FormStructure& form,
-      bool suppress_if_ac_unrecognized) const = 0;
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const = 0;
 
   // Returns a vector of strings for all parsed form types.
   std::vector<std::string_view> GetParsedFormTypesAsStringViews() const;

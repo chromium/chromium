@@ -140,7 +140,7 @@ class FormInteractionsUkmLogger {
       FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp,
-      bool suppress_if_ac_unrecognized);
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
   void LogKeyMetrics(ukm::SourceId ukm_source_id,
                      const DenseSet<FormTypeNameForLogging>& form_types,
                      bool data_to_fill_available,

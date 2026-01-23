@@ -47,8 +47,9 @@ TEST_F(QualityMetricsFillingTest, AutomationRateNotEmittedForEmptyForm) {
                                    {.role = NAME_LAST},
                                    {.role = ADDRESS_HOME_LINE1}}});
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   EXPECT_TRUE(histogram_tester_.GetAllSamples(kUmaAutomationRate).empty());
 }
@@ -64,8 +65,9 @@ TEST_F(QualityMetricsFillingTest, AutomationRate0EmittedForManuallyFilledForm) {
   form_structure->fields()[0]->set_value(u"Jane");
   form_structure->fields()[1]->set_value(u"Doe");
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 0, 1);
 }
@@ -86,8 +88,9 @@ TEST_F(QualityMetricsFillingTest, AutomationRate100EmittedForAutofilledForm) {
   form_structure->fields()[0]->set_is_autofilled(true);
   form_structure->fields()[1]->set_is_autofilled(true);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 100, 1);
 }
@@ -105,8 +108,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->fields()[1]->set_value(u"Doe");
   form_structure->fields()[0]->set_is_autofilled(true);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 57, 1);
 }
@@ -127,8 +131,9 @@ TEST_F(QualityMetricsFillingTest, AutomationRateEmittedIgnoringLongValues) {
       u"very very very very very very very long text");
   form_structure->fields()[0]->set_is_autofilled(true);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 100, 1);
 }
@@ -146,8 +151,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->fields()[1]->set_value(u"Doe");
   form_structure->fields()[1]->set_is_autofilled(true);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(kUmaAutomationRate, 100, 1);
 }
@@ -159,8 +165,9 @@ TEST_F(QualityMetricsFillingTest, DataUtilizationNotEmittedForUnknownType) {
       GetFormStructure({.fields = {{}}});
   form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
   // data utilization metric is recorded so it suffices to check that it's not
@@ -178,8 +185,9 @@ TEST_F(QualityMetricsFillingTest, DataUtilizationNotEmittedForEmptyType) {
       GetFormStructure({.fields = {{}}});
   form_structure->field(0)->set_possible_types({EMPTY_TYPE});
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
   // data utilization metric is recorded so it suffices to check that it's not
@@ -198,8 +206,9 @@ TEST_F(QualityMetricsFillingTest,
       GetFormStructure({.fields = {{.value = u"initial value"}}});
   form_structure->field(0)->set_possible_types({NAME_FIRST});
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   // Autofill.DataUtilization.AllFieldTypes.Aggregate is always recorded if any
   // data utilization metric is recorded so it suffices to check that it's not
@@ -221,8 +230,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->field(0)->set_possible_types({NAME_FIRST});
   form_structure->field(0)->set_value(u"later value");
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.AllFieldTypes.Aggregate",
@@ -290,8 +300,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->field(0)->set_possible_types({NAME_FIRST});
   form_structure->field(0)->set_value(u"later value");
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.NoPrediction.ByPossibleType",
@@ -319,8 +330,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST),
                                       AutofillPredictionSource::kHeuristics);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.AllFieldTypes.Aggregate",
@@ -383,8 +395,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->field(0)->set_value(u"05");
   form_structure->field(0)->set_possible_types({CREDIT_CARD_EXP_MONTH});
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.AllFieldTypes.Aggregate",
@@ -454,8 +467,9 @@ TEST_F(QualityMetricsFillingTest,
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_FIRST),
                                       AutofillPredictionSource::kHeuristics);
 
-  LogFillingQualityMetrics(*form_structure,
-                           /*suppress_if_ac_unrecognized=*/true);
+  LogFillingQualityMetrics(
+      *form_structure,
+      AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.AllFieldTypes.Aggregate",

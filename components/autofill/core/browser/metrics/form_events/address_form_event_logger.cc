@@ -223,8 +223,8 @@ AddressFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 
 DenseSet<FormTypeNameForLogging> AddressFormEventLogger::GetFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) const {
-  return GetAddressFormTypesForLogging(form, suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
+  return GetAddressFormTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 }  // namespace autofill::autofill_metrics

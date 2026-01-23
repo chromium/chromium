@@ -190,8 +190,7 @@ PlusAddressSuggestionGenerator::GetSourceToSuggest(
       !plus_address_delegate_->IsPlusAddressFillingEnabled(
           client.GetLastCommittedPrimaryMainFrameOrigin()) ||
       SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field,
-          /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode())) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     return std::nullopt;
   }
 

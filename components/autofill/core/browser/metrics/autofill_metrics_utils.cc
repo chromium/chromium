@@ -72,10 +72,10 @@ bool IsPostalAddressForm(const FormStructure& form) {
 // types in `filter_by`.
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior,
     std::optional<DenseSet<FormType>> filter_by = std::nullopt) {
   DenseSet<FormTypeNameForLogging> form_types;
-  for (FormType form_type : form.GetFormTypes(suppress_if_ac_unrecognized)) {
+  for (FormType form_type : form.GetFormTypes(ac_unrecognized_behavior)) {
     if (filter_by && !(*filter_by).contains(form_type)) {
       continue;
     }
@@ -214,35 +214,35 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
 
 DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) {
-  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) {
-  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kAddressFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetOneTimePasswordTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) {
-  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kOneTimePasswordFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetLoyaltyFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) {
-  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kLoyaltyCardFormTypes);
 }
 
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form,
-    bool suppress_if_ac_unrecognized) {
-  return internal::GetFormTypesForLogging(form, suppress_if_ac_unrecognized,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
+  return internal::GetFormTypesForLogging(form, ac_unrecognized_behavior,
                                           internal::kCreditCardFormTypes);
 }
 

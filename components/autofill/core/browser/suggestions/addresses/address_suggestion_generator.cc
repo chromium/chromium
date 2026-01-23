@@ -1110,8 +1110,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     return {};
   }
   if (SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field,
-          /*suppress_if_ac_unrecognized=*/!client.IsTabInActorMode())) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     return {};
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace autofill {
@@ -42,7 +43,7 @@ bool WillFillCreditCardNumberOrCvc(
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,
     const AutofillField& trigger_autofill_field,
     bool card_has_cvc,
-    bool suppress_if_ac_unrecognized);
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 }  // namespace autofill
 

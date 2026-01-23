@@ -788,7 +788,7 @@ bool AutofillField::HasExpirationDateType() const {
 }
 
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
-    bool suppress_if_ac_unrecognized) const {
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
   // The field will not be suppressed (i.e., it will be filled/suggested) if one
   // of the following is true:
   // 1. The autocomplete attribute is valid type (that can be seen in the HTML
@@ -800,10 +800,13 @@ bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault(
     return false;
   }
 
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnableSkippingUnrecognizedAttribute)
-             ? suppress_if_ac_unrecognized
-             : true;
+  switch (ac_unrecognized_behavior) {
+    case AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed:
+      return true;
+    case AutocompleteUnrecognizedBehavior::kSuggestionsAllowed:
+      return !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSkippingUnrecognizedAttribute);
+  }
 }
 
 void AutofillField::SetPasswordRequirements(PasswordRequirementsSpec spec) {

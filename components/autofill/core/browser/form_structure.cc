@@ -699,11 +699,11 @@ FormData FormStructure::ToFormData() const {
 }
 
 DenseSet<FormType> FormStructure::GetFormTypes(
-    bool suppress_if_ac_unrecognized) const {
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
   DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
     if (field->ShouldSuppressSuggestionsAndFillingByDefault(
-            suppress_if_ac_unrecognized)) {
+            ac_unrecognized_behavior)) {
       // Types are predicted for fields with unrecognized autocomplete
       // attribute, but suggestions are suppressed. So we don't want such fields
       // to affect the key and quality metrics. We therefore exclude them from

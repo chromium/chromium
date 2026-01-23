@@ -19,7 +19,8 @@
 
     _type = CWVAutofillFormTypeUnknown;
     autofill::DenseSet<autofill::FormType> formTypes =
-        formStructure.GetFormTypes(/*suppress_if_ac_unrecognized=*/true);
+        formStructure.GetFormTypes(
+            autofill::AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed);
     if (formTypes.contains(autofill::FormType::kAddressForm)) {
       _type |= CWVAutofillFormTypeAddresses;
     }

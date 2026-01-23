@@ -2171,7 +2171,8 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
         AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   }
   FormStructure form_structure(form);
-  EXPECT_THAT(form_structure.GetFormTypes(/*suppress_if_ac_unrecognized=*/true),
+  EXPECT_THAT(form_structure.GetFormTypes(
+                  AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed),
               UnorderedElementsAre(FormType::kUnknownFormType));
 }
 
