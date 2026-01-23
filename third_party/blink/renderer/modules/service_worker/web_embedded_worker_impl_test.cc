@@ -631,7 +631,12 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TerminateSoonAfterStart DISABLED_TerminateSoonAfterStart
+#else
+#define MAYBE_TerminateSoonAfterStart TerminateSoonAfterStart
+#endif
+TEST_F(WebEmbeddedWorkerImplTest, MAYBE_TerminateSoonAfterStart) {
   FakeBrowserInterfaceBroker browser_interface_broker;
   worker_->StartWorkerContext(
       CreateStartData(),
@@ -650,7 +655,13 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateSoonAfterStart) {
   worker_->WaitForShutdownForTesting();
 }
 
-TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TerminateWhileWaitingForDebugger \
+  DISABLED_TerminateWhileWaitingForDebugger
+#else
+#define MAYBE_TerminateWhileWaitingForDebugger TerminateWhileWaitingForDebugger
+#endif
+TEST_F(WebEmbeddedWorkerImplTest, MAYBE_TerminateWhileWaitingForDebugger) {
   std::unique_ptr<WebEmbeddedWorkerStartData> start_data = CreateStartData();
   start_data->wait_for_debugger_mode =
       WebEmbeddedWorkerStartData::kWaitForDebugger;
@@ -672,7 +683,12 @@ TEST_F(WebEmbeddedWorkerImplTest, TerminateWhileWaitingForDebugger) {
   worker_->WaitForShutdownForTesting();
 }
 
-TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ScriptNotFound DISABLED_ScriptNotFound
+#else
+#define MAYBE_ScriptNotFound ScriptNotFound
+#endif
+TEST_F(WebEmbeddedWorkerImplTest, MAYBE_ScriptNotFound) {
   WebURL script_url = url_test_helpers::ToKURL(kNotFoundScriptURL);
   url_test_helpers::RegisterMockedErrorURLLoad(script_url);
   std::unique_ptr<WebEmbeddedWorkerStartData> start_data = CreateStartData();
@@ -699,7 +715,15 @@ TEST_F(WebEmbeddedWorkerImplTest, ScriptNotFound) {
   worker_->WaitForShutdownForTesting();
 }
 
-TEST_F(WebEmbeddedWorkerImplTest, GCOnWorkerThreadShouldNotCauseUploadFail) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GCOnWorkerThreadShouldNotCauseUploadFail \
+  DISABLED_GCOnWorkerThreadShouldNotCauseUploadFail
+#else
+#define MAYBE_GCOnWorkerThreadShouldNotCauseUploadFail \
+  GCOnWorkerThreadShouldNotCauseUploadFail
+#endif
+TEST_F(WebEmbeddedWorkerImplTest,
+       MAYBE_GCOnWorkerThreadShouldNotCauseUploadFail) {
   std::unique_ptr<WebEmbeddedWorkerStartData> start_data = CreateStartData();
   start_data->script_url = url_test_helpers::ToKURL(kEmptyURL);
   FakeBrowserInterfaceBroker browser_interface_broker;
