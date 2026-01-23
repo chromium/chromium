@@ -1368,7 +1368,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // running App specific pages in the same process as a web site from the
 // internet. Allows navigation to app specific URL in the following cases:
 //   - last committed URL is app specific
-//   - navigation not a new navigation (back-forward or reload)
+//   - navigation not a new navigation (back-forward)
 //   - navigation is typed, generated or bookmark
 //   - navigation is performed in iframe and main frame is app-specific page
 - (BOOL)shouldAllowAppSpecificURLNavigationAction:(WKNavigationAction*)action
@@ -1388,11 +1388,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   if (pageTransition & ui::PAGE_TRANSITION_FORWARD_BACK) {
     // Allow back-forward navigations.
-    return YES;
-  }
-
-  if (pageTransition & ui::PAGE_TRANSITION_RELOAD) {
-    // Allow reload navigations.
     return YES;
   }
 
