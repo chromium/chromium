@@ -139,13 +139,6 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   /**
-   * Returns true if the new FOP display should be shown.
-   */
-  private shouldShowNewFopDisplay_(): boolean {
-    return this.showNewFopDisplayEnabled_;
-  }
-
-  /**
    * The card has a product description or a nickname.
    */
   private hasCardIdentifier_(): boolean {
@@ -261,7 +254,7 @@ export class SettingsCreditCardListEntryElement extends
     const separator = ' | ';
     let summarySublabel = this.isVirtualCardEnrolled_() ?
         this.i18n('virtualCardTurnedOn') :
-        (this.shouldShowNewFopDisplay_() ? '' : this.getCardExpiryDate_());
+        (this.showNewFopDisplayEnabled_ ? '' : this.getCardExpiryDate_());
     if (this.isCardCvcAvailable_()) {
       if (summarySublabel.length > 0) {
         summarySublabel += separator;
@@ -282,7 +275,7 @@ export class SettingsCreditCardListEntryElement extends
       case CardSummarySublabelType.VIRTUAL_CARD_WITH_BENEFITS_TAG:
       case CardSummarySublabelType.VIRTUAL_CARD_WITH_CVC_TAG:
       case CardSummarySublabelType.VIRTUAL_CARD:
-        return this.shouldShowNewFopDisplay_() ?
+        return this.showNewFopDisplayEnabled_ ?
             this.i18n(
                 'creditCardExpDateA11yLabeled', this.getCardExpiryDate_()) +
                 this.getSummarySublabel_() :
@@ -293,8 +286,8 @@ export class SettingsCreditCardListEntryElement extends
       case CardSummarySublabelType.EXPIRATION_DATE:
         return this.i18n(
             'creditCardExpDateA11yLabeled',
-            this.shouldShowNewFopDisplay_() ? this.getCardExpiryDate_() :
-                                              this.getSummarySublabel_());
+            this.showNewFopDisplayEnabled_ ? this.getCardExpiryDate_() :
+                                             this.getSummarySublabel_());
       default:
         assertNotReached();
     }

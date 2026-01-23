@@ -36,12 +36,12 @@
             [[getSummaryAriaLabel_(creditCard)]],
             [[getSummaryAriaSublabel_(creditCard)]]
           </div>
-          <template is="dom-if" if="[[!shouldShowNewFopDisplay_()]]">
+          <template is="dom-if" if="[[!showNewFopDisplayEnabled_]]">
             <div id="summaryLabel" class="ellipses" aria-hidden="true">
               [[creditCard.metadata.summaryLabel]]
             </div>
           </template>
-          <template is="dom-if" if="[[shouldShowNewFopDisplay_()]]">
+          <template is="dom-if" if="[[showNewFopDisplayEnabled_]]">
             <div>
               <span id="label" class="ellipses" aria-hidden="true">
                 [[creditCard.metadata.summaryLabel]]
