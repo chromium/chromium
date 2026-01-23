@@ -141,7 +141,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesVerbatimMatch) {
 
 // Ensures Gemini mode's null match; e.g. "<Type search term>" is hidden, and
 // that clicking the default search suggestion navigates correctly.
-IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesNullMatch) {
+// TODO(crbug.com/459704336): Re-enable after de-flaking.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GeminiHidesNullMatch DISABLED_GeminiHidesNullMatch
+#else
+#define MAYBE_GeminiHidesNullMatch GeminiHidesNullMatch
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
+                       MAYBE_GeminiHidesNullMatch) {
   RunTestSequence(
       // Enter Gemini mode in Omnibox.
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
