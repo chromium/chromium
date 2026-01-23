@@ -203,6 +203,21 @@ class DataAggregatorService : public CfmObserver,
   // the initial enqueue fails, to avoid a DoS.
   net::BackoffEntry enqueue_retry_backoff_;
 
+  // How often the data aggregator fetches data from each source.
+  base::TimeDelta fetch_frequency_;
+
+  // How often each log source ingests a new batch of logs.
+  base::TimeDelta log_poll_frequency_;
+
+  // The number of lines ingested in each log batch.
+  size_t log_batch_size_;
+
+  // The size at which payloads are queued for upload.
+  size_t payload_max_size_bytes_;
+
+  // The max internal payload queue size.
+  size_t payload_queue_max_size_;
+
   // Must be the last class member.
   base::WeakPtrFactory<DataAggregatorService> weak_ptr_factory_{this};
 };

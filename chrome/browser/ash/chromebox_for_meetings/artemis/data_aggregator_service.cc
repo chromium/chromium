@@ -32,12 +32,6 @@ using mojom::DataFilter::FilterType::REGEX;
 
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
-constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
-constexpr size_t kDefaultLogBatchSize = 100;  // lines
-
-constexpr size_t kPayloadMaxSizeBytes = 50 * 1000;  // 50Kb
-constexpr size_t kMaxPayloadQueueSize = 10;  // # payloads
-
 constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
 
@@ -68,9 +62,9 @@ using PollFrequencyMap =
 
 /*
  * IMPORTANT: When adding new commands to the below lists, please take care
- * to choose commands with a relatively small amount of output. The rule of
- * thumb is to avoid commands that output more than (kPayloadMaxSizeBytes / 2)
- * bytes of data. We don't want to overwhelm missived with large payloads.
+ * to choose commands with a relatively small amount of output. Rule of thumb:
+ * avoid commands that output more than (payload_max_size_bytes_ / 2) bytes of
+ * data. We don't want to overwhelm missived with large payloads.
  *
  * To check size output, pipe the command to `wc`. The byte count will be the
  * last number.
@@ -109,13 +103,28 @@ const PollFrequencyMap& GetLocalCommandPollFrequencyMap() {
   return *map;
 }
 
-constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
 constexpr const char* kLocalLogSources[] = {
     kCfmAuditLogFile,      kCfmBiosInfoLogFile,     kCfmChromeLogFile,
     kCfmChromeUserLogFile, kCfmCrosEcLogFile,       kCfmEventlogLogFile,
     kCfmFwupdLogFile,      kCfmPowerdLogFile,       kCfmSyslogLogFile,
     kCfmUiLogFile,         kCfmUpdateEngineLogFile, kCfmVariationsListLogFile,
 };
+
+// Define sane minimums and maximums for our Finch-controlled configs.
+constexpr base::TimeDelta kMinimumFetchFrequency = base::Minutes(1);
+constexpr base::TimeDelta kMaximumFetchFrequency = base::Hours(1);
+
+constexpr base::TimeDelta kMinimumLogPollFrequency = base::Seconds(10);
+constexpr base::TimeDelta kMaximumLogPollFrequency = base::Hours(1);
+
+constexpr size_t kMinimumLogBatchSize = 10;
+constexpr size_t kMaximumLogBatchSize = 10 * 1000;
+
+constexpr size_t kMinimumPayloadMaxSizeBytes = 1000;
+constexpr size_t kMaximumPayloadMaxSizeBytes = 1000 * 1000;
+
+constexpr size_t kMinimumPayloadQueueMaxSize = 1;
+constexpr size_t kMaximumPayloadQueueMaxSize = 10;
 
 }  // namespace
 
@@ -237,9 +246,10 @@ void DataAggregatorService::AddLocalCommandSource(
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& device_id, const std::string& command,
+             const size_t payload_max_size_bytes,
              const base::TimeDelta& poll_freq) {
             auto source = std::make_unique<CommandSource>(
-                command, kPayloadMaxSizeBytes, poll_freq);
+                command, payload_max_size_bytes, poll_freq);
             source->AssignDeviceID(device_id);
             source->StartCollectingData();
 
@@ -247,7 +257,8 @@ void DataAggregatorService::AddLocalCommandSource(
                                         std::move(pending_receiver));
           },
           remote.BindNewPipeAndPassReceiver(),
-          active_transport_payload_.permanent_id(), command, poll_freq));
+          active_transport_payload_.permanent_id(), command,
+          payload_max_size_bytes_, poll_freq));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalCommandDisconnect,
@@ -279,10 +290,12 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       FROM_HERE,
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
-             const std::string& device_id, const std::string& filepath) {
-            auto source = LogSource::Create(filepath, kPayloadMaxSizeBytes,
-                                            kDefaultLogPollFrequency,
-                                            kDefaultLogBatchSize);
+             const std::string& device_id, const std::string& filepath,
+             const size_t payload_max_size_bytes,
+             const base::TimeDelta log_poll_frequency,
+             const size_t log_batch_size) {
+            auto source = LogSource::Create(filepath, payload_max_size_bytes,
+                                            log_poll_frequency, log_batch_size);
             source->AssignDeviceID(device_id);
             source->StartCollectingData();
 
@@ -290,7 +303,8 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
                                         std::move(pending_receiver));
           },
           remote.BindNewPipeAndPassReceiver(),
-          active_transport_payload_.permanent_id(), filepath));
+          active_transport_payload_.permanent_id(), filepath,
+          payload_max_size_bytes_, log_poll_frequency_, log_batch_size_));
 
   remote.set_disconnect_handler(
       base::BindOnce(&DataAggregatorService::OnLocalLogDisconnect,
@@ -543,7 +557,7 @@ void DataAggregatorService::StartFetchTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Artemis started. Listening for data.";
   fetch_timer_.Start(
-      FROM_HERE, kFetchFrequency,
+      FROM_HERE, fetch_frequency_,
       base::BindRepeating(&DataAggregatorService::FetchFromAllSourcesAndEnqueue,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -576,7 +590,7 @@ void DataAggregatorService::StartFetchTimer() {
  *   check the queue for more data. If more is available, we'll immediately
  *   schedule another enqueue.
  * - FetchAll() calls will also be paused if the queue ever reaches the max
- *   size set by `kMaxPayloadQueueSize`. This prevents us from needing to
+ *   size set by `payload_queue_max_size_`. This prevents us from needing to
  *   drop data to keep the memory footprint down.
  */
 void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
@@ -593,7 +607,7 @@ void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
   // succeeds, at which point it will trigger the enqueue for the next
   // one. In other words, we should never reach a deadlocked state where
   // `Fetch()` calls are halted AND enqueues are halted.
-  if (pending_transport_payloads_.size() >= kMaxPayloadQueueSize) {
+  if (pending_transport_payloads_.size() >= payload_queue_max_size_) {
     LOG(WARNING) << "Payload queue is at capacity. Forgoing next fetch.";
     return;
   }
@@ -679,7 +693,7 @@ void DataAggregatorService::AppendEntriesToActivePayload(
 }
 
 bool DataAggregatorService::DidActivePayloadReachMaxSize() const {
-  return active_transport_payload_.ByteSizeLong() >= kPayloadMaxSizeBytes;
+  return active_transport_payload_.ByteSizeLong() >= payload_max_size_bytes_;
 }
 
 void DataAggregatorService::AddActivePayloadToPendingQueue() {
@@ -850,7 +864,32 @@ DataAggregatorService::DataAggregatorService()
   local_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(&PersistentDb::Initialize));
 
-  VLOG(1) << "Starting Artemis...";
+  // Cache configs.
+  fetch_frequency_ = std::clamp(features::kFetchFrequency.Get(),
+                                kMinimumFetchFrequency, kMaximumFetchFrequency);
+
+  log_poll_frequency_ =
+      std::clamp(features::kLogPollFrequency.Get(), kMinimumLogPollFrequency,
+                 kMaximumLogPollFrequency);
+
+  log_batch_size_ = std::clamp(features::kLogBatchSize.Get(),
+                               kMinimumLogBatchSize, kMaximumLogBatchSize);
+
+  payload_max_size_bytes_ =
+      std::clamp(features::kPayloadMaxSizeBytes.Get(),
+                 kMinimumPayloadMaxSizeBytes, kMaximumPayloadMaxSizeBytes);
+
+  payload_queue_max_size_ =
+      std::clamp(features::kPayloadQueueMaxSize.Get(),
+                 kMinimumPayloadQueueMaxSize, kMaximumPayloadQueueMaxSize);
+
+  VLOG(1) << "Starting Artemis with config: fetch_frequency = "
+          << fetch_frequency_
+          << ", log_poll_frequency = " << log_poll_frequency_
+          << ", log_batch_size = " << log_batch_size_
+          << ", payload_max_size_bytes = " << payload_max_size_bytes_
+          << ", payload_queue_max_size = " << payload_queue_max_size_;
+
   InitializeUploadEndpoint(/*num_tries=*/0);
 }
 
