@@ -15,7 +15,6 @@
 #include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
-#include "content/browser/renderer_host/network_restrictions_commit_deferring_condition.h"
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -165,9 +164,6 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
     AddCondition(ConcurrentNavigationsCommitDeferringCondition::MaybeCreate(
         navigation_request, navigation_type_));
   }
-
-  AddCondition(NetworkRestrictionsCommitDeferringCondition::MaybeCreate(
-      navigation_request));
 
   // The BFCache deferring condition should run after all other conditions
   // since it'll disable eviction on a cached renderer.

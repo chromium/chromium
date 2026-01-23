@@ -89,7 +89,6 @@
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
-#include "content/browser/renderer_host/network_restrictions_commit_deferring_condition.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
@@ -7316,14 +7315,20 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist() {
   const PolicyContainerPolicies* policies = nullptr;
 
   // If it is renderer-initiated, initiator_frame_token_ will be set and
-  // connection allowlist should be checked.
+  // connection allowlist should be checked unless it is a same-document
+  // navigation or a local navigation. For local navigation, the connection
+  // allowlist will be inherited as part of the PolicyContainerHost and
+  // applied in the network service in
+  // NetworkRestrictionsNavigationThrottle::WillCommitWithoutUrlLoader().
+  //
   // TODO(crbug.com/447954811): If it is renderer-initiated and a
   // history navigation, it is not currently checked.
   // To be fixed based on the resolution of
   // https://github.com/WICG/connection-allowlists/issues/4
   // TODO(crbug.com/475251663) Also, if the resolution is to fail as per
   // connection allowlist, then the crash in this issue needs to be fixed.
-  if (!initiator_frame_token_ || IsHistory()) {
+  if (!initiator_frame_token_ || IsHistory() || IsSameDocument() ||
+      !IsURLHandledByNetworkStack(common_params_->url)) {
     return true;
   }
 
@@ -7375,13 +7380,6 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist() {
       return true;
     }
   }
-
-  // TODO(crbug.com/447954811): If the scheme is local as returned from
-  // `IsURLHandledByNetworkStack(common_params_->url)`, we could theoretically
-  // allow it since it doesn't go to the network and it inherits the policy
-  // of the initiator, but it currently doesn't work as the connection
-  // allowlist is not applied to its subresource fetches because the
-  // CommitDeferringConditions don't get invoked. Fix this.
 
   return false;
 }

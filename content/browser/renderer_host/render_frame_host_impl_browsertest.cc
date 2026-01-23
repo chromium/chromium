@@ -9584,6 +9584,64 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
+                       AboutBlankIframeInheritsConnectionAllowlist) {
+  // 1. Navigate top-level frame to a page with connection allowlists.
+  // title1.html has Connection-Allowlist: (response-origin)
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* main_rfh = web_contents()->GetPrimaryMainFrame();
+
+  // 2. Create an iframe and point its src to a page with a different value of
+  // connection allowlist.
+  // title3.html has Connection-Allowlist: ()
+  GURL iframe_url = embedded_test_server()->GetURL("/title3.html");
+  EXPECT_TRUE(
+      ExecJs(main_rfh, JsReplace("let child = document.createElement('iframe');"
+                                 "child.id = 'test_iframe';"
+                                 "child.src = $1;"
+                                 "document.body.appendChild(child);",
+                                 iframe_url)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  EXPECT_EQ(1U, main_rfh->child_count());
+  RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+  EXPECT_TRUE(iframe->IsRenderFrameLive());
+
+  // In title3.html, same-origin fetch should fail because the allowlist is
+  // empty.
+  GURL fetch_url(embedded_test_server()->GetURL("/cors-ok.txt"));
+  std::string fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      fetch_url);
+  ASSERT_FALSE(ExecJs(iframe, fetch_resource));
+
+  // 3. Navigate the iframe to about:blank from the top-level page.
+  EXPECT_TRUE(ExecJs(
+      main_rfh, "document.getElementById('test_iframe').src = 'about:blank';"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // 4. Test that the about:blank iframe should inherit the connection allowlist
+  // of the top-level frame.
+  iframe = main_rfh->child_at(0)->current_frame_host();
+
+  // In about:blank, same-origin fetch should succeed as it inherits
+  // (response-origin) from title1.html.
+  EXPECT_EQ(200, EvalJs(iframe, fetch_resource));
+
+  // Cross-origin fetch should still fail.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_FALSE(ExecJs(iframe, cross_origin_fetch_resource));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistEmpty) {
   GURL url(embedded_test_server()->GetURL("/title3.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -9665,6 +9723,70 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
             navigation_observer.last_net_error_code());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplConnectionAllowlistBrowserTest,
+    ConnectionAllowlistInPagehideNavigationStateKeepAliveAboutBlank) {
+  // 1. Set up the opener window.
+  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
+
+  // 2. Set up the openee window.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), "window.open()"));
+  Shell* openee_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(openee_shell->web_contents()));
+
+  // 3. Navigate openee to a page with a connection allowlist.
+  GURL allowlist_url(
+      embedded_test_server()->GetURL("b.com", "/connection_allowlist.html"));
+  EXPECT_TRUE(NavigateToURL(openee_shell, allowlist_url));
+
+  // Fetch a cross-origin resource from the opener. It should be allowed.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_TRUE(ExecJs(web_contents(), cross_origin_fetch_resource));
+
+  // 4. The openee will navigate the opener to about:blank in pagehide.
+  EXPECT_TRUE(ExecJs(openee_shell, JsReplace(R"(
+    window.addEventListener("pagehide", () => {
+      opener.location.href = $1;
+    });
+  )",
+                                             GURL(url::kAboutBlankURL))));
+
+  RenderFrameHost* openee_rfh =
+      static_cast<WebContentsImpl*>(openee_shell->web_contents())
+          ->GetPrimaryMainFrame();
+
+  // 5. Issue a KeepAlive for the navigation state so that the
+  //    PolicyContainerHost will still exist after the initiator RenderFrameHost
+  //    is gone.
+  mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle> keep_alive;
+  static_cast<RenderFrameHostImpl*>(openee_rfh)
+      ->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver());
+
+  // 6. Watch for the navigation in the opener.
+  TestNavigationObserver navigation_observer(web_contents());
+
+  // 7. Close the openee, which triggers the navigation in the opener.
+  openee_shell->Close();
+
+  // 8. The navigation should pass since it is a local navigation.
+  navigation_observer.Wait();
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            navigation_observer.last_navigation_url());
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::OK, navigation_observer.last_net_error_code());
+
+  // 9. Fetch a cross-origin resource from the opener. It should be disallowed
+  //    due to it inheriting connection allowlist from its initiator (openee).
+  ASSERT_FALSE(ExecJs(web_contents(), cross_origin_fetch_resource));
+}
+
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
                        ConnectionAllowlistSrcdoc) {
   GURL url(
@@ -9685,15 +9807,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
 
   navigation_observer.Wait();
 
-  // TODO(crbug.com/447954811): we could allow a local navigation as it doesn't
-  // use the network and inherits the policy of the initiator, but it currently
-  // doesn't work as the connection allowlist is not applied to its subresource
-  // fetches because the CommitDeferringConditions don't get invoked. Fix this.
-  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(GURL(url::kAboutSrcdocURL),
             navigation_observer.last_navigation_url());
-  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
-            navigation_observer.last_net_error_code());
+  EXPECT_EQ(net::OK, navigation_observer.last_net_error_code());
+
+  // now fetch a cross-origin resource. It should be disallowed both in the
+  // main frame and the iframe.
+  RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/cors-ok.txt");
+  std::string cross_origin_fetch_resource = JsReplace(
+      "(async () => {"
+      "  let resp = (await fetch($1, { mode: 'cors', credential: 'omit'}));"
+      "  return resp.status; })();",
+      d_url);
+  ASSERT_FALSE(ExecJs(iframe, cross_origin_fetch_resource));
+
+  ASSERT_FALSE(ExecJs(main_rfh, cross_origin_fetch_resource));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplConnectionAllowlistBrowserTest,
