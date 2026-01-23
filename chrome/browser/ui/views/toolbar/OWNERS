@@ -1,2 +1,5 @@
 # Extension/Toolbar Actions
 per-file *toolbar_action*=file://extensions/UI_OWNERS
+
+# WebUI related files
+per-file *webui*=file://chrome/browser/ui/waap/OWNERS
