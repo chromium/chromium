@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -141,19 +142,75 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
     // it from the main thread (locked).
     std::unique_ptr<Renderer> renderer;
 
-    // True when OnBufferedTimeRangesChanged() has been called more recently
-    // than DidLoadingProgress().
-    bool did_loading_progress = false;
-
-    // Amount of available buffered data as reported by Demuxer.
-    Ranges<base::TimeDelta> buffered_time_ranges;
-
     // Accumulated statistics reported by the renderer.
     PipelineStatistics statistics;
 
     // The media timestamp to return while the pipeline is suspended.
     // Otherwise set to kNoTimestamp.
     base::TimeDelta suspend_timestamp = kNoTimestamp;
+  };
+
+  // State shared between the main and media thread, which can be updated from
+  // either thread. Unlike SharedState, all access must be locked.
+  struct LockedSharedState {
+    // True when OnBufferedTimeRangesChanged() has been called more recently
+    // than DidLoadingProgress().
+    bool did_loading_progress = false;
+
+    // Amount of available buffered data as reported by Demuxer.
+    Ranges<base::TimeDelta> buffered_time_ranges;
+  };
+
+  // Wrapper for SharedState that enforces locking and sequencing guarantees.
+  class SharedStateAccessor {
+   public:
+    SharedStateAccessor() {
+      DETACH_FROM_SEQUENCE(main_sequence_checker_);
+      DETACH_FROM_SEQUENCE(media_sequence_checker_);
+    }
+
+    ~SharedStateAccessor() = default;
+
+    SharedStateAccessor(const SharedStateAccessor&) = delete;
+    SharedStateAccessor& operator=(const SharedStateAccessor&) = delete;
+
+    base::Lock& lock() const LOCK_RETURNED(lock_) { return lock_; }
+
+    // From the main thread, reading requires a lock. There is no mutable
+    // accessor for the main thread.
+    const SharedState& main() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+      return state_;
+    }
+
+    // From the media thread, reading doesn't require a lock.
+    const SharedState& media() const {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+      return state_;
+    }
+
+    // From the media thread, writing requires a lock.
+    SharedState& mutable_media() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+      return state_;
+    }
+
+    // LockedSharedState is accessible from any thread, but always requires a
+    // lock.
+    const LockedSharedState& any() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+      return locked_state_;
+    }
+    LockedSharedState& any() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+      return locked_state_;
+    }
+
+   private:
+    SEQUENCE_CHECKER(main_sequence_checker_);
+    SEQUENCE_CHECKER(media_sequence_checker_);
+
+    mutable base::Lock lock_;
+    SharedState state_;  // Only sometimes guarded by `lock_`.
+    LockedSharedState locked_state_ GUARDED_BY(lock_);
   };
 
   static const char* GetStateString(State state);
@@ -234,11 +291,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
 
   bool was_played_with_user_activation_and_high_media_engagement_ = false;
 
-  // Lock used to serialize |shared_state_|.
-  mutable base::Lock shared_state_lock_;
-
   // State shared between main and media thread.
-  SharedState shared_state_;
+  SharedStateAccessor shared_state_;
 
   // Current state of the pipeline.
   State state_;
@@ -345,9 +399,10 @@ void PipelineImpl::RendererWrapper::Stop() {
 
   SetState(State::kStopping);
 
-  if (shared_state_.statistics.video_frames_decoded > 0) {
-    UMA_HISTOGRAM_COUNTS_1M("Media.DroppedFrameCount",
-                            shared_state_.statistics.video_frames_dropped);
+  if (shared_state_.media().statistics.video_frames_decoded > 0) {
+    UMA_HISTOGRAM_COUNTS_1M(
+        "Media.DroppedFrameCount",
+        shared_state_.media().statistics.video_frames_dropped);
   }
 
   // If we stop during starting/seeking/suspending/resuming we don't want to
@@ -396,9 +451,10 @@ void PipelineImpl::RendererWrapper::Seek(base::TimeDelta time) {
 
 
   // Flush.
-  DCHECK(shared_state_.renderer);
-  bound_fns.Push(base::BindOnce(
-      &Renderer::Flush, base::Unretained(shared_state_.renderer.get())));
+  DCHECK(shared_state_.media().renderer);
+  bound_fns.Push(
+      base::BindOnce(&Renderer::Flush,
+                     base::Unretained(shared_state_.media().renderer.get())));
 
   // Seek demuxer.
   bound_fns.Push(base::BindOnce(&Demuxer::Seek, base::Unretained(demuxer_),
@@ -426,12 +482,13 @@ void PipelineImpl::RendererWrapper::Suspend() {
   SetState(State::kSuspending);
 
   // Freeze playback and record the media time before destroying the renderer.
-  shared_state_.renderer->SetPlaybackRate(0.0);
+  shared_state_.media().renderer->SetPlaybackRate(0.0);
   {
-    base::AutoLock auto_lock(shared_state_lock_);
-    DCHECK(shared_state_.renderer);
-    shared_state_.suspend_timestamp = shared_state_.renderer->GetMediaTime();
-    DCHECK(shared_state_.suspend_timestamp != kNoTimestamp);
+    base::AutoLock auto_lock(shared_state_.lock());
+    DCHECK(shared_state_.media().renderer);
+    shared_state_.mutable_media().suspend_timestamp =
+        shared_state_.media().renderer->GetMediaTime();
+    DCHECK(shared_state_.media().suspend_timestamp != kNoTimestamp);
   }
 
   // Queue the asynchronous actions required to stop playback.
@@ -465,10 +522,7 @@ void PipelineImpl::RendererWrapper::Resume(
 
   SetState(State::kResuming);
 
-  {
-    base::AutoLock auto_lock(shared_state_lock_);
-    DCHECK(!shared_state_.renderer);
-  }
+  DCHECK(!shared_state_.media().renderer);
 
   default_renderer_ = std::move(default_renderer);
   renderer_ended_ = false;
@@ -498,7 +552,7 @@ void PipelineImpl::RendererWrapper::SetPlaybackRate(double playback_rate) {
 
   playback_rate_ = playback_rate;
   if (state_ == State::kPlaying) {
-    shared_state_.renderer->SetPlaybackRate(playback_rate_);
+    shared_state_.media().renderer->SetPlaybackRate(playback_rate_);
   }
 
   if (state_ != State::kCreated && state_ != State::kStopping &&
@@ -512,8 +566,9 @@ void PipelineImpl::RendererWrapper::SetVolume(float volume) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   volume_ = volume;
-  if (shared_state_.renderer)
-    shared_state_.renderer->SetVolume(volume_);
+  if (shared_state_.media().renderer) {
+    shared_state_.media().renderer->SetVolume(volume_);
+  }
 }
 
 void PipelineImpl::RendererWrapper::SetLatencyHint(
@@ -524,8 +579,9 @@ void PipelineImpl::RendererWrapper::SetLatencyHint(
     return;
 
   latency_hint_ = latency_hint;
-  if (shared_state_.renderer)
-    shared_state_.renderer->SetLatencyHint(latency_hint_);
+  if (shared_state_.media().renderer) {
+    shared_state_.media().renderer->SetLatencyHint(latency_hint_);
+  }
 }
 
 void PipelineImpl::RendererWrapper::SetPreservesPitch(bool preserves_pitch) {
@@ -535,8 +591,9 @@ void PipelineImpl::RendererWrapper::SetPreservesPitch(bool preserves_pitch) {
     return;
 
   preserves_pitch_ = preserves_pitch;
-  if (shared_state_.renderer)
-    shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
+  if (shared_state_.media().renderer) {
+    shared_state_.media().renderer->SetPreservesPitch(preserves_pitch_);
+  }
 }
 
 void PipelineImpl::RendererWrapper::SetRenderMutedAudio(
@@ -548,8 +605,8 @@ void PipelineImpl::RendererWrapper::SetRenderMutedAudio(
   }
 
   render_muted_audio_ = render_muted_audio;
-  if (shared_state_.renderer) {
-    shared_state_.renderer->SetRenderMutedAudio(render_muted_audio_);
+  if (shared_state_.media().renderer) {
+    shared_state_.media().renderer->SetRenderMutedAudio(render_muted_audio_);
   }
 }
 
@@ -560,9 +617,9 @@ void PipelineImpl::RendererWrapper::
 
   was_played_with_user_activation_and_high_media_engagement_ =
       was_played_with_user_activation_and_high_media_engagement;
-  if (shared_state_.renderer) {
-    shared_state_.renderer
-        ->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+  if (shared_state_.media().renderer) {
+    shared_state_.media()
+        .renderer->SetWasPlayedWithUserActivationAndHighMediaEngagement(
             was_played_with_user_activation_and_high_media_engagement_);
   }
 }
@@ -570,35 +627,37 @@ void PipelineImpl::RendererWrapper::
 base::TimeDelta PipelineImpl::RendererWrapper::GetMediaTime() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock auto_lock(shared_state_lock_);
-  if (shared_state_.suspend_timestamp != kNoTimestamp)
-    return shared_state_.suspend_timestamp;
-  return shared_state_.renderer ? shared_state_.renderer->GetMediaTime()
-                                : base::TimeDelta();
+  base::AutoLock auto_lock(shared_state_.lock());
+  if (shared_state_.main().suspend_timestamp != kNoTimestamp) {
+    return shared_state_.main().suspend_timestamp;
+  }
+  return shared_state_.main().renderer
+             ? shared_state_.main().renderer->GetMediaTime()
+             : base::TimeDelta();
 }
 
 Ranges<base::TimeDelta> PipelineImpl::RendererWrapper::GetBufferedTimeRanges()
     const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock auto_lock(shared_state_lock_);
-  return shared_state_.buffered_time_ranges;
+  base::AutoLock auto_lock(shared_state_.lock());
+  return shared_state_.any().buffered_time_ranges;
 }
 
 bool PipelineImpl::RendererWrapper::DidLoadingProgress() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock auto_lock(shared_state_lock_);
-  bool did_progress = shared_state_.did_loading_progress;
-  shared_state_.did_loading_progress = false;
+  base::AutoLock auto_lock(shared_state_.lock());
+  bool did_progress = shared_state_.any().did_loading_progress;
+  shared_state_.any().did_loading_progress = false;
   return did_progress;
 }
 
 PipelineStatistics PipelineImpl::RendererWrapper::GetStatistics() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock auto_lock(shared_state_lock_);
-  return shared_state_.statistics;
+  base::AutoLock auto_lock(shared_state_.lock());
+  return shared_state_.main().statistics;
 }
 
 void PipelineImpl::RendererWrapper::SetCdm(CdmContext* cdm_context,
@@ -607,8 +666,8 @@ void PipelineImpl::RendererWrapper::SetCdm(CdmContext* cdm_context,
   DCHECK(cdm_context);
 
   // If there's already a renderer, set the CDM on the renderer directly.
-  if (shared_state_.renderer) {
-    shared_state_.renderer->SetCdm(
+  if (shared_state_.media().renderer) {
+    shared_state_.media().renderer->SetCdm(
         cdm_context, base::BindOnce(&RendererWrapper::OnCdmAttached,
                                     weak_factory_.GetWeakPtr(),
                                     std::move(cdm_attached_cb), cdm_context));
@@ -672,10 +731,11 @@ void PipelineImpl::RendererWrapper::CreateRendererInternal(
 void PipelineImpl::RendererWrapper::OnBufferedTimeRangesChanged(
     const Ranges<base::TimeDelta>& ranges) {
   // TODO(alokp): Add thread DCHECK after ensuring that all Demuxer
-  // implementations call DemuxerHost on the media thread.
-  base::AutoLock auto_lock(shared_state_lock_);
-  shared_state_.did_loading_progress = true;
-  shared_state_.buffered_time_ranges = ranges;
+  // implementations call DemuxerHost on the media thread. Once that's done
+  // `buffered_time_ranges` can be moved from LockedSharedState to SharedState.
+  base::AutoLock auto_lock(shared_state_.lock());
+  shared_state_.any().did_loading_progress = true;
+  shared_state_.any().buffered_time_ranges = ranges;
 }
 
 void PipelineImpl::RendererWrapper::SetDuration(base::TimeDelta duration) {
@@ -749,10 +809,11 @@ void PipelineImpl::RendererWrapper::OnEnded() {
 base::TimeDelta PipelineImpl::RendererWrapper::GetCurrentTimestamp() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(demuxer_);
-  DCHECK(shared_state_.renderer || state_ != State::kPlaying);
+  DCHECK(shared_state_.media().renderer || state_ != State::kPlaying);
 
-  return state_ == State::kPlaying ? shared_state_.renderer->GetMediaTime()
-                                   : demuxer_->GetStartTime();
+  return state_ == State::kPlaying
+             ? shared_state_.media().renderer->GetMediaTime()
+             : demuxer_->GetStartTime();
 }
 
 void PipelineImpl::OnEnabledAudioTracksChanged(
@@ -817,14 +878,14 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     base::OnceClosure change_completed_cb,
     DemuxerStream* stream) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  if (!shared_state_.renderer) {
+  if (!shared_state_.media().renderer) {
     // This can happen if the pipeline has been suspended.
     std::move(change_completed_cb).Run();
     return;
   }
 
-  shared_state_.renderer->OnTracksChanged(stream_type, stream,
-                                          std::move(change_completed_cb));
+  shared_state_.media().renderer->OnTracksChanged(
+      stream_type, stream, std::move(change_completed_cb));
 }
 
 void PipelineImpl::OnExternalVideoFrameRequest() {
@@ -841,11 +902,11 @@ void PipelineImpl::OnExternalVideoFrameRequest() {
 
 void PipelineImpl::RendererWrapper::OnExternalVideoFrameRequest() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  if (!shared_state_.renderer) {
+  if (!shared_state_.media().renderer) {
     return;
   }
 
-  shared_state_.renderer->OnExternalVideoFrameRequest();
+  shared_state_.media().renderer->OnExternalVideoFrameRequest();
 }
 
 void PipelineImpl::RendererWrapper::OnStatisticsUpdate(
@@ -853,20 +914,28 @@ void PipelineImpl::RendererWrapper::OnStatisticsUpdate(
   DVLOG(3) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  base::AutoLock auto_lock(shared_state_lock_);
-  shared_state_.statistics.audio_bytes_decoded += stats.audio_bytes_decoded;
-  shared_state_.statistics.video_bytes_decoded += stats.video_bytes_decoded;
-  shared_state_.statistics.video_frames_decoded += stats.video_frames_decoded;
-  shared_state_.statistics.video_frames_decoded_power_efficient +=
+  base::AutoLock auto_lock(shared_state_.lock());
+  shared_state_.mutable_media().statistics.audio_bytes_decoded +=
+      stats.audio_bytes_decoded;
+  shared_state_.mutable_media().statistics.video_bytes_decoded +=
+      stats.video_bytes_decoded;
+  shared_state_.mutable_media().statistics.video_frames_decoded +=
+      stats.video_frames_decoded;
+  shared_state_.mutable_media()
+      .statistics.video_frames_decoded_power_efficient +=
       stats.video_frames_decoded_power_efficient;
-  shared_state_.statistics.video_frames_dropped += stats.video_frames_dropped;
-  shared_state_.statistics.audio_memory_usage += stats.audio_memory_usage;
-  shared_state_.statistics.video_memory_usage += stats.video_memory_usage;
+  shared_state_.mutable_media().statistics.video_frames_dropped +=
+      stats.video_frames_dropped;
+  shared_state_.mutable_media().statistics.audio_memory_usage +=
+      stats.audio_memory_usage;
+  shared_state_.mutable_media().statistics.video_memory_usage +=
+      stats.video_memory_usage;
 
   if (stats.audio_pipeline_info.decoder_type != AudioDecoderType::kUnknown &&
       stats.audio_pipeline_info !=
-          shared_state_.statistics.audio_pipeline_info) {
-    shared_state_.statistics.audio_pipeline_info = stats.audio_pipeline_info;
+          shared_state_.media().statistics.audio_pipeline_info) {
+    shared_state_.mutable_media().statistics.audio_pipeline_info =
+        stats.audio_pipeline_info;
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PipelineImpl::OnAudioPipelineInfoChange,
                                   weak_pipeline_, stats.audio_pipeline_info));
@@ -874,26 +943,27 @@ void PipelineImpl::RendererWrapper::OnStatisticsUpdate(
 
   if (stats.video_pipeline_info.decoder_type != VideoDecoderType::kUnknown &&
       stats.video_pipeline_info !=
-          shared_state_.statistics.video_pipeline_info) {
-    shared_state_.statistics.video_pipeline_info = stats.video_pipeline_info;
+          shared_state_.media().statistics.video_pipeline_info) {
+    shared_state_.mutable_media().statistics.video_pipeline_info =
+        stats.video_pipeline_info;
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PipelineImpl::OnVideoPipelineInfoChange,
                                   weak_pipeline_, stats.video_pipeline_info));
   }
 
   if (stats.video_frame_duration_average != kNoTimestamp) {
-    shared_state_.statistics.video_frame_duration_average =
+    shared_state_.mutable_media().statistics.video_frame_duration_average =
         stats.video_frame_duration_average;
   }
 
   base::TimeDelta old_key_frame_distance_average =
-      shared_state_.statistics.video_keyframe_distance_average;
+      shared_state_.media().statistics.video_keyframe_distance_average;
   if (stats.video_keyframe_distance_average != kNoTimestamp) {
-    shared_state_.statistics.video_keyframe_distance_average =
+    shared_state_.mutable_media().statistics.video_keyframe_distance_average =
         stats.video_keyframe_distance_average;
   }
 
-  if (shared_state_.statistics.video_keyframe_distance_average !=
+  if (shared_state_.media().statistics.video_keyframe_distance_average !=
       old_key_frame_distance_average) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -1007,8 +1077,9 @@ void PipelineImpl::RendererWrapper::OnCdmAttached(CdmAttachedCB cdm_attached_cb,
 void PipelineImpl::RendererWrapper::CheckPlaybackEnded() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-  if (shared_state_.renderer && !renderer_ended_)
+  if (shared_state_.media().renderer && !renderer_ended_) {
     return;
+  }
 
   // Don't fire an ended event if we're already in an error state.
   if (status_ != PIPELINE_OK)
@@ -1045,14 +1116,14 @@ void PipelineImpl::RendererWrapper::CompleteSeek(base::TimeDelta seek_time,
     return;
   }
 
-  shared_state_.renderer->StartPlayingFrom(
+  shared_state_.media().renderer->StartPlayingFrom(
       std::max(seek_time, demuxer_->GetStartTime()));
   {
-    base::AutoLock auto_lock(shared_state_lock_);
-    shared_state_.suspend_timestamp = kNoTimestamp;
+    base::AutoLock auto_lock(shared_state_.lock());
+    shared_state_.mutable_media().suspend_timestamp = kNoTimestamp;
   }
 
-  shared_state_.renderer->SetPlaybackRate(playback_rate_);
+  shared_state_.media().renderer->SetPlaybackRate(playback_rate_);
 
   SetState(State::kPlaying);
   main_task_runner_->PostTask(
@@ -1076,9 +1147,9 @@ void PipelineImpl::RendererWrapper::CompleteSuspend(PipelineStatus status) {
 
   DestroyRenderer();
   {
-    base::AutoLock auto_lock(shared_state_lock_);
-    shared_state_.statistics.audio_memory_usage = 0;
-    shared_state_.statistics.video_memory_usage = 0;
+    base::AutoLock auto_lock(shared_state_.lock());
+    shared_state_.mutable_media().statistics.audio_memory_usage = 0;
+    shared_state_.mutable_media().statistics.video_memory_usage = 0;
   }
 
   // Abort any reads the renderer may have kicked off.
@@ -1125,9 +1196,9 @@ void PipelineImpl::RendererWrapper::OnRendererCreated(
   }
 
   {
-    base::AutoLock auto_lock(shared_state_lock_);
-    DCHECK(!shared_state_.renderer);
-    shared_state_.renderer = std::move(renderer);
+    base::AutoLock auto_lock(shared_state_.lock());
+    DCHECK(!shared_state_.media().renderer);
+    shared_state_.mutable_media().renderer = std::move(renderer);
   }
   std::move(done_cb).Run(PIPELINE_OK);
 }
@@ -1144,28 +1215,29 @@ void PipelineImpl::RendererWrapper::InitializeRenderer(
   }
 
   if (cdm_context_)
-    shared_state_.renderer->SetCdm(cdm_context_, base::DoNothing());
+    shared_state_.media().renderer->SetCdm(cdm_context_, base::DoNothing());
 
   if (latency_hint_)
-    shared_state_.renderer->SetLatencyHint(latency_hint_);
+    shared_state_.media().renderer->SetLatencyHint(latency_hint_);
 
   if (render_muted_audio_) {
-    shared_state_.renderer->SetRenderMutedAudio(render_muted_audio_);
+    shared_state_.media().renderer->SetRenderMutedAudio(render_muted_audio_);
   }
 
-  shared_state_.renderer->SetPreservesPitch(preserves_pitch_);
+  shared_state_.media().renderer->SetPreservesPitch(preserves_pitch_);
 
   // Calling SetVolume() before Initialize() allows renderers to optimize for
   // power by avoiding initialization of audio output until necessary.
-  shared_state_.renderer->SetVolume(volume_);
+  shared_state_.media().renderer->SetVolume(volume_);
 
-  shared_state_.renderer->SetWasPlayedWithUserActivationAndHighMediaEngagement(
-      was_played_with_user_activation_and_high_media_engagement_);
+  shared_state_.media()
+      .renderer->SetWasPlayedWithUserActivationAndHighMediaEngagement(
+          was_played_with_user_activation_and_high_media_engagement_);
 
   // Initialize Renderer and report timeout UMA.
   std::string uma_name = "Media.InitializeRendererTimeout";
   base::UmaHistogramEnumeration(uma_name, CallbackTimeoutStatus::kCreate);
-  shared_state_.renderer->Initialize(
+  shared_state_.media().renderer->Initialize(
       demuxer_, this,
       WrapCallbackWithTimeoutHandler(
           std::move(done_cb), /*timeout_delay=*/base::Seconds(10),
@@ -1179,8 +1251,8 @@ void PipelineImpl::RendererWrapper::DestroyRenderer() {
   // while renderer is being destroyed (in case Renderer destructor is costly).
   std::unique_ptr<Renderer> renderer;
   {
-    base::AutoLock auto_lock(shared_state_lock_);
-    renderer.swap(shared_state_.renderer);
+    base::AutoLock auto_lock(shared_state_.lock());
+    renderer.swap(shared_state_.mutable_media().renderer);
   }
 }
 
@@ -1222,8 +1294,12 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
   // Abort pending render initialization tasks and suspend the pipeline.
   pending_callbacks_.reset();
   DestroyRenderer();
-  shared_state_.suspend_timestamp =
+  const base::TimeDelta suspend_timestamp =
       std::max(base::TimeDelta(), demuxer_->GetStartTime());
+  {
+    base::AutoLock lock(shared_state_.lock());
+    shared_state_.mutable_media().suspend_timestamp = suspend_timestamp;
+  }
   SetState(State::kSuspended);
   main_task_runner_->PostTask(
       FROM_HERE,
