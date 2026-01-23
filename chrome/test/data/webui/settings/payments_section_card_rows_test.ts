@@ -85,7 +85,8 @@ suite('PaymentsSectionCardRows', function() {
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
-    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     const updateCreditCardCallback =
         (creditCard: chrome.autofillPrivate.CreditCardEntry) => {
@@ -102,32 +103,27 @@ suite('PaymentsSectionCardRows', function() {
     creditCard = createCreditCardEntry();
     creditCard.nickname = 'My card name';
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for My card name', menuButton.getAttribute('title'));
+    assertEquals('More actions for My card name', menuButton.title);
 
     // Case 2: a card without nickname
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = '0000000000001234';
     creditCard.network = 'Visa';
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for Visa ending in 1234',
-        menuButton.getAttribute('title'));
+    assertEquals('More actions for Visa ending in 1234', menuButton.title);
 
     // Case 3: a card without network
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = '0000000000001234';
     creditCard.network = undefined;
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for Card ending in 1234',
-        menuButton.getAttribute('title'));
+    assertEquals('More actions for Card ending in 1234', menuButton.title);
 
     // Case 4: a card without number
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = undefined;
     updateCreditCardCallback(creditCard);
-    assertEquals('More actions for Jane Doe', menuButton.getAttribute('title'));
+    assertEquals('More actions for Jane Doe', menuButton.title);
 
     // Case 5: a card with CVC
     creditCard = createCreditCardEntry();
@@ -136,8 +132,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.cvc = '111';
     updateCreditCardCallback(creditCard);
     assertEquals(
-        'More actions for Visa ending in 1234, CVC saved',
-        menuButton.getAttribute('title'));
+        'More actions for Visa ending in 1234, CVC saved', menuButton.title);
   });
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {

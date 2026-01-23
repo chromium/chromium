@@ -453,18 +453,17 @@ suite('AutofillAiEntriesListUiTest', function() {
         continue;
       }
 
-      const iconButton = item.querySelector('cr-icon-button')!;
+      const iconButton = item.querySelector<HTMLElement>('cr-icon-button')!;
       // Only the Vehicle entity (Toyota) is stored in Wallet.
       if (!item.textContent.includes('Toyota')) {
         const labels = item.querySelectorAll<HTMLElement>('.ellipses');
-        assertTrue(
-            iconButton.getAttribute('title')!.includes(loadTimeData.getStringF(
-                'autofillAiMoreActionsForEntityInstance', labels[0]!.innerText,
-                labels[1]!.innerText)));
+        assertTrue(iconButton.title.includes(loadTimeData.getStringF(
+            'autofillAiMoreActionsForEntityInstance', labels[0]!.innerText,
+            labels[1]!.innerText)));
       } else {
         assertEquals(
             loadTimeData.getString('remoteWalletPassesLinkLabel'),
-            iconButton.getAttribute('title'));
+            iconButton.title);
       }
     }
   });
