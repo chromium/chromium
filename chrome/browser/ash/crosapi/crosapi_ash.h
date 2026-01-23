@@ -41,7 +41,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 namespace crosapi {
 
 class DocumentScanAsh;
-class KeystoreServiceAsh;
 class LocalPrinterAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
@@ -111,10 +110,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
-  KeystoreServiceAsh* keystore_service_ash() {
-    return keystore_service_ash_.get();
-  }
-
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
   ash::printing::PrintPreviewWebcontentsAdapterAsh*
@@ -130,7 +125,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
