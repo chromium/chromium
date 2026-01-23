@@ -18,6 +18,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -337,12 +338,11 @@ void ClipboardNudgeController::OnClipboardDataRead() {
 }
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown(
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+    chromeos::clipboard_history::ShowSource show_source) {
   // The clipboard history nudges specifically suggest trying the Search+V
   // shortcut. Opening the menu any other way should not count as the user
   // responding to the nudge.
-  if (show_source !=
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator) {
+  if (show_source != chromeos::clipboard_history::ShowSource::kAccelerator) {
     return;
   }
 

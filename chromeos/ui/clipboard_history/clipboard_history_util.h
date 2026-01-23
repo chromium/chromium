@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/functional/callback_forward.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "base/functional/callback.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 
 namespace base {
 class UnguessableToken;
@@ -28,8 +28,8 @@ bool IsUrl(std::u16string_view text);
 
 // Sets the function implementation that queries for the clipboard history item
 // descriptors. CrOS Ash and CrOS Lacros have different implementations.
-using QueryItemDescriptorsImpl = base::RepeatingCallback<
-    std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>()>;
+using QueryItemDescriptorsImpl =
+    base::RepeatingCallback<std::vector<ItemDescriptor>()>;
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void SetQueryItemDescriptorsImpl(QueryItemDescriptorsImpl impl);
 
@@ -39,24 +39,20 @@ QueryItemDescriptorsImpl::ResultType QueryItemDescriptors();
 
 // Sets the function implementation that pastes the clipboard item specified
 // by id. CrOS Ash and CrOS Lacros have different implementations.
-using PasteClipboardItemByIdImpl = base::RepeatingCallback<void(
-    const base::UnguessableToken&,
-    int,
-    crosapi::mojom::ClipboardHistoryControllerShowSource)>;
+using PasteClipboardItemByIdImpl = base::RepeatingCallback<
+    void(const base::UnguessableToken&, int, ShowSource)>;
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl);
 
 // Pastes the clipboard item specified by `id`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
-void PasteClipboardItemById(
-    const base::UnguessableToken& id,
-    int event_flags,
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
+void PasteClipboardItemById(const base::UnguessableToken& id,
+                            int event_flags,
+                            ShowSource paste_source);
 
 // Returns the icon that represents the `descriptor`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
-ui::ImageModel GetIconForDescriptor(
-    const crosapi::mojom::ClipboardHistoryItemDescriptor& descriptor);
+ui::ImageModel GetIconForDescriptor(const ItemDescriptor& descriptor);
 
 }  // namespace chromeos::clipboard_history
 

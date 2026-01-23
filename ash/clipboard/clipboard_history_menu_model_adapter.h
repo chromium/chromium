@@ -12,7 +12,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -59,7 +59,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   // `nudge_last_time_shown` indicate when the menu or any nudge was last shown.
   void Run(const gfx::Rect& anchor_rect,
            ui::mojom::MenuSourceType source_type,
-           crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+           chromeos::clipboard_history::ShowSource show_source,
            const std::optional<base::Time>& menu_last_time_shown,
            const std::optional<base::Time>& nudge_last_time_shown);
 
@@ -151,8 +151,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   base::TimeTicks menu_open_time_;
 
   // The source which opened the menu, absent until the menu is `Run()`.
-  std::optional<crosapi::mojom::ClipboardHistoryControllerShowSource>
-      menu_show_source_;
+  std::optional<chromeos::clipboard_history::ShowSource> menu_show_source_;
 
   // The mapping between the command ids and items that are copied from
   // `clipboard_history_` when the menu is created. It is used to solve the

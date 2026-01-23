@@ -27,7 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -40,7 +40,7 @@ namespace ash {
 
 namespace {
 
-using crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator;
+using chromeos::clipboard_history::ShowSource::kAccelerator;
 
 constexpr char kClipboardNudgeId[] = "ClipboardContextualNudge";
 
@@ -288,8 +288,7 @@ TEST_F(ClipboardNudgeControllerTest, TimeToActionMetric) {
   // Open clipboard history through the accelerator after one hour of having
   // shown the onboarding nudge, and right after showing the zero state nudge.
   nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kAccelerator);
+      /*show_source=*/chromeos::clipboard_history::ShowSource::kAccelerator);
 
   histograms().ExpectTotalCount(kNudgeShownCount, 2);
   histograms().ExpectBucketCount(kNudgeTimeToActionWithin1m,
@@ -429,16 +428,14 @@ TEST_P(ClipboardNudgeMetricTest, LogTwiceAfterShowingTwice) {
 // than the accelerator does not log any metrics, because the nudge only
 // mentions the accelerator as an option for opening the menu.
 TEST_P(ClipboardNudgeMetricTest, NotLogForNonAcceleratorMenuShown) {
-  using crosapi::mojom::ClipboardHistoryControllerShowSource;
+  using chromeos::clipboard_history::ShowSource;
 
   const ClipboardNudgeType nudge_type = GetNudgeType();
   ShowNudgeForType(nudge_type);
 
-  for (size_t i =
-           static_cast<size_t>(ClipboardHistoryControllerShowSource::kMinValue);
-       i < static_cast<size_t>(ClipboardHistoryControllerShowSource::kMaxValue);
-       ++i) {
-    auto show_source = static_cast<ClipboardHistoryControllerShowSource>(i);
+  for (size_t i = static_cast<size_t>(ShowSource::kMinValue);
+       i < static_cast<size_t>(ShowSource::kMaxValue); ++i) {
+    auto show_source = static_cast<ShowSource>(i);
     if (show_source != kAccelerator) {
       nudge_controller_->OnClipboardHistoryMenuShown(show_source);
     }

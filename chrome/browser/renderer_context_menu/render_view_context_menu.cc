@@ -331,8 +331,8 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/aura/window.h"
 #endif
@@ -2617,8 +2617,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
   // pointer in the callback.
   submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
       CreateClipboardHistorySubmenuModel(
-          crosapi::mojom::ClipboardHistoryControllerShowSource::
-              kRenderViewContextSubmenu,
+          chromeos::clipboard_history::ShowSource::kRenderViewContextSubmenu,
           base::BindRepeating(&RenderViewContextMenu::ShowClipboardHistoryMenu,
                               base::Unretained(this)));
   menu_model_.AddSubMenuWithStringId(IDC_CONTENT_PASTE_FROM_CLIPBOARD,
@@ -5015,8 +5014,7 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
 
   ash::ClipboardHistoryController::Get()->ShowMenu(
       gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu);
+      chromeos::clipboard_history::ShowSource::kRenderViewContextMenu);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

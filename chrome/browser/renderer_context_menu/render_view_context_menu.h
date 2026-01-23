@@ -19,6 +19,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/compose/buildflags.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"

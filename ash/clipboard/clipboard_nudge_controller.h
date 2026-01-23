@@ -22,9 +22,9 @@ namespace base {
 class Clock;
 }  // namespace base
 
-namespace crosapi::mojom {
-enum class ClipboardHistoryControllerShowSource;
-}  // namespace crosapi::mojom
+namespace chromeos::clipboard_history {
+enum class ShowSource;
+}  // namespace chromeos::clipboard_history
 
 namespace ui {
 class ClipboardMonitor;
@@ -64,8 +64,7 @@ class ASH_EXPORT ClipboardNudgeController
 
   // ClipboardHistoryController::Observer:
   void OnClipboardHistoryMenuShown(
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source)
-      override;
+      chromeos::clipboard_history::ShowSource show_source) override;
   void OnClipboardHistoryPasted() override;
 
   // Returns the time in this session that any nudge was last shown, or

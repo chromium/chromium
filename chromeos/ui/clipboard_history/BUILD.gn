@@ -12,13 +12,13 @@ component("clipboard_history") {
   sources = [
     "clipboard_history_submenu_model.cc",
     "clipboard_history_submenu_model.h",
+    "clipboard_history_types.h",
     "clipboard_history_util.cc",
     "clipboard_history_util.h",
   ]
 
   deps = [
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons/",
     "//components/vector_icons",

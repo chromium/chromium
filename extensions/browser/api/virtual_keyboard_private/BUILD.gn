@@ -32,6 +32,7 @@ source_set("virtual_keyboard_private") {
     deps += [
       "//ash",
       "//chromeos/crosapi/mojom",
+      "//chromeos/ui/clipboard_history",
       "//ui/base",
       "//ui/color:color_headers",
     ]

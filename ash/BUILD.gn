@@ -5419,6 +5419,7 @@ static_library("test_support") {
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/clipboard_history",
     "//chromeos/ui/frame",
     "//chromeos/utils",
     "//components/account_id",

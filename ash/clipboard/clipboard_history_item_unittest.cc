@@ -11,7 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -33,7 +33,7 @@ using ::testing::WithParamInterface;
 
 struct FormatPair {
   ui::ClipboardInternalFormat clipboard_format;
-  crosapi::mojom::ClipboardHistoryDisplayFormat display_format;
+  chromeos::clipboard_history::DisplayFormat display_format;
 };
 
 }  // namespace
@@ -48,7 +48,7 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
   builder.SetFormat(ui::ClipboardInternalFormat::kHtml);
   ClipboardHistoryItem item = builder.Build();
   EXPECT_EQ(item.display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml);
+            chromeos::clipboard_history::DisplayFormat::kHtml);
   ASSERT_TRUE(item.display_image().has_value());
   EXPECT_EQ(item.display_image().value(),
             clipboard_history_util::GetHtmlPreviewPlaceholder());
@@ -185,7 +185,7 @@ class ClipboardHistoryItemDisplayFormatTest
   ui::ClipboardInternalFormat GetClipboardFormat() const {
     return GetParam().clipboard_format;
   }
-  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
+  chromeos::clipboard_history::DisplayFormat GetDisplayFormat() const {
     return GetParam().display_format;
   }
 };
@@ -194,13 +194,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ClipboardHistoryItemDisplayFormatTest,
     Values(FormatPair{ui::ClipboardInternalFormat::kText,
-                      crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
+                      chromeos::clipboard_history::DisplayFormat::kText},
            FormatPair{ui::ClipboardInternalFormat::kPng,
-                      crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
+                      chromeos::clipboard_history::DisplayFormat::kPng},
            FormatPair{ui::ClipboardInternalFormat::kHtml,
-                      crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
+                      chromeos::clipboard_history::DisplayFormat::kHtml},
            FormatPair{ui::ClipboardInternalFormat::kFilenames,
-                      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}));
+                      chromeos::clipboard_history::DisplayFormat::kFile}));
 
 TEST_P(ClipboardHistoryItemDisplayFormatTest, Icon) {
   const auto item = BuildClipboardHistoryItem();
@@ -214,17 +214,17 @@ TEST_P(ClipboardHistoryItemDisplayFormatTest, DisplayImage) {
   const auto item = BuildClipboardHistoryItem();
   const auto& maybe_image = item.display_image();
   switch (GetDisplayFormat()) {
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+    case chromeos::clipboard_history::DisplayFormat::kUnknown:
       NOTREACHED();
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
+    case chromeos::clipboard_history::DisplayFormat::kText:
+    case chromeos::clipboard_history::DisplayFormat::kFile:
       EXPECT_FALSE(maybe_image);
       break;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+    case chromeos::clipboard_history::DisplayFormat::kPng:
       ASSERT_TRUE(maybe_image);
       EXPECT_TRUE(maybe_image.value().IsImage());
       break;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+    case chromeos::clipboard_history::DisplayFormat::kHtml:
       // Because the HTML placeholder image is a static `ImageModel`,
       // `maybe_image` might be a vector icon or an image depending on which
       // test cases are being run. What we know reliably is that the value of

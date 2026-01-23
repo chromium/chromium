@@ -10,7 +10,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/i18n/case_conversion.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 
 namespace ash {
 namespace {
@@ -19,15 +19,15 @@ constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
 constexpr int kMaxTextLength = 10000;
 
 std::optional<QuickInsertClipboardResult::DisplayFormat> GetDisplayFormat(
-    crosapi::mojom::ClipboardHistoryDisplayFormat format) {
+    chromeos::clipboard_history::DisplayFormat format) {
   switch (format) {
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
+    case chromeos::clipboard_history::DisplayFormat::kFile:
       return QuickInsertClipboardResult::DisplayFormat::kFile;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+    case chromeos::clipboard_history::DisplayFormat::kText:
       return QuickInsertClipboardResult::DisplayFormat::kText;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+    case chromeos::clipboard_history::DisplayFormat::kPng:
       return QuickInsertClipboardResult::DisplayFormat::kImage;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+    case chromeos::clipboard_history::DisplayFormat::kHtml:
       // TODO: b/348102522 - Show HTML content once it's possible to render them
       // inside Quick Insert.
     default:
@@ -43,9 +43,9 @@ bool MatchQuery(const ClipboardHistoryItem& item, std::u16string_view query) {
     return false;
   }
   if (item.display_format() !=
-          crosapi::mojom::ClipboardHistoryDisplayFormat::kText &&
+          chromeos::clipboard_history::DisplayFormat::kText &&
       item.display_format() !=
-          crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
+          chromeos::clipboard_history::DisplayFormat::kFile) {
     return false;
   }
   return base::i18n::ToLower(item.display_text())

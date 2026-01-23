@@ -48,7 +48,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -220,8 +220,7 @@ ui::KeyEvent SyntheticCtrl(ui::EventType type) {
              : ui::KeyEvent(type, ui::VKEY_CONTROL, dom_code, flags);
 }
 
-void SyntheticPaste(
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+void SyntheticPaste(chromeos::clipboard_history::ShowSource paste_source) {
   auto* host = GetWindowTreeHostForDisplay(
       display::Screen::Get()->GetDisplayForNewWindows().id());
   CHECK(host);
@@ -261,7 +260,7 @@ bool IsPlainTextPaste(ClipboardHistoryPasteType paste_type) {
 }
 
 ClipboardHistoryPasteType CalculatePasteType(
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source,
+    chromeos::clipboard_history::ShowSource paste_source,
     int event_flags) {
   // There are no specific flags that indicate a paste triggered by a
   // keystroke, so assume by default that keystroke was the event source
@@ -272,7 +271,7 @@ ClipboardHistoryPasteType CalculatePasteType(
   const bool paste_plain_text = event_flags & ui::EF_SHIFT_DOWN;
 
   if (paste_source ==
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard) {
+      chromeos::clipboard_history::ShowSource::kVirtualKeyboard) {
     return paste_plain_text
                ? ClipboardHistoryPasteType::kPlainTextVirtualKeyboard
                : ClipboardHistoryPasteType::kRichTextVirtualKeyboard;
@@ -480,7 +479,7 @@ void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator(
   }
 
   ShowMenu(CalculateAnchorRect(), ui::mojom::MenuSourceType::kKeyboard,
-           crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
+           chromeos::clipboard_history::ShowSource::kAccelerator);
 }
 
 void ClipboardHistoryControllerImpl::AddObserver(
@@ -496,7 +495,7 @@ void ClipboardHistoryControllerImpl::RemoveObserver(
 bool ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
     ui::mojom::MenuSourceType source_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+    chromeos::clipboard_history::ShowSource show_source) {
   return ShowMenu(anchor_rect, source_type, show_source,
                   OnMenuClosingCallback());
 }
@@ -504,7 +503,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
 bool ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
     ui::mojom::MenuSourceType source_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    chromeos::clipboard_history::ShowSource show_source,
     OnMenuClosingCallback callback) {
   if (IsMenuShowing() || !HasAvailableHistoryItems()) {
     return false;
@@ -576,7 +575,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
   std::map<base::UnguessableToken, SkBitmap> bitmaps_to_be_encoded;
   for (auto& item : clipboard_history_->GetItems()) {
     if (item.display_format() ==
-        crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
+        chromeos::clipboard_history::DisplayFormat::kPng) {
       const auto& maybe_png = item.data().maybe_png();
       if (!maybe_png.has_value()) {
         // The clipboard contains an image which has not yet been encoded to a
@@ -674,7 +673,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
   bool all_images_encoded = true;
   for (auto& item : clipboard_history_->GetItems()) {
     if (item.display_format() ==
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng &&
+            chromeos::clipboard_history::DisplayFormat::kPng &&
         !item.data().maybe_png().has_value()) {
       // The clipboard contains an image which has not yet been encoded to a
       // PNG. Hopefully we just finished encoding and the PNG can be found
@@ -717,7 +716,7 @@ std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()
 bool ClipboardHistoryControllerImpl::PasteClipboardItemById(
     const std::string& item_id,
     int event_flags,
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+    chromeos::clipboard_history::ShowSource paste_source) {
   const std::list<ClipboardHistoryItem>& history_items = history()->GetItems();
   auto iter_by_id = std::find_if(history_items.cbegin(), history_items.cend(),
                                  [&item_id](const ClipboardHistoryItem& item) {
@@ -922,7 +921,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardItemByCommandId(
 void ClipboardHistoryControllerImpl::MaybePostPasteTask(
     const ClipboardHistoryItem& item,
     ClipboardHistoryPasteType paste_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+    chromeos::clipboard_history::ShowSource paste_source) {
   // Deactivate ClipboardImageModelFactory prior to pasting to ensure that any
   // modifications to the clipboard for HTML rendering purposes are reversed.
   // This factory may be nullptr in tests.
@@ -945,7 +944,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     aura::Window* intended_window,
     ClipboardHistoryItem item,
     ClipboardHistoryPasteType paste_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) {
+    chromeos::clipboard_history::ShowSource paste_source) {
   // Return early if any of these conditions occur:
   // 1. The original clipboard data has been replaced by an in-progress
   //    clipboard history paste.

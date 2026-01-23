@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/experiences/clipboard/clipboard_history_test_util.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -1677,9 +1678,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   // `submenu_view` shows.
   submenu_histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextSubmenu,
-      1);
+      chromeos::clipboard_history::ShowSource::kRenderViewContextSubmenu, 1);
 
   // Expect that the menu option to launch the clipboard history menu exists.
   const views::View* const menu_item = ash::WaitForMenuItemWithLabel(
@@ -1697,9 +1696,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   // The source of the standalone clipboard history menu should be recorded.
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu,
-      1);
+      chromeos::clipboard_history::ShowSource::kRenderViewContextMenu, 1);
 }
 
 // Verifies the clipboard history menu response to mouse and arrow key inputs.
@@ -1716,7 +1713,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   ASSERT_EQ(3u, GetContextMenu()->GetMenuItemsCount());
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator, 1);
+      chromeos::clipboard_history::ShowSource::kAccelerator, 1);
 
   // The history menu's first item should be selected as default after the menu
   // shows. Its delete button should not show, so the contents should not be

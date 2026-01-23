@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -395,7 +395,7 @@ bool ChromeVirtualKeyboardDelegate::PasteClipboardItem(
 
   return clipboard_history_controller->PasteClipboardItemById(
       clipboard_item_id, ui::EF_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
+      chromeos::clipboard_history::ShowSource::kVirtualKeyboard);
 }
 
 bool ChromeVirtualKeyboardDelegate::DeleteClipboardItem(

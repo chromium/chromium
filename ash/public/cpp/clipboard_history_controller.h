@@ -10,7 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace gfx {
@@ -33,7 +33,7 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
    public:
     // Called when the clipboard history menu is shown.
     virtual void OnClipboardHistoryMenuShown(
-        crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {}
+        chromeos::clipboard_history::ShowSource show_source) {}
 
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
@@ -66,12 +66,11 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   virtual bool ShowMenu(
       const gfx::Rect& anchor_rect,
       ui::mojom::MenuSourceType source_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
-  virtual bool ShowMenu(
-      const gfx::Rect& anchor_rect,
-      ui::mojom::MenuSourceType source_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-      OnMenuClosingCallback callback) = 0;
+      chromeos::clipboard_history::ShowSource show_source) = 0;
+  virtual bool ShowMenu(const gfx::Rect& anchor_rect,
+                        ui::mojom::MenuSourceType source_type,
+                        chromeos::clipboard_history::ShowSource show_source,
+                        OnMenuClosingCallback callback) = 0;
 
   // Notify the clipboard history that a screenshot notification was created.
   virtual void OnScreenshotNotificationCreated() = 0;
@@ -93,7 +92,7 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   virtual bool PasteClipboardItemById(
       const std::string& item_id,
       int event_flags,
-      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source) = 0;
+      chromeos::clipboard_history::ShowSource paste_source) = 0;
 
   // Deletes the clipboard item specified by the item id.
   virtual bool DeleteClipboardItemById(const std::string& item_id) = 0;

@@ -24,7 +24,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class PrefRegistrySimple;
@@ -104,13 +104,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void RemoveObserver(ClipboardHistoryController::Observer* observer) override;
   bool ShowMenu(const gfx::Rect& anchor_rect,
                 ui::mojom::MenuSourceType source_type,
-                crosapi::mojom::ClipboardHistoryControllerShowSource
-                    show_source) override;
-  bool ShowMenu(
-      const gfx::Rect& anchor_rect,
-      ui::mojom::MenuSourceType source_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-      OnMenuClosingCallback callback) override;
+                chromeos::clipboard_history::ShowSource show_source) override;
+  bool ShowMenu(const gfx::Rect& anchor_rect,
+                ui::mojom::MenuSourceType source_type,
+                chromeos::clipboard_history::ShowSource show_source,
+                OnMenuClosingCallback callback) override;
   void GetHistoryValues(GetHistoryValuesCallback callback) const override;
 
   // Whether the clipboard history has items.
@@ -176,8 +174,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   bool PasteClipboardItemById(
       const std::string& item_id,
       int event_flags,
-      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source)
-      override;
+      chromeos::clipboard_history::ShowSource paste_source) override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
 
   // ClipboardHistory::Observer:
@@ -227,10 +224,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Posts a task to paste `item` with `paste_type` to the active window, if
   // any.
-  void MaybePostPasteTask(
-      const ClipboardHistoryItem& item,
-      ClipboardHistoryPasteType paste_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
+  void MaybePostPasteTask(const ClipboardHistoryItem& item,
+                          ClipboardHistoryPasteType paste_type,
+                          chromeos::clipboard_history::ShowSource paste_source);
 
   // Pastes the specified clipboard history item, if `intended_window` matches
   // the active window. `paste_type` indicates the mode of paste execution for
@@ -241,7 +237,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       aura::Window* intended_window,
       ClipboardHistoryItem item,
       ClipboardHistoryPasteType paste_type,
-      crosapi::mojom::ClipboardHistoryControllerShowSource paste_source);
+      chromeos::clipboard_history::ShowSource paste_source);
 
   // Delete the menu item being selected and its corresponding data. If no item
   // is selected, do nothing.
@@ -284,7 +280,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<MenuDelegate> menu_delegate_;
 
   // How the user last caused the `context_menu_` to show.
-  crosapi::mojom::ClipboardHistoryControllerShowSource last_menu_source_;
+  chromeos::clipboard_history::ShowSource last_menu_source_ =
+      chromeos::clipboard_history::ShowSource::kUnknown;
 
   // Indicates whether the clipboard data has been replaced due to an
   // in-progress clipboard history paste.

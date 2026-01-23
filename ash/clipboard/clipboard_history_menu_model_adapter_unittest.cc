@@ -20,7 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +50,7 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
-using crosapi::mojom::ClipboardHistoryControllerShowSource;
+using chromeos::clipboard_history::ShowSource;
 
 namespace {
 
@@ -60,22 +60,17 @@ ClipboardHistoryControllerImpl* GetClipboardHistoryController() {
   return Shell::Get()->clipboard_history_controller();
 }
 
-std::vector<ClipboardHistoryControllerShowSource>
-GetClipboardHistoryShowSources() {
-  constexpr std::array<ClipboardHistoryControllerShowSource, 2> kDeprecated = {
-      ClipboardHistoryControllerShowSource::kControlVLongpress,
-      ClipboardHistoryControllerShowSource::kToast,
+std::vector<ShowSource> GetClipboardHistoryShowSources() {
+  constexpr std::array<ShowSource, 2> kDeprecated = {
+      ShowSource::kControlVLongpress,
+      ShowSource::kToast,
   };
-  std::vector<ClipboardHistoryControllerShowSource> sources;
-  for (int i =
-           static_cast<int>(ClipboardHistoryControllerShowSource::kMinValue);
-       i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
-       ++i) {
+  std::vector<ShowSource> sources;
+  for (int i = static_cast<int>(ShowSource::kMinValue);
+       i <= static_cast<int>(ShowSource::kMaxValue); ++i) {
     // kControlVLongpress is deprecated.
-    if (!std::ranges::contains(
-            kDeprecated,
-            static_cast<ClipboardHistoryControllerShowSource>(i))) {
-      sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    if (!std::ranges::contains(kDeprecated, static_cast<ShowSource>(i))) {
+      sources.push_back(static_cast<ShowSource>(i));
     }
   }
   return sources;
@@ -143,8 +138,7 @@ TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
   controller->set_initial_item_selected_callback_for_test(
       run_loop.QuitClosure());
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
-      ClipboardHistoryControllerShowSource::kDefaultValue));
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone, ShowSource::kUnknown));
   run_loop.Run();
   EXPECT_TRUE(controller->IsMenuShowing());
 
@@ -198,8 +192,7 @@ TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest,
   auto* const controller = GetClipboardHistoryController();
   ASSERT_TRUE(controller);
   EXPECT_TRUE(controller->ShowMenu(
-      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
-      ClipboardHistoryControllerShowSource::kDefaultValue));
+      gfx::Rect(), ui::mojom::MenuSourceType::kNone, ShowSource::kUnknown));
   EXPECT_TRUE(controller->IsMenuShowing());
 
   // Verify the number of items in the menu.
@@ -237,7 +230,7 @@ TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest,
 class ClipboardHistoryMenuModelAdapterMenuItemTest
     : public AshTestBase,
       public WithParamInterface<std::tuple<
-          ClipboardHistoryControllerShowSource,
+          ShowSource,
           /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
           /*time_since_nudge_shown=*/std::optional<base::TimeDelta>>> {
  public:
@@ -274,9 +267,7 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     FlushMessageLoop();
   }
 
-  ClipboardHistoryControllerShowSource GetSource() const {
-    return std::get<0>(GetParam());
-  }
+  ShowSource GetSource() const { return std::get<0>(GetParam()); }
 
   const std::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
     return std::get<1>(GetParam());

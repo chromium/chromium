@@ -7,8 +7,8 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -40,8 +40,7 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
   // pointer in the callback.
   submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
       CreateClipboardHistorySubmenuModel(
-          crosapi::mojom::ClipboardHistoryControllerShowSource::
-              kTextfieldContextSubmenu,
+          chromeos::clipboard_history::ShowSource::kTextfieldContextSubmenu,
           base::BindRepeating(
               &ViewsTextServicesContextMenuAsh::ShowClipboardHistoryMenu,
               base::Unretained(this)));
@@ -105,8 +104,7 @@ void ViewsTextServicesContextMenuAsh::ShowClipboardHistoryMenu(
     int event_flags) {
   ClipboardHistoryController::Get()->ShowMenu(
       client()->GetCaretBounds(), ui::GetMenuSourceType(event_flags),
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kTextfieldContextMenu);
+      chromeos::clipboard_history::ShowSource::kTextfieldContextMenu);
 }
 
 }  // namespace ash

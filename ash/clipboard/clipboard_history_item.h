@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/text_constants.h"
@@ -58,7 +58,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   const ui::ClipboardData& data() const { return data_; }
   const base::Time time_copied() const { return time_copied_; }
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
-  crosapi::mojom::ClipboardHistoryDisplayFormat display_format() const {
+  chromeos::clipboard_history::DisplayFormat display_format() const {
     return display_format_;
   }
   const std::optional<ui::ImageModel>& display_image() const {
@@ -90,7 +90,7 @@ class ASH_EXPORT ClipboardHistoryItem {
 
   // The item's categorization based on the options we have for presenting data
   // to the user.
-  const crosapi::mojom::ClipboardHistoryDisplayFormat display_format_;
+  const chromeos::clipboard_history::DisplayFormat display_format_;
 
   // Cached display image. For PNG items, this will be set during construction.
   // For HTML items, this will be a placeholder image until the real preview is

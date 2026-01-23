@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,10 +70,9 @@ base::TimeDelta TimeSince(const base::Time& time) {
 }
 
 // Returns whether the clipboard history menu requires a footer.
-bool IsFooterRequired(
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
-    const std::optional<base::Time>& menu_last_time_shown,
-    const std::optional<base::Time>& nudge_last_time_shown) {
+bool IsFooterRequired(chromeos::clipboard_history::ShowSource show_source,
+                      const std::optional<base::Time>& menu_last_time_shown,
+                      const std::optional<base::Time>& nudge_last_time_shown) {
   // A footer is required if the menu hasn't been shown in the past 60 days.
   if (TimeSince(menu_last_time_shown.value_or(base::Time())) >=
       base::Days(60)) {
@@ -114,7 +114,7 @@ void InsertHeaderContent(views::MenuItemView* container) {
 // clipboard history menu. This method may only be called when clipboard history
 // refresh is enabled.
 void InsertFooterContentV2LabelStyledText(
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    chromeos::clipboard_history::ShowSource show_source,
     views::StyledLabel* styled_label) {
   // Create text style.
   views::StyledLabel::RangeStyleInfo text_style;
@@ -164,7 +164,7 @@ void InsertFooterContentV2LabelStyledText(
 // refresh is enabled.
 void InsertFooterContentV2(
     views::MenuItemView* container,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+    chromeos::clipboard_history::ShowSource show_source) {
   // Cache `menu_padding`.
   const int menu_padding =
       views::MenuConfig::instance().vertical_touchable_menu_item_padding;
@@ -284,7 +284,7 @@ ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 void ClipboardHistoryMenuModelAdapter::Run(
     const gfx::Rect& anchor_rect,
     ui::mojom::MenuSourceType source_type,
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
+    chromeos::clipboard_history::ShowSource show_source,
     const std::optional<base::Time>& menu_last_time_shown,
     const std::optional<base::Time>& nudge_last_time_shown) {
   DCHECK(!root_view_);

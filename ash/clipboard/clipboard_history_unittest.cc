@@ -22,7 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -544,11 +544,11 @@ TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
   ui::ClipboardData data;
   data.set_markup_data("plain html with no img or table tags");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kText);
+            chromeos::clipboard_history::DisplayFormat::kText);
 
   data.set_markup_data("<img> </img>");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml);
+            chromeos::clipboard_history::DisplayFormat::kHtml);
 }
 
 // Tests that exactly one Ash.ClipboardHistory.ControlToVDelayV2 histogram entry

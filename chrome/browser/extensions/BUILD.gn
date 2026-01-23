@@ -1377,6 +1377,7 @@ source_set("extensions") {
         "//chromeos/services/media_perception/public/mojom",
         "//chromeos/services/tts/public/mojom",
         "//chromeos/ui/base",
+        "//chromeos/ui/clipboard_history",
         "//chromeos/version",
         "//components/constrained_window",
         "//components/crash/content/browser/error_reporting",

@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -29,29 +29,29 @@ namespace ash {
 
 namespace {
 
-crosapi::mojom::ClipboardHistoryDisplayFormat CalculateDisplayFormat(
+chromeos::clipboard_history::DisplayFormat CalculateDisplayFormat(
     const ClipboardHistoryItem& item) {
   switch (item.main_format()) {
     case ui::ClipboardInternalFormat::kPng:
-      return crosapi::mojom::ClipboardHistoryDisplayFormat::kPng;
+      return chromeos::clipboard_history::DisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
       if (!item.data().markup_data().contains("<img") &&
           !item.data().markup_data().contains("<table")) {
-        return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
+        return chromeos::clipboard_history::DisplayFormat::kText;
       }
-      return crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml;
+      return chromeos::clipboard_history::DisplayFormat::kHtml;
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
-      return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
+      return chromeos::clipboard_history::DisplayFormat::kText;
     case ui::ClipboardInternalFormat::kFilenames:
-      return crosapi::mojom::ClipboardHistoryDisplayFormat::kFile;
+      return chromeos::clipboard_history::DisplayFormat::kFile;
     case ui::ClipboardInternalFormat::kCustom:
       return clipboard_history_util::ContainsFileSystemData(item.data())
-                 ? crosapi::mojom::ClipboardHistoryDisplayFormat::kFile
-                 : crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
+                 ? chromeos::clipboard_history::DisplayFormat::kFile
+                 : chromeos::clipboard_history::DisplayFormat::kText;
   }
 }
 
@@ -59,12 +59,12 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
     const ClipboardHistoryItem& item) {
   std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
+    case chromeos::clipboard_history::DisplayFormat::kUnknown:
       NOTREACHED();
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
+    case chromeos::clipboard_history::DisplayFormat::kText:
+    case chromeos::clipboard_history::DisplayFormat::kFile:
       break;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng: {
+    case chromeos::clipboard_history::DisplayFormat::kPng: {
       gfx::Image image;
       if (const auto& maybe_png = item.data().maybe_png()) {
         image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value());
@@ -78,7 +78,7 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
       maybe_image = ui::ImageModel::FromImage(image);
       break;
     }
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+    case chromeos::clipboard_history::DisplayFormat::kHtml:
       // The `ClipboardHistoryResourceManager` will update this preview once an
       // image model is rendered.
       maybe_image = clipboard_history_util::GetHtmlPreviewPlaceholder();

@@ -13,7 +13,7 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/functional/bind.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
@@ -65,7 +65,7 @@ void ClipboardHistoryResourceManager::SetOrRequestHtmlPreview(
   auto it = std::ranges::find_if(items, [&](const auto& existing) {
     return &existing != &item &&
            existing.display_format() ==
-               crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
+               chromeos::clipboard_history::DisplayFormat::kHtml &&
            existing.data().markup_data() == item.data().markup_data();
   });
 
@@ -175,7 +175,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
   if (item.display_format() ==
-          crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml &&
+          chromeos::clipboard_history::DisplayFormat::kHtml &&
       !is_duplicate) {
     // If an item is being copied for the first time, we begin rendering its
     // HTML preview as soon as possible.
@@ -187,7 +187,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
   if (item.display_format() !=
-      crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml) {
+      chromeos::clipboard_history::DisplayFormat::kHtml) {
     return;
   }
 
