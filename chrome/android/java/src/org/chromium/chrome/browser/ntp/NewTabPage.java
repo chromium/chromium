@@ -434,7 +434,12 @@ public class NewTabPage
                     focusReason = OmniboxFocusReason.NTP_AI_MODE;
                 }
 
-                mOmniboxStub.setUrlBarFocus(true, pastedText, focusReason, requestType);
+                mOmniboxStub.setUrlBarFocus(
+                        /* shouldBeFocused= */ true,
+                        pastedText,
+                        /* selectText= */ false,
+                        focusReason,
+                        requestType);
             }
         }
 

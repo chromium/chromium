@@ -201,8 +201,9 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
             locationBar
                     .getOmniboxStub()
                     .setUrlBarFocus(
-                            false,
+                            /* shouldBeFocused= */ false,
                             null,
+                            /* selectText= */ false,
                             OmniboxFocusReason.UNFOCUS,
                             AutocompleteRequestType.SEARCH);
         }

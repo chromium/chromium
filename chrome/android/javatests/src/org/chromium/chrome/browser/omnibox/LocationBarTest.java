@@ -47,7 +47,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -267,25 +266,24 @@ public class LocationBarTest {
         startActivityNormally();
         final String query = "testing query";
 
-        ThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.setSearchQuery(query));
+
+        // Query cannot be applied right away because the UrlBar needs to acquire focus first.
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    mLocationBarMediator.setSearchQuery(query);
                     Assert.assertEquals(query, mUrlBar.getTextWithoutAutocomplete());
                     Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
+                    mKeyboardDelegate.isKeyboardShowing(mUrlBar);
                 });
-
-        CriteriaHelper.pollUiThread(() -> mKeyboardDelegate.isKeyboardShowing(mUrlBar));
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1470145")
     public void testSetSearchQueryFocusesUrlBar_preNative() {
         startActivityWithDeferredNativeInitialization();
         final String query = "testing query";
 
         ThreadUtils.runOnUiThreadBlocking(() -> mLocationBarMediator.setSearchQuery(query));
-
         triggerAndWaitForDeferredNativeInitialization();
         CriteriaHelper.pollUiThread(
                 () -> {

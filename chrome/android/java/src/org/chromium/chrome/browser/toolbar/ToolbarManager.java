@@ -3038,7 +3038,12 @@ public class ToolbarManager
         boolean wasFocused = mLocationBar.getOmniboxStub().isUrlBarFocused();
         mLocationBar
                 .getOmniboxStub()
-                .setUrlBarFocus(focused, text, reason, AutocompleteRequestType.SEARCH);
+                .setUrlBarFocus(
+                        focused,
+                        text,
+                        /* selectText= */ false,
+                        reason,
+                        AutocompleteRequestType.SEARCH);
         if (wasFocused && focused) {
             mLocationBar.selectAll();
         }

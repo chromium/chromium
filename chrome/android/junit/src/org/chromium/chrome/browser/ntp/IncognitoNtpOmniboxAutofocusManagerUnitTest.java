@@ -189,12 +189,14 @@ public class IncognitoNtpOmniboxAutofocusManagerUnitTest {
         if (shouldBeCalled) {
             verify(mOmniboxStub)
                     .setUrlBarFocus(
-                            true,
+                            /* shouldBeFocused= */ true,
                             null,
+                            /* selectText= */ false,
                             OmniboxFocusReason.OMNIBOX_TAP,
                             AutocompleteRequestType.SEARCH);
         } else {
-            verify(mOmniboxStub, never()).setUrlBarFocus(anyBoolean(), any(), anyInt(), anyInt());
+            verify(mOmniboxStub, never())
+                    .setUrlBarFocus(anyBoolean(), any(), anyBoolean(), anyInt(), anyInt());
         }
     }
 

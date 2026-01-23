@@ -163,8 +163,9 @@ public class IncognitoNtpOmniboxAutofocusManager {
                             @Override
                             public boolean onSingleTapConfirmed(MotionEvent e) {
                                 mOmniboxStub.setUrlBarFocus(
-                                        false,
+                                        /* shouldBeFocused= */ false,
                                         null,
+                                        /* selectText= */ false,
                                         OmniboxFocusReason.UNFOCUS,
                                         AutocompleteRequestType.SEARCH);
                                 return false;
@@ -464,7 +465,11 @@ public class IncognitoNtpOmniboxAutofocusManager {
     private void autofocus(Tab tab) {
         mIsAutofocusing = true;
         mOmniboxStub.setUrlBarFocus(
-                true, null, OmniboxFocusReason.OMNIBOX_TAP, AutocompleteRequestType.SEARCH);
+                /* shouldBeFocused= */ true,
+                null,
+                /* selectText= */ false,
+                OmniboxFocusReason.OMNIBOX_TAP,
+                AutocompleteRequestType.SEARCH);
 
         // Mark the tab as processed to prevent future autofocus attempts.
         markTabAsProcessed(tab);

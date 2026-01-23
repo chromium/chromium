@@ -254,8 +254,9 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                                 var omniboxStub = getLocationBar().getOmniboxStub();
                                 if (omniboxStub != null) {
                                     omniboxStub.setUrlBarFocus(
-                                            false,
+                                            /* shouldBeFocused= */ false,
                                             null,
+                                            /* selectText= */ false,
                                             OmniboxFocusReason.UNFOCUS,
                                             AutocompleteRequestType.SEARCH);
                                 }

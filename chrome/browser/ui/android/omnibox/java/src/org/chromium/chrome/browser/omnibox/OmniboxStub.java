@@ -22,11 +22,14 @@ public interface OmniboxStub {
      * @param shouldBeFocused Whether the focus should be requested or cleared. True requests focus
      *     and False clears focus.
      * @param pastedText The given pasted text when focus, which could be null.
+     * @param selectText Whether the pasted text should be selected.
      * @param reason The given reason.
+     * @param requestType The request type (tool/mode) to focus the Omnibox for.
      */
     void setUrlBarFocus(
             boolean shouldBeFocused,
             @Nullable String pastedText,
+            boolean selectText,
             @OmniboxFocusReason int reason,
             @AutocompleteRequestType int requestType);
 
