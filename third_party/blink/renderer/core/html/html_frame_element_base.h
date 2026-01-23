@@ -65,7 +65,7 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
   // feature on the origin which is specified by the frame's "src" attribute. It
   // also takes into account details such as the frame's sandbox status, and
   // whether the frame should inherit its parent's origin.
-  scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy()
+  scoped_refptr<const SecurityOrigin> MakeOriginForPermissionsPolicy()
       const override;
 
  private:

@@ -31,14 +31,14 @@ class PolicyTest : public testing::Test {
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
 
-    auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
+    scoped_refptr origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
     PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
     auto header = PermissionsPolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         "gyroscope=(self \"https://*.example.com\" \"https://example.net\")",
-        origin.get(), dummy_logger, dummy_logger);
+        *origin, dummy_logger, dummy_logger);
     auto permissions_policy =
         network::PermissionsPolicy::CreateFromParentPolicy(
             nullptr, header, {}, origin->ToUrlOrigin());
@@ -73,7 +73,7 @@ class IFramePolicyTest : public PolicyTest {
     policy_ = MakeGarbageCollected<IFramePolicy>(
         page_holder_->GetFrame().DomWindow(),
         network::ParsedPermissionsPolicy(),
-        SecurityOrigin::CreateFromString(kSelfOrigin));
+        *SecurityOrigin::CreateFromString(kSelfOrigin));
   }
 };
 
@@ -202,7 +202,7 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   // Update the iframe's policy, given a new origin.
   GetPolicy()->UpdateContainerPolicy(
       network::ParsedPermissionsPolicy(),
-      SecurityOrigin::CreateFromString(kOriginA));
+      *SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // None of these features should be allowed in a cross-origin context.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -223,10 +223,10 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
-          SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginA), dummy_logger);
+          *SecurityOrigin::CreateFromString(kSelfOrigin),
+          *SecurityOrigin::CreateFromString(kOriginA), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
-      container_policy, SecurityOrigin::CreateFromString(kOriginA));
+      container_policy, *SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // These features are not explicitly allowed.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -250,10 +250,10 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
-          SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginASubdomain), dummy_logger);
+          *SecurityOrigin::CreateFromString(kSelfOrigin),
+          *SecurityOrigin::CreateFromString(kOriginASubdomain), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
-      container_policy, SecurityOrigin::CreateFromString(kOriginASubdomain));
+      container_policy, *SecurityOrigin::CreateFromString(kOriginASubdomain));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // These features are not explicitly allowed.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -277,10 +277,10 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
-          SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginB), dummy_logger);
+          *SecurityOrigin::CreateFromString(kSelfOrigin),
+          *SecurityOrigin::CreateFromString(kOriginB), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
-      container_policy, SecurityOrigin::CreateFromString(kOriginB));
+      container_policy, *SecurityOrigin::CreateFromString(kOriginB));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // These features are not explicitly allowed.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));
@@ -303,10 +303,10 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
-          SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginBSubdomain), dummy_logger);
+          *SecurityOrigin::CreateFromString(kSelfOrigin),
+          *SecurityOrigin::CreateFromString(kOriginBSubdomain), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
-      container_policy, SecurityOrigin::CreateFromString(kOriginBSubdomain));
+      container_policy, *SecurityOrigin::CreateFromString(kOriginBSubdomain));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // These features are not explicitly allowed.
   EXPECT_FALSE(allowed_features.Contains("fullscreen"));

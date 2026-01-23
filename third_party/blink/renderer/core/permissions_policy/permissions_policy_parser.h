@@ -70,7 +70,7 @@ class CORE_EXPORT PermissionsPolicyParser {
   static network::ParsedPermissionsPolicy ParseIsolatedAppPermissionsPolicy(
       const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
       const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
-      scoped_refptr<const SecurityOrigin>,
+      const SecurityOrigin&,
       PolicyParserMessageBuffer& permissions_policy_logger,
       ExecutionContext* execution_context);
 
@@ -82,7 +82,7 @@ class CORE_EXPORT PermissionsPolicyParser {
   static network::ParsedPermissionsPolicy ParseHeader(
       const String& feature_policy_header,
       const String& permission_policy_header,
-      scoped_refptr<const SecurityOrigin>,
+      const SecurityOrigin&,
       PolicyParserMessageBuffer& feature_policy_logger,
       PolicyParserMessageBuffer& permissions_policy_logger,
       ExecutionContext* = nullptr);
@@ -94,8 +94,8 @@ class CORE_EXPORT PermissionsPolicyParser {
   //     "vibrate a.com 'src'; fullscreen 'none'; payment 'self', payment *".
   static network::ParsedPermissionsPolicy ParseAttribute(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin& src_origin,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
@@ -103,22 +103,22 @@ class CORE_EXPORT PermissionsPolicyParser {
   // Unrecognized features are filtered out.
   static network::ParsedPermissionsPolicy ParsePolicyFromNode(
       Node&,
-      scoped_refptr<const SecurityOrigin>,
+      const SecurityOrigin&,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
   static network::ParsedPermissionsPolicy ParseFeaturePolicyForTest(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin* src_origin,
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* = nullptr);
 
   static network::ParsedPermissionsPolicy ParsePermissionsPolicyForTest(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin* src_origin,
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* = nullptr);

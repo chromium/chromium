@@ -25,7 +25,7 @@ class HTMLIFrameElementTest : public testing::Test {
  public:
   scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy(
       HTMLIFrameElement* element) {
-    return element->GetOriginForPermissionsPolicy();
+    return element->MakeOriginForPermissionsPolicy();
   }
 
   void SetUp() final {

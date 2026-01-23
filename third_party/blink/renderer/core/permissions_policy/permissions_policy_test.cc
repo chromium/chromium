@@ -133,7 +133,7 @@ class PermissionsPolicyParserTest : public ::testing::Test {
 
   network::ParsedPermissionsPolicy ParseFeaturePolicyHeader(
       const String& feature_policy_header,
-      scoped_refptr<const SecurityOrigin> origin,
+      const SecurityOrigin& origin,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* context = nullptr) {
     return PermissionsPolicyParser::ParseHeader(
@@ -175,7 +175,7 @@ class PermissionsPolicyParserParsingTest
     : public PermissionsPolicyParserTest,
       public ::testing::WithParamInterface<PermissionsPolicyParserTestCase> {
  private:
-  scoped_refptr<const SecurityOrigin> GetSrcOrigin(const char* origin_str) {
+  scoped_refptr<const SecurityOrigin> MakeSrcOrigin(const char* origin_str) {
     scoped_refptr<const SecurityOrigin> src_origin;
     if (String(origin_str) == OPAQUE_ORIGIN) {
       src_origin = SecurityOrigin::CreateUniqueOpaque();
@@ -195,8 +195,8 @@ class PermissionsPolicyParserParsingTest
       const FeatureNameMap& feature_names,
       ExecutionContext* context = nullptr) {
     return PermissionsPolicyParser::ParseFeaturePolicyForTest(
-        policy_string, SecurityOrigin::CreateFromString(self_origin_string),
-        GetSrcOrigin(src_origin_string), logger, feature_names, context);
+        policy_string, *SecurityOrigin::CreateFromString(self_origin_string),
+        MakeSrcOrigin(src_origin_string).get(), logger, feature_names, context);
   }
 
   network::ParsedPermissionsPolicy ParsePermissionsPolicy(
@@ -207,8 +207,8 @@ class PermissionsPolicyParserParsingTest
       const FeatureNameMap& feature_names,
       ExecutionContext* context = nullptr) {
     return PermissionsPolicyParser::ParsePermissionsPolicyForTest(
-        policy_string, SecurityOrigin::CreateFromString(self_origin_string),
-        GetSrcOrigin(src_origin_string), logger, feature_names, context);
+        policy_string, *SecurityOrigin::CreateFromString(self_origin_string),
+        MakeSrcOrigin(src_origin_string).get(), logger, feature_names, context);
   }
 
   void CheckParsedPolicy(const network::ParsedPermissionsPolicy& actual,
@@ -989,7 +989,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
   // feature, the allowlist value from *FIRST* declaration will be taken.
   CheckParsedPolicy(
       PermissionsPolicyParser::ParseHeader(
-          "geolocation 'none', geolocation 'self'", "", origin_a_.get(), logger,
+          "geolocation 'none', geolocation 'self'", "", *origin_a_, logger,
           logger, nullptr /* context */),
       {
           {
@@ -1013,8 +1013,8 @@ TEST_F(PermissionsPolicyParserParsingTest,
   // feature, the allowlist value from *LAST* declaration will be taken.
   CheckParsedPolicy(
       PermissionsPolicyParser::ParseHeader(
-          "", "geolocation=(), geolocation=self", origin_a_.get(), logger,
-          logger, nullptr /* context */),
+          "", "geolocation=(), geolocation=self", *origin_a_, logger, logger,
+          nullptr /* context */),
       {
           {
               // allowlist value 'self' is expected.
@@ -1038,7 +1038,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
   CheckParsedPolicy(
       PermissionsPolicyParser::ParseHeader(
           "geolocation 'none', fullscreen 'self'",
-          "geolocation=self, payment=*", origin_a_.get(), logger, logger,
+          "geolocation=self, payment=*", *origin_a_, logger, logger,
           nullptr /* context */),
       {
           {
@@ -1079,7 +1079,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
           ,
           "geolocation=*, fullscreen=*" /* permissions_policy_header */
           ,
-          origin_a_.get(), feature_policy_logger, permissions_policy_logger,
+          *origin_a_, feature_policy_logger, permissions_policy_logger,
           nullptr /* context */
           ),
       {
@@ -1124,7 +1124,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
           "bad-feature=*, geolocation=\"data:///bad-origin\"" /* permissions_policy_header
                                                                */
           ,
-          origin_a_.get(), feature_policy_logger, permissions_policy_logger,
+          *origin_a_, feature_policy_logger, permissions_policy_logger,
           nullptr /* context */
           ),
       {
@@ -1159,8 +1159,8 @@ TEST_F(PermissionsPolicyParserParsingTest, CommaSeparatorInAttribute) {
   CheckParsedPolicy(
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'none', fullscreen 'self'",
-          /* self_origin */ origin_a_.get(),
-          /* src_origin */ origin_a_.get(), logger, /* context */ nullptr),
+          /* self_origin */ *origin_a_,
+          /* src_origin */ *origin_a_, logger, /* context */ nullptr),
       {
           {
               network::mojom::PermissionsPolicyFeature::kGeolocation,
@@ -1187,7 +1187,7 @@ TEST_F(PermissionsPolicyParserTest, ParseValidHeaderPolicy) {
   for (const char* policy_string : kValidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
     PermissionsPolicyParser::ParseFeaturePolicyForTest(
-        policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
+        policy_string, *origin_a_, nullptr, logger, test_feature_name_map);
     EXPECT_EQ(0UL, logger.GetMessages().size())
         << "Should parse " << policy_string;
   }
@@ -1197,7 +1197,7 @@ TEST_F(PermissionsPolicyParserTest, ParseInvalidHeaderPolicy) {
   for (const char* policy_string : kInvalidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
     PermissionsPolicyParser::ParseFeaturePolicyForTest(
-        policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
+        policy_string, *origin_a_, nullptr, logger, test_feature_name_map);
     EXPECT_LT(0UL, logger.GetMessages().size())
         << "Should fail to parse " << policy_string;
   }
@@ -1207,13 +1207,13 @@ TEST_F(PermissionsPolicyParserTest, ParseTooLongPolicy) {
   PolicyParserMessageBuffer logger;
   auto policy_string = "geolocation http://" + std::string(1 << 17, 'a');
   PermissionsPolicyParser::ParseFeaturePolicyForTest(
-      policy_string.c_str(), origin_a_.get(), origin_b_.get(), logger,
+      policy_string.c_str(), *origin_a_, origin_b_.get(), logger,
       test_feature_name_map);
   EXPECT_EQ(1UL, logger.GetMessages().size())
       << "Should fail to parse feature policy string with size "
       << policy_string.size();
   PermissionsPolicyParser::ParsePermissionsPolicyForTest(
-      policy_string.c_str(), origin_a_.get(), origin_b_.get(), logger,
+      policy_string.c_str(), *origin_a_, origin_b_.get(), logger,
       test_feature_name_map);
   EXPECT_EQ(2UL, logger.GetMessages().size())
       << "Should fail to parse permissions policy string with size "
@@ -1227,7 +1227,7 @@ TEST_F(PermissionsPolicyParserTest, HeaderHistogram) {
   PolicyParserMessageBuffer logger;
 
   PermissionsPolicyParser::ParseFeaturePolicyForTest(
-      "payment; fullscreen", origin_a_.get(), nullptr, logger,
+      "payment; fullscreen", *origin_a_, nullptr, logger,
       test_feature_name_map);
   tester.ExpectTotalCount(histogram_name, 2);
   tester.ExpectBucketCount(
@@ -1248,10 +1248,10 @@ TEST_F(PermissionsPolicyParserTest, HistogramMultiple) {
   // If the same feature is listed multiple times, it should only be counted
   // once.
   PermissionsPolicyParser::ParseFeaturePolicyForTest(
-      "geolocation 'self'; payment; geolocation *", origin_a_.get(), nullptr,
-      logger, test_feature_name_map);
+      "geolocation 'self'; payment; geolocation *", *origin_a_, nullptr, logger,
+      test_feature_name_map);
   PermissionsPolicyParser::ParseFeaturePolicyForTest(
-      "fullscreen 'self', fullscreen *", origin_a_.get(), nullptr, logger,
+      "fullscreen 'self', fullscreen *", *origin_a_, nullptr, logger,
       test_feature_name_map);
   tester.ExpectTotalCount(histogram_name, 3);
   tester.ExpectBucketCount(
@@ -1271,7 +1271,7 @@ TEST_F(PermissionsPolicyParserTest, CommaSeparatedUseCounter) {
   // Declarations without a semicolon should not trigger the use counter.
   {
     auto dummy = std::make_unique<DummyPageHolder>();
-    ParseFeaturePolicyHeader("payment", origin_a_.get(), logger,
+    ParseFeaturePolicyHeader("payment", *origin_a_, logger,
                              dummy->GetFrame().DomWindow());
     EXPECT_FALSE(dummy->GetDocument().IsUseCounted(
         WebFeature::kFeaturePolicyCommaSeparatedDeclarations));
@@ -1280,7 +1280,7 @@ TEST_F(PermissionsPolicyParserTest, CommaSeparatedUseCounter) {
   // Validate that declarations which should trigger the use counter do.
   {
     auto dummy = std::make_unique<DummyPageHolder>();
-    ParseFeaturePolicyHeader("payment, fullscreen", origin_a_.get(), logger,
+    ParseFeaturePolicyHeader("payment, fullscreen", *origin_a_, logger,
                              dummy->GetFrame().DomWindow());
     EXPECT_TRUE(dummy->GetDocument().IsUseCounted(
         WebFeature::kFeaturePolicyCommaSeparatedDeclarations))
@@ -1296,7 +1296,7 @@ TEST_F(PermissionsPolicyParserTest, SemicolonSeparatedUseCounter) {
   // Declarations without a semicolon should not trigger the use counter.
   {
     auto dummy = std::make_unique<DummyPageHolder>();
-    ParseFeaturePolicyHeader("payment", origin_a_.get(), logger,
+    ParseFeaturePolicyHeader("payment", *origin_a_, logger,
                              dummy->GetFrame().DomWindow());
     EXPECT_FALSE(dummy->GetDocument().IsUseCounted(
         WebFeature::kFeaturePolicySemicolonSeparatedDeclarations));
@@ -1305,7 +1305,7 @@ TEST_F(PermissionsPolicyParserTest, SemicolonSeparatedUseCounter) {
   // Validate that declarations which should trigger the use counter do.
   {
     auto dummy = std::make_unique<DummyPageHolder>();
-    ParseFeaturePolicyHeader("payment; fullscreen", origin_a_.get(), logger,
+    ParseFeaturePolicyHeader("payment; fullscreen", *origin_a_, logger,
                              dummy->GetFrame().DomWindow());
     EXPECT_TRUE(dummy->GetDocument().IsUseCounted(
         WebFeature::kFeaturePolicySemicolonSeparatedDeclarations))
@@ -1591,7 +1591,7 @@ TEST_F(PermissionsPolicyParserTest, ParseIsolatedAppPermissionsPolicy) {
   network::ParsedPermissionsPolicy result =
       PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
           isolated_app_policy, /*permissions_policy_from_headers=*/{},
-          origin_a_.get(), logger, execution_context);
+          *origin_a_, logger, execution_context);
 
   EXPECT_THAT(
       result,
@@ -1647,7 +1647,7 @@ TEST_F(PermissionsPolicyParserTest,
 
   network::ParsedPermissionsPolicy result =
       PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
-          isolated_app_policy, header_policy, origin_a_.get(), logger,
+          isolated_app_policy, header_policy, *origin_a_, logger,
           execution_context);
 
   EXPECT_THAT(
@@ -1751,7 +1751,7 @@ TEST_F(PermissionsPolicyParserTest,
 
   network::ParsedPermissionsPolicy result =
       PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
-          isolated_app_policy, header_policy, origin_a_.get(), logger,
+          isolated_app_policy, header_policy, *origin_a_, logger,
           execution_context);
 
   EXPECT_THAT(

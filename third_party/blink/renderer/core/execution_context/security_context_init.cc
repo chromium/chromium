@@ -150,7 +150,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   permissions_policy_header_ = PermissionsPolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
-      execution_context_->GetSecurityOrigin(), feature_policy_logger,
+      *execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
   network::ParsedPermissionsPolicy
@@ -158,7 +158,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
           PermissionsPolicyParser::ParseHeader(
               response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
               report_only_permissions_policy_header,
-              execution_context_->GetSecurityOrigin(),
+              *execution_context_->GetSecurityOrigin(),
               report_only_feature_policy_logger,
               report_only_permissions_policy_logger, execution_context_);
 
@@ -329,7 +329,7 @@ SecurityContextInit::ParseIsolatedAppPermissionsPolicy(
       "Error with IWA Permissions-Policy: ");
   auto base_policy = PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
       isolated_app_policy, permissions_policy_header_,
-      execution_context_->GetSecurityOrigin(), iwa_policy_logger,
+      *execution_context_->GetSecurityOrigin(), iwa_policy_logger,
       execution_context_);
 
   for (const auto& message : iwa_policy_logger.GetMessages()) {

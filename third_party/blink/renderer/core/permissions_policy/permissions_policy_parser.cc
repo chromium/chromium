@@ -7,6 +7,7 @@
 #include <bitset>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
@@ -89,8 +90,8 @@ class ParsingContext {
 
  public:
   ParsingContext(PolicyParserMessageBuffer& logger,
-                 scoped_refptr<const SecurityOrigin> self_origin,
-                 scoped_refptr<const SecurityOrigin> src_origin,
+                 const SecurityOrigin& self_origin LIFETIME_CAPTURE_BY(this),
+                 const SecurityOrigin* src_origin LIFETIME_CAPTURE_BY(this),
                  const FeatureNameMap& feature_names,
                  ExecutionContext* execution_context)
       : logger_(logger),
@@ -146,8 +147,8 @@ class ParsingContext {
   void RecordAllowlistTypeUsage(size_t origin_count);
 
   PolicyParserMessageBuffer& logger_;
-  scoped_refptr<const SecurityOrigin> self_origin_;
-  scoped_refptr<const SecurityOrigin> src_origin_;
+  const SecurityOrigin& self_origin_;
+  const SecurityOrigin* const src_origin_;
   const FeatureNameMap& feature_names_;
   // `execution_context_` is used for reporting various WebFeatures
   // during the parsing process.
@@ -228,7 +229,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     //       |src_origin| is not null), |src_origin| is not opaque; or
     //     c. the opaque origin of the frame, if |src_origin| is opaque.
     if (!src_origin_) {
-      allowlist.self_if_matches = self_origin_->ToUrlOrigin();
+      allowlist.self_if_matches = self_origin_.ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
       std::optional<network::OriginWithPossibleWildcards>
           maybe_origin_with_possible_wildcards =
@@ -270,7 +271,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // 'self' origin is used if the origin is exactly 'self'.
       if (EqualIgnoringASCIICase(origin_string, "'self'")) {
         target_is_self = true;
-        self = self_origin_->ToUrlOrigin();
+        self = self_origin_.ToUrlOrigin();
       }
       // 'src' origin is used if |src_origin| is available and the
       // origin is a match for 'src'. |src_origin| is only set
@@ -640,7 +641,7 @@ network::ParsedPermissionsPolicy
 PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
     const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
     const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
-    scoped_refptr<const SecurityOrigin> origin,
+    const SecurityOrigin& origin,
     PolicyParserMessageBuffer& permissions_policy_logger,
     ExecutionContext* execution_context) {
   if (isolated_app_policy.empty()) {
@@ -667,7 +668,7 @@ PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     const String& feature_policy_header,
     const String& permissions_policy_header,
-    scoped_refptr<const SecurityOrigin> origin,
+    const SecurityOrigin& origin,
     PolicyParserMessageBuffer& feature_policy_logger,
     PolicyParserMessageBuffer& permissions_policy_logger,
     ExecutionContext* execution_context) {
@@ -721,13 +722,13 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin& src_origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
   bool is_isolated_context =
       execution_context && execution_context->IsIsolatedContext();
-  return ParsingContext(logger, self_origin, src_origin,
+  return ParsingContext(logger, self_origin, &src_origin,
                         GetDefaultFeatureNameMap(is_isolated_context),
                         execution_context)
       .ParseFeaturePolicy(policy);
@@ -735,7 +736,7 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
     PermissionsPolicyParser::Node& policy,
-    scoped_refptr<const SecurityOrigin> origin,
+    const SecurityOrigin& origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
   bool is_isolated_context =
@@ -749,8 +750,8 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
 network::ParsedPermissionsPolicy
 PermissionsPolicyParser::ParseFeaturePolicyForTest(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin* src_origin,
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
@@ -762,8 +763,8 @@ PermissionsPolicyParser::ParseFeaturePolicyForTest(
 network::ParsedPermissionsPolicy
 PermissionsPolicyParser::ParsePermissionsPolicyForTest(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin* src_origin,
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
