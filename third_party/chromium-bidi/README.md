@@ -45,7 +45,7 @@ To run the benchmark locally, you would need some preparation:
 
 ```bash
 npm run build
-npm install --dev puppeteer
+npm install puppeteer@24.36.0
 npm link
 npm link chromium-bidi
 node tools/benchmark-puppeteer.mjs

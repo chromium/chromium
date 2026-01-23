@@ -58,24 +58,28 @@ jobs:
       - name: Build chromium-bidi
         run: npm run build
       - name: Install Puppeteer
-        run: npm i puppeteer
+        # Use specific Puppeteer version for result consistency.
+        run: npm install puppeteer@24.36.0
       - name: Link chromium-bidi
         run: |
           npm link
           npm link chromium-bidi
       - name: Run JS performance benchmark
-        run: node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
+        run: |
+          node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}:/" > pup_perf_metrics.txt
+          value=$(grep 'PERF_METRIC:VALUE:' tests_output.txt | sed 's/^PERF_METRIC:VALUE://')
+          range=$(grep 'PERF_METRIC:RANGE:' tests_output.txt | sed 's/^PERF_METRIC:RANGE://')
+          echo "{\"name\": \"${{ matrix.os }}:pup-perf-metric\", \"value\": $value, \"range\": $range, \"unit\": \"Percent\", \"group\": \"pup-perf-metric\", \"extra\": \"${{ matrix.os }}\"}" > pup_perf_metrics.json
           echo "Extracted performance metrics:"
-          cat pup_perf_metrics.txt
+          cat pup_perf_metrics.json
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: pup-perf-metrics-${{ matrix.os }}
-          path: pup_perf_metrics.txt
+          path: pup_perf_metrics.json
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   e2e-perf-metric:
@@ -178,38 +182,45 @@ jobs:
           path: artifacts
       - name: Combine metrics into a single file
         run: |
-          find artifacts -name "pup_perf_metrics.txt" -exec cat {} + > all_performance_metrics.txt
-          find artifacts -name "e2e_perf_metrics.txt" -exec cat {} + >> all_performance_metrics.txt
+          find artifacts -name "*metrics.txt" -exec cat {} + > performance-metrics-all.txt
           echo "Combined performance metrics:"
-          cat all_performance_metrics.txt
+          cat performance-metrics-all.txt
 
           # Convert to JSON format suitable for github-action-benchmark
-          echo "[" > all_performance_metrics.json
+          echo "[" > performance-metrics-all.json
           first_metric=true
           while IFS= read -r line; do
             if [ "$first_metric" = false ]; then
-              echo "," >> all_performance_metrics.json
+              echo "," >> performance-metrics-all.json
             fi
             key=${line%:*}
             value=${line##*:}
-            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> all_performance_metrics.json
+            echo "  {\"name\": \"$key\", \"value\": $value, \"unit\": \"ms\"}" >> performance-metrics-all.json
             first_metric=false
-          done < all_performance_metrics.txt
-          echo "]" >> all_performance_metrics.json
+          done < performance-metrics-all.txt
+
+          find artifacts -name "*metrics.json" -print0 | while IFS= read -r -d '' file; do
+            if [ "$first_metric" = false ]; then
+              echo "," >> performance-metrics-all.json
+            fi
+            cat "$file" >> performance-metrics-all.json
+            first_metric=false
+          done
+
+          echo "]" >> performance-metrics-all.json
           echo "Combined performance metrics in JSON format:"
-          cat all_performance_metrics.json
+          cat performance-metrics-all.json
       - name: Upload combined performance metrics
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: all-performance-metrics
           path: |
-            all_performance_metrics.txt
-            all_performance_metrics.json
+            performance-metrics-all.json
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: 'customSmallerIsBetter'
-          output-file-path: all_performance_metrics.json
+          output-file-path: performance-metrics-all.json
           gh-pages-branch: gh-pages
           benchmark-data-dir-path: bench/
           github-token: ${{ secrets.GITHUB_TOKEN }}
