@@ -5,6 +5,10 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_USAGE_H_
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_USAGE_H_
 
+#include "base/containers/flat_map.h"
+#include "net/base/net_export.h"
+#include "net/device_bound_sessions/session_key.h"
+
 namespace net::device_bound_sessions {
 
 // Represents per-request usage of a session for populating use
@@ -37,6 +41,11 @@ enum class SessionUsage {
   kMaxValue = kDeferred
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionUsage)
+
+// Determines the max usage of the usages contained in the map. Defaults
+// to `kNoSiteMatchNotInScope` when the map is empty.
+SessionUsage NET_EXPORT GetMaxUsage(
+    const base::flat_map<SessionKey, SessionUsage>& device_bound_session_usage);
 
 }  // namespace net::device_bound_sessions
 

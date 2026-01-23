@@ -64,6 +64,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/device_bound_sessions/session_usage.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/filter/source_stream_type.h"
@@ -981,15 +982,10 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
 
     base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferralCount",
                                 device_bound_session_deferral_count_);
-    auto max_usage =
-        device_bound_sessions::SessionUsage::kNoSiteMatchNotInScope;
-    for (const auto& [key, usage] : request_->device_bound_session_usage()) {
-      if (usage > max_usage) {
-        max_usage = usage;
-      }
-    }
     base::UmaHistogramEnumeration(
-        "Net.DeviceBoundSessions.RequestDeferralDecision3", max_usage);
+        "Net.DeviceBoundSessions.RequestDeferralDecision3",
+        net::device_bound_sessions::GetMaxUsage(
+            request_->device_bound_session_usage()));
     if (device_bound_session_deferral_count_ > 0) {
       base::UmaHistogramTimes(
           "Net.DeviceBoundSessions.TotalRequestDeferredDuration",
