@@ -378,6 +378,8 @@ bool IsWebUIReloadButtonEnabled();
 
 bool IsWebUISplitTabsButtonEnabled();
 
+bool IsWebUILocationBarEnabled();
+
 bool IsWebUIToolbarEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 

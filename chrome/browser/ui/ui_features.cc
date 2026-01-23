@@ -560,8 +560,14 @@ bool IsWebUISplitTabsButtonEnabled() {
          base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
 }
 
+bool IsWebUILocationBarEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUILocationBar);
+}
+
 bool IsWebUIToolbarEnabled() {
-  return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled();
+  return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
+         IsWebUILocationBarEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
