@@ -52,7 +52,7 @@ const int kPreselectionBubbleMinY = 8;
 }  // namespace
 
 LensPreselectionBubble::LensPreselectionBubble(
-    base::WeakPtr<LensOverlayController> lens_overlay_controller,
+    tabs::TabHandle tab_handle,
     views::View* anchor_view,
     bool offline,
     ExitClickedCallback exit_clicked_callback,
@@ -60,7 +60,7 @@ LensPreselectionBubble::LensPreselectionBubble(
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
                                views::BubbleBorder::NO_SHADOW),
-      lens_overlay_controller_(lens_overlay_controller),
+      tab_handle_(tab_handle),
       offline_(offline),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   SetShowCloseButton(false);
@@ -151,9 +151,8 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
     return gfx::Rect();
   }
 
-  const bool is_tab_strip_visible = lens_overlay_controller_->GetTabInterface()
-                                        ->GetBrowserWindowInterface()
-                                        ->IsTabStripVisible();
+  const bool is_tab_strip_visible =
+      tab_handle_.Get()->GetBrowserWindowInterface()->IsTabStripVisible();
   const gfx::Size bubble_size =
       GetWidget()->GetContentsView()->GetPreferredSize();
   const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
@@ -218,21 +217,18 @@ void LensPreselectionBubble::OpenMoreInfoMenu() {
 }
 
 void LensPreselectionBubble::ExecuteCommand(int command_id, int event_flags) {
-  CHECK(lens_overlay_controller_);
+  CHECK(tab_handle_.Get());
   switch (command_id) {
     case COMMAND_MY_ACTIVITY: {
-      ActivityRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
-                               event_flags);
+      ActivityRequestedByEvent(tab_handle_.Get(), event_flags);
       break;
     }
     case COMMAND_LEARN_MORE: {
-      InfoRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
-                           event_flags);
+      InfoRequestedByEvent(tab_handle_.Get(), event_flags);
       break;
     }
     case COMMAND_SEND_FEEDBACK: {
-      FeedbackRequestedByEvent(lens_overlay_controller_->GetTabInterface(),
-                               event_flags);
+      FeedbackRequestedByEvent(tab_handle_.Get(), event_flags);
       break;
     }
     default: {
