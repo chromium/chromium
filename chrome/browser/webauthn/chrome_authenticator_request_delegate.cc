@@ -957,11 +957,7 @@ bool ChromeAuthenticatorRequestDelegate::PasswordsUsable() {
   }
 
   UIPresentation ui_presentation = dialog_controller_->ui_presentation();
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
-      ui_presentation == UIPresentation::kAutofill) {
-    // TODO(https://crbug.com/358119268): This will probably get its own
-    // mediation type, but for prototyping we assume any conditional request
-    // with passwords uses ambient.
+  if (ui_presentation == UIPresentation::kAmbient) {
     return true;
   }
 

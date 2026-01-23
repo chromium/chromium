@@ -1445,26 +1445,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
                       WebFeature::kCredentialManagerGetPasswordCredential);
   }
 
-  // TODO(crbug.com/358119268): For prototyping, any conditionally-mediated
-  // request that contains both password and publicKey credential types is
-  // assumed to be ambient, when the flag is on. This will change.
-  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
-      options->hasPublicKey() && options->hasPassword() &&
-      options->password() &&
-      options->mediation() ==
-          V8CredentialMediationRequirement::Enum::kConditional) {
-    // Unsupported ambient credential types:
-    if (options->hasOtp() || options->hasIdentity() ||
-        (options->publicKey()->hasExtensions() &&
-         options->publicKey()->extensions()->hasPayment()) ||
-        options->hasFederated()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Unsupported combination of credential types requested."));
-      return promise;
-    }
-  }
-
   if (options->hasPublicKey()) {
     ForwardRequestToAuthenticator(script_state, resolver, options);
     return promise;
@@ -2035,8 +2015,23 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
   }
 
   Mediation mediation = Mediation::MODAL;
-  if (options->mediation() ==
-      V8CredentialMediationRequirement::Enum::kConditional) {
+  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
+      options->uiMode() == V8CredentialUiModeRequirement::Enum::kPassive &&
+      options->mediation() ==
+          V8CredentialMediationRequirement::Enum::kConditional) {
+    // Unsupported ambient credential types:
+    if (options->hasOtp() || options->hasIdentity() ||
+        (options->publicKey()->hasExtensions() &&
+         options->publicKey()->extensions()->hasPayment()) ||
+        options->hasFederated()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Unsupported combination of credential types requested."));
+      return;
+    }
+    mediation = Mediation::AMBIENT;
+  } else if (options->mediation() ==
+             V8CredentialMediationRequirement::Enum::kConditional) {
     if (IsImmediateGetRequest(*context, *options)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,

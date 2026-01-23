@@ -749,6 +749,7 @@ void AuthenticatorRequestDialogController::StartFlow(
       StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
       break;
     case UIPresentation::kAutofill:
+    case UIPresentation::kAmbient:
       StartAutofillRequest();
       break;
     case UIPresentation::kPasskeyUpgrade:
@@ -1895,14 +1896,8 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
   }
   ReportConditionalUiPasskeyCount(credentials.size());
 
-  // TODO(https://crbug.com/358119268): This will probably get its own mediation
-  // type, but for prototyping we assume any conditional request with passwords
-  // uses ambient.
-  bool has_ambient_credentials = !credentials.empty() || !passwords_.empty();
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
-      has_ambient_credentials &&
-      (credential_types_ &
-       static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword))) {
+  if (ui_presentation() == UIPresentation::kAmbient &&
+      (!credentials.empty() || !passwords_.empty())) {
     auto* controller =
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);

@@ -127,6 +127,8 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     kModalImmediate,
     // Passkey autofill UI for .get() requests with `mediation = "conditional"`.
     kAutofill,
+    // Conditional request but not linked to autofill.
+    kAmbient,
     // Passkey upgrade request, i.e. .create() requests with `mediation =
     // "conditional"`.
     kPasskeyUpgrade,

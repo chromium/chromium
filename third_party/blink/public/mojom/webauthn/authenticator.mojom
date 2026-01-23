@@ -401,6 +401,9 @@ enum Mediation {
   // no discoverable credentials available. Otherwise it should handle the
   // request like a `MODAL` request.
   IMMEDIATE,
+  // Indicates that this is a non-modal 'ambient' request, which is similar to
+  // CONDITIONAL but does not use autofill UI.
+  AMBIENT,
 };
 
 // Parameters passed into calls to GetAssertion.

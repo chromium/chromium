@@ -1488,6 +1488,7 @@ void AuthenticatorCommonImpl::GetCredential(
   req_state_->request_key = RequestKey(next_request_key_);
 
   req_state_->response_callback = std::move(callback);
+  // TODO(crbug.com/358119268): Add Ambient request mode for logging.
   if (!payment_options.is_null()) {
     req_state_->mode = AuthenticationRequestMode::kPayment;
   } else if (options->mediation == Mediation::CONDITIONAL) {
@@ -1827,6 +1828,8 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
     ui_presentation = UIPresentation::kAutofill;
   } else if (options->mediation == Mediation::IMMEDIATE) {
     ui_presentation = UIPresentation::kModalImmediate;
+  } else if (options->mediation == Mediation::AMBIENT) {
+    ui_presentation = UIPresentation::kAmbient;
   }
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
@@ -1860,6 +1863,7 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   }
 
   if (options->mediation == Mediation::CONDITIONAL ||
+      options->mediation == Mediation::AMBIENT ||
       options->mediation == Mediation::IMMEDIATE) {
     // TODO(crbug.com/439510669) : Replace SetCredentialTypes with enums
     int requested_types = 0;
