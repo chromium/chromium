@@ -723,23 +723,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Permissions.DSE.AutoPermissionRevertTransition{PermissionTypes}"
-    enum="AutoDSEPermissionRevertTransition" expires_after="2026-03-01">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded when the Default Search Engine automatic permission grant is
-    reverted. It tracks the transition that the settings for the DSE origin
-    takes when this happens. Suffixed by `PermissionTypes` to provide
-    information per permission type. Only recorded for Android as that is the
-    only platform where the DSE permissions were enabled. {PermissionTypes}
-  </summary>
-  <token key="PermissionTypes" variants="PermissionTypes">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Permissions.DSE.EffectiveSetting{PermissionTypes}"
     enum="ContentSetting" expires_after="2026-03-01">
   <owner>andypaicu@chromium.org</owner>

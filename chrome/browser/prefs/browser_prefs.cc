@@ -957,6 +957,13 @@ constexpr char kTPCDExperimentProfileState[] = "tpcd_experiment.profile_state";
 constexpr char kDeviceName[] = "device_name";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 01/2026
+constexpr char kDSEGeolocationSettingDeprecated[] = "dse_geolocation_setting";
+constexpr char kDSEPermissionsSettings[] = "dse_permissions_settings";
+constexpr char kDSEWasDisabledByPolicy[] = "dse_was_disabled_by_policy";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1319,6 +1326,13 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2025.
   registry->RegisterBooleanPref(kCloudPrintProxyEnabled, true);
   registry->RegisterStringPref(kCloudPrintEmail, std::string());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 01/2026.
+  registry->RegisterDictionaryPref(kDSEGeolocationSettingDeprecated);
+  registry->RegisterDictionaryPref(kDSEPermissionsSettings);
+  registry->RegisterBooleanPref(kDSEWasDisabledByPolicy, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2558,6 +2572,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 12/2025.
   profile_prefs->ClearPref(kCloudPrintProxyEnabled);
   profile_prefs->ClearPref(kCloudPrintEmail);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 01/2026.
+  profile_prefs->ClearPref(kDSEGeolocationSettingDeprecated);
+  profile_prefs->ClearPref(kDSEPermissionsSettings);
+  profile_prefs->ClearPref(kDSEWasDisabledByPolicy);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

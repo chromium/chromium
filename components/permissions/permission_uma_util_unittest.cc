@@ -321,54 +321,6 @@ TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
 }
 
-// Test that the appropriate UMA metrics have been recorded when the DSE is
-// disabled.
-TEST_F(PermissionUmaUtilTest, MetricsAreRecordedWhenAutoDSEPermissionReverted) {
-  const std::string kTransitionHistogramPrefix =
-      "Permissions.DSE.AutoPermissionRevertTransition.";
-
-  constexpr struct {
-    ContentSetting backed_up_setting;
-    ContentSetting effective_setting;
-    ContentSetting end_state_setting;
-    permissions::AutoDSEPermissionRevertTransition expected_transition;
-  } kTests[] = {
-      // Expected valid combinations.
-      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
-       permissions::AutoDSEPermissionRevertTransition::NO_DECISION_ASK},
-      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
-       permissions::AutoDSEPermissionRevertTransition::PRESERVE_ALLOW},
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
-       permissions::AutoDSEPermissionRevertTransition::CONFLICT_ASK},
-      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
-       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ASK},
-      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
-       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ALLOW},
-      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
-       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_BLOCK},
-  };
-
-  // We test every combination of test case for notifications and geolocation to
-  // basically test the entire possible transition space.
-  for (const auto& test : kTests) {
-    for (const auto type : {ContentSettingsType::NOTIFICATIONS,
-                            ContentSettingsType::GEOLOCATION}) {
-      const std::string type_string = type == ContentSettingsType::NOTIFICATIONS
-                                          ? "Notifications"
-                                          : "Geolocation";
-      base::HistogramTester histograms;
-      PermissionUmaUtil::RecordAutoDSEPermissionReverted(
-          type, test.backed_up_setting, test.effective_setting,
-          test.end_state_setting);
-
-      // Test that the expected samples are recorded in histograms.
-      histograms.ExpectBucketCount(kTransitionHistogramPrefix + type_string,
-                                   test.expected_transition, 1);
-      histograms.ExpectTotalCount(kTransitionHistogramPrefix + type_string, 1);
-    }
-  }
-}
-
 TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
   base::HistogramTester histograms;
   auto* main_frame = primary_main_frame();
