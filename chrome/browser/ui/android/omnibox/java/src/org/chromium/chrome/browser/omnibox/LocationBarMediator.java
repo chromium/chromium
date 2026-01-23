@@ -351,8 +351,7 @@ class LocationBarMediator
 
         mFuseboxCoordinator
                 .getFuseboxStateSupplier()
-                .addObserver(
-                        mCallbackController.makeCancelable(s -> updateNavigateButtonVisibility()));
+                .addObserver(mCallbackController.makeCancelable(this::onFuseboxStateChanged));
         mFuseboxCoordinator.addAttachmentChangeListener(this);
     }
 
@@ -1442,6 +1441,11 @@ class LocationBarMediator
     @Override
     public void onAttachmentListChanged() {
         updateNavigateButtonVisibility();
+    }
+
+    private void onFuseboxStateChanged(@FuseboxState int state) {
+        updateNavigateButtonVisibility();
+        mLocationBarLayout.onFuseboxStateChanged(state);
     }
 
     private void updateNavigateButtonVisibility() {

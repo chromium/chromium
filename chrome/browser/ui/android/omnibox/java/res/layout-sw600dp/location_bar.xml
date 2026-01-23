@@ -12,4 +12,5 @@ found in the LICENSE file.
         layout="@layout/url_bar"/>
 
     <include layout="@layout/url_action_container"/>
+    <include layout="@layout/fusebox_layout"/>
 </merge>

@@ -287,7 +287,7 @@ public class LocationBarCoordinator
                         autocompleteRequestTypeSupplier,
                         snackbarManager);
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
-            mFuseboxCoordinator.getFuseboxStateSupplier().addObserver(this::onCompactModeChange);
+            mFuseboxCoordinator.getFuseboxStateSupplier().addObserver(this::onFuseboxStateChange);
         }
 
         mPageZoomIndicatorCoordinator =
@@ -869,7 +869,7 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonVisibility();
     }
 
-    private void onCompactModeChange(@FuseboxState int state) {
+    private void onFuseboxStateChange(@FuseboxState int state) {
         if (!mUrlCoordinator.hasFocus()) return;
         View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
         if (addButton == null) return;
@@ -1088,6 +1088,10 @@ public class LocationBarCoordinator
     public NonNullObservableSupplier<@AutocompleteRequestType Integer>
             getAutocompleteRequestTypeSupplier() {
         return mLocationBarMediator.getAutocompleteRequestTypeSupplier();
+    }
+
+    public NonNullObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
+        return mFuseboxCoordinator.getFuseboxStateSupplier();
     }
 
     @Override

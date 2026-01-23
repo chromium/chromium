@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -20,8 +21,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ToastManager;
 
@@ -52,6 +56,19 @@ public class LocationBarTabletUnitTest {
     @Test
     public void testOnLongClick() {
         longClickAndVerifyToast(R.id.bookmark_button, R.string.menu_bookmark);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testFuseboxStateChange() {
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
+        assertEquals(LayoutParams.WRAP_CONTENT, mLocationBarTablet.getLayoutParams().height);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
+        assertEquals(
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size),
+                mLocationBarTablet.getLayoutParams().height);
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

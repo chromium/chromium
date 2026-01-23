@@ -11,15 +11,22 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.toolbar.top.ToolbarTablet
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:layout_marginTop="@dimen/tab_strip_height"
     android:background="@macro/default_bg_color"
-     >
+    >
 
-    <LinearLayout
+  <!-- This view is intended to serve as a fixed height background when ToolbarTablet, its parent, expands beyond its normal height (e.g. when showing the Fusebox). Its height should not be mutated at runtime, only its visibility. -->
+  <View android:layout_width="match_parent"
+      android:id="@+id/toolbar_tablet_fixed_height_bg"
+      android:layout_height="@dimen/toolbar_height_no_shadow"
+      android:background="@macro/default_bg_color"
+      android:visibility="gone"
+  />
+
+  <LinearLayout
         android:id="@+id/toolbar_tablet_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

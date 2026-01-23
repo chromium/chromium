@@ -12,10 +12,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.Toast;
 
@@ -320,5 +322,19 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     /* package */ void setLocationBarButtonTranslationForNtpAnimation(float translationX) {
         super.setLocationBarButtonTranslationForNtpAnimation(translationX);
         mBookmarkButton.setTranslationX(translationX);
+    }
+
+    @Override
+    public void onFuseboxStateChanged(@FuseboxState int state) {
+        super.onFuseboxStateChanged(state);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
+        if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            layoutParams.height =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
+        }
+        setLayoutParams(layoutParams);
     }
 }

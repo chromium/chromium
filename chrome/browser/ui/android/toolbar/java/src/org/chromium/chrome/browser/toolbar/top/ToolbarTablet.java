@@ -13,8 +13,10 @@ import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
@@ -28,6 +30,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -80,6 +85,7 @@ public class ToolbarTablet extends ToolbarLayout {
     private ImageButton mBackButton;
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
+    private View mFixedHeightBackground;
 
     private boolean mIsInTabSwitcherMode;
     private boolean mToolbarButtonsVisible;
@@ -93,6 +99,8 @@ public class ToolbarTablet extends ToolbarLayout {
     private BackButtonCoordinator mBackButtonCoordinator;
     private IncognitoIndicatorCoordinator mIncognitoIndicatorCoordinator;
     private ForwardButtonCoordinator mForwardButtonCoordinator;
+    private final Callback<Integer> mFuseboxStateObserver = this::onFuseboxStateChanged;
+    private final CallbackController mCallbackController = new CallbackController();
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -128,6 +136,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mReloadButton = findViewById(R.id.refresh_button);
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
+        mFixedHeightBackground = findViewById(R.id.toolbar_tablet_fixed_height_bg);
 
         // Initialize values needed for showing/hiding toolbar buttons when the activity size
         // changes.
@@ -139,6 +148,9 @@ public class ToolbarTablet extends ToolbarLayout {
     @Initializer
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
+        mLocationBar
+                .getFuseboxStateSupplier()
+                .addObserver(mCallbackController.makeCancelable(mFuseboxStateObserver));
         final @ColorInt int color = SemanticColorUtils.getColorSurfaceContainer(getContext());
         mLocationBar.getTabletCoordinator().tintBackground(color);
 
@@ -266,6 +278,7 @@ public class ToolbarTablet extends ToolbarLayout {
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         setBackgroundColor(color);
+        mFixedHeightBackground.setBackgroundColor(color);
         final @ColorInt int textBoxColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                         getContext(), color, isIncognitoBranded(), /* isCustomTab= */ false);
@@ -435,6 +448,7 @@ public class ToolbarTablet extends ToolbarLayout {
     @Override
     public void destroy() {
         super.destroy();
+        mCallbackController.destroy();
         if (mButtonVisibilityAnimators != null) {
             mButtonVisibilityAnimators.removeAllListeners();
             mButtonVisibilityAnimators.cancel();
@@ -887,5 +901,24 @@ public class ToolbarTablet extends ToolbarLayout {
             if (widthConsumer == null || !widthConsumer.isVisible()) return true;
         }
         return false;
+    }
+
+    private void onFuseboxStateChanged(@FuseboxState Integer state) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) getLayoutParams();
+        if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
+            mFixedHeightBackground.setVisibility(VISIBLE);
+            setBackgroundColor(Color.TRANSPARENT);
+            setHairlineVisibility(false);
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        } else {
+            mFixedHeightBackground.setVisibility(GONE);
+            setBackgroundColor(
+                    mThemeColorProvider == null
+                            ? SemanticColorUtils.getDefaultBgColor(getContext())
+                            : mThemeColorProvider.getThemeColor());
+            setHairlineVisibility(true);
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
+        setLayoutParams(layoutParams);
     }
 }

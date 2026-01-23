@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -548,4 +549,10 @@ public class LocationBarLayout extends ConstraintLayout {
     int getUrlActionContainerEndMarginForTesting() {
         return mUrlActionContainerEndMargin;
     }
+
+    /**
+     * This should be called when the state of the fusebox shown in the LocationBar changes; it is
+     * assumed to start in the DISABLED state.
+     */
+    /* package */ void onFuseboxStateChanged(@FuseboxState int state) {}
 }
