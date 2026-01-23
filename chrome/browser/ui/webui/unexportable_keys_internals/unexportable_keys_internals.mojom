@@ -43,7 +43,4 @@ interface PageHandler {
 
 // Called from C++ side of chrome://unexportable-keys-internals (Browser ->
 // Renderer)
-interface Page {
-  // TODO(crbug.com/454585857): Consider adding a method to update the list of
-  // keys when the underlying list of keys changes.
-};
+interface Page {};
