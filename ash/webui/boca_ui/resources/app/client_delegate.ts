@@ -235,6 +235,8 @@ export class ClientDelegateFactory {
           return CreateSessionResult.HTTP_ERROR;
         } else if (result.error == CreateSessionError.kNetworkRestriction) {
           return CreateSessionResult.NETWORK_RESTRICTION;
+        } else if (result.error == CreateSessionError.kMaxStudentsExceeded) {
+          return CreateSessionResult.MAX_STUDENTS_EXCEEDED;
         }
         return CreateSessionResult.SUCCESS;
       },

@@ -137,6 +137,8 @@ constexpr char kStudentDeviceId[] = "student_device_id";
 constexpr char kActiveStudentId[] = "active_student_id";
 constexpr char kReceiverId[] = "receiver_id";
 constexpr char kReceiverName[] = "receiver_name";
+constexpr char kMaxStudentsExceededErrorMessage[] =
+    "session.roster may not contain more than 200 students";
 
 mojom::OnTaskConfigPtr GetCommonTestLockOnTaskConfig() {
   std::vector<mojom::ControlledTabPtr> tabs;
@@ -771,8 +773,9 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithFullInput) {
       std::vector<mojom::IdentityPtr>{}, GetCommonTestLockOnTaskConfig(),
       GetCommonCaptionConfig(), "");
   // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
   // API callback.
   base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
@@ -900,8 +903,9 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionWithCritialInputOnly) {
   auto session_duration = base::Minutes(2);
 
   // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
   // API callback.
   base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
@@ -953,8 +957,9 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
   auto session_duration = base::Minutes(2);
 
   // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
   // API callback.
   base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
@@ -984,8 +989,8 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
             ASSERT_FALSE(request->captions_config());
             ASSERT_FALSE(request->on_task_config());
             ASSERT_TRUE(request->roster());
-            request->callback().Run(
-                base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
+            request->callback().Run(base::unexpected(
+                std::make_pair(google_apis::ApiErrorCode::HTTP_FORBIDDEN, "")));
           }));
 
   // Verify local events not dispatched
@@ -1004,8 +1009,9 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedWithHttpError) {
 
 TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedOnNonManagedNetwork) {
   // Page handler callback.
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
   // API callback.
   base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
@@ -1037,6 +1043,55 @@ TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedOnNonManagedNetwork) {
   ASSERT_TRUE(future_1.Get().has_value());
   EXPECT_EQ(mojom::CreateSessionError::kNetworkRestriction,
             future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, CreateSessionFailedOnTooManyStudents) {
+  base::HistogramTester histogram_tester;
+  auto session_duration = base::Minutes(2);
+
+  // Page handler callback.
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::CreateSessionError>> future_1;
+
+  const auto config = mojom::Config::New(
+      session_duration, std::nullopt, nullptr,
+      std::vector<mojom::IdentityPtr>{}, std::vector<mojom::IdentityPtr>{},
+      mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr), "");
+
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id(kGaiaId.ToString());
+  CreateSessionRequest request(
+      nullptr, kTestUrlBase, teacher, config->session_duration,
+      ::boca::Session::SessionState::Session_SessionState_ACTIVE,
+      future.GetCallback());
+  EXPECT_CALL(*session_client_impl(), CreateSession(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          [&](auto request) {
+            request->callback().Run(base::unexpected(
+                std::make_pair(google_apis::ApiErrorCode::HTTP_BAD_REQUEST,
+                               kMaxStudentsExceededErrorMessage)));
+          }));
+
+  // Verify local events not dispatched
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
+  EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
+      .WillOnce(Return(false));
+
+  boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+  EXPECT_EQ(mojom::CreateSessionError::kMaxStudentsExceeded,
+            future_1.Get().value());
+  histogram_tester.ExpectTotalCount(kBocaCreateSessionErrorCodeUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaCreateSessionErrorCodeUmaPath,
+      google_apis::ApiErrorCode::HTTP_BAD_REQUEST, 1);
 }
 
 TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {

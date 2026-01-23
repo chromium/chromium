@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
@@ -45,6 +46,8 @@ using ::testing::Truly;
 
 namespace {
 const char kTestUserAgent[] = "test-user-agent";
+const char kMaxStudentsExceededErrorMessage[] =
+    "session.roster may not contain more than 100 students";
 
 class MockRequestHandler {
  public:
@@ -83,6 +86,20 @@ class MockRequestHandler {
   static std::unique_ptr<HttpResponse> CreateFailedResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    return response;
+  }
+
+  static std::unique_ptr<HttpResponse> CreateMaxStudentsFailedResponse() {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_BAD_REQUEST);
+    const std::string_view content = R"({
+      "error": {
+        "code": 400,
+        "message": "%s",
+        "status": "INVALID_ARGUMENT"
+      } })";
+    response->set_content(
+        absl::StrFormat(content, kMaxStudentsExceededErrorMessage));
     return response;
   }
 
@@ -143,8 +160,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
   teacher.set_email("teacher@gmail.com");
   teacher.set_full_name("teacher");
   base::TimeDelta session_duration = base::Seconds(120);
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
 
   std::unique_ptr<CreateSessionRequest> request =
@@ -247,8 +265,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {
   GaiaId gaia_id("1");
   base::TimeDelta session_duration = base::Seconds(120);
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
 
   ::boca::UserIdentity teacher;
@@ -287,8 +306,9 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
   GaiaId gaia_id("1");
   base::TimeDelta session_duration = base::Seconds(120);
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
       future;
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
@@ -314,7 +334,42 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndFail) {
       "}},\"teacher\":{\"email\":\"\",\"fullName\":\"\",\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());
+  const google_apis::ApiErrorCode error_code = result.error().first;
+  EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, error_code);
+}
+
+TEST_F(SessionApiRequestsTest, CreateSessionWithTooManyStudentsAndFail) {
+  net::test_server::HttpRequest http_request;
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(
+          DoAll(SaveArg<0>(&http_request),
+                Return(MockRequestHandler::CreateMaxStudentsFailedResponse())));
+
+  GaiaId gaia_id("1");
+  base::TimeDelta session_duration = base::Seconds(120);
+
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<::boca::Session>,
+                     std::pair<google_apis::ApiErrorCode, std::string>>>
+      future;
+  ::boca::UserIdentity teacher;
+  teacher.set_gaia_id("1");
+  std::unique_ptr<CreateSessionRequest> request =
+      std::make_unique<CreateSessionRequest>(
+          request_sender(), "https://test", teacher, session_duration,
+          ::boca::Session::SessionState::Session_SessionState_ACTIVE,
+          future.GetCallback());
+
+  request->OverrideURLForTesting(test_server_.base_url().spec());
+
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+
+  ASSERT_TRUE(future.Wait());
+  auto result = future.Take();
+  const google_apis::ApiErrorCode error_code = result.error().first;
+  const std::string& error_msg = result.error().second;
+  EXPECT_EQ(google_apis::HTTP_BAD_REQUEST, error_code);
+  EXPECT_EQ(kMaxStudentsExceededErrorMessage, error_msg);
 }
 
 }  // namespace ash::boca

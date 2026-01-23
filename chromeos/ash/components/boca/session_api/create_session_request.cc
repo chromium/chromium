@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
 
 #include <string>
+#include <utility>
 
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -19,6 +21,22 @@
 #include "third_party/protobuf/src/google/protobuf/map_field_lite.h"
 
 namespace ash::boca {
+
+namespace {
+
+std::string ParseErrorMsg(const std::string& response_body) {
+  std::optional<base::Value> root =
+      base::JSONReader::Read(response_body, base::JSON_PARSE_RFC);
+  if (!root || !root->is_dict()) {
+    return "";
+  }
+
+  const std::string* message =
+      root->GetDict().FindStringByDottedPath("error.message");
+  return message ? *message : "";
+}
+
+}  // namespace
 
 //=================CreateSessionRequest================
 CreateSessionRequest::CreateSessionRequest(
@@ -135,7 +153,7 @@ void CreateSessionRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackOnPrematureFailureWithMessage(error, std::move(response_body));
       OnProcessURLFetchResultsComplete();
       break;
   }
@@ -143,7 +161,14 @@ void CreateSessionRequest::ProcessURLFetchResults(
 
 void CreateSessionRequest::RunCallbackOnPrematureFailure(
     google_apis::ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  std::move(callback_).Run(base::unexpected(std::make_pair(error, "")));
+}
+
+void CreateSessionRequest::RunCallbackOnPrematureFailureWithMessage(
+    google_apis::ApiErrorCode error,
+    std::string response_body) {
+  const std::string& error_msg = ParseErrorMsg(response_body);
+  std::move(callback_).Run(base::unexpected(std::make_pair(error, error_msg)));
 }
 
 void CreateSessionRequest::OverrideURLForTesting(std::string url) {
@@ -153,7 +178,8 @@ void CreateSessionRequest::OverrideURLForTesting(std::string url) {
 void CreateSessionRequest::OnDataParsed(
     std::unique_ptr<::boca::Session> session) {
   if (!session) {
-    std::move(callback_).Run(base::unexpected(google_apis::PARSE_ERROR));
+    std::move(callback_).Run(
+        base::unexpected(std::make_pair(google_apis::PARSE_ERROR, "")));
   } else {
     std::move(callback_).Run(std::move(session));
   }

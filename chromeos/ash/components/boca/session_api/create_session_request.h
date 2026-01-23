@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -24,9 +25,9 @@ namespace ash::boca {
 
 //=================CreateSessionRequest================
 
-using CreateSessionCallback =
-    base::OnceCallback<void(base::expected<std::unique_ptr<::boca::Session>,
-                                           google_apis::ApiErrorCode> result)>;
+using CreateSessionCallback = base::OnceCallback<void(
+    base::expected<std::unique_ptr<::boca::Session>,
+                   std::pair<google_apis::ApiErrorCode, std::string>> result)>;
 // This class performs the request for creating a session
 class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
@@ -87,6 +88,11 @@ class CreateSessionRequest : public google_apis::UrlFetchRequestBase {
 
  private:
   void OnDataParsed(std::unique_ptr<::boca::Session> session);
+
+  // Parses the HTTP response for an error message and includes it in the
+  // callback response if available.
+  void RunCallbackOnPrematureFailureWithMessage(google_apis::ApiErrorCode code,
+                                                std::string response_body);
 
   ::boca::UserIdentity teacher_;
   base::TimeDelta duration_;
