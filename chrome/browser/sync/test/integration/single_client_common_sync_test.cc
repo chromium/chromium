@@ -590,10 +590,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/353425612): Modernize SingleClientPolicySyncTest.
-class SingleClientPolicySyncTest : public SyncTest {
+class SingleClientPolicySyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientPolicySyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientPolicySyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~SingleClientPolicySyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -605,16 +611,26 @@ class SingleClientPolicySyncTest : public SyncTest {
         &policy_provider_);
   }
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   testing::NiceMock<policy::MockConfigurationPolicyProvider>*
   policy_provider() {
     return &policy_provider_;
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPolicySyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientPolicySyncTest,
                        AppliesSyncTypesListDisabledPolicyImmediately) {
   ASSERT_TRUE(SetupSync());
 
@@ -655,11 +671,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
 // Regression test for crbug.com/415728693.
 // EnterSyncPausedStateForPrimaryAccount() is not supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientPolicySyncTest,
                        ApplySyncDisabledPolicyWhileSyncPaused) {
   ASSERT_TRUE(SetupSync());
 
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  }
+
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   ASSERT_EQ(syncer::GetUploadToGoogleState(GetSyncService(0),
