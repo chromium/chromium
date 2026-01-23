@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -60,7 +61,9 @@ class ComponentManagerImpl : public ComponentManager {
         /*registered_callback=*/
         base::BindOnce(
             &component_updater::TranslateKitComponentInstallerPolicy::
-                UpdateComponentOnDemand));
+                UpdateComponentOnDemand,
+            base::Unretained(g_browser_process->component_updater())),
+        base::DoNothing());
   }
 
   void RegisterTranslateKitLanguagePackComponent(

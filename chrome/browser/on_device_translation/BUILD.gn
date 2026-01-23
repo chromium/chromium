@@ -89,6 +89,9 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/image_loader" ]
+  }
 }
 
 source_set("test_support") {

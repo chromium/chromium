@@ -13,6 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -24,7 +26,6 @@
 #include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/update_client/update_client_errors.h"
-#include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -81,8 +82,11 @@ void SetBinaryPathInPrefs(PrefService* pref_service,
 }  // namespace
 
 TranslateKitComponentInstallerPolicy::TranslateKitComponentInstallerPolicy(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* pref_service,
+    base::RepeatingClosure on_ready_callback)
+    : pref_service_(pref_service),
+      on_ready_callback_(on_ready_callback ? std::move(on_ready_callback)
+                                           : base::DoNothing()) {}
 
 TranslateKitComponentInstallerPolicy::~TranslateKitComponentInstallerPolicy() =
     default;
@@ -91,8 +95,7 @@ bool TranslateKitComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_CHROMEOS)
-  bool squash_fs_found = base::PathExists(GetSquashFsImagePath(install_dir));
-  return squash_fs_found;
+  return base::PathExists(GetSquashFsImagePath(install_dir));
 #else
   return base::PathExists(GetInstalledPath(install_dir));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -138,6 +141,7 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
   }
 #else
   SetBinaryPathInPrefs(pref_service_, install_dir);
+  on_ready_callback_.Run();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -150,6 +154,7 @@ void TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded(
     return;
   }
   SetBinaryPathInPrefs(pref_service_, *mount_path);
+  on_ready_callback_.Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -178,9 +183,10 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 // static
-void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand() {
+void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand(
+    ComponentUpdateService* cus) {
   auto crx_id = GetExtensionId();
-  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+  cus->GetOnDemandUpdater().OnDemandUpdate(
       crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
@@ -198,8 +204,8 @@ const std::string TranslateKitComponentInstallerPolicy::GetExtensionId() {
 void RegisterTranslateKitComponent(ComponentUpdateService* cus,
                                    PrefService* pref_service,
                                    bool force_install,
-                                   base::OnceClosure registered_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                                   base::OnceClosure registered_callback,
+                                   base::RepeatingClosure on_ready_callback) {
   VLOG(1) << "Registering TranslateKit component.";
   if (!force_install &&
       !pref_service->GetBoolean(prefs::kTranslateKitPreviouslyRegistered)) {
@@ -219,7 +225,8 @@ void RegisterTranslateKitComponent(ComponentUpdateService* cus,
   SetBinaryPathInPrefs(pref_service, base::FilePath());
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<TranslateKitComponentInstallerPolicy>(pref_service));
+      std::make_unique<TranslateKitComponentInstallerPolicy>(
+          pref_service, std::move(on_ready_callback)));
   installer->Register(cus, std::move(registered_callback));
 }
 

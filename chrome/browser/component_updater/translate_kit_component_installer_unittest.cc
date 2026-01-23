@@ -8,16 +8,26 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_translation/public/paths.h"
 #include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -25,10 +35,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/dbus/image_loader/fake_image_loader_client.h"
+#endif
+
 namespace component_updater {
 namespace {
 
+using ::base::MockCallback;
 using ::testing::_;
+using ::testing::Return;
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The component id is: lbimbicckdokpoicboneldipejkhjgdg
@@ -61,6 +77,23 @@ class RegisterTranslateKitComponentTest : public ::testing::Test {
     ASSERT_TRUE(fake_install_dir_.CreateUniqueTempDir());
     SetVersion(kFakeTranslateKitVersion);
     on_device_translation::RegisterLocalStatePrefs(pref_service_.registry());
+    scoped_path_override_ = std::make_unique<base::ScopedPathOverride>(
+        component_updater::DIR_COMPONENT_PREINSTALLED,
+        fake_install_dir_.GetPath());
+
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::ImageLoaderClient::InitializeFake();
+    fake_image_loader_client_ =
+        static_cast<ash::FakeImageLoaderClient*>(ash::ImageLoaderClient::Get());
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    fake_image_loader_client_ = nullptr;
+    ash::ImageLoaderClient::Shutdown();
+#endif
+    scoped_path_override_.reset();
   }
 
   // Not Copyable.
@@ -82,6 +115,39 @@ class RegisterTranslateKitComponentTest : public ::testing::Test {
     fake_version_ = base::Version(version_str);
     fake_manifest_.Set("version", version_str);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::FakeImageLoaderClient& fake_image_loader_client() {
+    return *fake_image_loader_client_;
+  }
+#endif
+
+  void CreateFakeInstallation() {
+#if BUILDFLAG(IS_CHROMEOS)
+    fake_image_loader_client().SetMountPathForComponent("ChromeTranslateKit",
+                                                        install_dir());
+#endif
+    base::FilePath component_dir = install_dir().Append(
+        on_device_translation::GetBinaryRelativeInstallDir());
+    CHECK(base::CreateDirectory(component_dir));
+    CHECK(
+        base::CreateDirectory(component_dir.AppendASCII("TranslateKitFiles")));
+    base::FilePath linux_file = component_dir.Append(
+        FILE_PATH_LITERAL("TranslateKitFiles/libtranslatekit.so"));
+    base::FilePath win_file = component_dir.Append(
+        FILE_PATH_LITERAL("TranslateKitFiles/libtranslatekit.dll"));
+    base::FilePath chromeos_file =
+        component_dir.Append(FILE_PATH_LITERAL("image.squash"));
+    CHECK(base::WriteFile(linux_file, ""));
+    CHECK(base::WriteFile(win_file, ""));
+    CHECK(base::WriteFile(chromeos_file, ""));
+
+    CHECK(base::WriteFile(component_dir.AppendASCII("manifest.json"),
+                          R"({
+    "name": "FakeInstallation",
+    "version": "0.0.1",
+    "min_env_version": "0.0.1"
+  })"));
+  }
 
  private:
   content::BrowserTaskEnvironment env_;
@@ -89,6 +155,10 @@ class RegisterTranslateKitComponentTest : public ::testing::Test {
   base::ScopedTempDir fake_install_dir_;
   base::Version fake_version_;
   base::Value::Dict fake_manifest_;
+  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
+#if BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<ash::FakeImageLoaderClient> fake_image_loader_client_ = nullptr;
+#endif
 };
 
 TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationNoForceInstall) {
@@ -98,7 +168,8 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationNoForceInstall) {
   RegisterTranslateKitComponent(
       service.get(), pref_service(),
       /*force_install=*/false,
-      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }),
+      base::DoNothing());
   env().RunUntilIdle();
   EXPECT_FALSE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
@@ -115,7 +186,8 @@ TEST_F(RegisterTranslateKitComponentTest,
   base::RunLoop run_loop;
   RegisterTranslateKitComponent(service.get(), pref_service(),
                                 /*force_install=*/false,
-                                /*registered_callback=*/run_loop.QuitClosure());
+                                /*registered_callback=*/run_loop.QuitClosure(),
+                                base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
@@ -125,13 +197,27 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationForceInstall) {
   auto service =
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
-  EXPECT_CALL(*service, RegisterComponent(_));
+  CreateFakeInstallation();
+  // We capture the installer, so its lifetime is extended from the
+  // `RegisterTranslateKitComponent` function.
+  scoped_refptr<update_client::CrxInstaller> installer;
+  EXPECT_CALL(*service, RegisterComponent)
+      .WillOnce([&](const ComponentRegistration& registration) {
+        // "Steal" the reference to keep it alive
+        installer = registration.installer;
+        return true;
+      });
+
   EXPECT_CALL(*service, GetComponentIDs());
   base::RunLoop run_loop;
+  base::RunLoop on_ready_loop;
   RegisterTranslateKitComponent(service.get(), pref_service(),
                                 /*force_install=*/true,
-                                /*registered_callback=*/run_loop.QuitClosure());
+                                /*registered_callback=*/run_loop.QuitClosure(),
+                                /*on_ready_callback=*/
+                                on_ready_loop.QuitClosure());
   run_loop.Run();
+  on_ready_loop.Run();
   EXPECT_TRUE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
 }
@@ -145,18 +231,21 @@ TEST_F(RegisterTranslateKitComponentTest,
       .WillOnce(testing::Return(
           std::vector<std::string>({crx_file::id_util::GenerateIdFromHash(
               kTranslateKitPublicKeySHA256)})));
-  base::RunLoop run_loop;
-  RegisterTranslateKitComponent(
-      service.get(), pref_service(),
-      /*force_install=*/true,
-      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  base::MockOnceClosure callback;
+  EXPECT_CALL(callback, Run()).Times(0);
+
+  RegisterTranslateKitComponent(service.get(), pref_service(),
+                                /*force_install=*/true,
+                                /*registered_callback=*/callback.Get(),
+                                /*on_ready_callback=*/base::DoNothing());
   env().RunUntilIdle();
   EXPECT_FALSE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
 }
 
 TEST_F(RegisterTranslateKitComponentTest, VerifyInstallationDefaultEmpty) {
-  TranslateKitComponentInstallerPolicy policy(pref_service());
+  TranslateKitComponentInstallerPolicy policy(pref_service(),
+                                              base::DoNothing());
 
   // An empty directory lacks all required files.
   EXPECT_FALSE(policy.VerifyInstallation(manifest(), install_dir()));

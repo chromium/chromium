@@ -17,10 +17,14 @@
 
 namespace component_updater {
 
+class ComponentUpdateService;
+
 // The installer policy for the TranslateKit Component.
 class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit TranslateKitComponentInstallerPolicy(PrefService* pref_service);
+  explicit TranslateKitComponentInstallerPolicy(
+      PrefService* pref_service,
+      base::RepeatingClosure on_ready_callback);
   ~TranslateKitComponentInstallerPolicy() override;
 
   // Not Copyable.
@@ -30,7 +34,7 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
       const TranslateKitComponentInstallerPolicy&) = delete;
 
   // Requests to update the component.
-  static void UpdateComponentOnDemand();
+  static void UpdateComponentOnDemand(ComponentUpdateService* cus);
 
   static const std::string GetExtensionId();
 
@@ -60,6 +64,7 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   raw_ptr<PrefService> pref_service_;
+  base::RepeatingClosure on_ready_callback_;
   base::WeakPtrFactory<TranslateKitComponentInstallerPolicy> weak_factory_{
       this};
 };
@@ -69,7 +74,8 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
 void RegisterTranslateKitComponent(ComponentUpdateService* cus,
                                    PrefService* pref_service,
                                    bool force_install,
-                                   base::OnceClosure registered_callback);
+                                   base::OnceClosure registered_callback,
+                                   base::RepeatingClosure on_ready_callback);
 
 }  // namespace component_updater
 

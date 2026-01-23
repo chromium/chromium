@@ -237,7 +237,8 @@ void RegisterComponentsForUpdate() {
   // TODO(crbug.com/364795294): Support other platforms.
   RegisterTranslateKitComponent(cus, g_browser_process->local_state(),
                                 /*force_install=*/false,
-                                /*registered_callback=*/base::OnceClosure());
+                                /*registered_callback=*/base::OnceClosure(),
+                                /*on_ready_callback=*/base::DoNothing());
   RegisterTranslateKitLanguagePackComponentsForUpdate(
       cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
