@@ -20,17 +20,17 @@ MockBlindSignAuth::MockBlindSignAuth() = default;
 
 MockBlindSignAuth::~MockBlindSignAuth() = default;
 
-void MockBlindSignAuth::GetTokens(
-    std::optional<std::string> oauth_token,
-    int num_tokens,
-    quiche::ProxyLayer proxy_layer,
-    quiche::BlindSignAuthServiceType /*service_type*/,
-    quiche::SignedTokenCallback callback) {
+void MockBlindSignAuth::GetTokens(std::optional<std::string> oauth_token,
+                                  int num_tokens,
+                                  quiche::ProxyLayer proxy_layer,
+                                  quiche::BlindSignAuthServiceType service_type,
+                                  quiche::SignedTokenCallback callback) {
   get_tokens_called_ = true;
   last_thread_id_ = base::PlatformThread::CurrentId();
   oauth_token_ = oauth_token ? *oauth_token : "";
   num_tokens_ = num_tokens;
   proxy_layer_ = proxy_layer;
+  service_type_ = service_type;
 
   if (status_.ok()) {
     std::move(callback)(absl::Span<quiche::BlindSignToken>(tokens_));

@@ -191,7 +191,9 @@ TEST_F(TokenFetcherImplTest, Success) {
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   EXPECT_EQ(bsa_->num_tokens(), 2);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
+  EXPECT_EQ(bsa_->service_type(),
+            quiche::BlindSignAuthServiceType::kChromePrivateAratea);
   std::vector<BlindSignedAuthToken> expected;
   expected.push_back(
       CreateMockBlindSignedAuthTokenForTesting("single-use-1", expiration_time_)
@@ -219,7 +221,7 @@ TEST_F(TokenFetcherImplTest, NoTokens) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -234,7 +236,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokens) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -255,7 +257,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenExtensions) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -275,7 +277,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenEmptyTokenValue) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -295,7 +297,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenEmptyExtensionsValue) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -308,7 +310,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError400) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
 }
@@ -321,7 +323,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError401) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
 }
@@ -334,7 +336,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError403) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_not_eligible_backoff_);
 }
@@ -347,7 +349,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenErrorOther) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }

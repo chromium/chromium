@@ -105,15 +105,15 @@ void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
     return;
   }
 
-  // The `quiche::BlindSignAuth` library requires a `ProxyLayer` parameter,
-  // but for client attestation, this distinction is not currently
-  // meaningful. Therefore, a default value is used.
+  // Use `TerminalLayer` as the `ProxyLayer` parameter because we want tokens
+  // for the PI server. This should be parameterized later when we introduce IP
+  // protection and a proxy to fetch the needed tokens for the proxy layer.
   helper_
       .AsyncCall(
           &TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth)
-      .WithArgs(quiche::BlindSignAuthServiceType::kPrivateAratea,
+      .WithArgs(quiche::BlindSignAuthServiceType::kChromePrivateAratea,
                 std::move(access_token), batch_size,
-                quiche::ProxyLayer::kProxyA,
+                quiche::ProxyLayer::kTerminalLayer,
                 base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &TokenFetcherImpl::OnFetchBlindSignedTokenCompleted,
                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
