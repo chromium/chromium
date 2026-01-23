@@ -84,6 +84,12 @@ enum InputType {
 
 // Represents the current state of inputs, models, and tools within AIM.
 struct InputState {
+  // The set of allowed models.
+  array<ModelMode> allowed_models;
+  // The set of allowed tools.
+  array<ToolMode> allowed_tools;
+  // The set of allowed input types.
+  array<InputType> allowed_input_types;
   // The currently active model.
   ModelMode active_model;
   // The currently active tool.

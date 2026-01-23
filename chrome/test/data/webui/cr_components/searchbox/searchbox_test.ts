@@ -3124,6 +3124,9 @@ suite('NewTabPageRealboxTest', () => {
   test('onInputStateChanged updates inputState', async () => {
     realbox = await createAndAppendRealbox();
     const inputState = {
+      allowedModels: [],
+      allowedTools: [],
+      allowedInputTypes: [],
       activeModel: 0,
       activeTool: 0,
       disabledModels: [],
