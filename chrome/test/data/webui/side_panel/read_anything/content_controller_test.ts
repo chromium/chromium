@@ -439,6 +439,44 @@ suite('ContentController', () => {
       assertFalse(!!root.getAttribute('href'));
     });
 
+    test('link visibility toggled toggles links with Readability', async () => {
+      const url = 'https://www.relsilicon.com/';
+      chrome.readingMode.isReadabilityEnabled = true;
+      contentController.configureTrustedTypes();
+      const text = 'a link';
+      readingMode.htmlContent = `<a href="${url}">${text}</a>`;
+
+      const root = contentController.updateContent();
+      await microtasksFinished();
+      assertTrue(!!root);
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      const shadowRoot = container.attachShadow({mode: 'open'});
+      const contentDiv = (root as DocumentFragment).querySelector('div');
+      assertTrue(!!contentDiv);
+      shadowRoot.append(...contentDiv.childNodes);
+
+      // Hide the links.
+      chrome.readingMode.linksEnabled = false;
+      contentController.updateLinks(shadowRoot);
+      let link = shadowRoot.querySelector('a');
+      assertFalse(!!link);
+      let span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
+      assertTrue(!!span);
+      assertEquals(url, span.dataset['link']);
+      assertEquals(text, span.textContent);
+
+      // Show the links.
+      chrome.readingMode.linksEnabled = true;
+      contentController.updateLinks(shadowRoot);
+      span = shadowRoot.querySelector<HTMLElement>('span[data-link]');
+      assertFalse(!!span);
+      link = shadowRoot.querySelector('a');
+      assertTrue(!!link);
+      assertEquals(url, link.href);
+      assertEquals(text, link.textContent);
+    });
+
     test('builds an image as a <canvas> tag', () => {
       const altText = 'how it\'s done done done';
       chrome.readingMode.imagesEnabled = true;

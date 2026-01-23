@@ -406,11 +406,13 @@ export class ContentController {
   }
 
   private setLinkAttributes_(
-      element: HTMLElement, url: string, nodeId: number) {
+      element: HTMLElement, url: string, nodeId?: number) {
     element.setAttribute('href', url);
     element.onclick = (event: MouseEvent) => {
       event.preventDefault();
-      chrome.readingMode.onLinkClicked(nodeId);
+      if (nodeId) {
+        chrome.readingMode.onLinkClicked(nodeId);
+      }
     };
   }
 
@@ -461,7 +463,11 @@ export class ContentController {
   private transformLinkContainer_(
       elemToReplace: HTMLElement, showLinks: boolean) {
     const nodeId = this.nodeStore_.getAxId(elemToReplace);
-    assert(nodeId !== undefined, 'link node id is undefined');
+    // If the Readability flag is enabled, we don't expect there to be an
+    // AX id for the node, so don't assert that it exists.
+    if (!chrome.readingMode.isReadabilityEnabled) {
+      assert(nodeId !== undefined, 'link node id is undefined');
+    }
     const newTag = showLinks ? LINKS_ON_TAG : LINKS_OFF_TAG;
     const newElem = document.createElement(newTag);
     // Move children to preserve inner highlighting or other formatting.
