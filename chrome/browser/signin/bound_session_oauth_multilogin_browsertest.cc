@@ -31,6 +31,8 @@
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
@@ -76,6 +78,24 @@ const std::vector<base::test::FeatureRef>& GetStandardFeatures() {
            // isolation.
            network::features::kUseUnexportableKeyServiceInBrowserProcess});
   return *kStandardFeatures;
+}
+
+net::device_bound_sessions::SessionParams CreateTestSessionParams() {
+  GURL url("https://google.com/");
+  net::device_bound_sessions::SessionParams::Scope scope;
+  scope.include_site = true;
+  scope.origin = url::Origin::Create(url).Serialize();
+  net::device_bound_sessions::SessionParams params(
+      /*id=*/"sidts_session", url,
+      /*refresh_url=*/"/RotateBoundCookies", std::move(scope),
+      /*creds=*/
+      {net::device_bound_sessions::SessionParams::Credential{
+          .name = "__Secure-1PSIDTS",
+          .attributes = "Secure; HttpOnly; Domain=.google.com; "
+                        "Path=/; SameSite=None"}},
+      unexportable_keys::UnexportableKeyId(),
+      /*allowed_refresh_initiators=*/{"*"});
+  return params;
 }
 
 class DeviceBoundSessionAccessObserver
@@ -170,6 +190,11 @@ class BoundSessionOAuthMultiloginBaseTest
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    test_identity_manager_observer_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return CHECK_DEREF(UnexportableKeyServiceFactory::GetForProfileAndPurpose(
@@ -226,11 +251,31 @@ class BoundSessionOAuthMultiloginBaseTest
     return *wrapped_key;
   }
 
+  void UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(
+      const FakeGaia::Configuration& config) {
+    if (!test_identity_manager_observer_) {
+      test_identity_manager_observer_ =
+          std::make_unique<signin::TestIdentityManagerObserver>(
+              &identity_manager());
+    }
+    test_identity_manager_observer_->SetOnAccountsInCookieUpdatedCallback(
+        base::BindLambdaForTesting([&, config_updated = false]() mutable {
+          if (config_updated) {
+            return;
+          }
+          fake_gaia().SetConfiguration(config);
+          config_updated = true;
+        }));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+
+  std::unique_ptr<signin::TestIdentityManagerObserver>
+      test_identity_manager_observer_;
 };
 
 class BoundSessionOAuthMultiloginPrototypeTest
@@ -304,21 +349,13 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
                             std::string(k3PSIDTSCookieName)};
   fake_gaia().SetConfiguration(config);
 
+  // Make sure that subsequent `/ListAccounts` returns both accounts.
+  config.emails = {email_1, email_2};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
+
   TestAccountReconcilorObserver account_reconcilor_observer(
       AccountReconcilorFactory::GetForProfile(browser()->profile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
-  signin::TestIdentityManagerObserver identity_manager_observer(
-      &identity_manager());
-  identity_manager_observer.SetOnAccountsInCookieUpdatedCallback(
-      base::BindLambdaForTesting([&, config_updated = false]() mutable {
-        if (config_updated) {
-          return;
-        }
-        // Make sure that subsequent `/ListAccounts` returns both accounts.
-        config.emails = {email_1, email_2};
-        fake_gaia().SetConfiguration(config);
-        config_updated = true;
-      }));
 
   // Enforce initial `/ListAccounts`.
   signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
@@ -389,6 +426,11 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
   config.session_1p_sidts_cookie = "fake_1p_sidts";
   config.session_3p_sidts_cookie = "fake_3p_sidts";
   fake_gaia().SetConfiguration(config);
+
+  // Make sure that subsequent `/ListAccounts` returns the missing primary
+  // account, this prevents triggering OAML indefinitely.
+  config.emails = {FakeGaiaMixin::kFakeUserEmail};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
 
   base::RunLoop run_loop;
   SetBoundSessionParamsUpdatedCallback(run_loop.QuitClosure());
@@ -477,22 +519,14 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
                             std::string(k3PSIDTSCookieName)};
   fake_gaia().SetConfiguration(config);
 
+  // Make sure that subsequent `/ListAccounts` returns the primary account
+  // only.
+  config.emails = {email};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
+
   TestAccountReconcilorObserver account_reconcilor_observer(
       AccountReconcilorFactory::GetForProfile(browser()->profile()),
       /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
-  signin::TestIdentityManagerObserver identity_manager_observer(
-      &identity_manager());
-  identity_manager_observer.SetOnAccountsInCookieUpdatedCallback(
-      base::BindLambdaForTesting([&, config_updated = false]() mutable {
-        if (config_updated) {
-          return;
-        }
-        // Make sure that subsequent `/ListAccounts` returns the primary account
-        // only.
-        config.emails = {email};
-        fake_gaia().SetConfiguration(config);
-        config_updated = true;
-      }));
 
   // Enforce initial `/ListAccounts`.
   signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
@@ -785,6 +819,11 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
   config.session_3p_sidts_cookie = "fake_3p_sidts";
   fake_gaia().SetConfiguration(config);
 
+  // Make sure that `/ListAccounts` return the primary account to avoid
+  // triggering OAML indefinitely.
+  config.emails = {FakeGaiaMixin::kFakeUserEmail};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
+
   base::RunLoop run_loop;
   DeviceBoundSessionAccessObserver observer(
       device_bound_session_manager(),
@@ -837,6 +876,245 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
                 net::SchemefulSite::Deserialize("https://google.com")))));
 }
 
+IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
+                       ReuseExistingSession) {
+  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+
+  const std::string email_1 = "user1@gmail.com";
+  const GaiaId::Literal fake_gaia_id_1("fake-gaia-id-1");
+  const std::string refresh_token_1 = "refresh-token-1";
+  const CoreAccountInfo account_info_1 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .AsPrimary(signin::ConsentLevel::kSignin)
+                               .WithGaiaId(fake_gaia_id_1)
+                               .WithRefreshToken(refresh_token_1)
+                               .WithRefreshTokenBindingKey(wrapped_key)
+                               .Build(email_1));
+  ASSERT_EQ(
+      identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
+      account_info_1);
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_1.account_id));
+
+  const std::string email_2 = "user2@gmail.com";
+  const GaiaId::Literal fake_gaia_id_2("fake-gaia-id-2");
+  const std::string refresh_token_2 = "refresh-token-2";
+  const CoreAccountInfo account_info_2 = signin::MakeAccountAvailable(
+      &identity_manager(), signin::AccountAvailabilityOptionsBuilder()
+                               .WithGaiaId(fake_gaia_id_2)
+                               .WithRefreshToken(refresh_token_2)
+                               .WithRefreshTokenBindingKey(wrapped_key)
+                               .Build(email_2));
+  ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
+      account_info_2.account_id));
+
+  // Configure `FakeGaia`:
+  // - make `ListAccounts` return only the primary account making Chrome to
+  // trigger OAML,
+  // - make OAML return reuse bound session response,
+  // - make `RotateBoundCookies` return success (to ensure the session is not
+  // terminated).
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_1, fake_gaia_id_1,
+                                          refresh_token_1);
+  fake_gaia_mixin().SetupFakeGaiaForLogin(email_2, fake_gaia_id_2,
+                                          refresh_token_2);
+  FakeGaia::Configuration config;
+  config.session_sid_cookie = "fake_sid";
+  config.session_lsid_cookie = "fake_lsid";
+  config.session_1p_sidts_cookie = "fake_1p_sidts";
+  config.session_3p_sidts_cookie = "fake_3p_sidts";
+  config.emails = {email_1};
+  config.reuse_bound_session = true;
+  config.rotated_cookies = {std::string(k1PSIDTSCookieName),
+                            std::string(k3PSIDTSCookieName)};
+  fake_gaia().SetConfiguration(config);
+
+  // Make sure that subsequent `/ListAccounts` returns both accounts.
+  config.emails = {email_1, email_2};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
+
+  // Create a session to reuse.
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  std::vector<net::device_bound_sessions::SessionParams> params;
+  params.push_back(CreateTestSessionParams());
+  const std::string session_id = params[0].session_id;
+  const net::SchemefulSite session_site =
+      net::SchemefulSite(params[0].fetcher_url);
+  device_bound_session_manager().CreateBoundSessions(
+      std::move(params), wrapped_key, /*cookies_to_set=*/{},
+      net::CookieOptions(), create_future.GetCallback());
+  ASSERT_THAT(
+      create_future.Get<0>(),
+      UnorderedElementsAre(
+          net::device_bound_sessions::SessionError::ErrorType::kSuccess));
+
+  bool session_created = false;
+  DeviceBoundSessionAccessObserver observer(
+      device_bound_session_manager(),
+      base::BindLambdaForTesting([&session_created](
+                                     const net::device_bound_sessions::
+                                         SessionAccess& access) {
+        if (access.access_type ==
+            net::device_bound_sessions::SessionAccess::AccessType::kCreation) {
+          session_created = true;
+        }
+      }));
+
+  TestAccountReconcilorObserver account_reconcilor_observer(
+      AccountReconcilorFactory::GetForProfile(browser()->profile()),
+      /*wait_state=*/signin_metrics::AccountReconcilorState::kOk);
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  // Wait until the reconcilor reaches the
+  // `signin_metrics::AccountReconcilorState::kOk` state.
+  account_reconcilor_observer.WaitForStateChange();
+
+  base::queue<FakeGaia::MultiloginCall> multilogin_calls =
+      fake_gaia().GetAndResetMultiloginCalls();
+
+  ASSERT_THAT(multilogin_calls, SizeIs(2));
+
+  const auto& first_call = multilogin_calls.front();
+  // OAML first returns the challenge to sign.
+  ASSERT_EQ(first_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBindingChallenge);
+  multilogin_calls.pop();
+
+  // After the challenge is received and signed, OAML returns the bound cookies.
+  const auto& second_call = multilogin_calls.front();
+  ASSERT_EQ(second_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
+
+  // Verify that the bound session is present and it hasn't been
+  // terminated.
+  ASSERT_FALSE(session_created);
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      sessions_future;
+  device_bound_session_manager().GetAllSessions(sessions_future.GetCallback());
+  EXPECT_THAT(
+      sessions_future.Get(),
+      UnorderedElementsAre(AllOf(
+          Field(&net::device_bound_sessions::SessionKey::id,
+                net::device_bound_sessions::SessionKey::Id(session_id)),
+          Field(&net::device_bound_sessions::SessionKey::site, session_site))));
+}
+
+IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
+                       OverrideExistingSession) {
+  const unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();
+  const std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id);
+  signin::MakeAccountAvailable(
+      &identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithGaiaId(FakeGaiaMixin::kFakeUserGaiaId)
+          .WithRefreshToken(FakeGaiaMixin::kFakeRefreshToken)
+          .WithRefreshTokenBindingKey(wrapped_key)
+          .Build(FakeGaiaMixin::kFakeUserEmail));
+
+  ASSERT_TRUE(
+      identity_manager().HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(identity_manager().GetWrappedBindingKey(), wrapped_key);
+
+  // This makes sure that eventually OAML will return bound cookies, at the same
+  // time `/ListAccounts` WON'T return primary account triggering OAML - it
+  // simulates similar scenario to cookies being cleared.
+  fake_gaia_mixin().SetupFakeGaiaForLoginWithDefaults();
+  FakeGaia::Configuration config;
+  config.session_sid_cookie = "fake_sid";
+  config.session_lsid_cookie = "fake_lsid";
+  config.session_1p_sidts_cookie = "fake_1p_sidts";
+  config.session_3p_sidts_cookie = "fake_3p_sidts";
+  fake_gaia().SetConfiguration(config);
+
+  // Make sure that subsequent `/ListAccounts` return the missing primary
+  // account to avoid triggering OAML indefinitely.
+  config.emails = {FakeGaiaMixin::kFakeUserEmail};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&,
+      std::vector<net::CookieInclusionStatus>>
+      create_future;
+  std::vector<net::device_bound_sessions::SessionParams> params;
+  params.push_back(CreateTestSessionParams());
+  const std::string session_id = params[0].session_id;
+  const net::SchemefulSite session_site =
+      net::SchemefulSite(params[0].fetcher_url);
+  device_bound_session_manager().CreateBoundSessions(
+      std::move(params), wrapped_key, /*cookies_to_set=*/{},
+      net::CookieOptions(), create_future.GetCallback());
+  ASSERT_THAT(
+      create_future.Get<0>(),
+      UnorderedElementsAre(
+          net::device_bound_sessions::SessionError::ErrorType::kSuccess));
+
+  base::RunLoop run_loop;
+  DeviceBoundSessionAccessObserver observer(
+      device_bound_session_manager(),
+      base::BindLambdaForTesting([&run_loop](const net::device_bound_sessions::
+                                                 SessionAccess& access) {
+        // Wait until the observer receives the notification about the new
+        // session (override).
+        if (access.access_type ==
+            net::device_bound_sessions::SessionAccess::AccessType::kCreation) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Enforce initial `/ListAccounts`.
+  signin::SetFreshnessOfAccountsInGaiaCookie(&identity_manager(),
+                                             /*accounts_are_fresh=*/false);
+
+  // Wait until the observer receives the notification about the new session.
+  run_loop.Run();
+
+  base::queue<FakeGaia::MultiloginCall> multilogin_calls =
+      fake_gaia().GetAndResetMultiloginCalls();
+
+  ASSERT_THAT(multilogin_calls, SizeIs(2));
+
+  const auto& first_call = multilogin_calls.front();
+  // OAML first returns the challenge to sign.
+  ASSERT_EQ(first_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBindingChallenge);
+  multilogin_calls.pop();
+
+  // After the challenge is received and signed, OAML returns the bound
+  // cookies.
+  const auto& second_call = multilogin_calls.front();
+  ASSERT_EQ(second_call.action,
+            FakeGaia::MultiloginCall::Action::kReturnBoundCookies);
+
+  // Verify that the challenge was signed correctly.
+  const std::optional<gaia::MultiOAuthHeader> header = second_call.header;
+  ASSERT_TRUE(header.has_value());
+  ASSERT_THAT(header->account_requests(), SizeIs(1));
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      header->account_requests().at(0).token_binding_assertion(),
+      *unexportable_key_service().GetAlgorithm(key_id),
+      *unexportable_key_service().GetSubjectPublicKeyInfo(key_id)));
+
+  base::test::TestFuture<
+      const std::vector<net::device_bound_sessions::SessionKey>&>
+      sessions_future;
+  device_bound_session_manager().GetAllSessions(sessions_future.GetCallback());
+  EXPECT_THAT(
+      sessions_future.Get(),
+      UnorderedElementsAre(AllOf(
+          Field(&net::device_bound_sessions::SessionKey::id,
+                net::device_bound_sessions::SessionKey::Id(session_id)),
+          Field(&net::device_bound_sessions::SessionKey::site, session_site))));
+}
+
 class BoundSessionOAuthMultiloginStandardWithPrototypeFallbackTest
     : public BoundSessionOAuthMultiloginBaseTest {
  public:
@@ -886,6 +1164,11 @@ IN_PROC_BROWSER_TEST_F(
   config.session_1p_sidts_cookie = "fake_1p_sidts";
   config.session_3p_sidts_cookie = "fake_3p_sidts";
   fake_gaia().SetConfiguration(config);
+
+  // Make sure that subsequent `/ListAccounts` return the missing primary
+  // account to avoid triggering OAML indefinitely.
+  config.emails = {FakeGaiaMixin::kFakeUserEmail};
+  UpdateFakeGaiaConfigOnSetOnAccountsInCookieUpdated(config);
 
   base::RunLoop run_loop;
   SetBoundSessionParamsUpdatedCallback(run_loop.QuitClosure());
