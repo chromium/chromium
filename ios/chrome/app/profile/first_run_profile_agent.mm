@@ -142,6 +142,12 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   [self releaseUILocks];
 
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+
+  [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  _guidedTourPromoCoordinator = nil;
+
   [_firstRunCoordinator stop];
   _firstRunCoordinator = nil;
 
