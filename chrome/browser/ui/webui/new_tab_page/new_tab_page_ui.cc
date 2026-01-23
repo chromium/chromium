@@ -196,7 +196,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   GURL threads_url = google_base_url.Resolve("/search");
   threads_url = net::AppendQueryParameter(threads_url, "udm", "50");
-  threads_url = net::AppendQueryParameter(threads_url, "atvm", "1");
+  threads_url = net::AppendQueryParameter(threads_url, "atvm", "3");
   source->AddString("threadsUrl", threads_url.spec());
 
   source->AddInteger(
