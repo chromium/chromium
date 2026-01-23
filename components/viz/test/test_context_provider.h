@@ -55,10 +55,6 @@ class TestContextProvider
   explicit TestContextProvider(std::unique_ptr<TestContextSupport> support,
                                std::unique_ptr<TestRasterInterface> raster,
                                bool support_locking);
-  explicit TestContextProvider(
-      std::unique_ptr<TestContextSupport> support,
-      std::unique_ptr<TestGLES2Interface> gl,
-      bool support_locking);
 
   TestContextProvider(const TestContextProvider&) = delete;
   TestContextProvider& operator=(const TestContextProvider&) = delete;
@@ -102,6 +98,10 @@ class TestContextProvider
   ~TestContextProvider() override;
 
  private:
+  TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                      std::unique_ptr<TestGLES2Interface> gl,
+                      bool support_locking);
+
   void OnLostContext();
   void CheckValidThreadOrLockAcquired() const {
 #if DCHECK_IS_ON()
