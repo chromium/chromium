@@ -75,6 +75,4 @@ void GetUserPoliciesJson(
       FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
 }
 
-void SetActive() {}
-
 }  // namespace updater

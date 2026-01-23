@@ -11,12 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/activity_reporter/activity_reporter.h"
-#include "components/activity_reporter/buildflags.h"
 #include "components/activity_reporter/configurator.h"
 #include "components/activity_reporter/constants.h"
 #include "components/prefs/pref_service.h"
@@ -32,30 +29,20 @@ class ActivityReporterImpl : public ActivityReporter {
   ActivityReporterImpl(
       base::RepeatingCallback<PrefService*()> pref_service_provider,
       scoped_refptr<update_client::NetworkFetcherFactory>
-          network_fetcher_factory,
-      base::RepeatingClosure updater_active_callback)
+          network_fetcher_factory)
       : update_client_(update_client::UpdateClientFactory(
             base::MakeRefCounted<ActivityReporterConfigurator>(
                 pref_service_provider,
-                network_fetcher_factory))),
-        updater_active_callback_(updater_active_callback) {}
-
-  ActivityReporterImpl(scoped_refptr<update_client::UpdateClient> update_client,
-                       base::RepeatingClosure updater_active_callback)
-      : update_client_(update_client),
-        updater_active_callback_(updater_active_callback) {}
+                network_fetcher_factory))) {}
+  ActivityReporterImpl(
+      base::RepeatingCallback<PrefService*()> pref_service_provider,
+      scoped_refptr<update_client::NetworkFetcherFactory>
+          network_fetcher_factory,
+      scoped_refptr<update_client::UpdateClient> update_client)
+      : update_client_(update_client) {}
 
   void ReportActive() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if !BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
-    // If updater-reported actives use the non-legacy active definition (this
-    // one) report activity to the updater here.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        updater_active_callback_);
-#endif
     const base::Time now = base::Time::Now();
     if (last_reported_ && now - *last_reported_ < base::Hours(5)) {
       // The last report was too recent; don't send another.
@@ -92,7 +79,6 @@ class ActivityReporterImpl : public ActivityReporter {
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<base::Time> last_reported_;
   scoped_refptr<update_client::UpdateClient> update_client_;
-  base::RepeatingClosure updater_active_callback_;
 };
 
 }  // namespace
@@ -100,17 +86,18 @@ class ActivityReporterImpl : public ActivityReporter {
 // Must be called on a SequencedTaskRunner.
 std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
-    scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
-    base::RepeatingClosure updater_active_callback) {
-  return std::make_unique<ActivityReporterImpl>(
-      pref_service_provider, network_fetcher_factory, updater_active_callback);
+    scoped_refptr<update_client::NetworkFetcherFactory>
+        network_fetcher_factory) {
+  return std::make_unique<ActivityReporterImpl>(pref_service_provider,
+                                                network_fetcher_factory);
 }
 
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
-    scoped_refptr<update_client::UpdateClient> update_client,
-    base::RepeatingClosure updater_active_callback) {
-  return std::make_unique<ActivityReporterImpl>(update_client,
-                                                updater_active_callback);
+    base::RepeatingCallback<PrefService*()> pref_service_provider,
+    scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
+    scoped_refptr<update_client::UpdateClient> update_client) {
+  return std::make_unique<ActivityReporterImpl>(
+      pref_service_provider, network_fetcher_factory, update_client);
 }
 
 }  // namespace activity_reporter

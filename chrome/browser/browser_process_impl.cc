@@ -45,7 +45,6 @@
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/battery/battery_metrics.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
@@ -90,7 +89,6 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
-#include "chrome/browser/updater/updater.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -1327,8 +1325,7 @@ activity_reporter::ActivityReporter* BrowserProcessImpl::activity_reporter() {
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
             system_network_context_manager()->GetSharedURLLoaderFactory(),
             // Never send cookies for activity reports.
-            base::BindRepeating([](const GURL& url) { return false; })),
-        base::BindRepeating(&updater::SetActive));
+            base::BindRepeating([](const GURL& url) { return false; })));
   }
   return activity_reporter_.get();
 }

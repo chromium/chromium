@@ -2,20 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//components/activity_reporter/buildflags.gni")
 import("//testing/test.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "USE_LEGACY_ACTIVE_DEFINITION=$use_legacy_active_definition" ]
-}
 
 source_set("activity_reporter") {
   public = [ "activity_reporter.h" ]
 
   deps = [
-    ":buildflags",
     "//base",
     "//components/prefs",
     "//components/update_client",

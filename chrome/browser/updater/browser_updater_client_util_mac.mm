@@ -44,7 +44,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-#include "components/activity_reporter/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -202,10 +201,8 @@ void InstallUpdaterAndRegisterBrowser(base::TaskPriority priority,
           std::move(complete)));
 }
 
-}  // namespace
-
 // Marks the browser as active, and schedules a call 1 hour later to mark the
-// browser as active again, when using the legacy active definition.
+// browser as active again.
 void SetActive() {
   base::FilePath actives_dir =
       base::GetHomeDir()
@@ -217,16 +214,14 @@ void SetActive() {
     return;
   }
   base::WriteFile(actives_dir.Append(base::apple::BaseBundleID()), "");
-#if BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
-  // Only SetActive in a loop on macOS when using the legacy definition; the
-  // non-legacy definition will always call SetActive when appropriate.
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&SetActive), base::Hours(1));
-#endif
 }
+
+}  // namespace
 
 base::Version CurrentlyInstalledVersion() {
   base::ScopedBlockingCall blocks(FROM_HERE, base::BlockingType::WILL_BLOCK);
@@ -248,12 +243,10 @@ UpdaterScope GetBrowserUpdaterScope() {
 void EnsureUpdater(base::TaskPriority priority,
                    base::OnceClosure prompt,
                    base::OnceClosure complete) {
-#if BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), priority,
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
                              base::BindOnce(&SetActive));
-#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), priority,

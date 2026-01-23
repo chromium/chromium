@@ -50,9 +50,6 @@ void SetUpSystemUpdater();
 // calls `prompt` on the same sequence.
 void SchedulePeriodicTasks(base::RepeatingClosure prompt);
 
-// Communicates to the updater that the browser is active.
-void SetActive();
-
 std::optional<mojom::UpdateState> GetLastOnDemandUpdateState();
 
 std::optional<mojom::AppState> GetLastKnownBrowserRegistration();

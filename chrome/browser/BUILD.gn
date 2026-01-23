@@ -2013,7 +2013,6 @@ static_library("browser") {
     "//chrome/browser/webid",
     "//chrome/browser/webid:impl",
     "//components/activity_reporter",
-    "//components/activity_reporter:buildflags",
     "//components/browser_apis/tab_strip:mojom",
     "//components/content_settings/browser/ui",
     "//components/enterprise/connectors/core",
