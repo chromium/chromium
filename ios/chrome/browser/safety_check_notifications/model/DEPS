@@ -1,8 +1,10 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/content_suggestions",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/safety_check/model",
-  "+ios/chrome/browser/upgrade/model",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/upgrade/model",
+  # keep-sorted end
 ]
