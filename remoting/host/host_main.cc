@@ -47,9 +47,11 @@ namespace remoting {
 // Known entry points.
 int SingleProcessHostProcessMain();
 int NetworkProcessMain();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+int DesktopProcessMain();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN)
 int DaemonProcessMain();
-int DesktopProcessMain();
 int FileChooserMain();
 int RdpDesktopSessionMain();
 int UrlForwarderConfiguratorMain();
@@ -148,11 +150,13 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
     main_routine = &SingleProcessHostProcessMain;
   } else if (process_type == kProcessTypeNetwork) {
     main_routine = &NetworkProcessMain;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  } else if (process_type == kProcessTypeDesktop) {
+    main_routine = &DesktopProcessMain;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN)
   } else if (process_type == kProcessTypeDaemon) {
     main_routine = &DaemonProcessMain;
-  } else if (process_type == kProcessTypeDesktop) {
-    main_routine = &DesktopProcessMain;
   } else if (process_type == kProcessTypeFileChooser) {
     main_routine = &FileChooserMain;
   } else if (process_type == kProcessTypeRdpDesktopSession) {

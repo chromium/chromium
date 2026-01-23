@@ -382,6 +382,7 @@ static_library("common") {
     "desktop_and_cursor_conditional_composer.cc",
     "desktop_process.cc",
     "desktop_process.h",
+    "desktop_process_main.cc",
     "desktop_resizer_proxy.cc",
     "desktop_session.cc",
     "desktop_session.h",
