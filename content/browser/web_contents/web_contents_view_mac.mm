@@ -33,6 +33,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #import "content/browser/web_contents/web_drag_dest_mac.h"
 #include "content/common/web_contents_ns_view_bridge.mojom-shared.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -216,6 +218,35 @@ void WebContentsViewMac::StartDragging(
   // The drag invokes a nested event loop, arrange to continue
   // processing events.
   base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
+
+  GURL source_url = web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL();
+  ui::DataTransferEndpoint data_endpoint(
+      source_url,
+      {.notify_if_restricted = true,
+       .off_the_record = web_contents_->GetBrowserContext()->IsOffTheRecord()});
+
+  // TODO(crbug.com/410835513): Unify with other declarations of
+  // CreateClipboardEndpoint.
+  ClipboardEndpoint source_endpoint(
+      base::optional_ref<const ui::DataTransferEndpoint>(data_endpoint),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId()),
+      *web_contents_->GetPrimaryMainFrame());
+
+  // Checks if the drag operation is allowed by enterprise policies
+  if (!GetContentClient()->browser()->IsDragAllowedByPolicy(source_endpoint,
+                                                            drop_data)) {
+    web_contents_->SystemDragEnded(source_rwh);
+    return;
+  }
+
   NSDragOperation mask = static_cast<NSDragOperation>(allowed_operations);
 
   [drag_dest_ initiateDragWithRenderWidgetHost:source_rwh dropData:drop_data];

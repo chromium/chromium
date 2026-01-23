@@ -18,6 +18,7 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -47,11 +48,12 @@ namespace content {
 
 // Mac-specific implementation of the WebContentsView. It owns an NSView that
 // contains all of the contents of the tab and associated child views.
-class WebContentsViewMac : public WebContentsView,
-                           public RenderViewHostDelegateView,
-                           public PopupMenuHelper::Delegate,
-                           public remote_cocoa::mojom::WebContentsNSViewHost,
-                           public ui::ViewsHostableView {
+class CONTENT_EXPORT WebContentsViewMac
+    : public WebContentsView,
+      public RenderViewHostDelegateView,
+      public PopupMenuHelper::Delegate,
+      public remote_cocoa::mojom::WebContentsNSViewHost,
+      public ui::ViewsHostableView {
  public:
   // The corresponding WebContentsImpl is passed in the constructor, and manages
   // our lifetime. This doesn't need to be the case, but is this way currently
