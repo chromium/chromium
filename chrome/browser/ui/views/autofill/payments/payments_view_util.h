@@ -89,6 +89,8 @@ class TitleWithIconAfterLabelView : public views::BoxLayoutView {
   enum class Icon {
     // Google Pay icon. The "Pay" portion is recolored for light/dark mode.
     GOOGLE_PAY,
+    // Google Wallet icon.
+    GOOGLE_WALLET,
     // Google super G.
     GOOGLE_G,
     // Google Pay logo next to an Affirm logo separated by a vertical line.
