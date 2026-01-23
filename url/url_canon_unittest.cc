@@ -267,7 +267,7 @@ TEST_F(URLCanonTest, UTF) {
       StdStringCanonOutput output(&out_str);
 
       std::u16string input_str(
-          test_utils::TruncateWStringToUTF16(utf_case.input16));
+          test_utils::TruncateWStringToUtf16(utf_case.input16));
       size_t input_len = input_str.length();
       bool success = true;
       for (size_t ch = 0; ch < input_len; ch++) {
@@ -284,7 +284,7 @@ TEST_F(URLCanonTest, UTF) {
       // UTF-16 -> UTF-8
       std::string input8_str(utf_case.input8);
       std::u16string input16_str(
-          test_utils::TruncateWStringToUTF16(utf_case.input16));
+          test_utils::TruncateWStringToUtf16(utf_case.input16));
       EXPECT_EQ(input8_str, base::UTF16ToUTF8(input16_str));
 
       // UTF-8 -> UTF-16
@@ -686,7 +686,7 @@ TEST_F(URLCanonHostTest, Host) {
     // Wide version.
     if (host_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(host_case.input16));
+          test_utils::TruncateWStringToUtf16(host_case.input16));
       int host_len = static_cast<int>(input16.length());
       Component in_comp(0, host_len);
       Component out_comp;
@@ -734,7 +734,7 @@ TEST_F(URLCanonHostTest, Host) {
     // Wide version.
     if (host_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(host_case.input16));
+          test_utils::TruncateWStringToUtf16(host_case.input16));
       int host_len = static_cast<int>(input16.length());
       Component in_comp(0, host_len);
 
@@ -966,7 +966,7 @@ TEST_F(URLCanonTest, IPv4) {
 
     // 16-bit version.
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(test_case.input16));
+        test_utils::TruncateWStringToUtf16(test_case.input16));
 
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
@@ -1165,7 +1165,7 @@ TEST_F(URLCanonTest, IPv6) {
 
     // 16-bit version.
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(cases[i].input16));
+        test_utils::TruncateWStringToUtf16(cases[i].input16));
 
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
@@ -1214,7 +1214,7 @@ TEST_F(URLCanonTest, CanonicalizeHostSubstring) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     EXPECT_FALSE(CanonicalizeHostSubstring(
-        test_utils::TruncateWStringToUTF16(L"\xfdd0zyx.com"), &output));
+        test_utils::TruncateWStringToUtf16(L"\xfdd0zyx.com"), &output));
     output.Complete();
     EXPECT_EQ("%EF%B7%90zyx.com", out_str);
   }
@@ -1474,7 +1474,7 @@ void DoPathTest(base::span<const DualComponentCase> path_cases,
 
     if (path_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(path_case.input16));
+          test_utils::TruncateWStringToUtf16(path_case.input16));
       Component out_comp;
       std::string out_str;
       StdStringCanonOutput output(&out_str);
@@ -1595,7 +1595,7 @@ TEST_F(URLCanonPathPreservePercentEncodedDotDisabledTest, DecodesPercentDot) {
 
     if (path_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(path_case.input16));
+          test_utils::TruncateWStringToUtf16(path_case.input16));
       std::string out_str;
       StdStringCanonOutput output(&out_str);
       Component out_comp;
@@ -1647,7 +1647,7 @@ TEST_F(URLCanonTest, Query) {
 
     if (query_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(query_case.input16));
+          test_utils::TruncateWStringToUtf16(query_case.input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);
       std::string out_str;
@@ -1720,7 +1720,7 @@ TEST_F(URLCanonTest, Ref) {
     // 16-bit input
     if (ref_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(ref_case.input16));
+          test_utils::TruncateWStringToUtf16(ref_case.input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);
       Component out_comp;
@@ -2488,7 +2488,7 @@ TEST_F(URLCanonTest, CanonicalizePathUrlPath) {
     StdStringCanonOutput output16(&out_str16);
     url::Component out_component16;
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(path_case.input16.data()));
+        test_utils::TruncateWStringToUtf16(path_case.input16));
     CanonicalizePathUrlPath(input16, &output16, &out_component16);
     output16.Complete();
 
@@ -2921,7 +2921,7 @@ TEST_F(URLCanonTest, ReplacementOverflow) {
   for (int i = 0; i < 4800; i++)
     new_query.push_back('a');
 
-  std::u16string new_path(test_utils::TruncateWStringToUTF16(L"/foo"));
+  std::u16string new_path(test_utils::TruncateWStringToUtf16(L"/foo"));
   repl.SetPathStr(new_path);
   repl.SetQueryStr(new_query);
 
@@ -3106,7 +3106,7 @@ TEST_F(URLCanonTest, OpaqueHost) {
   for (const auto& host_case : host_cases) {
     SCOPED_TRACE(testing::Message() << "url: \"" << host_case.input16 << "\"");
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(host_case.input16));
+        test_utils::TruncateWStringToUtf16(host_case.input16));
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Component out_comp;
@@ -3173,7 +3173,7 @@ TEST_F(URLCanonTest, NonSpecialHostIPv6Address) {
     SCOPED_TRACE(testing::Message()
                  << "url: \"" << ip_address_case.input16 << "\"");
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(ip_address_case.input16));
+        test_utils::TruncateWStringToUtf16(ip_address_case.input16));
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     CanonHostInfo host_info;

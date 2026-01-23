@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
