@@ -117,9 +117,6 @@ void LayoutInline::WillBeDestroyed() {
     text_autosizer->Destroy(this);
 
   if (!DocumentBeingDestroyed()) {
-    if (Parent()) {
-      Parent()->DirtyLinesFromChangedChild(this);
-    }
     if (FirstInlineFragmentItemIndex()) {
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();

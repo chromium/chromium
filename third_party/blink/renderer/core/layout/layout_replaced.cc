@@ -73,14 +73,6 @@ LayoutReplaced::LayoutReplaced(Element* element) : LayoutBox(element) {
 
 LayoutReplaced::~LayoutReplaced() = default;
 
-void LayoutReplaced::WillBeDestroyed() {
-  NOT_DESTROYED();
-  if (!DocumentBeingDestroyed() && Parent())
-    Parent()->DirtyLinesFromChangedChild(this);
-
-  LayoutBox::WillBeDestroyed();
-}
-
 void LayoutReplaced::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,

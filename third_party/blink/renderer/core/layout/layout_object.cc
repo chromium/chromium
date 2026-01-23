@@ -4092,8 +4092,9 @@ void LayoutObject::WillBeRemovedFromTree() {
     RemoveLayers(layer);
   }
 
-  if (IsOutOfFlowPositioned() && Parent()->ChildrenInline())
+  if (Parent()->ChildrenInline()) {
     Parent()->DirtyLinesFromChangedChild(this);
+  }
 
   if (bitfields_.IsScrollAnchorObject()) {
     // Clear the bit first so that anchor.clear() doesn't recurse into

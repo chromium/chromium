@@ -100,8 +100,6 @@ void LayoutBlock::RemoveFromGlobalMaps() {
 
 void LayoutBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  if (!DocumentBeingDestroyed() && Parent())
-    Parent()->DirtyLinesFromChangedChild(this);
 
   if (LocalFrame* frame = GetFrame()) {
     frame->Selection().LayoutBlockWillBeDestroyed(*this);

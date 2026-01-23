@@ -265,9 +265,6 @@ void LayoutText::StyleDidChange(
 void LayoutText::RemoveAndDestroyTextBoxes() {
   NOT_DESTROYED();
   if (!DocumentBeingDestroyed()) {
-    if (Parent()) {
-      Parent()->DirtyLinesFromChangedChild(this);
-    }
     if (FirstInlineFragmentItemIndex()) {
       DetachAxHooksIfNeeded();
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
