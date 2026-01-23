@@ -176,12 +176,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
             BindRepeating(&GPUDevice::OnLoggingImpl,
                           WrapWeakPersistent(this))))));
   } else {
-    logging_callback_.reset(MakeWGPURepeatingCallback(blink::BindRepeating(
-        [](GPUDevice* self, wgpu::LoggingType loggingType,
-           wgpu::StringView message) {
-          self->OnLoggingImpl(loggingType, StringFromASCIIAndUTF8(message));
-        },
-        WrapWeakPersistent(this))));
+    logging_callback_.reset(MakeWGPURepeatingCallback(
+        blink::BindRepeating(&GPUDevice::OnLogging, WrapWeakPersistent(this))));
   }
 }
 
@@ -358,6 +354,12 @@ bool GPUDevice::ValidateBlendFactor(V8GPUBlendFactor blend_factor,
   return false;
 }
 
+void GPUDevice::OnUncapturedError(const wgpu::Device&,
+                                  wgpu::ErrorType errorType,
+                                  wgpu::StringView message) {
+  OnUncapturedErrorImpl(errorType, StringFromASCIIAndUTF8(message));
+}
+
 void GPUDevice::OnUncapturedErrorImpl(wgpu::ErrorType errorType,
                                       const String& message) {
   // Suppress errors once the device is lost.
@@ -385,6 +387,11 @@ void GPUDevice::OnUncapturedErrorImpl(wgpu::ErrorType errorType,
   if (!event->defaultPrevented()) {
     AddConsoleWarning(message);
   }
+}
+
+void GPUDevice::OnLogging(wgpu::LoggingType loggingType,
+                          wgpu::StringView message) {
+  OnLoggingImpl(loggingType, StringFromASCIIAndUTF8(message));
 }
 
 void GPUDevice::OnLoggingImpl(wgpu::LoggingType loggingType,
@@ -845,12 +852,7 @@ void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
                           WrapWeakPersistent(this))))));
   } else {
     error_callback.reset(MakeWGPURepeatingCallback(blink::BindRepeating(
-        [](GPUDevice* self, const wgpu::Device&, wgpu::ErrorType errorType,
-           wgpu::StringView message) {
-          self->OnUncapturedErrorImpl(errorType,
-                                      StringFromASCIIAndUTF8(message));
-        },
-        WrapWeakPersistent(this))));
+        &GPUDevice::OnUncapturedError, WrapWeakPersistent(this))));
   }
   dawn_desc.SetUncapturedErrorCallback(error_callback->UnboundCallback(),
                                        error_callback->AsUserdata());
