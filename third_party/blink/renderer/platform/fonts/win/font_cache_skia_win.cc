@@ -200,43 +200,38 @@ const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   // large repertoire. Eventually, we need to scan all the fonts
   // on the system to have a Firefox-like coverage.
   // Make sure that all of them are lowercased.
-  const static UChar* const kCjkFonts[] = {
-      u"arial unicode ms", u"ms pgothic", u"simsun", u"gulim", u"pmingliu",
-      u"wenquanyi zen hei",  // Partial CJK Ext. A coverage but more widely
-                             // known to Chinese users.
-      u"ar pl shanheisun uni", u"ar pl zenkai uni",
-      u"han nom a",  // Complete CJK Ext. A coverage.
-      u"code2000"    // Complete CJK Ext. A coverage.
+  const static char* const kCjkFonts[] = {
+      "arial unicode ms", "ms pgothic", "simsun", "gulim", "pmingliu",
+      "wenquanyi zen hei",  // Partial CJK Ext. A coverage but more widely
+                            // known to Chinese users.
+      "ar pl shanheisun uni", "ar pl zenkai uni",
+      "han nom a",  // Complete CJK Ext. A coverage.
+      "code2000"    // Complete CJK Ext. A coverage.
       // CJK Ext. B fonts are not listed here because it's of no use
       // with our current non-BMP character handling because we use
       // Uniscribe for it and that code path does not go through here.
   };
 
-  const static UChar* const kCommonFonts[] = {
-      u"tahoma", u"arial unicode ms", u"lucida sans unicode",
-      u"microsoft sans serif", u"palatino linotype",
+  const static char* const kCommonFonts[] = {
+      "tahoma", "arial unicode ms", "lucida sans unicode",
+      "microsoft sans serif", "palatino linotype",
       // Six fonts below (and code2000 at the end) are not from MS, but
       // once installed, cover a very wide range of characters.
-      u"dejavu serif", u"dejavu sasns", u"freeserif", u"freesans", u"gentium",
-      u"gentiumalt", u"ms pgothic", u"simsun", u"gulim", u"pmingliu",
-      u"code2000"};
+      "dejavu serif", "dejavu sasns", "freeserif", "freesans", "gentium",
+      "gentiumalt", "ms pgothic", "simsun", "gulim", "pmingliu", "code2000"};
 
-  const UChar* const* pan_uni_fonts = nullptr;
-  int num_fonts = 0;
+  base::span<const char* const> pan_uni_fonts;
   if (script == USCRIPT_HAN) {
-    pan_uni_fonts = kCjkFonts;
-    num_fonts = std::size(kCjkFonts);
+    pan_uni_fonts = base::span(kCjkFonts);
   } else {
-    pan_uni_fonts = kCommonFonts;
-    num_fonts = std::size(kCommonFonts);
+    pan_uni_fonts = base::span(kCommonFonts);
   }
-  // Font returned from getFallbackFamily may not cover |character|
+  // Font returned from GetFallbackFamily() may not cover `codepoint`
   // because it's based on script to font mapping. This problem is
   // critical enough for non-Latin scripts (especially Han) to
-  // warrant an additional (real coverage) check with fontCotainsCharacter.
-  for (int i = 0; i < num_fonts; ++i) {
-    FontFaceCreationParams create_by_family =
-        FontFaceCreationParams(AtomicString(UNSAFE_TODO(pan_uni_fonts[i])));
+  // warrant an additional (real coverage) check with FontContainsCharacter().
+  for (const char* font : pan_uni_fonts) {
+    FontFaceCreationParams create_by_family{AtomicString(font)};
     const FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint))
@@ -379,12 +374,10 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
       {" ultrabold", 10, FontSelectionValue(800)},
       {" black", 6, FontSelectionValue(900)},
       {" heavy", 6, FontSelectionValue(900)}};
-  size_t num_variants = std::size(kVariantForSuffix);
-  for (size_t i = 0; i < num_variants; i++) {
-    const FamilyWeightSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
+  for (const auto& entry : kVariantForSuffix) {
     if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
-      String family_name = family.GetString();
-      family_name.Truncate(family.length() - entry.length);
+      StringView family_name(family);
+      family_name.remove_suffix(entry.length);
       adjusted_name = AtomicString(family_name);
       variant_weight = entry.weight;
       return true;
@@ -416,12 +409,10 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
       {" expanded", 9, kExpandedWidthValue},
       {" extraexpanded", 14, kExtraExpandedWidthValue},
       {" ultraexpanded", 14, kUltraExpandedWidthValue}};
-  size_t num_variants = std::size(kVariantForSuffix);
-  for (size_t i = 0; i < num_variants; i++) {
-    const FamilyStretchSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
+  for (const auto& entry : kVariantForSuffix) {
     if (family.EndsWith(entry.suffix, kTextCaseASCIIInsensitive)) {
-      String family_name = family.GetString();
-      family_name.Truncate(family.length() - entry.length);
+      StringView family_name(family);
+      family_name.remove_suffix(entry.length);
       adjusted_name = AtomicString(family_name);
       variant_stretch = entry.stretch;
       return true;
