@@ -590,7 +590,7 @@ class VulkanOverlayAdaptorTest
       public testing::WithParamInterface<VulkanOverlayAdaptorTestParam> {
  public:
   VulkanOverlayAdaptorTest();
-  ~VulkanOverlayAdaptorTest() = default;
+  ~VulkanOverlayAdaptorTest();
 
   struct PrintToStringParamName {
     template <class ParamType>
@@ -668,6 +668,10 @@ VulkanOverlayAdaptorTest::VulkanOverlayAdaptorTest()
       &shared_image_manager_, nullptr, false);
 }
 
+VulkanOverlayAdaptorTest::~VulkanOverlayAdaptorTest() {
+  shared_image_factory_->DestroyAllSharedImages(true);
+}
+
 void VulkanOverlayAdaptorTest::ProcessMailboxes(
     gpu::Mailbox in_mailbox,
     const gfx::Size& size,
@@ -677,11 +681,13 @@ void VulkanOverlayAdaptorTest::ProcessMailboxes(
     gfx::OverlayTransform transform,
     VulkanOverlayAdaptor& processor) {
   auto in_vulkan_representation = shared_image_manager_.ProduceVulkan(
-      in_mailbox, nullptr, processor.GetVulkanDeviceQueue(),
-      processor.GetVulkanImplementation(), /*needs_detiling=*/true);
+      in_mailbox, context_state_->memory_type_tracker(),
+      processor.GetVulkanDeviceQueue(), processor.GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   auto out_vulkan_representation = shared_image_manager_.ProduceVulkan(
-      out_mailbox, nullptr, processor.GetVulkanDeviceQueue(),
-      processor.GetVulkanImplementation(), /*needs_detiling=*/true);
+      out_mailbox, context_state_->memory_type_tracker(),
+      processor.GetVulkanDeviceQueue(), processor.GetVulkanImplementation(),
+      /*needs_detiling=*/true);
   {
     std::vector<VkSemaphore> begin_semaphores;
     std::vector<VkSemaphore> end_semaphores;
