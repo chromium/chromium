@@ -4,10 +4,12 @@
 
 #include "chrome/browser/skills/skills_ui_controller.h"
 
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace skills {
 
@@ -24,10 +26,6 @@ SkillsUiController::~SkillsUiController() = default;
 SkillsUiController* SkillsUiController::From(
     BrowserWindowInterface* browser_window_interface) {
   return Get(browser_window_interface->GetUnownedUserDataHost());
-}
-
-void SkillsUiController::ShowDialog(std::string_view prompt) {
-  // TODO(crbug.com/475589469): Implement this.
 }
 
 void SkillsUiController::OnSkillSaved(std::string_view skill_id) {

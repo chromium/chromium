@@ -25,7 +25,6 @@ class SkillsUiController {
   static SkillsUiController* From(
       BrowserWindowInterface* browser_window_interface);
 
-  void ShowDialog(std::string_view prompt);
   // Called when we want to update UI after a skill has been saved.
   void OnSkillSaved(std::string_view skill_id);
   // Called after a skill has been deleted from the UI.

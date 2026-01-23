@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::WebContents;
@@ -22,19 +21,6 @@ constexpr gfx::Size kDefaultSize{500, 628};
 }  // namespace
 
 namespace skills {
-
-void SkillsDialog::CreateAndShow(tabs::TabInterface* tab) {
-  if (!tab || !tab->GetContents()) {
-    return;
-  }
-  if (auto* window = tab->GetBrowserWindowInterface()) {
-    Profile* profile = window->GetProfile();
-    ShowConstrainedWebDialog(
-        profile, std::unique_ptr<SkillsDialog>(new SkillsDialog(profile)),
-        tab->GetContents());
-  }
-  return;
-}
 
 SkillsDialog::SkillsDialog(Profile* profile)
     : profile_keep_alive_(profile->GetOriginalProfile(),

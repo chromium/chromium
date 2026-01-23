@@ -8,8 +8,6 @@ source_set("skills") {
   sources = [
     "skills_service_factory.cc",
     "skills_service_factory.h",
-    "skills_ui_controller.cc",
-    "skills_ui_controller.h",
   ]
 
   public_deps = [
@@ -21,15 +19,51 @@ source_set("skills") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/toasts",
-    "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/common:channel_info",
     "//components/keyed_service/core",
     "//components/skills:features",
     "//components/skills/internal",
     "//components/skills/public",
     "//components/sync/model",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "skills_ui_tab_controller_interface.cc",
+    "skills_ui_tab_controller_interface.h",
+  ]
+  deps = [
+    "//base",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "skills_ui_controller.cc",
+    "skills_ui_controller.h",
+    "skills_ui_tab_controller.cc",
+    "skills_ui_tab_controller.h",
+  ]
+
+  public_deps = [
+    ":public",
+    "//base",
+  ]
+
+  deps = [
+    ":skills",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/skills",
+    "//components/skills:features",
+    "//components/skills/public",
+    "//components/web_modal",
     "//ui/base/unowned_user_data",
   ]
 }
@@ -37,12 +71,17 @@ source_set("skills") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "skills_ui_controller_browsertest.cc" ]
+  sources = [
+    "skills_ui_controller_browsertest.cc",
+    "skills_ui_tab_controller_browsertest.cc",
+  ]
   deps = [
     ":skills",
+    ":ui",
     "//chrome/browser/ui",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/test:test_support",
+    "//components/skills:features",
   ]
 }

@@ -88,11 +88,13 @@
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/skills/features.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #endif
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -366,6 +368,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
     actor_tab_data_ =
         GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);
+
+    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+      skills_ui_tab_controller_ =
+          GetUserDataFactory().CreateInstance<skills::SkillsUiTabController>(
+              tab, tab);
+    }
   }  // IsInNormalWindow() end.
 
   // This block instantiates the page action controllers that depends on the

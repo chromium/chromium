@@ -41,6 +41,10 @@ class ManagePasswordsPageActionController;
 class BookmarkBarPreloadPipelineManager;
 class NewTabPagePreloadPipelineManager;
 
+namespace skills {
+class SkillsUiTabControllerInterface;
+}  // namespace skills
+
 namespace back_to_opener {
 class BackToOpenerController;
 }  // namespace back_to_opener
@@ -515,6 +519,9 @@ class TabFeatures {
 
   std::unique_ptr<back_to_opener::BackToOpenerController>
       back_to_opener_controller_;
+
+  std::unique_ptr<skills::SkillsUiTabControllerInterface>
+      skills_ui_tab_controller_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

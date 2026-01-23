@@ -37,7 +37,6 @@ source_set("skills") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/skills:resources",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
     "//chrome/common",

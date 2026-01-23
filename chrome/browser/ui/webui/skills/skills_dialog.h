@@ -10,22 +10,14 @@
 
 class Profile;
 
-namespace tabs {
-class TabInterface;
-}
-
 namespace skills {
 
 class SkillsDialog : public ui::WebDialogDelegate {
  public:
-  static void CreateAndShow(tabs::TabInterface* tab);
-
+  explicit SkillsDialog(Profile* profile);
   SkillsDialog(const SkillsDialog&) = delete;
   SkillsDialog& operator=(const SkillsDialog&) = delete;
   ~SkillsDialog() override;
-
- protected:
-  explicit SkillsDialog(Profile* profile);
 
  private:
   // Prevent Profile destruction until the dialog is closed, to prevent a
