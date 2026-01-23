@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
@@ -2209,6 +2210,12 @@ LineLogicalSide ComputedStyle::GetTextEmphasisLineLogicalSide() const {
   if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled() &&
       position == TextEmphasisPosition::kAuto) {
     if (IsHorizontalWritingMode()) {
+      // In Chinese, emphasis marks appear below the text.
+      // https://drafts.csswg.org/css-text-decor/#text-emphasis-position-property
+      const LayoutLocale* locale = GetFontDescription().Locale();
+      if (locale && locale->IsMacrolanguageChinese()) {
+        return LineLogicalSide::kUnder;
+      }
       return LineLogicalSide::kOver;
     }
     switch (GetWritingMode()) {
