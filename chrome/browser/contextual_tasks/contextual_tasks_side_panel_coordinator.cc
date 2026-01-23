@@ -436,9 +436,6 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   UpdateContextualSearchWebContentsHelperForTask(
       contextual_search_service_, browser_window_, contextual_tasks_service_,
       this, web_contents, new_task_id);
-
-  // Updates the automated chip if needed.
-  UpdateContextualTaskUI();
 }
 
 contextual_search::ContextualSearchSessionHandle*
