@@ -4696,7 +4696,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the format used for creating video frames with hardware backed
     GpuMemoryBuffers. Result is an enum that represents OutputFormat in
-    GpuMemoryBufferVideoFramePool. Recorded once per VideoFrame creation.
+    MappableSharedImageVideoFramePool. Recorded once per VideoFrame creation.
   </summary>
 </histogram>
 
@@ -4708,7 +4708,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the format used for creating video frames with software backed
     GpuMemoryBuffers. Result is an enum that represents OutputFormat in
-    GpuMemoryBufferVideoFramePool. Recorded once per VideoFrame creation.
+    MappableSharedImageVideoFramePool. Recorded once per VideoFrame creation.
   </summary>
 </histogram>
 
@@ -4758,16 +4758,6 @@ chromium-metrics-reviews@google.com.
     creates its underlying media::VideoDecodeAccelerator. Warning: this
     histogram was expired from 2023-01-22 to 2023-06-21; 2024-06-22 to
     2025-09-01; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
-    enum="VideoPixelFormatUnion" expires_after="2026-05-24">
-  <owner>magchen@chromium.org</owner>
-  <owner>cros-gfx-video@google.com</owner>
-  <summary>
-    GpuMemoryBufferVideoFramePool is called with an unsupported VideoFrame pixel
-    format. Emitted on VideoFrame arrival.
   </summary>
 </histogram>
 
@@ -4939,6 +4929,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether capture started successfully after a low-latency input stream
     startup was requested.
+  </summary>
+</histogram>
+
+<histogram name="Media.MappableSharedImageVideoFramePool.UnsupportedFormat"
+    enum="VideoPixelFormatUnion" expires_after="2026-05-24">
+  <owner>magchen@chromium.org</owner>
+  <owner>cros-gfx-video@google.com</owner>
+  <summary>
+    MappableSharedImageVideoFramePool is called with an unsupported VideoFrame
+    pixel format. Emitted on VideoFrame arrival.
   </summary>
 </histogram>
 

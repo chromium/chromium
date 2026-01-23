@@ -157,17 +157,18 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
 }  // namespace
 
-class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
-    : public base::RefCountedThreadSafe<GpuMemoryBufferVideoFramePool> {
+class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
+    : public base::RefCountedThreadSafe<MappableSharedImageVideoFramePool> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  GpuMemoryBufferVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
-                                const gfx::Size& coded_size)
+  MappableSharedImageVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
+                                    const gfx::Size& coded_size)
       : gpu_factories_(gpu_factories), coded_size_(coded_size) {}
-  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
-  GpuMemoryBufferVideoFramePool& operator=(
-      const GpuMemoryBufferVideoFramePool&) = delete;
+  MappableSharedImageVideoFramePool(const MappableSharedImageVideoFramePool&) =
+      delete;
+  MappableSharedImageVideoFramePool& operator=(
+      const MappableSharedImageVideoFramePool&) = delete;
 
   scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
       const gfx::Size& visible_size) {
@@ -206,9 +207,9 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     auto shared_image = std::move(available_shared_images_.back());
     available_shared_images_.pop_back();
 
-    auto shared_image_release_cb =
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
+    auto shared_image_release_cb = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&MappableSharedImageVideoFramePool::ReuseFrame, this,
+                       shared_image));
     video_frame = media::VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), sync_token, std::move(shared_image_release_cb),
         gfx::Rect(visible_size), visible_size, base::TimeDelta());
@@ -216,8 +217,8 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
   }
 
  private:
-  friend class RefCountedThreadSafe<GpuMemoryBufferVideoFramePool>;
-  ~GpuMemoryBufferVideoFramePool() = default;
+  friend class RefCountedThreadSafe<MappableSharedImageVideoFramePool>;
+  ~MappableSharedImageVideoFramePool() = default;
 
   // |shared_image| will be used when MappableSI is enabled. It will be null
   // otherwise.
@@ -1094,7 +1095,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   }
 
   if (!gmb_frame_pool_) {
-    gmb_frame_pool_ = base::MakeRefCounted<GpuMemoryBufferVideoFramePool>(
+    gmb_frame_pool_ = base::MakeRefCounted<MappableSharedImageVideoFramePool>(
         gpu_factories_, dest_coded_size);
   }
 

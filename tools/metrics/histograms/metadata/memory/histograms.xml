@@ -85,7 +85,6 @@ chromium-metrics-reviews@google.com.
   <variant name="gpu__TextureManager" summary="gpu::TextureManager"/>
   <variant name="gpu__TransferBufferManager"
       summary="gpu::TransferBufferManager"/>
-  <variant name="GpuMemoryBufferVideoFramePool"/>
   <variant name="GpuPersistentCache"/>
   <variant name="GraphiteVizMemoryAssistant"/>
   <variant name="GrShaderCache"/>
@@ -99,6 +98,7 @@ chromium-metrics-reviews@google.com.
   <variant name="LocalStorage"/>
   <variant name="MadvFreeDiscardableMemoryAllocator"/>
   <variant name="Malloc"/>
+  <variant name="MappableSharedImageVideoFramePool"/>
   <variant name="media__V4l2VideoDecodeAccelerator"
       summary="media::V4l2VideoDecodeAccelerator"/>
   <variant name="media__VaapiVideoEncodeAccelerator"

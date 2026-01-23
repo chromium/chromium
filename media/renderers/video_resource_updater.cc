@@ -227,7 +227,7 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
   using Subsampling = viz::SharedImageFormat::Subsampling;
   using ChannelFormat = viz::SharedImageFormat::ChannelFormat;
   // Supports VideoPixelFormats based on data from
-  // Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat UMA which ends up
+  // Media.MappableSharedImageVideoFramePool.UnsupportedFormat UMA which ends up
   // going through VideoResourceUpdater for software pixel upload.
   switch (input_format) {
     case PIXEL_FORMAT_I420:
@@ -1074,10 +1074,10 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
         int max_value = 1 << bits_per_channel;
         // Use 1.0/max_value to be consistent with multiplanar shared images
         // which create TextureDrawQuads and don't take in a multiplier, offset.
-        // This is consistent with GpuMemoryBufferVideoFramePool as well which
-        // performs libyuv conversion for converting I420 to buffer. This is
-        // sub-optimal but okay as it is only used for 16-bit float formats with
-        // slower software pixel upload path here.
+        // This is consistent with MappableSharedImageVideoFramePool as well
+        // which performs libyuv conversion for converting I420 to buffer. This
+        // is sub-optimal but okay as it is only used for 16-bit float formats
+        // with slower software pixel upload path here.
         float libyuv_multiplier = 1.f / max_value;
         libyuv::HalfFloatPlane(
             reinterpret_cast<const uint16_t*>(

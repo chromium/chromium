@@ -34,7 +34,7 @@
 #include "media/filters/decoder_stream.h"
 #include "media/filters/video_renderer_algorithm.h"
 #include "media/renderers/renderer_impl_factory.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 namespace base {
 class TickClock;
@@ -62,7 +62,7 @@ class MEDIA_EXPORT VideoRendererImpl
       const CreateVideoDecodersCB& create_video_decoders_cb,
       bool drop_frames,
       MediaLog* media_log,
-      std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool,
+      std::unique_ptr<MappableSharedImageVideoFramePool> gmb_pool,
       MediaPlayerLoggingID media_player_id);
 
   VideoRendererImpl(const VideoRendererImpl&) = delete;
@@ -243,7 +243,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // Ensure this is destructed after |algorithm_| for optimal memory release
   // when a frames are still held by the compositor. Must be destructed after
   // |video_decoder_stream_| since it holds a callback to the pool.
-  std::unique_ptr<GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
+  std::unique_ptr<MappableSharedImageVideoFramePool> gpu_memory_buffer_pool_;
 
   // Provides video frames to VideoRendererImpl.
   std::unique_ptr<VideoDecoderStream> video_decoder_stream_;

@@ -7,12 +7,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
 
-class MockGpuMemoryBufferVideoFramePool : public GpuMemoryBufferVideoFramePool {
+class MockGpuMemoryBufferVideoFramePool
+    : public MappableSharedImageVideoFramePool {
  public:
   explicit MockGpuMemoryBufferVideoFramePool(
       std::vector<base::OnceClosure>* frame_ready_cbs);

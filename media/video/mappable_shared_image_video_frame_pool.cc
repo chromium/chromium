@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -74,9 +74,9 @@ namespace media {
 
 // Implementation of a pool of mappable shared images(MappableSI) used to back
 // VideoFrames.
-class GpuMemoryBufferVideoFramePool::PoolImpl
+class MappableSharedImageVideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<
-          GpuMemoryBufferVideoFramePool::PoolImpl>,
+          MappableSharedImageVideoFramePool::PoolImpl>,
       public base::trace_event::MemoryDumpProvider {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
@@ -99,7 +99,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     DCHECK(worker_task_runner_);
 
     // Using a static atomic id generator to generate a unique id for each
-    // GpuMemoryBufferVideoFramePool in a thread safe manner.
+    // MappableSharedImageVideoFramePool in a thread safe manner.
     static std::atomic_uint32_t id = 0;
     pool_id_ = ++id;
   }
@@ -131,7 +131,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
 
  private:
   friend class base::RefCountedThreadSafe<
-      GpuMemoryBufferVideoFramePool::PoolImpl>;
+      MappableSharedImageVideoFramePool::PoolImpl>;
   ~PoolImpl() override;
 
   // Resource needed to compose a frame.
@@ -285,7 +285,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   base::circular_deque<VideoFrameCopyRequest> frame_copy_requests_;
   bool in_shutdown_ = false;
 
-  // Id used in ::OnMemoryDump to identify the GpuMemoryBufferVideoFramePool.
+  // Id used in ::OnMemoryDump to identify the
+  // MappableSharedImageVideoFramePool.
   uint32_t pool_id_ = 0;
 
   // Unique Id generated each time a MappableSI is created. This is
@@ -659,7 +660,7 @@ gfx::ColorSpace GetOutputColorSpace(
 // The data contained in |video_frame| is copied into the VideoFrame passed to
 // |frame_ready_cb|.
 // This has to be called on the thread where |media_task_runner_| is current.
-void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
+void MappableSharedImageVideoFramePool::PoolImpl::CreateHardwareFrame(
     scoped_refptr<VideoFrame> video_frame,
     FrameReadyCB frame_ready_cb) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
@@ -744,7 +745,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_UNKNOWN:
       if (is_software_backed_video_frame) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat",
+            "Media.MappableSharedImageVideoFramePool.UnsupportedFormat",
             pixel_format, PIXEL_FORMAT_MAX + 1);
       }
       passthrough = true;
@@ -774,7 +775,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   }
 }
 
-bool GpuMemoryBufferVideoFramePool::PoolImpl::OnMemoryDump(
+bool MappableSharedImageVideoFramePool::PoolImpl::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   const int kImportance = 2;
@@ -804,7 +805,7 @@ bool GpuMemoryBufferVideoFramePool::PoolImpl::OnMemoryDump(
   return true;
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::Abort() {
+void MappableSharedImageVideoFramePool::PoolImpl::Abort() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Abort any pending copy requests. If one is already in flight, we can't do
   // anything about it.
@@ -815,7 +816,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Abort() {
                              frame_copy_requests_.end());
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
+void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDone(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
@@ -830,7 +831,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
                      std::move(video_frame), frame_resource));
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
+void MappableSharedImageVideoFramePool::PoolImpl::StartCopy() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!frame_copy_requests_.empty());
 
@@ -872,9 +873,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
 // Copies |video_frame| into |frame_resource| asynchronously, posting n tasks
 // that will be synchronized by a barrier.
 // After the barrier is passed OnCopiesDone will be called.
-void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffer(
-    scoped_refptr<VideoFrame> video_frame,
-    FrameResource* frame_resource) {
+void MappableSharedImageVideoFramePool::PoolImpl::
+    CopyVideoFrameToGpuMemoryBuffer(scoped_refptr<VideoFrame> video_frame,
+                                    FrameResource* frame_resource) {
   CHECK(frame_resource);
   CHECK(frame_resource->shared_image);
   CHECK(frame_resource->scoped_mapping);
@@ -922,7 +923,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffer(
 }
 
 // static
-void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
+void MappableSharedImageVideoFramePool::PoolImpl::CopyRowsToBuffer(
     GpuVideoAcceleratorFactories::OutputFormat output_format,
     const size_t row,
     const size_t rows_to_copy,
@@ -996,7 +997,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
   }
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
+void MappableSharedImageVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResource* frame_resource) {
@@ -1040,7 +1041,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
   CompleteCopyRequestAndMaybeStartNextCopy(std::move(frame));
 }
 
-scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
+scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
     BindAndCreateMailboxHardwareFrameResource(
         FrameResource* frame_resource,
         const gfx::Size& coded_size,
@@ -1154,11 +1155,11 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
 // Destroy all the resources posting one task per FrameResource
 // to the |media_task_runner_|.
-GpuMemoryBufferVideoFramePool::PoolImpl::~PoolImpl() {
+MappableSharedImageVideoFramePool::PoolImpl::~PoolImpl() {
   DCHECK(in_shutdown_);
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::Shutdown() {
+void MappableSharedImageVideoFramePool::PoolImpl::Shutdown() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Clients don't care about copies once shutdown has started, so abort them.
   Abort();
@@ -1178,15 +1179,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Shutdown() {
   resources_pool_.clear();
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::SetTickClockForTesting(
+void MappableSharedImageVideoFramePool::PoolImpl::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
 }
 
 // Tries to find the resource in the pool or creates it.
 // Incompatible resource will be dropped.
-GpuMemoryBufferVideoFramePool::PoolImpl::FrameResource*
-GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
+MappableSharedImageVideoFramePool::PoolImpl::FrameResource*
+MappableSharedImageVideoFramePool::PoolImpl::GetOrCreateFrameResource(
     const gfx::Size& size,
     gfx::BufferUsage usage,
     const gfx::ColorSpace& color_space) {
@@ -1270,7 +1271,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
   return nullptr;
 }
 
-void GpuMemoryBufferVideoFramePool::PoolImpl::
+void MappableSharedImageVideoFramePool::PoolImpl::
     CompleteCopyRequestAndMaybeStartNextCopy(
         scoped_refptr<VideoFrame> video_frame) {
   DCHECK(!frame_copy_requests_.empty());
@@ -1284,7 +1285,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
 }
 
 // static
-void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResource(
+void MappableSharedImageVideoFramePool::PoolImpl::DeleteFrameResource(
     GpuVideoAcceleratorFactories* const gpu_factories,
     FrameResource* frame_resource) {
   // TODO(dcastagna): As soon as the context lost is dealt with in media,
@@ -1302,7 +1303,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResource(
 
 // Called when a VideoFrame is no longer referenced. Put back the resource in
 // the pool.
-void GpuMemoryBufferVideoFramePool::PoolImpl::SharedImageReleased(
+void MappableSharedImageVideoFramePool::PoolImpl::SharedImageReleased(
     FrameResource* frame_resource,
     const gpu::SyncToken& release_sync_token) {
   if (!media_task_runner_->RunsTasksInCurrentSequence()) {
@@ -1337,9 +1338,10 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::SharedImageReleased(
   }
 }
 
-GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool() = default;
+MappableSharedImageVideoFramePool::MappableSharedImageVideoFramePool() =
+    default;
 
-GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
+MappableSharedImageVideoFramePool::MappableSharedImageVideoFramePool(
     const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     GpuVideoAcceleratorFactories* gpu_factories)
@@ -1348,11 +1350,11 @@ GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
                                                 gpu_factories)) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
-          pool_impl_.get(), "GpuMemoryBufferVideoFramePool", media_task_runner,
-          base::trace_event::MemoryDumpProvider::Options());
+          pool_impl_.get(), "MappableSharedImageVideoFramePool",
+          media_task_runner, base::trace_event::MemoryDumpProvider::Options());
 }
 
-GpuMemoryBufferVideoFramePool::~GpuMemoryBufferVideoFramePool() {
+MappableSharedImageVideoFramePool::~MappableSharedImageVideoFramePool() {
   // May be nullptr in tests.
   if (!pool_impl_) {
     return;
@@ -1363,7 +1365,7 @@ GpuMemoryBufferVideoFramePool::~GpuMemoryBufferVideoFramePool() {
       pool_impl_.get());
 }
 
-void GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame(
+void MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame(
     scoped_refptr<VideoFrame> video_frame,
     FrameReadyCB frame_ready_cb) {
   DCHECK(video_frame);
@@ -1371,11 +1373,11 @@ void GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame(
                                   std::move(frame_ready_cb));
 }
 
-void GpuMemoryBufferVideoFramePool::Abort() {
+void MappableSharedImageVideoFramePool::Abort() {
   pool_impl_->Abort();
 }
 
-void GpuMemoryBufferVideoFramePool::SetTickClockForTesting(
+void MappableSharedImageVideoFramePool::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   pool_impl_->SetTickClockForTesting(tick_clock);
 }

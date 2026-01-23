@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 #include <stdint.h>
 
@@ -33,9 +33,9 @@ namespace media {
 // TODO(crbug.com/366375486): Convert the currently skipped tests.
 const bool SkipTestWithMappableSI = true;
 
-class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
+class MappableSharedImageVideoFramePoolTest : public ::testing::Test {
  public:
-  GpuMemoryBufferVideoFramePoolTest() = default;
+  MappableSharedImageVideoFramePoolTest() = default;
   void SetUp() override {
     // Seed test clock with some dummy non-zero value to avoid confusion with
     // empty base::TimeTicks values.
@@ -49,8 +49,10 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
             media_task_runner_);
     mock_gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
-    gpu_memory_buffer_pool_ = std::make_unique<GpuMemoryBufferVideoFramePool>(
-        media_task_runner_, copy_task_runner_.get(), mock_gpu_factories_.get());
+    gpu_memory_buffer_pool_ =
+        std::make_unique<MappableSharedImageVideoFramePool>(
+            media_task_runner_, copy_task_runner_.get(),
+            mock_gpu_factories_.get());
     gpu_memory_buffer_pool_->SetTickClockForTesting(&test_clock_);
   }
 
@@ -247,11 +249,12 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
 
   base::SimpleTestTickClock test_clock_;
   std::unique_ptr<MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
-  std::unique_ptr<GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
+  std::unique_ptr<MappableSharedImageVideoFramePool> gpu_memory_buffer_pool_;
   scoped_refptr<base::TestSimpleTaskRunner> media_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> copy_task_runner_;
-  // GpuMemoryBufferVideoFramePool uses base::BindPostTaskToCurrentDefault(),
-  // which requires SingleThreadTaskRunner::CurrentDefaultHandle initialization.
+  // MappableSharedImageVideoFramePool uses
+  // base::BindPostTaskToCurrentDefault(), which requires
+  // SingleThreadTaskRunner::CurrentDefaultHandle initialization.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       media_task_runner_handle_;
   scoped_refptr<gpu::TestSharedImageInterface> sii_;
@@ -271,7 +274,7 @@ void MaybeCreateHardwareFrameCallbackAndTrackTime(
   *output_time = base::TimeTicks::Now();
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, VideoFrameOutputFormatUnknown) {
+TEST_F(MappableSharedImageVideoFramePoolTest, VideoFrameOutputFormatUnknown) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   mock_gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED);
@@ -283,7 +286,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, VideoFrameOutputFormatUnknown) {
   EXPECT_EQ(software_frame.get(), frame.get());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareFrame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -297,7 +300,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrame) {
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       CreateOneHardwareFrameWithOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(9);
   scoped_refptr<VideoFrame> frame;
@@ -353,7 +357,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddSize) {
 
 // Tests the current workaround for odd positioned video frame input. Once
 // https://crbug.com/638906 is fixed, output should be different.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddOrigin) {
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       CreateOneHardwareFrameWithOddOrigin) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(9, 8, 1);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -364,7 +369,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameWithOddOrigin) {
   EXPECT_EQ(software_frame.get(), frame.get());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateOneHardwareFrameWithOddOriginOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(11, 8, 1);
@@ -377,7 +382,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   EXPECT_EQ(software_frame.get(), frame.get());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOne10BppHardwareFrame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -391,7 +396,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOne10BppHardwareFrame) {
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateOne10BppHardwareFrameWithOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(17, 10);
@@ -445,7 +450,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   }
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
+TEST_F(MappableSharedImageVideoFramePoolTest, ReuseFirstResource) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -481,7 +486,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, ReuseFirstResource) {
   EXPECT_NE(frame->acquire_sync_token(), sync_token);
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
+TEST_F(MappableSharedImageVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
       CreateTestYUVVideoFrame(10),
@@ -506,7 +511,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, DropResourceWhenSizeIsDifferent) {
   EXPECT_TRUE(sii_->CheckSharedImageExists(frame->shared_image()->mailbox()));
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareNV12Frame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -523,7 +528,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateOneHardwareNV12FrameWithOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(5);
@@ -577,7 +582,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   }
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
+TEST_F(MappableSharedImageVideoFramePoolTest,
+       CreateOneHardwareFrameForNV12Input) {
   scoped_refptr<VideoFrame> software_frame = CreateTestNV12VideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -593,7 +599,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareFrameForNV12Input) {
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateOneHardwareFrameForNV12InputWithOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestNV12VideoFrameWithOddSize(135);
@@ -646,7 +652,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   }
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXR30Frame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -663,7 +669,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareP010Frame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -697,7 +703,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
                 uv_memory[1]));
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateOneHardwareP010FrameWithOddSize) {
   scoped_refptr<VideoFrame> software_frame =
       CreateTestYUVVideoFrameWithOddSize(7, 10);
@@ -753,7 +759,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   }
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   software_frame->set_color_space(gfx::ColorSpace::CreateREC709());
   scoped_refptr<VideoFrame> frame;
@@ -778,7 +784,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {
   EXPECT_EQ(as_xr30(0, 311, 0), *static_cast<uint32_t*>(memory));
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   software_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   scoped_refptr<VideoFrame> frame;
@@ -803,7 +809,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT601) {
   EXPECT_EQ(as_xr30(0, 543, 0), *static_cast<uint32_t*>(memory));
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareXB30Frame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
   scoped_refptr<VideoFrame> frame;
   mock_gpu_factories_->SetVideoFrameOutputFormat(
@@ -827,7 +833,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXB30Frame) {
   EXPECT_EQ(as_xr30(0, 543, 0), *static_cast<uint32_t*>(memory));
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVAVideoFrame(10);
   scoped_refptr<VideoFrame> frame;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -838,7 +844,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
   EXPECT_EQ(software_frame.get(), frame.get());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
+TEST_F(MappableSharedImageVideoFramePoolTest, PreservesMetadata) {
   gfx::HDRMetadata hdr_metadata;
   hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(5000, 1000);
 
@@ -864,7 +870,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
 // CreateGpuMemoryBuffer can return null (e.g: when the GPU process is down).
 // This test checks that in that case we don't crash and don't create the
 // textures.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
+TEST_F(MappableSharedImageVideoFramePoolTest, CreateGpuMemoryBufferFail) {
   if (SkipTestWithMappableSI) {
     return;
   }
@@ -881,7 +887,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
   EXPECT_EQ(0u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest,
+TEST_F(MappableSharedImageVideoFramePoolTest,
        CreateGpuMemoryBufferFailAfterShutdown) {
   if (SkipTestWithMappableSI) {
     return;
@@ -899,7 +905,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   EXPECT_EQ(0u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, ShutdownReleasesUnusedResources) {
+TEST_F(MappableSharedImageVideoFramePoolTest, ShutdownReleasesUnusedResources) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame_1;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -932,7 +938,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, ShutdownReleasesUnusedResources) {
   EXPECT_EQ(1u, sii_->shared_image_count());
 }
 
-TEST_F(GpuMemoryBufferVideoFramePoolTest, StaleFramesAreExpired) {
+TEST_F(MappableSharedImageVideoFramePoolTest, StaleFramesAreExpired) {
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame_1;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
@@ -967,7 +973,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, StaleFramesAreExpired) {
 
 // Test when we request two copies in a row, there should be at most one frame
 // copy in flight at any time.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, AtMostOneCopyInFlight) {
+TEST_F(MappableSharedImageVideoFramePoolTest, AtMostOneCopyInFlight) {
   mock_gpu_factories_->SetVideoFrameOutputFormat(
       media::GpuVideoAcceleratorFactories::OutputFormat::NV12);
 
@@ -993,7 +999,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, AtMostOneCopyInFlight) {
 
 // Tests that adding a frame that the pool doesn't handle does not break the
 // FIFO order in tasks.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesOrder) {
+TEST_F(MappableSharedImageVideoFramePoolTest, PreservesOrder) {
   std::vector<scoped_refptr<VideoFrame>> frame_outputs;
 
   scoped_refptr<VideoFrame> software_frame_1 = CreateTestYUVVideoFrame(10);
@@ -1041,7 +1047,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesOrder) {
 }
 
 // Test that Abort() stops any pending copies.
-TEST_F(GpuMemoryBufferVideoFramePoolTest, AbortCopies) {
+TEST_F(MappableSharedImageVideoFramePoolTest, AbortCopies) {
   scoped_refptr<VideoFrame> software_frame_1 = CreateTestYUVVideoFrame(10);
   scoped_refptr<VideoFrame> frame_1;
   gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
-#define MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#ifndef MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
+#define MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,19 +30,20 @@ class GpuVideoAcceleratorFactories;
 // be kept alive by video frames indirectly referencing them. Video frames
 // themselves are ref-counted and will be released when they are no longer
 // needed, potentially after the pool is destroyed.
-class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
+class MEDIA_EXPORT MappableSharedImageVideoFramePool {
  public:
-  GpuMemoryBufferVideoFramePool();
-  GpuMemoryBufferVideoFramePool(
+  MappableSharedImageVideoFramePool();
+  MappableSharedImageVideoFramePool(
       const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       GpuVideoAcceleratorFactories* gpu_factories);
 
-  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
-  GpuMemoryBufferVideoFramePool& operator=(
-      const GpuMemoryBufferVideoFramePool&) = delete;
+  MappableSharedImageVideoFramePool(const MappableSharedImageVideoFramePool&) =
+      delete;
+  MappableSharedImageVideoFramePool& operator=(
+      const MappableSharedImageVideoFramePool&) = delete;
 
-  virtual ~GpuMemoryBufferVideoFramePool();
+  virtual ~MappableSharedImageVideoFramePool();
 
   // Callback used by MaybeCreateHardwareFrame to deliver a new VideoFrame
   // after it has been copied to MappableSI.
@@ -75,4 +76,4 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
+#endif  // MEDIA_VIDEO_MAPPABLE_SHARED_IMAGE_VIDEO_FRAME_POOL_H_

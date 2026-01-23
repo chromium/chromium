@@ -34,7 +34,7 @@
 #include "media/base/video_types.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -243,7 +243,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
+            &media::MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame,
             CrossThreadUnretained(gpu_memory_buffer_pool_.get()),
             std::move(frame),
             base::BindPostTaskToCurrentDefault(blink::BindOnce(
@@ -276,7 +276,7 @@ class WebMediaPlayerMS::FrameDeliverer {
         gpu_factories_->ShouldUseGpuMemoryBuffersForVideoFrames(
             true /* for_media_stream */)) {
       gpu_memory_buffer_pool_ =
-          std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+          std::make_unique<media::MappableSharedImageVideoFramePool>(
               media_task_runner_, worker_task_runner_, gpu_factories_);
     }
   }
@@ -323,7 +323,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     PostCrossThreadTask(
         *media_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &media::GpuMemoryBufferVideoFramePool::Abort,
+            &media::MappableSharedImageVideoFramePool::Abort,
             CrossThreadUnretained(gpu_memory_buffer_pool_.get())));
     weak_factory_for_pool_.InvalidateWeakPtrs();
   }
@@ -335,7 +335,8 @@ class WebMediaPlayerMS::FrameDeliverer {
   RepaintCB enqueue_frame_cb_;
 
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
-  std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
+  std::unique_ptr<media::MappableSharedImageVideoFramePool>
+      gpu_memory_buffer_pool_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
@@ -1416,7 +1417,7 @@ void WebMediaPlayerMS::TriggerResize() {
 }
 
 void WebMediaPlayerMS::SetGpuMemoryBufferVideoForTesting(
-    media::GpuMemoryBufferVideoFramePool* gpu_memory_buffer_pool) {
+    media::MappableSharedImageVideoFramePool* gpu_memory_buffer_pool) {
   CHECK(frame_deliverer_);
   frame_deliverer_->gpu_memory_buffer_pool_.reset(gpu_memory_buffer_pool);
 }

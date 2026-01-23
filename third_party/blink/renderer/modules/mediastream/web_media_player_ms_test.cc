@@ -1461,7 +1461,8 @@ TEST_P(WebMediaPlayerMSTest, FrameSizeChange) {
     EXPECT_CALL(*this, DoStopRendering());
 }
 
-// Tests that GpuMemoryBufferVideoFramePool is called in the expected sequence.
+// Tests that MappableSharedImageVideoFramePool is called in the expected
+// sequence.
 TEST_P(WebMediaPlayerMSTest, CreateHardwareFrames) {
   InitializeWebMediaPlayerMS();
   MockMediaStreamVideoRenderer* provider = LoadAndGetFrameProvider(false);

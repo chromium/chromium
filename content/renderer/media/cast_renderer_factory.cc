@@ -14,8 +14,8 @@
 #include "media/base/decoder_factory.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 namespace content {
@@ -49,10 +49,10 @@ std::unique_ptr<media::Renderer> CastRendererFactory::CreateRenderer(
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
-  std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gmb_pool;
+  std::unique_ptr<media::MappableSharedImageVideoFramePool> gmb_pool;
   if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
                            false /* for_media_stream */)) {
-    gmb_pool = std::make_unique<media::GpuMemoryBufferVideoFramePool>(
+    gmb_pool = std::make_unique<media::MappableSharedImageVideoFramePool>(
         media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 

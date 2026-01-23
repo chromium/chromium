@@ -53,7 +53,7 @@ specific_include_rules = {
   "fuchsia_video_decoder_unittest.cc": [
     "+components/viz/test/test_context_support.h",
   ],
-  "gpu_memory_buffer_video_frame_pool_unittest.cc": [
+  "mappable_shared_image_video_frame_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
   "video_encode_accelerator_adapter_test.cc": [

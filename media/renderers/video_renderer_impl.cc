@@ -50,7 +50,7 @@ VideoRendererImpl::VideoRendererImpl(
     const CreateVideoDecodersCB& create_video_decoders_cb,
     bool drop_frames,
     MediaLog* media_log,
-    std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool,
+    std::unique_ptr<MappableSharedImageVideoFramePool> gmb_pool,
     MediaPlayerLoggingID media_player_id)
     : task_runner_(media_task_runner),
       sink_(sink),
@@ -185,7 +185,7 @@ void VideoRendererImpl::Initialize(
       &VideoRendererImpl::OnFallback, weak_factory_.GetWeakPtr()));
   if (gpu_memory_buffer_pool_) {
     video_decoder_stream_->SetPrepareCB(base::BindRepeating(
-        &GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
+        &MappableSharedImageVideoFramePool::MaybeCreateHardwareFrame,
         // Safe since VideoDecoderStream won't issue calls after destruction.
         base::Unretained(gpu_memory_buffer_pool_.get())));
   }

@@ -18,10 +18,10 @@ source_set("video") {
   sources = [
     "alpha_video_encoder_wrapper.cc",
     "alpha_video_encoder_wrapper.h",
-    "gpu_memory_buffer_video_frame_pool.cc",
-    "gpu_memory_buffer_video_frame_pool.h",
     "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
+    "mappable_shared_image_video_frame_pool.cc",
+    "mappable_shared_image_video_frame_pool.h",
     "offloading_video_encoder.cc",
     "offloading_video_encoder.h",
     "picture.cc",
@@ -118,7 +118,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "alpha_video_encoder_wrapper_unittest.cc",
-    "gpu_memory_buffer_video_frame_pool_unittest.cc",
+    "mappable_shared_image_video_frame_pool_unittest.cc",
     "offloading_video_encoder_unittest.cc",
     "renderable_mappable_shared_image_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",

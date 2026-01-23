@@ -25,7 +25,7 @@ include_rules = [
     "+media/media_buildflags.h",
     "+media/filters/video_renderer_algorithm.h",
     "+media/renderers/paint_canvas_video_renderer.h",
-    "+media/video/gpu_memory_buffer_video_frame_pool.h",
+    "+media/video/mappable_shared_image_video_frame_pool.h",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
     "+skia/ext/platform_canvas.h",
 

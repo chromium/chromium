@@ -26,7 +26,7 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 
 namespace media {
-class GpuMemoryBufferVideoFramePool;
+class MappableSharedImageVideoFramePool;
 class MediaLog;
 }  // namespace media
 
@@ -251,7 +251,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   // Helper method used for testing.
   void SetGpuMemoryBufferVideoForTesting(
-      media::GpuMemoryBufferVideoFramePool* gpu_memory_buffer_pool);
+      media::MappableSharedImageVideoFramePool* gpu_memory_buffer_pool);
   void SetMediaStreamRendererFactoryForTesting(
       std::unique_ptr<MediaStreamRendererFactory>);
 
