@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/stack_buffer.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +29,8 @@ TEST(StackBufferTest, BufferAllocated) {
 
   // Memory pointed to by buffer should be writable.
   for (unsigned int i = 0; i < (kBufferSize / sizeof(buffer[0])); i++) {
-    buffer[i] = i;
-    EXPECT_EQ(buffer[i], i);
+    UNSAFE_TODO(buffer[i]) = i;
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], i));
   }
 }
 
@@ -47,8 +43,8 @@ TEST(StackBufferTest, MarkBufferContentsAsUnneeded) {
 
   // Force the kernel to allocate backing store for the buffer.
   for (unsigned int i = 0; i < (kBufferSize / sizeof(uintptr_t)); i++) {
-    buffer[i] = i;
-    EXPECT_EQ(buffer[i], i);
+    UNSAFE_TODO(buffer[i]) = i;
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], i));
   }
 
   // Tell kernel to discard (most of) the memory.
@@ -58,7 +54,7 @@ TEST(StackBufferTest, MarkBufferContentsAsUnneeded) {
 
   // The first 100 elements shouldn't have been discarded.
   for (size_t i = 0; i < kUndiscardedElements; i++) {
-    EXPECT_EQ(buffer[i], i);
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], i));
   }
 
   // Pages past the discard point should be zero-filled now.
@@ -67,14 +63,14 @@ TEST(StackBufferTest, MarkBufferContentsAsUnneeded) {
       sizeof(buffer[0]);
   for (size_t i = kExpectedDiscardStartPoint;
        i < kBufferSize / sizeof(buffer[0]); i++) {
-    EXPECT_EQ(buffer[i], 0U);
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], 0U));
   }
 
   // Writing to the memory (both discarded and undiscarded parts) shouldn't
   // cause segmentation faults and should remember the value we write.
   for (unsigned int i = 0; i < (kBufferSize / sizeof(buffer[0])); i++) {
-    buffer[i] = i + 7;
-    EXPECT_EQ(buffer[i], i + 7);
+    UNSAFE_TODO(buffer[i]) = i + 7;
+    UNSAFE_TODO(EXPECT_EQ(buffer[i], i + 7));
   }
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS)

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/stack_copier.h"
 
 #include <vector>
@@ -101,13 +96,14 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
   // alignment between values in the original stack and the copy. This uses the
   // platform stack alignment rather than pointer alignment so that the stack
   // copy is aligned to platform expectations.
-  uint8_t* stack_copy_bottom =
+  uint8_t* stack_copy_bottom = UNSAFE_TODO(
       reinterpret_cast<uint8_t*>(stack_buffer_bottom) +
-      (byte_src - bits::AlignDown(byte_src, platform_stack_alignment));
+      (byte_src - bits::AlignDown(byte_src, platform_stack_alignment)));
   uint8_t* byte_dst = stack_copy_bottom;
 
   // Copy bytes verbatim up to the first aligned address.
-  for (; byte_src < first_aligned_address; ++byte_src, ++byte_dst) {
+  for (; byte_src < first_aligned_address;
+       UNSAFE_TODO(++byte_src), UNSAFE_TODO(++byte_dst)) {
     *byte_dst = *byte_src;
   }
 
@@ -115,7 +111,7 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
   // looks like a pointer into the stack.
   const uintptr_t* src = reinterpret_cast<const uintptr_t*>(byte_src);
   uintptr_t* dst = reinterpret_cast<uintptr_t*>(byte_dst);
-  for (; src < original_stack_top; ++src, ++dst) {
+  for (; src < original_stack_top; UNSAFE_TODO(++src), UNSAFE_TODO(++dst)) {
     *dst = RewritePointerIfInOriginalStack(
         original_stack_bottom, original_stack_top, stack_copy_bottom, *src);
   }
