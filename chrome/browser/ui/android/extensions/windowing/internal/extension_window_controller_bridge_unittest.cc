@@ -75,8 +75,8 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_);
   }
 
-  void InvokeJavaOnTaskRemoved() const {
-    Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnTaskRemoved(
+  void InvokeJavaOnFeatureRemoved() const {
+    Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnFeatureRemoved(
         AttachCurrentThread(), java_test_support_);
   }
 
@@ -145,7 +145,7 @@ TEST_F(ExtensionWindowControllerBridgeUnitTest,
   InvokeJavaOnAddedToTask();
 
   // Act.
-  InvokeJavaOnTaskRemoved();
+  InvokeJavaOnFeatureRemoved();
 
   // Assert.
   EXPECT_EQ(nullptr, InvokeJavaGetNativePtrForTesting());
@@ -157,8 +157,8 @@ TEST_F(ExtensionWindowControllerBridgeUnitTest,
   InvokeJavaOnAddedToTask();
 
   // Act.
-  InvokeJavaOnTaskRemoved();
-  InvokeJavaOnTaskRemoved();
+  InvokeJavaOnFeatureRemoved();
+  InvokeJavaOnFeatureRemoved();
 
   // Assert.
   EXPECT_EQ(nullptr, InvokeJavaGetNativePtrForTesting());

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -208,6 +209,29 @@ final class ChromeAndroidTaskImpl
      */
     private final Deque<ActivityScopedObjects> mActivityScopedObjectsDeque = new ArrayDeque<>();
 
+    /**
+     * Observer for profile removal. This is attached to the {@link ProfileManager} in the
+     * constructor and is removed when the {@link ChromeAndroidTask} is destroyed.
+     */
+    private final ProfileManager.Observer mProfileObserver =
+            new ProfileManager.Observer() {
+                @Override
+                public void onProfileAdded(Profile profile) {}
+
+                @Override
+                public void onProfileDestroyed(Profile profile) {
+                    var iterator = mFeatures.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        var entry = iterator.next();
+                        var key = entry.getKey();
+                        if (profile.equals(key.mProfile)) {
+                            entry.getValue().onFeatureRemoved();
+                            iterator.remove();
+                        }
+                    }
+                }
+            };
+
     private @Nullable TabModelSelectorTabModelObserver mPreventAddTabToOtherModelObserver;
 
     private @Nullable Integer mId;
@@ -348,6 +372,7 @@ final class ChromeAndroidTaskImpl
         // TODO(crbug.com/475200706): Support regular + OTR for mobile.
         mAndroidBrowserWindow =
                 new AndroidBrowserWindow(/* chromeAndroidTask= */ this, initialProfile);
+        ProfileManager.addObserver(mProfileObserver);
 
         mState = State.IDLE;
         addActivityScopedObjectsInternal(activityScopedObjects);
@@ -360,6 +385,8 @@ final class ChromeAndroidTaskImpl
         mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
         mAndroidBrowserWindow =
                 new AndroidBrowserWindow(/* chromeAndroidTask= */ this, mInitialProfile);
+        ProfileManager.addObserver(mProfileObserver);
+
         mState = State.PENDING_CREATE;
         mPendingActionManager.updateFutureStates(mPendingTaskInfo);
     }
@@ -514,10 +541,10 @@ final class ChromeAndroidTaskImpl
         // One case where the "DESTROYING" state is crucial:
         //
         // If a ChromeAndroidTaskFeature ("Feature") holds a ChromeAndroidTask ("Task") reference,
-        // the Feature could call the Task's APIs during Feature#onTaskRemoved(). Since mState won't
-        // become "DESTROYED" until after Feature#onTaskRemoved(), we need the "DESTROYING" state to
-        // prevent the Feature from accessing the Task's APIs that should only be called when mState
-        // is "ALIVE".
+        // the Feature could call the Task's APIs during Feature#onFeatureRemoved(). Since mState
+        // won't become "DESTROYED" until after Feature#onFeatureRemoved(), we need the "DESTROYING"
+        // state to prevent the Feature from accessing the Task's APIs that should only be called
+        // when mState is "ALIVE".
         mState = State.DESTROYING;
 
         if (mPendingTaskInfo != null) {
@@ -527,6 +554,7 @@ final class ChromeAndroidTaskImpl
 
         removeAllActivityScopedObjects();
         destroyFeatures();
+        ProfileManager.removeObserver(mProfileObserver);
 
         mAndroidBrowserWindow.destroy();
         mState = State.DESTROYED;
@@ -863,8 +891,6 @@ final class ChromeAndroidTaskImpl
             maybeSetStateIdle(actions);
         }
 
-        // TODO(crbug.com/475200706): Also dispatch when the selected tab model changes this allows
-        // features to react to either the task or window being backgrounded accordingly.
         for (var feature : mFeatures.values()) {
             feature.onTaskFocusChanged(isTopResumedActivity);
         }
@@ -1127,10 +1153,8 @@ final class ChromeAndroidTaskImpl
     }
 
     private void destroyFeatures() {
-        // TODO(crbug.com/475200706): Destroy profile-scoped features earlier if the associated
-        // profile is destroyed.
         for (var feature : mFeatures.values()) {
-            feature.onTaskRemoved();
+            feature.onFeatureRemoved();
         }
         mFeatures.clear();
     }

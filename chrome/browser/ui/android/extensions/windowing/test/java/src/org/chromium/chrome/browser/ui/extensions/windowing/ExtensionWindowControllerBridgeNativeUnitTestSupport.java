@@ -50,7 +50,7 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
 
     @CalledByNative
     private void tearDown() {
-        mExtensionWindowControllerBridge.onTaskRemoved();
+        mExtensionWindowControllerBridge.onFeatureRemoved();
         mChromeAndroidTask.destroy();
     }
 
@@ -60,8 +60,8 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private void invokeOnTaskRemoved() {
-        mExtensionWindowControllerBridge.onTaskRemoved();
+    private void invokeOnFeatureRemoved() {
+        mExtensionWindowControllerBridge.onFeatureRemoved();
     }
 
     @CalledByNative

@@ -32,7 +32,12 @@ public interface ChromeAndroidTaskFeature {
      * @see ChromeAndroidTask#destroy()
      * @see ChromeAndroidTaskTracker#remove(int)
      */
-    void onTaskRemoved();
+    // TODO(crbug.com/475200706): Remove default once interfaces are migrated.
+    default void onFeatureRemoved() {}
+
+    // TODO(crbug.com/475200706): Remove once interfaces are migrated.
+    @Deprecated
+    default void onTaskRemoved() {}
 
     /**
      * Called by a {@link ChromeAndroidTask} when the Task (window) bounds are changed.

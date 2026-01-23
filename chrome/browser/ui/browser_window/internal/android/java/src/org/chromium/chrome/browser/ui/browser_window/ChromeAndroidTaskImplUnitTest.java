@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -981,6 +982,38 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act & Assert.
         assertThrows(AssertionError.class, chromeAndroidTask::destroy);
+    }
+
+    @Test
+    public void onProfileDestroyed_removesProfileScopedFeature() throws Exception {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+
+        var profileScopedFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var profileScopedFeatureKey =
+                new ChromeAndroidTaskFeatureKey(TestChromeAndroidTaskFeature.class, profile);
+        chromeAndroidTask.addFeature(profileScopedFeatureKey, () -> profileScopedFeature);
+
+        var nonProfileScopedFeature = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        var nonProfileScopedFeatureKey =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class, /* profile= */ null);
+        chromeAndroidTask.addFeature(nonProfileScopedFeatureKey, () -> nonProfileScopedFeature);
+
+        // Act.
+        // Simulate a profile destruction.
+        ProfileManager.onProfileDestroyed(profile);
+
+        // Assert.
+        profileScopedFeature.mOnTaskRemovedHelper.waitForCallback(0, 1);
+        assertNull(chromeAndroidTask.getFeatureForTesting(profileScopedFeatureKey));
+        assertEquals(
+                nonProfileScopedFeature,
+                chromeAndroidTask.getFeatureForTesting(nonProfileScopedFeatureKey));
+        assertEquals(0, nonProfileScopedFeature.mOnTaskRemovedHelper.getCallCount());
     }
 
     @Test
@@ -2830,7 +2863,7 @@ public class ChromeAndroidTaskImplUnitTest {
         }
 
         @Override
-        public void onTaskRemoved() {
+        public void onFeatureRemoved() {
             mOnTaskRemovedHelper.notifyCalled();
 
             if (mShouldRefuseToBeRemoved) {

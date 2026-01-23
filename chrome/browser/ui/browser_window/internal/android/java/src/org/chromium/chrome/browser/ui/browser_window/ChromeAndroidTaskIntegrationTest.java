@@ -1113,7 +1113,7 @@ public class ChromeAndroidTaskIntegrationTest {
         public void onAddedToTask() {}
 
         @Override
-        public void onTaskRemoved() {}
+        public void onFeatureRemoved() {}
 
         @Override
         public void onTaskBoundsChanged(Rect newBoundsInDp) {
