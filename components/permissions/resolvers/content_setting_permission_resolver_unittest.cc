@@ -34,7 +34,7 @@ INSTANTIATE_TEST_SUITE_P(
                         ContentSettingsType::ALL_SCREEN_CAPTURE,
                         CONTENT_SETTING_BLOCK),
                     std::pair<ContentSettingsType, ContentSetting>(
-                        ContentSettingsType::GEOLOCATION,
+                        ContentSettingsType::NOTIFICATIONS,
                         CONTENT_SETTING_ASK)));
 
 TEST_P(ContentSettingPermissionResolverTest, TestDeterminePermissionStatus) {
