@@ -261,6 +261,9 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Whether the "Omnibox Next" Lens search chip feature is enabled.
   virtual bool IsOmniboxNextLensSearchChipEnabled() const;
 
+  // Whether the "Omnibox Next" AIM popup is enabled.
+  virtual bool IsOmniboxNextAimPopupEnabled() const;
+
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.
   virtual base::WeakPtr<AutocompleteProviderClient> GetWeakPtr();

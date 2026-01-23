@@ -1526,7 +1526,8 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
   const bool is_lens_enabled = autocomplete_provider_client()->IsLensEnabled();
 
   internal_result_.set_has_contextual_chips(
-      mia_enabled && (is_lens_enabled || can_show_contextual_suggestions));
+      autocomplete_provider_client()->IsOmniboxNextAimPopupEnabled() &&
+      (is_lens_enabled || can_show_contextual_suggestions));
 
   bool default_match_changed = CheckWhetherDefaultMatchChanged(
       old_result.last_default_match,

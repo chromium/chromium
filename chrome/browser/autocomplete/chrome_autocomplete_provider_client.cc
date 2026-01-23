@@ -657,8 +657,15 @@ bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
 bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
     const {
 #if !BUILDFLAG(IS_ANDROID)
-  return omnibox::IsAimPopupEnabled(profile_) &&
-         omnibox::kShowLensSearchChip.Get();
+  return IsOmniboxNextAimPopupEnabled() && omnibox::kShowLensSearchChip.Get();
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+bool ChromeAutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return omnibox::IsAimPopupEnabled(profile_);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
