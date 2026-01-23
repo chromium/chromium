@@ -55,8 +55,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -195,8 +196,8 @@ public class CompositorViewHolderUnitTest {
     private CompositorViewHolder mCompositorViewHolder;
     private BrowserControlsManager mBrowserControlsManager;
     private ApplicationViewportInsetTracker mViewportInsets;
-    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
-    private ObservableSupplierImpl<Integer> mKeyboardAccessoryInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
     private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Before
@@ -214,9 +215,9 @@ public class CompositorViewHolderUnitTest {
         when(mInsetObserver.isKeyboardInOverlayMode()).thenReturn(false);
         mViewportInsets.setInsetObserver(mInsetObserver);
 
-        mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+        mKeyboardInsetSupplier = ObservableSuppliers.createNonNull(0);
         mViewportInsets.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
-        mKeyboardAccessoryInsetSupplier = new ObservableSupplierImpl<>();
+        mKeyboardAccessoryInsetSupplier = ObservableSuppliers.createNonNull(0);
         mViewportInsets.setKeyboardAccessoryInsetSupplier(mKeyboardAccessoryInsetSupplier);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
@@ -863,7 +864,8 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     public void testWebContentResizeByBottomSheetInset() {
-        var bottomSheetInsetSupplier = new ObservableSupplierImpl<Integer>();
+        SettableMonotonicObservableSupplier<Integer> bottomSheetInsetSupplier =
+                ObservableSuppliers.createMonotonic();
         mViewportInsets.setBottomSheetInsetSupplier(bottomSheetInsetSupplier);
         reset(mWebContents);
 

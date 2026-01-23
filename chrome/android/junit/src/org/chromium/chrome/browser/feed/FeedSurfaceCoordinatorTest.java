@@ -54,8 +54,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -220,8 +220,8 @@ public class FeedSurfaceCoordinatorTest {
             ObservableSuppliers.createNonNull(0);
     private FeedSurfaceMediator mMediatorSpy;
     private int mTabStripHeight;
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     @SuppressWarnings("DirectInvocationOnMock")

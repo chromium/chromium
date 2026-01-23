@@ -40,9 +40,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -689,8 +689,8 @@ public class SensitiveContentTest {
         TabContentManager tabContentManager =
                 new TabContentManager(context, null, false, null, mTabWindowManager);
         tabContentManager.initWithNative();
-        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
+                ObservableSuppliers.createMonotonic();
         OneshotSupplierImpl tabSwitcherSupplier = new OneshotSupplierImpl();
 
         // Build a fake content container

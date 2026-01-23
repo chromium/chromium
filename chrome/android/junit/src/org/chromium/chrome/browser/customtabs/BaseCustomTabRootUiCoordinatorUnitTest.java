@@ -38,7 +38,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -118,7 +117,10 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
-    @Mock private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    @Mock
+    private SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
+            mEphemeralTabCoordinatorSupplier;
+
     @Mock private BrowserControlsManager mBrowserControlsManager;
 
     @Mock
@@ -163,7 +165,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SettableMonotonicObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier =
             ObservableSuppliers.createMonotonic();
     private AppCompatActivity mActivity;
@@ -189,9 +191,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         when(mFullscreenManager.getPersistentFullscreenModeSupplier())
-                .thenReturn(new ObservableSupplierImpl<Boolean>(false));
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
-        mProfileSupplier = new ObservableSupplierImpl();
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
 
         mBaseCustomTabRootUiCoordinator =
                 new BaseCustomTabRootUiCoordinator(
@@ -317,6 +319,11 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     public void testCreateMismatchNotificationChecker() {
+        // No profile
+        assertNull(
+                "Should NOT create checker for no profile",
+                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+
         HistogramWatcher freCompletedRecentlyWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.CctAccountMismatchNoticeSuppressed",
@@ -377,11 +384,5 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 "Should NOT create checker for an OTR session",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
         mismatchNoticeSuppressedWatcher.assertExpected();
-
-        // No profile
-        mProfileSupplier.set(null);
-        assertNull(
-                "Should NOT create checker for no profile",
-                mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
     }
 }

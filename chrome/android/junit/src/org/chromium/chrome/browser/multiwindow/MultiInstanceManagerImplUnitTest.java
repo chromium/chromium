@@ -31,7 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -69,7 +69,7 @@ public class MultiInstanceManagerImplUnitTest {
     private Activity mActivity;
 
     private final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier =
-            new ObservableSupplierImpl<>();
+            ObservableSuppliers.alwaysNull();
 
     @Before
     public void setUp() {

@@ -20,7 +20,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
@@ -33,7 +33,7 @@ public class StripTabModelActionListenerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
+    @Mock private SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier;
     @Mock private View mToolbarContainerView;
     @Mock private Runnable mBeforeSyncDialogRunnable;
     @Mock private Runnable mOnSuccess;

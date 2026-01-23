@@ -46,7 +46,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -423,8 +424,8 @@ public class IdentityDiscControllerTest {
 
                     mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
-                    ObservableSupplierImpl<Profile> profileSupplier =
-                            new ObservableSupplierImpl<>();
+                    SettableMonotonicObservableSupplier<Profile> profileSupplier =
+                            ObservableSuppliers.createMonotonic();
                     IdentityDiscController identityDiscController =
                             new IdentityDiscController(
                                     mActivityTestRule.getActivity(), profileSupplier);

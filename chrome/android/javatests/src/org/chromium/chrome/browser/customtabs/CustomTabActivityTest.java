@@ -109,7 +109,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.transit.Triggers;
@@ -2966,8 +2966,8 @@ public class CustomTabActivityTest {
                 getActivity()
                         .getBackPressManagerForTesting()
                         .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
-        ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
-                (ObservableSupplierImpl<Boolean>)
+        SettableNonNullObservableSupplier<Boolean> handleBackPressChangedSupplier =
+                (SettableNonNullObservableSupplier<Boolean>)
                         navigationHandler.getHandleBackPressChangedSupplier();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

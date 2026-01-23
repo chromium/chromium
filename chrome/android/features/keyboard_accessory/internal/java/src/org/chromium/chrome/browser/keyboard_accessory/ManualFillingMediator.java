@@ -200,9 +200,6 @@ class ManualFillingMediator
                 }
             };
 
-    /** Default constructor */
-    ManualFillingMediator() {}
-
     void initialize(
             KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet,

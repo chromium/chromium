@@ -37,7 +37,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -307,7 +307,7 @@ public class TabModelSelectorImplTest {
         WindowAndroid window = mock(WindowAndroid.class);
         WeakReference<Context> weakContext = new WeakReference<>(mContext);
         when(window.getContext()).thenReturn(weakContext);
-        doReturn(new ObservableSupplierImpl<>(false)).when(window).getOcclusionSupplier();
+        doReturn(ObservableSuppliers.alwaysFalse()).when(window).getOcclusionSupplier();
         tab.updateAttachment(window, mTabDelegateFactory);
 
         assertEquals(
@@ -560,7 +560,6 @@ public class TabModelSelectorImplTest {
     }
 
     private boolean currentTabModelSupplierHasObservers() {
-        return ((ObservableSupplierImpl<?>) mTabModelSelector.getCurrentTabModelSupplier())
-                .hasObservers();
+        return mTabModelSelector.getCurrentTabModelSupplier().hasObservers();
     }
 }

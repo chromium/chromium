@@ -16,7 +16,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -97,8 +98,8 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                 () -> {
                     ShoppingPersistedTabData shoppingPersistedTabData =
                             new ShoppingPersistedTabData(tab);
-                    ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-                    supplier.set(true);
+                    SettableNonNullObservableSupplier<Boolean> supplier =
+                            ObservableSuppliers.createNonNull(true);
                     shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
                     shoppingPersistedTabData.enableSaving();
                     shoppingPersistedTabData.setPriceMicros(PRICE_MICROS);

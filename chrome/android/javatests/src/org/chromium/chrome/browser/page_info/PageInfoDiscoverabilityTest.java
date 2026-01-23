@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -252,7 +252,7 @@ public class PageInfoDiscoverabilityTest {
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mTemplateUrlServiceSupplier,
-                                    new ObservableSupplierImpl(mProfile),
+                                    ObservableSuppliers.of(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     null);

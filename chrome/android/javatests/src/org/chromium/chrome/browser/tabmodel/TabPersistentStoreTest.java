@@ -34,8 +34,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
@@ -920,9 +921,8 @@ public class TabPersistentStoreTest {
                         () -> {
                             MockTab newTab =
                                     new MockTab(tabId, ProfileManager.getLastUsedRegularProfile());
-                            ObservableSupplierImpl<Boolean> observableSupplier =
-                                    new ObservableSupplierImpl<>();
-                            observableSupplier.set(true);
+                            SettableNonNullObservableSupplier<Boolean> observableSupplier =
+                                    ObservableSuppliers.createNonNull(true);
                             ShoppingPersistedTabData.from(newTab)
                                     .registerIsTabSaveEnabledSupplier(observableSupplier);
                             ShoppingPersistedTabData.from(newTab).save();

@@ -32,7 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
@@ -54,8 +55,8 @@ public class OfflineIndicatorControllerV2UnitTest {
     @Mock private OfflineIndicatorMetricsDelegate mMetricsDelegate;
 
     private Context mContext;
-    private final ObservableSupplierImpl<Boolean> mIsUrlBarFocusedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsUrlBarFocusedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private OfflineIndicatorControllerV2 mController;
     private long mElapsedTimeMs;
     private String mOfflineString;
@@ -73,7 +74,6 @@ public class OfflineIndicatorControllerV2UnitTest {
         when(mOfflineDetector.isApplicationForeground()).thenReturn(true);
         when(mMetricsDelegate.isTrackingShownDuration()).thenReturn(false);
 
-        mIsUrlBarFocusedSupplier.set(false);
         OfflineDetector.setMockConnectivityDetector(mConnectivityDetector);
         OfflineIndicatorControllerV2.setMockOfflineDetector(mOfflineDetector);
         mElapsedTimeMs = 0;

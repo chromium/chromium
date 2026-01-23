@@ -44,7 +44,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -125,7 +125,7 @@ public class StripDragShadowViewUnitTest {
                 mMockBrowserControlsStateProvider,
                 mMockMultiThumbnailCardProvider,
                 mMockTabContentManager,
-                new ObservableSupplierImpl<>(mMockLayerTitleCache),
+                ObservableSuppliers.of(mMockLayerTitleCache),
                 mMockTabModelSelector,
                 mMockShadowUpdateHost);
 

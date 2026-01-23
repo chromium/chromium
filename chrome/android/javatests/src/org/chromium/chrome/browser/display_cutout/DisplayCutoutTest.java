@@ -14,7 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -198,10 +199,10 @@ public class DisplayCutoutTest {
     @LargeTest
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/365516493")
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
-        final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
+        final SettableMonotonicObservableSupplier<Integer> browserCutoutModeSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new ObservableSupplierImpl<>();
+                            return ObservableSuppliers.createMonotonic();
                         });
 
         ThreadUtils.runOnUiThreadBlocking(

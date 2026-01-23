@@ -22,7 +22,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,8 +49,8 @@ public class HistoricalTabSaverImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final ObservableSupplierImpl<TabModel> mSecondaryTabModelSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModel> mSecondaryTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;

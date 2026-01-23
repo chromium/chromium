@@ -21,7 +21,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -290,8 +291,8 @@ public class PersistedTabDataTest {
     }
 
     private static void registerObserverSupplier(MockPersistedTabData mockPersistedTabData) {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         mockPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
     }
 }

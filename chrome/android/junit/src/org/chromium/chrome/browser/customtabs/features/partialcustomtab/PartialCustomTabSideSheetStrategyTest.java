@@ -50,7 +50,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
@@ -844,9 +845,9 @@ public class PartialCustomTabSideSheetStrategyTest {
     public void handleCloseAnimation() {
         var strategy = createPcctSideSheetStrategy(2000);
         strategy.setSheetOnRightForTesting(true);
-        var invoked = new ObservableSupplierImpl<Boolean>();
+        SettableNonNullObservableSupplier<Boolean> invoked =
+                ObservableSuppliers.createNonNull(false);
 
-        invoked.set(false);
         assertEquals(0, mPCCTTestRule.getWindowAttributes().x);
         strategy.handleCloseAnimation(() -> invoked.set(true)); // Slide out to right
         PartialCustomTabTestRule.waitForAnimationToFinish();

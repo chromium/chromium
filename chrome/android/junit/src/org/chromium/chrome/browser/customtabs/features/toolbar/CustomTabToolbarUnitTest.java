@@ -72,7 +72,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -211,7 +212,8 @@ public class CustomTabToolbarUnitTest {
         mToolbar =
                 (CustomTabToolbar)
                         LayoutInflater.from(mActivity).inflate(toolbarLayout, null, false);
-        ObservableSupplierImpl<Tracker> trackerSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Tracker> trackerSupplier =
+                ObservableSuppliers.createMonotonic();
         trackerSupplier.set(mTracker);
         mToolbarProgressBar = new ToolbarProgressBar(mActivity, null);
         mToolbar.initialize(

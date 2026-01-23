@@ -34,7 +34,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -68,16 +69,17 @@ public class TabbedNavigationBarColorControllerUnitTest {
     private TabbedNavigationBarColorController mNavColorController;
     private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
-    private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
+    private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerObservableSupplier;
-    private ObservableSupplierImpl<Integer> mOverviewColorSupplier;
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerObservableSupplier;
+    private SettableMonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
     @Mock private NavigationBarColorProvider.Observer mObserver;
-    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
+    @Mock private SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier;
     @Mock private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
 
     @Before
@@ -87,9 +89,9 @@ public class TabbedNavigationBarColorControllerUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mLayoutManagerSupplier = new ObservableSupplierImpl<>();
-        mEdgeToEdgeControllerObservableSupplier = new ObservableSupplierImpl<>();
-        mOverviewColorSupplier = new ObservableSupplierImpl<>();
+        mLayoutManagerSupplier = ObservableSuppliers.createMonotonic();
+        mEdgeToEdgeControllerObservableSupplier = ObservableSuppliers.createMonotonic();
+        mOverviewColorSupplier = ObservableSuppliers.createMonotonic();
 
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);

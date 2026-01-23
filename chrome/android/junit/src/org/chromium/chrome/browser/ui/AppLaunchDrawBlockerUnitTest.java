@@ -38,7 +38,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -77,7 +78,8 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock private Supplier<Boolean> mIsTabletSupplier;
 
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Mock
     private IncognitoRestoreAppLaunchDrawBlockerFactory

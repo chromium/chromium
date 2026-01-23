@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -361,7 +361,7 @@ public class LocationBarModelTest {
                     NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                     new LocationBarModel.OfflineStatus() {},
-                    new ObservableSupplierImpl(ControlsPosition.TOP));
+                    ObservableSuppliers.of(ControlsPosition.TOP));
             initializeWithNative();
 
             Tab tab =

@@ -34,8 +34,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
@@ -132,10 +134,10 @@ public class AppMenuPropertiesDelegateUnitTest {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
     private MenuUiState mMenuUiState;

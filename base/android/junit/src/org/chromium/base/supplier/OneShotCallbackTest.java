@@ -34,7 +34,8 @@ public class OneShotCallbackTest {
     @Test
     public void testNotCalledWithNoValue() {
         Handler handler = new Handler();
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Integer> supplier =
+                ObservableSuppliers.createMonotonic();
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
 
@@ -47,8 +48,7 @@ public class OneShotCallbackTest {
     @Test
     public void testCalledWithPresetValue() {
         Handler handler = new Handler();
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
-        supplier.set(5);
+        SettableNonNullObservableSupplier<Integer> supplier = ObservableSuppliers.createNonNull(5);
 
         handler.post(
                 () -> {
@@ -64,7 +64,8 @@ public class OneShotCallbackTest {
     @Test
     public void testCalledWithSet() {
         Handler handler = new Handler();
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Integer> supplier =
+                ObservableSuppliers.createMonotonic();
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
         handler.post(
@@ -82,8 +83,7 @@ public class OneShotCallbackTest {
     @Test
     public void testNotCalledWithPresetValueOnlyOnce() {
         Handler handler = new Handler();
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
-        supplier.set(5);
+        SettableNonNullObservableSupplier<Integer> supplier = ObservableSuppliers.createNonNull(5);
         supplier.set(10);
 
         handler.post(
@@ -100,7 +100,8 @@ public class OneShotCallbackTest {
     @Test
     public void testCalledWithSetOnlyOnce() {
         Handler handler = new Handler();
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Integer> supplier =
+                ObservableSuppliers.createMonotonic();
 
         handler.post(() -> new OneShotCallback<>(supplier, mCallbackMock));
         handler.post(

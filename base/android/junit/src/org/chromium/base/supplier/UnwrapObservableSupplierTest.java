@@ -48,7 +48,7 @@ public class UnwrapObservableSupplierTest {
             };
 
     private static NullableObservableSupplier<Integer> make(
-            MonotonicObservableSupplier<Object> parentSupplier) {
+            NullableObservableSupplier<Object> parentSupplier) {
         return parentSupplier.createDerivedNullable(UnwrapObservableSupplierTest::unwrap);
     }
 
@@ -58,7 +58,8 @@ public class UnwrapObservableSupplierTest {
 
     @Test
     public void testGetWithoutObservers() {
-        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        SettableNullableObservableSupplier<Object> parentSupplier =
+                ObservableSuppliers.createNullable();
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
         assertEquals(0, unwrapSupplier.get().intValue());
         assertFalse(parentSupplier.hasObservers());
@@ -78,7 +79,8 @@ public class UnwrapObservableSupplierTest {
 
     @Test
     public void testGetWithObserver() {
-        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        SettableNullableObservableSupplier<Object> parentSupplier =
+                ObservableSuppliers.createNullable();
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
         unwrapSupplier.addObserver(mOnChangeCallback);
 
@@ -101,7 +103,8 @@ public class UnwrapObservableSupplierTest {
 
     @Test
     public void testAlreadyHasValueWhenObserverAdded() {
-        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>(mObject1);
+        SettableNonNullObservableSupplier<Object> parentSupplier =
+                ObservableSuppliers.createNonNull(mObject1);
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
 
         unwrapSupplier.addObserver(mOnChangeCallback);
@@ -113,8 +116,8 @@ public class UnwrapObservableSupplierTest {
 
     @Test
     public void testAddObserver_ShouldNotifyOnAdd() {
-        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
-        parentSupplier.set(3);
+        SettableNonNullObservableSupplier<Object> parentSupplier =
+                ObservableSuppliers.createNonNull(3);
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
         unwrapSupplier.addObserver(mOnChangeCallback);
 
@@ -127,7 +130,8 @@ public class UnwrapObservableSupplierTest {
 
     @Test
     public void testAddObserver_ShouldNotNotifyOnAdd() {
-        ObservableSupplierImpl<Object> parentSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Object> parentSupplier =
+                ObservableSuppliers.createMonotonic();
         NullableObservableSupplier<Integer> unwrapSupplier = make(parentSupplier);
         unwrapSupplier.addSyncObserver(mOnChangeCallback);
 

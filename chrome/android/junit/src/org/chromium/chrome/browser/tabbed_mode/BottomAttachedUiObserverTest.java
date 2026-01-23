@@ -27,7 +27,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -83,12 +84,12 @@ public class BottomAttachedUiObserverTest {
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<ContextualSearchManager>
+            mContextualSearchManagerSupplier = ObservableSuppliers.createMonotonic();
     @Mock private ContextualSearchManager mContextualSearchManager;
 
-    private final ObservableSupplierImpl<OverlayPanelStateProvider>
-            mOverlayPanelStateProviderSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<OverlayPanelStateProvider>
+            mOverlayPanelStateProviderSupplier = ObservableSuppliers.createMonotonic();
     @Mock private OverlayPanelStateProvider mOverlayPanelStateProvider;
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -99,11 +100,11 @@ public class BottomAttachedUiObserverTest {
     @Mock private ManualFillingComponent mManualFillingComponent;
 
     @Mock private KeyboardAccessoryVisualStateProvider mKeyboardAccessoryVisualStateProvider;
-    private final ObservableSupplierImpl<KeyboardAccessoryVisualStateProvider>
-            mKeyboardAccessoryVisualStateSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
+            mKeyboardAccessoryVisualStateSupplier = ObservableSuppliers.createMonotonic();
     @Mock private AccessorySheetVisualStateProvider mAccessorySheetVisualStateProvider;
-    private final ObservableSupplierImpl<AccessorySheetVisualStateProvider>
-            mAccessorySheetVisualStateSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<AccessorySheetVisualStateProvider>
+            mAccessorySheetVisualStateSupplier = ObservableSuppliers.createMonotonic();
 
     @Mock private InsetObserver mInsetObserver;
 
@@ -305,7 +306,8 @@ public class BottomAttachedUiObserverTest {
     public void testSetOverlayPanelObserver() {
         verify(mOverlayPanelStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mOverlayPanelStateProviderSupplier.set(null);
+        mOverlayPanelStateProviderSupplier.set(
+                org.mockito.Mockito.mock(OverlayPanelStateProvider.class));
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
@@ -585,7 +587,8 @@ public class BottomAttachedUiObserverTest {
     public void testSetAccessorySheetVisualStateObserver() {
         verify(mAccessorySheetVisualStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mAccessorySheetVisualStateSupplier.set(null);
+        mAccessorySheetVisualStateSupplier.set(
+                org.mockito.Mockito.mock(AccessorySheetVisualStateProvider.class));
         verify(mAccessorySheetVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
@@ -604,7 +607,8 @@ public class BottomAttachedUiObserverTest {
     public void testSetKeyboardAccessoryVisualStateObserver() {
         verify(mKeyboardAccessoryVisualStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mKeyboardAccessoryVisualStateSupplier.set(null);
+        mKeyboardAccessoryVisualStateSupplier.set(
+                org.mockito.Mockito.mock(KeyboardAccessoryVisualStateProvider.class));
         verify(mKeyboardAccessoryVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 

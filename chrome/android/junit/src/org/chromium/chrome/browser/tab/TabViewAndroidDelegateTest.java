@@ -28,7 +28,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -60,13 +61,13 @@ public class TabViewAndroidDelegateTest {
 
     private final ApplicationViewportInsetTracker mApplicationInsetSupplier =
             ApplicationViewportInsetTracker.createForTests();
-    private ObservableSupplierImpl<Integer> mVisualViewportInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mVisualViewportInsetSupplier;
     private TabViewAndroidDelegate mViewAndroidDelegate;
 
     @Before
     public void setUp() {
 
-        mVisualViewportInsetSupplier = new ObservableSupplierImpl<>();
+        mVisualViewportInsetSupplier = ObservableSuppliers.createNonNull(0);
 
         // The the keyboard only insets the visual viewport while in RESIZES_VISUAL mode.
         mApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);

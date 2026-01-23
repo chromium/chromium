@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
@@ -35,7 +35,11 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelOrchestratorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
+
+    @Mock
+    private SettableMonotonicObservableSupplier<TabModelStartupInfo>
+            mMockTabModelStartupInfoSupplier;
+
     @Mock private TabModel mMockTabModel;
     @Mock private TabModelSelectorBase mMockTabModelSelectorBase;
     @Mock private TabPersistentStore mMockTabPersistentStore;

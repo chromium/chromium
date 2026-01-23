@@ -42,7 +42,8 @@ import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.cc.input.BrowserControlsState;
@@ -82,7 +83,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
-    private ObservableSupplierImpl<Boolean> mAreControlsHidden;
+    private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
     private UserDataHost mHost;
 
     @SuppressLint("NewApi")
@@ -142,7 +143,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
 
-        mAreControlsHidden = new ObservableSupplierImpl<>();
+        mAreControlsHidden = ObservableSuppliers.createNonNull(false);
         mMultiWindowModeStateDispatcher = new MultiWindowModeStateDispatcherImpl(mActivity);
         mFullscreenHtmlApiHandlerCompat =
                 new FullscreenHtmlApiHandlerCompat(

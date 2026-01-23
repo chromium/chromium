@@ -37,8 +37,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -410,7 +411,8 @@ public class ActivityRecreationControllerUnitTest {
     private void initializeController() {
         var toolbarManagerSupplier = new OneshotSupplierImpl<ToolbarManager>();
         toolbarManagerSupplier.set(mToolbarManager);
-        var layoutManagerSupplier = new ObservableSupplierImpl<LayoutManager>();
+        SettableMonotonicObservableSupplier<LayoutManager> layoutManagerSupplier =
+                ObservableSuppliers.createMonotonic();
         layoutManagerSupplier.set(mLayoutManager);
         mActivityRecreationController =
                 new ActivityRecreationController(

@@ -29,7 +29,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
@@ -68,8 +69,8 @@ public class StatusBarColorControllerUnitTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
-    private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
+    private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private StatusBarColorController mStatusBarColorController;
     private Activity mActivity;
 

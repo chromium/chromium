@@ -10,7 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link ValueChangedCallback}. */
@@ -22,7 +23,8 @@ public class ValueChangedCallbackTest {
     private int mCallCount;
     private String mOldSuppliedString;
     private String mNewSuppliedString;
-    private final ObservableSupplierImpl<String> mSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<String> mSupplier =
+            ObservableSuppliers.createNullable();
 
     @Test
     public void testObserverCaching() {

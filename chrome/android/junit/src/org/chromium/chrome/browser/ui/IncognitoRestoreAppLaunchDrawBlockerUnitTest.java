@@ -39,7 +39,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.build.BuildConfig;
@@ -74,8 +75,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverArgumentCaptor;
 
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorObservableSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModelSelector>
+            mTabModelSelectorObservableSupplier = ObservableSuppliers.createMonotonic();
     private final Supplier<Intent> mIntentSupplier =
             new Supplier<>() {
                 @Nullable

@@ -62,7 +62,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -155,7 +156,10 @@ public class TabStripDragHandlerTest {
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
+    @Mock
+    private SettableMonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+
     private TabStripDragHandler mSourceInstance;
     private TabStripDragHandler mDestInstance;
 
@@ -242,8 +246,8 @@ public class TabStripDragHandlerTest {
                         mActivity,
                         () -> mSourceStripLayoutHelper,
                         () -> mTabStripVisible,
-                        new ObservableSupplierImpl<>(mTabContentManager),
-                        new ObservableSupplierImpl<>(mLayerTitleCache),
+                        ObservableSuppliers.of(mTabContentManager),
+                        ObservableSuppliers.of(mLayerTitleCache),
                         mSourceMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
@@ -257,8 +261,8 @@ public class TabStripDragHandlerTest {
                         mActivity,
                         () -> mDestStripLayoutHelper,
                         () -> mTabStripVisible,
-                        new ObservableSupplierImpl<>(mTabContentManager),
-                        new ObservableSupplierImpl<>(mLayerTitleCache),
+                        ObservableSuppliers.of(mTabContentManager),
+                        ObservableSuppliers.of(mLayerTitleCache),
                         mDestMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,

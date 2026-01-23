@@ -28,7 +28,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -74,8 +75,8 @@ public class ReaderModeToolbarButtonControllerTest {
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
-    private final ObservableSupplierImpl<ReaderModeIphController> mReaderModeIphControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<ReaderModeIphController>
+            mReaderModeIphControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private UserDataHost mUserDataHost;
     private UnownedUserDataHost mUnownedUserDataHost;

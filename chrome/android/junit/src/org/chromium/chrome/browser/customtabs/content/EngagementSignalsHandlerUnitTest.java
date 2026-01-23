@@ -28,7 +28,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
@@ -50,8 +51,8 @@ public class EngagementSignalsHandlerUnitTest {
     @Mock private WebContents mWebContents;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
-    private final ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mCrashUploadPermittedSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Before
     public void setUp() {

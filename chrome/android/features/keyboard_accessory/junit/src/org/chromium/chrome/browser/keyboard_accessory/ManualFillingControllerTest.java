@@ -70,7 +70,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.build.annotations.Nullable;
@@ -166,10 +168,10 @@ public class ManualFillingControllerTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ApplicationViewportInsetTracker mInsetSupplier =
             ApplicationViewportInsetTracker.createForTests();
-    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mMockEdgeToEdgeControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier =
+            ObservableSuppliers.createNonNull(0);
+    private final SettableNullableObservableSupplier<EdgeToEdgeController>
+            mMockEdgeToEdgeControllerSupplier = ObservableSuppliers.createNullable();
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
@@ -335,9 +337,8 @@ public class ManualFillingControllerTest {
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
         doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
-        ObservableSupplierImpl<CompositorViewHolder> compositorViewHolderSupplier =
-                new ObservableSupplierImpl<>();
-        compositorViewHolderSupplier.set(mMockCompositorViewHolder);
+        SettableNonNullObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
+                ObservableSuppliers.createNonNull(mMockCompositorViewHolder);
         when(mMockActivity.getCompositorViewHolderSupplier())
                 .thenReturn(compositorViewHolderSupplier);
         when(mMockActivity.getResources()).thenReturn(mMockResources);

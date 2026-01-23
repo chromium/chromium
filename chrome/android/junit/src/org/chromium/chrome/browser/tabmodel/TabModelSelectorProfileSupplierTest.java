@@ -20,7 +20,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -36,8 +37,8 @@ public class TabModelSelectorProfileSupplierTest {
     @Mock Callback<Profile> mProfileCallback1;
     @Mock Callback<Profile> mProfileCallback2;
 
-    ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
+    SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
 
     TabModelSelectorProfileSupplier mSupplier;
     MockTabModelSelector mSelector;
