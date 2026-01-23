@@ -204,9 +204,9 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
   // the navigation capturing behavior.
   navigate_params.pwa_navigation_capturing_force_off = true;
 
-  // Treat PDF open-in-new-window navigations consistently with other PDF
-  // navigations, as done in TabsUpdateFunction::UpdateURL().
   if (extension && extension->id() == extension_misc::kPdfExtensionId) {
+    // Treat PDF open-in-new-tab navigations consistently with other PDF
+    // navigations, as done in TabsUpdateFunction::UpdateURL().
     navigate_params.is_renderer_initiated = true;
     navigate_params.initiator_origin = extension->origin();
     navigate_params.source_site_instance = content::SiteInstance::CreateForURL(

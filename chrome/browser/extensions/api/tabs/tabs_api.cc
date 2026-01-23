@@ -984,10 +984,19 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     // to be compatible with the navigation capturing behavior.
     navigate_params.pwa_navigation_capturing_force_off = true;
 
-    // Depending on the |setSelfAsOpener| option, we need to put the new
-    // contents in the same BrowsingInstance as their opener.  See also
-    // https://crbug.com/713888.
-    if (set_self_as_opener_) {
+    if (extension() && extension()->id() == extension_misc::kPdfExtensionId) {
+      // Treat PDF open-in-new-window navigations consistently with other PDF
+      // navigations, as done in TabsUpdateFunction::UpdateURL().
+      navigate_params.is_renderer_initiated = true;
+      navigate_params.initiator_origin = extension()->origin();
+      navigate_params.source_site_instance =
+          content::SiteInstance::CreateForURL(
+              browser_context(), navigate_params.initiator_origin->GetURL());
+    } else if (set_self_as_opener_) {
+      // Depending on the `setSelfAsOpener` option, we need to put the new
+      // contents in the same BrowsingInstance as their opener.  See also
+      // https://crbug.com/713888.
+      //
       // TODO(crbug.com/40636155): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
       // See ExtensionApiTest.WindowsCreate* tests for details.
