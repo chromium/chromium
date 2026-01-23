@@ -131,6 +131,10 @@ public class PreferenceParser {
             String prefFragment,
             Bundle extras,
             Map<String, SearchIndexProvider> providerMap) {
+        if (xmlRes == 0 || xmlRes == BaseSearchIndexProvider.INDEX_OPT_OUT) {
+            return;
+        }
+
         List<Bundle> metadata;
 
         try {
@@ -186,7 +190,9 @@ public class PreferenceParser {
             SettingsIndexData indexData,
             Map<String, SearchIndexProvider> providerMap,
             Set<String> processedFragments) {
-        if (xmlRes == 0 || processedFragments.contains(parentFragmentName)) {
+        if (xmlRes == 0
+                || xmlRes == BaseSearchIndexProvider.INDEX_OPT_OUT
+                || processedFragments.contains(parentFragmentName)) {
             return;
         }
 
