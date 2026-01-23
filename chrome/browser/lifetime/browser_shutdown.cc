@@ -78,8 +78,6 @@ bool g_trying_to_quit = false;
 
 base::Time* g_shutdown_started = nullptr;
 ShutdownType g_shutdown_type = ShutdownType::kNotValid;
-int g_shutdown_num_processes;
-int g_shutdown_num_processes_slow;
 
 const char* ToShutdownTypeString(ShutdownType type) {
   switch (type) {
@@ -145,15 +143,10 @@ void OnShutdownStarting(ShutdownType type) {
   // a no-op in some cases, so we still need to go through the normal
   // shutdown path for the ones that didn't exit here.
   if (g_browser_process) {
-    g_shutdown_num_processes = 0;
-    g_shutdown_num_processes_slow = 0;
     for (content::RenderProcessHost::iterator i(
              content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
-      ++g_shutdown_num_processes;
-      if (!i.GetCurrentValue()->FastShutdownIfPossible()) {
-        ++g_shutdown_num_processes_slow;
-      }
+      i.GetCurrentValue()->FastShutdownIfPossible();
     }
   }
 }
@@ -236,11 +229,6 @@ void RecordShutdownMetrics() {
     base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
     base::UmaHistogramMediumTimes(time_metric_name, shutdown_delta);
   }
-
-  base::UmaHistogramCounts100("Shutdown.Renderers.Total2",
-                              g_shutdown_num_processes);
-  base::UmaHistogramCounts100("Shutdown.Renderers.Slow2",
-                              g_shutdown_num_processes_slow);
 }
 
 bool RecordShutdownInfoPrefs() {
