@@ -11,20 +11,6 @@
 
 namespace media {
 
-// static
-base::TimeDelta AudioTimestampHelper::FramesToTime(int64_t frames,
-                                                   int samples_per_second) {
-  CHECK_GT(samples_per_second, 0);
-  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
-                            samples_per_second);
-}
-
-// static
-int64_t AudioTimestampHelper::TimeToFrames(base::TimeDelta time,
-                                           int samples_per_second) {
-  return std::round(time.InSecondsF() * samples_per_second);
-}
-
 AudioTimestampHelper::AudioTimestampHelper(int samples_per_second)
     : frame_count_(0) {
   CHECK_GT(samples_per_second, 0);
