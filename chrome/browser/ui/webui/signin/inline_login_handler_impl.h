@@ -8,11 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -26,7 +24,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-class Browser;
+class Profile;
 class SigninUIError;
 
 // Implementation for the inline login WebUI handler on desktop Chrome. Once
@@ -48,8 +46,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     return weak_factory_.GetWeakPtr();
   }
 
-  Browser* GetDesktopBrowser();
-  void SyncSetupFailed();
   void HandleLoginError(const SigninUIError& error);
 
   // Calls the javascript function 'sendLSTFetchResults' with the given
@@ -72,7 +68,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     FinishCompleteLoginParams(InlineLoginHandlerImpl* handler,
                               content::StoragePartition* partition,
                               const GURL& url,
-                              bool confirm_untrusted_signin,
                               const std::string& email,
                               const GaiaId& gaia_id,
                               const std::string& password,
@@ -86,9 +81,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     raw_ptr<content::StoragePartition> partition;
     // URL of sign in containing parameters such as email, source, etc.
     GURL url;
-    // When true, an extra prompt will be shown to the user before sign in
-    // completes.
-    bool confirm_untrusted_signin;
     // Email address of the account used to sign in.
     std::string email;
     // Obfustcated gaia id of the account used to sign in.
@@ -103,10 +95,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
   static void FinishCompleteLogin(const FinishCompleteLoginParams& params,
                                   Profile* profile);
-
-  // True if the user has navigated to untrusted domains during the signin
-  // process.
-  bool confirm_untrusted_signin_;
 
   base::WeakPtrFactory<InlineLoginHandlerImpl> weak_factory_{this};
 };
@@ -127,30 +115,17 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
-      const std::string& signin_scoped_device_id,
-      bool confirm_untrusted_signin);
+      const std::string& signin_scoped_device_id);
 
   InlineSigninHelper(const InlineSigninHelper&) = delete;
   InlineSigninHelper& operator=(const InlineSigninHelper&) = delete;
 
   ~InlineSigninHelper() override;
 
- protected:
-  GaiaAuthFetcher* GetGaiaAuthFetcherForTest() { return &gaia_auth_fetcher_; }
-
  private:
   // Overridden from GaiaAuthConsumer.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
-
-  // Callback invoked once the user has responded to the signin confirmation UI.
-  // If confirmed is false, the signin is aborted.
-  void UntrustedSigninConfirmed(const std::string& refresh_token,
-                                bool confirmed);
-
-  // Creates the sync starter.  Virtual for tests. Call to exchange oauth code
-  // for tokens.
-  virtual void CreateSyncStarter(const std::string& refresh_token);
 
   GaiaAuthFetcher gaia_auth_fetcher_;
   base::WeakPtr<InlineLoginHandlerImpl> handler_;
@@ -160,7 +135,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   const GaiaId gaia_id_;
   const std::string password_;
   const std::string auth_code_;
-  const bool confirm_untrusted_signin_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_IMPL_H_

@@ -136,8 +136,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string default_email;
-  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
-      reason == signin_metrics::Reason::kForcedSigninPrimaryAccount) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     default_email = profile->GetPrefs()->GetString(
         prefs::kGoogleServicesLastSyncingUsername);
   } else {

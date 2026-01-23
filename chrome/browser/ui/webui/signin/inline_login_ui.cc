@@ -248,7 +248,6 @@ bool IsValidChromeSigninReason(const GURL& url) {
       signin::GetSigninReasonForEmbeddedPromoURL(url);
 
   switch (reason) {
-    case signin_metrics::Reason::kForcedSigninPrimaryAccount:
     case signin_metrics::Reason::kReauthentication:
       // Used by the profile picker.
       return true;
