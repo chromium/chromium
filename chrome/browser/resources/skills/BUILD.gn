@@ -13,6 +13,8 @@ build_webui("build") {
   static_files = [
     "skills.html",
     "skills_dialog.html",
+    "images/skills_empty.svg",
+    "images/skills_empty_dark.svg",
   ]
 
   ts_composite = true
@@ -20,8 +22,8 @@ build_webui("build") {
     "app.ts",
     "app.html.ts",
     "icons.html.ts",
-    "user_skills_page.ts",
     "user_skills_page.html.ts",
+    "user_skills_page.ts",
     "discover_skills_page.ts",
     "discover_skills_page.html.ts",
     "skills_dialog_app.html.ts",
@@ -32,6 +34,8 @@ build_webui("build") {
   css_files = [
     "app.css",
     "skills_dialog.css",
+    "shared_vars.css",
+    "user_skills_page.css",
   ]
 
   webui_context_type = "trusted"

@@ -4,11 +4,17 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './user_skills_page.css.js';
 import {getHtml} from './user_skills_page.html.js';
+
 
 export class UserSkillsPageElement extends CrLitElement {
   static get is() {
     return 'user-skills-page';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {

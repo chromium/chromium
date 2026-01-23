@@ -58,7 +58,7 @@ export class SkillsAppElement extends CrLitElement {
     };
   }
 
-  // TODO(crbug.com/475607224): Instead of hardcoding, add resource strings for
+  // TODO(b/475607224): Instead of hardcoding, add resource strings for
   // the name.
   protected accessor selectedPage_: Page = Page.USER_SKILLS;
   protected accessor menuItems_: MenuItem[] = [
@@ -113,7 +113,10 @@ export class SkillsAppElement extends CrLitElement {
 
   protected onMenuItemSelect_(e: CustomEvent<{item: HTMLAnchorElement}>): void {
     const newUrl = new URL(e.detail.item.href);
+    // Does not trigger the popstate to update on path changes.
     CrRouter.getInstance().setPath(newUrl.pathname);
+    // Manually trigger the path change event since setPath does not trigger it.
+    this.onPathChanged_(newUrl.pathname);
   }
 
   // Prevent clicks on sidebar items from navigating and reloading the page.

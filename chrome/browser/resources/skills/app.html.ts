@@ -6,7 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {Page, type SkillsAppElement} from './app.js';
 
-// TODO(crbug.com/475607224): Instead of hardcoding, add resource strings for
+// TODO(b/475607224): Instead of hardcoding, add resource strings for
 // labels and names.
 export function getHtml(this: SkillsAppElement) {
   // clang-format off
@@ -26,12 +26,12 @@ export function getHtml(this: SkillsAppElement) {
       <cr-menu-selector id="menu" selectable="a" selected-attribute="selected"
           @iron-select="${this.onMenuItemSelect_}">
         ${this.menuItems_.map(menuItem => html`
-            <a role="menuitem" href="${menuItem.page}" class="cr-nav-menu-item"
-                @click="${this.onMenuItemClick_}">
-              <cr-icon icon="${menuItem.icon}" slot="prefix"></cr-icon>
-              <div class="name">${menuItem.name}</div>
-            </a>
-          `)}
+          <a role="menuitem" href="${menuItem.page}" class="cr-nav-menu-item"
+              @click="${this.onMenuItemClick_}">
+            <cr-icon icon="${menuItem.icon}"></cr-icon>
+            <div class="name">${menuItem.name}</div>
+          </a>
+        `)}
       </cr-menu-selector>
     </div>
   </div>

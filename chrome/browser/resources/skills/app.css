@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=./shared_vars.css.js
  * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_style_lit.css.js
  * #scheme=relative
@@ -35,12 +36,21 @@
   width: 100%;
   overscroll-behavior: contain;
   overflow: auto;
+  padding-top: 8px;
 }
 
 cr-page-selector {
   flex: 1;
   overflow: auto;
   min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  /* max-width to align with the searchbar */
+  max-width: var(--main-content-max-width);
+  margin: 0 auto;
+  padding-top: 16px;
 }
 
 .cr-nav-menu-item {
