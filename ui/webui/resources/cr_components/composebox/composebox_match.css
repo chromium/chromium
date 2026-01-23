@@ -40,6 +40,13 @@
   background-color: var(--color-searchbox-results-background-selected, var(--color-searchbox-results-background-hovered));
 }
 
+@media (forced-colors: active) {
+  .container:hover,
+  :host(:is(:focus-visible, [selected])) .container {
+    --color-searchbox-results-background-hovered: Highlight;
+  }
+}
+
 #focusIndicator {
   background-color: var(--color-searchbox-results-focus-indicator);
   border-radius: 4px;
