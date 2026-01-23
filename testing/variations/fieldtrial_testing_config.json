@@ -3558,6 +3558,27 @@
             ]
         }
     ],
+    "AutomaticJsOptimizer": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260122",
+                    "enable_features": [
+                        "BlockV8OptimizerOnUnfamiliarSitesSetting"
+                    ],
+                    "disable_features": [
+                        "MigrateToBlockV8OptimizerOnUnfamiliarSites"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutomaticUsbDetach": [
         {
             "platforms": [
