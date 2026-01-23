@@ -42,8 +42,15 @@ constexpr gfx::Insets kListHeaderPadding = gfx::Insets::VH(10, 20);
 ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
                                      Profile* profile)
     : root_action_item_(root_action_item),
-      action_view_controller_(std::make_unique<views::ActionViewController>()) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      action_view_controller_(std::make_unique<views::ActionViewController>()),
+      resize_animation_(this) {
+  // The vertical tab strip contains ScrollViews that paint to a layer. This
+  // view must also paint to a layer to ensure it overlays those components.
+  SetPaintToLayer();
+  layer()->SetMasksToBounds(true);
+
+  content_container_ = AddChildView(std::make_unique<views::View>());
+  content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kRegionInteriorMargins)
       .SetCollapseMargins(true)
@@ -51,22 +58,22 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
-  SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
-
-  // The vertical tab strip contains ScrollViews that paint to a layer. This
-  // view must also paint to a layer to ensure it overlays those components.
-  SetPaintToLayer();
+  content_container_->SetBackground(
+      views::CreateSolidBackground(ui::kColorFrameActive));
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
 
-  controls_view_ = AddChildView(std::make_unique<ProjectsPanelControlsView>(
-      root_action_item_.get(), action_view_controller_.get()));
+  controls_view_ = content_container_->AddChildView(
+      std::make_unique<ProjectsPanelControlsView>(
+          root_action_item_.get(), action_view_controller_.get()));
 
-  tab_groups_view_ = AddChildView(std::make_unique<ProjectsPanelTabGroupsView>(
-      root_action_item_.get(), action_view_controller_.get()));
+  tab_groups_view_ = content_container_->AddChildView(
+      std::make_unique<ProjectsPanelTabGroupsView>(
+          root_action_item_.get(), action_view_controller_.get()));
 
-  auto* threads_list_title = AddChildView(std::make_unique<views::Label>());
+  auto* threads_list_title =
+      content_container_->AddChildView(std::make_unique<views::Label>());
   threads_list_title->SetText(
       l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
   threads_list_title->SetTextStyle(views::style::TextStyle::STYLE_BODY_3_BOLD);
@@ -74,8 +81,9 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   threads_list_title->SetProperty(views::kMarginsKey, kListHeaderPadding);
 
-  threads_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
-      views::ScrollView::ScrollWithLayers::kEnabled));
+  threads_scroll_view_ =
+      content_container_->AddChildView(std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled));
   // TODO(crbug.com/475300882): Fetch thread data from the controller once
   // available.
   threads_scroll_view_->SetContents(
@@ -89,6 +97,10 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+
+  resize_animation_.SetSlideDuration(
+      gfx::Animation::RichAnimationDuration(base::Milliseconds(450)));
+  resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
   SetVisible(false);
   SetPreferredSize(gfx::Size(kProjectPanelWidth, 0));
@@ -110,8 +122,34 @@ bool ProjectsPanelView::IsPositionInWindowCaption(const gfx::Point& point) {
 void ProjectsPanelView::OnProjectsPanelStateChanged(
     ProjectsPanelStateController* state_controller) {
   TooltipTextChanged();
-  SetVisible(state_controller->IsProjectsPanelVisible());
+  const bool visible = state_controller->IsProjectsPanelVisible();
+  if (visible) {
+    SetVisible(true);
+    resize_animation_.Show();
+  } else {
+    resize_animation_.Hide();
+  }
+}
+
+double ProjectsPanelView::GetResizeAnimationValue() const {
+  return resize_animation_.GetCurrentValue();
+}
+
+void ProjectsPanelView::Layout(PassKey) {
+  const int target_width = kProjectPanelWidth;
+  const int visible_width = width();
+  content_container_->SetBounds(-(target_width - visible_width), 0,
+                                target_width, height());
+}
+
+void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
   InvalidateLayout();
+}
+
+void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
+  if (animation->GetCurrentValue() == 0.0) {
+    SetVisible(false);
+  }
 }
 
 BEGIN_METADATA(ProjectsPanelView)

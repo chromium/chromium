@@ -409,10 +409,15 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Project Panel Container.
   if (IsParentedToAndVisible(views().projects_panel_container,
                              views().browser_view)) {
+    const int target_width =
+        views().projects_panel_container->GetPreferredSize().width();
+    const double reveal_amount =
+        views().projects_panel_container->GetResizeAnimationValue();
+    const int visible_width = base::ClampFloor(target_width * reveal_amount);
+
     gfx::Rect projects_panel_bounds =
         gfx::Rect(browser_params.visual_client_area.x(),
-                  browser_params.visual_client_area.y(),
-                  views().projects_panel_container->GetPreferredSize().width(),
+                  browser_params.visual_client_area.y(), visible_width,
                   browser_params.visual_client_area.height());
     layout.AddChild(views().projects_panel_container, projects_panel_bounds);
   }
