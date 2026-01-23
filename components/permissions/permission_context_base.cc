@@ -771,8 +771,8 @@ void PermissionContextBase::NotifyPermissionSet(
   PermissionSetting previous_value = GetPermissionStatusInternal(
       rfh, request_data.requesting_origin, request_data.embedding_origin);
   PermissionSetting new_value =
-      request_data.resolver->ComputePermissionDecisionResult(
-          previous_value, decision.overall_decision, decision.prompt_options);
+      request_data.resolver->ComputePermissionDecisionResult(previous_value,
+                                                             decision);
 
   if (persist) {
     // Clone new value, because we need it again for the callback.

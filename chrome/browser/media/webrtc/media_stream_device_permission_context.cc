@@ -176,8 +176,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
         rfh, request_data.requesting_origin, request_data.embedding_origin);
     auto new_content_setting = std::get<ContentSetting>(
         request_data.resolver->ComputePermissionDecisionResult(
-            previous_content_setting, decision.overall_decision,
-            decision.prompt_options));
+            previous_content_setting, decision));
 
     UpdateContentSetting(
         request_data, new_content_setting,

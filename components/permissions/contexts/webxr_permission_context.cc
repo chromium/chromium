@@ -99,9 +99,8 @@ void WebXrPermissionContext::NotifyPermissionSet(
     auto previous_setting = GetContentSettingStatusInternal(
         rfh, request_data.requesting_origin, request_data.embedding_origin);
     auto new_content_setting = std::get<ContentSetting>(
-        request_data.resolver->ComputePermissionDecisionResult(
-            previous_setting, decision.overall_decision,
-            decision.prompt_options));
+        request_data.resolver->ComputePermissionDecisionResult(previous_setting,
+                                                               decision));
 
     ContentSettingPermissionContextBase::UpdateContentSetting(
         request_data, new_content_setting,

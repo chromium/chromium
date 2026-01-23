@@ -14,6 +14,8 @@ class PermissionDescriptor;
 
 namespace permissions {
 
+struct PermissionPromptDecision;
+
 // A |PermissionResolver| for the geolocation permission supporting
 // approximate/precise location requests.
 class GeolocationPermissionResolver : public PermissionResolver {
@@ -26,8 +28,7 @@ class GeolocationPermissionResolver : public PermissionResolver {
 
   PermissionSetting ComputePermissionDecisionResult(
       const PermissionSetting& previous_setting,
-      PermissionDecision decision,
-      PromptOptions prompt_options) const override;
+      const PermissionPromptDecision& decision) const override;
 
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;

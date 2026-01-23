@@ -11,6 +11,8 @@
 
 namespace permissions {
 
+struct PermissionPromptDecision;
+
 // PermissionResolver for basic ContentSetting permissions which do not use
 // permission options.
 class ContentSettingPermissionResolver : public PermissionResolver {
@@ -25,8 +27,7 @@ class ContentSettingPermissionResolver : public PermissionResolver {
 
   PermissionSetting ComputePermissionDecisionResult(
       const PermissionSetting& previous_setting,
-      PermissionDecision decision,
-      PromptOptions prompt_options) const override;
+      const PermissionPromptDecision& decision) const override;
 
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;

@@ -6,8 +6,10 @@
 
 #include <variant>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
@@ -100,9 +102,13 @@ GeolocationPermissionContextExtensions::DecidePermission(
                 // only granted precise location. Potentially implement support
                 // for a granular approximate geolocation permission for
                 // extensions in the future.
-                .prompt_options =
-                    GeolocationPromptOptions{.selected_accuracy =
-                                                 GeolocationAccuracy::kPrecise},
+                .prompt_options = base::FeatureList::IsEnabled(
+                                      content_settings::features::
+                                          kApproximateGeolocationPermission)
+                                      ? PromptOptions(GeolocationPromptOptions{
+                                            .selected_accuracy =
+                                                GeolocationAccuracy::kPrecise})
+                                      : std::monostate(),
                 .is_final = true}};
       }
     }

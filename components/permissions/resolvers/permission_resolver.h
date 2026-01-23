@@ -11,11 +11,14 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
 namespace permissions {
+
+struct PermissionPromptDecision;
 
 // Interface that allows implementing a permission resolver. Subclasses should
 // implement logic for one or more permission types. Each object of subclasses
@@ -46,8 +49,7 @@ class PermissionResolver {
   // request.
   virtual PermissionSetting ComputePermissionDecisionResult(
       const PermissionSetting& previous_setting,
-      PermissionDecision decision,
-      PromptOptions prompt_options) const = 0;
+      const PermissionPromptDecision& decision) const = 0;
 
   // Determines the `PromptParameters` for the current request given the
   // `current_setting_state` which is the fully coalesced current settings

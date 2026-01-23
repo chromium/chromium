@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,15 +70,27 @@ TEST_P(ContentSettingPermissionResolverTest,
   ContentSetting previous_setting(CONTENT_SETTING_DEFAULT);
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kAllow, std::monostate()),
+                previous_setting,
+                PermissionPromptDecision{
+                    .overall_decision = PermissionDecision::kAllow,
+                    .prompt_options = std::monostate(),
+                    .is_final = true}),
             PermissionSetting(CONTENT_SETTING_ALLOW));
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kDeny, std::monostate()),
+                previous_setting,
+                PermissionPromptDecision{
+                    .overall_decision = PermissionDecision::kDeny,
+                    .prompt_options = std::monostate(),
+                    .is_final = true}),
             PermissionSetting(CONTENT_SETTING_BLOCK));
 
   EXPECT_EQ(resolver.ComputePermissionDecisionResult(
-                previous_setting, PermissionDecision::kNone, std::monostate()),
+                previous_setting,
+                PermissionPromptDecision{
+                    .overall_decision = PermissionDecision::kNone,
+                    .prompt_options = std::monostate(),
+                    .is_final = true}),
 
             PermissionSetting(CONTENT_SETTING_ASK));
 }
