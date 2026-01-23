@@ -147,9 +147,6 @@ found in the LICENSE file.
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
     <dimen name="incognito_ntp_fading_shadow_size">16dp</dimen>
 
-    <!-- Incognito Indicator Menu -->
-    <dimen name="incognito_indicator_menu_max_width">270dp</dimen>
-
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">8dp</dimen>
     <dimen name="recent_tabs_group_view_vertical_padding">8dp</dimen>

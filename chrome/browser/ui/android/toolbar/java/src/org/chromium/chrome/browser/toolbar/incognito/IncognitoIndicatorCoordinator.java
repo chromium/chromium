@@ -235,6 +235,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         R.color.toolbar_text_box_background_incognito,
                         null);
 
+        int measuredWidth = menu.getMenuDimensions()[0];
         mMenuWindow =
                 new AnchoredPopupWindow.Builder(
                                 context,
@@ -247,10 +248,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         .setDismissOnTouchInteraction(true)
                         .setFocusable(true)
                         .setTouchModal(true)
-                        .setMaxWidth(
-                                context.getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.incognito_indicator_menu_max_width))
+                        .setDesiredContentWidth(measuredWidth)
                         .setHorizontalOverlapAnchor(true)
                         .setPreferredHorizontalOrientation(
                                 AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE)
