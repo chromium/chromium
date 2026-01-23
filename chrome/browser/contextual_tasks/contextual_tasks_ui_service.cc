@@ -627,7 +627,7 @@ void ContextualTasksUiService::OnTaskChanged(
         browser_window_interface->GetFeatures()
             .contextual_tasks_active_task_context_provider();
     if (active_task_context_provider) {
-      active_task_context_provider->OnFullTabStateUpdated();
+      active_task_context_provider->RefreshContext();
     }
   } else {  // !is_shown_in_tab
     // If a new thread is started in the panel, affiliated tabs should change

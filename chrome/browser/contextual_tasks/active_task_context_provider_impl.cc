@@ -88,10 +88,6 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ActiveTaskContextProviderImpl::OnFullTabStateUpdated() {
-  RefreshContext();
-}
-
 void ActiveTaskContextProviderImpl::SetSessionHandleGetter(
     SessionHandleGetter session_handle_getter) {
   session_handle_getter_ = session_handle_getter;
@@ -108,12 +104,6 @@ void ActiveTaskContextProviderImpl::OnActiveTabChanged(
 }
 
 void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
-  RefreshContext();
-}
-
-void ActiveTaskContextProviderImpl::OnSidePanelStateUpdated() {
-  // The side panel was just opened or closed or we might have switched to a
-  // different tab. Update the context.
   RefreshContext();
 }
 

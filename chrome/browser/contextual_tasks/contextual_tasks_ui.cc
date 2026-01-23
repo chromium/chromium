@@ -695,7 +695,7 @@ void ContextualTasksUI::DisableActiveTabContextSuggestion() {
   auto* active_task_context_provider =
       browser->GetFeatures().contextual_tasks_active_task_context_provider();
   if (active_task_context_provider) {
-    active_task_context_provider->OnSidePanelStateUpdated();
+    active_task_context_provider->RefreshContext();
   }
 }
 
