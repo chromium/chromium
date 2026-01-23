@@ -1,6 +1,7 @@
 Name: Lens Protos
 Short Name: lens_overlay_proto
 URL: This is the canonical public repository
+Update Mechanism: Manual
 Version: 858608937
 Date: 2026-01-20
 License: BSD-3-Clause
