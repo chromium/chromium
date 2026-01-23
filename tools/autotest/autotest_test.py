@@ -7,12 +7,10 @@ import contextlib
 import io
 import os
 import unittest
-from pathlib import Path
 from unittest import mock
 
+import main as autotest
 from pyfakefs.fake_filesystem_unittest import TestCase
-
-import autotest
 
 
 class FindMatchingTestFilesTest(TestCase):
@@ -81,7 +79,7 @@ class FindMatchingTestFilesTest(TestCase):
 class FindTestTargetsTest(unittest.TestCase):
 
   def setUp(self):
-    self.mock_run_command = mock.patch('autotest.RunCommand').start()
+    self.mock_run_command = mock.patch('main.RunCommand').start()
     self.addCleanup(mock.patch.stopall)
 
   def test_mixed_targets(self):
