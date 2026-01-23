@@ -28,6 +28,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/strings/grit/extensions_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -107,7 +109,7 @@ ExtensionInstallPolicyServiceImpl::~ExtensionInstallPolicyServiceImpl() =
 
 void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
     const ExtensionIdAndVersion& extension_id_and_version,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback) const {
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   std::move(callback).Run(true);
   return;
@@ -177,7 +179,7 @@ void ExtensionInstallPolicyServiceImpl::CanInstallExtension(
 }
 
 std::optional<bool> ExtensionInstallPolicyServiceImpl::IsExtensionAllowed(
-    const ExtensionIdAndVersion& extension_id_and_version) {
+    const ExtensionIdAndVersion& extension_id_and_version) const {
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
   return std::nullopt;
 #else
@@ -265,6 +267,58 @@ void ExtensionInstallPolicyServiceImpl::NotifyExtensionInstallPolicyUpdated() {
   for (auto& observer : observers_) {
     observer.OnExtensionInstallPolicyUpdated();
   }
+}
+
+std::string ExtensionInstallPolicyServiceImpl::GetDebugPolicyProviderName()
+    const {
+#if DCHECK_IS_ON()
+  return "ExtensionInstallPolicyServiceImpl";
+#else
+  base::ImmediateCrash();
+#endif  // DCHECK_IS_ON()
+}
+
+void ExtensionInstallPolicyServiceImpl::UserMayInstall(
+    scoped_refptr<const extensions::Extension> extension,
+    base::OnceCallback<void(extensions::ManagementPolicy::Decision)> callback)
+    const {
+  if (!extension->from_webstore()) {
+    // Always allow non-webstore extensions.
+    std::move(callback).Run({true, std::u16string()});
+    return;
+  }
+  CanInstallExtension(
+      {extension->id(), extension->VersionString()},
+      base::BindOnce(
+          [](base::OnceCallback<void(extensions::ManagementPolicy::Decision)>
+                 callback,
+             bool can_install) {
+            std::move(callback).Run(
+                {can_install,
+                 can_install
+                     ? std::u16string()
+                     : l10n_util::GetStringUTF16(
+                           IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_RISK_SCORE)});
+          },
+          std::move(callback)));
+}
+
+bool ExtensionInstallPolicyServiceImpl::UserMayLoad(
+    const extensions::Extension* extension,
+    std::u16string* error) const {
+  // TODO(crbug.com/477545526): Implement this based on cached policy values.
+  // TODO(crbug.com/477545526): Notify ExtensionService of policy changes so it
+  // re-runs CheckManagementPolicy() to apply the new cached value.
+  return true;
+}
+
+bool ExtensionInstallPolicyServiceImpl::MustRemainDisabled(
+    const extensions::Extension* extension,
+    extensions::disable_reason::DisableReason* reason) const {
+  // TODO(crbug.com/477545526): Implement this based on cached policy values.
+  // TODO(crbug.com/477545526): Notify ExtensionService of policy changes so it
+  // re-runs CheckManagementPolicy() to apply the new cached value.
+  return false;
 }
 
 std::set<ExtensionIdAndVersion>

@@ -17,6 +17,12 @@
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/management_policy.h"
+
+namespace extensions {
+class Extension;
+}  // namespace extensions
 
 class Profile;
 
@@ -26,7 +32,9 @@ struct ExtensionIdAndVersion;
 class CloudPolicyManager;
 
 // A keyed service that provides access to the extension install policy.
-class ExtensionInstallPolicyService : public KeyedService {
+class ExtensionInstallPolicyService
+    : public KeyedService,
+      public extensions::ManagementPolicy::Provider {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -43,10 +51,10 @@ class ExtensionInstallPolicyService : public KeyedService {
   // as "id@version".
   virtual void CanInstallExtension(
       const ExtensionIdAndVersion& extension_id_and_version,
-      base::OnceCallback<void(bool)>) = 0;
+      base::OnceCallback<void(bool)>) const = 0;
 
   virtual std::optional<bool> IsExtensionAllowed(
-      const ExtensionIdAndVersion& extension_id_and_version) = 0;
+      const ExtensionIdAndVersion& extension_id_and_version) const = 0;
 };
 
 // A keyed service that provides access to the extension install policy.
@@ -66,9 +74,21 @@ class ExtensionInstallPolicyServiceImpl
   // ExtensionInstallPolicyService impl:
   void CanInstallExtension(
       const ExtensionIdAndVersion& extension_id_and_version,
-      base::OnceCallback<void(bool)>) override;
+      base::OnceCallback<void(bool)>) const override;
   std::optional<bool> IsExtensionAllowed(
-      const ExtensionIdAndVersion& extension_id_and_version) override;
+      const ExtensionIdAndVersion& extension_id_and_version) const override;
+
+  // extensions::ManagementPolicy::Provider implementation:
+  std::string GetDebugPolicyProviderName() const override;
+  void UserMayInstall(
+      scoped_refptr<const extensions::Extension> extension,
+      base::OnceCallback<void(extensions::ManagementPolicy::Decision)> callback)
+      const override;
+  bool UserMayLoad(const extensions::Extension* extension,
+                   std::u16string* error) const override;
+  bool MustRemainDisabled(
+      const extensions::Extension* extension,
+      extensions::disable_reason::DisableReason* reason) const override;
 
   // PolicyTypeToFetch::ExtensionsProvider:
   std::set<ExtensionIdAndVersion> GetExtensions() override;

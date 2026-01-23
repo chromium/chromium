@@ -18,14 +18,15 @@ class MockExtensionInstallPolicyService : public ExtensionInstallPolicyService {
   MockExtensionInstallPolicyService();
   ~MockExtensionInstallPolicyService() override;
 
+  // ExtensionInstallPolicyService:
   MOCK_METHOD(void,
               CanInstallExtension,
               (const ExtensionIdAndVersion&, base::OnceCallback<void(bool)>),
-              (override));
+              (const, override));
   MOCK_METHOD(std::optional<bool>,
               IsExtensionAllowed,
               (const ExtensionIdAndVersion&),
-              (override));
+              (const, override));
   MOCK_METHOD(void,
               AddObserver,
               (ExtensionInstallPolicyService::Observer*),
@@ -34,6 +35,24 @@ class MockExtensionInstallPolicyService : public ExtensionInstallPolicyService {
               RemoveObserver,
               (ExtensionInstallPolicyService::Observer*),
               (override));
+
+  // ManagementPolicy::Provider:
+  MOCK_METHOD(std::string, GetDebugPolicyProviderName, (), (const, override));
+  MOCK_METHOD(
+      void,
+      UserMayInstall,
+      (scoped_refptr<const extensions::Extension>,
+       base::OnceCallback<void(extensions::ManagementPolicy::Decision)>),
+      (const, override));
+  MOCK_METHOD(bool,
+              UserMayLoad,
+              (const extensions::Extension*, std::u16string*),
+              (const, override));
+  MOCK_METHOD(bool,
+              MustRemainDisabled,
+              (const extensions::Extension*,
+               extensions::disable_reason::DisableReason*),
+              (const, override));
 };
 
 }  // namespace policy

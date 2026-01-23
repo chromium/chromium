@@ -9,6 +9,7 @@
 
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -122,13 +123,14 @@ TEST_F(SupervisedUserExtensionsManagerTest,
   EXPECT_TRUE(manager_->UserMayLoad(extension.get(), &error_1));
   EXPECT_TRUE(error_1.empty());
 
-  std::u16string error_2;
-  EXPECT_TRUE(manager_->UserMayInstall(extension.get(), &error_2));
-  EXPECT_TRUE(error_2.empty());
+  base::test::TestFuture<extensions::ManagementPolicy::Decision> future;
+  manager_->UserMayInstall(extension, future.GetCallback());
+  EXPECT_TRUE(future.Get().allowed);
+  EXPECT_TRUE(future.Get().error.empty());
 
-  std::u16string error_3;
-  EXPECT_FALSE(manager_->MustRemainInstalled(extension.get(), &error_3));
-  EXPECT_TRUE(error_3.empty());
+  std::u16string error_2;
+  EXPECT_FALSE(manager_->MustRemainInstalled(extension.get(), &error_2));
+  EXPECT_TRUE(error_2.empty());
 
 #if DCHECK_IS_ON()
   EXPECT_FALSE(manager_->GetDebugPolicyProviderName().empty());
@@ -168,9 +170,10 @@ TEST_F(SupervisedUserExtensionsManagerTest,
     EXPECT_TRUE(manager_->UserMayModifySettings(extension.get(), &error_3));
     EXPECT_TRUE(error_3.empty());
 
-    std::u16string error_4;
-    EXPECT_TRUE(manager_->UserMayInstall(extension.get(), &error_4));
-    EXPECT_TRUE(error_4.empty());
+    base::test::TestFuture<extensions::ManagementPolicy::Decision> future;
+    manager_->UserMayInstall(extension, future.GetCallback());
+    EXPECT_TRUE(future.Get().allowed);
+    EXPECT_TRUE(future.Get().error.empty());
   }
 
 #if DCHECK_IS_ON()

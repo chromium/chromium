@@ -7652,6 +7652,7 @@ static_library("browser") {
       # is modularized.
       "//chrome/browser/extensions/api/notifications",
       "//extensions/browser/updater",
+      "//extensions/strings",
     ]
   }
 

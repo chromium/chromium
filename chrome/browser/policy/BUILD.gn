@@ -159,8 +159,6 @@ source_set("test_support") {
   sources = [
     "cloud/cloud_policy_test_utils.cc",
     "cloud/cloud_policy_test_utils.h",
-    "cloud/mock_extension_install_policy_service.cc",
-    "cloud/mock_extension_install_policy_service.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
     "safe_browsing_policy_test.cc",
@@ -198,9 +196,12 @@ source_set("test_support") {
 
   if (enable_extensions_core) {
     sources += [
+      "cloud/mock_extension_install_policy_service.cc",
+      "cloud/mock_extension_install_policy_service.h",
       "extension_policy_test_base.cc",
       "extension_policy_test_base.h",
     ]
+    deps += [ "//extensions/common" ]
   }
 
   if (!is_android) {

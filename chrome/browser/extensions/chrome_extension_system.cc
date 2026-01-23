@@ -32,10 +32,13 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/policy/core/common/features.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -175,6 +178,14 @@ void ChromeExtensionSystem::Shared::RegisterManagementPolicyProviders() {
 
   management_policy_->RegisterProvider(
       InstallVerifierFactory::GetForBrowserContext(profile_));
+
+  if (auto* extension_install_policy_service =
+          policy::ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
+              profile_)) {
+    CHECK(base::FeatureList::IsEnabled(
+        policy::features::kEnableExtensionInstallPolicyFetching));
+    management_policy_->RegisterProvider(extension_install_policy_service);
+  }
 }
 
 void ChromeExtensionSystem::Shared::InitInstallGates() {
