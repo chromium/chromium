@@ -454,7 +454,7 @@ ApplicationContextImpl::GetActivityReporter() {
             GetSharedURLLoaderFactory(),
             // Never send cookies for activity reports.
             base::BindRepeating([](const GURL& url) { return false; })),
-        base::BindRepeating(&GetChannel), base::DoNothing(), true);
+        base::DoNothing());
   }
   return activity_reporter_.get();
 }

@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
 #include "components/activity_reporter/constants.h"
 #include "components/policy/core/common/management/platform_management_service.h"
@@ -76,16 +75,12 @@ class ActivityService final : public update_client::ActivityDataService {
 
 ActivityReporterConfigurator::ActivityReporterConfigurator(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
-    scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
-    base::RepeatingCallback<version_info::Channel()> channel_provider,
-    bool per_user_install)
+    scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory)
     : pref_service_provider_(pref_service_provider),
       persisted_data_(update_client::CreatePersistedData(
           pref_service_provider,
           std::make_unique<ActivityService>())),
-      network_fetcher_factory_(network_fetcher_factory),
-      channel_provider_(channel_provider),
-      per_user_install_(per_user_install) {}
+      network_fetcher_factory_(network_fetcher_factory) {}
 
 ActivityReporterConfigurator::~ActivityReporterConfigurator() = default;
 
@@ -131,7 +126,8 @@ base::Version ActivityReporterConfigurator::GetBrowserVersion() const {
 
 std::string ActivityReporterConfigurator::GetChannel() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::string{version_info::GetChannelString(channel_provider_.Run())};
+  // TODO(crbug.com/454662418): Return a real value.
+  return {};
 }
 
 std::string ActivityReporterConfigurator::GetLang() const {
@@ -141,7 +137,8 @@ std::string ActivityReporterConfigurator::GetLang() const {
 
 std::string ActivityReporterConfigurator::GetOSLongName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::string{version_info::GetOSType()};
+  // TODO(crbug.com/454662418): Return a real value.
+  return {};
 }
 
 base::flat_map<std::string, std::string>
@@ -208,7 +205,8 @@ update_client::PersistedData* ActivityReporterConfigurator::GetPersistedData()
 
 bool ActivityReporterConfigurator::IsPerUserInstall() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return per_user_install_;
+  // TODO(crbug.com/454662418): Return a real value.
+  return true;
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>

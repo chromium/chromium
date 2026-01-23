@@ -14,7 +14,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/buildflags.h"
@@ -34,15 +33,11 @@ class ActivityReporterImpl : public ActivityReporter {
       base::RepeatingCallback<PrefService*()> pref_service_provider,
       scoped_refptr<update_client::NetworkFetcherFactory>
           network_fetcher_factory,
-      base::RepeatingClosure updater_active_callback,
-      base::RepeatingCallback<version_info::Channel()> channel_provider,
-      bool per_user_install)
+      base::RepeatingClosure updater_active_callback)
       : update_client_(update_client::UpdateClientFactory(
             base::MakeRefCounted<ActivityReporterConfigurator>(
                 pref_service_provider,
-                network_fetcher_factory,
-                channel_provider,
-                per_user_install))),
+                network_fetcher_factory))),
         updater_active_callback_(updater_active_callback) {}
 
   ActivityReporterImpl(scoped_refptr<update_client::UpdateClient> update_client,
@@ -106,12 +101,9 @@ class ActivityReporterImpl : public ActivityReporter {
 std::unique_ptr<ActivityReporter> CreateActivityReporter(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory,
-    base::RepeatingCallback<version_info::Channel()> channel_provider,
-    base::RepeatingClosure updater_active_callback,
-    bool per_user_install) {
+    base::RepeatingClosure updater_active_callback) {
   return std::make_unique<ActivityReporterImpl>(
-      pref_service_provider, network_fetcher_factory, updater_active_callback,
-      channel_provider, per_user_install);
+      pref_service_provider, network_fetcher_factory, updater_active_callback);
 }
 
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
