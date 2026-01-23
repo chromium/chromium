@@ -237,7 +237,7 @@ bool StructTraits<
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  base::Value::Dict system_print_dialog_data;
+  base::DictValue system_print_dialog_data;
   if (!data.ReadSystemPrintDialogData(&system_print_dialog_data)) {
     return false;
   }

@@ -15,7 +15,7 @@ namespace printing {
 
 namespace {
 
-const base::Value::List kClientInfoJobSetting = base::test::ParseJsonList(R"([
+const base::ListValue kClientInfoJobSetting = base::test::ParseJsonList(R"([
     {
       "ipp-client-name": "ChromeOS",
       "ipp-client-patches": "patch",
@@ -43,7 +43,7 @@ const std::vector<mojom::IppClientInfo> kClientInfo{
                          std::nullopt)};
 
 TEST(PrintSettingsConversionChromeosTest, ConvertClientInfoToJobSetting) {
-  base::Value::List job_setting = ConvertClientInfoToJobSetting(kClientInfo);
+  base::ListValue job_setting = ConvertClientInfoToJobSetting(kClientInfo);
   EXPECT_EQ(job_setting, kClientInfoJobSetting);
 }
 

@@ -14,13 +14,13 @@
 namespace printing {
 
 COMPONENT_EXPORT(PRINTING)
-base::Value::List ConvertClientInfoToJobSetting(
+base::ListValue ConvertClientInfoToJobSetting(
     const std::vector<mojom::IppClientInfo>& client_info);
 
 // Assumes that `client_info_job_setting` is valid.
 COMPONENT_EXPORT(PRINTING)
 std::vector<mojom::IppClientInfo> ConvertJobSettingToClientInfo(
-    const base::Value::List& client_info_job_setting);
+    const base::ListValue& client_info_job_setting);
 
 }  // namespace printing
 

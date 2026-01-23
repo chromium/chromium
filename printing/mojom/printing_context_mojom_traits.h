@@ -186,7 +186,7 @@ struct StructTraits<printing::mojom::PrintSettingsDataView,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  static const base::Value::Dict& system_print_dialog_data(
+  static const base::DictValue& system_print_dialog_data(
       const printing::PrintSettings& s) {
     return s.system_print_dialog_data();
   }

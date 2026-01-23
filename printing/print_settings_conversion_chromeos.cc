@@ -11,7 +11,7 @@ namespace printing {
 namespace {
 
 // Assumes that `dict` contains valid data for client-info.
-mojom::IppClientInfo GetClientInfoFromDict(const base::Value::Dict& dict) {
+mojom::IppClientInfo GetClientInfoFromDict(const base::DictValue& dict) {
   mojom::IppClientInfo client_info;
   client_info.client_type = static_cast<mojom::IppClientInfo::ClientType>(
       dict.FindInt(kSettingIppClientType).value());
@@ -31,12 +31,12 @@ mojom::IppClientInfo GetClientInfoFromDict(const base::Value::Dict& dict) {
 }
 }  // namespace
 
-base::Value::List ConvertClientInfoToJobSetting(
+base::ListValue ConvertClientInfoToJobSetting(
     const std::vector<mojom::IppClientInfo>& client_infos) {
-  base::Value::List client_info_list;
+  base::ListValue client_info_list;
   client_info_list.reserve(client_infos.size());
   for (const auto& client_info : client_infos) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(kSettingIppClientType, static_cast<int>(client_info.client_type));
     dict.Set(kSettingIppClientName, client_info.client_name);
     dict.Set(kSettingIppClientStringVersion, client_info.client_string_version);
@@ -52,7 +52,7 @@ base::Value::List ConvertClientInfoToJobSetting(
 }
 
 std::vector<mojom::IppClientInfo> ConvertJobSettingToClientInfo(
-    const base::Value::List& client_info) {
+    const base::ListValue& client_info) {
   std::vector<mojom::IppClientInfo> result;
   for (const base::Value& client_info_value : client_info) {
     result.push_back(GetClientInfoFromDict(client_info_value.GetDict()));

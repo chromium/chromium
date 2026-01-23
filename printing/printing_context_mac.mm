@@ -228,7 +228,7 @@ mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,
     return destination_location.error();
   }
 
-  base::Value::Dict dialog_data;
+  base::DictValue dialog_data;
   dialog_data.Set(kMacSystemPrintDialogDataPrintSettings,
                   std::move(print_settings_data.value()));
   dialog_data.Set(kMacSystemPrintDialogDataPageFormat,
@@ -249,7 +249,7 @@ mojom::ResultCode CaptureSystemPrintDialogData(NSPrintInfo* print_info,
 }
 
 mojom::ResultCode ApplySystemPrintSettings(
-    const base::Value::Dict& system_print_dialog_data,
+    const base::DictValue& system_print_dialog_data,
     NSPrintInfo* print_info,
     PMPrintSession& print_session,
     PMPrintSettings& print_settings) {
@@ -289,7 +289,7 @@ mojom::ResultCode ApplySystemPrintSettings(
 }
 
 mojom::ResultCode ApplySystemPageFormat(
-    const base::Value::Dict& system_print_dialog_data,
+    const base::DictValue& system_print_dialog_data,
     NSPrintInfo* print_info,
     PMPrintSession& print_session,
     PMPageFormat& page_format) {
@@ -328,7 +328,7 @@ mojom::ResultCode ApplySystemPageFormat(
 
 mojom::ResultCode ApplySystemDestination(
     const std::u16string& device_name,
-    const base::Value::Dict& system_print_dialog_data,
+    const base::DictValue& system_print_dialog_data,
     PMPrintSession& print_session,
     PMPrintSettings& print_settings) {
   std::optional<int> destination_type = system_print_dialog_data.FindInt(
@@ -386,7 +386,7 @@ mojom::ResultCode ApplySystemDestination(
 
 mojom::ResultCode ApplySystemPrintDialogData(
     const std::u16string& device_name,
-    const base::Value::Dict& system_print_dialog_data,
+    const base::DictValue& system_print_dialog_data,
     NSPrintInfo* print_info) {
   PMPrintSession print_session =
       static_cast<PMPrintSession>([print_info PMPrintSession]);
