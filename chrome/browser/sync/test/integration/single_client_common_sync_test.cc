@@ -436,7 +436,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/353425612): Modernize SingleClientFeatureToTransportSyncTest.
 class SingleClientFeatureToTransportSyncTest : public SyncTest {
  public:
   SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
@@ -478,6 +477,10 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
 
     reading_list_helper::WaitForReadingListModelLoaded(reading_list_model());
     return true;
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
   }
 
   reading_list::DualReadingListModel* reading_list_model() {
