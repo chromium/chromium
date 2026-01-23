@@ -22,6 +22,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace sync_pb {
+class SyncEntity;
+}  // namespace sync_pb
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -105,6 +109,15 @@ class DeviceStatisticsTracker {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncDeviceStatisticsPlatform)
 
  private:
+  struct DeviceData {
+    DeviceData(Platform platform, bool history_opt_in)
+        : platform(platform), history_opt_in(history_opt_in) {}
+    ~DeviceData() = default;
+
+    const Platform platform;
+    const bool history_opt_in;
+  };
+
   void RequestDoneForGaiaId(const GaiaId& gaia);
   void AllRequestsDone();
 
@@ -112,6 +125,10 @@ class DeviceStatisticsTracker {
 
   RequestsCompletedSuccess GetOverallSuccess() const;
   AccountsHaveOtherDevicesSummary GetOverallOutcome() const;
+
+  std::vector<DeviceData> DeduplicateEntities(
+      const std::vector<sync_pb::SyncEntity>& entities,
+      const std::vector<std::string>& current_device_cache_guids);
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -136,7 +153,7 @@ class DeviceStatisticsTracker {
   // Results. This will have exactly one entry for every request that completed,
   // successfully or not. On success, the value is the list of all valid other
   // devices (which may be empty).
-  base::flat_map<GaiaId, base::expected<std::vector<Platform>, RequestFailed>>
+  base::flat_map<GaiaId, base::expected<std::vector<DeviceData>, RequestFailed>>
       other_devices_by_gaia_;
 };
 
