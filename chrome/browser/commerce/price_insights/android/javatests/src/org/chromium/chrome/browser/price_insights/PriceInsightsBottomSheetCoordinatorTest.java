@@ -111,20 +111,20 @@ public class PriceInsightsBottomSheetCoordinatorTest {
 
     @Before
     public void setUp() {
-        doReturn(mMockProfile).when(mMockTab).getProfile();
-        doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
-        setShoppingServiceGetPriceInsightsInfoForUrl();
-        ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
-        mMockPriceHistoryChart = new View(sActivity);
-        doReturn(mMockPriceHistoryChart)
-                .when(mMockPriceInsightsDelegate)
-                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
-        doReturn(ObservableSuppliers.alwaysFalse())
-                .when(mMockPriceInsightsDelegate)
-                .getPriceTrackingStateSupplier(mMockTab);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    doReturn(mMockProfile).when(mMockTab).getProfile();
+                    doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
+                    setShoppingServiceGetPriceInsightsInfoForUrl();
+                    ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+                    mMockPriceHistoryChart = new View(sActivity);
+                    doReturn(mMockPriceHistoryChart)
+                            .when(mMockPriceInsightsDelegate)
+                            .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO);
+                    doReturn(ObservableSuppliers.alwaysFalse())
+                            .when(mMockPriceInsightsDelegate)
+                            .getPriceTrackingStateSupplier(mMockTab);
+
                     mPriceInsightsCoordinator =
                             new PriceInsightsBottomSheetCoordinator(
                                     sActivity,
@@ -191,16 +191,16 @@ public class PriceInsightsBottomSheetCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator.requestShowContent();
+                    verify(mMockBottomSheetController, times(1))
+                            .requestShowContent(mBottomSheetContentCaptor.capture(), eq(true));
+                    verify(mMockBottomSheetController, times(1))
+                            .addObserver(mBottomSheetObserverCaptor.capture());
+                    mPriceInsightsCoordinator.closeContent();
+                    verify(mMockBottomSheetController, times(1))
+                            .hideContent(eq(mBottomSheetContentCaptor.getValue()), eq(true));
+                    verify(mMockBottomSheetController)
+                            .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
                 });
-        verify(mMockBottomSheetController, times(1))
-                .requestShowContent(mBottomSheetContentCaptor.capture(), eq(true));
-        verify(mMockBottomSheetController, times(1))
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        mPriceInsightsCoordinator.closeContent();
-        verify(mMockBottomSheetController, times(1))
-                .hideContent(eq(mBottomSheetContentCaptor.getValue()), eq(true));
-        verify(mMockBottomSheetController)
-                .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
     }
 
     @Test
@@ -209,15 +209,12 @@ public class PriceInsightsBottomSheetCoordinatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPriceInsightsCoordinator.requestShowContent();
-                });
-        verify(mMockBottomSheetController, times(1))
-                .addObserver(mBottomSheetObserverCaptor.capture());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
+                    verify(mMockBottomSheetController, times(1))
+                            .addObserver(mBottomSheetObserverCaptor.capture());
                     mBottomSheetObserverCaptor.getValue().onSheetContentChanged(null);
+                    verify(mMockBottomSheetController)
+                            .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
                 });
-        verify(mMockBottomSheetController)
-                .removeObserver(eq(mBottomSheetObserverCaptor.getValue()));
     }
 
     private View getView(@IdRes int viewId) {

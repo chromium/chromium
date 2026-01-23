@@ -121,8 +121,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private final PointerCoords[] mPointerCoords = new PointerCoords[2];
     private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
             ObservableSuppliers.alwaysNull();
-    private final NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
-            ObservableSuppliers.alwaysFalse();
+    private NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
     private float mDpToPx;
 
@@ -791,6 +790,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         // Load the browser process.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mScrimVisibilitySupplier = ObservableSuppliers.alwaysFalse();
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
 

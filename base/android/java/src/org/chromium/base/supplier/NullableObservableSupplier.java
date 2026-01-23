@@ -51,6 +51,11 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
      * Adds a synchronous observer to the supplier and posts a notification if the value is not
      * null.
      *
+     * <ul>
+     *   <li>Posted callbacks are not run if removeObserver() is called before they are run.
+     *   <li>Posted callbacks are not run if set() is called with a new value before they are run.
+     * </ul>
+     *
      * @param obs The observer to add.
      * @return The current value of the supplier.
      */

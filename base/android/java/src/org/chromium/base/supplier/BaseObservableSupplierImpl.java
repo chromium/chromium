@@ -15,20 +15,18 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 @SuppressWarnings("NullAway")
 class BaseObservableSupplierImpl<T extends @Nullable Object>
-        implements MonotonicObservableSupplier<T>, NonNullObservableSupplier<T> {
-    protected @Nullable T mObject;
+        implements MonotonicObservableSupplier<T> {
     // TODO(455874046): Make this non-nullable once ObservableSupplierImpl is no longer directly
     // used.
     protected @Nullable Boolean mAllowSetToNull;
 
-    BaseObservableSupplierImpl(@Nullable T initialValue, @Nullable Boolean allowSetToNull) {
-        mObject = initialValue;
+    BaseObservableSupplierImpl(@Nullable Boolean allowSetToNull) {
         mAllowSetToNull = allowSetToNull;
     }
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        return mObject;
+        return null;
     }
 
     @Override
@@ -36,7 +34,7 @@ class BaseObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public T get() {
-        return mObject;
+        return null;
     }
 
     @Override

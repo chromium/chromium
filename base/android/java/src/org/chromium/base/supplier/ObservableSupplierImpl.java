@@ -4,6 +4,8 @@
 
 package org.chromium.base.supplier;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -16,13 +18,19 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * Implementation for Settable{NonNull}ObservableSupplier.
+ * Implementation for Settable{NonNull|Monotonic}ObservableSupplier.
  *
  * <p>Since this class is both nullable and non-null, it should only be used directly when needing
  * to create subclasses. All normal uses should be done through interface types; creation should be
  * done via ObservableSuppliers.
  *
- * <p>This class must only be accessed from a single thread.
+ * <pre>
+ * Some implementation details:
+ *   * Must only be accessed from the UI thread.
+ *   * Callbacks from set() are executed synchronously (not posted).
+ *   * Callbacks from addSyncObserverAndPostIfNonNull() are automatically cancelled if the observer
+ *     is removed or the value is changed before they are run.
+ * </pre>
  */
 @NullMarked
 @SuppressWarnings("NullAway") // Implementation for both Nullable and NonNull.
@@ -35,6 +43,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();
     protected @Nullable ObserverList<Callback<T>> mObservers = new ObserverList<>();
+    protected T mObject;
 
     @Deprecated // Migrate to ObservableSuppliers.*
     public ObservableSupplierImpl() {
@@ -47,7 +56,8 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
     }
 
     protected ObservableSupplierImpl(@Nullable T initialValue, @Nullable Boolean allowSetToNull) {
-        super(initialValue, allowSetToNull);
+        super(allowSetToNull);
+        mObject = initialValue;
         // Guard against creation on Instrumentation thread, since this causes the ThreadChecker
         // to be associated with it (it should be UI thread).
         assert !ThreadUtils.runningOnInstrumentationThread();
@@ -55,13 +65,13 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
 
     @Override
     public T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
-        assert mObservers != null; // Check not destroyed.
+        assumeNonNull(mObservers); // Check not destroyed.
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
-        boolean notify = shouldNotifyOnAdd(behavior) && mObject != null;
+        T currentObject = mObject;
+        boolean notify = shouldNotifyOnAdd(behavior) && currentObject != null;
         if (notify) {
-            T currentObject = mObject;
             if (shouldPostOnAdd(behavior)) {
                 ThreadUtils.assertOnUiThread();
                 ThreadUtils.postOnUiThread(
@@ -75,7 +85,7 @@ public class ObservableSupplierImpl<T extends @Nullable Object>
             }
         }
 
-        return mObject;
+        return currentObject;
     }
 
     @Override

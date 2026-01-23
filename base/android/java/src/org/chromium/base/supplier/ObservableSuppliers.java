@@ -10,14 +10,8 @@ import org.chromium.build.annotations.Nullable;
 /** Factory methods for ObservableSuppliers. */
 @NullMarked
 public class ObservableSuppliers {
-    private static final NonNullObservableSupplier<Boolean> ALWAYS_FALSE =
-            new BaseObservableSupplierImpl<>(false, /* allowSetToNull= */ false);
-    private static final NonNullObservableSupplier<Boolean> ALWAYS_TRUE =
-            new BaseObservableSupplierImpl<>(true, /* allowSetToNull= */ false);
-    private static final NonNullObservableSupplier<Integer> ALWAYS_ZERO =
-            new BaseObservableSupplierImpl<>(0, /* allowSetToNull= */ false);
     private static final MonotonicObservableSupplier<?> ALWAYS_NULL =
-            new BaseObservableSupplierImpl<>(null, /* allowSetToNull= */ false);
+            new BaseObservableSupplierImpl<>(/* allowSetToNull= */ false);
 
     /** Creates an ObservableSupplier that can be set to null. */
     public static <T> SettableNullableObservableSupplier<T> createNullable() {
@@ -53,17 +47,19 @@ public class ObservableSuppliers {
         return new ObservableSupplierImpl<T>(initialValue, /* allowSetToNull= */ false);
     }
 
-    @SuppressWarnings("Unchecked")
+    // Convenience methods. These cannot be changed to share an instance (like alwaysNull), because
+    // addObserver() posts a callback that must be cancelled if removeObserver() is called before it
+    // gets schedules.
     public static NonNullObservableSupplier<Boolean> alwaysTrue() {
-        return ALWAYS_TRUE;
+        return createNonNull(true);
     }
 
     public static NonNullObservableSupplier<Boolean> alwaysFalse() {
-        return ALWAYS_FALSE;
+        return createNonNull(false);
     }
 
     public static NonNullObservableSupplier<Integer> alwaysZero() {
-        return ALWAYS_ZERO;
+        return createNonNull(0);
     }
 
     public static <T> MonotonicObservableSupplier<T> alwaysNull() {
@@ -71,8 +67,7 @@ public class ObservableSuppliers {
     }
 
     public static <T> NonNullObservableSupplier<T> of(T value) {
-        // Saves the overhead of having an ObserverList.
-        return new BaseObservableSupplierImpl<>(value, false);
+        return createNonNull(value);
     }
 
     private ObservableSuppliers() {}
