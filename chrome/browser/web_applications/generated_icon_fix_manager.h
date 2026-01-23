@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
+#include "chrome/browser/web_applications/scheduler/generated_icon_fix_result.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/scheduler/generated_icon_fix_result.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -32,7 +33,7 @@ namespace web_app {
 GeneratedIconFixCommand::GeneratedIconFixCommand(
     webapps::AppId app_id,
     proto::GeneratedIconFixSource source,
-    base::OnceCallback<void(GeneratedIconFixResult)> callback)
+    GeneratedIconFixCallback callback)
     : WebAppCommand<SharedWebContentsWithAppLock, GeneratedIconFixResult>(
           "GeneratedIconFixCommand",
           SharedWebContentsWithAppLockDescription({app_id}),

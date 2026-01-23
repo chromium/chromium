@@ -307,6 +307,8 @@ source_set("web_applications") {
     "scheduler/fetch_install_info_from_install_url_result.h",
     "scheduler/fetch_installability_for_chrome_management_result.cc",
     "scheduler/fetch_installability_for_chrome_management_result.h",
+    "scheduler/generated_icon_fix_result.cc",
+    "scheduler/generated_icon_fix_result.h",
     "scope_extension_info.cc",
     "scope_extension_info.h",
     "url_pattern_with_regex_matcher.cc",
