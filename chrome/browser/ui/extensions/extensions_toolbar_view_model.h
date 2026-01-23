@@ -132,9 +132,6 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   // Returns whether the actions are initialized.
   bool AreActionsInitialized();
 
-  // Returns whether any of `actions` given have access to the `web_contents`.
-  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents) const;
-
   // Returns the state of the extensions toolbar button based on 'web_contents'.
   ExtensionsToolbarButtonState GetButtonState(
       content::WebContents* web_contents) const;
@@ -176,6 +173,9 @@ class ExtensionsToolbarViewModel : public ExtensionsContainer,
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
  private:
+  // Returns whether any of `actions` given have access to the `web_contents`.
+  bool AnyActionHasCurrentSiteAccess(content::WebContents* web_contents) const;
+
   // Creates and appends an action model to `actions_` vector.
   void AppendActionModel(const ToolbarActionsModel::ActionId& action_id);
 

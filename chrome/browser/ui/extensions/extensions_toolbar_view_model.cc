@@ -105,17 +105,6 @@ bool ExtensionsToolbarViewModel::AreActionsInitialized() {
   return actions_model_->actions_initialized();
 }
 
-bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
-    content::WebContents* web_contents) const {
-  for (const auto& [action_id, model] : actions_) {
-    if (model->GetSiteInteraction(web_contents) ==
-        extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
-      return true;
-    }
-  }
-  return false;
-}
-
 ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
 ExtensionsToolbarViewModel::GetButtonState(
     content::WebContents* web_contents) const {
@@ -316,6 +305,17 @@ void ExtensionsToolbarViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
 void ExtensionsToolbarViewModel::OnTabListDestroyed(
     TabListInterface& tab_list) {
   tab_list_observation_.Reset();
+}
+
+bool ExtensionsToolbarViewModel::AnyActionHasCurrentSiteAccess(
+    content::WebContents* web_contents) const {
+  for (const auto& [action_id, model] : actions_) {
+    if (model->GetSiteInteraction(web_contents) ==
+        extensions::SitePermissionsHelper::SiteInteraction::kGranted) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void ExtensionsToolbarViewModel::AppendActionModel(
