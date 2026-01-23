@@ -8,12 +8,9 @@
 
 namespace ui {
 
+// TODO(https://crbug.com/475611763): Cleanup feature flag.
 BASE_FEATURE(kCompensateGestureDetectorTimeouts,
-#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 const base::FeatureParam<bool>

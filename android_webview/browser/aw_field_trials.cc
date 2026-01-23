@@ -32,7 +32,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/features.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 
@@ -81,10 +80,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // HDR does not support webview yet. See crbug.com/1493153 for an explanation.
   aw_feature_overrides.DisableFeature(ui::kAndroidHDR);
-
-  // TODO(crbug.com/450845471): Remove this once webview experiment has
-  // concluded.
-  aw_feature_overrides.DisableFeature(ui::kCompensateGestureDetectorTimeouts);
 
   // Disable launch_handler on WebView.
   aw_feature_overrides.DisableFeature(::features::kAndroidWebAppLaunchHandler);
