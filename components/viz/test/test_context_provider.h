@@ -58,7 +58,6 @@ class TestContextProvider
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
-      scoped_refptr<gpu::TestSharedImageInterface> sii,
       bool support_locking);
 
   TestContextProvider(const TestContextProvider&) = delete;
