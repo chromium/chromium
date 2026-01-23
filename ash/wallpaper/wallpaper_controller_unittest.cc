@@ -609,6 +609,13 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     CreateDefaultWallpapers();
   }
 
+  void TearDown() override {
+    drivefs_delegate_ = nullptr;
+    controller_ = nullptr;
+    pref_manager_ = nullptr;
+    NoSessionAshTestBase::TearDown();
+  }
+
   WallpaperView* wallpaper_view() {
     return Shell::Get()
         ->GetPrimaryRootWindowController()
@@ -943,9 +950,8 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     return base::Time();
   }
 
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged> controller_;
-  raw_ptr<WallpaperPrefManager, DanglingUntriaged> pref_manager_ =
-      nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl> controller_;
+  raw_ptr<WallpaperPrefManager> pref_manager_ = nullptr;  // owned by controller
 
   base::FilePath GetUserDataDir() {
     return base::PathService::CheckedGet(ash::DIR_USER_DATA);
@@ -962,7 +968,7 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
 
   TestWallpaperControllerClient client_;
-  raw_ptr<TestWallpaperDriveFsDelegate, DanglingUntriaged> drivefs_delegate_;
+  raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
 
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId("child_gaia_id"));
