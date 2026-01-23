@@ -133,7 +133,8 @@ class ContextualSearchSessionHandle {
 
   // Returns the list of uploaded but not yet committed FileInfo for this
   // particular instance of the session.
-  std::vector<FileInfo> GetUploadedContextFileInfos() const;
+  // Gets a list of file infos for all uploaded context files.
+  virtual std::vector<FileInfo> GetUploadedContextFileInfos() const;
 
   // Returns the list of uploaded but not yet committed context tokens for this
   // particular instance of the session, editable for testing.
