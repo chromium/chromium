@@ -673,9 +673,9 @@ bool GpuControlList::Entry::NeedsMoreInfo(const GPUInfo& gpu_info,
   return false;
 }
 
-base::Value::List GpuControlList::Entry::GetFeatureNames(
+base::ListValue GpuControlList::Entry::GetFeatureNames(
     const FeatureMap& feature_map) const {
-  base::Value::List feature_names;
+  base::ListValue feature_names;
   for (auto feature : features) {
     auto iter = feature_map.find(feature);
     CHECK(iter != feature_map.end());
@@ -811,22 +811,22 @@ std::vector<std::string> GpuControlList::GetDisabledWebGLExtensions() {
                                   disabled_webgl_extensions.end());
 }
 
-void GpuControlList::GetReasons(base::Value::List& problem_list,
+void GpuControlList::GetReasons(base::ListValue& problem_list,
                                 std::string_view tag,
                                 base::span<const uint32_t> entries) const {
   for (auto index : entries) {
     const Entry& entry = entries_[index];
-    base::Value::Dict problem;
+    base::DictValue problem;
 
     problem.Set("description", entry.description);
 
-    base::Value::List cr_bugs;
+    base::ListValue cr_bugs;
     for (auto cr_bug : entry.cr_bugs) {
       cr_bugs.Append(base::Int64ToValue(static_cast<int64_t>(cr_bug)));
     }
     problem.Set("crBugs", std::move(cr_bugs));
 
-    base::Value::List features = entry.GetFeatureNames(feature_map_);
+    base::ListValue features = entry.GetFeatureNames(feature_map_);
     problem.Set("affectedGpuSettings", std::move(features));
 
     DCHECK(tag == "workarounds" || tag == "disabledFeatures");
