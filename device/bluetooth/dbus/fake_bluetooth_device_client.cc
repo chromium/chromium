@@ -924,9 +924,9 @@ void FakeBluetoothDeviceClient::CreateDeviceWithProperties(
 
 base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
     const {
-  base::Value::List predefined_devices;
+  base::ListValue predefined_devices;
 
-  base::Value::Dict paired_device;
+  base::DictValue paired_device;
   paired_device.Set("path", kPairedDevicePath);
   paired_device.Set("address", kPairedDeviceAddress);
   paired_device.Set("name", kPairedDeviceName);
@@ -941,7 +941,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   paired_device.Set("incoming", false);
   predefined_devices.Append(std::move(paired_device));
 
-  base::Value::Dict legacy_device;
+  base::DictValue legacy_device;
   legacy_device.Set("path", kLegacyAutopairPath);
   legacy_device.Set("address", kLegacyAutopairAddress);
   legacy_device.Set("name", kLegacyAutopairName);
@@ -956,7 +956,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   legacy_device.Set("incoming", false);
   predefined_devices.Append(std::move(legacy_device));
 
-  base::Value::Dict pin;
+  base::DictValue pin;
   pin.Set("path", kDisplayPinCodePath);
   pin.Set("address", kDisplayPinCodeAddress);
   pin.Set("name", kDisplayPinCodeName);
@@ -971,7 +971,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   pin.Set("incoming", false);
   predefined_devices.Append(std::move(pin));
 
-  base::Value::Dict vanishing;
+  base::DictValue vanishing;
   vanishing.Set("path", kVanishingDevicePath);
   vanishing.Set("address", kVanishingDeviceAddress);
   vanishing.Set("name", kVanishingDeviceName);
@@ -986,7 +986,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   vanishing.Set("incoming", false);
   predefined_devices.Append(std::move(vanishing));
 
-  base::Value::Dict connect_unpairable;
+  base::DictValue connect_unpairable;
   connect_unpairable.Set("path", kConnectUnpairablePath);
   connect_unpairable.Set("address", kConnectUnpairableAddress);
   connect_unpairable.Set("name", kConnectUnpairableName);
@@ -1002,7 +1002,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   connect_unpairable.Set("incoming", false);
   predefined_devices.Append(std::move(connect_unpairable));
 
-  base::Value::Dict passkey;
+  base::DictValue passkey;
   passkey.Set("path", kDisplayPasskeyPath);
   passkey.Set("address", kDisplayPasskeyAddress);
   passkey.Set("name", kDisplayPasskeyName);
@@ -1017,7 +1017,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   passkey.Set("incoming", false);
   predefined_devices.Append(std::move(passkey));
 
-  base::Value::Dict request_pin;
+  base::DictValue request_pin;
   request_pin.Set("path", kRequestPinCodePath);
   request_pin.Set("address", kRequestPinCodeAddress);
   request_pin.Set("name", kRequestPinCodeName);
@@ -1032,7 +1032,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   request_pin.Set("incoming", false);
   predefined_devices.Append(std::move(request_pin));
 
-  base::Value::Dict confirm;
+  base::DictValue confirm;
   confirm.Set("path", kConfirmPasskeyPath);
   confirm.Set("address", kConfirmPasskeyAddress);
   confirm.Set("name", kConfirmPasskeyName);
@@ -1047,7 +1047,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   confirm.Set("incoming", false);
   predefined_devices.Append(std::move(confirm));
 
-  base::Value::Dict request_passkey;
+  base::DictValue request_passkey;
   request_passkey.Set("path", kRequestPasskeyPath);
   request_passkey.Set("address", kRequestPasskeyAddress);
   request_passkey.Set("name", kRequestPasskeyName);
@@ -1062,7 +1062,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   request_passkey.Set("incoming", false);
   predefined_devices.Append(std::move(request_passkey));
 
-  base::Value::Dict unconnectable;
+  base::DictValue unconnectable;
   unconnectable.Set("path", kUnconnectableDevicePath);
   unconnectable.Set("address", kUnconnectableDeviceAddress);
   unconnectable.Set("name", kUnconnectableDeviceName);
@@ -1077,7 +1077,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   unconnectable.Set("incoming", false);
   predefined_devices.Append(std::move(unconnectable));
 
-  base::Value::Dict unpairable;
+  base::DictValue unpairable;
   unpairable.Set("path", kUnpairableDevicePath);
   unpairable.Set("address", kUnpairableDeviceAddress);
   unpairable.Set("name", kUnpairableDeviceName);
@@ -1092,7 +1092,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   unpairable.Set("incoming", false);
   predefined_devices.Append(std::move(unpairable));
 
-  base::Value::Dict just_works;
+  base::DictValue just_works;
   just_works.Set("path", kJustWorksPath);
   just_works.Set("address", kJustWorksAddress);
   just_works.Set("name", kJustWorksName);
@@ -1107,7 +1107,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   just_works.Set("incoming", false);
   predefined_devices.Append(std::move(just_works));
 
-  base::Value::Dict low_energy;
+  base::DictValue low_energy;
   low_energy.Set("path", kLowEnergyPath);
   low_energy.Set("address", kLowEnergyAddress);
   low_energy.Set("name", kLowEnergyName);
@@ -1122,7 +1122,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   low_energy.Set("incoming", false);
   predefined_devices.Append(std::move(low_energy));
 
-  base::Value::Dict paired_unconnectable;
+  base::DictValue paired_unconnectable;
   paired_unconnectable.Set("path", kPairedUnconnectableDevicePath);
   paired_unconnectable.Set("address", kPairedUnconnectableDeviceAddress);
   paired_unconnectable.Set("name", kPairedUnconnectableDeviceName);
@@ -1138,7 +1138,7 @@ base::Value FakeBluetoothDeviceClient::GetBluetoothDevicesAsDictionaries()
   paired_unconnectable.Set("incoming", false);
   predefined_devices.Append(std::move(paired_unconnectable));
 
-  base::Value::Dict connected_trusted_not_paired;
+  base::DictValue connected_trusted_not_paired;
   connected_trusted_not_paired.Set("path",
                                    kConnectedTrustedNotPairedDevicePath);
   connected_trusted_not_paired.Set("address",

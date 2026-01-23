@@ -77,14 +77,14 @@ std::optional<std::vector<FilterStep>> ParseJSON(std::string_view json) {
     return std::nullopt;
   }
 
-  const base::Value::List* filters = dict->FindList("filters");
+  const base::ListValue* filters = dict->FindList("filters");
   if (!filters) {
     return std::nullopt;
   }
 
   std::vector<FilterStep> ret;
   for (const auto& filter : *filters) {
-    const base::Value::Dict* filter_dict = filter.GetIfDict();
+    const base::DictValue* filter_dict = filter.GetIfDict();
     if (!filter_dict) {
       return std::nullopt;
     }
