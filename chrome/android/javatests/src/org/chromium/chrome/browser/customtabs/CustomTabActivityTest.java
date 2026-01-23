@@ -2130,6 +2130,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void closeButton_closesActivityIfNoLandingPage() throws TimeoutException {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent =
