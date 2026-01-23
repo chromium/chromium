@@ -155,6 +155,15 @@ impl<R: Read> IntoIterator for EventReader<R> {
     }
 }
 
+impl<R: Read + Clone> Clone for EventReader<R> {
+    fn clone(&self) -> Self {
+        Self {
+            source: self.source.clone(),
+            parser: self.parser.clone()
+        }
+    }
+}
+
 /// An iterator over XML events created from some type implementing `Read`.
 ///
 /// When the next event is `xml::event::Error` or `xml::event::EndDocument`, then

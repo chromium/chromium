@@ -97,6 +97,7 @@ impl fmt::Display for Encoding {
     }
 }
 
+#[derive(Clone)]
 pub(crate) struct CharReader {
     pub encoding: Encoding,
 }

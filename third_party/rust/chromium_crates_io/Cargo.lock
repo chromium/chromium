@@ -1551,7 +1551,7 @@ dependencies = [
 
 [[package]]
 name = "xml"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

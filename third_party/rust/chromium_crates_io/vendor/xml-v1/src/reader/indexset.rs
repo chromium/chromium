@@ -6,6 +6,7 @@ use std::collections::HashSet;
 use std::hash::{BuildHasher, Hasher};
 
 /// An ordered set
+#[derive(Clone)]
 pub struct AttributesSet {
     vec: Vec<OwnedAttribute>,
     /// Uses a no-op hasher, because these u64s are hashes already
@@ -103,7 +104,7 @@ impl Hasher for U64Hasher {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 struct U64HasherBuilder;
 
 impl BuildHasher for U64HasherBuilder {

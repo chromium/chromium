@@ -61,7 +61,7 @@ The package exposes a single crate called `xml`.
 Reading XML documents
 ---------------------
 
-[`xml::reader::EventReader`](EventReader) requires a [`Read`](stdread) instance to read from. It can be a `File` wrapped in `BufReader`, or a `Vec<u8>`, or a `&[u8]` slice.
+[`xml::reader::EventReader`][EventReader] requires a [`Read`][stdread] instance to read from. It can be a `File` wrapped in `BufReader`, or a `Vec<u8>`, or a `&[u8]` slice.
 
 [EventReader]: https://docs.rs/xml/latest/xml/reader/struct.EventReader.html
 [stdread]: https://doc.rust-lang.org/stable/std/io/trait.Read.html
