@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "ui/accessibility/ax_mode.h"
 
 OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     LocationBarView* location_bar_view,
@@ -29,6 +31,20 @@ void OmniboxPopupAimPresenter::Show() {
 }
 
 void OmniboxPopupAimPresenter::Hide() {
+  // If UI devtools settings allows closing the view
+  // (`ShouldHandleNativeWidgetActivationChanged()`), refocus the location bar
+  // for screen readers to prevent unreliable focus tracking.
+  if (GetWidget() &&
+      GetWidget()->ShouldHandleNativeWidgetActivationChanged(false) &&
+      GetWidget()->IsActive()) {
+    const bool is_screen_reader_enabled =
+        content::BrowserAccessibilityState::GetInstance()
+            ->GetAccessibilityMode()
+            .has_mode(ui::AXMode::kScreenReader);
+    if (is_screen_reader_enabled) {
+      location_bar_view()->FocusLocation(true);
+    }
+  }
   widget_observation_.Reset();
   OmniboxPopupPresenterBase::Hide();
 }

@@ -23,8 +23,11 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
@@ -276,9 +279,55 @@ class OmniboxAimWebUiInteractiveTest
         InSameContext(WaitForAimInputValue(kPopupWebView, kAimInput, result)));
   }
 
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
+                       RestoresFocusToLocationBarOnHideWithScreenReader) {
+  RunTestSequence(
+      // Enable screen reader mode.
+      Do([this]() {
+        scoped_accessibility_mode_ =
+            content::BrowserAccessibilityState::GetInstance()
+                ->CreateScopedModeForProcess(ui::AXMode::kScreenReader);
+      }),
+      // Open the AIM popup.
+      OpenAimPopupInNewTab(),
+      // Verify popup's web contents have focus.
+      CheckJsResult(kPopupWebView, "() => document.hasFocus()", true),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
+      // Hide the popup.
+      InAnyContext(ExecuteJsAt(kPopupWebView, kCancelIcon, "el => el.click()")),
+      InAnyContext(
+          WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Verify location bar has focus.
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
+                       FocusesWebContentsOnNavigationWithScreenReader) {
+  RunTestSequence(
+      // Enable screen reader mode.
+      Do([this]() {
+        scoped_accessibility_mode_ =
+            content::BrowserAccessibilityState::GetInstance()
+                ->CreateScopedModeForProcess(ui::AXMode::kScreenReader);
+      }),
+      // Open the AIM popup.
+      OpenAimPopupInNewTab(),
+      // Verify web contents have focus.
+      CheckJsResult(kPopupWebView, "() => document.hasFocus()", true),
+      // Trigger a search.
+      InputAimPopupText("foo"),
+      InSameContext(ClickElement(kPopupWebView, kAimSubmit)),
+      WaitForGoogleSearch(kNewTab, "foo"),
+      // Verify tab has focus and not the location bar.
+      CheckJsResult(kNewTab, "() => document.hasFocus()", true),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
+}
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
   RunTestSequence(
