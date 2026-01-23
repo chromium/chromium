@@ -36,6 +36,9 @@ BASE_FEATURE(kWebXROrientationSensorDevice,
 #endif
 );
 
+// Enables access to the WebXR plane-detection feature
+BASE_FEATURE(kWebXRPlaneDetection, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows blink to process the `visible-blurred` state.
 BASE_FEATURE(kWebXrVisibleBlurred, base::FEATURE_ENABLED_BY_DEFAULT);
 

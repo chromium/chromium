@@ -40,7 +40,6 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::DOM_OVERLAY,
                           mojom::XRSessionFeature::LIGHT_ESTIMATION,
                           mojom::XRSessionFeature::ANCHORS,
-                          mojom::XRSessionFeature::PLANE_DETECTION,
                           mojom::XRSessionFeature::DEPTH,
                           mojom::XRSessionFeature::IMAGE_TRACKING,
                           mojom::XRSessionFeature::HIT_TEST,
@@ -82,6 +81,11 @@ ArCoreDevice::ArCoreDevice(
 
   // Only support camera access if the device supports shared buffers.
   device_features.emplace_back(mojom::XRSessionFeature::CAMERA_ACCESS);
+
+  // Only support plane detection if the appropriate feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXRPlaneDetection)) {
+    device_features.emplace_back(mojom::XRSessionFeature::PLANE_DETECTION);
+  }
 
   // Only support WebGPU sessions if the appropriate feature flag is enabled
   // and shared buffers will be used.
