@@ -164,7 +164,7 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
       FieldDataManagerFactoryIOS::GetRetainable(frame);
 
   if (base::expected<autofill::FormData, ExtractFormDataFailure> form_data =
-          ExtractFormData(*form_dict, /*filtered=*/false, /*form_name=*/u"",
+          ExtractFormData(*form_dict, /*form_name_filter=*/std::nullopt,
                           web_state->GetLastCommittedURL(),
                           frame->GetSecurityOrigin(), *field_data_manager,
                           frame->GetFrameId());

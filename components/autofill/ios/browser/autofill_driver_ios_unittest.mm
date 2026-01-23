@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <optional>
+#import <string>
 
 #import "base/test/mock_callback.h"
 #import "base/test/test_future.h"
@@ -74,8 +75,7 @@
 - (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
                 inFrame:(web::WebFrame*)frame {
 }
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
   std::move(completionHandler).Run(_forms);

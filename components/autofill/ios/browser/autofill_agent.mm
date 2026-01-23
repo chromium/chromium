@@ -1245,17 +1245,16 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
 // Invokes the form extraction script in |frame| and loads the output into the
 // format expected by the BrowserAutofillManager.
-// If |filtered| is NO, all forms are extracted.
-// If |filtered| is YES,
-//   - if |formName| is non-empty, only a form of that name is extracted.
-//   - if |formName| is empty, unowned fields are extracted.
-// Only forms with at least |requiredFieldsCount| fields are extracted.
-// Calls |completionHandler| with a success BOOL of YES and the form data that
+// If `formNameFilter` is `std::nullopt`, all forms are extracted.
+// Otherwise,
+//   - if `*formNameFilter` is non-empty, only forms of that name are extracted.
+//   - if `*formNameFilter` is empty, unowned fields are extracted.
+// Only forms with at least `requiredFieldsCount` fields are extracted.
+// Calls `completionHandler` with a success BOOL of YES and the form data that
 // was extracted.
-// Calls |completionHandler| with NO if the forms could not be extracted.
+// Calls `completionHandler` with NO if the forms could not be extracted.
 // |completionHandler| cannot be nil.
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
   DCHECK(completionHandler);
@@ -1272,20 +1271,19 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   const scoped_refptr<FieldDataManager> fieldDataManager =
       FieldDataManagerFactoryIOS::GetRetainable(frame);
-  const auto callback = [](FormFetchCompletion completion, BOOL filtered,
-                           const std::u16string& formName, const GURL& pageURL,
-                           const url::Origin& frameOrigin,
-                           scoped_refptr<FieldDataManager> fieldDataManager,
-                           const std::string& frame_id, NSString* formJSON) {
-    std::optional<std::vector<FormData>> formData =
-        autofill::ExtractFormsData(formJSON, filtered, formName, pageURL,
-                                   frameOrigin, *fieldDataManager, frame_id);
-    std::move(completion).Run(std::move(formData));
-  };
+  auto extractForms = base::BindOnce(
+      [](std::optional<std::u16string> formNameFilter, const GURL& pageURL,
+         const url::Origin& frameOrigin,
+         scoped_refptr<FieldDataManager> fieldDataManager,
+         const std::string& frame_id, NSString* formJSON) {
+        return autofill::ExtractFormsData(formJSON, formNameFilter, pageURL,
+                                          frameOrigin, *fieldDataManager,
+                                          frame_id);
+      },
+      std::move(formNameFilter), pageURL, frameOrigin, fieldDataManager,
+      frame->GetFrameId());
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
-      frame, base::BindOnce(callback, std::move(completionHandler), filtered,
-                            formName, pageURL, frameOrigin, fieldDataManager,
-                            frame->GetFrameId()));
+      frame, std::move(extractForms).Then(std::move(completionHandler)));
 }
 
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions

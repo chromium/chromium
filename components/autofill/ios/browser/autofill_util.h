@@ -10,6 +10,7 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/types/expected.h"
+#import "base/types/optional_ref.h"
 #import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -81,8 +82,7 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
 // See `ExtractFormData` for details on the function parameters.
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* form_json,
-    bool filtered,
-    const std::u16string& form_name,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& frame_origin,
     const FieldDataManager& field_data_manager,
@@ -90,9 +90,8 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     LocalFrameToken host_frame = LocalFrameToken());
 
 // Converts `form` into FormData.
-// - `filtered` and `form_name` limit the forms that
-// will be returned: if `filtered` is true, only a form with
-// `form_data.name == form_name` is returned.
+// - `form_name_filter` limits the forms that will be returned: if not nullopt,
+//    then only forms with `form_data.name == *form_name_filter` are returned.
 // - If a form's origin does not match `frame_origin`, the form is dropped.
 // - `host_frame` is the isolated world frame corresponding to the page content
 //   world frame where the forms were extracted. For forms extracted in the
@@ -101,8 +100,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 // - Returns std::nullopt if the data was invalid.
 base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
     const FieldDataManager& field_data_manager,

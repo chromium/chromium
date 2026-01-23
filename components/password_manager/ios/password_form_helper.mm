@@ -154,8 +154,8 @@ const char kHostFrameKey[] = "host_frame";
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
   std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
-      JSONString, false, std::u16string(), pageURL, frame->GetSecurityOrigin(),
-      *fieldDataManager, frame->GetFrameId());
+      JSONString, /*form_name_filter=*/std::nullopt, pageURL,
+      frame->GetSecurityOrigin(), *fieldDataManager, frame->GetFrameId());
   if (!formsData) {
     return;
   }
@@ -412,8 +412,8 @@ const char kHostFrameKey[] = "host_frame";
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
   if (base::expected<FormData, autofill::ExtractFormDataFailure> form =
-          autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
-                                    url::Origin::Create(*pageURL),
+          autofill::ExtractFormData(dict, /*form_name_filter=*/std::nullopt,
+                                    *pageURL, url::Origin::Create(*pageURL),
                                     *fieldDataManager, *host_frame);
       form.has_value()) {
     [self.delegate formHelper:self didSubmitForm:form.value() inFrame:frame];

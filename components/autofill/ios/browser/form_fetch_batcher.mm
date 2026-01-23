@@ -88,8 +88,7 @@ void FormFetchBatcher::Run() {
   if (frame_) {
     auto completion =
         base::BindOnce(&FormFetchBatcher::Complete, weak_factory_.GetWeakPtr());
-    [bridge_ fetchFormsFiltered:NO
-                       withName:u""
+    [bridge_ fetchFormsFiltered:std::nullopt
                         inFrame:frame_.get()
               completionHandler:std::move(completion)];
   } else {

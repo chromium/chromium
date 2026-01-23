@@ -7,6 +7,8 @@
 
 #import <stdint.h>
 
+#import <optional>
+#import <string>
 #import <vector>
 
 #import "components/autofill/core/common/form_data.h"
@@ -55,10 +57,10 @@ using FormFetchCompletion =
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame;
 
-// Fetches autofill forms in the `frame`'s document. Only provides the first
-// form matching `formName` if `filtered` is true.
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+// Fetches autofill forms in the `frame`'s document. If `formNameFilter` is not
+// `std::nullopt`, then it only provides forms whose name matches
+// `*form_name_filter`.
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler;
 

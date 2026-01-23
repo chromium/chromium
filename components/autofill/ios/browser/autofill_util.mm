@@ -14,6 +14,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/types/optional_ref.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -118,8 +119,7 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
 
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* forms_json,
-    bool filtered,
-    const std::u16string& form_name,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& frame_origin,
     const FieldDataManager& field_data_manager,
@@ -147,7 +147,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     }
 
     if (base::expected<FormData, ExtractFormDataFailure> form = ExtractFormData(
-            *form_dict, filtered, form_name, main_frame_url, frame_origin,
+            *form_dict, form_name_filter, main_frame_url, frame_origin,
             field_data_manager, frame_id, host_frame);
         form.has_value()) {
       forms_data.push_back(std::move(form).value());
@@ -158,8 +158,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
 
 base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
     const FieldDataManager& field_data_manager,
@@ -172,7 +171,7 @@ base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
     return base::unexpected(ExtractFormDataFailure::kMissingName);
   }
   form_data.set_name(base::UTF8ToUTF16(*name));
-  if (filtered && form_name != form_data.name()) {
+  if (form_name_filter && *form_name_filter != form_data.name()) {
     return base::unexpected(ExtractFormDataFailure::kFilteredNameMismatch);
   }
 

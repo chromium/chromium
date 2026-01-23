@@ -94,8 +94,7 @@ class Section;
 - (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
                 inFrame:(web::WebFrame*)frame {
 }
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
   if (self.async) {

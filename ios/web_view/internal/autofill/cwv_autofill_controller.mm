@@ -769,12 +769,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   [_autofillAgent notifyFormsSeen:updatedForms inFrame:frame];
 }
 
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
-  [_autofillAgent fetchFormsFiltered:filtered
-                            withName:formName
+  [_autofillAgent fetchFormsFiltered:std::move(formNameFilter)
                              inFrame:frame
                    completionHandler:std::move(completionHandler)];
 }
