@@ -13,6 +13,9 @@ from snegg.c.libei import libei
 import snegg.ei as ei
 
 
+BTN_LEFT = 0x110  # Per linux/input-event-codes.h
+
+
 class DBusService:
   def __init__(self, bus: dbus.Bus, bus_name: str, interface: str) -> None:
     self.bus = bus
@@ -256,15 +259,34 @@ class MoveByAction(argparse.Action):
 
 
 class ClickAction(argparse.Action):
-  BTN_LEFT = 0x110  # Per linux/input-event-codes.h
   def __call__(self,
                parser: argparse.ArgumentParser,
                namespace: argparse.Namespace,
                value: Any,
                option: Optional[str] = None) -> None:
     namespace.executors.append(
-      lambda d: d.button.button_button(value + self.BTN_LEFT, True).frame(
-      ).button_button(value + self.BTN_LEFT, False).frame())
+      lambda d: d.button.button_button(value + BTN_LEFT, True).frame(
+      ).button_button(value + BTN_LEFT, False).frame())
+
+
+class MouseDownAction(argparse.Action):
+  def __call__(self,
+               parser: argparse.ArgumentParser,
+               namespace: argparse.Namespace,
+               value: Any,
+               option: Optional[str] = None) -> None:
+    namespace.executors.append(
+      lambda d: d.button.button_button(value + BTN_LEFT, True).frame())
+
+
+class MouseUpAction(argparse.Action):
+  def __call__(self,
+               parser: argparse.ArgumentParser,
+               namespace: argparse.Namespace,
+               value: Any,
+               option: Optional[str] = None) -> None:
+    namespace.executors.append(
+      lambda d: d.button.button_button(value + BTN_LEFT, False).frame())
 
 
 class TypeAction(argparse.Action):
@@ -342,6 +364,24 @@ if __name__ == "__main__":
       type=int,
       metavar="button",
       help="click the mouse (left button by default)",
+  )
+  parser.add_argument(
+      "--mouse_down",
+      action=MouseDownAction,
+      nargs="?",
+      const=0,  # Left button
+      type=int,
+      metavar="button",
+      help="press a mouse button (left button by default)",
+  )
+  parser.add_argument(
+      "--mouse_up",
+      action=MouseUpAction,
+      nargs="?",
+      const=0,  # Left button
+      type=int,
+      metavar="button",
+      help="release a mouse button (left button by default)",
   )
   parser.add_argument(
       "--move_to",
