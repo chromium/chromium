@@ -21,7 +21,7 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/local_network_access_util.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/dip/document_isolation_policy_reporter.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -261,7 +261,7 @@ void SharedWorkerHost::Start(
     if (creator_policy_container_host_) {
       worker_client_security_state_ =
           DeriveClientSecurityState(creator_policy_container_host_->policies(),
-                                    LocalNetworkAccessRequestContext::kWorker);
+                                    PrivateNetworkRequestContext::kWorker);
     } else {
       // Create a maximally restricted client security state if the policy
       // container is missing.
@@ -300,7 +300,7 @@ void SharedWorkerHost::Start(
         GetContentClient()->browser());
 
     worker_client_security_state_ = DeriveClientSecurityState(
-        policies, LocalNetworkAccessRequestContext::kWorker);
+        policies, PrivateNetworkRequestContext::kWorker);
 
     // Check for policy overrides on LNA. For shared workers, we apply
     // policy overrides based on the renderer_origin() when the shared worker
@@ -308,9 +308,8 @@ void SharedWorkerHost::Start(
     // TODO(crbug.com/452389539): Centralize these policy overrides.
     BrowserContext* context = GetProcessHost()->GetBrowserContext();
     url::Origin origin = instance_.renderer_origin();
-    ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
-        policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
-            context, origin);
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
+        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
     worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
             worker_client_security_state_->private_network_request_policy,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/local_network_access_util.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 
 #include <array>
 #include <ostream>
@@ -26,7 +26,7 @@ namespace content {
 namespace {
 
 using AddressSpace = network::mojom::IPAddressSpace;
-using RequestContext = LocalNetworkAccessRequestContext;
+using RequestContext = PrivateNetworkRequestContext;
 using Policy = network::mojom::PrivateNetworkRequestPolicy;
 
 using ::testing::ElementsAreArray;
@@ -39,7 +39,7 @@ constexpr bool kSecure = true;
 constexpr bool kDisallowNonSecure = false;
 constexpr bool kAllowNonSecure = true;
 
-// Input arguments to `DeriveLocalNetworkAccessRequestPolicy()`.
+// Input arguments to `DerivePrivateNetworkRequestPolicy()`.
 struct DerivePolicyInput {
   bool is_web_secure_context;
   bool allow_on_non_secure_context;
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& out, const DerivePolicyInput& input) {
 }
 
 Policy DerivePolicy(DerivePolicyInput input) {
-  return DeriveLocalNetworkAccessRequestPolicy(
+  return DerivePrivateNetworkRequestPolicy(
       input.address_space, input.is_web_secure_context,
       input.allow_on_non_secure_context, input.request_context);
 }
@@ -614,14 +614,14 @@ void TestPolicyMap(
   }
 }
 
-TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessDiabled) {
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessDiabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       network::features::kLocalNetworkAccessChecks);
   TestPolicyMap(DefaultPolicyMap());
 }
 
-TEST(LocalNetworkAccessUtilTest, DerivePolicyDisableWebSecurity) {
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyDisableWebSecurity) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableWebSecurity);
 
@@ -629,7 +629,7 @@ TEST(LocalNetworkAccessUtilTest, DerivePolicyDisableWebSecurity) {
 }
 
 // Test the configuration in LNA blocking mode.
-TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["LocalNetworkAccessChecksWarn"] = "false";
@@ -641,7 +641,7 @@ TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccess) {
 }
 
 // Test the configuration in LNA warning-only mode.
-TEST(LocalNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessWarn) {
+TEST(PrivateNetworkAccessUtilTest, DerivePolicyLocalNetworkAccessWarn) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
   params["LocalNetworkAccessChecksWarn"] = "true";

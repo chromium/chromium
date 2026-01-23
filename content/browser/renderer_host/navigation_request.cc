@@ -83,7 +83,6 @@
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -92,6 +91,7 @@
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/network_restrictions_commit_deferring_condition.h"
 #include "content/browser/renderer_host/page_delegate.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -8734,13 +8734,11 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
 
   url::Origin origin = GetOriginToCommit().value();
   // TODO(crbug.com/452389539): Centralize these policy overrides.
-  ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
-      policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
-          context, origin);
+  ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
+      client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
 
   if (policy_override ==
-      ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
-          kForceAllow) {
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kForceAllow) {
     private_network_request_policy_ =
         network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
@@ -8767,18 +8765,18 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // TODO(crbug.com/433300380): The lna_secure_context_overide check needs to be
   // done in all other policy derivation points. This boolean should probably be
   // put into PolicyContainerPolicies.
-  private_network_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
-      policies, LocalNetworkAccessRequestContext::kSubresource);
+  private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
+      policies, PrivateNetworkRequestContext::kSubresource);
 
   if (policy_override ==
-      ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
           kBlockInsteadOfWarn) {
     private_network_request_policy_ =
         OverrideToBlockInsteadOfWarn(private_network_request_policy_);
   }
 
   if (policy_override ==
-      ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
           kWarnInsteadOfBlock) {
     private_network_request_policy_ =
         OverrideToWarnInsteadOfBlock(private_network_request_policy_);
@@ -10236,7 +10234,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
 
       network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
           *policy_container_builder_->InitiatorPolicies(),
-          LocalNetworkAccessRequestContext::kMainFrameNavigation);
+          PrivateNetworkRequestContext::kMainFrameNavigation);
 
       // Remove the initiator's COEP, it is unused. For iframes, the parent's
       // COEP should be used: that is checked in `EnforceCOEP()`. The value
@@ -10254,7 +10252,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
 
       network::mojom::ClientSecurityStatePtr state = DeriveClientSecurityState(
           *policy_container_builder_->InitiatorPolicies(),
-          LocalNetworkAccessRequestContext::kSubframeNavigation);
+          PrivateNetworkRequestContext::kSubframeNavigation);
 
       // Check for policy overrides on LNA. For subframe navigations, we apply
       // policy overrides based on the initiator.
@@ -10264,10 +10262,9 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
         BrowserContext* context =
             frame_tree_node_->navigator().controller().GetBrowserContext();
         url::Origin origin = GetInitiatorOrigin().value();
-        ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
-            policy_override =
-                client->ShouldOverrideLocalNetworkAccessRequestPolicy(context,
-                                                                      origin);
+        ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+            policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
+                context, origin);
         state->private_network_request_policy =
             OverrideLocalNetworkAccessPolicy(
                 state->private_network_request_policy, policy_override);
@@ -10308,10 +10305,10 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
       // TODO(crbug.com/40258851): Remove COEP from
       // `client_security_state`, see the reasoning for subframes above.
       client_security_state->private_network_request_policy =
-          DeriveLocalNetworkAccessRequestPolicy(
+          DerivePrivateNetworkRequestPolicy(
               client_security_state->ip_address_space,
               client_security_state->is_web_secure_context, false,
-              LocalNetworkAccessRequestContext::kFencedFrameNavigation);
+              PrivateNetworkRequestContext::kFencedFrameNavigation);
 
       return client_security_state;
     }

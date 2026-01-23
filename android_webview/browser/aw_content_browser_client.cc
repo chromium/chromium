@@ -1302,16 +1302,16 @@ void AwContentBrowserClient::LogWebDXFeatureForCurrentPage(
       render_frame_host, feature);
 }
 
-content::ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
-AwContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
+content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+AwContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   // Webview does not implement support for deprecation trials, so webview apps
-  // broken by Local Network Access restrictions cannot help themselves by
+  // broken by Private Network Access restrictions cannot help themselves by
   // registering for the trial.
   // See crbug.com/1255675.
-  return content::ContentBrowserClient::
-      LocalNetworkAccessRequestPolicyOverride::kForceAllow;
+  return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+      kForceAllow;
 }
 
 content::SpeechRecognitionManagerDelegate*

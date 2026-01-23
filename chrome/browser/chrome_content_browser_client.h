@@ -958,8 +958,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void GrantAdditionalRequestPrivilegesToWorkerProcess(
       int child_id,
       const GURL& script_url) override;
-  LocalNetworkAccessRequestPolicyOverride
-  ShouldOverrideLocalNetworkAccessRequestPolicy(
+  PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   bool IsJitDisabledForSite(content::BrowserContext* browser_context,

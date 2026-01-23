@@ -20,7 +20,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/browser/renderer_host/local_network_access_util.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -510,9 +510,9 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
               creator_policy_container_policies_.cross_origin_embedder_policy,
               creator_policy_container_policies_.is_web_secure_context,
               creator_policy_container_policies_.ip_address_space,
-              DeriveLocalNetworkAccessRequestPolicy(
+              DerivePrivateNetworkRequestPolicy(
                   creator_policy_container_policies_,
-                  LocalNetworkAccessRequestContext::kWorker),
+                  PrivateNetworkRequestContext::kWorker),
               creator_policy_container_policies_.document_isolation_policy));
 
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
@@ -624,9 +624,9 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
               creator_policy_container_policies_.cross_origin_embedder_policy,
               creator_policy_container_policies_.is_web_secure_context,
               creator_policy_container_policies_.ip_address_space,
-              DeriveLocalNetworkAccessRequestPolicy(
+              DerivePrivateNetworkRequestPolicy(
                   creator_policy_container_policies_,
-                  LocalNetworkAccessRequestContext::kWorker),
+                  PrivateNetworkRequestContext::kWorker),
               creator_policy_container_policies_.document_isolation_policy));
   if (!loader_factory) {
     // We can't continue with update checking appropriately without
