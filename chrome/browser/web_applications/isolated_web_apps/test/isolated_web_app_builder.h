@@ -86,6 +86,11 @@ class ManifestBuilder {
   // Mime type to vector of file extensions.
   using FileHandlerAccept = std::map<std::string, std::vector<std::string>>;
 
+  struct ScopeExtension {
+    url::Origin origin;
+    bool has_origin_wildcard;
+  };
+
   using ClientMode = blink::Manifest::LaunchHandler::ClientMode;
 
   // Creates the following default manifest:
@@ -134,6 +139,9 @@ class ManifestBuilder {
   ManifestBuilder& AddFileHandler(std::string_view action,
                                   const FileHandlerAccept& accept);
 
+  ManifestBuilder& AddScopeExtension(url::Origin origin,
+                                     bool has_origin_wildcard);
+
   ManifestBuilder& AddBorderlessUrlPattern(blink::SafeUrlPattern pattern);
 
   const std::string& start_url() const;
@@ -159,6 +167,7 @@ class ManifestBuilder {
       permissions_policy_;
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
   std::map<std::string, FileHandlerAccept> file_handlers_;
+  std::vector<ScopeExtension> scope_extensions_;
   std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
 };
 

@@ -63,6 +63,7 @@
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -72,6 +73,7 @@
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -152,6 +154,14 @@ void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+std::string OriginAssociationFileFromAppIdentity(std::string iwa_bundle_id) {
+  constexpr char kOriginAssociationTemplate[] = R"(
+    { "isolated-app://$1/": { "scope": "/" } }
+    )";
+  return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
+                                         {iwa_bundle_id}, nullptr);
+}
+
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
  public:
@@ -222,6 +232,20 @@ class IsolatedWebAppUpdateManagerBrowserTest
     return app;
   }
 
+  void SetFakeOriginAssociationFetcher(
+      url::Origin request_origin,
+      const web_package::SignedWebBundleId& bundle_id) {
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+
+    origin_association_fetcher->SetData(
+        {{std::move(request_origin),
+          OriginAssociationFileFromAppIdentity(bundle_id.id())}});
+
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+  }
+
   url::Origin GetAppOrigin() const {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(GetWebBundleId())
         .origin();
@@ -260,6 +284,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
@@ -301,6 +327,109 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                                      /*sample=*/false, /*expected_count=*/0);
   histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
                                     /*expected_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       SucceedsWithScopeExtensionsUpdated) {
+  // Install IWA without scope extensions.
+  {
+    IsolatedWebAppBuilder(
+        ManifestBuilder().SetName("app-3.0.4").SetVersion("3.0.4"))
+        .AddHtml("/", kIndexHtml304WithServiceWorker)
+        .AddJs("/register-sw.js", kRegisterServiceWorkerScript)
+        .AddJs("/sw.js", kServiceWorkerScript)
+        .BuildBundle(GetWebBundleId(), {kKeyPair1})
+        ->InstallChecked(browser()->profile());
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+    ASSERT_EQ(0UL, web_app->scope_extensions().size());
+    ASSERT_EQ(0UL, web_app->validated_scope_extensions().size());
+  }
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  // Update bundle with scope extension origin https://fakeorigin.com.
+  {
+    // This is needed to validate scope extensions.
+    url::Origin scope_extension_origin1 =
+        url::Origin::Create(GURL("https://fakeorigin.com"));
+    SetFakeOriginAssociationFetcher(scope_extension_origin1, GetWebBundleId());
+
+    iwa_test_update_server_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .AddScopeExtension(scope_extension_origin1,
+                                   /*has_origin_wildcard=*/false)
+                .SetName("app-4.0.0")
+                .SetVersion("4.0.0"))
+            .AddHtml("/", kIndexHtml706)
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({GetAppId()});
+
+    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+    manifest_updated_observer.Wait();
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+
+    ASSERT_EQ("app-4.0.0", web_app->untranslated_name());
+    ASSERT_EQ(1UL, web_app->scope_extensions().size());
+    ASSERT_EQ(1UL, web_app->validated_scope_extensions().size());
+
+    ASSERT_EQ(scope_extension_origin1,
+              web_app->scope_extensions().begin()->origin);
+    ASSERT_EQ(scope_extension_origin1,
+              web_app->validated_scope_extensions().begin()->origin);
+  }
+
+  // Update bundle with scope extension origin https://anotherfakeorigin.com to
+  // ensure that existing scope extensions are overwritten on update.
+  {
+    // This is needed to validate scope extensions.
+    url::Origin scope_extension_origin =
+        url::Origin::Create(GURL("https://anotherfakeorigin.com"));
+    SetFakeOriginAssociationFetcher(scope_extension_origin, GetWebBundleId());
+
+    iwa_test_update_server_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder()
+                .AddScopeExtension(scope_extension_origin,
+                                   /*has_origin_wildcard=*/false)
+                .SetName("app-5.0.0")
+                .SetVersion("5.0.0"))
+            .AddHtml("/", kIndexHtml706)
+            .BuildBundle(GetWebBundleId(), {kKeyPair1}));
+
+    WebAppTestManifestUpdatedObserver manifest_updated_observer(
+        &provider().install_manager());
+    manifest_updated_observer.BeginListening({GetAppId()});
+
+    EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+    manifest_updated_observer.Wait();
+
+    const WebApp* web_app = GetIsolatedWebApp(GetAppId());
+
+    ASSERT_EQ("app-5.0.0", web_app->untranslated_name());
+    ASSERT_EQ(1UL, web_app->scope_extensions().size());
+    ASSERT_EQ(1UL, web_app->validated_scope_extensions().size());
+
+    // Ensure that old origin got replaced.
+    ASSERT_EQ(scope_extension_origin,
+              web_app->scope_extensions().begin()->origin);
+    ASSERT_EQ(scope_extension_origin,
+              web_app->validated_scope_extensions().begin()->origin);
+  }
 }
 
 // The case of allowlisted app being installed and updated is covered by

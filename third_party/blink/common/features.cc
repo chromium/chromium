@@ -2525,6 +2525,14 @@ BASE_FEATURE(kWebAppBorderless, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAppEnableScopeExtensionsBySite,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This controls whether scope extensions work for isolated web apps which
+// use same concepts as pwa
+// https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
+// Note that for Isolated Web Apps it is not possible to capture link
+// navigations without scope extensions.
+BASE_FEATURE(kWebAppEnableScopeExtensionsForIsolatedWebApps,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls parsing and usage of localized fields in web app manifests.
 // See spec for more information:
 // https://www.w3.org/TR/appmanifest/#x_localized-members

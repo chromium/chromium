@@ -364,6 +364,12 @@ ManifestBuilder& ManifestBuilder::AddFileHandler(
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::AddScopeExtension(url::Origin origin,
+                                                    bool has_origin_wildcard) {
+  scope_extensions_.push_back({std::move(origin), has_origin_wildcard});
+  return *this;
+}
+
 ManifestBuilder& ManifestBuilder::AddBorderlessUrlPattern(
     blink::SafeUrlPattern pattern) {
   borderless_url_patterns_.emplace_back(std::move(pattern));
@@ -480,6 +486,26 @@ std::string ManifestBuilder::ToJson() const {
              base::ToValueList(borderless_url_patterns_, &UrlPatternToValue));
   }
 
+  if (!scope_extensions_.empty()) {
+    json.Set("scope_extensions",
+             base::ToValueList(scope_extensions_, [](const ScopeExtension& it) {
+               base::Value::Dict extension_entry;
+               extension_entry.Set("type", "origin");
+
+               std::string origin_string = it.origin.Serialize();
+
+               if (it.has_origin_wildcard) {
+                 // Replaces "scheme://host" with "scheme://*.host" safely.
+                 // If "://" is not found, the string remains unchanged.
+                 base::ReplaceFirstSubstringAfterOffset(&origin_string, 0,
+                                                        "://", "://*.");
+               }
+
+               extension_entry.Set("origin", std::move(origin_string));
+               return extension_entry;
+             }));
+  }
+
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
@@ -561,6 +587,13 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   }
 
   base::Extend(manifest->borderless_url_patterns, borderless_url_patterns_);
+
+  for (const ScopeExtension& it : scope_extensions_) {
+    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+    scope_extension->origin = it.origin;
+    scope_extension->has_origin_wildcard = it.has_origin_wildcard;
+    manifest->scope_extensions.push_back(std::move(scope_extension));
+  }
 
   return manifest;
 }

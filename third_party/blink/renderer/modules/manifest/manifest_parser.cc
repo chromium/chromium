@@ -462,8 +462,10 @@ bool ManifestParser::Parse() {
                       WebFeature::kWebAppManifestProtocolHandlers);
   }
 
-  if (!(execution_context_ && execution_context_->IsIsolatedContext())) {
-    // TODO(crbug.com/383094092): Scope Extensions for IWAs are not defined yet.
+  bool is_iwa = execution_context_ && execution_context_->IsIsolatedContext();
+  if (!is_iwa ||
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps)) {
     manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
     if (!manifest_->scope_extensions.empty()) {
       UseCounter::Count(execution_context_,
