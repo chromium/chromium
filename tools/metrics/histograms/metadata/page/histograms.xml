@@ -639,6 +639,7 @@ chromium-metrics-reviews@google.com.
     <variant name="FileSystemAccess"/>
     <variant name="Find"/>
     <variant name="IntentPicker"/>
+    <variant name="JsOptimizations"/>
     <variant name="LensOverlay"/>
     <variant name="LensOverlayHomework"/>
     <variant name="LocalCardMigration"/>
