@@ -74,7 +74,7 @@ WebUIToolbarConfig::WebUIToolbarConfig()
 
 bool WebUIToolbarConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsWebUIReloadButtonEnabled();
+  return features::IsWebUIToolbarEnabled();
 }
 
 void WebUIToolbarUI::BindInterface(

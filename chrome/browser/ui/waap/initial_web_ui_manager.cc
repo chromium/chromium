@@ -13,7 +13,7 @@ DEFINE_USER_DATA(InitialWebUIManager);
 
 InitialWebUIManager::InitialWebUIManager(BrowserWindowInterface* browser)
     : window_(browser->GetWindow()),
-      is_initial_web_ui_pending_(features::IsWebUIReloadButtonEnabled()),
+      is_initial_web_ui_pending_(features::IsWebUIToolbarEnabled()),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {}
 
 InitialWebUIManager::~InitialWebUIManager() = default;

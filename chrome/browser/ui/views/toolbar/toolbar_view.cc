@@ -314,10 +314,12 @@ void ToolbarView::Init() {
       BackForwardButton::Direction::kForward,
       base::BindRepeating(callback, browser_, IDC_FORWARD), browser_));
 
-  if (features::IsWebUIReloadButtonEnabled()) {
+  if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
         browser_, browser_->command_controller()));
-  } else {
+  }
+
+  if (!features::IsWebUIReloadButtonEnabled()) {
     reload_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->profile(), browser_->command_controller(),
         InitialWebUIWindowMetricsManager::From(browser_)));

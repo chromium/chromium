@@ -296,7 +296,7 @@ class NetworkRequestMetricsBrowserTest
       // TODO(crbug.com/444358999): we need to exclude the resource load metric
       // for the initial web UI. This might be removed after the initial web UI
       // metrics are separated from the rest.
-      if (features::IsWebUIReloadButtonEnabled() && !found_resource_load &&
+      if (features::IsWebUIToolbarEnabled() && !found_resource_load &&
           bucket.count > 0 && bucket.min == -net::OK) {
         found_resource_load = true;
         bucket.count--;
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
     // TODO(crbug.com/444358999): we need to exclude the resource load metric
     // for the initial web UI. This might be removed after the initial web UI
     // metrics are separated from the rest.
-    if (features::IsWebUIReloadButtonEnabled() && !found_resource_load &&
+    if (features::IsWebUIToolbarEnabled() && !found_resource_load &&
         bucket.count > 0 && bucket.min == -net::OK) {
       found_resource_load = true;
       bucket.count--;

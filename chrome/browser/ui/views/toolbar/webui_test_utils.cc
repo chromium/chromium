@@ -19,7 +19,7 @@
 
 void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
     BrowserWindowInterface* browser) {
-  if (!browser || !features::IsWebUIReloadButtonEnabled()) {
+  if (!browser || !features::IsWebUIToolbarEnabled()) {
     return;
   }
 

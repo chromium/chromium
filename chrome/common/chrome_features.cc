@@ -1824,6 +1824,10 @@ const base::FeatureParam<base::TimeDelta>
         &kWebUIReloadButton,
         "WebUIReloadButtonRestartUnresponsiveRenderersTimeout",
         base::Seconds(15)};
+// When enabled, the split tabs button will be replaced with WebUI loaded from
+// chrome://webui-toolbar.top-chrome.
+// crbug.com/470039098
+BASE_FEATURE(kWebUISplitTabsButton, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the User-Agent override fix for SearchPrefetch. This will work only

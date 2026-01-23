@@ -554,6 +554,15 @@ bool IsWebUIReloadButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUIReloadButton);
 }
+
+bool IsWebUISplitTabsButtonEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
+}
+
+bool IsWebUIToolbarEnabled() {
+  return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled();
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
