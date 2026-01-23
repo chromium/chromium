@@ -10,6 +10,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {recordEnumerationValue} from './common.js';
 import {getCss} from './threads_rail.css.js';
 import {getHtml} from './threads_rail.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -25,13 +26,7 @@ export enum ThreadsAction {
 }
 
 function recordAction(action: ThreadsAction) {
-  // In rare cases, chrome.metricsPrivate is not available.
-  // TODO(crbug.com/40162029): Remove this check once the bug is fixed.
-  if (!chrome.metricsPrivate) {
-    return;
-  }
-
-  chrome.metricsPrivate.recordEnumerationValue(
+  recordEnumerationValue(
       'NewTabPage.ThreadsRail.Action', action, ThreadsAction.MAX_VALUE + 1);
 }
 
