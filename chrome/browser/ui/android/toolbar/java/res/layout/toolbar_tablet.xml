@@ -93,7 +93,8 @@ found in the LICENSE file.
             android:id="@+id/extension_toolbar_container_stub"
             android:inflatedId="@+id/extension_toolbar_container"
             android:layout_width="wrap_content"
-            android:layout_height="?attr/toolbarButtonHeight" />
+            android:layout_height="?attr/toolbarButtonHeight"
+            android:layout_marginVertical="?attr/toolbarButtonMarginVertical"/>
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
