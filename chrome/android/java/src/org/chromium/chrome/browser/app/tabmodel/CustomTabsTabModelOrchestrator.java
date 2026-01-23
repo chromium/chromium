@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import static org.chromium.chrome.browser.app.tabmodel.ShadowTabStoreValidator.CUSTOM_TAG;
 import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildAuthoritativeStore;
-import static org.chromium.chrome.browser.app.tabmodel.TabPersistentStoreFactory.buildShadowStore;
 
 import android.app.Activity;
 
@@ -15,9 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -35,10 +31,6 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 @NullMarked
 public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
     public CustomTabsTabModelOrchestrator() {}
-
-    private static final String WINDOW_PREFIX = TabPersistentStoreImpl.CLIENT_TAG_CUSTOM + "_";
-    private final AccumulatingTabCreator mRegularShadowTabCreator = new AccumulatingTabCreator();
-    private final AccumulatingTabCreator mIncognitoShadowTabCreator = new AccumulatingTabCreator();
 
     /** Creates the TabModelSelector and the TabPersistentStore. */
     public void createTabModels(
@@ -76,25 +68,6 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         tabWindowManager,
                         cipherFactory,
                         /* recordLegacyTabCountMetrics= */ true);
-
-        profileProviderSupplier.onAvailable(
-                provider -> {
-                    Profile profile = provider.getOriginalProfile();
-                    assert profile != null;
-
-                    String windowTag = WINDOW_PREFIX + activity.getTaskId();
-                    mShadowTabPersistentStore =
-                            buildShadowStore(
-                                    profile,
-                                    mRegularShadowTabCreator,
-                                    mIncognitoShadowTabCreator,
-                                    mTabModelSelector,
-                                    mTabPersistencePolicy,
-                                    mTabPersistentStore,
-                                    windowTag,
-                                    cipherFactory,
-                                    CUSTOM_TAG);
-                });
 
         wireSelectorAndStore();
         markTabModelsInitialized();
