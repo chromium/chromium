@@ -6,7 +6,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -113,7 +115,28 @@ SurveyStringData GetSurveyStringData(const std::string& trigger,
   return data;
 }
 
-bool IsFeatureEnabledForHatsTrigger(const std::string& trigger) {
+// Returns true if surveys are allowed for the current application locale.
+bool IsLocaleAllowedForSurvey() {
+  static constexpr auto kAllowedSurveyLocales =
+      base::MakeFixedFlatSet<std::string_view>({
+          "de",
+          "en",
+          "en-GB",
+          "en-US",
+          "fr",
+          "fr-CA",
+          "ja",
+          "pt",
+      });
+  return kAllowedSurveyLocales.contains(
+      g_browser_process->GetApplicationLocale());
+}
+
+// Returns true if the survey corresponding to `trigger` should be enabled.
+// Surveys are gated by both a feature flag and locale eligibility.
+// However, if the feature flag is overridden (e.g., by Finch or command-line),
+// the locale check is bypassed to allow server-side control.
+bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
   static const base::NoDestructor<
       absl::flat_hash_map<std::string_view, const base::Feature*>>
       kChromeIdentityHatsTriggerFeatureMap({
@@ -142,12 +165,26 @@ bool IsFeatureEnabledForHatsTrigger(const std::string& trigger) {
           {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
            &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
       });
-  if (const auto* feature =
-          base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger)) {
+
+  const auto* feature =
+      base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger);
+
+  if (!feature) {
+    // No matching feature for the given trigger.
+    return false;
+  }
+
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverridden(feature->name)) {
+    // If the feature state is overridden (e.g., by Finch or command-line),
+    // bypass the locale check. This allows Finch to enable surveys for
+    // locales not listed in `IsLocaleAllowedForSurvey`.
     return base::FeatureList::IsEnabled(*feature);
   }
-  // No matching feature for the given trigger.
-  return false;
+
+  // If not overridden, the survey is enabled only if the feature is on
+  // AND the locale is eligible.
+  return IsLocaleAllowedForSurvey() && base::FeatureList::IsEnabled(*feature);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -162,7 +199,7 @@ void LaunchHatsSurveyForProfile(const std::string& trigger,
                                 std::optional<signin_metrics::AccessPoint>
                                     access_point_for_data_type_promo) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!profile || !IsFeatureEnabledForHatsTrigger(trigger)) {
+  if (!profile || !IsSurveyEnabledForHatsTrigger(trigger)) {
     return;
   }
 
