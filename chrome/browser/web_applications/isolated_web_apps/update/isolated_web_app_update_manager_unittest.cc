@@ -1297,7 +1297,7 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
 
   std::unique_ptr<WebApp> CreateIsolatedWebApp(const GURL& start_url,
                                                IsolationData isolation_data) {
-    webapps::ManifestId manifest_id = start_url.Resolve("/");
+    webapps::ManifestId manifest_id = webapps::ManifestId(start_url.Resolve("/"));
     GURL scope = start_url.Resolve("/");
     auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
     web_app->SetName("iwa name");
