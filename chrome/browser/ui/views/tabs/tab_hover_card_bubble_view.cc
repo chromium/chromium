@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
 #include "chrome/browser/ui/views/tabs/filename_elider.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -362,9 +362,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
                                       kHoverCardDomainLabelElementId);
 
-TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
-                                               const InitParams& params)
-    : BubbleDialogDelegateView(tab,
+TabHoverCardBubbleView::TabHoverCardBubbleView(
+    HoverCardAnchorTarget* anchor_target,
+    const InitParams& params)
+    : BubbleDialogDelegateView(anchor_target->GetAnchorView(),
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
       tab_style_(TabStyle::Get()),
@@ -474,8 +475,13 @@ void TabHoverCardBubbleView::AddedToWidget() {
   // Note that this code has to go after CreateBubble() above, since setting up
   // the placeholder image and background color require a ColorProvider, which
   // is only available once this View has been added to its widget.
-  Tab* tab = static_cast<Tab*>(GetAnchorView());
-  if (thumbnail_view_ && !tab->HasThumbnail() && !tab->IsActive()) {
+
+  HoverCardAnchorTarget* anchor_target =
+      HoverCardAnchorTarget::FromAnchorView(GetAnchorView());
+  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
+                         anchor_target->data().thumbnail->has_data() &&
+                         anchor_target->IsActive();
+  if (thumbnail_view_ && !valid_thumbnail) {
     thumbnail_view_->SetPlaceholderImage();
   }
 
@@ -519,10 +525,14 @@ TabHoverCardBubbleView::GetCollaborationMessagingData(
   return collaboration_messaging_data;
 }
 
-void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
+void TabHoverCardBubbleView::UpdateCardContent(
+    const HoverCardAnchorTarget* anchor_target) {
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
-    if (tab->IsActive() || (tab->IsDiscarded() && !tab->HasThumbnail())) {
+    bool has_thumbnail = anchor_target->data().thumbnail &&
+                         anchor_target->data().thumbnail->has_data();
+    if (anchor_target->IsActive() ||
+        (anchor_target->data().is_tab_discarded && !has_thumbnail)) {
       thumbnail_view_->ClearImage();
     } else {
       thumbnail_view_->SetWaitingForImage();
@@ -530,7 +540,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
 
   std::u16string title;
-  const TabRendererData& tab_data = tab->data();
+  const TabRendererData& tab_data = anchor_target->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
   // can be blank for some web pages.

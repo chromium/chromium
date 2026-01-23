@@ -4421,6 +4421,8 @@ static_library("ui") {
       "views/tabs/groups/avatar_container_view.h",
       "views/tabs/groups/manage_sharing_row.cc",
       "views/tabs/groups/manage_sharing_row.h",
+      "views/tabs/hover_card_anchor_target.cc",
+      "views/tabs/hover_card_anchor_target.h",
       "views/tabs/new_tab_button.cc",
       "views/tabs/new_tab_button.h",
       "views/tabs/recent_activity_bubble_dialog_view.cc",

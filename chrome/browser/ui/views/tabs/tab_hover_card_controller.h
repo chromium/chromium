@@ -27,9 +27,9 @@ namespace gfx {
 class ImageSkia;
 }
 
+class HoverCardAnchorTarget;
 class TabHoverCardBubbleView;
 class TabHoverCardThumbnailObserver;
-class Tab;
 class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
@@ -40,8 +40,8 @@ class TabHoverCardController : public views::ViewObserver,
   ~TabHoverCardController() override;
 
   bool IsHoverCardVisible() const;
-  bool IsHoverCardShowingForTab(Tab* tab) const;
-  void UpdateHoverCard(Tab* tab,
+  bool IsHoverCardShowingForTab(HoverCardAnchorTarget* anchor_target) const;
+  void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
                        TabSlotController::HoverCardUpdateType update_type);
   void PreventImmediateReshow();
 
@@ -99,17 +99,19 @@ class TabHoverCardController : public views::ViewObserver,
 
   bool ArePreviewsEnabled() const;
 
-  void CreateHoverCard(Tab* tab);
-  void UpdateCardContent(Tab* tab);
-  void MaybeStartThumbnailObservation(Tab* tab, bool is_initial_show);
-  void StartThumbnailObservation(Tab* tab);
+  void CreateHoverCard(HoverCardAnchorTarget* anchor_target);
+  void UpdateCardContent(HoverCardAnchorTarget* anchor_target);
+  void MaybeStartThumbnailObservation(HoverCardAnchorTarget* anchor_target,
+                                      bool is_initial_show);
+  void StartThumbnailObservation(HoverCardAnchorTarget* anchor_target);
 
-  void UpdateOrShowCard(Tab* tab,
+  void UpdateOrShowCard(HoverCardAnchorTarget* anchor_target,
                         TabSlotController::HoverCardUpdateType update_type);
-  void ShowHoverCard(bool is_initial, const Tab* intended_tab);
+  void ShowHoverCard(bool is_initial,
+                     const HoverCardAnchorTarget* intended_target);
   void HideHoverCard();
 
-  bool ShouldShowImmediately(const Tab* tab) const;
+  bool ShouldShowImmediately(const HoverCardAnchorTarget* anchor_target) const;
 
   const views::View* GetTargetAnchorView() const;
 
@@ -154,7 +156,7 @@ class TabHoverCardController : public views::ViewObserver,
   // the mouse reenters within a given amount of time.
   base::TimeTicks last_mouse_exit_timestamp_;
 
-  raw_ptr<Tab> target_tab_ = nullptr;
+  raw_ptr<HoverCardAnchorTarget> target_tab_ = nullptr;
   const raw_ptr<TabStrip> tab_strip_;
   raw_ptr<TabHoverCardBubbleView> hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>

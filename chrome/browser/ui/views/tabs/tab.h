@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
+#include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/buildflags.h"
@@ -64,6 +65,7 @@ class Tab : public gfx::AnimationDelegate,
             public views::MaskedTargeterDelegate,
             public views::ViewObserver,
             public TabSlotView,
+            public HoverCardAnchorTarget,
             public AlertIndicatorButton::Delegate {
   METADATA_HEADER(Tab, TabSlotView)
 
@@ -129,8 +131,10 @@ class Tab : public gfx::AnimationDelegate,
   // Returns the color for the tab's group, if any.
   std::optional<SkColor> GetGroupColor() const;
 
-  // Returns true if this tab is the active tab.
-  bool IsActive() const;
+  // HoverCardAnchorTarget:
+  bool IsActive() const override;
+  bool IsValid() const override;
+  const TabRendererData& data() const override;
 
   // Notifies the AlertIndicatorButton that the active state of this tab has
   // changed.
@@ -157,7 +161,6 @@ class Tab : public gfx::AnimationDelegate,
   // Sets the data this tabs displays. Should only be called after Tab is added
   // to widget hierarchy.
   void SetData(TabRendererData data);
-  const TabRendererData& data() const { return data_; }
 
   // Redraws the loading animation if one is visible. Otherwise, no-op. The
   // `elapsed_time` parameter is shared between tabs and used to keep the

@@ -216,7 +216,8 @@ void Tab::SetShowHoverCardOnMouseHoverForTesting(bool value) {
 }
 
 Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
-    : tab_handle_(handle),
+    : HoverCardAnchorTarget(this),
+      tab_handle_(handle),
       controller_(controller),
       title_(new views::Label()),
       title_animation_(this) {
@@ -893,6 +894,14 @@ bool Tab::IsActive() const {
   } else {
     return controller_->IsActiveTab(this);
   }
+}
+
+bool Tab::IsValid() const {
+  return !closing() && !detached() && !dragging() && GetVisible();
+}
+
+const TabRendererData& Tab::data() const {
+  return data_;
 }
 
 void Tab::ActiveStateChanged() {
