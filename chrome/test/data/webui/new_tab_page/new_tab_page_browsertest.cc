@@ -58,6 +58,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, BackgroundManager) {
   RunTest("new_tab_page/background_manager_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, BackgroundImage) {
+  RunTest("new_tab_page/background_image_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MiddleSlotPromo) {
   RunTest("new_tab_page/middle_slot_promo_test.js", "mocha.run()");
 }
