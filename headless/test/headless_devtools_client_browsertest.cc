@@ -65,7 +65,7 @@ class HeadlessDevToolsClientNavigationTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnLoadEventFired(const base::Value::Dict& params) {
+  void OnLoadEventFired(const base::DictValue& params) {
     devtools_client_.SendCommand("Page.disable");
     FinishAsynchronousTest();
   }
@@ -82,7 +82,7 @@ class HeadlessDevToolsNavigationControlTest
     SendCommandSync(devtools_client_, "Page.enable");
     SendCommandSync(devtools_client_, "Network.enable");
 
-    base::Value::List patterns;
+    base::ListValue patterns;
     patterns.Append(Param("urlPattern", "*"));
     devtools_client_.SendCommand("Network.setRequestInterception",
                                  Param("patterns", std::move(patterns)));
@@ -104,7 +104,7 @@ class HeadlessDevToolsNavigationControlTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnRequestIntercepted(const base::Value::Dict& params) {
+  void OnRequestIntercepted(const base::DictValue& params) {
     if (DictBool(params, "params.isNavigationRequest"))
       navigation_requested_ = true;
 
@@ -114,7 +114,7 @@ class HeadlessDevToolsNavigationControlTest
         Param("interceptionId", DictString(params, "params.interceptionId")));
   }
 
-  void OnFrameStoppedLoading(const base::Value::Dict& params) {
+  void OnFrameStoppedLoading(const base::DictValue& params) {
     EXPECT_TRUE(navigation_requested_);
     FinishAsynchronousTest();
   }
@@ -139,7 +139,7 @@ class HeadlessCrashObserverTest : public HeadlessDevTooledBrowserTest {
                                  Param("url", blink::kChromeUICrashURL));
   }
 
-  void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
+  void OnTargetCrashed(const base::DictValue&) { FinishAsynchronousTest(); }
 
   // Make sure we don't fail because the renderer crashed!
   void PrimaryMainFrameRenderProcessGone(
@@ -203,8 +203,8 @@ class HeadlessDevToolsNetworkBlockedUrlTest
 
     SendCommandSync(devtools_client_, "Page.enable");
 
-    base::Value::List urls;
-    base::Value::Dict url_pattern;
+    base::ListValue urls;
+    base::DictValue url_pattern;
     url_pattern.Set("urlPattern", "*://*:*/hello.html");
     url_pattern.Set("block", true);
     urls.Append(std::move(url_pattern));
@@ -222,24 +222,24 @@ class HeadlessDevToolsNetworkBlockedUrlTest
     return gurl.GetPath();
   }
 
-  void OnRequestWillBeSent(const base::Value::Dict& params) {
+  void OnRequestWillBeSent(const base::DictValue& params) {
     std::string path = GetUrlPath(DictString(params, "params.request.url"));
     requests_to_be_sent_.push_back(path);
     request_id_to_path_[DictString(params, "params.requestId")] = path;
   }
 
-  void OnResponseReceived(const base::Value::Dict& params) {
+  void OnResponseReceived(const base::DictValue& params) {
     responses_received_.push_back(
         GetUrlPath(DictString(params, "params.response.url")));
   }
 
-  void OnLoadingFailed(const base::Value::Dict& params) {
+  void OnLoadingFailed(const base::DictValue& params) {
     failures_.push_back(
         request_id_to_path_[DictString(params, "params.requestId")]);
     EXPECT_EQ("inspector", DictString(params, "params.blockedReason"));
   }
 
-  void OnLoadEventFired(const base::Value::Dict&) {
+  void OnLoadEventFired(const base::DictValue&) {
     EXPECT_THAT(requests_to_be_sent_,
                 testing::UnorderedElementsAre(
                     "/dom_tree_test.html", "/dom_tree_test.css", "/iframe.html",
@@ -274,7 +274,7 @@ class DevToolsNetworkOfflineEmulationTest
 
     SendCommandSync(devtools_client_, "Network.enable");
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("offline", true);
     params.Set("latency", 0);
     params.Set("downloadThroughput", 0);
@@ -287,7 +287,7 @@ class DevToolsNetworkOfflineEmulationTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnLoadingFailed(const base::Value::Dict& params) {
+  void OnLoadingFailed(const base::DictValue& params) {
     EXPECT_THAT(params, DictHasValue("params.errorText",
                                      "net::ERR_INTERNET_DISCONNECTED"));
     EXPECT_EQ("net::ERR_INTERNET_DISCONNECTED",
@@ -317,10 +317,10 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
               embedded_test_server()->GetURL("/dom_tree_test.html").spec()));
   }
 
-  void OnLoadEventFired(const base::Value::Dict&) {
+  void OnLoadEventFired(const base::DictValue&) {
     SendCommandSync(devtools_client_, "Page.disable");
 
-    base::Value::List css_whitelist;
+    base::ListValue css_whitelist;
     css_whitelist.Append("color");
     css_whitelist.Append("display");
     css_whitelist.Append("font-style");
@@ -336,11 +336,11 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnGetSnapshotDone(base::Value::Dict result) {
-    std::vector<base::Value::Dict> dom_nodes;
+  void OnGetSnapshotDone(base::DictValue result) {
+    std::vector<base::DictValue> dom_nodes;
     GetDomNodes(result, &dom_nodes);
 
-    std::vector<base::Value::Dict> computed_styles;
+    std::vector<base::DictValue> computed_styles;
     GetComputedStyles(result, &computed_styles);
 
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -360,17 +360,17 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     FinishAsynchronousTest();
   }
 
-  void GetDomNodes(const base::Value::Dict& result,
-                   std::vector<base::Value::Dict>* dom_nodes) {
+  void GetDomNodes(const base::DictValue& result,
+                   std::vector<base::DictValue>* dom_nodes) {
     GURL::Replacements replace_port;
     replace_port.SetPortStr("");
 
-    const base::Value::List* dom_nodes_list =
+    const base::ListValue* dom_nodes_list =
         result.FindListByDottedPath("result.domNodes");
     ASSERT_NE(dom_nodes_list, nullptr);
     ASSERT_GT(dom_nodes_list->size(), 0ul);
 
-    const base::Value::List* layout_tree_nodes_list =
+    const base::ListValue* layout_tree_nodes_list =
         result.FindListByDottedPath("result.layoutTreeNodes");
     ASSERT_NE(layout_tree_nodes_list, nullptr);
     ASSERT_GT(layout_tree_nodes_list->size(), 0ul);
@@ -380,7 +380,7 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     for (const auto& dom_node : *dom_nodes_list) {
       ASSERT_TRUE(dom_node.is_dict());
       dom_nodes->push_back(dom_node.GetDict().Clone());
-      base::Value::Dict& node_dict = dom_nodes->back();
+      base::DictValue& node_dict = dom_nodes->back();
 
       // Node IDs are assigned in a non deterministic way.
       if (node_dict.Find("backendNodeId"))
@@ -420,10 +420,10 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
         ASSERT_GT(layout_tree_nodes_list->size(),
                   static_cast<size_t>(*layout_node_index));
 
-        const base::Value::Dict& layout_tree_node =
+        const base::DictValue& layout_tree_node =
             (*layout_tree_nodes_list)[*layout_node_index].GetDict();
 
-        if (const base::Value::Dict* bounding_box =
+        if (const base::DictValue* bounding_box =
                 layout_tree_node.FindDict("boundingBox")) {
           node_dict.Set("boundingBox", bounding_box->Clone());
           FixBoundingBox(node_dict);
@@ -439,9 +439,9 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
           node_dict.Set("styleIndex", *style_index);
         }
 
-        if (const base::Value::List* inline_text_nodes =
+        if (const base::ListValue* inline_text_nodes =
                 layout_tree_node.FindList("inlineTextNodes")) {
-          base::Value::List list = inline_text_nodes->Clone();
+          base::ListValue list = inline_text_nodes->Clone();
           for (auto& list_entry : list) {
             ASSERT_TRUE(list_entry.is_dict());
             FixBoundingBox(list_entry.GetDict());
@@ -452,8 +452,8 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     }
   }
 
-  void FixBoundingBox(base::Value::Dict& dict) {
-    if (base::Value::Dict* bounding_box = dict.FindDict("boundingBox")) {
+  void FixBoundingBox(base::DictValue& dict) {
+    if (base::DictValue* bounding_box = dict.FindDict("boundingBox")) {
       // The golden file expects double values in boundingBox.
       // TODO(kvitekp): Consider updating the golden and just
       // cloning the |boundingBox| dictionary here.
@@ -464,9 +464,9 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     }
   }
 
-  void GetComputedStyles(const base::Value::Dict& result,
-                         std::vector<base::Value::Dict>* computed_styles) {
-    const base::Value::List* computed_styles_list =
+  void GetComputedStyles(const base::DictValue& result,
+                         std::vector<base::DictValue>* computed_styles) {
+    const base::ListValue* computed_styles_list =
         result.FindListByDottedPath("result.computedStyles");
     ASSERT_NE(computed_styles_list, nullptr);
     ASSERT_GT(computed_styles_list->size(), 0ul);
@@ -474,14 +474,14 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     computed_styles->reserve(computed_styles_list->size());
     for (const auto& computed_style : *computed_styles_list) {
       ASSERT_TRUE(computed_style.is_dict());
-      const base::Value::List* properties_list =
+      const base::ListValue* properties_list =
           computed_style.GetDict().FindList("properties");
       ASSERT_NE(properties_list, nullptr);
 
-      base::Value::Dict computed_style_dict;
+      base::DictValue computed_style_dict;
       for (const auto& property : *properties_list) {
         ASSERT_TRUE(property.is_dict());
-        const base::Value::Dict& property_dict = property.GetDict();
+        const base::DictValue& property_dict = property.GetDict();
         computed_style_dict.Set(*property_dict.FindString("name"),
                                 *property_dict.FindString("value"));
       }
@@ -489,13 +489,13 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
     }
   }
 
-  void CompareToGolden(const std::vector<base::Value::Dict>& entries,
+  void CompareToGolden(const std::vector<base::DictValue>& entries,
                        base::FilePath expected_filepath) {
     std::string expected_entries;
     ASSERT_TRUE(base::ReadFileToString(expected_filepath, &expected_entries));
 
     std::string actual_entries;
-    for (const base::Value::Dict& entry : entries) {
+    for (const base::DictValue& entry : entries) {
       std::string entry_json;
       base::JSONWriter::WriteWithOptions(
           entry, base::JSONWriter::OPTIONS_PRETTY_PRINT, &entry_json);
@@ -545,7 +545,7 @@ class BlockedByClient_NetworkObserver_Test
     SendCommandSync(devtools_client_, "Network.enable");
 
     // Intercept all network requests.
-    base::Value::List patterns;
+    base::ListValue patterns;
     patterns.Append(Param("urlPattern", "*"));
     devtools_client_.SendCommand("Network.setRequestInterception",
                                  Param("patterns", std::move(patterns)));
@@ -564,12 +564,12 @@ class BlockedByClient_NetworkObserver_Test
                                           .spec()));
   }
 
-  void OnRequestIntercepted(const base::Value::Dict& params) {
+  void OnRequestIntercepted(const base::DictValue& params) {
     const std::string url = DictString(params, "params.request.url");
 
     urls_seen_.push_back(GURL(url).ExtractFileName());
 
-    base::Value::Dict continue_intercept_params;
+    base::DictValue continue_intercept_params;
     continue_intercept_params.Set("interceptionId",
                                   DictString(params, "params.interceptionId"));
 
@@ -592,14 +592,14 @@ class BlockedByClient_NetworkObserver_Test
                                  std::move(continue_intercept_params));
   }
 
-  void OnRequestWillBeSent(const base::Value::Dict& params) {
+  void OnRequestWillBeSent(const base::DictValue& params) {
     // Here, we just record the URLs (filenames) for each request ID, since
     // we won't have access to them in OnLoadingFailed below.
     urls_by_id_[DictString(params, "params.requestId")] =
         GURL(DictString(params, "params.request.url")).ExtractFileName();
   }
 
-  void OnLoadingFailed(const base::Value::Dict& params) {
+  void OnLoadingFailed(const base::DictValue& params) {
     // Record the failed loading events so we can verify below that we
     // received the events.
     urls_that_failed_to_load_.push_back(
@@ -607,7 +607,7 @@ class BlockedByClient_NetworkObserver_Test
     EXPECT_EQ("inspector", DictString(params, "params.blockedReason"));
   }
 
-  void OnLoadEventFired(const base::Value::Dict&) {
+  void OnLoadEventFired(const base::DictValue&) {
     EXPECT_THAT(urls_that_failed_to_load_,
                 UnorderedElementsAre("test.jpg", "Ahem.ttf", "iframe2.html"));
     EXPECT_THAT(urls_seen_, UnorderedElementsAre("resource_cancel_test.html",
@@ -651,7 +651,7 @@ class DevtoolsInterceptionWithAuthProxyTest
     SendCommandSync(devtools_client_, "Network.enable");
 
     // Intercept all network requests.
-    base::Value::List patterns;
+    base::ListValue patterns;
     patterns.Append(Param("urlPattern", "*"));
     devtools_client_.SendCommand("Network.setRequestInterception",
                                  Param("patterns", std::move(patterns)));
@@ -673,15 +673,15 @@ class DevtoolsInterceptionWithAuthProxyTest
                          .spec()));
   }
 
-  void OnRequestIntercepted(const base::Value::Dict& params) {
-    base::Value::Dict continue_intercept_params;
+  void OnRequestIntercepted(const base::DictValue& params) {
+    base::DictValue continue_intercept_params;
     continue_intercept_params.Set("interceptionId",
                                   DictString(params, "params.interceptionId"));
 
     if (DictHas(params, "params.authChallenge")) {
       auth_challenge_seen_ = true;
 
-      base::Value::Dict auth_challenge_response;
+      base::DictValue auth_challenge_response;
       auth_challenge_response.Set("response", "ProvideCredentials");
       auth_challenge_response.Set("username", "user");
       auth_challenge_response.Set("password", "pass");
@@ -696,7 +696,7 @@ class DevtoolsInterceptionWithAuthProxyTest
                                  std::move(continue_intercept_params));
   }
 
-  void OnLoadEventFired(const base::Value::Dict&) {
+  void OnLoadEventFired(const base::DictValue&) {
     EXPECT_TRUE(auth_challenge_seen_);
     EXPECT_THAT(files_loaded_,
                 testing::UnorderedElementsAre("/Ahem.ttf", "/dom_tree_test.css",
@@ -733,7 +733,7 @@ class NavigatorLanguages : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnEvaluateResult(base::Value::Dict result) {
+  void OnEvaluateResult(base::DictValue result) {
     EXPECT_THAT(result, DictHasValue("result.result.value",
                                      "[\"en-UK\",\"DE\",\"FR\"]"));
     FinishAsynchronousTest();
@@ -762,7 +762,7 @@ class AcceptLanguagesSwitch : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnEvaluateResult(base::Value::Dict result) {
+  void OnEvaluateResult(base::DictValue result) {
     EXPECT_THAT(result, DictHasValue("result.result.value", "[\"cz-CZ\"]"));
     FinishAsynchronousTest();
   }

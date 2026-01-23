@@ -67,8 +67,8 @@ class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnPageSetupCompleted(base::Value::Dict) {
-    base::Value::Dict params;
+  void OnPageSetupCompleted(base::DictValue) {
+    base::DictValue params;
     params.Set("printBackground", true);
     params.Set("paperHeight", kPaperHeight);
     params.Set("paperWidth", kPaperWidth);
@@ -83,7 +83,7 @@ class HeadlessPDFPagesBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnPDFCreated(base::Value::Dict result) {
+  void OnPDFCreated(base::DictValue result) {
     std::string pdf_data_base64 = DictString(result, "result.data");
     ASSERT_FALSE(pdf_data_base64.empty());
 
@@ -148,8 +148,8 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnPageSetupCompleted(base::Value::Dict) {
-    base::Value::Dict params;
+  void OnPageSetupCompleted(base::DictValue) {
+    base::DictValue params;
     params.Set("transferMode", "ReturnAsStream");
     params.Set("printBackground", true);
     params.Set("paperHeight", kPaperHeight);
@@ -165,7 +165,7 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnPDFCreated(base::Value::Dict result) {
+  void OnPDFCreated(base::DictValue result) {
     EXPECT_THAT(result, DictHasValue("result.data", std::string()));
 
     stream_ = DictString(result, "result.stream");
@@ -176,7 +176,7 @@ class HeadlessPDFStreamBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void OnReadChunk(base::Value::Dict result) {
+  void OnReadChunk(base::DictValue result) {
     EXPECT_THAT(result, DictHasValue("result.base64Encoded", true));
 
     const std::string base64_pdf_data_chunk = DictString(result, "result.data");
@@ -235,14 +235,14 @@ class HeadlessPDFBrowserTestBase : public HeadlessDevTooledBrowserTest {
         Param("url", embedded_test_server()->GetURL(GetUrl()).spec()));
   }
 
-  void OnLoadEventFired(const base::Value::Dict&) {
+  void OnLoadEventFired(const base::DictValue&) {
     devtools_client_.SendCommand(
         "Page.printToPDF", GetPrintToPDFParams(),
         base::BindOnce(&HeadlessPDFBrowserTestBase::OnPDFCreated,
                        base::Unretained(this)));
   }
 
-  void OnPDFCreated(base::Value::Dict result) {
+  void OnPDFCreated(base::DictValue result) {
     std::optional<int> error_code = result.FindIntByDottedPath("error.code");
     const std::string* error_message =
         result.FindStringByDottedPath("error.message");
@@ -268,8 +268,8 @@ class HeadlessPDFBrowserTestBase : public HeadlessDevTooledBrowserTest {
 
   virtual const char* GetUrl() = 0;
 
-  virtual base::Value::Dict GetPrintToPDFParams() {
-    base::Value::Dict params;
+  virtual base::DictValue GetPrintToPDFParams() {
+    base::DictValue params;
     params.Set("printBackground", true);
     params.Set("paperHeight", 41);
     params.Set("paperWidth", 41);
@@ -306,8 +306,8 @@ class HeadlessPDFPageOrientationBrowserTest
  public:
   const char* GetUrl() override { return "/pages_with_orientation.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("paperHeight", 11);
     params.Set("paperWidth", 8.5);
 
@@ -346,8 +346,8 @@ class HeadlessPDFPageRangesBrowserTest
  public:
   const char* GetUrl() override { return "/lorem_ipsum.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("pageRanges", page_ranges());
     params.Set("paperHeight", 8.5);
     params.Set("paperWidth", 11);
@@ -393,8 +393,8 @@ class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
  public:
   const char* GetUrl() override { return "/oopif.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("printBackground", true);
     params.Set("paperHeight", 10);
     params.Set("paperWidth", 15);
@@ -427,10 +427,10 @@ class HeadlessPDFTinyPageBrowserTest
  public:
   const char* GetUrl() override { return "/hello.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
+  base::DictValue GetPrintToPDFParams() override {
     // This tests that we can print into tiny pages as some WPT
     // tests expect that.
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("paperHeight", paper_height());
     params.Set("paperWidth", paper_width());
     params.Set("marginTop", 0);
@@ -468,10 +468,10 @@ class HeadlessPDFOversizeMarginsBrowserTest
  public:
   const char* GetUrl() override { return "/hello.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
+  base::DictValue GetPrintToPDFParams() override {
     // Set paper size to be smaller than the margins and expect content size
     // error.
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("paperHeight", 0.1);
     params.Set("paperWidth", 0.1);
     params.Set("marginTop", 0.2);
@@ -506,8 +506,8 @@ class HeadlessPDFDisableLazyLoading : public HeadlessPDFBrowserTestBase {
     command_line->AppendSwitch(switches::kDisableLazyLoading);
   }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("printBackground", true);
 
     return params;
@@ -675,8 +675,8 @@ class HeadlessGenerateTaggedPDFBrowserTest
  public:
   const char* GetUrl() override { return "/structured_doc.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("generateTaggedPDF", generate_tagged_pdf());
     return params;
   }
@@ -703,8 +703,8 @@ class HeadlessGenerateDocumentOutlinePDFBrowserTest
  public:
   const char* GetUrl() override { return "/structured_doc.html"; }
 
-  base::Value::Dict GetPrintToPDFParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPrintToPDFParams() override {
+    base::DictValue params;
     params.Set("generateDocumentOutline", generate_document_outline());
     return params;
   }

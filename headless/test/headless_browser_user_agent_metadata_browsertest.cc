@@ -34,23 +34,23 @@ using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 namespace {
 
 // Generate some fake UserAgentMetadata for use when overriding with CDP.
-base::Value::Dict MakeFakeMetadata() {
-  base::Value::Dict brand_version;
+base::DictValue MakeFakeMetadata() {
+  base::DictValue brand_version;
   brand_version.Set("brand", "HeadlessChrome");
 
-  base::Value::List brands;
+  base::ListValue brands;
   brand_version.Set("version", "1");
   brands.Append(brand_version.Clone());
 
   brand_version.Set("version", "1.2.3");
-  base::Value::List full_version_list;
+  base::ListValue full_version_list;
   full_version_list.Append(std::move(brand_version));
 
-  base::Value::List form_factors;
+  base::ListValue form_factors;
   form_factors.Append("Mobile");
   form_factors.Append("XR");
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set("brands", std::move(brands));
   metadata.Set("fullVersionList", std::move(full_version_list));
   metadata.Set("fullVersion", "1.2.3");
@@ -97,8 +97,8 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   }
 
   // Get a UserAgentMetadata value as seen from navigator.userAgentData.
-  base::Value::Dict GetUAMetadataValue(std::string script) {
-    base::Value::Dict params = Param("expression", script);
+  base::DictValue GetUAMetadataValue(std::string script) {
+    base::DictValue params = Param("expression", script);
     // Always await a Promise. This does not hurt if the script returns a
     // non-Promise value.
     params.Set("awaitPromise", true);
@@ -107,12 +107,12 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
   }
 
   // Use the Chrome Devtools Protocol to override UserAgentMetadata.
-  void OverrideUserAgentMetadata(base::Value::Dict user_agent_metadata) {
-    base::Value::Dict params;
+  void OverrideUserAgentMetadata(base::DictValue user_agent_metadata) {
+    base::DictValue params;
     params.Set("userAgent", "overridden");
     params.Set("userAgentMetadata",
                base::Value(std::move(user_agent_metadata)));
-    base::Value::Dict result = SendCommandSync(
+    base::DictValue result = SendCommandSync(
         devtools_client_, "Network.setUserAgentOverride", std::move(params));
     std::string* err = result.FindStringByDottedPath("error.data");
     CHECK(!err) << "Error invoking Network.setUserAgentOverride: \n" << *err;
@@ -302,12 +302,12 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
   // Use the Chrome Devtools Protocol to override UserAgentMetadata.
-  void OverrideUserAgentMetadata(base::Value::Dict user_agent_metadata) {
-    base::Value::Dict params;
+  void OverrideUserAgentMetadata(base::DictValue user_agent_metadata) {
+    base::DictValue params;
     params.Set("userAgent", "overridden");
     params.Set("userAgentMetadata",
                base::Value(std::move(user_agent_metadata)));
-    base::Value::Dict result = SendCommandSync(
+    base::DictValue result = SendCommandSync(
         devtools_client_, "Network.setUserAgentOverride", std::move(params));
     std::string* err = result.FindStringByDottedPath("error.data");
     CHECK(!err) << "Error invoking Network.setUserAgentOverride: \n" << *err;
@@ -316,9 +316,9 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   // Use the Chrome Devtools Protocol to reload the page, ignoring cache, and
   // wait for the load to complete.
   void ReloadPage() {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("ignoreCache", true);
-    base::Value::Dict result =
+    base::DictValue result =
         SendCommandSync(devtools_client_, "Page.reload", std::move(params));
     std::string* err = result.FindStringByDottedPath("error.data");
     CHECK(!err) << "Error invoking Page.reload: \n" << *err;
@@ -326,8 +326,8 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
   // Use the fetch API to make a subresource request.
-  base::Value::Dict FetchSubresource() {
-    base::Value::Dict params = Param("expression", "fetch('/sub')");
+  base::DictValue FetchSubresource() {
+    base::DictValue params = Param("expression", "fetch('/sub')");
     params.Set("awaitPromise", true);
     return SendCommandSync(devtools_client_, "Runtime.evaluate",
                            std::move(params));

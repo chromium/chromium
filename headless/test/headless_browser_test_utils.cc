@@ -22,24 +22,24 @@ using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
 namespace headless {
 
-base::Value::Dict SendCommandSync(SimpleDevToolsProtocolClient& devtools_client,
-                                  const std::string& command) {
-  return SendCommandSync(devtools_client, command, base::Value::Dict());
+base::DictValue SendCommandSync(SimpleDevToolsProtocolClient& devtools_client,
+                                const std::string& command) {
+  return SendCommandSync(devtools_client, command, base::DictValue());
 }
 
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command,
-    base::Value::Dict params) {
-  base::Value::Dict command_result;
+    base::DictValue params) {
+  base::DictValue command_result;
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   devtools_client.SendCommand(
       command, std::move(params),
       base::BindOnce(
-          [](base::RunLoop* run_loop, base::Value::Dict* command_result,
-             base::Value::Dict result) {
+          [](base::RunLoop* run_loop, base::DictValue* command_result,
+             base::DictValue result) {
             *command_result = std::move(result);
             run_loop->Quit();
           },
@@ -49,14 +49,14 @@ base::Value::Dict SendCommandSync(
   return command_result;
 }
 
-base::Value::Dict EvaluateScript(HeadlessWebContents* web_contents,
-                                 const std::string& script) {
+base::DictValue EvaluateScript(HeadlessWebContents* web_contents,
+                               const std::string& script) {
   SimpleDevToolsProtocolClient devtools_client;
   devtools_client.AttachToWebContents(
       HeadlessWebContentsImpl::From(web_contents)->web_contents());
 
-  base::Value::Dict result = SendCommandSync(
-      devtools_client, "Runtime.evaluate", Param("expression", script));
+  base::DictValue result = SendCommandSync(devtools_client, "Runtime.evaluate",
+                                           Param("expression", script));
 
   devtools_client.DetachClient();
 
@@ -91,30 +91,30 @@ void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents) {
 }
 
 ///////////////////////////////////////////////////////////////////////
-// base::Value::Dict helpers.
+// base::DictValue helpers.
 
-std::string DictString(const base::Value::Dict& dict, std::string_view path) {
+std::string DictString(const base::DictValue& dict, std::string_view path) {
   const std::string* result = dict.FindStringByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-int DictInt(const base::Value::Dict& dict, std::string_view path) {
+int DictInt(const base::DictValue& dict, std::string_view path) {
   std::optional<int> result = dict.FindIntByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-bool DictBool(const base::Value::Dict& dict, std::string_view path) {
+bool DictBool(const base::DictValue& dict, std::string_view path) {
   std::optional<bool> result = dict.FindBoolByDottedPath(path);
   CHECK(result) << "Missing value for '" << path << "' in:\n"
                 << dict.DebugString();
   return *result;
 }
 
-bool DictHas(const base::Value::Dict& dict, std::string_view path) {
+bool DictHas(const base::DictValue& dict, std::string_view path) {
   return dict.FindByDottedPath(path) != nullptr;
 }
 
@@ -128,7 +128,7 @@ std::string ToJSON(const base::ValueView& value) {
 }
 
 class DictHasPathValueMatcher
-    : public testing::MatcherInterface<const base::Value::Dict&> {
+    : public testing::MatcherInterface<const base::DictValue&> {
  public:
   DictHasPathValueMatcher(const std::string& path, base::Value expected_value)
       : path_(path), expected_value_(std::move(expected_value)) {}
@@ -138,7 +138,7 @@ class DictHasPathValueMatcher
 
   ~DictHasPathValueMatcher() override = default;
 
-  bool MatchAndExplain(const base::Value::Dict& dict,
+  bool MatchAndExplain(const base::DictValue& dict,
                        testing::MatchResultListener* listener) const override {
     const base::Value* dict_value = dict.FindByDottedPath(path_);
     if (!dict_value) {
@@ -171,7 +171,7 @@ class DictHasPathValueMatcher
 };
 
 class DictHasKeyMatcher
-    : public testing::MatcherInterface<const base::Value::Dict&> {
+    : public testing::MatcherInterface<const base::DictValue&> {
  public:
   explicit DictHasKeyMatcher(const std::string& key) : key_(key) {}
 
@@ -179,7 +179,7 @@ class DictHasKeyMatcher
 
   ~DictHasKeyMatcher() override = default;
 
-  bool MatchAndExplain(const base::Value::Dict& dict,
+  bool MatchAndExplain(const base::DictValue& dict,
                        testing::MatchResultListener* listener) const override {
     const base::Value* dict_value = dict.Find(key_);
     if (!dict_value) {
@@ -204,14 +204,14 @@ class DictHasKeyMatcher
 
 }  // namespace
 
-testing::Matcher<const base::Value::Dict&> DictHasPathValue(
+testing::Matcher<const base::DictValue&> DictHasPathValue(
     const std::string& path,
     base::Value expected_value) {
   return testing::MakeMatcher(
       new DictHasPathValueMatcher(path, std::move(expected_value)));
 }
 
-testing::Matcher<const base::Value::Dict&> DictHasKey(const std::string& key) {
+testing::Matcher<const base::DictValue&> DictHasKey(const std::string& key) {
   return testing::MakeMatcher(new DictHasKeyMatcher(key));
 }
 

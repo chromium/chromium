@@ -84,8 +84,8 @@ void HeadlessProtocolBrowserTest::SetUpCommandLine(
   feature_list_ = test_meta_info_.ProcessCommandLineSwitches(*command_line);
 }
 
-base::Value::Dict HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
-  return base::Value::Dict();
+base::DictValue HeadlessProtocolBrowserTest::GetPageUrlExtraParams() {
+  return base::DictValue();
 }
 
 void HeadlessProtocolBrowserTest::LoadTestMetaInfo() {
@@ -132,7 +132,7 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
                      base::Unretained(this)));
 }
 
-void HeadlessProtocolBrowserTest::OnceSetUp(base::Value::Dict) {
+void HeadlessProtocolBrowserTest::OnceSetUp(base::DictValue) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
       "harness.test", "/resources/inspector-protocol-test-subtarget.html");
@@ -140,7 +140,7 @@ void HeadlessProtocolBrowserTest::OnceSetUp(base::Value::Dict) {
 }
 
 void HeadlessProtocolBrowserTest::OnLoadEventFired(
-    const base::Value::Dict& params) {
+    const base::DictValue& params) {
   ASSERT_THAT(params, DictHasValue("method", "Page.loadEventFired"));
 
   std::string script_name = GetScriptName();
@@ -149,7 +149,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
   GURL target_url =
       embedded_test_server()->GetURL("127.0.0.1", "/protocol/" + script_name);
 
-  base::Value::Dict test_params;
+  base::DictValue test_params;
   test_params.Set("test", test_url.spec());
   test_params.Set("target", target_url.spec());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -161,7 +161,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
   std::string json_test_params = base::WriteJson(test_params).value_or("");
   std::string evaluate_script = "runTest(" + json_test_params + ")";
 
-  base::Value::Dict evaluate_params;
+  base::DictValue evaluate_params;
   evaluate_params.Set("expression", evaluate_script);
   evaluate_params.Set("awaitPromise", true);
   evaluate_params.Set("returnByValue", true);
@@ -171,7 +171,7 @@ void HeadlessProtocolBrowserTest::OnLoadEventFired(
                      base::Unretained(this)));
 }
 
-void HeadlessProtocolBrowserTest::OnEvaluateResult(base::Value::Dict params) {
+void HeadlessProtocolBrowserTest::OnEvaluateResult(base::DictValue params) {
   ProcessTestResult(DictString(params, "result.result.value"));
 
   FinishTest();
@@ -399,8 +399,8 @@ class HeadlessProtocolBrowserTestWithKnownPermission
   HeadlessProtocolBrowserTestWithKnownPermission() = default;
 
  protected:
-  base::Value::Dict GetPageUrlExtraParams() override {
-    base::Value::List permissions;
+  base::DictValue GetPageUrlExtraParams() override {
+    base::ListValue permissions;
     const std::vector<blink::PermissionType>& types =
         blink::GetAllPermissionTypes();
     for (blink::PermissionType type : types) {
@@ -409,7 +409,7 @@ class HeadlessProtocolBrowserTestWithKnownPermission
       permissions.Append(permission);
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("permissions", std::move(permissions));
     return dict;
   }
@@ -463,9 +463,9 @@ class HeadlessProtocolBrowserTestWithProxy
   net::EmbeddedTestServer* proxy_server() { return &proxy_server_; }
 
  protected:
-  base::Value::Dict GetPageUrlExtraParams() override {
+  base::DictValue GetPageUrlExtraParams() override {
     std::string proxy = proxy_server()->host_port_pair().ToString();
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("proxy", proxy);
     return dict;
   }
@@ -488,8 +488,8 @@ class PopupWindowOpenTest : public HeadlessProtocolBrowserTest,
     builder.SetBlockNewWebContents(ShouldBlockNewWebContents());
   }
 
-  base::Value::Dict GetPageUrlExtraParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPageUrlExtraParams() override {
+    base::DictValue params;
     params.Set("blockingNewWebContents", ShouldBlockNewWebContents());
     return params;
   }
@@ -525,11 +525,11 @@ class HeadlessProtocolBrowserTestWithFileInputDirectoryUpload
   static constexpr char kFileInputDirectoryUpload[] =
       "resources/file-input-directory-upload";
 
-  base::Value::Dict GetPageUrlExtraParams() override {
+  base::DictValue GetPageUrlExtraParams() override {
     base::FilePath data_path =
         GetScriptPath().DirName().AppendASCII(kFileInputDirectoryUpload);
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("data_path", data_path.AsUTF8Unsafe());
     return dict;
   }
@@ -549,8 +549,8 @@ class HeadlessProtocolBrowserTestSitePerProcess
  public:
   bool ShouldEnableSitePerProcess() override { return GetParam(); }
 
-  base::Value::Dict GetPageUrlExtraParams() override {
-    base::Value::Dict params;
+  base::DictValue GetPageUrlExtraParams() override {
+    base::DictValue params;
     params.Set("sitePerProcessEnabled", ShouldEnableSitePerProcess());
     return params;
   }

@@ -130,8 +130,8 @@ class HeadlessAllowedVideoCodecsTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnLoadEventFired(const base::Value::Dict& params) {
-    base::Value::Dict eval_params;
+  void OnLoadEventFired(const base::DictValue& params) {
+    base::DictValue eval_params;
     eval_params.Set("returnByValue", true);
     eval_params.Set("awaitPromise", true);
     eval_params.Set("expression", base::StringPrintf(R"(
@@ -139,7 +139,7 @@ class HeadlessAllowedVideoCodecsTest
           .then(result => result.supported)
     )",
                                                      codec_name().c_str()));
-    base::Value::Dict result = SendCommandSync(
+    base::DictValue result = SendCommandSync(
         devtools_client_, "Runtime.evaluate", std::move(eval_params));
     EXPECT_THAT(result.FindBoolByDottedPath("result.result.value"),
                 testing::Optional(is_codec_enabled()));

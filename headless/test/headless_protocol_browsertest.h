@@ -31,7 +31,7 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
 
   // Implement this for tests that need to pass extra parameters to
   // JavaScript test body.
-  virtual base::Value::Dict GetPageUrlExtraParams();
+  virtual base::DictValue GetPageUrlExtraParams();
 
   // Returns relative test data directory.
   base::FilePath GetTestDataDir();
@@ -53,9 +53,9 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
   // HeadlessDevTooledBrowserTest:
   void RunDevTooledTest() override;
 
-  void OnceSetUp(base::Value::Dict params);
-  void OnLoadEventFired(const base::Value::Dict& params);
-  void OnEvaluateResult(base::Value::Dict params);
+  void OnceSetUp(base::DictValue params);
+  void OnLoadEventFired(const base::DictValue& params);
+  void OnEvaluateResult(base::DictValue params);
 
   void ProcessTestResult(const std::string& test_result);
   void FinishTest();
