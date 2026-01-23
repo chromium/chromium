@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "ui/gfx/gpu_fence.h"
 
 namespace blink {
@@ -56,7 +57,8 @@ XRWebGLFrameTransportDelegate::CopyImage(
   }
 
   auto [gpu_memory_buffer_handle, sync_token] =
-      image_copier_->CopyImage(image.get());
+      image_copier_->CopyImage(image->GetSharedImage());
+  image->UpdateSyncToken(sync_token);
 
   DrawingBuffer::Client* client = context_provider_->GetDrawingBufferClient();
   client->DrawingBufferClientRestoreTexture2DBinding();
