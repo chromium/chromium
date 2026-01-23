@@ -4,6 +4,7 @@
 
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 
+#include "base/barrier_closure.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
@@ -63,6 +64,15 @@ void BackgroundTracingMetricsProvider::RecordSystemProfileMetrics(
   for (auto& provider : system_profile_providers_) {
     provider->ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks::Now(), &system_profile_proto);
+  }
+}
+
+void BackgroundTracingMetricsProvider::AsyncInit(
+    base::OnceClosure done_callback) {
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      system_profile_providers_.size(), std::move(done_callback));
+  for (auto& provider : system_profile_providers_) {
+    provider->AsyncInit(barrier);
   }
 }
 
