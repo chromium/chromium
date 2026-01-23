@@ -136,6 +136,14 @@
 				<string>org.chromium.shortcut</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.avif</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
@@ -675,6 +683,30 @@
 				<string>pdf</string>
 				<key>public.mime-type</key>
 				<string>application/pdf</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<string>public.heif-standard</string>
+			<key>UTTypeDescription</key>
+			<string>AV1 Image File Format</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string>Icon</string>
+				<key>UTTypeIconText</key>
+				<string>AVIF</string>
+			</dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.avif</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>AVIF</string>
+				<key>public.filename-extension</key>
+				<string>avif</string>
+				<key>public.mime-type</key>
+				<string>image/avif</string>
 			</dict>
 		</dict>
 	</array>
