@@ -597,18 +597,21 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidAccessInitialMainDocument();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  using WindowShowStateChangeCallback = base::OnceCallback<void(bool)>;
+  // Additional Windowing Controls API.
+  using WindowingControlsChangeCallback = base::OnceCallback<void(bool)>;
   // Sends window.minimize() requests to the browser window.
-  void Minimize(WindowShowStateChangeCallback);
+  void Minimize(WindowingControlsChangeCallback);
   // Sends window.maximize() requests to the browser window.
-  void Maximize(WindowShowStateChangeCallback);
+  void Maximize(WindowingControlsChangeCallback);
   // Sends window.restore() requests to the browser window.
-  void Restore(WindowShowStateChangeCallback);
+  void Restore(WindowingControlsChangeCallback);
   // Sends window.setResizable() requests to the browser window.
-  void SetResizable(bool resizable);
+  void SetResizable(bool resizable, WindowingControlsChangeCallback);
 
+  // Resolve promises to window functions above.
   void OnWindowShowStateChanged(ui::mojom::blink::WindowShowState old_state,
                                 ui::mojom::blink::WindowShowState new_state);
+  void OnResizableChanged(bool new_resizable);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
@@ -1032,8 +1035,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   base::ObserverList<WebViewObserver> observers_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::optional<
-      std::pair<WindowShowStateChangeType, WindowShowStateChangeCallback>>
+      std::pair<WindowShowStateChangeType, WindowingControlsChangeCallback>>
       window_show_state_change_callback_;
+  std::optional<std::pair<bool, WindowingControlsChangeCallback>>
+      set_resizable_change_callback_;
 #endif
 };
 

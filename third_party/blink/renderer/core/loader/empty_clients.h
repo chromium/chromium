@@ -101,10 +101,12 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void ChromeDestroyed() override {}
   void SetWindowRect(const gfx::Rect&, LocalFrame&) override {}
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void Minimize(LocalFrame&, WindowShowStateChangeCallback) override {}
-  void Maximize(LocalFrame&, WindowShowStateChangeCallback) override {}
-  void Restore(LocalFrame&, WindowShowStateChangeCallback) override {}
-  void SetResizable(bool resizable, LocalFrame&) override {}
+  void Minimize(LocalFrame&, WindowingControlsChangeCallback) override {}
+  void Maximize(LocalFrame&, WindowingControlsChangeCallback) override {}
+  void Restore(LocalFrame&, WindowingControlsChangeCallback) override {}
+  void SetResizable(bool resizable,
+                    LocalFrame&,
+                    WindowingControlsChangeCallback) override {}
 #endif
   gfx::Rect RootWindowRect(LocalFrame&) override { return gfx::Rect(); }
   void DidAccessInitialMainDocument() override {}

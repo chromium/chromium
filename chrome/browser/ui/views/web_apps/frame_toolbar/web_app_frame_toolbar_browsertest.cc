@@ -176,7 +176,7 @@ content::EvalJsResult EvalDisplayStateChange(
     const content::ToRenderFrameHost& execution_target,
     std::string window_method,
     std::string expected_state) {
-  constexpr char script[] =
+  static constexpr char script[] =
       R"(new Promise((resolve, reject) => {
         window.$1().then(() => {
           if (window.matchMedia('(display-state: $2)').matches) {
@@ -194,9 +194,29 @@ content::EvalJsResult EvalDisplayStateChange(
           nullptr));
 }
 
+content::EvalJsResult EvalSetResizable(
+    const content::ToRenderFrameHost& execution_target,
+    bool resizable_passed,
+    bool resizable_expected) {
+  static constexpr char script[] =
+      R"(new Promise((resolve, reject) => {
+        window.setResizable($1).then(() => {
+          if (window.matchMedia('(resizable: $2)').matches) {
+            resolve('window.setResizable($1) succeeded.');
+          } else {
+            reject('window.setResizable($1) resolved, but ' +
+            '`resizable: $2` not matched.');
+          }
+        }).catch(() => reject('window.setResizable($1) rejected.'));
+      });)";
+  return content::EvalJs(
+      execution_target,
+      content::JsReplace(script, resizable_passed, resizable_expected));
+}
+
 content::EvalJsResult EvalFullscreenRequest(
     const content::ToRenderFrameHost& execution_target) {
-  constexpr char script[] = R"(
+  static constexpr char script[] = R"(
     new Promise((resolve, reject) => {
       window.matchMedia('(display-state: fullscreen)').addEventListener(
         'change', e => {
@@ -2165,21 +2185,6 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     return EvalJs(web_contents, match_media_script).ExtractBool();
   }
 
-  void SetResizableAndWait(content::WebContents* web_contents,
-                           bool resizable,
-                           bool expected) {
-    auto set_resizable_script =
-        content::JsReplace("window.setResizable($1)", resizable);
-    EXPECT_TRUE(ExecJs(web_contents, set_resizable_script));
-    content::WaitForLoadStop(web_contents);
-    RunUntil([&]() {
-      return MatchMediaMatches(
-          web_contents,
-          content::JsReplace("window.matchMedia('(resizable: $1)').matches",
-                             expected));
-    });
-  }
-
   void CheckCanResize(bool browser_view_can_resize_expected,
                       std::optional<bool> web_api_can_resize_expected) {
     EXPECT_EQ(helper()->browser_view()->CanResize(),
@@ -2244,11 +2249,15 @@ IN_PROC_BROWSER_TEST_F(
   CheckCanResize(true, std::nullopt);
 
   // Explicitly set to false -> Returns false.
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   CheckCanResize(false, false);
 
   // Explicitly set to true -> Returns true.
-  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
+                             /*resizable_expected=*/true),
+            "window.setResizable(true) succeeded.");
   CheckCanResize(true, true);
 
   // `window.setResizable()` API can only alter the resizability of
@@ -2258,11 +2267,13 @@ IN_PROC_BROWSER_TEST_F(
   web_contents->GetPrimaryPage().SetResizableForTesting(std::nullopt);
   CheckCanResize(false, std::nullopt);
 
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   CheckCanResize(false, false);
 
-  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/false);
-  CheckCanResize(false, true);
+  // TODO(crbug.com/288265319): implement rejecting the promise if
+  // SetCanResize(false) was called and add a test case here.
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2290,7 +2301,9 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   // Sets the resizability false for the main page.
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   CheckCanResize(false, false);
 
   // Navigates to the second page of the app.
@@ -2300,7 +2313,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(helper()->browser_view()->GetWebApiWindowResizable(), std::nullopt);
 
   // Sets the resizability true for the second page.
-  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
+                             /*resizable_expected=*/true),
+            "window.setResizable(true) succeeded.");
   CheckCanResize(true, true);
 
   // Returns back to the main page.
@@ -2343,7 +2358,9 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   // Sets the resizability true for the app.
-  SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/true,
+                             /*resizable_expected=*/true),
+            "window.setResizable(true) succeeded.");
   CheckCanResize(true, true);
 
   // Another URL where resizability is not set resets the web API overridden
@@ -2713,7 +2730,9 @@ IN_PROC_BROWSER_TEST_F(
     return EvalJs(web_contents, "window.screenX").ExtractInt() < 50;
   }));
 
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   CheckCanResize(false, false);
 
   // Checking exact size may be flaky, so just test if was changed
@@ -2769,7 +2788,9 @@ IN_PROC_BROWSER_TEST_F(
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
 
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   EXPECT_FALSE(browser_view->IsFullscreen());
 
   EnterTabFullscreenThroughWebAPI();
@@ -2787,7 +2808,9 @@ IN_PROC_BROWSER_TEST_F(
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
-  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
 
   // User can escape not user-initiated browser fullscreen
   ToggleBrowserFullscreen(/*user_initiated=*/false);
@@ -2810,7 +2833,9 @@ IN_PROC_BROWSER_TEST_F(
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
 
-  SetResizableAndWait(web_contents, false, false);
+  EXPECT_EQ(EvalSetResizable(web_contents, /*resizable_passed=*/false,
+                             /*resizable_expected=*/false),
+            "window.setResizable(false) succeeded.");
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
 
   // Most accelerators (e.g., F11, ⛶, Fn+F) maps to IDC_FULLSCREEN command

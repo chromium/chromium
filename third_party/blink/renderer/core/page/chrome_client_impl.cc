@@ -250,26 +250,28 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void ChromeClientImpl::Minimize(LocalFrame&,
-                                WindowShowStateChangeCallback callback) {
+                                WindowingControlsChangeCallback callback) {
   DCHECK(web_view_);
   web_view_->Minimize(std::move(callback));
 }
 
 void ChromeClientImpl::Maximize(LocalFrame&,
-                                WindowShowStateChangeCallback callback) {
+                                WindowingControlsChangeCallback callback) {
   DCHECK(web_view_);
   web_view_->Maximize(std::move(callback));
 }
 
 void ChromeClientImpl::Restore(LocalFrame&,
-                               WindowShowStateChangeCallback callback) {
+                               WindowingControlsChangeCallback callback) {
   DCHECK(web_view_);
   web_view_->Restore(std::move(callback));
 }
 
-void ChromeClientImpl::SetResizable(bool resizable, LocalFrame& frame) {
+void ChromeClientImpl::SetResizable(bool resizable,
+                                    LocalFrame& frame,
+                                    WindowingControlsChangeCallback callback) {
   DCHECK(web_view_);
-  web_view_->SetResizable(resizable);
+  web_view_->SetResizable(resizable, std::move(callback));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

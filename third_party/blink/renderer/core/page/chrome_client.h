@@ -148,11 +148,14 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  using WindowShowStateChangeCallback = base::OnceCallback<void(bool)>;
-  virtual void Minimize(LocalFrame&, WindowShowStateChangeCallback) = 0;
-  virtual void Maximize(LocalFrame&, WindowShowStateChangeCallback) = 0;
-  virtual void Restore(LocalFrame&, WindowShowStateChangeCallback) = 0;
-  virtual void SetResizable(bool resizable, LocalFrame&) = 0;
+  // Additional Windowing Controls API.
+  using WindowingControlsChangeCallback = base::OnceCallback<void(bool)>;
+  virtual void Minimize(LocalFrame&, WindowingControlsChangeCallback) = 0;
+  virtual void Maximize(LocalFrame&, WindowingControlsChangeCallback) = 0;
+  virtual void Restore(LocalFrame&, WindowingControlsChangeCallback) = 0;
+  virtual void SetResizable(bool resizable,
+                            LocalFrame&,
+                            WindowingControlsChangeCallback) = 0;
 #endif
 
   // For non-composited WebViews that exist to contribute to a "parent" WebView

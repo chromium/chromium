@@ -3211,7 +3211,7 @@ void WebViewImpl::DidAccessInitialMainDocument() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // TODO(https://crbug.com/40946306): Add timeouts to the callbacks and consider
 // queuing requests instead of rejecting them.
-void WebViewImpl::Minimize(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Minimize(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
@@ -3222,7 +3222,7 @@ void WebViewImpl::Minimize(WindowShowStateChangeCallback callback) {
   }
 }
 
-void WebViewImpl::Maximize(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Maximize(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
@@ -3233,7 +3233,7 @@ void WebViewImpl::Maximize(WindowShowStateChangeCallback callback) {
   }
 }
 
-void WebViewImpl::Restore(WindowShowStateChangeCallback callback) {
+void WebViewImpl::Restore(WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
   if (window_show_state_change_callback_.has_value()) {
     std::move(callback).Run(/*succeeded=*/false);
@@ -3244,9 +3244,25 @@ void WebViewImpl::Restore(WindowShowStateChangeCallback callback) {
   }
 }
 
-void WebViewImpl::SetResizable(bool resizable) {
+void WebViewImpl::SetResizable(bool resizable,
+                               WindowingControlsChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
-  local_main_frame_host_remote_->SetResizable(resizable);
+  if (set_resizable_change_callback_.has_value()) {
+    // Reject the current request if there's already a pending request.
+    std::move(callback).Run(/*succeeded=*/false);
+  } else {
+    if (web_widget_->Resizable() == resizable) {
+      // The desired resizable property is already set. We still need to mark
+      // what resizable value has been requested by the page.
+      local_main_frame_host_remote_->SetResizable(resizable);
+      std::move(callback).Run(/*succeeded=*/true);
+    } else {
+      // We need to wait for the window resizable property to be changed by the
+      // operating system.
+      set_resizable_change_callback_.emplace(resizable, std::move(callback));
+      local_main_frame_host_remote_->SetResizable(resizable);
+    }
+  }
 }
 
 void WebViewImpl::OnWindowShowStateChanged(
@@ -3280,6 +3296,19 @@ void WebViewImpl::OnWindowShowStateChanged(
     case WindowShowState::kFullscreen:
     case WindowShowState::kEnd:
       break;
+  }
+}
+
+void WebViewImpl::OnResizableChanged(bool new_resizable) {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  if (set_resizable_change_callback_.has_value() &&
+      set_resizable_change_callback_->first == new_resizable) {
+    std::move(set_resizable_change_callback_->second).Run(/*succeeded=*/true);
+    set_resizable_change_callback_.reset();
   }
 }
 

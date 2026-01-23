@@ -133,6 +133,14 @@ base::OnceCallback<void(bool)> GetRestoreCallback(
   return GetWindowEventCallback(resolver, "Could not restore the window.");
 }
 
+base::OnceCallback<void(bool)> GetSetResizableCallback(
+    bool resizable,
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  return GetWindowEventCallback(
+      resolver, resizable ? "Could not set the window to be resizable."
+                          : "Coult not set the window to be non-resizable.");
+}
+
 void OnMaximizePermissionRequestComplete(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     LocalDOMWindow* window,
@@ -190,13 +198,9 @@ void OnSetResizablePermissionRequestComplete(
     return;
   }
 
-  ChromeClient& chrome_client = window->GetFrame()->GetChromeClient();
-  chrome_client.SetResizable(resizable, *window->GetFrame());
-
-  // TODO(crbug.com/1505666): Add wait for the resizability change to be
-  // completed before resolving the promise.
-
-  resolver->Resolve();
+  window->GetFrame()->GetChromeClient().SetResizable(
+      resizable, *window->GetFrame(),
+      GetSetResizableCallback(resizable, resolver));
 }
 
 }  // namespace

@@ -1816,6 +1816,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   ui::mojom::blink::WindowShowState old_show_state = window_show_state_;
+  bool old_resizable = resizable_;
 #endif
   SetDisplayMode(visual_properties.display_mode);
   SetWindowShowState(visual_properties.window_show_state);
@@ -1876,6 +1877,9 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (old_show_state != window_show_state_) {
     View()->OnWindowShowStateChanged(old_show_state, window_show_state_);
+  }
+  if (old_resizable != resizable_) {
+    View()->OnResizableChanged(resizable_);
   }
 #endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
