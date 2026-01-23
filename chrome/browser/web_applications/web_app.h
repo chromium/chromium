@@ -43,7 +43,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -129,10 +128,6 @@ class WebApp {
 
   const std::vector<DisplayOverride>& display_mode_override() const {
     return display_mode_override_;
-  }
-
-  const std::vector<blink::SafeUrlPattern>& borderless_url_patterns() const {
-    return borderless_url_patterns_;
   }
 
   syncer::StringOrdinal user_page_ordinal() const {
@@ -481,8 +476,6 @@ class WebApp {
   void SetUserDisplayMode(mojom::UserDisplayMode user_display_mode);
   void SetDisplayModeOverride(
       std::vector<DisplayOverride> display_mode_override);
-  void SetBorderlessUrlPatterns(
-      std::vector<blink::SafeUrlPattern> borderless_url_patterns);
   void SetWebAppChromeOsData(std::optional<WebAppChromeOsData> chromeos_data);
   void SetInstallState(proto::InstallState install_state);
   void SetIsFromSyncAndPendingInstallation(
@@ -647,7 +640,6 @@ class WebApp {
   std::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_ = DisplayMode::kUndefined;
   std::vector<DisplayOverride> display_mode_override_;
-  std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
   std::optional<WebAppChromeOsData> chromeos_data_;
   proto::InstallState install_state_ =
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;

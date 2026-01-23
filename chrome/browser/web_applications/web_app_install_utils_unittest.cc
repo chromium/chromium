@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,10 +23,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -736,23 +739,26 @@ TEST(WebAppInstallUtils, SetWebAppManifestFields_ShareTarget) {
   EXPECT_FALSE(web_app->share_target().has_value());
 }
 
-TEST(WebAppInstallUtils, SetWebAppManifestFields_BorderlessUrlPatterns) {
+TEST(WebAppInstallUtils, SetWebAppManifestFields_DisplayOverride) {
   auto web_app_info = CreateWebAppInstallInfoFromStartUrl(StartUrl());
   web_app_info.title = u"App Name";
 
   auto web_app = web_app::test::CreateWebApp(web_app_info.start_url());
 
   blink::SafeUrlPattern foo_pattern;
-  foo_pattern.hostname = {
+  foo_pattern.pathname = {
       liburlpattern::Part(liburlpattern::PartType::kFixed,
-                          /*value=*/"foo.com", liburlpattern::Modifier::kNone),
+                          /*value=*/"/foo", liburlpattern::Modifier::kNone),
   };
-  web_app_info.borderless_url_patterns.push_back(foo_pattern);
+
+  web_app_info.display_override = {
+      DisplayOverride::CreateUnframed({foo_pattern})};
 
   SetWebAppManifestFields(web_app_info, *web_app);
 
-  EXPECT_THAT(web_app->borderless_url_patterns(),
-              testing::ElementsAre(foo_pattern));
+  EXPECT_THAT(
+      web_app->display_mode_override(),
+      testing::ElementsAre(DisplayOverride::CreateUnframed({foo_pattern})));
 }
 
 }  // namespace web_app

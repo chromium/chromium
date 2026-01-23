@@ -251,7 +251,7 @@ message WebApp {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
       "run_on_os_login_os_integration_state", "url_handlers", "update_token",
-      "display_mode_override";
+      "display_mode_override", "borderless_url_patterns";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -554,8 +554,7 @@ message WebApp {
   // |stored_trusted_icon_sizes_any|.
   repeated int32 stored_trusted_icon_sizes_maskable = 76;
 
-  // A list of URL patterns in which the app window should be borderless.
-  repeated UrlPattern borderless_url_patterns = 77;
+  reserved 77;
 
   // A list of up to ten unique URLs of the most recent pages that attempt to
   // install the app via the Web Install API. The order is that the front is

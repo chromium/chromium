@@ -50,6 +50,8 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -743,11 +745,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
         override_item.display() == DisplayMode::kBorderless
             ? DisplayOverride::CreateUnframed(override_item.url_patterns())
             : DisplayOverride::Create(override_item.display()));
-    if (override_item.display() == DisplayMode::kBorderless &&
-        !override_item.url_patterns().empty()) {
-      // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
-      install_info().borderless_url_patterns = override_item.url_patterns();
-    }
   }
 
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(manifest_->icons,
@@ -767,11 +764,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   // TODO(crbug.com/40185556): Confirm incoming icons to write to install_info_.
   PopulateFileHandlerInfoFromManifest(manifest_->file_handlers,
                                       install_info().scope, &install_info());
-
-  if (!manifest_->borderless_url_patterns.empty()) {
-    // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
-    install_info().borderless_url_patterns = manifest_->borderless_url_patterns;
-  }
 
   install_info().share_target = ToWebAppShareTarget(manifest_->share_target);
 

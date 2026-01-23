@@ -33,7 +33,6 @@
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
@@ -398,10 +397,6 @@ struct WebAppInstallInfo {
   // WebApp::SetUserDisplayMode().
   std::optional<web_app::mojom::UserDisplayMode> user_display_mode =
       web_app::mojom::UserDisplayMode::kBrowser;
-
-  // URL patterns used to decide when a window should have display mode
-  // `kBorderless`.
-  std::vector<blink::SafeUrlPattern> borderless_url_patterns;
 
   // The extensions and mime types the app can handle.
   apps::FileHandlers file_handlers;

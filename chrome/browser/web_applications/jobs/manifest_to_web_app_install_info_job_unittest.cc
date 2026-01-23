@@ -79,23 +79,14 @@ IconPurpose IconInfoPurposeToManifestPurpose(
   }
 }
 
-// Returns a simple `SafeUrlPattern` to match the given hostname.
-blink::SafeUrlPattern UrlPatternForHostname(std::string_view hostname) {
+// Returns a simple `SafeUrlPattern` for the "/foo" pathname.
+blink::SafeUrlPattern FooUrlPattern() {
   blink::SafeUrlPattern pattern;
-  pattern.hostname = {
+  pattern.pathname = {
       liburlpattern::Part(liburlpattern::PartType::kFixed,
-                          /*value=*/std::string(hostname),
-                          liburlpattern::Modifier::kNone),
+                          /*value=*/"/foo", liburlpattern::Modifier::kNone),
   };
   return pattern;
-}
-
-blink::SafeUrlPattern FooUrlPattern() {
-  return UrlPatternForHostname("foo.com");
-}
-
-blink::SafeUrlPattern BarUrlPattern() {
-  return UrlPatternForHostname("bar.com");
 }
 
 class ManifestToWebAppInstallInfoJobTest : public WebAppTest {
@@ -321,10 +312,6 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   EXPECT_EQ(u"platform", related_app.platform);
   EXPECT_EQ(GURL("http://www.example.com"), related_app.url);
   EXPECT_EQ(u"id", related_app.id);
-
-  // Check borderless URL patterns were set.
-  EXPECT_THAT(web_app_info->borderless_url_patterns,
-              testing::ElementsAre(FooUrlPattern()));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, EmptyNameUsesShortName) {
@@ -1385,26 +1372,6 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
               gfx::test::EqualsBitmap(larger_icon));
   EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[largest_icon_size],
               gfx::test::EqualsBitmap(largest_icon));
-}
-
-TEST_F(ManifestToWebAppInstallInfoJobTest, BorderlessUrlPatternsOverwrite) {
-  SetupBasicPageState();
-  auto& manifest = GetPageManifest();
-
-  manifest->display_override = {
-      blink::Manifest::DisplayOverride::CreateUnframed({FooUrlPattern()}),
-      blink::Manifest::DisplayOverride::CreateUnframed({BarUrlPattern()})};
-
-  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
-
-  // Expect only the patterns from the last "borderless" entry to be present
-  // because the current implementation overwrites `borderless_url_patterns`
-  // with every `url_patterns` entry in `display_override`. This is a temporary
-  // solution until `borderless_url_patterns` is replaced by `display_override`
-  // and `url_patterns`.
-  // TODO(crbug.com/467939520): Remove `borderless_url_patterns`.
-  EXPECT_THAT(web_app_info->borderless_url_patterns,
-              testing::ElementsAre(BarUrlPattern()));
 }
 
 class ManifestToWebAppInstallInfoLocalizationTest

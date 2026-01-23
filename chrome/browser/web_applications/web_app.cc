@@ -523,11 +523,6 @@ void WebApp::SetDisplayModeOverride(
   display_mode_override_ = std::move(display_mode_override);
 }
 
-void WebApp::SetBorderlessUrlPatterns(
-    std::vector<blink::SafeUrlPattern> borderless_url_patterns) {
-  borderless_url_patterns_ = std::move(borderless_url_patterns);
-}
-
 void WebApp::SetWebAppChromeOsData(
     std::optional<WebAppChromeOsData> chromeos_data) {
   chromeos_data_ = std::move(chromeos_data);
@@ -1066,7 +1061,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.dark_mode_background_color_,
         app.display_mode_,
         app.display_mode_override_,
-        app.borderless_url_patterns_,
         app.chromeos_data_,
         app.install_state_,
         app.is_from_sync_and_pending_installation_,
@@ -1375,9 +1369,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   }
   root.Set("stored_trusted_icon_sizes",
            std::move(stored_trusted_icon_sizes_json));
-
-  root.Set("borderless_url_patterns",
-           base::ToValueList(borderless_url_patterns_, UrlPatternDebugValue));
 
   return base::Value(std::move(root));
 }

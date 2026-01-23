@@ -1506,13 +1506,6 @@ std::unique_ptr<WebApp> ParseWebAppProto(
       IconPurpose::MASKABLE,
       SortedSizesPx(std::move(trusted_icon_sizes_maskable)));
 
-  auto borderless_url_patterns = ToUrlPatterns(proto.borderless_url_patterns());
-  if (!borderless_url_patterns.has_value()) {
-    RecordProtoParseResult(ProtoParseResult::kInvalidBorderlessUrlPatterns);
-    return nullptr;
-  }
-  web_app->SetBorderlessUrlPatterns(std::move(borderless_url_patterns.value()));
-
   std::deque<AppInstalledBy> installed_by_data;
   for (const auto& installed_by_proto : proto.installed_by()) {
     std::optional<AppInstalledBy> installed_by =
@@ -2131,10 +2124,6 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   for (SquareSizePx size :
        web_app.stored_trusted_icon_sizes(IconPurpose::MASKABLE)) {
     local_data->add_stored_trusted_icon_sizes_maskable(size);
-  }
-
-  for (const auto& pattern : web_app.borderless_url_patterns()) {
-    *(local_data->add_borderless_url_patterns()) = ToUrlPatternProto(pattern);
   }
 
   for (const auto& installed_by_data : web_app.installed_by()) {

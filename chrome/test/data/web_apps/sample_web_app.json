@@ -7,7 +7,6 @@
    "app_service_icon_url": "chrome://app-icon/ejhkbejlajgoplgondfmjmplbdjaofok/32",
    "app_size_in_bytes": "382722586",
    "background_color": "rgba(151,34,83,1)",
-   "borderless_url_patterns": [  ],
    "current_os_integration_states": {
       "file_handling": {
          "file_handlers": [ {

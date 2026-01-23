@@ -1375,9 +1375,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     app->SetStoredTrustedIconSizes(IconPurpose::MASKABLE,
                                    {icon_sizes[random.next_uint(8)]});
   }
-  if (is_iwa && random.next_bool()) {
-    app->SetBorderlessUrlPatterns(CreateRandomUrlPatterns(random));
-  }
 
   base::Time first_install_time = random.next_time();
   if (random.next_bool()) {
