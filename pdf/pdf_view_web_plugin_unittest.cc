@@ -183,7 +183,7 @@ MATCHER_P(IsExpectedImeKeyEvent, expected_text, "") {
          event.unmodified_text.data() == expected_text;
 }
 
-base::Value::Dict ParseMessage(std::string_view json) {
+base::DictValue ParseMessage(std::string_view json) {
   return std::move(base::test::ParseJson(json).GetDict());
 }
 
@@ -203,8 +203,8 @@ SkBitmap GenerateExpectedBitmapForPaint(const gfx::Rect& expected_clipped_rect,
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-base::Value::Dict GenerateShowSearchifyInProgressMessage(bool show) {
-  return base::Value::Dict()
+base::DictValue GenerateShowSearchifyInProgressMessage(bool show) {
+  return base::DictValue()
       .Set("type", "showSearchifyInProgress")
       .Set("show", show);
 }
@@ -293,7 +293,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (const blink::WebString&),
               (const override));
 
-  MOCK_METHOD(void, PostMessage, (base::Value::Dict), (override));
+  MOCK_METHOD(void, PostMessage, (base::DictValue), (override));
 
   MOCK_METHOD(void, Invalidate, (), (override));
 
@@ -476,7 +476,7 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
         });
   }
 
-  void OnMessageWithEngineUpdate(const base::Value::Dict& message) {
+  void OnMessageWithEngineUpdate(const base::DictValue& message) {
     // New engine will be created making this unowned reference stale.
     engine_ptr_ = nullptr;
     plugin_->OnMessage(message);
@@ -510,7 +510,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   }
 
   void SendViewportMessage(double zoom) {
-    base::Value::Dict message = ParseMessage(R"({
+    base::DictValue message = ParseMessage(R"({
       "type": "viewport",
       "userInitiated": false,
       "zoom": 1,
@@ -1520,7 +1520,7 @@ TEST_F(PdfViewWebPluginTest, HandleViewportMessageScrollRightToLeft) {
 TEST_F(PdfViewWebPluginTest, HandleSetBackgroundColorMessage) {
   ASSERT_NE(SK_ColorGREEN, plugin_->GetBackgroundColor());
 
-  plugin_->OnMessage(base::Value::Dict()
+  plugin_->OnMessage(base::DictValue()
                          .Set("type", "setBackgroundColor")
                          .Set("color", static_cast<double>(SK_ColorGREEN)));
 
@@ -1531,7 +1531,7 @@ TEST_F(PdfViewWebPluginTest, HandleSetPresentationModeMessage) {
   EXPECT_FALSE(engine_ptr_->IsReadOnly());
   plugin_->set_cursor_type_for_testing(ui::mojom::CursorType::kIBeam);
 
-  auto message = base::Value::Dict()
+  auto message = base::DictValue()
                      .Set("type", "setPresentationMode")
                      .Set("enablePresentationMode", true);
   plugin_->OnMessage(message);
@@ -1856,9 +1856,9 @@ TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
 
 TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
   auto message =
-      base::Value::Dict()
+      base::DictValue()
           .Set("type", "metadata")
-          .Set("metadataData", base::Value::Dict()
+          .Set("metadataData", base::DictValue()
                                    .Set("fileSize", "0 B")
                                    .Set("linearized", false)
                                    .Set("pageSize", "Varies")
@@ -1870,7 +1870,7 @@ TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
 }
 
 TEST_F(PdfViewWebPluginTest, OnRendererPreferencesUpdated) {
-  auto message = base::Value::Dict()
+  auto message = base::DictValue()
                      .Set("type", "rendererPreferencesUpdated")
                      .Set("caretBrowsingEnabled", false);
 
@@ -1906,7 +1906,7 @@ TEST_F(PdfViewWebPluginTest, OnRendererPreferencesUpdated) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 // Searchify in progress not shown when searchify just starts.
 TEST_F(PdfViewWebPluginTest, OnSearchifyStarted) {
-  base::Value::Dict message = GenerateShowSearchifyInProgressMessage(true);
+  base::DictValue message = GenerateShowSearchifyInProgressMessage(true);
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message)))).Times(0);
   EXPECT_CALL(pdf_host_, OnSearchifyStarted);
@@ -1918,7 +1918,7 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStarted) {
 
 // Searchify in progress not shown when searchify didn't starts.
 TEST_F(PdfViewWebPluginTest, OnSearchifyNotStartedAndMaybeShowInProgress) {
-  base::Value::Dict message = GenerateShowSearchifyInProgressMessage(true);
+  base::DictValue message = GenerateShowSearchifyInProgressMessage(true);
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message)))).Times(0);
   EXPECT_CALL(pdf_host_, OnSearchifyStarted).Times(0);
@@ -1930,7 +1930,7 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyNotStartedAndMaybeShowInProgress) {
 
 // Searchify in progress shown when asked after start.
 TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndMaybeShowInProgress) {
-  base::Value::Dict message = GenerateShowSearchifyInProgressMessage(true);
+  base::DictValue message = GenerateShowSearchifyInProgressMessage(true);
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   EXPECT_CALL(pdf_host_, OnSearchifyStarted);
@@ -1944,7 +1944,7 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndMaybeShowInProgress) {
 // Searchify in progress not shown when asked after stop.
 TEST_F(PdfViewWebPluginTest,
        OnSearchifyStartedAndStoppedAndMaybeShowInProgress) {
-  base::Value::Dict message_show = GenerateShowSearchifyInProgressMessage(true);
+  base::DictValue message_show = GenerateShowSearchifyInProgressMessage(true);
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message_show)))).Times(0);
   EXPECT_CALL(pdf_host_, OnSearchifyStarted);
@@ -1958,9 +1958,8 @@ TEST_F(PdfViewWebPluginTest,
 
 // Searchify in progress hides after stop.
 TEST_F(PdfViewWebPluginTest, OnSearchifyShowProgressHideAfterStopped) {
-  base::Value::Dict message_show = GenerateShowSearchifyInProgressMessage(true);
-  base::Value::Dict message_hide =
-      GenerateShowSearchifyInProgressMessage(false);
+  base::DictValue message_show = GenerateShowSearchifyInProgressMessage(true);
+  base::DictValue message_hide = GenerateShowSearchifyInProgressMessage(false);
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message_show))));
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message_hide))));
@@ -1983,7 +1982,7 @@ TEST_F(PdfViewWebPluginTest, OnSearchifyStartedMoreThanOnce) {
 }
 
 TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {
-  auto message = base::Value::Dict().Set("type", "setHasSearchifyText");
+  auto message = base::DictValue().Set("type", "setHasSearchifyText");
 
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   plugin_->OnHasSearchifyText();
@@ -1996,11 +1995,12 @@ TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragments) {
       .WillOnce(Return(true));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment);
 
-  plugin_->OnMessage(base::Value::Dict()
-                         .Set("type", "highlightTextFragments")
-                         .Set("textFragments", base::Value::List()
-                                                   .Append("hello-,world")
-                                                   .Append("world,-hello")));
+  plugin_->OnMessage(
+      base::DictValue()
+          .Set("type", "highlightTextFragments")
+          .Set(
+              "textFragments",
+              base::ListValue().Append("hello-,world").Append("world,-hello")));
 }
 
 TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragmentsNotFound) {
@@ -2009,11 +2009,12 @@ TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragmentsNotFound) {
       .WillOnce(Return(false));
   EXPECT_CALL(*engine_ptr_, ScrollToFirstTextFragment).Times(0);
 
-  plugin_->OnMessage(base::Value::Dict()
-                         .Set("type", "highlightTextFragments")
-                         .Set("textFragments", base::Value::List()
-                                                   .Append("hello-,world")
-                                                   .Append("world,-hello")));
+  plugin_->OnMessage(
+      base::DictValue()
+          .Set("type", "highlightTextFragments")
+          .Set(
+              "textFragments",
+              base::ListValue().Append("hello-,world").Append("world,-hello")));
 }
 
 class PdfViewWebPluginWithDocInfoTest
@@ -2038,26 +2039,25 @@ class PdfViewWebPluginWithDocInfoTest
       InitializeDocumentMetadata();
     }
 
-    base::Value::List GetBookmarks() override {
+    base::ListValue GetBookmarks() override {
       // Create `bookmark2` which navigates to a web page. This bookmark will be
       // a child of `bookmark1`.
       auto bookmark2 =
-          base::Value::Dict().Set("title", "Bookmark 2").Set("uri", "test.com");
+          base::DictValue().Set("title", "Bookmark 2").Set("uri", "test.com");
 
       // Create `bookmark1` which navigates to an in-doc position. This bookmark
       // will be in the top-level bookmark list.
       auto bookmark1 =
-          base::Value::Dict()
+          base::DictValue()
               .Set("title", "Bookmark 1")
               .Set("page", 2)
               .Set("x", 10)
               .Set("y", 20)
               .Set("zoom", 2.0)
-              .Set("children",
-                   base::Value::List().Append(std::move(bookmark2)));
+              .Set("children", base::ListValue().Append(std::move(bookmark2)));
 
       // Create the top-level bookmark list.
-      return base::Value::List().Append(std::move(bookmark1));
+      return base::ListValue().Append(std::move(bookmark1));
     }
 
     std::optional<gfx::Size> GetUniformPageSizePoints() override {
@@ -2113,35 +2113,35 @@ class PdfViewWebPluginWithDocInfoTest
         "America/Los_Angeles"};
   };
 
-  static base::Value::Dict CreateExpectedAttachmentsResponse() {
-    return base::Value::Dict()
+  static base::DictValue CreateExpectedAttachmentsResponse() {
+    return base::DictValue()
         .Set("type", "attachments")
-        .Set("attachmentsData", base::Value::List()
-                                    .Append(base::Value::Dict()
+        .Set("attachmentsData", base::ListValue()
+                                    .Append(base::DictValue()
                                                 .Set("name", "attachment1.txt")
                                                 .Set("size", 13)
                                                 .Set("readable", true))
-                                    .Append(base::Value::Dict()
+                                    .Append(base::DictValue()
                                                 .Set("name", "attachment2.pdf")
                                                 .Set("size", 0)
                                                 .Set("readable", false))
-                                    .Append(base::Value::Dict()
+                                    .Append(base::DictValue()
                                                 .Set("name", "attachment3.mov")
                                                 .Set("size", -1)
                                                 .Set("readable", true)));
   }
 
-  static base::Value::Dict CreateExpectedBookmarksResponse(
-      base::Value::List bookmarks) {
-    return base::Value::Dict()
+  static base::DictValue CreateExpectedBookmarksResponse(
+      base::ListValue bookmarks) {
+    return base::DictValue()
         .Set("type", "bookmarks")
         .Set("bookmarksData", std::move(bookmarks));
   }
 
-  static base::Value::Dict CreateExpectedMetadataResponse() {
-    return base::Value::Dict()
+  static base::DictValue CreateExpectedMetadataResponse() {
+    return base::DictValue()
         .Set("type", "metadata")
-        .Set("metadataData", base::Value::Dict()
+        .Set("metadataData", base::DictValue()
                                  .Set("version", "1.7")
                                  .Set("fileSize", "13 B")
                                  .Set("linearized", true)
@@ -2174,11 +2174,11 @@ class PdfViewWebPluginWithDocInfoTest
 };
 
 TEST_P(PdfViewWebPluginWithDocInfoTest, OnDocumentLoadComplete) {
-  const base::Value::Dict expect_attachments =
+  const base::DictValue expect_attachments =
       CreateExpectedAttachmentsResponse();
-  const base::Value::Dict expect_bookmarks =
+  const base::DictValue expect_bookmarks =
       CreateExpectedBookmarksResponse(engine_ptr_->GetBookmarks());
-  const base::Value::Dict expect_metadata = CreateExpectedMetadataResponse();
+  const base::DictValue expect_metadata = CreateExpectedMetadataResponse();
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_attachments))))
       .Times(IsPortfolioEnabled() ? 1 : 0);
@@ -2199,7 +2199,7 @@ class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
   void SetUpClient() override {
     // Ignore non-"saveData" `PdfViewWebPlugin::Client::PostMessage()` calls.
     EXPECT_CALL(*client_ptr_, PostMessage)
-        .WillRepeatedly([](const base::Value::Dict& message) {
+        .WillRepeatedly([](const base::DictValue& message) {
           EXPECT_NE("saveData", *message.FindString("type"));
         });
   }
@@ -2284,10 +2284,10 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
 
 class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
  protected:
-  base::Value::Dict CreateRequest(pdf::mojom::SaveRequestType request_type,
-                                  uint32_t offset,
-                                  uint32_t block_size,
-                                  std::string token) {
+  base::DictValue CreateRequest(pdf::mojom::SaveRequestType request_type,
+                                uint32_t offset,
+                                uint32_t block_size,
+                                std::string token) {
     std::string request_type_string;
     switch (request_type) {
       case pdf::mojom::SaveRequestType::kAnnotation:
@@ -2303,7 +2303,7 @@ class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
         request_type_string = "SEARCHIFIED";
         break;
     }
-    return base::Value::Dict()
+    return base::DictValue()
         .Set("type", "getSaveDataBlock")
         .Set("saveRequestType", request_type_string)
         .Set("offset", static_cast<int>(offset))
@@ -2318,7 +2318,7 @@ class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
     auto data_to_save = data.subspan(offset, block_size);
     base::BlobStorage data_to_save_blob(data_to_save.begin(),
                                         data_to_save.end());
-    auto dict = base::Value::Dict()
+    auto dict = base::DictValue()
                     .Set("type", "saveDataBlock")
                     .Set("token", std::move(token))
                     .Set("dataToSave", std::move(data_to_save_blob))
@@ -2330,7 +2330,7 @@ class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
     // Ignore non - "saveDataBlock" `PdfViewWebPlugin::Client::PostMessage()`
     // calls.
     EXPECT_CALL(*client_ptr_, PostMessage)
-        .WillRepeatedly([](const base::Value::Dict& message) {
+        .WillRepeatedly([](const base::DictValue& message) {
           EXPECT_NE("saveDataBlock", *message.FindString("type"));
         });
   }
@@ -2418,7 +2418,7 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, ReleaseSaveBuffer) {
   EXPECT_FALSE(plugin_->IsSaveDataBufferEmptyForTesting());
 
   plugin_->OnMessage(
-      base::Value::Dict().Set("type", "releaseSaveInBlockBuffers"));
+      base::DictValue().Set("type", "releaseSaveInBlockBuffers"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
 
   pdf_receiver_.FlushForTesting();
@@ -3016,7 +3016,7 @@ class PdfViewWebPluginInkTest
   }
 
   void SendThumbnail(std::string_view message_id, const gfx::SizeF& page_size) {
-    auto reply = base::Value::Dict()
+    auto reply = base::DictValue()
                      .Set("type", "getThumbnailReply")
                      .Set("messageId", message_id);
     plugin_->SendThumbnailForTesting(
@@ -3213,7 +3213,7 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
   SetUpWithTrivialInkStrokes();
 
   EXPECT_CALL(*client_ptr_, PostMessage)
-      .WillOnce([](const base::Value::Dict& dict) {
+      .WillOnce([](const base::DictValue& dict) {
         auto expected = base::test::ParseJsonDict(R"({
             "type": "getThumbnailReply",
             "messageId": "foo",
@@ -3227,7 +3227,7 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
         ASSERT_TRUE(blob);
         EXPECT_FALSE(blob->empty());
       })
-      .WillOnce([](const base::Value::Dict& dict) {
+      .WillOnce([](const base::DictValue& dict) {
         auto expected = base::test::ParseJsonDict(R"({
             "type": "updateInk2Thumbnail",
             "pageNumber": 1,
@@ -3246,7 +3246,7 @@ TEST_P(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
 
 TEST_P(PdfViewWebPluginInkTest, SendThumbnailWithNoStrokes) {
   EXPECT_CALL(*client_ptr_, PostMessage)
-      .WillOnce([](const base::Value::Dict& dict) {
+      .WillOnce([](const base::DictValue& dict) {
         auto expected = base::test::ParseJsonDict(R"({
             "type": "getThumbnailReply",
             "messageId": "foo",

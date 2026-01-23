@@ -45,11 +45,11 @@ class DocumentLayout final {
 
     friend constexpr bool operator==(const Options&, const Options&) = default;
 
-    // Serializes layout options to a base::Value::Dict.
-    base::Value::Dict ToValue() const;
+    // Serializes layout options to a base::DictValue.
+    base::DictValue ToValue() const;
 
-    // Deserializes layout options from a base::Value::Dict.
-    void FromValue(const base::Value::Dict& value);
+    // Deserializes layout options from a base::DictValue.
+    void FromValue(const base::DictValue& value);
 
     // Page layout direction. This is tied to the direction of the user's UI,
     // rather than the direction of individual pages.

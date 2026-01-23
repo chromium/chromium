@@ -40,7 +40,7 @@ class PostMessageReceiver final
   class Client {
    public:
     // Handles converted messages from the embedder.
-    virtual void OnMessage(const base::Value::Dict& message) = 0;
+    virtual void OnMessage(const base::DictValue& message) = 0;
 
    protected:
     Client() = default;

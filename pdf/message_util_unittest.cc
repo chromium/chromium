@@ -11,11 +11,11 @@
 namespace chrome_pdf {
 
 TEST(PrepareReplyMessageTest, BasicReply) {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("type", "typeBasic");
   message.Set("messageId", "messageIdBasic");
 
-  base::Value::Dict reply = PrepareReplyMessage(message);
+  base::DictValue reply = PrepareReplyMessage(message);
 
   const std::string* reply_type = reply.FindString("type");
   ASSERT_TRUE(reply_type);

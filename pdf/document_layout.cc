@@ -42,8 +42,8 @@ DocumentLayout::Options& DocumentLayout::Options::operator=(
 
 DocumentLayout::Options::~Options() = default;
 
-base::Value::Dict DocumentLayout::Options::ToValue() const {
-  base::Value::Dict dictionary;
+base::DictValue DocumentLayout::Options::ToValue() const {
+  base::DictValue dictionary;
   dictionary.Set(kDirection, direction_);
   dictionary.Set(kDefaultPageOrientation,
                  static_cast<int>(default_page_orientation_));
@@ -51,7 +51,7 @@ base::Value::Dict DocumentLayout::Options::ToValue() const {
   return dictionary;
 }
 
-void DocumentLayout::Options::FromValue(const base::Value::Dict& value) {
+void DocumentLayout::Options::FromValue(const base::DictValue& value) {
   int32_t direction = value.FindInt(kDirection).value();
   DCHECK_GE(direction, base::i18n::UNKNOWN_DIRECTION);
   DCHECK_LE(direction, base::i18n::TEXT_DIRECTION_MAX);

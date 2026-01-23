@@ -79,12 +79,11 @@ constexpr int kEraserSize = 3;
 
 // `is_ink` represents the Ink thumbnail when true, and the PDF thumbnail when
 // false.
-base::Value::Dict CreateUpdateThumbnailMessage(
-    int page_index,
-    bool is_ink,
-    std::vector<uint8_t> image_data,
-    const gfx::Size& thumbnail_size) {
-  return base::Value::Dict()
+base::DictValue CreateUpdateThumbnailMessage(int page_index,
+                                             bool is_ink,
+                                             std::vector<uint8_t> image_data,
+                                             const gfx::Size& thumbnail_size) {
+  return base::DictValue()
       .Set("type", "updateInk2Thumbnail")
       .Set("pageNumber", page_index + 1)
       .Set("isInk", is_ink)
@@ -358,8 +357,8 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   }
 }
 
-bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
-  using MessageHandler = void (PdfInkModule::*)(const base::Value::Dict&);
+bool PdfInkModule::OnMessage(const base::DictValue& message) {
+  using MessageHandler = void (PdfInkModule::*)(const base::DictValue&);
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
@@ -1362,29 +1361,27 @@ bool PdfInkModule::ShouldIgnoreTouchInput(
          tool_type == ink::StrokeInput::ToolType::kTouch;
 }
 
-void PdfInkModule::HandleAnnotationRedoMessage(
-    const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationRedoMessage(const base::DictValue& message) {
   ApplyUndoRedoCommands(undo_redo_model_.Redo());
 }
 
-void PdfInkModule::HandleAnnotationUndoMessage(
-    const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationUndoMessage(const base::DictValue& message) {
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 
 void PdfInkModule::HandleGetAllTextAnnotationsMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   // TODO(crbug.com/408926609): Fill in this method. For now, just return an
   // empty set of annotations.
   client_->PostMessage(
-      PrepareReplyMessage(message).Set("annotations", base::Value::List()));
+      PrepareReplyMessage(message).Set("annotations", base::ListValue()));
 }
 
 void PdfInkModule::HandleGetAnnotationBrushMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
-  base::Value::Dict reply = PrepareReplyMessage(message);
+  base::DictValue reply = PrepareReplyMessage(message);
 
   // Get the brush type from `message` or the current brush type if not
   // provided.
@@ -1399,7 +1396,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
             : "eraser";
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("type", brush_type_string);
 
   if (brush_type_string == "eraser") {
@@ -1416,7 +1413,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
   data.Set("size", ink_brush.GetSize());
 
   SkColor color = GetSkColorFromInkBrush(ink_brush);
-  data.Set("color", base::Value::Dict()
+  data.Set("color", base::DictValue()
                         .Set("r", static_cast<int>(SkColorGetR(color)))
                         .Set("g", static_cast<int>(SkColorGetG(color)))
                         .Set("b", static_cast<int>(SkColorGetB(color))));
@@ -1426,10 +1423,10 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
 }
 
 void PdfInkModule::HandleSetAnnotationBrushMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
-  const base::Value::Dict* data = message.FindDict("data");
+  const base::DictValue* data = message.FindDict("data");
   CHECK(data);
 
   const std::string& brush_type_string = *data->FindString("type");
@@ -1477,7 +1474,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   }
 
   // All brush types except the eraser should have a color and size.
-  const base::Value::Dict* color = data->FindDict("color");
+  const base::DictValue* color = data->FindDict("color");
   CHECK(color);
 
   int color_r = color->FindInt("r").value();
@@ -1508,7 +1505,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   const std::string* mode = message.FindString("mode");
   CHECK(mode);
   if (*mode == "off") {
@@ -1538,12 +1535,12 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
 }
 
 void PdfInkModule::HandleEditTextAnnotationMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   // TODO(crbug.com/408976049): Implement.
 }
 
 void PdfInkModule::HandleFinishTextAnnotationMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   // TODO(crbug.com/408976049): Implement.
 }
 

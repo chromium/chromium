@@ -84,7 +84,7 @@ class PdfInkModule {
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Returns whether the message was handled or not.
-  bool OnMessage(const base::Value::Dict& message);
+  bool OnMessage(const base::DictValue& message);
 
   // Informs PdfInkModule that the plugin geometry changed.
   void OnGeometryChanged();
@@ -369,14 +369,14 @@ class PdfInkModule {
   // `ink::StrokeInput::ToolType::kTouch`.
   bool ShouldIgnoreTouchInput(ink::StrokeInput::ToolType tool_type);
 
-  void HandleAnnotationRedoMessage(const base::Value::Dict& message);
-  void HandleAnnotationUndoMessage(const base::Value::Dict& message);
-  void HandleEditTextAnnotationMessage(const base::Value::Dict& message);
-  void HandleFinishTextAnnotationMessage(const base::Value::Dict& message);
-  void HandleGetAllTextAnnotationsMessage(const base::Value::Dict& message);
-  void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
-  void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
-  void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
+  void HandleAnnotationRedoMessage(const base::DictValue& message);
+  void HandleAnnotationUndoMessage(const base::DictValue& message);
+  void HandleEditTextAnnotationMessage(const base::DictValue& message);
+  void HandleFinishTextAnnotationMessage(const base::DictValue& message);
+  void HandleGetAllTextAnnotationsMessage(const base::DictValue& message);
+  void HandleGetAnnotationBrushMessage(const base::DictValue& message);
+  void HandleSetAnnotationBrushMessage(const base::DictValue& message);
+  void HandleSetAnnotationModeMessage(const base::DictValue& message);
 
   bool is_drawing_stroke() const {
     return std::holds_alternative<DrawingStrokeState>(current_tool_state_);

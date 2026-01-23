@@ -95,7 +95,7 @@ class TestPDFiumEngine : public PDFiumEngine {
               (const override));
 
   // Returns an empty bookmark list.
-  base::Value::List GetBookmarks() override;
+  base::ListValue GetBookmarks() override;
 
   MOCK_METHOD(void, SetGrayscale, (bool), (override));
 

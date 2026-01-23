@@ -10,14 +10,14 @@
 
 namespace chrome_pdf {
 
-base::Value::Dict PrepareReplyMessage(const base::Value::Dict& message) {
+base::DictValue PrepareReplyMessage(const base::DictValue& message) {
   const std::string* original_type = message.FindString("type");
   CHECK(original_type);
 
   const std::string* message_id = message.FindString("messageId");
   CHECK(message_id);
 
-  base::Value::Dict reply;
+  base::DictValue reply;
   reply.Set("type", *original_type + "Reply");
   reply.Set("messageId", *message_id);
   return reply;

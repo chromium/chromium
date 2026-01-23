@@ -2794,16 +2794,16 @@ int PDFiumEngine::GetNumberOfPages() const {
   return pages_.size();
 }
 
-base::Value::List PDFiumEngine::GetBookmarks() {
-  base::Value::Dict dict = TraverseBookmarks(nullptr, 0);
+base::ListValue PDFiumEngine::GetBookmarks() {
+  base::DictValue dict = TraverseBookmarks(nullptr, 0);
   // The root bookmark contains no useful information.
-  base::Value::List* children = dict.FindList("children");
+  base::ListValue* children = dict.FindList("children");
   return std::move(*children);
 }
 
-base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                                  unsigned int depth) {
-  base::Value::Dict dict;
+base::DictValue PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
+                                                unsigned int depth) {
+  base::DictValue dict;
   std::u16string title = CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDFBookmark_GetTitle, bookmark),
       /*check_expected_size=*/true);
@@ -2842,7 +2842,7 @@ base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
     }
   }
 
-  base::Value::List children;
+  base::ListValue children;
 
   // Don't trust PDFium to handle circular bookmarks.
   constexpr unsigned int kMaxDepth = 128;

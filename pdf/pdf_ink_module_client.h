@@ -136,7 +136,7 @@ class PdfInkModuleClient {
   virtual int PageIndexFromPoint(const gfx::PointF& point) = 0;
 
   // Asks the client to post `message`.
-  virtual void PostMessage(base::Value::Dict message) {}
+  virtual void PostMessage(base::DictValue message) {}
 
   // Asks the client to update the page thumbnail for `page_index`. Note that
   // this is the regular page thumbnail, and not the thumbnail with the Ink

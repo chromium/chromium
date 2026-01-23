@@ -299,7 +299,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // - "page" - an int Value.
   // - "children" - a list of Values, with each entry containing
   //   a dictionary Value of the same structure.
-  virtual base::Value::List GetBookmarks();
+  virtual base::ListValue GetBookmarks();
 
   // Gets the named destination by name.
   std::optional<NamedDestination> GetNamedDestination(
@@ -1023,8 +1023,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // dictionaries representing the child bookmarks. If `bookmark` is null, then
   // this method traverses from the root of the bookmarks tree. Note that the
   // root bookmark contains no useful information.
-  base::Value::Dict TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                      unsigned int depth);
+  base::DictValue TraverseBookmarks(FPDF_BOOKMARK bookmark, unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,

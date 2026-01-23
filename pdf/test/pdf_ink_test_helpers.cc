@@ -67,40 +67,40 @@ std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
   return input_batch;
 }
 
-base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
+base::DictValue CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,
     const TestAnnotationBrushMessageParams* params) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("type", type);
   if (params) {
     data.Set("color",
-             base::Value::Dict()
+             base::DictValue()
                  .Set("r", static_cast<int>(SkColorGetR(params->color)))
                  .Set("g", static_cast<int>(SkColorGetG(params->color)))
                  .Set("b", static_cast<int>(SkColorGetB(params->color))));
     data.Set("size", params->size);
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("type", "setAnnotationBrush")
       .Set("data", std::move(data));
 }
 
-base::Value::Dict CreateSetAnnotationModeMessageForTesting(
+base::DictValue CreateSetAnnotationModeMessageForTesting(
     InkAnnotationMode mode) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("type", "setAnnotationMode")
       .Set("mode", GetAnnotationModeMessageString(mode));
 }
 
-base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+base::DictValue CreateSetAnnotationUndoRedoMessageForTesting(
     TestAnnotationUndoRedoMessageType type) {
-  base::Value::Dict message;
+  base::DictValue message;
   switch (type) {
     case TestAnnotationUndoRedoMessageType::kUndo:
-      return base::Value::Dict().Set("type", "annotationUndo");
+      return base::DictValue().Set("type", "annotationUndo");
     case TestAnnotationUndoRedoMessageType::kRedo:
-      return base::Value::Dict().Set("type", "annotationRedo");
+      return base::DictValue().Set("type", "annotationRedo");
   }
   NOTREACHED();
 }
