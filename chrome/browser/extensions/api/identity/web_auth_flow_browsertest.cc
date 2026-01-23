@@ -459,26 +459,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }
 
-// TODO(crbug.com/434156398): Add support and testing for the infobar on
-// desktop Android.
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab \
-  DISABLED_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab
-#else
-#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab \
-  InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab
-#endif
 // This test is in two parts:
-// - First create a WebAuthFlow in interactive mode that will create a new tab
-// with the auth_url.
-// - Close the new created tab, simulating the user declining the consent by
-// closing the tab.
+// - First create a WebAuthFlow in interactive mode that will create a popup
+// window with the auth_url.
+// - Close the new created window, simulating the user declining the consent.
 //
-// These two tests are combined into one in order not to re-test the tab
+// These two tests are combined into one in order not to re-test the window
 // creation twice.
-IN_PROC_BROWSER_TEST_F(
-    WebAuthFlowBrowserTest,
-    MAYBE_InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
+IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
+                       InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -491,6 +480,8 @@ IN_PROC_BROWSER_TEST_F(
 
   navigation_observer.Wait();
 
+// TODO(crbug.com/434156398): Enable these checks on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* popup_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
@@ -499,6 +490,7 @@ IN_PROC_BROWSER_TEST_F(
   TabListInterface* tabs = TabListInterface::From(popup_browser);
   EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetLastCommittedURL(),
             auth_url);
+#endif
 
   // Check info bar exists and displays proper message with extension name.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> infobar_delegate =
@@ -513,22 +505,16 @@ IN_PROC_BROWSER_TEST_F(
   //---------------------------------------------------------------------
   // Part of the test that closes the tab, simulating declining the consent.
   //---------------------------------------------------------------------
+  // TODO(crbug.com/434156398): Enable this check on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
   tabs->GetActiveTab()->Close();
+#endif
 }
 
-// TODO(crbug.com/434156398): Add support and testing for the infobar on
-// desktop Android.
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow \
-  DISABLED_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow
-#else
-#define MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow \
-  InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
-    MAYBE_InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow) {
+    InteractivePopupWindowCreatedWithAuthURL_NavigationInURLDoesNotBreakTheFlow) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -552,11 +538,14 @@ IN_PROC_BROWSER_TEST_F(
       web_auth_flow()->GetInfoBarDelegateForTesting();
   ASSERT_TRUE(auth_info_bar);
 
+// TODO(crbug.com/434156398): Enable these checks on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* popup_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
   EXPECT_EQ(popup_browser->GetType(), BrowserWindowInterface::TYPE_POPUP);
   EXPECT_NE(GetFirstActivatedBrowser(), popup_browser);
+#endif
 
   // Simulate an internal navigation, such as an authentication that needs an
   // input of username and password on two different pages/urls.
@@ -576,11 +565,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
 
   EXPECT_EQ(web_contents()->GetURL(), auth_url);
+
+// TODO(crbug.com/434156398): Enable these checks on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Popup window is still active.
   EXPECT_TRUE(popup_browser);
   EXPECT_EQ(extensions::browser_window_util::GetBrowserForTabContents(
                 *web_contents()),
             popup_browser);
+#endif
+
   // Infobar should not be closed on navigation.
   EXPECT_TRUE(auth_info_bar);
 }
@@ -691,18 +685,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, SilentNewTabNotCreated) {
   EXPECT_EQ(tabs->GetTabCount(), initial_tab_count);
 }
 
-// TODO(crbug.com/434156398): Add support and testing for the infobar on
-// desktop Android.
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#define MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault \
-  DISABLED_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault
-#else
-#define MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault \
-  InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebAuthFlowBrowserTest,
-    MAYBE_InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
+IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
+                       InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -712,6 +696,8 @@ IN_PROC_BROWSER_TEST_F(
 
   navigation_observer.Wait();
 
+  // TODO(crbug.com/434156398): Enable these checks on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   BrowserWindowInterface* popup_browser =
       extensions::browser_window_util::GetBrowserForTabContents(
           *web_contents());
@@ -719,6 +705,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(GetFirstActivatedBrowser(), popup_browser);
   EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetLastCommittedURL(),
             auth_url);
+#endif
 
   // Check info bar is not created if not set via
   // `SetShouldShowInfoBar())`.
