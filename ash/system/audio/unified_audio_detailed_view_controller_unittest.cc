@@ -207,7 +207,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     tray_model_.reset();
     toggles_map_.clear();
     style_transfer_toggles_map_.clear();
-
+    cras_audio_handler_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -350,8 +350,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   AudioDetailedView::NoiseCancellationCallback
       noise_cancellation_toggle_callback_;
   AudioDetailedView::StyleTransferCallback style_transfer_toggle_callback_;
-  raw_ptr<CrasAudioHandler, DanglingUntriaged> cras_audio_handler_ =
-      nullptr;  // Not owned.
+  raw_ptr<CrasAudioHandler> cras_audio_handler_ = nullptr;  // Not owned.
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<UnifiedAudioDetailedViewController>
       audio_detailed_view_controller_;
