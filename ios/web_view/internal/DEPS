@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+base",
   "+components/activity_reporter",
   "+components/affiliations/core/browser",
@@ -8,8 +9,8 @@ include_rules = [
   "+components/content_settings/core",
   "+components/gcm_driver",
   "+components/history/core/common",
-  "+components/image_fetcher/ios",
   "+components/image_fetcher/core",
+  "+components/image_fetcher/ios",
   "+components/infobars/core",
   "+components/invalidation",
   "+components/keyed_service/core",
@@ -80,6 +81,7 @@ include_rules = [
   "+third_party/ocmock",
   "+ui/base",
   "+ui/gfx",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

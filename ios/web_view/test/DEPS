@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+base",
   "+components/url_formatter",
   "+components/variations",
@@ -8,4 +9,5 @@ include_rules = [
   "+mojo/core/embedder",
   "+net",
   "+ui/base",
+  # keep-sorted end
 ]
