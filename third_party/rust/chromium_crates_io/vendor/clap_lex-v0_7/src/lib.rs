@@ -190,24 +190,24 @@ impl RawArgs {
     }
 
     /// Advance the cursor, returning the next [`ParsedArg`]
-    pub fn next(&self, cursor: &mut ArgCursor) -> Option<ParsedArg<'_>> {
+    pub fn next<'s>(&'s self, cursor: &mut ArgCursor) -> Option<ParsedArg<'s>> {
         self.next_os(cursor).map(ParsedArg::new)
     }
 
     /// Advance the cursor, returning a raw argument value.
-    pub fn next_os(&self, cursor: &mut ArgCursor) -> Option<&OsStr> {
+    pub fn next_os<'s>(&'s self, cursor: &mut ArgCursor) -> Option<&'s OsStr> {
         let next = self.items.get(cursor.cursor).map(|s| s.as_os_str());
         cursor.cursor = cursor.cursor.saturating_add(1);
         next
     }
 
     /// Return the next [`ParsedArg`]
-    pub fn peek(&self, cursor: &ArgCursor) -> Option<ParsedArg<'_>> {
+    pub fn peek<'s>(&'s self, cursor: &ArgCursor) -> Option<ParsedArg<'s>> {
         self.peek_os(cursor).map(ParsedArg::new)
     }
 
     /// Return a raw argument value.
-    pub fn peek_os(&self, cursor: &ArgCursor) -> Option<&OsStr> {
+    pub fn peek_os<'s>(&'s self, cursor: &ArgCursor) -> Option<&'s OsStr> {
         self.items.get(cursor.cursor).map(|s| s.as_os_str())
     }
 
@@ -224,7 +224,7 @@ impl RawArgs {
     /// let mut paths = raw.remaining(&mut cursor).map(PathBuf::from).collect::<Vec<_>>();
     /// println!("{paths:?}");
     /// ```
-    pub fn remaining(&self, cursor: &mut ArgCursor) -> impl Iterator<Item = &OsStr> {
+    pub fn remaining<'s>(&'s self, cursor: &mut ArgCursor) -> impl Iterator<Item = &'s OsStr> {
         let remaining = self.items[cursor.cursor..].iter().map(|s| s.as_os_str());
         cursor.cursor = self.items.len();
         remaining
@@ -321,7 +321,7 @@ impl<'s> ParsedArg<'s> {
     }
 
     /// Treat as a long-flag
-    pub fn to_long(&self) -> Option<(Result<&str, &OsStr>, Option<&OsStr>)> {
+    pub fn to_long(&self) -> Option<(Result<&'s str, &'s OsStr>, Option<&'s OsStr>)> {
         let raw = self.inner;
         let remainder = raw.strip_prefix("--")?;
         if remainder.is_empty() {
@@ -344,7 +344,7 @@ impl<'s> ParsedArg<'s> {
     }
 
     /// Treat as a short-flag
-    pub fn to_short(&self) -> Option<ShortFlags<'_>> {
+    pub fn to_short(&self) -> Option<ShortFlags<'s>> {
         if let Some(remainder_os) = self.inner.strip_prefix("-") {
             if remainder_os.starts_with("-") {
                 None
@@ -371,7 +371,7 @@ impl<'s> ParsedArg<'s> {
     /// **NOTE:** May return a flag or an escape.
     ///
     /// </div>
-    pub fn to_value_os(&self) -> &OsStr {
+    pub fn to_value_os(&self) -> &'s OsStr {
         self.inner
     }
 
@@ -382,14 +382,14 @@ impl<'s> ParsedArg<'s> {
     /// **NOTE:** May return a flag or an escape.
     ///
     /// </div>
-    pub fn to_value(&self) -> Result<&str, &OsStr> {
+    pub fn to_value(&self) -> Result<&'s str, &'s OsStr> {
         self.inner.to_str().ok_or(self.inner)
     }
 
     /// Safely print an argument that may contain non-UTF8 content
     ///
     /// This may perform lossy conversion, depending on the platform. If you would like an implementation which escapes the path please use Debug instead.
-    pub fn display(&self) -> impl std::fmt::Display + '_ {
+    pub fn display(&self) -> impl std::fmt::Display + 's {
         self.inner.to_string_lossy()
     }
 }

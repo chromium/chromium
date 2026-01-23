@@ -54,6 +54,7 @@ chrome/browser/feed/android
 chrome/browser/first_run
 chrome/browser/mac
 chrome/browser/metrics
+chrome/browser/net
 chrome/browser/new_tab_page/modules
 chrome/browser/password_manager
 chrome/browser/predictors
