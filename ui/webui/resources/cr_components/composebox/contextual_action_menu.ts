@@ -24,8 +24,6 @@ import {getHtml} from './contextual_action_menu.html.js';
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
-/** The string value of the tall bottom context layout mode. */
-const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
 
 export interface ContextualActionMenuElement {
   $: {
@@ -53,7 +51,6 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       fileNum: {type: Number},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
-      searchboxLayoutMode: {type: String},
       enableMultiTabSelection_: {
         reflect: true,
         type: Boolean,
@@ -69,7 +66,6 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
   accessor fileNum: number = 0;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
-  accessor searchboxLayoutMode: string = '';
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
@@ -146,9 +142,6 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       composed: true,
       detail: {uuid: uuid},
     }));
-    if (this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
-      this.$.menu.close();
-    }
   }
 
   protected addTabContext_(tabInfo: TabInfo) {
@@ -163,8 +156,7 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
         origin: TabUploadOrigin.CONTEXT_MENU,
       },
     }));
-    if (!this.enableMultiTabSelection_ ||
-        this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (!this.enableMultiTabSelection_) {
       this.$.menu.close();
     }
   }
