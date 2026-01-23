@@ -8,7 +8,7 @@ import("//chrome/common/features.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(enable_glic || enable_glic_android)
+assert(enable_glic)
 
 # TODO(b/430371855): This target should eventually become Glic's public target,
 # to be imported from external BUILD files. The "impl" source set below would

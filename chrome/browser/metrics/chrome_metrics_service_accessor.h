@@ -17,7 +17,7 @@
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #endif
 
@@ -168,7 +168,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class BrowserProcessImpl;
   friend class GlobalFeatures;
   friend class supervised_user::MetricsServiceAccessorDelegateImpl;
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   friend class glic::GlicSyntheticTrialManager;
 #endif
   friend class OptimizationGuideKeyedService;

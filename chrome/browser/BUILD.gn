@@ -6238,7 +6238,7 @@ static_library("browser") {
     ]
   }
 
-  if (enable_glic_android || enable_glic) {
+  if (enable_glic) {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
@@ -6246,7 +6246,7 @@ static_library("browser") {
     allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic/fre" ]
 
     allow_circular_includes_from += [ "//chrome/browser/glic/fre" ]

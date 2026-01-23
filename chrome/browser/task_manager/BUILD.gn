@@ -257,7 +257,7 @@ source_set("impl") {
       "providers/web_contents/extension_task.cc",
     ]
   }
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
 

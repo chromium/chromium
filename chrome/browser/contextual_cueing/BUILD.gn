@@ -58,7 +58,7 @@ source_set("impl") {
     "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/glic",
@@ -113,7 +113,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",

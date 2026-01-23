@@ -35,7 +35,7 @@ source_set("tabs_impl") {
     "//content/public/browser",
   ]
 
-  if (enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
 }

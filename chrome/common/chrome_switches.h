@@ -298,7 +298,7 @@ extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 extern const char kGlicGuestURL[];
 extern const char kGlicAlwaysOpenFre[];
 extern const char kGlicFreURL[];

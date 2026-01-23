@@ -2914,7 +2914,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Glic Strings -->
-      <if expr="enable_glic or enable_glic_android">
+      <if expr="enable_glic">
         <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title." translateable="false">
           Try Gemini in Chromium
         </message>

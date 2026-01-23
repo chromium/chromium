@@ -541,7 +541,7 @@
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
@@ -1630,7 +1630,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   glic::prefs::RegisterLocalStatePrefs(registry);
 #endif
 
@@ -1679,7 +1679,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   glic::prefs::RegisterProfilePrefs(registry);
 #endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);

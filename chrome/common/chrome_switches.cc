@@ -968,7 +968,7 @@ const char kGuest[] = "guest";
 
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 // Overrides the glic guest URL.
 const char kGlicGuestURL[] = "glic-guest-url";
 const char kGlicAlwaysOpenFre[] = "glic-always-open-fre";

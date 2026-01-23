@@ -146,7 +146,7 @@ source_set("impl") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
 

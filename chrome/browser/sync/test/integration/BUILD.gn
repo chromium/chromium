@@ -351,7 +351,7 @@ source_set("sync_integration_tests_impl") {
     ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",

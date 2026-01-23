@@ -258,7 +258,7 @@ source_set("sync") {
 
   allow_circular_includes_from += [ "//chrome/browser/consent_auditor" ]
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
 }

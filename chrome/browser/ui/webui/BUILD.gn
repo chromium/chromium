@@ -127,7 +127,7 @@ source_set("configs") {
     deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
   }
 

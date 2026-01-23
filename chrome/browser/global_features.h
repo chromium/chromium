@@ -29,7 +29,7 @@ class DefaultBrowserManager;
 }  // namespace default_browser
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
 class GlicGlobalEnabling;
@@ -140,7 +140,7 @@ class GlobalFeatures {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
     return synthetic_trial_manager_.get();
   }
@@ -210,7 +210,7 @@ class GlobalFeatures {
       default_browser_manager_;
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicGlobalEnabling> glic_global_enabling_;
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
@@ -220,7 +220,7 @@ class GlobalFeatures {
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
 #endif
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 #endif
 

@@ -32,7 +32,7 @@
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
 #include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
@@ -107,7 +107,7 @@ void GlobalFeatures::PostBrowserProcessInit() {
 
   PostBrowserProcessInitCore();
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
 #if !BUILDFLAG(IS_ANDROID)
@@ -197,7 +197,7 @@ void GlobalFeatures::PostMainMessageLoopRun() {
     glic_background_mode_manager_.reset();
   }
 #endif
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   if (glic_profile_manager_) {
     glic_profile_manager_->Shutdown();
     glic_profile_manager_.reset();

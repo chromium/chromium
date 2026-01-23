@@ -290,7 +290,7 @@ are declared in tools/grit/grit_args.gni.
       <part file="bookmarks_strings.grdp" />
 
       <!-- Glic specific strings -->
-      <if expr="enable_glic or enable_glic_android">
+      <if expr="enable_glic">
         <part file="glic_strings.grdp" />
       </if>
 

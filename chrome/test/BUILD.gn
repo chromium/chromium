@@ -7529,7 +7529,7 @@ test("unit_tests") {
     deps += [ "//chrome/browser/captive_portal" ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [
       "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic",

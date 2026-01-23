@@ -272,10 +272,10 @@
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/gemini_act_on_web_settings_policy_handler.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#endif  // BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 namespace policy {
 namespace {
@@ -2442,11 +2442,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAIModeSettings,
     omnibox::kAIModeSettings,
     base::Value::Type::INTEGER },
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   { key::kGeminiActOnWebSettings,
     glic::prefs::kGlicActuationOnWeb,
     base::Value::Type::INTEGER },
-#endif  // BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#endif  // BUILDFLAG(ENABLE_GLIC)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   { key::kEnableProxyOverrideRulesForAllUsers,
     proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
@@ -3515,7 +3515,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
           gen_ai_default_policies)));
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
   handlers->AddHandler(std::make_unique<GeminiActOnWebSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies))));
@@ -3525,7 +3525,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
       key::kGeminiActOnWebBlockedForURLs,
       glic::prefs::kGlicActuationOnWebBlockedForURLs));
-#endif  // BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(

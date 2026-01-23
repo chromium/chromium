@@ -1,6 +1,6 @@
 import("//chrome/common/features.gni")
 
-assert(enable_glic || enable_glic_android)
+assert(enable_glic)
 
 source_set("shared") {
   sources = [

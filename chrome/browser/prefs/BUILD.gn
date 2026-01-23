@@ -371,7 +371,7 @@ source_set("impl") {
     deps += [ "//chrome/browser/web_applications" ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
     if (!is_android) {
       deps += [ "//chrome/browser/background/glic" ]

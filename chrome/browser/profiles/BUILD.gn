@@ -473,7 +473,7 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (enable_glic || enable_glic_android) {
+  if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]
     if (!is_android) {
       deps += [ "//chrome/browser/ui/tabs:glic" ]

@@ -359,7 +359,7 @@ BASE_DECLARE_FEATURE(kGlicTrustFirstOnboarding);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicTrustFirstOnboardingArmParam;
 
-#if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
 // IMPORTANT: this feature should never be expired! It is used as the main
 // kill-switch for Glic and can be used in the future to handle unsupported

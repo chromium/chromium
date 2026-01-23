@@ -4,7 +4,7 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(enable_glic || enable_glic_android)
+assert(enable_glic)
 
 build_webui("build") {
   grd_prefix = "glic_fre"
