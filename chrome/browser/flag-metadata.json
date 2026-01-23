@@ -1746,7 +1746,7 @@
   {
     "name": "content-notification-provisional-ignore-conditions",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 155
   },
   {
     "name": "content-push-notifications",
