@@ -65,7 +65,21 @@ constexpr int kIconDesignWidth = 16;
 constexpr int kTitleMinWidth = 10;
 constexpr int kHorizontalInset = 7;
 constexpr int kDefaultPadding = 4;
-constexpr int kFocusRingInset = 4;
+constexpr int kFocusRingInset = -2.0f;
+
+class VerticalTabHighlightPathGenerator : public views::HighlightPathGenerator {
+ public:
+  explicit VerticalTabHighlightPathGenerator(VerticalTabView* tab_view)
+      : tab_view_(tab_view) {}
+
+  // views::HighlightPathGenerator:
+  SkPath GetHighlightPath(const views::View* view) override {
+    return tab_view_->GetPath();
+  }
+
+ private:
+  raw_ptr<VerticalTabView> tab_view_;
+};
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -167,11 +181,12 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
   // TODO(crbug.com/476156783): Change to ACCESSIBLE_ONLY.
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHaloInset(kFocusRingInset);
+  focus_ring->SetOutsetFocusRingDisabled(true);
 
   views::HighlightPathGenerator::Install(
-      this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                gfx::Insets(kFocusRingInset),
-                GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius)));
+      this, std::make_unique<VerticalTabHighlightPathGenerator>(this));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
   GetViewAccessibility().SetName(
