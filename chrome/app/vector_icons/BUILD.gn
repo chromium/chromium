@@ -79,6 +79,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "download_toolbar_button_chrome_refresh.icon",
     "download_toolbar_button_touch.icon",
     "download_warning.icon",
+    "draft_spark.icon",
     "drag_handle.icon",
     "drive_shortcut_chrome_refresh.icon",
     "edit_chrome_refresh.icon",
