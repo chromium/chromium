@@ -177,11 +177,16 @@ chromium::import! {
   "//mojo/public/rust/sequences:sequences";
 }
 
+use std::collections::HashMap;
 use std::marker::PhantomData;
+// FOR_RELEASE: Replace some/all Arc/Mutexes with the sequenced equivalents,
+// where appropriate (maybe all of them?).
+// TODO(crbug.com/477584253): Replace std::sync with std::nonpoison once
+// it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex};
 
 use mojo_rust_system_api::message_pipe::MessageEndpoint;
-use mojo_rust_system_api::mojo_types::MojoResult;
+use mojo_rust_system_api::mojo_types::{MojoResult, UntypedHandle};
 use sequences::SequencedTaskRunnerHandle;
 
 use crate::message::MojomMessage;
@@ -203,7 +208,7 @@ pub trait MojomInterface {
     /// This defines the type of response callbacks for this interface.
     /// It's used by the `Remote` to store callbacks for different message
     /// types, since they take different arguments.
-    type ResponseCallbackTy;
+    type ResponseCallbackTy: Send + 'static;
 
     /// For use in `Remote`s. Takes a message with a parsed header, examines
     /// it to determine which message type it contains, ensures the callback
@@ -275,6 +280,8 @@ pub trait DynMojomInterface: MojomInterface {}
 
 // FOR_RELEASE: Put in a different file
 pub mod remote {
+    type CallbackMap<T> = Arc<Mutex<HashMap<u64, <T as MojomInterface>::ResponseCallbackTy>>>;
+
     use super::*;
     /// This type represents one end of a Mojo pipe corresponding to a
     /// particular Mojom `interface`. The parameter `T` names the interface:
@@ -309,15 +316,19 @@ pub mod remote {
     // The bindings will implement the trait such that calling, e.g.
     // `remote.Add(...)` will send an `Add` message to the receiver, and stash a
     // response callback in the map if necessary.
-    //
-    // FOR_RELEASE: We'll need some synchronization primitives here
     pub struct Remote<T>
     where
         T: DynMojomInterface + ?Sized,
     {
         endpoint_watcher: MessagePipeWatcher,
         runner: SequencedTaskRunnerHandle,
-        pending_responses: std::collections::HashMap<u32, T::ResponseCallbackTy>,
+        // Stores the callbacks to be invoked when we get a response, using the
+        // request ID as a key. May be accessed out-of-sequence (when sending a
+        // new message), so requires synchronization.
+        pending_responses: CallbackMap<T>,
+        // Starts at 1, increments each time we send a message.
+        // 0 is reserved in case it gets a special meaning later.
+        next_request_id: u64,
         _phantom: PhantomData<T>,
     }
 
@@ -362,8 +373,13 @@ pub mod remote {
 
         /// Create a new Mojo message pipe corresponding to `T`'s interface, and
         /// return the endpoints
-        pub fn new_pipe() -> (PendingRemote<T>, super::receiver::PendingReceiver<T>) {
-            todo!()
+        pub fn new_pipe(
+        ) -> Result<(PendingRemote<T>, super::receiver::PendingReceiver<T>), MojoResult> {
+            let (endpoint1, endpoint2) = MessageEndpoint::create_pipe()?;
+            return Ok((
+                PendingRemote::new(endpoint1),
+                super::receiver::PendingReceiver::new(endpoint2),
+            ));
         }
     }
 
@@ -388,22 +404,40 @@ pub mod remote {
         /// This function isn't `pub` because users should always get their
         /// `Remote`s by `bind`ing a `PendingRemote`.
         fn new_with_runner(endpoint: MessageEndpoint, runner: SequencedTaskRunnerHandle) -> Self {
-            todo!()
+            let pending_responses = Arc::new(Mutex::new(HashMap::new()));
+            let pending_responses_clone = pending_responses.clone();
+            let message_handler = move |raw_message, _sender| {
+                Self::incoming_message_handler(raw_message, &pending_responses_clone)
+            };
+            let endpoint_watcher =
+                MessagePipeWatcher::new_with_runner(endpoint, message_handler, runner.clone())
+                    .expect("FOR_RELEASE: Figure out how to handle errors here");
+            // FOR_RELEASE: We should clear out any existing messages in the endpoint
+            // in case it's being re-used, so the new remote doesn't see responses to
+            // the previous remote's messages.
+
+            Self {
+                pending_responses,
+                runner,
+                endpoint_watcher,
+                next_request_id: 1, // Reserve 0 in case it gets a special meaning later
+                _phantom: PhantomData,
+            }
         }
 
         /// Unbind this `Remote` from the current sequence, turning it back into
         /// a `PendingRemote` which can be rebound later.
         ///
-        /// If the remote has responses pending, it will not be unbound, and
-        /// will return an error value containing itself.
-        pub fn unbind(self) -> Result<PendingRemote<T>, Self> {
-            // TODO: Ensure no pending responses
-            Ok(PendingRemote::new(self.endpoint_watcher.into_endpoint()))
+        /// If the remote has responses pending, they will be silently ignored.
+        pub fn unbind(self) -> PendingRemote<T> {
+            PendingRemote::new(self.endpoint_watcher.into_endpoint())
         }
 
         // Construct a header for the provided message ID and payload, and send it
         // through the pipe. When we get a response, call the provided response
-        // handler. This function is public because we need to call it from
+        // handler.
+        //
+        // This function is public because we need to call it from
         // generated code, but doc(hidden) because users shouldn't call it
         // directly. Instead, they should users should call one of the
         // interface-specific traits methods(e.g. `remote.Add(...)`, which will
@@ -413,16 +447,56 @@ pub mod remote {
         #[doc(hidden)]
         pub fn send_message_internal(
             &mut self,
-            message: MojomMessage,
+            mut message: MojomMessage,
             response_callback: Option<T::ResponseCallbackTy>,
         ) {
-            // Generate a request ID, set it in the header, stash the callback, send the
-            // message
-            todo!()
+            // Set the request ID and stash the callback in the map with that ID as the key
+            message.header.request_id = self.next_request_id;
+            if let Some(callback) = response_callback {
+                let old_entry = self
+                    .pending_responses
+                    .lock()
+                    .expect("Mutex should never be poisoned")
+                    .insert(self.next_request_id, callback);
+                if !matches!(old_entry, None) {
+                    // This is technically possible...if we wrap all the way around with request IDs
+                    panic!("send_message_internal: Tried to insert duplicate response!")
+                }
+            }
+
+            // Generate the next request ID. Skip 0 in case it gets a special meaning in the
+            // future.
+            self.next_request_id =
+                if self.next_request_id == u64::MAX { 1 } else { self.next_request_id + 1 };
+
+            // FOR_RELEASE: This returns a MojoResult, figure out what to do with it
+            self.endpoint_watcher.send_message(&message.into_bytes(), Vec::new());
+        }
+
+        /// This is the function which is called by the endpoint watcher
+        /// whenever a message comes in. Its job is to parse the message
+        /// header, retrieve the corresponding response callback from
+        /// the map, and invoke the interface's response handler with
+        /// it.
+        fn incoming_message_handler(
+            raw_message: (Vec<u8>, Vec<UntypedHandle>),
+            callback_map: &CallbackMap<T>,
+        ) {
+            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
+            // what to do about those
+            let message: MojomMessage = MojomMessage::from_bytes(raw_message.0)
+                .expect("Incoming response failed to parse!");
+            let response_callback = callback_map
+                .lock()
+                .expect("Callback map should never be poisoned")
+                .remove(&message.header.request_id);
+            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
+            // what to do about those
+            let response_callback =
+                response_callback.expect("Incoming response had no request_id!");
+            T::handle_incoming_response(message, response_callback);
         }
     }
-
-    // FOR_RELEASE: impl Drop for Remote to ensure no responses were pending.
 
     // We deliberately do not implement `From` and `Into` for
     // `Remote/PendingRemote` pairs, because binding and unbinding are
