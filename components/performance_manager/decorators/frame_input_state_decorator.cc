@@ -169,6 +169,7 @@ void FrameInputStateDecorator::InputObserver::OnInputEvent(
     input::InputEventSource source) {
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown:
       OnKeyEvent(event);
       return;
     // Pinches and flings are classified as scrolls.
