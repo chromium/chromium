@@ -18,9 +18,13 @@
 
 namespace {
 
+// Returns an equivalent IOSGeminiFirstPromptSubmission enum value for a given
+// BWGInputType.
 IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
     BWGInputType input_type) {
   switch (input_type) {
+    case BWGInputTypeUnknown:
+      return IOSGeminiFirstPromptSubmissionMethod::kUnknown;
     case BWGInputTypeText:
       return IOSGeminiFirstPromptSubmissionMethod::kText;
     case BWGInputTypeSummarize:
@@ -39,9 +43,41 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
       return IOSGeminiFirstPromptSubmissionMethod::kWhatCanGeminiDo;
     case BWGInputTypeDiscoveryCard:
       return IOSGeminiFirstPromptSubmissionMethod::kDiscoveryCard;
-    case BWGInputTypeUnknown:
-    default:
-      return IOSGeminiFirstPromptSubmissionMethod::kUnknown;
+    case BWGInputTypeOmniboxSummarize:
+      return IOSGeminiFirstPromptSubmissionMethod::kOmniboxSummarize;
+    case BWGInputTypeOmniboxPrompt:
+      return IOSGeminiFirstPromptSubmissionMethod::kOmniboxPrompt;
+    case BWGInputTypeTransitionToLive:
+      return IOSGeminiFirstPromptSubmissionMethod::kTransitionToLive;
+    case BWGInputTypeOnboardingWhatCanGeminiDo:
+      return IOSGeminiFirstPromptSubmissionMethod::kOnboardingWhatCanGeminiDo;
+    case BWGInputTypeOnboardingAskAboutPage:
+      return IOSGeminiFirstPromptSubmissionMethod::kOnboardingAskAboutPage;
+    case BWGInputTypeOnboardingSummarize:
+      return IOSGeminiFirstPromptSubmissionMethod::kOnboardingSummarize;
+    case BWGInputTypeSuggestedReply:
+      return IOSGeminiFirstPromptSubmissionMethod::kSuggestedReply;
+    case BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaTurnThisPageIntoAComicStrip;
+    case BWGInputTypeNanoBananaMakeAFolkArtIllustration:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaMakeAFolkArtIllustration;
+    case BWGInputTypeNanoBananaMakeACustomMiniFigure:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaMakeACustomMiniFigure;
+    case BWGInputTypeNanoBananaGiveMeAGrungeMakeover:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaGiveMeAGrungeMakeover;
+    case BWGInputTypeNanoBananaTurnThisImageIntoAVintagePostcard:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaTurnThisImageIntoAVintagePostcard;
+    case BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaTurnThisImageIntoAWatercolorPainting;
+    case BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm:
+      return IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaMakeThisImageLookLikeInstantFilm;
   }
 }
 
@@ -172,6 +208,14 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 - (void)responseReceivedWithClientID:(NSString*)clientID
                             serverID:(NSString*)serverID {
+  // TODO(crbug.com/478230514): Remove once migrated to new implementation.
+  // no-op
+}
+
+- (void)responseReceivedWithClientID:(NSString*)clientID
+                            serverID:(NSString*)serverID
+            isNanoBananaToolSelected:(BOOL)isNanoBananaToolSelected
+                    isImageGenerated:(BOOL)isImageGenerated {
   [self updateSessionWithClientID:clientID serverID:serverID];
 
   // Calculate and record response latency.
@@ -189,7 +233,7 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
     RecordFirstResponseReceived();
   }
   // Track all responses for conversation engagement.
-  RecordGeminiResponseReceived();
+  RecordGeminiResponseReceived(isImageGenerated);
 }
 
 - (void)didTapGeminiSettingsButton {
@@ -198,10 +242,21 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType
               pageContextAttached:(BOOL)pageContextAttached {
+  // TODO(crbug.com/478230514): Remove once migrated to new implementation.
+  // no-op
+}
+
+- (void)didSendQueryWithInputType:(BWGInputType)inputType
+         isNanoBananaToolSelected:(BOOL)isNanoBananaToolSelected
+              imagesAttachedCount:(NSUInteger)imagesAttachedCount
+                   longPressImage:(BOOL)longPressImage
+              pageContextAttached:(BOOL)pageContextAttached {
   _totalPromptsInSession++;
 
-  // Record user action for prompt sent.
-  RecordGeminiPromptSent();
+  // Record that a prompt was sent with arguments.
+  RecordGeminiPromptSent(isNanoBananaToolSelected,
+                         static_cast<int>(imagesAttachedCount), longPressImage,
+                         pageContextAttached);
 
   // Check if this is the user's first prompt.
   if (!_hasSubmittedFirstPrompt) {
@@ -210,8 +265,6 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
         ConvertBWGInputTypeToHistogramEnum(inputType);
     RecordFirstPromptSubmission(method);
   }
-  // Track context attachment for all prompts.
-  RecordPromptContextAttachment(pageContextAttached);
   // Start latency tracking.
   _lastPromptSentTime = base::TimeTicks::Now();
   _lastPromptHadPageContext = pageContextAttached;
@@ -250,6 +303,22 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                           sessionID:(NSString*)sessionID
                      conversationID:(NSString*)conversationID {
   RecordGeminiSessionCancellation(HistogramEnumFromGeminiCancelType(reason));
+}
+
+// Called when the user taps on the photo, gallery, CreateImageSelected or
+// CreateImageDeselected in Attachment sheet behind + button.
+- (void)didTapInputPlateAttachmentOption:(NSString*)attachmentOption
+                               sessionID:(NSString*)sessionID
+                          conversationID:(NSString*)conversationID {
+  // TODO: Implement metrics once attachmentOption is available as an enum.
+}
+
+// Called when the user taps on save / share / copy / download image action
+// button.
+- (void)imageActionButtonTapped:(NSString*)actionButtonType
+                      sessionID:(NSString*)sessionID
+                 conversationID:(NSString*)conversationID {
+  // TODO: Implement metrics once actionButtonType is available as an enum.
 }
 
 #pragma mark - Private
