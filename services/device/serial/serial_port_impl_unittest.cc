@@ -108,7 +108,7 @@ class SerialPortImplTest : public DeviceServiceTestBase {
         std::make_unique<mojom::SerialPortConnectionWatcher>(),
         watcher_remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop loop;
-    SerialPortImpl::OpenForTesting(
+    SerialPortImpl::Open(
         io_handler, mojom::SerialConnectionOptions::New(), mojo::NullRemote(),
         std::move(watcher_remote),
         base::BindLambdaForTesting(
@@ -227,7 +227,7 @@ TEST_F(SerialPortImplTest, OpenFailure) {
       std::make_unique<mojom::SerialPortConnectionWatcher>(),
       watcher_remote.InitWithNewPipeAndPassReceiver());
   base::RunLoop loop;
-  SerialPortImpl::OpenForTesting(
+  SerialPortImpl::Open(
       io_handler, mojom::SerialConnectionOptions::New(), mojo::NullRemote(),
       std::move(watcher_remote),
       base::BindLambdaForTesting(

@@ -26,6 +26,7 @@ import android.webkit.WebViewDelegate;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.chromium.base.serial.SerialManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -420,5 +421,10 @@ public interface AconfigFlaggedApiDelegate {
         Promise<Void> promise = new Promise<>();
         promise.reject(new UnsupportedOperationException("Not supported"));
         return promise;
+    }
+
+    /** Gets an Android SerialManager wrapped in an intermediary object. */
+    default @Nullable SerialManager getSerialManager() {
+        return null;
     }
 }

@@ -22,6 +22,10 @@
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "services/device/serial/serial_device_enumerator_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace device {
 
 SerialIoHandler::SerialIoHandler(
@@ -43,13 +47,19 @@ SerialIoHandler::~SerialIoHandler() {
 
 void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
                            OpenCompleteCallback callback) {
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!open_complete_);
   DCHECK(!port_.empty());
   open_complete_ = std::move(callback);
   DCHECK(ui_thread_task_runner_.get());
   MergeConnectionOptions(options);
+  OpenImpl();
+}
 
+void SerialIoHandler::OpenImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS)
   // Note: dbus clients are destroyed in PostDestroyThreads so passing |client|
   // as unretained is safe.
@@ -75,7 +85,7 @@ void SerialIoHandler::Open(const mojom::SerialConnectionOptions& options,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void SerialIoHandler::OnPathOpened(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
@@ -99,12 +109,12 @@ void SerialIoHandler::ReportPathOpenError(const std::string& error_name,
                                           const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(open_complete_);
-  SERIAL_LOG(ERROR) << "Permission broker failed to open '" << port_
-                    << "': " << error_name << ": " << error_message;
+  SERIAL_LOG(ERROR) << "Failed to open '" << port_ << "': " << error_name
+                    << ": " << error_message;
   std::move(open_complete_).Run(false);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void SerialIoHandler::MergeConnectionOptions(
     const mojom::SerialConnectionOptions& options) {

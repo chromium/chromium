@@ -46,6 +46,7 @@ class SerialIoHandlerPosix : public SerialIoHandler {
 
  private:
   friend class SerialIoHandler;
+  friend class SerialIoHandlerAndroid;
   friend class SerialIoHandlerPosixTest;
 
   SerialIoHandlerPosix(

@@ -4,6 +4,10 @@
 
 import("//build/config/features.gni")
 
+if (is_android) {
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android) {
   config("platform_support") {
     visibility = [ ":serial" ]
@@ -79,6 +83,13 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android) {
       sources += [
         "serial_device_enumerator_android.cc",
         "serial_device_enumerator_android.h",
+        "serial_io_handler_android.cc",
+        "serial_io_handler_android.h",
+      ]
+
+      deps += [
+        ":jni_headers",
+        "//device/base",
       ]
     }
 
@@ -124,5 +135,47 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac || is_android) {
       ":serial",
       "//base",
     ]
+  }
+}
+
+if (is_android) {
+  java_sources_needing_jni =
+      [ "android/java/src/org/chromium/device/serial/ChromeSerialManager.java" ]
+
+  generate_jni("jni_headers") {
+    sources = java_sources_needing_jni
+  }
+
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = java_sources_needing_jni
+    deps = [
+      "//base:base_java",
+      "//base:flagged_apis_java",
+      "//base:service_loader_java",
+      "//build/android:build_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  javatest_sources_needing_jni =
+      [ "android/javatests/src/org/chromium/device/serial/CppTestHelper.java" ]
+
+  generate_jni("native_unittests_jni_headers") {
+    testonly = true
+    sources = javatest_sources_needing_jni
+  }
+
+  android_library("native_unittests_java") {
+    testonly = true
+    sources = javatest_sources_needing_jni
+    deps = [
+      ":java",
+      "//base:flagged_apis_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [ ":native_unittests_jni_headers" ]
   }
 }

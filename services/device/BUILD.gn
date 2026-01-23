@@ -318,6 +318,14 @@ source_set("tests") {
       sources += [ "serial/serial_io_handler_posix_unittest.cc" ]
     }
 
+    if (is_android) {
+      sources += [ "serial/serial_device_enumerator_android_unittest.cc" ]
+      deps += [
+        "//services/device/serial:native_unittests_jni_headers",
+        "//third_party/jni_zero:jni_zero_java",
+      ]
+    }
+
     if (is_linux || is_chromeos) {
       deps += [ "//device/udev_linux:test_support" ]
     }
@@ -485,6 +493,7 @@ if (is_android) {
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:mojom_java",
       "//services/device/screen_orientation:java",
+      "//services/device/serial:java",
       "//services/device/time_zone_monitor:java",
       "//services/device/usb:java",
       "//services/device/vibration/android:vibration_manager_java",

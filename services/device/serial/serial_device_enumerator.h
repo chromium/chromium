@@ -48,6 +48,10 @@ class SerialDeviceEnumerator {
       const base::UnguessableToken& token,
       bool use_alternate_path);
 
+  virtual scoped_refptr<SerialIoHandler> CreateIoHandler(
+      const base::FilePath& path,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
  protected:
   // These helper methods take care of managing |ports_| and notifying
   // observers. |port|s passed to AddPort() must be unique and the |token|

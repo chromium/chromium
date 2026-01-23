@@ -16,6 +16,7 @@
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
+#include "services/device/serial/serial_io_handler.h"
 #include "services/device/serial/serial_port_impl.h"
 
 namespace device {
@@ -111,11 +112,13 @@ void SerialPortManagerImpl::OpenPort(
   std::optional<base::FilePath> path =
       enumerator_->GetPathFromToken(token, use_alternate_path);
   if (path) {
+    scoped_refptr<SerialIoHandler> io_handler =
+        enumerator_->CreateIoHandler(*path, ui_task_runner_);
     io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &SerialPortImpl::Open, *path, std::move(options), std::move(client),
-            std::move(watcher), ui_task_runner_,
+            &SerialPortImpl::Open, io_handler, std::move(options),
+            std::move(client), std::move(watcher),
             base::BindOnce(&OnPortOpened, std::move(callback),
                            base::SequencedTaskRunner::GetCurrentDefault())));
     return;

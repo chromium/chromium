@@ -14,10 +14,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace device {
 
 class SerialIoHandler;
@@ -32,14 +28,6 @@ class SerialPortImpl : public mojom::SerialPort {
       base::OnceCallback<void(mojo::PendingRemote<mojom::SerialPort>)>;
 
   static void Open(
-      const base::FilePath& path,
-      mojom::SerialConnectionOptionsPtr options,
-      mojo::PendingRemote<mojom::SerialPortClient> client,
-      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      OpenCallback callback);
-
-  static void OpenForTesting(
       scoped_refptr<SerialIoHandler> io_handler,
       mojom::SerialConnectionOptionsPtr options,
       mojo::PendingRemote<mojom::SerialPortClient> client,
