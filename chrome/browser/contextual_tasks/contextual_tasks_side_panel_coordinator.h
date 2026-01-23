@@ -62,6 +62,9 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
     // Whether the side panel is open. Only used when FeatureParam
     // `kTaskScopedSidePanel` is set to true.
     bool is_open;
+
+    // The time when the WebContents becomes inactive.
+    base::TimeTicks last_active_time_ticks;
   };
   DECLARE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
@@ -137,6 +140,10 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
+
+  // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
+  ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
+  GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
 
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;

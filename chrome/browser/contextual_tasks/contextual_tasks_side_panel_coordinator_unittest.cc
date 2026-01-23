@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -167,6 +168,9 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     side_panel_registry_ =
         std::make_unique<SidePanelRegistry>(browser_window_.get());
 
+    tab_list_bridge_ = std::make_unique<TabListBridge>(*tab_strip_model_,
+                                                       unowned_user_data_host_);
+
     coordinator_ = std::make_unique<ContextualTasksSidePanelCoordinator>(
         browser_window_.get(), &mock_side_panel_ui_,
         &mock_active_task_context_provider_);
@@ -189,6 +193,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   void TearDown() override {
     coordinator_.reset();
     side_panel_registry_.reset();
+    tab_list_bridge_.reset();
     tab_strip_model_.reset();
     browser_window_.reset();
     mock_controller_ = nullptr;
@@ -213,6 +218,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   std::unique_ptr<TabStripModel> tab_strip_model_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<SidePanelRegistry> side_panel_registry_;
+  std::unique_ptr<TabListBridge> tab_list_bridge_;
   NiceMock<MockSidePanelUI> mock_side_panel_ui_;
   NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider_;
   raw_ptr<MockContextualTasksService> mock_controller_ = nullptr;
