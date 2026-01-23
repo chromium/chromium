@@ -16,7 +16,6 @@ include_rules = [
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   "+ios/chrome/browser/web/model",
   "+ios/chrome/browser/webdata_services/model",
-  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
 ]
 
 specific_include_rules = {

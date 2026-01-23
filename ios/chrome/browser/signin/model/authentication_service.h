@@ -18,7 +18,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 namespace syncer {
@@ -54,8 +53,7 @@ class AuthenticationService : public KeyedService,
   };
 
   // All passed-in services must not be null, and must outlive this service.
-  AuthenticationService(ProfileIOS* profile,
-                        PrefService* pref_service,
+  AuthenticationService(PrefService* pref_service,
                         ChromeAccountManagerService* account_manager_service,
                         signin::IdentityManager* identity_manager,
                         syncer::SyncService* sync_service);
@@ -230,7 +228,6 @@ class AuthenticationService : public KeyedService,
   // Chrome is started after a device restore.
   void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
                                bool device_restore);
-  void HandleForgottenIdentityCallback(const CoreAccountInfo account_info);
 
   // Checks if the authenticated identity was removed by calling
   // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
@@ -277,7 +274,6 @@ class AuthenticationService : public KeyedService,
   // is null.
   std::unique_ptr<AuthenticationServiceDelegate> delegate_;
 
-  raw_ptr<ProfileIOS> profile_;
   // Pointer to the KeyedServices used by AuthenticationService.
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;

@@ -20,7 +20,7 @@ enum class ProfileSignout;
 using SignoutCompletionCallback = base::OnceCallback<void(SceneState*)>;
 
 // Returns a ChangeProfileContinuation that sign-out the profile, presents
-// a snackbar (if non-null), and then runs `signout_completion`.
+// a snackbar, and then runs `signout_completion`.
 ChangeProfileContinuation CreateChangeProfileSignoutContinuation(
     signin_metrics::ProfileSignout signout_source_metric,
     BOOL force_snackbar_over_toolbar,
