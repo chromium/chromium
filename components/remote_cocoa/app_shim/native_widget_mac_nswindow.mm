@@ -4,11 +4,12 @@
 
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
+#include <memory>
+
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -206,14 +207,13 @@ struct NSEdgeAndCornerThicknesses {
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _activationIndependence;
   BOOL _isTooltip;
-  BOOL _isHeadless;
   BOOL _isShufflingForOrdering;
   BOOL _miniaturizationInProgress;
+  std::unique_ptr<NativeWidgetMacNSWindowHeadlessInfo> _headless_info;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
 @synthesize bridge = _bridge;
 @synthesize isTooltip = _isTooltip;
-@synthesize isHeadless = _isHeadless;
 @synthesize isShufflingForOrdering = _isShufflingForOrdering;
 @synthesize preventKeyWindow = _preventKeyWindow;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
@@ -233,6 +233,27 @@ struct NSEdgeAndCornerThicknesses {
     self.releasedWhenClosed = NO;
   }
   return self;
+}
+
+- (BOOL)isHeadless {
+  return _headless_info != nullptr;
+}
+
+- (void)setIsHeadless:(BOOL)isHeadless {
+  // NativeWidgetMacNSWindowHeadlessInfo constructor overrides certain NSWindow
+  // methods in order to implement headless mode behavior. This affects all
+  // NativeWidgetMacNSWindow instances, however, the overrides will fallback to
+  // the original implementations if there is no headless info associated with
+  // the window.
+  if (isHeadless) {
+    _headless_info = std::make_unique<NativeWidgetMacNSWindowHeadlessInfo>();
+  } else {
+    _headless_info.reset();
+  }
+}
+
+- (NativeWidgetMacNSWindowHeadlessInfo*)headlessInfo {
+  return _headless_info.get();
 }
 
 // This is called by the "Move Window to {Left/Right} Side of Screen"
@@ -351,19 +372,6 @@ struct NSEdgeAndCornerThicknesses {
   [self orderWindow:NSWindowAbove relativeTo:0];
 }
 
-- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
-  if (_isHeadless || self.parentWindow) {
-    // AppKit's default implementation moves child windows down to avoid
-    // the menu bar. We don't want that behavior, because widgets like the
-    // Omnibox may have a big shadow that could cause invisible menu bar
-    // collision in fullscreen/maximized state. We override it here to
-    // return the original frameRect before the adjustment.
-    return frameRect;
-  }
-
-  return [super constrainFrameRect:frameRect toScreen:screen];
-}
-
 // Private methods.
 
 - (ViewsNSWindowDelegate*)viewsNSWindowDelegate {
@@ -402,6 +410,19 @@ struct NSEdgeAndCornerThicknesses {
     return customFrame;
   }
   return [super frameViewClassForStyleMask:windowStyle];
+}
+
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  if (self.isHeadless || self.parentWindow) {
+    // AppKit's default implementation moves child windows down to avoid
+    // the menu bar. We don't want that behavior, because widgets like the
+    // Omnibox may have a big shadow that could cause invisible menu bar
+    // collision in fullscreen/maximized state. We override it here to
+    // return the original frameRect before the adjustment.
+    return frameRect;
+  }
+
+  return [super constrainFrameRect:frameRect toScreen:screen];
 }
 
 - (BOOL)_isTitleHidden {

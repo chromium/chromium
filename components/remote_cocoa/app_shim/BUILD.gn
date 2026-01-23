@@ -47,6 +47,8 @@ component("app_shim") {
     "native_widget_mac_frameless_nswindow.mm",
     "native_widget_mac_nswindow.h",
     "native_widget_mac_nswindow.mm",
+    "native_widget_mac_nswindow_headless.h",
+    "native_widget_mac_nswindow_headless.mm",
     "native_widget_mac_overlay_nswindow.h",
     "native_widget_mac_overlay_nswindow.mm",
     "native_widget_ns_window_bridge.h",
@@ -116,6 +118,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_native_widget_window_mac_unittests.mm",
+    "native_widget_mac_nswindow_headless_unittests.mm",
     "native_widget_mac_overlay_nswindow_unittests.mm",
   ]
   deps = [
@@ -124,5 +127,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
     "//ui/base",
+    "//ui/display:test_support",
   ]
 }

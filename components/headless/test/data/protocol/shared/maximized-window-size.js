@@ -10,19 +10,31 @@
 
   await dp.Page.enable();
 
-  async function getWindowSize(windowId) {
-    const {result: {bounds}} = await dp.Browser.getWindowBounds({windowId});
-    return {width: bounds.width, height: bounds.height};
+  const {windowId} = (await dp.Browser.getWindowForTarget()).result;
+
+  async function logWindowBounds() {
+    const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
+    testRunner.log(`${bounds.left},${bounds.top} ${bounds.width}x${
+        bounds.height} ${bounds.windowState}`);
   }
 
-  const {result: {windowId}} = await dp.Browser.getWindowForTarget();
+  // Set normal window size to non default width and height thus ensuring
+  // frame resized notification.
+  await dp.Browser.setWindowBounds(
+      {windowId, bounds: {left: 10, top: 20, width: 810, height: 620}});
+  await dp.Page.onceFrameResized();
+  await logWindowBounds();
 
+  // Maximize window.
   await dp.Browser.setWindowBounds(
       {windowId, bounds: {windowState: 'maximized'}});
   await dp.Page.onceFrameResized();
+  await logWindowBounds();
 
-  const maximizedSize = await getWindowSize(windowId);
-  testRunner.log(`${maximizedSize.width}x${maximizedSize.height}`);
+  // Restore window.
+  await dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'normal'}});
+  await dp.Page.onceFrameResized();
+  await logWindowBounds();
 
   testRunner.completeTest();
 });

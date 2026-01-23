@@ -301,21 +301,19 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSizeLargerThanScreen,
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "shared/large-browser-window-size.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
+                            "shared/maximize-restore-window.js")
+
 // These currently fail on Mac, see https://crbug.com/1488010
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MinimizeRestoreWindow,
                             "shared/minimize-restore-window.js")
-HEADLESS_MODE_PROTOCOL_TEST(MaximizeRestoreWindow,
-                            "shared/maximize-restore-window.js")
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenRestoreWindow,
                             "shared/fullscreen-restore-window.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-// This currently fails on Mac, see https://crbug.com/416088625
-#if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "shared/maximized-window-size.js")
-#endif  // !BUILDFLAG(IS_MAC)
 
 // These currently fail on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
