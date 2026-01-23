@@ -26,6 +26,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -43,6 +44,7 @@ namespace web_app {
 
 class IsolatedWebAppStorageLocation;
 class WebApp;
+class FinalizeInstallJob;
 class WebAppProvider;
 
 // An finalizer for the installation process, represents the last step.
@@ -145,7 +147,14 @@ class WebAppInstallFinalizer {
   void SetClockForTesting(base::Clock* clock);
 
  private:
+  friend class FinalizeInstallJob;
+
   using CommitCallback = base::OnceCallback<void(bool success)>;
+
+  void OnInstallJobFinished(FinalizeInstallJob* job,
+                            InstallFinalizedCallback callback,
+                            const webapps::AppId& app_id,
+                            webapps::InstallResultCode code);
 
   void UpdateIsolationDataAndResetPendingUpdateInfo(
       WebApp* web_app,
@@ -215,6 +224,8 @@ class WebAppInstallFinalizer {
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   raw_ptr<base::Clock> clock_{base::DefaultClock::GetInstance()};
+
+  absl::flat_hash_set<std::unique_ptr<FinalizeInstallJob>> install_jobs_;
 
   bool started_ = false;
 

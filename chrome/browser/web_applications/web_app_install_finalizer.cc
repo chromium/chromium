@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -266,8 +267,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
     return;
   }
 
-  webapps::ManifestId manifest_id = web_app_info.manifest_id();
-
   if (options.install_state == proto::InstallState::SUGGESTED_FROM_MIGRATION &&
       web_app_info.migration_sources.empty()) {
     std::move(callback).Run(
@@ -275,40 +274,24 @@ void WebAppInstallFinalizer::FinalizeInstall(
     return;
   }
 
-  // parent_app_manifest_id can only exist if installing as a sub-app.
-  CHECK((options.install_surface == webapps::WebappInstallSource::SUB_APP &&
-         web_app_info.parent_app_manifest_id.has_value()) ||
-        (options.install_surface != webapps::WebappInstallSource::SUB_APP &&
-         !web_app_info.parent_app_manifest_id.has_value()));
+  std::unique_ptr<FinalizeInstallJob> web_app_install_job =
+      std::make_unique<FinalizeInstallJob>(*profile_, *provider_, *this,
+                                           std::move(web_app_info), options);
+  FinalizeInstallJob* job_ptr = web_app_install_job.get();
+  install_jobs_.insert(std::move(web_app_install_job));
+  job_ptr->Start(base::BindOnce(&WebAppInstallFinalizer::OnInstallJobFinished,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                base::Unretained(job_ptr),
+                                std::move(callback)));
+}
 
-  OnDidGetWebAppOriginAssociations origin_association_validated_callback =
-      base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
-                     weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
-                     options, std::move(callback));
-
-  bool needs_scope_validation =
-      !web_app_info.scope_extensions.empty() &&
-      !web_app_info.validated_scope_extensions.has_value();
-  bool needs_migration_validation =
-      base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
-      !web_app_info.migration_sources.empty();
-
-  if (options.skip_origin_association_validation ||
-      (!needs_scope_validation && !needs_migration_validation)) {
-    std::move(origin_association_validated_callback).Run(OriginAssociations());
-    return;
-  }
-
-  OriginAssociations origin_associations;
-  if (needs_scope_validation) {
-    origin_associations.scope_extensions = web_app_info.scope_extensions;
-  }
-  if (needs_migration_validation) {
-    origin_associations.migration_sources = web_app_info.migration_sources;
-  }
-  provider_->origin_association_manager().GetWebAppOriginAssociations(
-      manifest_id, std::move(origin_associations),
-      std::move(origin_association_validated_callback));
+void WebAppInstallFinalizer::OnInstallJobFinished(
+    FinalizeInstallJob* job,
+    InstallFinalizedCallback callback,
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
+  install_jobs_.erase(job);
+  std::move(callback).Run(app_id, code);
 }
 
 void WebAppInstallFinalizer::OnOriginAssociationValidated(

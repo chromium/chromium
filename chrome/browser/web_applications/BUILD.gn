@@ -184,6 +184,8 @@ source_set("web_applications") {
     "isolated_web_apps/update_manifest/update_manifest_fetcher.h",
     "isolated_web_apps/window_management/window_management_content_setting_observer.cc",
     "isolated_web_apps/window_management/window_management_content_setting_observer.h",
+    "jobs/finalize_install_job.cc",
+    "jobs/finalize_install_job.h",
     "jobs/get_progressive_web_app_size_job.cc",
     "jobs/get_progressive_web_app_size_job.h",
     "jobs/install_from_info_job.cc",
