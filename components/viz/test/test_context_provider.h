@@ -52,10 +52,6 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> CreateWorker(
       std::unique_ptr<TestContextSupport> support);
 
-  explicit TestContextProvider(std::unique_ptr<TestContextSupport> support,
-                               std::unique_ptr<TestRasterInterface> raster,
-                               bool support_locking);
-
   TestContextProvider(const TestContextProvider&) = delete;
   TestContextProvider& operator=(const TestContextProvider&) = delete;
 
@@ -95,6 +91,9 @@ class TestContextProvider
 
  protected:
   friend class base::RefCountedThreadSafe<TestContextProvider>;
+  TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                      std::unique_ptr<TestRasterInterface> raster,
+                      bool support_locking);
   ~TestContextProvider() override;
 
  private:
