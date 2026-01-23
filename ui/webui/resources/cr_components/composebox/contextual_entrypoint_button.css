@@ -54,11 +54,11 @@ cr-button#entrypoint.ai-mode-button {
   }
 }
 
-:host([glif-animation-state="spinner-only"]) #description {
+:host([glif-animation-state='spinner-only']) #description {
   opacity: 0;
 }
 
-:host([glif-animation-state="started"]) #description {
+:host([glif-animation-state='started']) #description {
   animation: slide-in 1000ms 820ms var(--text-animation-curve) forwards,
     fade-in 850ms 970ms var(--text-animation-curve) forwards;
   opacity: 0;
@@ -96,7 +96,7 @@ cr-button#entrypoint.ai-mode-button {
 .aim-gradient-solid:before {
   background: var(--glif-gradient);
   bottom: 0;
-  content: "";
+  content: '';
   height: 200%;
   left: 0;
   opacity: 0;
@@ -133,10 +133,10 @@ cr-button#entrypoint.ai-mode-button {
     infinite;
 }
 
-:host([glif-animation-state="finished"]) .aim-gradient-outer-blur,
-:host([glif-animation-state="ineligible"]) .aim-gradient-outer-blur,
-:host([glif-animation-state="finished"]) .aim-gradient-solid,
-:host([glif-animation-state="ineligible"]) .aim-gradient-solid {
+:host([glif-animation-state='finished']) .aim-gradient-outer-blur,
+:host([glif-animation-state='ineligible']) .aim-gradient-outer-blur,
+:host([glif-animation-state='finished']) .aim-gradient-solid,
+:host([glif-animation-state='ineligible']) .aim-gradient-solid {
   animation-play-state: paused;
   opacity: 0;
 }
@@ -155,8 +155,8 @@ cr-button#entrypoint.ai-mode-button {
   }
 }
 
-:host([glif-animation-state="started"]) .aim-gradient-outer-blur:before,
-:host([glif-animation-state="started"]) .aim-gradient-solid:before {
+:host([glif-animation-state='started']) .aim-gradient-outer-blur:before,
+:host([glif-animation-state='started']) .aim-gradient-solid:before {
   /* Start fully opaque before fading. */
   opacity: 1;
   animation: fade-out-only var(--duration) linear forwards;
@@ -172,17 +172,17 @@ cr-button#entrypoint.ai-mode-button {
   }
 }
 
-:host([glif-animation-state="spinner-only"]) .aim-gradient-outer-blur:before,
-:host([glif-animation-state="spinner-only"]) .aim-gradient-solid:before {
+:host([glif-animation-state='spinner-only']) .aim-gradient-outer-blur:before,
+:host([glif-animation-state='spinner-only']) .aim-gradient-solid:before {
   animation: opacity-fade-in-and-stay 300ms linear forwards;
 }
 
-:host([glif-animation-state="finished"]) .aim-gradient-outer-blur:before,
-:host([glif-animation-state="finished"]) .aim-gradient-solid:before {
+:host([glif-animation-state='finished']) .aim-gradient-outer-blur:before,
+:host([glif-animation-state='finished']) .aim-gradient-solid:before {
   opacity: 0;
 }
 
-:host([glif-animation-state="spinner-only"]) .aim-background {
+:host([glif-animation-state='spinner-only']) .aim-background {
   animation: opacity-fade-in-and-stay 300ms linear forwards;
   background-color: var(--fulfillment-background);
 }
@@ -195,11 +195,11 @@ cr-button#entrypoint.ai-mode-button {
   position: absolute;
 }
 
-:host([glif-animation-state="started"]) .aim-background {
+:host([glif-animation-state='started']) .aim-background {
   animation: background-fade var(--duration) linear forwards;
 }
 
-:host([glif-animation-state="finished"]) .aim-background {
+:host([glif-animation-state='finished']) .aim-background {
   opacity: 0;
 }
 
@@ -238,7 +238,7 @@ cr-button#entrypoint.ai-mode-button {
   gap: 4px;
 }
 
-:host(:not([glif-animation-state="ineligible"])) #entrypoint {
+:host(:not([glif-animation-state='ineligible'])) #entrypoint {
   --cr-hover-background-color: transparent;
   animation: hover-background-delay 0ms 1850ms linear forwards;
   --icon-block-padding-small: 8px;
