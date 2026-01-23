@@ -1290,6 +1290,14 @@
       "expiry_milestone": 148
   },
   {
+    "name": "bundled-security-settings-secure-dns-v2",
+    "owners": [
+      "awado@google.com",
+      "jacastro@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"],
+      "expiry_milestone": 150
+  },
+  {
     "name": "bwg-precise-location",
     "owners": [
       "joemerramos@google.com",

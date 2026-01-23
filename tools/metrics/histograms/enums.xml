@@ -16466,6 +16466,7 @@ from previous Chrome versions.
   <int value="735180038"
       label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
+  <int value="736402508" label="BundledSecuritySettingsSecureDnsV2:enabled"/>
   <int value="736740751"
       label="OmniboxFocusTriggersWebAndSRPZeroSuggest:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
@@ -18579,6 +18580,7 @@ from previous Chrome versions.
   <int value="1460266536" label="PulseaudioLoopbackForScreenShare:disabled"/>
   <int value="1460521025"
       label="GlobalCacheListForGatingNotificationProtections:enabled"/>
+  <int value="1460523245" label="BundledSecuritySettingsSecureDnsV2:disabled"/>
   <int value="1460747747" label="GdiTextPrinting:enabled"/>
   <int value="1460958818" label="NTPForeignSessionsSuggestions:enabled"/>
   <int value="1461581256" label="MovablePartialScreenshot:enabled"/>

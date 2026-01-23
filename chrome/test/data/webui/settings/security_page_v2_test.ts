@@ -8,16 +8,15 @@ import type {CrExpandButtonElement, SettingsSecurityPageV2Element} from 'chrome:
 import {HttpsFirstModeSetting, SafeBrowsingSetting, SecuritySettingsBundleSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import type {ControlledRadioButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, Router, routes, resetRouterForTesting, SecurityPageV2Interaction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-
 
 // clang-format on
 
@@ -30,13 +29,16 @@ suite('Main', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
+      enableBundledSecuritySettingsSecureDnsV2: false,
     });
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  setup(setUpPage);
+
+  function setUpPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -52,8 +54,8 @@ suite('Main', function() {
         'generated.security_settings_bundle',
         SecuritySettingsBundleSetting.STANDARD);
     page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
-    flush();
-  });
+    return microtasksFinished();
+  }
 
   test('StandardBundleIsInitiallySelected', function() {
     assertEquals(
@@ -439,6 +441,26 @@ suite('Main', function() {
 
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('advancedProtectionURL'));
+  });
+
+  test('SecureDnsV2HiddenWhenFlagDisabled', function() {
+    // Secure DNS V2 is hidden.
+    assertFalse(
+        loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
+    assertFalse(isChildVisible(page, '#secureDnsV2'));
+  });
+
+  test('SecureDnsV2VisibleWhenFlagEnabled', async function() {
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: true,
+    });
+    resetRouterForTesting();
+
+    await setUpPage();
+    // Secure DNS V2 is visible.
+    assertTrue(
+        loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'));
+    assertTrue(isChildVisible(page, '#secureDnsV2'));
   });
 });
 

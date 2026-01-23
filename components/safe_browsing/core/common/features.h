@@ -50,8 +50,13 @@ extern const base::FeatureParam<double>
 extern const base::FeatureParam<int>
     kAutoRevokeSuspiciousNotificationMinNotificationCount;
 
-// Enables Bundled Security Settings UI on chrome://settings/security
+// Enables Bundled Security Settings UI on chrome://settings/security.
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);
+
+// Enables new Secure DNS V2 UI in Bundled Security Settings UI on the
+// chrome://settings/security page. Requires that kBundledSecuritySettings is
+// also enabled.
+BASE_DECLARE_FEATURE(kBundledSecuritySettingsSecureDnsV2);
 
 // Expand CSPP beyond phishing and trigger when clipboard copy API is called on
 // the page.

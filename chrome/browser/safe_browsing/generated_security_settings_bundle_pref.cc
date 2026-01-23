@@ -10,6 +10,7 @@
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace settings_api = extensions::api::settings_private;
@@ -55,20 +56,28 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
     // Keep this section sorted by feature name and label each section with
     // the feature.
 
-    // Secure DNS Setting
-    // TODO(crbug.com/460180440): migrate to a per-profile setting.
-    local_state->SetString(prefs::kDnsOverHttpsMode,
-                           SecureDnsConfig::kModeAutomatic);
-    local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
-    local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
-                            true);
+    // TODO(crbug.com/478023158): Extract Secure DNS pref logic to a helper
+    // function.
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+      // Secure DNS Setting
+      // TODO(crbug.com/460180440): migrate to a per-profile setting.
+      local_state->SetString(prefs::kDnsOverHttpsMode,
+                             SecureDnsConfig::kModeAutomatic);
+      local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
+      local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              true);
+    }
   } else {
-    // Secure DNS Setting
-    local_state->SetString(prefs::kDnsOverHttpsMode,
-                           SecureDnsConfig::kModeAutomatic);
-    local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
-    local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
-                            false);
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+      // Secure DNS Setting
+      local_state->SetString(prefs::kDnsOverHttpsMode,
+                             SecureDnsConfig::kModeAutomatic);
+      local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
+      local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              false);
+    }
   }
 
   return extensions::settings_private::SetPrefResult::SUCCESS;

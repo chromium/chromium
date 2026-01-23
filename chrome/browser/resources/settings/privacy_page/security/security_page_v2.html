@@ -369,10 +369,10 @@
         </settings-radio-group>
       </div>
     </security-page-feature-row>
-    <settings-secure-dns-v2
-      prefs="{{prefs}}"
-      class="box">
-    </settings-secure-dns-v2>
+    <template is="dom-if" if="[[enableBundledSecuritySettingsSecureDnsV2_]]">
+      <settings-secure-dns-v2 id="secureDnsV2" prefs="{{prefs}}" class="box">
+      </settings-secure-dns-v2>
+    </template>
   </settings-section>
   <settings-section page-title="$i18n{securityAccountAndNetworkSectionTitle}">
     <div id="httpsFirstModeSection">

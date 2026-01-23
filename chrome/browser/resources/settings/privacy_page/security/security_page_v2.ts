@@ -167,6 +167,12 @@ export class SettingsSecurityPageV2Element extends
           return loadTimeData.getBoolean('enableSecurityKeysSubpage');
         },
       },
+
+      enableBundledSecuritySettingsSecureDnsV2_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableBundledSecuritySettingsSecureDnsV2'),
+      },
     };
   }
 
@@ -192,6 +198,7 @@ export class SettingsSecurityPageV2Element extends
   declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
   declare private safeBrowsingStateTextMap_: Object;
   declare private enableSecurityKeysSubpage_: boolean;
+  declare private enableBundledSecuritySettingsSecureDnsV2_: boolean;
 
   private lastFocusTime_: number|undefined;
   private totalTimeInFocus_: number = 0;
