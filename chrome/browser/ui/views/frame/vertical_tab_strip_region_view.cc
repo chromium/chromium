@@ -550,6 +550,10 @@ bool VerticalTabStripRegionView::IsFrameActive() const {
 
 TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
     const gfx::Point& point_in_screen) {
+  if (!drag_handler_) {
+    return nullptr;
+  }
+
   VerticalUnpinnedTabContainerView* container = GetUnpinnedTabsContainer();
   CHECK(container);
   if (container->GetBoundsInScreen().Contains(point_in_screen)) {
