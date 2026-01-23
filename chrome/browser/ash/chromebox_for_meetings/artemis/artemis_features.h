@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace ash::cfm::features {
 
@@ -26,6 +27,25 @@ enum class TelemetryVerbosity {
 };
 
 extern const base::FeatureParam<TelemetryVerbosity> kTelemetryVerbosity;
+
+// Configures various fetch/upload parameters in Artemis.
+BASE_DECLARE_FEATURE(kArtemisConfig);
+
+// Defines how often the data aggregator fetches data from each source.
+extern const base::FeatureParam<base::TimeDelta> kFetchFrequency;
+
+// Defines how often each log source ingests a new batch of logs.
+extern const base::FeatureParam<base::TimeDelta> kLogPollFrequency;
+
+// Defines the number of lines ingested in each log batch.
+extern const base::FeatureParam<size_t> kLogBatchSize;
+
+// Defines the size at which payloads are queued for upload.
+extern const base::FeatureParam<size_t> kPayloadMaxSizeBytes;
+
+// Defines the max internal payload queue size. The aggregator will temporarily
+// halt fetches if we reach this size.
+extern const base::FeatureParam<size_t> kPayloadQueueMaxSize;
 
 }  // namespace ash::cfm::features
 
