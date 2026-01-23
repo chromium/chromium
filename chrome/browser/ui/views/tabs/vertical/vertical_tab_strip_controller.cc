@@ -8,7 +8,6 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
@@ -222,12 +221,6 @@ bool VerticalTabStripController::IsCollapsed() const {
   const tabs::VerticalTabStripStateController* state_controller =
       tabs::VerticalTabStripStateController::From(browser_view_->browser());
   return state_controller && state_controller->IsCollapsed();
-}
-
-tab_groups::TabGroupSyncService*
-VerticalTabStripController::GetTabGroupSyncService() {
-  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-      browser_view_->GetProfile());
 }
 
 bool VerticalTabStripController::IsContextMenuCommandChecked(
