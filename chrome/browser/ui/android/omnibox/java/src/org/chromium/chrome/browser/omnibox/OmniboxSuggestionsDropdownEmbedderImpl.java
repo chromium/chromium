@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -63,6 +64,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
     private @Nullable WindowInsetsCompat mWindowInsetsCompat;
     private final @Nullable View mBaseChromeLayout;
     private final LocationBarDataProvider mLocationBarDataProvider;
+    private final Supplier<Integer> mFuseboxStateSupplier;
 
     /**
      * @param windowAndroid Window object in which the dropdown will be displayed.
@@ -94,7 +96,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             Supplier<@ControlsPosition Integer> controlsPositionSupplier,
             Supplier<Integer> keyboardHeightSupplier,
             Supplier<Integer> bottomWindowPaddingSupplier,
-            LocationBarDataProvider locationBarDataProvider) {
+            LocationBarDataProvider locationBarDataProvider,
+            Supplier<Integer> fuseboxStateSupplier) {
         mWindowAndroid = windowAndroid;
         mAnchorView = anchorView;
         mAlignmentView = alignmentView;
@@ -109,6 +112,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mWindowHeightDp = configuration.screenHeightDp;
         mBaseChromeLayout = baseChromeLayout;
         mLocationBarDataProvider = locationBarDataProvider;
+        mFuseboxStateSupplier = fuseboxStateSupplier;
         recalculateOmniboxAlignment();
     }
 
@@ -216,18 +220,19 @@ class OmniboxSuggestionsDropdownEmbedderImpl
      * during layout and should avoid memory allocations other than the necessary new
      * OmniboxAlignment(). The method aligns the omnibox dropdown as follows:
      *
-     * <p>Case 1: Omnibox revamp enabled on tablet window.
+     * <p>Case 1: Omnibox without fusebox on tablet window.
      *
      * <pre>
      *  | anchor  [  alignment  ]       |
      *            |  dropdown   |
      * </pre>
      *
-     * <p>Case 2: Omnibox revamp disabled on tablet window.
+     * <p>Case 2: Omnibox with Fusebox on tablet window.
      *
      * <pre>
      *  | anchor    [alignment]         |
-     *  |{pad_left} dropdown {pad_right}|
+     *  |           [alignment]         |
+     *  |            dropdown           |
      * </pre>
      *
      * <p>Case 3: Phone window. Full width and no padding.
@@ -249,8 +254,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         int top;
         int left;
         int width;
-        int paddingLeft;
-        int paddingRight;
+        int paddingLeft = 0;
+        int paddingRight = 0;
 
         @ControlsPosition int controlsPosition = mControlsPositionSupplier.get();
         if (controlsPosition == ControlsPosition.BOTTOM) {
@@ -261,30 +266,42 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         }
 
         if (isTablet()) {
-            ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mPositionArray);
-            // Width equal to alignment view and left equivalent to left of alignment view. Top
-            // minus a small overlap.
-            top -=
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_toolbar_overlap);
-            int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
-            width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
+            int sideSpacing;
+            if (mFuseboxStateSupplier.get() == FuseboxState.DISABLED) {
+                // Case 1: fusebox-less omnibox on tablet.
+                // Width equal to alignment view and left equivalent to left of alignment view. Top
+                // minus a small overlap.
+                top -=
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_list_toolbar_overlap);
+                sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
+            } else {
+                // Case 2: fusebox omnibox on tablet.
+                // The width of the dropdown should match the alignment view's width exactly (0 side
+                // spacing), and its top should be exactly below the bottom of the alignment view.
+                ViewUtils.getRelativeLayoutPosition(contentView, mAlignmentView, mPositionArray);
+                top =
+                        mPositionArray[1]
+                                + mAlignmentView.getMeasuredHeight()
+                                - contentView.getPaddingTop();
+                sideSpacing = 0;
+            }
 
+            // Tablet positioning logic common between fusebox and non-fusebox cases.
+            ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mPositionArray);
+            width = mAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
             if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                 // The view will be shifted to the left, so the adjustment needs to be negative.
                 left = -(mAnchorView.getMeasuredWidth() - width - mPositionArray[0] + sideSpacing);
             } else {
                 left = mPositionArray[0] - sideSpacing;
             }
-            paddingLeft = 0;
-            paddingRight = 0;
         } else {
             // Case 3: phones or phone-sized windows on tablets. Full bleed width with no padding or
             // positioning adjustments.
             left = 0;
             width = mAnchorView.getMeasuredWidth();
-            paddingLeft = 0;
-            paddingRight = 0;
         }
 
         int keyboardHeight = mKeyboardHeightSupplier.get();

@@ -253,20 +253,6 @@ public class LocationBarCoordinator
                                     mOmniboxDropdownEmbedderImpl.recalculateOmniboxAlignment();
                                     updateBottomContainerPosition();
                                 }));
-        mOmniboxDropdownEmbedderImpl =
-                new OmniboxSuggestionsDropdownEmbedderImpl(
-                        mWindowAndroid,
-                        autocompleteAnchorView,
-                        mLocationBarLayout,
-                        uiOverrides.isForcedPhoneStyleOmnibox(),
-                        baseChromeLayout,
-                        () ->
-                                mBrowserControlsStateProvider == null
-                                        ? ControlsPosition.TOP
-                                        : mBrowserControlsStateProvider.getControlsPosition(),
-                        mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
-                        bottomWindowPaddingSupplier,
-                        locationBarDataProvider);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         final boolean isIncognito =
@@ -286,9 +272,29 @@ public class LocationBarCoordinator
                         templateUrlServiceSupplier,
                         autocompleteRequestTypeSupplier,
                         snackbarManager);
+        NonNullObservableSupplier<Integer> fuseboxStateSupplier;
         if (OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()) {
-            mFuseboxCoordinator.getFuseboxStateSupplier().addObserver(this::onFuseboxStateChange);
+            fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();
+            fuseboxStateSupplier.addObserver(this::onFuseboxStateChange);
+        } else {
+            fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
         }
+
+        mOmniboxDropdownEmbedderImpl =
+                new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mWindowAndroid,
+                        autocompleteAnchorView,
+                        mLocationBarLayout,
+                        uiOverrides.isForcedPhoneStyleOmnibox(),
+                        baseChromeLayout,
+                        () ->
+                                mBrowserControlsStateProvider == null
+                                        ? ControlsPosition.TOP
+                                        : mBrowserControlsStateProvider.getControlsPosition(),
+                        mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
+                        bottomWindowPaddingSupplier,
+                        locationBarDataProvider,
+                        fuseboxStateSupplier);
 
         mPageZoomIndicatorCoordinator =
                 pageZoomManager != null
