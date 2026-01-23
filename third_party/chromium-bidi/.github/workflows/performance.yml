@@ -1,6 +1,6 @@
 # This workflow will run measure performance in different environments.
 
-name: Measure performance
+name: Run performance benchmarks
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -29,8 +29,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  performance_metric:
-    name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
+  pup-perf-metric:
+    name: Puppeteer ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO(#876): Add Windows CI.
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - name: Disable AppArmor
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+      - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
+      - name: Install and build npm dependencies
+        run: npm ci
+      # Install chrome, chromedriver and headless shell is required to keep them cached.
+      - name: Install all chrome binaries if needed
+        uses: ./.github/actions/setup-chrome-binaries
+      - name: Build chromium-bidi
+        run: npm run build
+      - name: Install Puppeteer
+        run: npm i puppeteer
+      - name: Link chromium-bidi
+        run: |
+          npm link
+          npm link chromium-bidi
+      - name: Run JS performance benchmark
+        run: node tools/benchmark-puppeteer.mjs | tee -a tests_output.txt
+      - name: Extract and store performance metrics
+        id: extract_metrics
+        run: |
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}:/" > pup_perf_metrics.txt
+          echo "Extracted performance metrics:"
+          cat pup_perf_metrics.txt
+      - name: Upload performance result as artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: pup-perf-metrics-${{ matrix.os }}
+          path: pup_perf_metrics.txt
+          # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
+          retention-days: 1
+  e2e-perf-metric:
+    name: E2e ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
       matrix:
@@ -95,14 +144,14 @@ jobs:
       - name: Extract and store performance metrics
         id: extract_metrics
         run: |
-          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > performance_metrics.txt
+          grep 'PERF_METRIC:' tests_output.txt | sed 's/^PERF_METRIC://' | sed "s/^/${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}:/" > e2e_perf_metrics.txt
           echo "Extracted performance metrics:"
-          cat performance_metrics.txt
+          cat e2e_perf_metrics.txt
       - name: Upload performance result as artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: performance-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
-          path: performance_metrics.txt
+          name: e2e-perf-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
+          path: e2e_perf_metrics.txt
           # Do not store these artifacts for long, as they will be present in the `all-performance-metrics`.
           retention-days: 1
   combine_metrics:
@@ -117,7 +166,7 @@ jobs:
       pull-requests: write
       contents: write
     runs-on: ubuntu-latest
-    needs: performance_metric
+    needs: [pup-perf-metric, e2e-perf-metric]
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -129,7 +178,8 @@ jobs:
           path: artifacts
       - name: Combine metrics into a single file
         run: |
-          find artifacts -name "performance_metrics.txt" -exec cat {} + > all_performance_metrics.txt
+          find artifacts -name "pup_perf_metrics.txt" -exec cat {} + > all_performance_metrics.txt
+          find artifacts -name "e2e_perf_metrics.txt" -exec cat {} + >> all_performance_metrics.txt
           echo "Combined performance metrics:"
           cat all_performance_metrics.txt
 
