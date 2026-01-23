@@ -24,7 +24,6 @@ class GLApi;
 namespace gpu {
 namespace gles2 {
 class Texture;
-class TexturePassthrough;
 }  // namespace gles2
 
 // An AbstractTextureAndroid enables access to GL textures from the GPU process,
@@ -57,38 +56,6 @@ class GPU_GLES2_EXPORT AbstractTextureAndroidValidating final {
   raw_ptr<gles2::Texture> texture_ = nullptr;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
   base::WeakPtrFactory<AbstractTextureAndroidValidating> weak_ptr_factory_{
-      this};
-};
-
-class GPU_GLES2_EXPORT AbstractTextureAndroidPassthrough final {
- public:
-  static std::unique_ptr<AbstractTextureAndroidPassthrough> Create(
-      gfx::Size size);
-
-  explicit AbstractTextureAndroidPassthrough(
-      scoped_refptr<gles2::TexturePassthrough> texture,
-      const gfx::Size& size);
-
-  // The texture is guaranteed to be around while |this| exists, as long as
-  // the decoder isn't destroyed / context isn't lost.
-  ~AbstractTextureAndroidPassthrough();
-
-  // Return our TextureBase, useful mostly for creating a mailbox.  This may
-  // return null if the texture has been destroyed.
-  TextureBase* GetTextureBase() const;
-
-  // Used to notify the AbstractTexture if the context is lost.
-  void NotifyOnContextLost();
-
-  unsigned int service_id() const { return GetTextureBase()->service_id(); }
-
- private:
-  bool have_context_ = true;
-
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
-  gfx::Size texture_passthrough_size_;
-  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
-  base::WeakPtrFactory<AbstractTextureAndroidPassthrough> weak_ptr_factory_{
       this};
 };
 

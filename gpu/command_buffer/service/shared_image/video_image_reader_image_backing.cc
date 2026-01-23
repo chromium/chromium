@@ -40,6 +40,7 @@
 #include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -63,6 +64,19 @@ void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   } else {
     LOG(ERROR) << "Failed to create EGL image ";
   }
+}
+
+GLuint CreateTextureWithLinearFilter() {
+  const auto target = GL_TEXTURE_EXTERNAL_OES;
+  GLuint service_id = 0;
+  auto* api = gl::g_current_gl_context;
+  api->glGenTexturesFn(1, &service_id);
+  gl::ScopedTextureBinder binder(target, service_id);
+  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  return service_id;
 }
 
 class VideoImage : public base::RefCounted<VideoImage> {
@@ -249,16 +263,16 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        abstract_texture_(AbstractTextureAndroidPassthrough::Create(size())),
-        passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
-            abstract_texture_->GetTextureBase())) {
+        passthrough_texture_(base::MakeRefCounted<gles2::TexturePassthrough>(
+            CreateTextureWithLinearFilter(),
+            GL_TEXTURE_EXTERNAL_OES)) {
     // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(passthrough_texture_);
   }
 
   ~GLTexturePassthroughVideoImageRepresentation() override {
     if (!has_context()) {
-      abstract_texture_->NotifyOnContextLost();
+      passthrough_texture_->MarkContextLost();
     }
   }
 
@@ -304,7 +318,6 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroidPassthrough> abstract_texture_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
