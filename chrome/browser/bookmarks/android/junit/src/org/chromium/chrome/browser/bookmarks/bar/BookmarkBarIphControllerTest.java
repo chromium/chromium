@@ -25,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -68,9 +69,12 @@ public class BookmarkBarIphControllerTest {
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private BookmarkBarIphController mController;
+    private ObservableSupplierImpl<Boolean> mXrSpaceModeSupplier;
 
     @Before
     public void setUp() {
+        mXrSpaceModeSupplier = new ObservableSupplierImpl<>();
+        mXrSpaceModeSupplier.set(false);
         MockitoAnnotations.initMocks(this);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
@@ -104,7 +108,8 @@ public class BookmarkBarIphControllerTest {
                         mAppMenuHandler,
                         mToolbarMenuButton,
                         mBookmarkModel,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        mXrSpaceModeSupplier);
     }
 
     /**
@@ -186,7 +191,30 @@ public class BookmarkBarIphControllerTest {
                         mAppMenuHandler,
                         mToolbarMenuButton,
                         mBookmarkModel,
-                        mUserEducationHelper);
+                        mUserEducationHelper,
+                        mXrSpaceModeSupplier);
+
+        // Verify that #finishLoadingBookmarkModel was never called.
+        verify(mBookmarkModel, never()).finishLoadingBookmarkModel(any());
+    }
+
+    @Test
+    public void testDoesNotLoadModelIfXrModeIsOn() {
+        // Reset the mocks that were already used in the @Before setup.
+        reset(mTracker);
+        reset(mBookmarkModel);
+
+        mXrSpaceModeSupplier.set(true);
+
+        // Call the constructor again.
+        BookmarkBarIphController newController =
+                new BookmarkBarIphController(
+                        mProfile,
+                        mAppMenuHandler,
+                        mToolbarMenuButton,
+                        mBookmarkModel,
+                        mUserEducationHelper,
+                        mXrSpaceModeSupplier);
 
         // Verify that #finishLoadingBookmarkModel was never called.
         verify(mBookmarkModel, never()).finishLoadingBookmarkModel(any());

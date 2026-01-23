@@ -311,6 +311,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
     private final @NonNull CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
+    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -630,6 +631,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 (inactivityTracker) -> {
                     inactivityTracker.addObserver(mInactivityObserver);
                 });
+        mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
 
         mCrossDeviceSettingImporter =
                 new CrossDeviceSettingImporter(
@@ -1029,10 +1031,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
-            BookmarkBarUtils.recordStartUpMetrics(mActivity, mProfileSupplier.get());
+            BookmarkBarUtils.recordStartUpMetrics(
+                    mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier);
             mBookmarkBarVisibilityProvider =
                     new BookmarkBarVisibilityProvider(
-                            mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+                            mActivity,
+                            mActivityLifecycleDispatcher,
+                            mProfileSupplier,
+                            mXrSpaceModeObservableSupplier);
             mBookmarkBarVisibilityObserver =
                     new BookmarkBarVisibilityObserver() {
                         @Override
@@ -1391,7 +1397,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             profile,
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mToolbarManager.getMenuButtonView(),
-                            mBookmarkModelSupplier.get());
+                            mBookmarkModelSupplier.get(),
+                            mXrSpaceModeObservableSupplier);
         }
     }
 
@@ -2031,7 +2038,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     public boolean getBookmarkBarVisibility() {
-        return BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfileSupplier.get());
+        return BookmarkBarUtils.isBookmarkBarVisible(
+                mActivity, mProfileSupplier.get(), mXrSpaceModeObservableSupplier);
     }
 
     public int getBookmarkBarHeight() {

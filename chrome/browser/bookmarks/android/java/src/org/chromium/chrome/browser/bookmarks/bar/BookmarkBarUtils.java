@@ -26,6 +26,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 /** Utilities for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked
@@ -196,11 +197,19 @@ public class BookmarkBarUtils {
      *
      * @param context The context in which compatibility should be assessed.
      * @param profile The profile for which the user UserPref should be assessed.
+     * @param isXrFullSpaceMode Supplier for whether the device is in XR full space mode.
      * @return Whether the Bookmark Bar is currently visible.
      */
-    public static boolean isBookmarkBarVisible(Context context, @Nullable Profile profile) {
+    public static boolean isBookmarkBarVisible(
+            Context context,
+            @Nullable Profile profile,
+            @Nullable Supplier<Boolean> isXrFullSpaceMode) {
         if (sBookmarkBarVisibleForTesting != null) {
             return sBookmarkBarVisibleForTesting;
+        }
+
+        if (isXrFullSpaceMode != null && Boolean.TRUE.equals(isXrFullSpaceMode.get())) {
+            return false;
         }
 
         if (!isActivityStateBookmarkBarCompatible(context)) {
@@ -423,8 +432,11 @@ public class BookmarkBarUtils {
                 BOOKMARK_BAR_CLICK, clickType, BookmarkBarClickType.NUM_ENTRIES);
     }
 
-    public static void recordStartUpMetrics(Context context, @Nullable Profile profile) {
-        boolean isCurrentlyVisible = isBookmarkBarVisible(context, profile);
+    public static void recordStartUpMetrics(
+            Context context,
+            @Nullable Profile profile,
+            @Nullable Supplier<Boolean> isXrFullSpaceMode) {
+        boolean isCurrentlyVisible = isBookmarkBarVisible(context, profile, isXrFullSpaceMode);
 
         // Record if the Bookmark Bar is visible, but not in cases of a forced feature param.
         if (DeviceInfo.isDesktop() || hasUserSetDevicePrefShowBookmarksBar()) {
