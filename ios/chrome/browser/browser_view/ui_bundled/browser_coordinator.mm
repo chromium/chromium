@@ -828,6 +828,8 @@ const char kChromeAppStoreUrl[] =
   // notified of WebStateList events.
   [self startTabLifeCycleMediator];
 
+  [self startDispatchingToProtocols];
+
   [self createViewControllerDependencies];
 
   [self createViewController];
@@ -876,7 +878,6 @@ const char kChromeAppStoreUrl[] =
   [self uninstallDelegatesForBrowser];
   [self.tabEventsMediator disconnect];
   [self.tabLifecycleMediator disconnect];
-  [self.dispatcher stopDispatchingToTarget:self];
   // TODO:(crbug.com/477258591): Remove this nil call when clean up is resolved.
   if (IsGeminiCopresenceEnabled()) {
     // Gemini commands can be called during view controller
@@ -887,6 +888,7 @@ const char kChromeAppStoreUrl[] =
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
+  [self.dispatcher stopDispatchingToTarget:self];
   _webUsageEnablerObserver.reset();
   _activityOverlayCallback.RunAndReset();
 }
@@ -1264,10 +1266,9 @@ const char kChromeAppStoreUrl[] =
   return view != nil;
 }
 
-// Creates the browser view controller dependencies.
-- (void)createViewControllerDependencies {
-  Browser* browser = self.browser;
-  _dispatcher = browser->GetCommandDispatcher();
+// Starts dispatching
+- (void)startDispatchingToProtocols {
+  _dispatcher = self.browser->GetCommandDispatcher();
 
   // Add commands protocols handled by this class in this array to let the
   // dispatcher know where to dispatch such commands. This must be done before
@@ -1324,6 +1325,11 @@ const char kChromeAppStoreUrl[] =
   for (Protocol* protocol in protocols) {
     [_dispatcher startDispatchingToTarget:self forProtocol:protocol];
   }
+}
+
+// Creates the browser view controller dependencies.
+- (void)createViewControllerDependencies {
+  Browser* browser = self.browser;
 
   ProfileIOS* profile = browser->GetProfile();
 
@@ -1539,6 +1545,7 @@ const char kChromeAppStoreUrl[] =
   [_sideSwipeCoordinator stop];
   _sideSwipeCoordinator = nil;
 
+  [_toolbarCoordinator stop];
   _toolbarCoordinator = nil;
   _omniboxCommandsHandler = nil;
 
