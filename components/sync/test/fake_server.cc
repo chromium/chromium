@@ -621,12 +621,11 @@ void FakeServer::TriggerActionableProtocolError(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!HasTriggeredError());
 
-  sync_pb::ClientToServerResponse_Error* error =
-      new sync_pb::ClientToServerResponse_Error();
+  auto error = std::make_unique<sync_pb::ClientToServerResponse_Error>();
   error->set_error_type(error_type);
   error->set_error_description(description);
   error->set_action(action);
-  triggered_actionable_error_.reset(error);
+  triggered_actionable_error_ = std::move(error);
 }
 
 void FakeServer::ClearActionableProtocolError() {

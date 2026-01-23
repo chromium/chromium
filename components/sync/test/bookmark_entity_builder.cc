@@ -186,22 +186,20 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
   }
 
   if (use_client_tag_hash_) {
-    return base::WrapUnique<LoopbackServerEntity>(
-        new syncer::PersistentBookmarkEntity(
-            id_, kUnusedVersion, title_, /*originator_cache_guid=*/"",
-            /*originator_client_item_id=*/"",
-            syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                                uuid_.AsLowercaseString())
-                .value(),
-            GetUniquePosition(), entity_specifics, is_folder, parent_id_,
-            kDefaultTime, kDefaultTime));
+    return std::make_unique<syncer::PersistentBookmarkEntity>(
+        id_, kUnusedVersion, title_, /*originator_cache_guid=*/"",
+        /*originator_client_item_id=*/"",
+        syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                            uuid_.AsLowercaseString())
+            .value(),
+        GetUniquePosition(), entity_specifics, is_folder, parent_id_,
+        kDefaultTime, kDefaultTime);
   } else {
-    return base::WrapUnique<LoopbackServerEntity>(
-        new syncer::PersistentBookmarkEntity(
-            id_, kUnusedVersion, title_, originator_cache_guid_,
-            /*originator_client_item_id=*/originator_client_item_id_,
-            /*client_tag_hash=*/"", GetUniquePosition(), entity_specifics,
-            is_folder, parent_id_, kDefaultTime, kDefaultTime));
+    return std::make_unique<syncer::PersistentBookmarkEntity>(
+        id_, kUnusedVersion, title_, originator_cache_guid_,
+        /*originator_client_item_id=*/originator_client_item_id_,
+        /*client_tag_hash=*/"", GetUniquePosition(), entity_specifics,
+        is_folder, parent_id_, kDefaultTime, kDefaultTime);
   }
 }
 
