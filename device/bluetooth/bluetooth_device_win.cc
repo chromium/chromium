@@ -5,7 +5,6 @@
 #include "device/bluetooth/bluetooth_device_win.h"
 
 #include <string>
-#include <unordered_map>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -19,6 +18,7 @@
 #include "device/bluetooth/bluetooth_task_manager_win.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 
@@ -219,7 +219,7 @@ bool BluetoothDeviceWin::IsEqual(
 
   // Checks service collection
   UUIDSet new_services;
-  std::unordered_map<std::string, std::unique_ptr<BluetoothServiceRecordWin>>
+  absl::flat_hash_map<std::string, std::unique_ptr<BluetoothServiceRecordWin>>
       new_service_records;
   for (auto iter = device_state.service_record_states.begin();
        iter != device_state.service_record_states.end(); ++iter) {
