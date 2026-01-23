@@ -98,7 +98,7 @@ found in the LICENSE file.
     <dimen name="search_box_icon_background_width">36dp</dimen>
     <dimen name="search_box_icon_background_height">36dp</dimen>
     <dimen name="search_box_nav_button_background_inset">12dp</dimen>
-    <dimen name="search_box_embedder_margin_start">14dp</dimen>
+    <dimen name="search_box_embedder_margin_horizontal">14dp</dimen>
 
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>
