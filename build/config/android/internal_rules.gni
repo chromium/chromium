@@ -4067,7 +4067,6 @@ if (enable_java_templates) {
         }
       }
       _compile_java_forward_variables = [
-        "additional_jar_files",
         "apk_name",
         "javac_args",
         "processor_args_javac",
@@ -4105,6 +4104,7 @@ if (enable_java_templates) {
       compile_java_helper(_compile_java_target) {
         forward_variables_from(invoker,
                                _compile_java_forward_variables + [
+                                     "additional_jar_files",
                                      "jar_excluded_patterns",
                                      "jar_included_patterns",
                                    ])
