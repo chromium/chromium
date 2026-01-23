@@ -8,4 +8,8 @@
 declare_args() {
   # Enables Kythe annotations necessary to build cross references.
   enable_kythe_annotations = false
+
+  # Specifies Kythe corpus to refer to when emitting Kythe metadata from code
+  # generation tools.
+  kythe_corpus = "chromium.googlesource.com/codesearch/chromium/src//main"
 }

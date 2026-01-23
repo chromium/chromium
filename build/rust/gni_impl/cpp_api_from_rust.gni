@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/kythe.gni")
+
 # Defines a C++ `source_set` (and supporting targets) that contains C++
 # bindings for using/calling-into a given Rust crate.
 #
@@ -116,10 +118,6 @@ template("cpp_api_from_rust") {
       "--rustfmt-config-path",
       rebase_path(_rustfmt_config_path, root_build_dir),
 
-      "--kythe-annotations",
-      "--kythe-default-corpus",
-      "chromium.googlesource.com/codesearch/chromium/src//main",
-
       # TODO(crbug.com/470466915): Start using `--crate-namespace...` to stop
       # leaking mangled crate name via namespace of the generated bindings.
       # This may be blocked by b/473633643.
@@ -129,6 +127,13 @@ template("cpp_api_from_rust") {
       args += [
         "--clang-format-exe-path",
         rebase_path(_clang_format_exe_path, root_build_dir),
+      ]
+    }
+    if (enable_kythe_annotations) {
+      args += [
+        "--kythe-annotations",
+        "--kythe-default-corpus",
+        kythe_corpus_identifier,
       ]
     }
   }
