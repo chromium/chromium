@@ -19,6 +19,7 @@ export type {LineFocusListener} from './content/line_focus_controller.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './content/node_store.js';
 export type {SettingsPrefs} from './content/read_anything_types.js';
 export {DEFAULT_SETTINGS, LineFocusMovement, LineFocusStyle, LineFocusType, SettingsOption, ToolbarEvent} from './content/read_anything_types.js';
+export {ReadabilityImageClassifier} from './content/readability_image_classifier.js';
 export {SelectionController} from './content/selection_controller.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';

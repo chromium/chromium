@@ -23,6 +23,7 @@ build_webui("build") {
     "app/read_anything_toolbar.html.ts",
     "app/read_anything_toolbar.ts",
     "content/content_controller.ts",
+    "content/readability_image_classifier.ts",
     "content/line_focus_controller.ts",
     "content/line_focus_model.ts",
     "content/node_store.ts",

@@ -191,3 +191,15 @@
   display: flex;
   justify-content: center;
 }
+
+img.distilled-inline-img {
+  display: inline;
+  vertical-align: middle;
+  width: auto;
+}
+
+img.distilled-full-width-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
