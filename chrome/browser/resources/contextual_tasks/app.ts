@@ -174,6 +174,10 @@ export class ContextualTasksAppElement extends CrLitElement {
   override async connectedCallback() {
     super.connectedCallback();
 
+    // Record the WebUI URL in case one of the events below fires and changes
+    // it.
+    const webUiUrlOnLoad = new URL(window.location.href);
+
     const callbackRouter = this.browserProxy_.callbackRouter;
     this.listenerIds_ = [
       callbackRouter.onSidePanelStateChanged.addListener(
@@ -231,8 +235,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     // Check if the URL that loaded this page has a task attached to it. If it
     // does, we'll use the tasks URL to load the embedded page.
-    const params = new URLSearchParams(window.location.search);
-    const taskUuid = params.get('task');
+    const taskUuid = webUiUrlOnLoad.searchParams.get('task');
     let threadUrl = '';
     if (taskUuid) {
       const {url} =
@@ -251,7 +254,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     const threadUrlAsUrl = new URL(threadUrl);
 
     // If the "open_history" param has any value, open the history panel.
-    if (params.has('open_history')) {
+    if (webUiUrlOnLoad.searchParams.has('open_history')) {
       threadUrlAsUrl.searchParams.set('atvm', '1');
 
       // Remove the param so subsequent loads don't show history again.
@@ -269,7 +272,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     // webview) until oauth tokens are received from the WebUI controller. This
     // prevents situations where the user is technically signed out of the
     // embedded frame and unable to save or access existing data.
-    this.pendingUrl_ = this.maybeUpdateThreadUrlForRestore(threadUrlAsUrl.href);
+    this.pendingUrl_ =
+        this.maybeUpdateThreadUrlForRestore(threadUrlAsUrl, webUiUrlOnLoad);
     this.maybeLoadPendingUrl_();
   }
 
@@ -299,14 +303,14 @@ export class ContextualTasksAppElement extends CrLitElement {
   // Conditionally update the provided thread URL so it restores an existing
   // thread. If the thread URL already contains the params for loading a
   // specific thread, this will return the same URL that was provided.
-  private maybeUpdateThreadUrlForRestore(threadUrl: string): string {
+  private maybeUpdateThreadUrlForRestore(threadUrl: URL, webUiUrl: URL):
+      string {
     // Check if the provided URL is default by checking for thread ID, turn ID,
     // and title. If those params are not present, but are present on the WebUI
     // URL, apply them to the thread URL.
     // TODO(470107169): The ContextualTasksService should provide this URL
     //                  based on task ID alone.
-    const updatedThreadUrl = new URL(threadUrl);
-    const webUiUrl = new URL(window.location.href);
+    const updatedThreadUrl = new URL(threadUrl.href);
     const threadUrlHasParams = embeddedUrlHasThreadParams(updatedThreadUrl);
     const webUiUrlHasParams = webUiUrlHasThreadParams(webUiUrl);
     if (!threadUrlHasParams && webUiUrlHasParams) {
