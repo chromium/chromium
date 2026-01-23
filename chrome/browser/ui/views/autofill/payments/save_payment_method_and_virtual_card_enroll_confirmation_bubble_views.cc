@@ -69,7 +69,11 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
       !base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+            GetWindowTitle(),
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBranding)
+                ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
+                : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   } else {
     // Failed server saves should not show a Google Wallet logo, as the card did
     // not successfully save there.
