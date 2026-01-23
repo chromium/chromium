@@ -170,6 +170,11 @@ The Chromium CQ supports a variety of options that can change what it checks.
   Bypasses merge-approval check on release branches. Googlers can read more at
   http://go/chrome-merge-process.
 
+* `Max-Compile-Failures: <number>`
+
+  Specifies the number of compilation failures each trybot should collect before
+  terminating the build (0 means infinity).
+
 ## Google-internal CQ Builders
 
 A small subset of builders on the CQ are "Google-internal". This means they
