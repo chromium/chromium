@@ -9817,3 +9817,5 @@ crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogr
 
 # Gardener 2026-01-23
 crbug.com/478074263 [ Mac ] virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/select-url-saved-query-same-origin-multi-query.tentative.https.sub.html [ Failure Pass Timeout ]
+crbug.com/478193880 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Failure Pass Timeout ]
+crbug.com/478201211 external/wpt/webxr/layers/idlharness.https.window.html [ Failure Pass ]
