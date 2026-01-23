@@ -63,25 +63,20 @@ void InputStateModel::notifySubscribers() {
 
 namespace {
 
-// Checks if a set of items are all present in an allowed list.
-template <typename T, typename U>
-bool AreItemsAllowed(const T& items, const U& allowed_items) {
-  std::set<typename U::value_type> allowed_set(allowed_items.begin(),
-                                               allowed_items.end());
-  for (const auto& item : items) {
-    if (allowed_set.find(item) == allowed_set.end()) {
-      return false;
-    }
-  }
-  return true;
-}
-
 // Returns if an item is allowed in a list of items.
 template <typename T, typename U>
 bool IsItemAllowed(const T& item, const U& allowed_items) {
-  std::set<typename U::value_type> allowed_set(allowed_items.begin(),
-                                               allowed_items.end());
-  return allowed_set.count(item);
+  return std::find(allowed_items.begin(), allowed_items.end(), item) !=
+         allowed_items.end();
+}
+
+// Checks if a set of items are all present in an allowed list.
+template <typename T, typename U>
+bool AreItemsAllowed(const T& items, const U& allowed_items) {
+  return std::all_of(items.begin(), items.end(),
+                     [&allowed_items](const auto& item) {
+                       return IsItemAllowed(item, allowed_items);
+                     });
 }
 
 // Returns the rule for a given `model`.
