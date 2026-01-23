@@ -72,13 +72,11 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     FinishCompleteLoginParams(InlineLoginHandlerImpl* handler,
                               content::StoragePartition* partition,
                               const GURL& url,
-                              const base::FilePath& profile_path,
                               bool confirm_untrusted_signin,
                               const std::string& email,
                               const GaiaId& gaia_id,
                               const std::string& password,
-                              const std::string& auth_code,
-                              bool is_force_sign_in_with_usermanager);
+                              const std::string& auth_code);
     FinishCompleteLoginParams(const FinishCompleteLoginParams& other);
     ~FinishCompleteLoginParams();
 
@@ -88,9 +86,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     raw_ptr<content::StoragePartition> partition;
     // URL of sign in containing parameters such as email, source, etc.
     GURL url;
-    // Path to profile being signed in. Non empty only when unlocking a profile
-    // from the user manager.
-    base::FilePath profile_path;
     // When true, an extra prompt will be shown to the user before sign in
     // completes.
     bool confirm_untrusted_signin;
@@ -104,9 +99,6 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     // for the account used to sign in.  Used only with password separated
     // signin flow.
     std::string auth_code;
-    // True if user signing in with UserManager when force-sign-in policy is
-    // enabled.
-    bool is_force_sign_in_with_usermanager;
   };
 
   static void FinishCompleteLogin(const FinishCompleteLoginParams& params,
@@ -136,8 +128,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
-      bool confirm_untrusted_signin,
-      bool is_force_sign_in_with_usermanager);
+      bool confirm_untrusted_signin);
 
   InlineSigninHelper(const InlineSigninHelper&) = delete;
   InlineSigninHelper& operator=(const InlineSigninHelper&) = delete;
@@ -151,8 +142,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   // Overridden from GaiaAuthConsumer.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
-
-  void OnClientOAuthSuccessAndBrowserOpened(const ClientOAuthResult& result);
 
   // Callback invoked once the user has responded to the signin confirmation UI.
   // If confirmed is false, the signin is aborted.
@@ -172,7 +161,6 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   const std::string password_;
   const std::string auth_code_;
   const bool confirm_untrusted_signin_;
-  const bool is_force_sign_in_with_usermanager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_HANDLER_IMPL_H_

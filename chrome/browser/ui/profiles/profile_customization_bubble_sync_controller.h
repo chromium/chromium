@@ -9,6 +9,8 @@
 
 class BrowserWindowInterface;
 
+// TODO(crbug.com/381231566): As part of the ForceSignin inline login handler
+// cleanup, this is not used anymore. Look into further possible cleanups.
 // Implemented in
 // chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.cc
 void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
