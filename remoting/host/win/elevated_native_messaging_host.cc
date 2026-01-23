@@ -76,8 +76,7 @@ ProcessLaunchResult ElevatedNativeMessagingHost::EnsureElevatedHostCreated() {
   return PROCESS_LAUNCH_RESULT_SUCCESS;
 }
 
-void ElevatedNativeMessagingHost::SendMessage(
-    const base::Value::Dict& message) {
+void ElevatedNativeMessagingHost::SendMessage(const base::DictValue& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
   elevated_channel_->SendMessage(message);
 }

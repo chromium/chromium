@@ -33,7 +33,7 @@ class FileSessionStorageTest : public testing::Test {
   // memory!
   FileSessionStorage storage() { return FileSessionStorage{GetDir()}; }
 
-  void StoreSession(const base::Value::Dict& information = {}) {
+  void StoreSession(const base::DictValue& information = {}) {
     TestFuture<void> done_signal;
     storage().StoreSession(information, done_signal.GetCallback());
     ASSERT_TRUE(done_signal.Wait());
@@ -45,8 +45,8 @@ class FileSessionStorageTest : public testing::Test {
     ASSERT_TRUE(done_signal.Wait());
   }
 
-  std::optional<base::Value::Dict> RetrieveSession() {
-    TestFuture<std::optional<base::Value::Dict>> done_signal;
+  std::optional<base::DictValue> RetrieveSession() {
+    TestFuture<std::optional<base::DictValue>> done_signal;
     storage().RetrieveSession(done_signal.GetCallback());
     return done_signal.Take();
   }
@@ -87,11 +87,11 @@ TEST_F(FileSessionStorageTest,
 TEST_F(FileSessionStorageTest,
        RetrieveSessionShouldReturnStoredSessionInformation) {
   auto session_information =
-      base::Value::Dict().Set("stored-key", "stored-value");
+      base::DictValue().Set("stored-key", "stored-value");
 
   StoreSession(session_information);
 
-  std::optional<base::Value::Dict> result = RetrieveSession();
+  std::optional<base::DictValue> result = RetrieveSession();
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(*result, base::test::IsJson(session_information));
 }

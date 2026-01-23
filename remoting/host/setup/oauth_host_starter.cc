@@ -53,7 +53,7 @@ class OAuthHostStarter : public HostStarterBase {
   void RetrieveApiAccessToken() override;
   void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
-  void ApplyConfigValues(base::Value::Dict& config) override;
+  void ApplyConfigValues(base::DictValue& config) override;
 
   // DirectoryServiceClient callbacks.
   void OnDeleteHostResponse(
@@ -149,7 +149,7 @@ void OAuthHostStarter::RemoveOldHostFromDirectory(
   }
 }
 
-void OAuthHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+void OAuthHostStarter::ApplyConfigValues(base::DictValue& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   config.Set(kHostTypeHintPath, kMe2MeHostTypeHint);

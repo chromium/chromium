@@ -41,7 +41,7 @@ void NativeMessagingWriterTest::SetUp() {
 }
 
 TEST_F(NativeMessagingWriterTest, GoodMessage) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("foo", 42);
   base::Value message(std::move(dict));
   EXPECT_TRUE(writer_->WriteMessage(message));
@@ -59,7 +59,7 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   ASSERT_TRUE(body_read.has_value());
   ASSERT_EQ(static_cast<size_t>(body_length), *body_read);
 
-  base::Value::Dict written = base::test::ParseJsonDict(body_buffer);
+  base::DictValue written = base::test::ParseJsonDict(body_buffer);
   EXPECT_EQ(message, written);
 
   // Ensure no extra data: read returns zero or nullopt on EOF.
@@ -72,8 +72,8 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
 
 TEST_F(NativeMessagingWriterTest, SecondMessage) {
   auto messages = std::to_array<base::Value>({
-      base::Value(base::Value::Dict{}),
-      base::Value(base::Value::Dict().Set("foo", 42)),
+      base::Value(base::DictValue{}),
+      base::Value(base::DictValue().Set("foo", 42)),
   });
   EXPECT_TRUE(writer_->WriteMessage(messages[0]));
   EXPECT_TRUE(writer_->WriteMessage(messages[1]));
@@ -93,7 +93,7 @@ TEST_F(NativeMessagingWriterTest, SecondMessage) {
     ASSERT_EQ(static_cast<size_t>(length), *body_read) << "i = " << i;
 
     // Verify message content.
-    base::Value::Dict written = base::test::ParseJsonDict(body_buffer);
+    base::DictValue written = base::test::ParseJsonDict(body_buffer);
     EXPECT_EQ(messages[i], written);
   }
 }
@@ -102,7 +102,7 @@ TEST_F(NativeMessagingWriterTest, FailedWrite) {
   // Close the read end so that writing fails immediately.
   read_file_.Close();
 
-  base::Value message(base::Value::Dict{});
+  base::Value message(base::DictValue{});
   EXPECT_FALSE(writer_->WriteMessage(message));
 }
 

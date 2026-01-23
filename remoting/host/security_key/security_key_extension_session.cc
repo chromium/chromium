@@ -42,7 +42,7 @@ unsigned int GetCommandCode(const std::string& data) {
 
 // Creates a string of byte data from a ListValue of numbers. Returns true if
 // all of the list elements are numbers.
-bool ConvertListToString(const base::Value::List& bytes, std::string* out) {
+bool ConvertListToString(const base::ListValue& bytes, std::string* out) {
   out->clear();
 
   unsigned int byte_count = bytes.size();
@@ -95,7 +95,7 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
     return false;
   }
 
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       message.data(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(WARNING) << "Failed to retrieve data from gnubby-auth message.";
@@ -129,7 +129,7 @@ void SecurityKeyExtensionSession::BindSecurityKeyForwarder(
 #endif  // BUILDFLAG(IS_WIN)
 
 void SecurityKeyExtensionSession::ProcessControlMessage(
-    const base::Value::Dict& message_data) const {
+    const base::DictValue& message_data) const {
   const std::string* option = message_data.FindString(kControlOption);
   if (!option) {
     LOG(WARNING) << "Could not extract control option from message.";
@@ -144,7 +144,7 @@ void SecurityKeyExtensionSession::ProcessControlMessage(
 }
 
 void SecurityKeyExtensionSession::ProcessDataMessage(
-    const base::Value::Dict& message_data) const {
+    const base::DictValue& message_data) const {
   std::optional<int> connection_id_opt = message_data.FindInt(kConnectionId);
   if (!connection_id_opt.has_value()) {
     LOG(WARNING) << "Could not extract connection id from message.";
@@ -159,7 +159,7 @@ void SecurityKeyExtensionSession::ProcessDataMessage(
   }
 
   std::string response;
-  const base::Value::List* bytes_list = message_data.FindList(kDataPayload);
+  const base::ListValue* bytes_list = message_data.FindList(kDataPayload);
   if (bytes_list && ConvertListToString(*bytes_list, &response)) {
     HOST_LOG << "Processing security key response: "
              << GetCommandCode(response);
@@ -172,7 +172,7 @@ void SecurityKeyExtensionSession::ProcessDataMessage(
 }
 
 void SecurityKeyExtensionSession::ProcessErrorMessage(
-    const base::Value::Dict& message_data) const {
+    const base::DictValue& message_data) const {
   std::optional<int> connection_id_opt = message_data.FindInt(kConnectionId);
   if (!connection_id_opt.has_value()) {
     LOG(WARNING) << "Could not extract connection id from message.";
@@ -196,11 +196,11 @@ void SecurityKeyExtensionSession::SendMessageToClient(
 
   HOST_LOG << "Sending security key request: " << GetCommandCode(data);
 
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
   request_dict.Set(kMessageType, kDataMessage);
   request_dict.Set(kConnectionId, connection_id);
 
-  base::Value::List bytes;
+  base::ListValue bytes;
   for (auto& byte : data) {
     bytes.Append(static_cast<unsigned char>(byte));
   }

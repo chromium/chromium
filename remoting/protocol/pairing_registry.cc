@@ -57,7 +57,7 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
 }
 
 PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
-    const base::Value::Dict& pairing) {
+    const base::DictValue& pairing) {
   std::optional<double> created_time_value =
       pairing.FindDouble(kCreatedTimeKey);
   const std::string* client_name = pairing.FindString(kClientNameKey);
@@ -75,8 +75,8 @@ PairingRegistry::Pairing PairingRegistry::Pairing::CreateFromValue(
   return Pairing();
 }
 
-base::Value::Dict PairingRegistry::Pairing::ToValue() const {
-  base::Value::Dict pairing;
+base::DictValue PairingRegistry::Pairing::ToValue() const {
+  base::DictValue pairing;
   pairing.Set(
       kCreatedTimeKey,
       static_cast<double>(created_time().InMillisecondsFSinceUnixEpoch()));
@@ -182,7 +182,7 @@ void PairingRegistry::AddPairing(const Pairing& pairing) {
 void PairingRegistry::DoLoadAll(GetAllPairingsCallback callback) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  base::Value::List pairings = delegate_->LoadAll();
+  base::ListValue pairings = delegate_->LoadAll();
   PostTask(caller_task_runner_, FROM_HERE,
            base::BindOnce(std::move(callback), std::move(pairings)));
 }
@@ -242,17 +242,17 @@ void PairingRegistry::InvokeGetPairingCallbackAndScheduleNext(
 
 void PairingRegistry::InvokeGetAllPairingsCallbackAndScheduleNext(
     GetAllPairingsCallback callback,
-    base::Value::List pairings) {
+    base::ListValue pairings) {
   std::move(callback).Run(std::move(pairings));
   pending_requests_.pop();
   ServiceNextRequest();
 }
 
 void PairingRegistry::SanitizePairings(GetAllPairingsCallback callback,
-                                       base::Value::List pairings) {
+                                       base::ListValue pairings) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  base::Value::List sanitized_pairings;
+  base::ListValue sanitized_pairings;
   for (const base::Value& pairing_json : pairings) {
     if (!pairing_json.is_dict()) {
       LOG(WARNING) << "A pairing entry is not a dictionary.";

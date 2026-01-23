@@ -124,7 +124,7 @@ std::string ConvertChromeOsEnterpriseAudioPlaybackToString(
 
 // static
 ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   ChromeOsEnterpriseParams params;
   params.suppress_user_dialogs =
       dict.FindBool(kSuppressUserDialogs).value_or(false);
@@ -163,8 +163,8 @@ ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(
   return params;
 }
 
-base::Value::Dict ChromeOsEnterpriseParams::ToDict() const {
-  return base::Value::Dict()
+base::DictValue ChromeOsEnterpriseParams::ToDict() const {
+  return base::DictValue()
       .Set(kSuppressUserDialogs, suppress_user_dialogs)
       .Set(kSuppressNotifications, suppress_notifications)
       .Set(kTerminateUponInput, terminate_upon_input)

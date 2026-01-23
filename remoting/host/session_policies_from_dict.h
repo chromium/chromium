@@ -18,7 +18,7 @@ namespace remoting {
 // GetPlatformPolicies(). The dictionary passed to the PolicyUpdatedCallback is
 // a delta, but this function takes the full policy dictionary.
 std::optional<SessionPolicies> SessionPoliciesFromDict(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 }  // namespace remoting
 

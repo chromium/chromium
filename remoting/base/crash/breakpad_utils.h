@@ -36,7 +36,7 @@ extern bool CreateMinidumpDirectoryIfNeeded(
     const base::FilePath& minidump_directory);
 
 extern bool WriteMetadataForMinidump(const base::FilePath& minidump_file_path,
-                                     base::Value::Dict custom_client_info);
+                                     base::DictValue custom_client_info);
 
 #if BUILDFLAG(IS_WIN)
 

@@ -36,14 +36,14 @@ class MockPairingRegistryCallbacks {
   virtual ~MockPairingRegistryCallbacks() = default;
 
   MOCK_METHOD1(DoneCallback, void(bool));
-  MOCK_METHOD1(GetAllPairingsCallback, void(base::Value::List));
+  MOCK_METHOD1(GetAllPairingsCallback, void(base::ListValue));
   MOCK_METHOD1(GetPairingCallback, void(PairingRegistry::Pairing));
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include
 // any shared secret.
 void VerifyPairing(PairingRegistry::Pairing expected,
-                   const base::Value::Dict& actual) {
+                   const base::DictValue& actual) {
   const std::string* value = actual.FindString(PairingRegistry::kClientNameKey);
   ASSERT_TRUE(value);
   EXPECT_EQ(expected.client_name(), *value);
@@ -62,7 +62,7 @@ class PairingRegistryTest : public testing::Test {
  public:
   void SetUp() override { callback_count_ = 0; }
 
-  void set_pairings(base::Value::List pairings) {
+  void set_pairings(base::ListValue pairings) {
     pairings_ = std::move(pairings);
   }
 
@@ -82,7 +82,7 @@ class PairingRegistryTest : public testing::Test {
   base::RunLoop run_loop_;
 
   int callback_count_;
-  base::Value::List pairings_;
+  base::ListValue pairings_;
 };
 
 TEST_F(PairingRegistryTest, CreateAndGetPairings) {
@@ -121,8 +121,8 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   ASSERT_TRUE(actual_pairing_1_value.is_dict());
   const base::Value& actual_pairing_2_value = pairings_[1];
   ASSERT_TRUE(actual_pairing_2_value.is_dict());
-  const base::Value::Dict* actual_pairing_1 = &actual_pairing_1_value.GetDict();
-  const base::Value::Dict* actual_pairing_2 = &actual_pairing_2_value.GetDict();
+  const base::DictValue* actual_pairing_1 = &actual_pairing_1_value.GetDict();
+  const base::DictValue* actual_pairing_2 = &actual_pairing_2_value.GetDict();
 
   // Ordering is not guaranteed, so swap if necessary.
   const std::string* actual_client_id =

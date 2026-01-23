@@ -374,24 +374,24 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // Determines whether a new config should be applied and handles starting or
   // restarting the host process as necessary.
-  void OnConfigParsed(base::Value::Dict config);
+  void OnConfigParsed(base::DictValue config);
 
   // Applies the host config, returning true if successful.
-  bool ApplyConfig(const base::Value::Dict& config);
+  bool ApplyConfig(const base::DictValue& config);
 
   // Handles policy updates, by calling On*PolicyUpdate methods.
-  void OnPolicyUpdate(base::Value::Dict policies);
+  void OnPolicyUpdate(base::DictValue policies);
   void OnPolicyError();
   void ReportPolicyErrorAndRestartHost();
   void ApplyHostDomainListPolicy();
   void ApplyAllowRemoteAccessConnections();
-  bool OnClientDomainListPolicyUpdate(const base::Value::Dict& policies);
-  bool OnHostDomainListPolicyUpdate(const base::Value::Dict& policies);
-  bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
-  bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
-  bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
-  bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
-  bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
+  bool OnClientDomainListPolicyUpdate(const base::DictValue& policies);
+  bool OnHostDomainListPolicyUpdate(const base::DictValue& policies);
+  bool OnPairingPolicyUpdate(const base::DictValue& policies);
+  bool OnGnubbyAuthPolicyUpdate(const base::DictValue& policies);
+  bool OnEnableUserInterfacePolicyUpdate(const base::DictValue& policies);
+  bool OnAllowRemoteAccessConnections(const base::DictValue& policies);
+  bool OnAllowPinAuthenticationUpdate(const base::DictValue& policies);
 
   std::optional<ErrorCode> OnSessionPoliciesReceived(
       const SessionPolicies& session_policies) const;
@@ -424,7 +424,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // mojom::RemotingHostControl implementation.
 #if BUILDFLAG(IS_WIN)
-  void ApplyHostConfig(base::Value::Dict serialized_config) override;
+  void ApplyHostConfig(base::DictValue serialized_config) override;
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
@@ -468,7 +468,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string service_account_email_;
-  base::Value::Dict config_;
+  base::DictValue config_;
   std::set<std::string> host_owner_emails_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
@@ -703,8 +703,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
   HOST_LOG << "Parsing new host configuration.";
 
-  std::optional<base::Value::Dict> config(
-      HostConfigFromJson(serialized_config));
+  std::optional<base::DictValue> config(HostConfigFromJson(serialized_config));
   if (!config.has_value()) {
     LOG(ERROR) << "Invalid configuration.";
     ShutdownHost(kInvalidHostConfigurationExitCode);
@@ -714,7 +713,7 @@ void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
   OnConfigParsed(std::move(*config));
 }
 
-void HostProcess::OnConfigParsed(base::Value::Dict config) {
+void HostProcess::OnConfigParsed(base::DictValue config) {
   if (!context_->network_task_runner()->BelongsToCurrentThread()) {
     context_->network_task_runner()->PostTask(
         FROM_HERE,
@@ -1250,7 +1249,7 @@ void HostProcess::BindRemotingHostControl(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-void HostProcess::ApplyHostConfig(base::Value::Dict config) {
+void HostProcess::ApplyHostConfig(base::DictValue config) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
   OnConfigParsed(std::move(config));
 }
@@ -1345,7 +1344,7 @@ void HostProcess::OnAgentProcessBrokerDisconnected() {
 #endif  // BUILDFLAG(IS_MAC)
 
 // Applies the host config, returning true if successful.
-bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
+bool HostProcess::ApplyConfig(const base::DictValue& config) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   const std::string* host_id = config.FindString(kHostIdConfigPath);
@@ -1451,7 +1450,7 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   return true;
 }
 
-void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
+void HostProcess::OnPolicyUpdate(base::DictValue policies) {
   if (!context_->network_task_runner()->BelongsToCurrentThread()) {
     context_->network_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&HostProcess::OnPolicyUpdate, this,
@@ -1568,11 +1567,11 @@ void HostProcess::ApplyAllowRemoteAccessConnections() {
 }
 
 bool HostProcess::OnHostDomainListPolicyUpdate(
-    const base::Value::Dict& policies) {
+    const base::DictValue& policies) {
   // Returns false: never restart the host after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  const base::Value::List* list =
+  const base::ListValue* list =
       policies.FindList(policy::key::kRemoteAccessHostDomainList);
   if (!list) {
     return false;
@@ -1588,10 +1587,10 @@ bool HostProcess::OnHostDomainListPolicyUpdate(
 }
 
 bool HostProcess::OnClientDomainListPolicyUpdate(
-    const base::Value::Dict& policies) {
+    const base::DictValue& policies) {
   // Returns true if the host has to be restarted after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-  const base::Value::List* list =
+  const base::ListValue* list =
       policies.FindList(policy::key::kRemoteAccessHostClientDomainList);
   if (!list) {
     return false;
@@ -1605,7 +1604,7 @@ bool HostProcess::OnClientDomainListPolicyUpdate(
   return true;
 }
 
-bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
+bool HostProcess::OnPairingPolicyUpdate(const base::DictValue& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   std::optional<bool> allow_pairing =
@@ -1623,7 +1622,7 @@ bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
   return true;
 }
 
-bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
+bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::DictValue& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   std::optional<bool> security_key_auth_policy_enabled =
@@ -1643,7 +1642,7 @@ bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
 }
 
 bool HostProcess::OnAllowPinAuthenticationUpdate(
-    const base::Value::Dict& policies) {
+    const base::DictValue& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   const base::Value* allow_pin_auth =
@@ -1672,7 +1671,7 @@ bool HostProcess::OnAllowPinAuthenticationUpdate(
 }
 
 bool HostProcess::OnEnableUserInterfacePolicyUpdate(
-    const base::Value::Dict& policies) {
+    const base::DictValue& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   std::optional<bool> enable_user_interface =
@@ -1695,7 +1694,7 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
 }
 
 bool HostProcess::OnAllowRemoteAccessConnections(
-    const base::Value::Dict& policies) {
+    const base::DictValue& policies) {
   // Returns false: never restart the host after this policy update.
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 

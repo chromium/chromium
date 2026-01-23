@@ -13,7 +13,7 @@ namespace remoting {
 
 bool ParseNativeMessageJson(const std::string& message,
                             std::string& message_type,
-                            base::Value::Dict& parsed_message) {
+                            base::DictValue& parsed_message) {
   auto opt_message =
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!opt_message.has_value()) {
@@ -38,15 +38,15 @@ bool ParseNativeMessageJson(const std::string& message,
   return true;
 }
 
-std::optional<base::Value::Dict> CreateNativeMessageResponse(
-    const base::Value::Dict& request) {
+std::optional<base::DictValue> CreateNativeMessageResponse(
+    const base::DictValue& request) {
   const std::string* type = request.FindString(kMessageType);
   if (!type) {
     LOG(ERROR) << "'" << kMessageType << "' not found in request.";
     return std::nullopt;
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set(kMessageType, *type + "Response");
 
   // If the client supplies an ID, it will expect it in the response. This
@@ -58,8 +58,8 @@ std::optional<base::Value::Dict> CreateNativeMessageResponse(
   return response;
 }
 
-void ProcessNativeMessageHelloResponse(base::Value::Dict& response,
-                                       base::Value::List supported_features) {
+void ProcessNativeMessageHelloResponse(base::DictValue& response,
+                                       base::ListValue supported_features) {
   response.Set(kHostVersion, STRINGIZE(VERSION));
   if (!supported_features.empty()) {
     response.Set(kSupportedFeatures, std::move(supported_features));

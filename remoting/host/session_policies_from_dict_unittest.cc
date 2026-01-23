@@ -39,9 +39,9 @@ const SessionPolicies GetFullSessionPolicies() {
   return session_policies;
 }
 
-const base::Value::Dict& GetFullSessionPolicyDict() {
-  static const base::NoDestructor<base::Value::Dict> dict(
-      base::Value::Dict()
+const base::DictValue& GetFullSessionPolicyDict() {
+  static const base::NoDestructor<base::DictValue> dict(
+      base::DictValue()
           .Set(policy::key::kRemoteAccessHostClipboardSizeBytes, 1024)
           .Set(policy::key::kRemoteAccessHostFirewallTraversal, true)
           .Set(policy::key::kRemoteAccessHostAllowRelayedConnection, false)
@@ -61,13 +61,13 @@ const base::Value::Dict& GetFullSessionPolicyDict() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-base::Value::Dict GetPolicyDictWithMaxDurationMins(int mins) {
+base::DictValue GetPolicyDictWithMaxDurationMins(int mins) {
   return GetFullSessionPolicyDict().Clone().Set(
       policy::key::kRemoteAccessHostMaximumSessionDurationMinutes, mins);
 }
 #endif
 
-base::Value::Dict GetPolicyDictWithClipboardSize(int clipboard_size) {
+base::DictValue GetPolicyDictWithClipboardSize(int clipboard_size) {
   return GetFullSessionPolicyDict().Clone().Set(
       policy::key::kRemoteAccessHostClipboardSizeBytes, clipboard_size);
 }
@@ -76,7 +76,7 @@ base::Value::Dict GetPolicyDictWithClipboardSize(int clipboard_size) {
 
 TEST(SessionPoliciesFromDict, EmptyDict_CreatesEmptyPolicies) {
   std::optional<SessionPolicies> policies =
-      SessionPoliciesFromDict(base::Value::Dict());
+      SessionPoliciesFromDict(base::DictValue());
   EXPECT_EQ(*policies, SessionPolicies());
 }
 
@@ -95,7 +95,7 @@ TEST(SessionPoliciesFromDict, FullDict_ExpectNoValueForAllowRemoteInput) {
 }
 
 TEST(SessionPoliciesFromDict, PartialDict_CreatesPartialPolicies) {
-  base::Value::Dict policy_dict = GetFullSessionPolicyDict().Clone();
+  base::DictValue policy_dict = GetFullSessionPolicyDict().Clone();
   policy_dict.Remove(policy::key::kRemoteAccessHostClipboardSizeBytes);
   policy_dict.Remove(policy::key::kRemoteAccessHostUdpPortRange);
 
@@ -110,7 +110,7 @@ TEST(SessionPoliciesFromDict, PartialDict_CreatesPartialPolicies) {
 
 TEST(SessionPoliciesFromDict,
      FirewallTraversalDisabled_DisablesStunAndRelayedConnections) {
-  base::Value::Dict policy_dict =
+  base::DictValue policy_dict =
       GetFullSessionPolicyDict()
           .Clone()
           .Set(policy::key::kRemoteAccessHostFirewallTraversal, false)
@@ -144,7 +144,7 @@ TEST(SessionPoliciesFromDict, ZeroMaxSessionDuration_FieldIsNullopt) {
 #endif
 
 TEST(SessionPoliciesFromDict, InvalidHostUdpPortRange_ReturnsNullopt) {
-  base::Value::Dict policy_dict = GetFullSessionPolicyDict().Clone().Set(
+  base::DictValue policy_dict = GetFullSessionPolicyDict().Clone().Set(
       policy::key::kRemoteAccessHostUdpPortRange, "456-123");
   EXPECT_EQ(SessionPoliciesFromDict(policy_dict), std::nullopt);
 }

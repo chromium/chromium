@@ -68,7 +68,7 @@ const char* const kUnprivilegedConfigKeys[] = {kHostIdConfigPath,
                                                kDeprecatedXmppLoginConfigPath};
 
 // Reads and parses the configuration file up to |kMaxConfigFileSize| in size.
-bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
+bool ReadConfig(const base::FilePath& filename, base::DictValue& config_out) {
   // ReadConfig is called in cases where no config file is expected to be
   // present so check to see if a file exists before attempting to read and
   // parse it.
@@ -84,7 +84,7 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
     return false;
   }
 
-  std::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
+  std::optional<base::DictValue> config = HostConfigFromJson(file_content);
   if (!config.has_value()) {
     LOG(ERROR) << "Config file: '" << filename.value() << "' is empty.";
     return false;
@@ -152,7 +152,7 @@ bool MoveConfigFileFromTemp(const base::FilePath& filename) {
 }
 
 // Writes the configuration file up to |kMaxConfigFileSize| in size.
-bool WriteConfig(const base::Value::Dict& config) {
+bool WriteConfig(const base::DictValue& config) {
   std::string config_json = HostConfigToJson(config);
   if (config_json.length() > kMaxConfigFileSize) {
     LOG(ERROR) << "Config is larger than the max size: " << kMaxConfigFileSize;
@@ -192,7 +192,7 @@ bool WriteConfig(const base::Value::Dict& config) {
   }
 
   // Extract the unprivileged fields from the configuration.
-  base::Value::Dict unprivileged_config;
+  base::DictValue unprivileged_config;
   for (const char* key : kUnprivilegedConfigKeys) {
     if (const std::string* value = config.FindString(key)) {
       unprivileged_config.Set(key, *value);
@@ -351,11 +351,11 @@ DaemonController::State DaemonControllerDelegateWin::GetState() {
   return ConvertToDaemonState(status.dwCurrentState);
 }
 
-std::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
+std::optional<base::DictValue> DaemonControllerDelegateWin::GetConfig() {
   base::FilePath config_dir = remoting::GetConfigDir();
 
   // Read the unprivileged part of host configuration.
-  base::Value::Dict config;
+  base::DictValue config;
   if (!ReadConfig(config_dir.Append(kUnprivilegedConfigFileName), config)) {
     return std::nullopt;
   }
@@ -364,7 +364,7 @@ std::optional<base::Value::Dict> DaemonControllerDelegateWin::GetConfig() {
 }
 
 void DaemonControllerDelegateWin::UpdateConfig(
-    base::Value::Dict updated_config,
+    base::DictValue updated_config,
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
   for (const char* key : kReadonlyKeys) {
@@ -376,7 +376,7 @@ void DaemonControllerDelegateWin::UpdateConfig(
   }
   // Get the old config.
   base::FilePath config_dir = remoting::GetConfigDir();
-  base::Value::Dict config;
+  base::DictValue config;
   if (!ReadConfig(config_dir.Append(kConfigFileName), config)) {
     InvokeCompletionCallback(std::move(done), false);
     return;
@@ -425,7 +425,7 @@ void DaemonControllerDelegateWin::CheckPermission(
 }
 
 void DaemonControllerDelegateWin::SetConfigAndStart(
-    base::Value::Dict config,
+    base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
   // Record the user's consent.

@@ -26,7 +26,7 @@ bool GetUsageStatsConsent(bool* allowed, bool* set_by_policy) {
 
   std::string filename = GetHostHash() + ".json";
   base::FilePath config_path = GetConfigDirectoryPath().Append(filename);
-  std::optional<base::Value::Dict> config(HostConfigFromJsonFile(config_path));
+  std::optional<base::DictValue> config(HostConfigFromJsonFile(config_path));
   if (!config.has_value()) {
     LOG(ERROR) << "No host config file found.";
     return false;

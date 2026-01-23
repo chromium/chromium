@@ -72,14 +72,14 @@ extern const char kDeprecatedHostOwnerEmailConfigPath[];
 extern const char kDeprecatedXmppLoginConfigPath[];
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
-std::optional<base::Value::Dict> HostConfigFromJson(
+std::optional<base::DictValue> HostConfigFromJson(
     const std::string& serialized);
-std::string HostConfigToJson(const base::Value::Dict& host_config);
+std::string HostConfigToJson(const base::DictValue& host_config);
 
 // Helpers for loading/saving host configurations from/to files.
-std::optional<base::Value::Dict> HostConfigFromJsonFile(
+std::optional<base::DictValue> HostConfigFromJsonFile(
     const base::FilePath& config_file);
-bool HostConfigToJsonFile(const base::Value::Dict& host_config,
+bool HostConfigToJsonFile(const base::DictValue& host_config,
                           const base::FilePath& config_file);
 
 }  // namespace remoting

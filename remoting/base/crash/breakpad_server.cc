@@ -73,7 +73,7 @@ void OnClientDumpRequestCallback(void* context,
     return;
   }
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   // Use the crash server version since we update all host components in the
   // same package and we've seen problems trying to use the metadata provided
   // by the client process, see crbug.com/350725178.

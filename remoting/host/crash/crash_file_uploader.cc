@@ -130,7 +130,7 @@ base::FilePath GetMetadataFilePath(const base::FilePath& crash_guid) {
 
 bool RetrieveCrashReportDetails(const base::FilePath& crash_guid,
                                 std::string& minidump_file_contents,
-                                base::Value::Dict& metadata,
+                                base::DictValue& metadata,
                                 std::string& error_reason) {
   base::FilePath minidump_file_path = GetDumpFilePath(crash_guid);
   if (!base::PathExists(minidump_file_path)) {
@@ -156,7 +156,7 @@ bool RetrieveCrashReportDetails(const base::FilePath& crash_guid,
     return false;
   }
 
-  std::optional<base::Value::Dict> opt_metadata = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> opt_metadata = base::JSONReader::ReadDict(
       metadata_file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!opt_metadata.has_value()) {
     error_reason = "Failed to parse metadata file contents";
@@ -217,7 +217,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleUrlLoader() {
   return simple_url_loader;
 }
 
-void GenerateMultiPartPostData(const base::Value::Dict& metadata,
+void GenerateMultiPartPostData(const base::DictValue& metadata,
                                const std::string& minidump_data,
                                std::string& post_data,
                                std::string& content_type) {
@@ -346,7 +346,7 @@ void CrashFileUploader::Core::Upload(const base::FilePath& crash_guid) {
     return;
   }
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   std::string minidump_data;
   std::string error;
   if (!RetrieveCrashReportDetails(crash_guid, minidump_data, metadata, error)) {

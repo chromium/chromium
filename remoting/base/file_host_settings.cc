@@ -83,7 +83,7 @@ void FileHostSettings::SetString(const HostSettingKey key,
 
   if (!settings_) {
     VLOG(1) << "Settings file didn't exist. New file will be created.";
-    settings_ = base::Value::Dict();
+    settings_ = base::DictValue();
   }
   settings_->Set(key, value);
 

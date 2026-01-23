@@ -145,14 +145,14 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
   }
 }
 
-std::optional<base::Value::Dict> DaemonControllerDelegateLinux::GetConfig() {
-  std::optional<base::Value::Dict> host_config(
+std::optional<base::DictValue> DaemonControllerDelegateLinux::GetConfig() {
+  std::optional<base::DictValue> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!host_config.has_value()) {
     return std::nullopt;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   std::string* value = host_config->FindString(kHostIdConfigPath);
   if (value) {
     result.Set(kHostIdConfigPath, *value);
@@ -175,7 +175,7 @@ void DaemonControllerDelegateLinux::CheckPermission(
 }
 
 void DaemonControllerDelegateLinux::SetConfigAndStart(
-    base::Value::Dict config,
+    base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
   // Ensure the configuration directory exists.
@@ -217,9 +217,9 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
 }
 
 void DaemonControllerDelegateLinux::UpdateConfig(
-    base::Value::Dict config,
+    base::DictValue config,
     DaemonController::CompletionCallback done) {
-  std::optional<base::Value::Dict> new_config(
+  std::optional<base::DictValue> new_config(
       HostConfigFromJsonFile(GetConfigPath()));
   if (!new_config.has_value()) {
     LOG(ERROR) << "Failed to read existing config file.";

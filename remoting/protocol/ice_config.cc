@@ -57,13 +57,13 @@ IceConfig::IceConfig(const IceConfig& other) = default;
 IceConfig::~IceConfig() = default;
 
 // static
-IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
-  const base::Value::Dict* data = dictionary.FindDict("data");
+IceConfig IceConfig::Parse(const base::DictValue& dictionary) {
+  const base::DictValue* data = dictionary.FindDict("data");
   if (data) {
     return Parse(*data);
   }
 
-  const base::Value::List* ice_servers_list = dictionary.FindList("iceServers");
+  const base::ListValue* ice_servers_list = dictionary.FindList("iceServers");
   if (!ice_servers_list) {
     return IceConfig();
   }
@@ -87,13 +87,13 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
   bool errors_found = false;
   ice_config.max_bitrate_kbps = 0;
   for (const auto& server : *ice_servers_list) {
-    const base::Value::Dict* server_dict = server.GetIfDict();
+    const base::DictValue* server_dict = server.GetIfDict();
     if (!server_dict) {
       errors_found = true;
       continue;
     }
 
-    const base::Value::List* urls_list = server_dict->FindList("urls");
+    const base::ListValue* urls_list = server_dict->FindList("urls");
     if (!urls_list) {
       errors_found = true;
       continue;

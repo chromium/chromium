@@ -78,7 +78,7 @@ TEST_F(PairingRegistryDelegateWinTest, SaveAndLoad) {
 
   // Verify that the only remaining value is |pairing2|.
   EXPECT_EQ(delegate->LoadAll().size(), 1u);
-  base::Value::List pairings = delegate->LoadAll();
+  base::ListValue pairings = delegate->LoadAll();
   ASSERT_TRUE(pairings[0].is_dict());
   EXPECT_EQ(PairingRegistry::Pairing::CreateFromValue(
                 std::move(pairings[0]).TakeDict()),

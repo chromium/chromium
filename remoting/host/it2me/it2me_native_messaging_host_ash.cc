@@ -71,7 +71,7 @@ void It2MeNativeMessageHostAsh::Connect(
       std::move(host_state_disconnected_callback);
 
   auto message =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kMessageType, kConnectMessage)
           .Set(kUserName, params.user_name)
           .Set(kAccessToken, params.oauth_access_token)
@@ -100,7 +100,7 @@ void It2MeNativeMessageHostAsh::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   native_message_host_->OnMessage(*base::WriteJson(
-      base::Value::Dict().Set(kMessageType, kDisconnectMessage)));
+      base::DictValue().Set(kMessageType, kDisconnectMessage)));
 
   // Notify the owner that the host has been disconnected.  This will result in
   // the destruction of this object so do not access member variables after this
@@ -112,7 +112,7 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
     const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string type;
-  base::Value::Dict contents;
+  base::DictValue contents;
   if (!ParseNativeMessageJson(message, type, contents)) {
     CloseChannel(std::string());
     return;
@@ -160,7 +160,7 @@ void It2MeNativeMessageHostAsh::HandleDisconnectResponse() {
 }
 
 void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
-    base::Value::Dict message) {
+    base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string* new_state = message.FindString(kState);
   if (!new_state) {
@@ -240,7 +240,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
 }
 
 void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
-    base::Value::Dict message) {
+    base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<bool> nat_enabled =
       message.FindBool(kNatPolicyChangedMessageNatEnabled);
@@ -267,12 +267,12 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
 }
 
 void It2MeNativeMessageHostAsh::HandlePolicyErrorMessage(
-    base::Value::Dict message) {
+    base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_->OnPolicyError();
 }
 
-void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value::Dict message) {
+void It2MeNativeMessageHostAsh::HandleErrorMessage(base::DictValue message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string* error_code_string = message.FindString(kErrorMessageCode);
   if (!error_code_string) {

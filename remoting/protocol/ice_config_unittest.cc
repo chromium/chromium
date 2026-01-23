@@ -176,7 +176,7 @@ TEST(IceConfigTest, ParsePartiallyInvalid) {
 }
 
 TEST(IceConfigTest, InvalidConfig) {
-  IceConfig config = IceConfig::Parse(base::Value::Dict());
+  IceConfig config = IceConfig::Parse(base::DictValue());
   EXPECT_TRUE(config.is_null());
 }
 

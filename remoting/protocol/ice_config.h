@@ -32,7 +32,7 @@ struct IceConfig {
 
   // Parses JSON representation of the config. Returns null config if parsing
   // fails.
-  static IceConfig Parse(const base::Value::Dict& dictionary);
+  static IceConfig Parse(const base::DictValue& dictionary);
   static IceConfig Parse(const apis::v1::GetIceConfigResponse& config);
 
   // Parses a |url| in the form of stun:<host>[:<port>][?transport=<udp|tcp>]

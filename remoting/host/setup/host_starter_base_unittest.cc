@@ -59,13 +59,13 @@ class TestDaemonControllerDelegate : public DaemonController::Delegate {
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
-  std::optional<base::Value::Dict> GetConfig() override;
+  std::optional<base::DictValue> GetConfig() override;
   void CheckPermission(bool it2me,
                        DaemonController::BoolCallback callback) override;
-  void SetConfigAndStart(base::Value::Dict config,
+  void SetConfigAndStart(base::DictValue config,
                          bool consent,
                          DaemonController::CompletionCallback done) override;
-  void UpdateConfig(base::Value::Dict config,
+  void UpdateConfig(base::DictValue config,
                     DaemonController::CompletionCallback done) override;
   void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
@@ -74,7 +74,7 @@ class TestDaemonControllerDelegate : public DaemonController::Delegate {
   void set_result_for_config_and_start(DaemonController::AsyncResult result) {
     result_for_config_and_start_ = result;
   }
-  void set_initial_config(base::Value::Dict config) {
+  void set_initial_config(base::DictValue config) {
     config_ = std::move(config);
   }
 
@@ -85,7 +85,7 @@ class TestDaemonControllerDelegate : public DaemonController::Delegate {
   DaemonController::State state_ = DaemonController::STATE_STOPPED;
   DaemonController::AsyncResult result_for_config_and_start_ =
       DaemonController::RESULT_OK;
-  base::Value::Dict config_;
+  base::DictValue config_;
 };
 
 TestDaemonControllerDelegate::TestDaemonControllerDelegate() = default;
@@ -96,7 +96,7 @@ DaemonController::State TestDaemonControllerDelegate::GetState() {
   return state_;
 }
 
-std::optional<base::Value::Dict> TestDaemonControllerDelegate::GetConfig() {
+std::optional<base::DictValue> TestDaemonControllerDelegate::GetConfig() {
   return config_.Clone();
 }
 
@@ -107,7 +107,7 @@ void TestDaemonControllerDelegate::CheckPermission(
 }
 
 void TestDaemonControllerDelegate::SetConfigAndStart(
-    base::Value::Dict config,
+    base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
   config_ = std::move(config);
@@ -116,7 +116,7 @@ void TestDaemonControllerDelegate::SetConfigAndStart(
 }
 
 void TestDaemonControllerDelegate::UpdateConfig(
-    base::Value::Dict config,
+    base::DictValue config,
     DaemonController::CompletionCallback done) {
   ADD_FAILURE() << "Unexpected call to UpdateConfig()";
 }
@@ -150,7 +150,7 @@ class TestHostStarter : public HostStarterBase {
   void RetrieveApiAccessToken() override;
   void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_removed) override;
-  void ApplyConfigValues(base::Value::Dict& config) override;
+  void ApplyConfigValues(base::DictValue& config) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_done) override;
 
@@ -214,7 +214,7 @@ void TestHostStarter::RemoveOldHostFromDirectory(base::OnceClosure on_removed) {
   std::move(on_removed).Run();
 }
 
-void TestHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+void TestHostStarter::ApplyConfigValues(base::DictValue& config) {
   config.Set(kTestConfigValuePath, kTestConfigValue);
 }
 
@@ -498,7 +498,7 @@ TEST_F(HostStarterBaseTest, ExistingHostIsStopped) {
   HostStarter::Params params;
   params.owner_email = kTestUserEmail;
 
-  base::Value::Dict initial_config;
+  base::DictValue initial_config;
   initial_config.Set(kHostIdConfigPath, "old_crusty_host_id");
   test_daemon_controller_delegate().set_initial_config(
       std::move(initial_config));

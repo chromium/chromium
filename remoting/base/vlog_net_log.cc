@@ -43,7 +43,7 @@ VlogNetLogObserver::VlogNetLogObserver() {
 VlogNetLogObserver::~VlogNetLogObserver() = default;
 
 void VlogNetLogObserver::OnAddEntry(const net::NetLogEntry& entry) {
-  base::Value::Dict value = entry.ToDict();
+  base::DictValue value = entry.ToDict();
   VLOG(4) << base::WriteJson(value).value_or("");
 }
 

@@ -61,7 +61,7 @@ class HostStarterBase : public HostStarter {
 
   // Methods used to implement the registration process described in the class
   // comment. They are listed in the order in which they are called.
-  void OnExistingConfigLoaded(std::optional<base::Value::Dict> config);
+  void OnExistingConfigLoaded(std::optional<base::DictValue> config);
   virtual void RetrieveApiAccessToken();
   virtual void RegisterNewHost(std::optional<std::string> access_token) = 0;
   void OnNewHostRegistered(const std::string& directory_id,
@@ -77,7 +77,7 @@ class HostStarterBase : public HostStarter {
   void StopOldHost();
   void OnOldHostStopped(DaemonController::AsyncResult result);
   void GenerateConfigFile();
-  virtual void ApplyConfigValues(base::Value::Dict& config) = 0;
+  virtual void ApplyConfigValues(base::DictValue& config) = 0;
   void OnNewHostStarted(DaemonController::AsyncResult result);
 
   // |HandleError| will cause |on_done_| to be executed.

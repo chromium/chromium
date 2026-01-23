@@ -27,12 +27,11 @@ class FileSessionStorage : public SessionStorage {
   ~FileSessionStorage() override = default;
 
   // `SessionStorage` implementation:
-  void StoreSession(const base::Value::Dict& information,
+  void StoreSession(const base::DictValue& information,
                     base::OnceClosure on_done) override;
   void DeleteSession(base::OnceClosure on_done) override;
-  void RetrieveSession(
-      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
-      override;
+  void RetrieveSession(base::OnceCallback<void(std::optional<base::DictValue>)>
+                           on_done) override;
   void HasSession(base::OnceCallback<void(bool)> on_done) const override;
 
   void SetStorageDirectoryForTesting(const base::FilePath& dir);

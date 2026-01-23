@@ -305,7 +305,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   raw_ptr<FakeIt2MeDialogFactory, AcrossTasksDanglingUntriaged>
       dialog_factory_ = nullptr;
 
-  std::optional<base::Value::Dict> policies_;
+  std::optional<base::DictValue> policies_;
 
   scoped_refptr<It2MeHost> it2me_host_;
 
@@ -542,7 +542,7 @@ void It2MeHostTest::SimulateEffectiveSessionPoliciesReceived() {
 
 base::Value It2MeHostTest::MakeList(
     std::initializer_list<std::string_view> values) {
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& value : values) {
     result.Append(value);
   }

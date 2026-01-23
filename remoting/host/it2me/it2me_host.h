@@ -136,7 +136,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
       std::unique_ptr<ChromotingHostContext> context,
-      base::Value::Dict policies,
+      base::DictValue policies,
       std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
       base::WeakPtr<It2MeHost::Observer> observer,
       CreateDeferredConnectContext create_context,
@@ -166,7 +166,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 #endif
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(base::Value::Dict policies);
+  void OnPolicyUpdate(base::DictValue policies);
 
  protected:
   friend class base::RefCountedThreadSafe<It2MeHost>;
@@ -213,7 +213,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   void UpdateHostDomainListPolicy(std::vector<std::string> host_domain_list);
   void UpdateClientDomainListPolicy(
       std::vector<std::string> client_domain_list);
-  void UpdateLocalSessionPolicies(const base::Value::Dict& platform_policies);
+  void UpdateLocalSessionPolicies(const base::DictValue& platform_policies);
 
   void DisconnectOnNetworkThread(
       protocol::ErrorCode error_code = protocol::ErrorCode::OK);
@@ -225,7 +225,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
       protocol::ValidatingAuthenticator::ResultCallback result_callback);
 
   // Determines if remote support connections are allowed by policy.
-  bool RemoteSupportConnectionsAllowed(const base::Value::Dict& policies);
+  bool RemoteSupportConnectionsAllowed(const base::DictValue& policies);
 
   // Indicates whether the session allows a ChromeOS admin to reconnect.
   bool SessionSupportsReconnections() const;

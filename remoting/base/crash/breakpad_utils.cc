@@ -112,7 +112,7 @@ bool CreateMinidumpDirectoryIfNeeded(const base::FilePath& minidump_directory) {
 }
 
 bool WriteMetadataForMinidump(const base::FilePath& minidump_file_path,
-                              base::Value::Dict metadata) {
+                              base::DictValue metadata) {
   auto metadata_file_contents = base::WriteJson(metadata);
   if (!metadata_file_contents.has_value()) {
     LOG(ERROR) << "Failed to convert metadata to JSON.";
@@ -178,7 +178,7 @@ bool BreakpadHelper::OnMinidumpGenerated(
 
   auto process_uptime = base::Time::NowFromSystemTime() - process_start_time_;
   auto metadata =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kBreakpadProcessIdKey, static_cast<int>(process_id_))
           .Set(kBreakpadProcessNameKey, process_name_.MaybeAsASCII())
           .Set(kBreakpadProcessStartTimeKey,

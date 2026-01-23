@@ -216,7 +216,7 @@ SecurityKeyExtensionSessionTest::~SecurityKeyExtensionSessionTest() = default;
 
 void SecurityKeyExtensionSessionTest::WaitForAndVerifyHostMessage() {
   client_stub_.WaitForDeliverHostMessage(base::Milliseconds(500));
-  base::Value::List expected_data;
+  base::ListValue expected_data;
 
   // Skip first four bytes.
   for (size_t i = 4; i < kRequestData.size(); ++i) {

@@ -74,7 +74,7 @@ const base::FilePath::CharType kElevatedHostBinaryName[] =
 void PolicyUpdateCallback(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     remoting::PolicyWatcher::PolicyUpdatedCallback callback,
-    base::Value::Dict policies) {
+    base::DictValue policies) {
   DCHECK(callback);
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(callback, std::move(policies)));
@@ -176,16 +176,16 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   std::string type;
-  base::Value::Dict request;
+  base::DictValue request;
   if (!ParseNativeMessageJson(message, type, request)) {
     client_->CloseChannel(std::string());
     return;
   }
 
-  std::optional<base::Value::Dict> response =
+  std::optional<base::DictValue> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
-    SendErrorAndExit(base::Value::Dict(), ErrorCode::INVALID_ARGUMENT);
+    SendErrorAndExit(base::DictValue(), ErrorCode::INVALID_ARGUMENT);
     return;
   }
 
@@ -214,18 +214,18 @@ void It2MeNativeMessagingHost::Start(Client* client) {
 }
 
 void It2MeNativeMessagingHost::SendMessageToClient(
-    base::Value::Dict message) const {
+    base::DictValue message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
   client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
-void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
-                                            base::Value::Dict response) const {
+void It2MeNativeMessagingHost::ProcessHello(base::DictValue message,
+                                            base::DictValue response) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   // No need to forward to the elevated process since no internal state is set.
 
-  base::Value::List features;
+  base::ListValue features;
   features.Append(kFeatureAccessTokenAuth);
   features.Append(kFeatureAuthorizedHelper);
 
@@ -233,8 +233,8 @@ void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
   SendMessageToClient(std::move(response));
 }
 
-void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
-                                              base::Value::Dict response) {
+void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
+                                              base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (!policy_received_) {
@@ -355,12 +355,12 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   }
 
   protocol::IceConfig ice_config;
-  base::Value::Dict* ice_config_dict = message.FindDict(kIceConfig);
+  base::DictValue* ice_config_dict = message.FindDict(kIceConfig);
   if (ice_config_dict) {
     ice_config = protocol::IceConfig::Parse(*ice_config_dict);
   }
 
-  base::Value::Dict policies = policy_watcher_->GetEffectivePolicies();
+  base::DictValue policies = policy_watcher_->GetEffectivePolicies();
   if (policies.empty()) {
     // At this point policies have been read, so if there are none set then
     // it indicates an error. Since this can be fixed by end users it has a
@@ -402,8 +402,8 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   SendMessageToClient(std::move(response));
 }
 
-void It2MeNativeMessagingHost::ProcessDisconnect(base::Value::Dict message,
-                                                 base::Value::Dict response) {
+void It2MeNativeMessagingHost::ProcessDisconnect(base::DictValue message,
+                                                 base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK(policy_received_);
 
@@ -428,8 +428,8 @@ void It2MeNativeMessagingHost::ProcessDisconnect(base::Value::Dict message,
 }
 
 void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   const std::string* signaling_access_token =
@@ -457,7 +457,7 @@ void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
 }
 
 void It2MeNativeMessagingHost::SendErrorAndExit(
-    base::Value::Dict response,
+    base::DictValue response,
     protocol::ErrorCode error_code) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
   response.Set(kMessageType, kErrorMessage);
@@ -471,7 +471,7 @@ void It2MeNativeMessagingHost::SendErrorAndExit(
 void It2MeNativeMessagingHost::SendPolicyErrorAndExit() const {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kMessageType, kPolicyErrorMessage);
   SendMessageToClient(std::move(message));
   client_->CloseChannel(std::string());
@@ -483,7 +483,7 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
 
   state_ = state;
 
-  base::Value::Dict message;
+  base::DictValue message;
 
   message.Set(kMessageType, kHostStateChangedMessage);
   message.Set(kState, It2MeHostStateToString(state));
@@ -491,7 +491,7 @@ void It2MeNativeMessagingHost::OnStateChanged(It2MeHostState state,
   switch (state_) {
     case It2MeHostState::kReceivedAccessCode:
       message.Set(kAccessCode, access_code_);
-      // base::Value::Dict does not support setting int64_t due to JSON spec's
+      // base::DictValue does not support setting int64_t due to JSON spec's
       // limitation (see comments in values.h). The cast should be safe given
       // the lifetime is relatively short.
       message.Set(kAccessCodeLifetime,
@@ -537,7 +537,7 @@ void It2MeNativeMessagingHost::OnNatPoliciesChanged(
     bool relay_connections_allowed) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  base::Value::Dict message;
+  base::DictValue message;
 
   message.Set(kMessageType, kNatPolicyChangedMessage);
   message.Set(kNatPolicyChangedMessageNatEnabled, nat_traversal_enabled);
@@ -568,7 +568,7 @@ It2MeNativeMessagingHost::task_runner() const {
 
 /* static */
 
-void It2MeNativeMessagingHost::OnPolicyUpdate(base::Value::Dict policies) {
+void It2MeNativeMessagingHost::OnPolicyUpdate(base::DictValue policies) {
   // If an It2MeHost exists, provide it with the updated policies first.
   // That way it won't appear that the policies have changed if the pending
   // connect callback is run. If done the other way around, there is a race
@@ -590,7 +590,7 @@ std::optional<bool>
 It2MeNativeMessagingHost::GetAllowElevatedHostPolicyValue() {
   DCHECK(policy_received_);
 #if BUILDFLAG(IS_WIN)
-  base::Value::Dict platform_policies = policy_watcher_->GetPlatformPolicies();
+  base::DictValue platform_policies = policy_watcher_->GetPlatformPolicies();
   auto* platform_policy_value = platform_policies.FindByDottedPath(
       policy::key::kRemoteAccessHostAllowUiAccessForRemoteAssistance);
   if (platform_policy_value) {
@@ -627,7 +627,7 @@ void It2MeNativeMessagingHost::OnPolicyError() {
 }
 
 std::string It2MeNativeMessagingHost::ExtractAccessToken(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   const std::string* access_token = message.FindString(kAccessToken);
   if (!access_token) {
     LOG(ERROR) << kAccessToken << " field not found in request.";
@@ -651,8 +651,7 @@ std::string It2MeNativeMessagingHost::ExtractAccessToken(
 
 #if BUILDFLAG(IS_WIN)
 
-bool It2MeNativeMessagingHost::DelegateToElevatedHost(
-    base::Value::Dict message) {
+bool It2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK(use_elevated_host_);
 
@@ -682,8 +681,7 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
 
 #else  // !BUILDFLAG(IS_WIN)
 
-bool It2MeNativeMessagingHost::DelegateToElevatedHost(
-    base::Value::Dict message) {
+bool It2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   NOTREACHED();
 }
 

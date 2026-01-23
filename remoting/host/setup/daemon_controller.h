@@ -66,7 +66,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // is returned containing host_id and service_account, with security-sensitive
   // fields filtered out. An empty dictionary is returned if the host is not
   // configured, and nullptr if the configuration is corrupt or cannot be read.
-  typedef base::OnceCallback<void(std::optional<base::Value::Dict> config)>
+  typedef base::OnceCallback<void(std::optional<base::DictValue> config)>
       GetConfigCallback;
 
   // Callback used for asynchronous operations, e.g. when
@@ -110,7 +110,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
     // Queries current host configuration. Any values that might be security
     // sensitive have been filtered out.
-    virtual std::optional<base::Value::Dict> GetConfig() = 0;
+    virtual std::optional<base::DictValue> GetConfig() = 0;
 
     // Checks to verify that the required OS permissions have been granted to
     // the host process, querying the user if necessary. Notifies the callback
@@ -121,7 +121,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
     // Starts the daemon process. This may require that the daemon be
     // downloaded and installed. |done| is invoked on the calling thread when
     // the operation is completed.
-    virtual void SetConfigAndStart(base::Value::Dict config,
+    virtual void SetConfigAndStart(base::DictValue config,
                                    bool consent,
                                    CompletionCallback done) = 0;
 
@@ -131,7 +131,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
     // service_account values, because implementations of this method cannot
     // change them. |done| is invoked on the calling thread when the operation
     // is completed.
-    virtual void UpdateConfig(base::Value::Dict config,
+    virtual void UpdateConfig(base::DictValue config,
                               CompletionCallback done) = 0;
 
     // Stops the daemon process. |done| is invoked on the calling thread when
@@ -176,7 +176,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // these two steps are merged for simplicity. Consider splitting it
   // into SetConfig() and Start() once we have basic host setup flow
   // working.
-  void SetConfigAndStart(base::Value::Dict config,
+  void SetConfigAndStart(base::DictValue config,
                          bool consent,
                          CompletionCallback done);
 
@@ -186,7 +186,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
   // is preserved. |config| must not contain host_id, xmpp_login, or
   // service_account values, because implementations of this method cannot
   // change them.
-  void UpdateConfig(base::Value::Dict config, CompletionCallback done);
+  void UpdateConfig(base::DictValue config, CompletionCallback done);
 
   // Stop the daemon process. It is permitted to call Stop while the daemon
   // process is being installed, in which case the installation should be
@@ -205,10 +205,10 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
   // Blocking helper methods used to call the delegate.
   void DoGetConfig(GetConfigCallback done);
-  void DoSetConfigAndStart(base::Value::Dict config,
+  void DoSetConfigAndStart(base::DictValue config,
                            bool consent,
                            CompletionCallback done);
-  void DoUpdateConfig(base::Value::Dict config, CompletionCallback done);
+  void DoUpdateConfig(base::DictValue config, CompletionCallback done);
   void DoStop(CompletionCallback done);
   void DoGetUsageStatsConsent(GetUsageStatsConsentCallback done);
 
@@ -218,7 +218,7 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
                                                AsyncResult result);
   void InvokeConfigCallbackAndScheduleNext(
       GetConfigCallback done,
-      std::optional<base::Value::Dict> config);
+      std::optional<base::DictValue> config);
   void InvokeConsentCallbackAndScheduleNext(GetUsageStatsConsentCallback done,
                                             const UsageStatsConsent& consent);
 

@@ -300,7 +300,7 @@ void CorpMessagingPlayground::OnPeerMessageReceived(
 
                      std::vector<uint8_t> signature =
                          key_pair_->Sign(key_exchange_->public_key_bytes());
-                     base::Value::Dict response_dict;
+                     base::DictValue response_dict;
                      response_dict.Set("publicKey",
                                        key_exchange_->PublicKeyBase64());
                      response_dict.Set("signature",

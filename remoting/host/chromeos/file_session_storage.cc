@@ -45,7 +45,7 @@ FileSessionStorage::FileSessionStorage()
 FileSessionStorage::FileSessionStorage(const base::FilePath& storage_directory)
     : storage_directory_(storage_directory) {}
 
-void FileSessionStorage::StoreSession(const base::Value::Dict& information,
+void FileSessionStorage::StoreSession(const base::DictValue& information,
                                       base::OnceClosure on_done) {
   WriteFileAsync(session_file(), *base::WriteJson(information),
                  base::BindOnce([](base::FileErrorOr<void> result) {
@@ -65,14 +65,14 @@ void FileSessionStorage::DeleteSession(base::OnceClosure on_done) {
 }
 
 void FileSessionStorage::RetrieveSession(
-    base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done) {
+    base::OnceCallback<void(std::optional<base::DictValue>)> on_done) {
   ReadFileAsync(session_file(),
                 base::BindOnce([](base::FileErrorOr<std::string> content) {
                   if (!content.has_value()) {
                     LOG(ERROR)
                         << "Failed to read CRD session information file: "
                         << base::File::ErrorToString(content.error());
-                    return make_nullopt<base::Value::Dict>();
+                    return make_nullopt<base::DictValue>();
                   }
 
                   auto dict_optional = base::JSONReader::ReadDict(

@@ -16,7 +16,7 @@
 namespace remoting {
 
 std::optional<SessionPolicies> SessionPoliciesFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
 #if !BUILDFLAG(IS_CHROMEOS)
   std::optional<base::TimeDelta> maximum_session_duration;
   std::optional<int> max_session_duration_mins =

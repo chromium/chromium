@@ -64,60 +64,57 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
   // These "Process.." methods handle specific request types. The |response|
   // dictionary is pre-filled by ProcessMessage() with the parts of the
   // response already known ("id" and "type" fields).
-  void ProcessHello(base::Value::Dict message, base::Value::Dict response);
-  void ProcessClearPairedClients(base::Value::Dict message,
-                                 base::Value::Dict response);
-  void ProcessDeletePairedClient(base::Value::Dict message,
-                                 base::Value::Dict response);
-  void ProcessGetHostName(base::Value::Dict message,
-                          base::Value::Dict response);
-  void ProcessGetPinHash(base::Value::Dict message, base::Value::Dict response);
-  void ProcessGenerateKeyPair(base::Value::Dict message,
-                              base::Value::Dict response);
-  void ProcessUpdateDaemonConfig(base::Value::Dict message,
-                                 base::Value::Dict response);
-  void ProcessGetDaemonConfig(base::Value::Dict message,
-                              base::Value::Dict response);
-  void ProcessGetPairedClients(base::Value::Dict message,
-                               base::Value::Dict response);
-  void ProcessGetUsageStatsConsent(base::Value::Dict message,
-                                   base::Value::Dict response);
-  void ProcessStartDaemon(base::Value::Dict message,
-                          base::Value::Dict response);
-  void ProcessStopDaemon(base::Value::Dict message, base::Value::Dict response);
-  void ProcessGetDaemonState(base::Value::Dict message,
-                             base::Value::Dict response);
-  void ProcessGetHostClientId(base::Value::Dict message,
-                              base::Value::Dict response);
-  void ProcessGetCredentialsFromAuthCode(base::Value::Dict message,
-                                         base::Value::Dict response,
+  void ProcessHello(base::DictValue message, base::DictValue response);
+  void ProcessClearPairedClients(base::DictValue message,
+                                 base::DictValue response);
+  void ProcessDeletePairedClient(base::DictValue message,
+                                 base::DictValue response);
+  void ProcessGetHostName(base::DictValue message, base::DictValue response);
+  void ProcessGetPinHash(base::DictValue message, base::DictValue response);
+  void ProcessGenerateKeyPair(base::DictValue message,
+                              base::DictValue response);
+  void ProcessUpdateDaemonConfig(base::DictValue message,
+                                 base::DictValue response);
+  void ProcessGetDaemonConfig(base::DictValue message,
+                              base::DictValue response);
+  void ProcessGetPairedClients(base::DictValue message,
+                               base::DictValue response);
+  void ProcessGetUsageStatsConsent(base::DictValue message,
+                                   base::DictValue response);
+  void ProcessStartDaemon(base::DictValue message, base::DictValue response);
+  void ProcessStopDaemon(base::DictValue message, base::DictValue response);
+  void ProcessGetDaemonState(base::DictValue message, base::DictValue response);
+  void ProcessGetHostClientId(base::DictValue message,
+                              base::DictValue response);
+  void ProcessGetCredentialsFromAuthCode(base::DictValue message,
+                                         base::DictValue response,
                                          bool need_user_email);
-  void ProcessIt2mePermissionCheck(base::Value::Dict message,
-                                   base::Value::Dict response);
+  void ProcessIt2mePermissionCheck(base::DictValue message,
+                                   base::DictValue response);
 
   // These Send... methods get called on the DaemonController's internal thread,
   // or on the calling thread if called by the PairingRegistry.
   // These methods fill in the |response| dictionary from the other parameters,
   // and pass it to SendResponse().
-  void SendConfigResponse(base::Value::Dict response,
-                          std::optional<base::Value::Dict> config);
-  void SendPairedClientsResponse(base::Value::Dict response,
-                                 base::Value::List pairings);
+  void SendConfigResponse(base::DictValue response,
+                          std::optional<base::DictValue> config);
+  void SendPairedClientsResponse(base::DictValue response,
+                                 base::ListValue pairings);
   void SendUsageStatsConsentResponse(
-      base::Value::Dict response,
+      base::DictValue response,
       const DaemonController::UsageStatsConsent& consent);
-  void SendAsyncResult(base::Value::Dict response,
+  void SendAsyncResult(base::DictValue response,
                        DaemonController::AsyncResult result);
-  void SendBooleanResult(base::Value::Dict response, bool result);
-  void SendCredentialsResponse(base::Value::Dict response,
+  void SendBooleanResult(base::DictValue response, bool result);
+  void SendCredentialsResponse(base::DictValue response,
                                const std::string& user_email,
                                const std::string& refresh_token);
-  void SendMessageToClient(base::Value::Dict message) const;
+  void SendMessageToClient(base::DictValue message) const;
 
   void OnError(const std::string& error_message);
 
   // Returns whether the request was successfully sent to the elevated host.
-  DelegationResult DelegateToElevatedHost(base::Value::Dict message);
+  DelegationResult DelegateToElevatedHost(base::DictValue message);
 
   bool needs_elevation_;
 

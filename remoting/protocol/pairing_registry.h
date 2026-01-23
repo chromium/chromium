@@ -45,9 +45,9 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
     ~Pairing();
 
     static Pairing Create(const std::string& client_name);
-    static Pairing CreateFromValue(const base::Value::Dict& pairing);
+    static Pairing CreateFromValue(const base::DictValue& pairing);
 
-    base::Value::Dict ToValue() const;
+    base::DictValue ToValue() const;
 
     bool operator==(const Pairing& other) const;
 
@@ -70,7 +70,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
 
   // Delegate callbacks.
   typedef base::OnceCallback<void(bool success)> DoneCallback;
-  typedef base::OnceCallback<void(base::Value::List pairings)>
+  typedef base::OnceCallback<void(base::ListValue pairings)>
       GetAllPairingsCallback;
   typedef base::OnceCallback<void(Pairing pairing)> GetPairingCallback;
 
@@ -85,7 +85,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
     virtual ~Delegate() {}
 
     // Retrieves all JSON-encoded pairings from persistent storage.
-    virtual base::Value::List LoadAll() = 0;
+    virtual base::ListValue LoadAll() = 0;
 
     // Deletes all pairings in persistent storage.
     virtual bool DeleteAll() = 0;
@@ -119,7 +119,7 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   // with an invalid Pairing.
   void GetPairing(const std::string& client_id, GetPairingCallback callback);
 
-  // Gets all pairings with the shared secrets removed as a base::Value::List.
+  // Gets all pairings with the shared secrets removed as a base::ListValue.
   void GetAllPairings(GetAllPairingsCallback callback);
 
   // Delete a pairing, identified by its client ID. |callback| is called with
@@ -161,11 +161,11 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
                                                Pairing pairing);
   void InvokeGetAllPairingsCallbackAndScheduleNext(
       GetAllPairingsCallback callback,
-      base::Value::List pairings);
+      base::ListValue pairings);
 
   // Sanitize |pairings| by parsing each entry and removing the secret from it.
   void SanitizePairings(GetAllPairingsCallback callback,
-                        base::Value::List pairings);
+                        base::ListValue pairings);
 
   // Queue management methods.
   void ServiceOrQueueRequest(base::OnceClosure request);

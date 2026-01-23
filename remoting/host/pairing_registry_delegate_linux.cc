@@ -40,8 +40,8 @@ PairingRegistryDelegateLinux::PairingRegistryDelegateLinux() = default;
 
 PairingRegistryDelegateLinux::~PairingRegistryDelegateLinux() = default;
 
-base::Value::List PairingRegistryDelegateLinux::LoadAll() {
-  base::Value::List pairings;
+base::ListValue PairingRegistryDelegateLinux::LoadAll() {
+  base::ListValue pairings;
 
   // Enumerate all pairing files in the pairing registry.
   base::FilePath registry_path = GetRegistryPath();

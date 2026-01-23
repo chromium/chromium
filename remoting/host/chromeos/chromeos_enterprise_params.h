@@ -46,8 +46,8 @@ struct ChromeOsEnterpriseParams {
   bool operator==(const ChromeOsEnterpriseParams& other) const;
 
   // Helpers used to serialize/deserialize enterprise params.
-  static ChromeOsEnterpriseParams FromDict(const base::Value::Dict& dict);
-  base::Value::Dict ToDict() const;
+  static ChromeOsEnterpriseParams FromDict(const base::DictValue& dict);
+  base::DictValue ToDict() const;
 
   // Local machine configuration.
   bool suppress_user_dialogs = false;
