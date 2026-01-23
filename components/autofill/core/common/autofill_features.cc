@@ -166,13 +166,6 @@ BASE_FEATURE(kAutofillAiDedupeEntities, base::FEATURE_DISABLED_BY_DEFAULT);
 // to be accepted.
 BASE_FEATURE(kAutofillAiFillingSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch: If enabled, MayPerformAutofillAiAction() also depends on two
-// prefs that enable/disable filling and import of identity-related and
-// travel-related entities.
-// TODO(crbug.com/450060416): Remove after M144 branch point (2025-01-12).
-BASE_FEATURE(kAutofillAiIdentityAndTravelPrefs,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
 // `kAutofillAiIgnoreGeoIp` is enabled):

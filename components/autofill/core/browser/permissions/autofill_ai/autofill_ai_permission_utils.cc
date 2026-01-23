@@ -273,9 +273,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       CHECK(entity_type)
           << "An entity type is required to check if an entity "
              "can be filled or imported, and IPH requires import";
-      return entity_type_is_enabled_in_settings(*entity_type) ||
-             !base::FeatureList::IsEnabled(
-                 features::kAutofillAiIdentityAndTravelPrefs);
+      return entity_type_is_enabled_in_settings(*entity_type);
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
