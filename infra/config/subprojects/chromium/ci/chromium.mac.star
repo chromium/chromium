@@ -1141,6 +1141,7 @@ ios_builder(
             "libfuzzer",
             "no_dsyms",
             "no_remoting",
+            "disable_be_deferred_context_menu",
         ],
     ),
     targets = targets.bundle(

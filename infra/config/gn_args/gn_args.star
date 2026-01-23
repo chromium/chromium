@@ -838,6 +838,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "disable_be_deferred_context_menu",
+    args = {
+        "use_be_deferred_context_menu": False,
+    },
+)
+
+gn_args.config(
     name = "ios_simulator",
     args = {"target_environment": "simulator"},
     configs = ["ios"],
