@@ -22,4 +22,8 @@ IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillsAppPage) {
   RunTest("skills/skills_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsBrowserTest, SkillsDialogAppPage) {
+  RunTest("skills/skills_dialog_test.js", "mocha.run();");
+}
+
 }  // namespace

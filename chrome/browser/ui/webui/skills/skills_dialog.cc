@@ -44,7 +44,7 @@ SkillsDialog::SkillsDialog(Profile* profile)
   set_can_resize(false);
   set_can_minimize(true);
   set_dialog_content_url(GURL(std::string(content::kChromeUIScheme) + "://" +
-                              chrome::kChromeUISkillsHost + "/dialog.html"));
+                              chrome::kChromeUISkillsHost + "/dialog"));
   set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_size(kDefaultSize);
   // TODO(marissashen): Update to resource once strings are finalized.

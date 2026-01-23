@@ -11,15 +11,27 @@
 #include "chrome/grit/skills_resources.h"
 #include "chrome/grit/skills_resources_map.h"
 #include "components/skills/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
 namespace skills {
 
+void AddDialogStringResources(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"cancel", IDS_CANCEL},
+      {"save", IDS_SAVE},
+  };
+
+  source->AddLocalizedStrings(kStrings);
+}
+
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUISkillsHost);
   webui::SetupWebUIDataSource(source, kSkillsResources, IDR_SKILLS_SKILLS_HTML);
+  source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
+  AddDialogStringResources(source);
 }
 
 void SkillsUI::BindInterface(

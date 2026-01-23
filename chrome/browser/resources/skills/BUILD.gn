@@ -10,7 +10,10 @@ assert(is_win || is_mac || is_linux || is_chromeos,
 build_webui("build") {
   grd_prefix = "skills"
 
-  static_files = [ "skills.html" ]
+  static_files = [
+    "skills.html",
+    "skills_dialog.html",
+  ]
 
   ts_composite = true
   ts_files = [
@@ -21,9 +24,14 @@ build_webui("build") {
     "user_skills_page.html.ts",
     "discover_skills_page.ts",
     "discover_skills_page.html.ts",
+    "skills_dialog_app.html.ts",
+    "skills_dialog_app.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "skills_dialog.css",
+  ]
 
   webui_context_type = "trusted"
   ts_deps = [

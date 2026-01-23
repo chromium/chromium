@@ -4,7 +4,10 @@ assert(is_win || is_mac || is_linux || is_chromeos,
        "This target is only supported on Windows, Mac, Linux, or ChromeOS.")
 
 build_webui_tests("build") {
-  files = [ "skills_test.ts" ]
+  files = [
+    "skills_dialog_test.ts",
+    "skills_test.ts",
+  ]
 
   ts_path_mappings =
       [ "chrome://skills/*|" +
