@@ -38,6 +38,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
+import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
+import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,6 +56,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
+import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.components.ukm.UkmRecorder;
@@ -545,6 +551,33 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assertOnUiThread();
         try (ScopedStorageBatch ignored = createBatch(getProfile())) {
             openMostRecentlyClosedEntryInternal();
+        }
+    }
+
+    @Override
+    public @RecentlyClosedEntryType int getMostRecentlyClosedEntryType() {
+        if (getProfile() == null || isIncognito()) return RecentlyClosedEntryType.NONE;
+
+        RecentlyClosedBridge bridge =
+                new RecentlyClosedBridge(getProfile(), (TabModelSelector) mModelDelegate);
+        try {
+            List<RecentlyClosedEntry> entries = bridge.getRecentlyClosedEntries(1);
+            if (entries == null || entries.isEmpty()) {
+                return RecentlyClosedEntryType.NONE;
+            }
+            RecentlyClosedEntry entry = entries.get(0);
+
+            if (entry instanceof RecentlyClosedTab) {
+                return RecentlyClosedEntryType.TAB;
+            } else if (entry instanceof RecentlyClosedBulkEvent) {
+                return RecentlyClosedEntryType.TABS;
+            } else if (entry instanceof RecentlyClosedGroup) {
+                return RecentlyClosedEntryType.GROUP;
+            } else {
+                return RecentlyClosedEntryType.NONE;
+            }
+        } finally {
+            bridge.destroy();
         }
     }
 

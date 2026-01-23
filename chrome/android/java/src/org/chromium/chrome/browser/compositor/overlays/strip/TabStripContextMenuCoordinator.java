@@ -23,6 +23,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -116,6 +117,23 @@ public class TabStripContextMenuCoordinator {
                             .withMenuId(R.id.new_tab_menu_id)
                             .withIsIncognito(isIncognito)
                             .build());
+            // Add "Reopen closed tab/tabs/group" option.
+            @RecentlyClosedEntryType
+            int recentlyClosedEntryType = mDelegate.getRecentlyClosedEntryType();
+            if (recentlyClosedEntryType != RecentlyClosedEntryType.NONE) {
+                int titleRes = R.string.menu_reopen_closed_tab;
+                if (recentlyClosedEntryType == RecentlyClosedEntryType.TABS) {
+                    titleRes = R.string.menu_reopen_closed_tabs;
+                } else if (recentlyClosedEntryType == RecentlyClosedEntryType.GROUP) {
+                    titleRes = R.string.menu_reopen_closed_group;
+                }
+                itemList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(titleRes)
+                                .withMenuId(R.id.reopen_closed_entry)
+                                .withIsIncognito(false)
+                                .build());
+            }
         }
         // Add "Name window" option.
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()
@@ -155,6 +173,8 @@ public class TabStripContextMenuCoordinator {
             }
             if (model.get(MENU_ITEM_ID) == R.id.new_tab_menu_id) {
                 mDelegate.onNewTab();
+            } else if (model.get(MENU_ITEM_ID) == R.id.reopen_closed_entry) {
+                mDelegate.onReopenClosedEntry();
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
                 mDelegate.onNameWindow();
             }

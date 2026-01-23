@@ -4788,6 +4788,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.ReopenClosedEntry">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Reopen closed entry' on the tab strip context menu to reopen
+    the last closed entry.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.SaveWindowName">
   <owner>aishwaryarj@google.com</owner>
   <description>

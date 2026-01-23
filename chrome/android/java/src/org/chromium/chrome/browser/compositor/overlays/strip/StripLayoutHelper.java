@@ -117,6 +117,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -3178,6 +3179,20 @@ public class StripLayoutHelper
                                 @Override
                                 public void onNewTab() {
                                     handleNewTabClick(NewTabSource.EMPTY_SPACE_CONTEXT_MENU);
+                                }
+
+                                @Override
+                                public @RecentlyClosedEntryType int getRecentlyClosedEntryType() {
+                                    return (mModel != null)
+                                            ? mModel.getMostRecentlyClosedEntryType()
+                                            : RecentlyClosedEntryType.NONE;
+                                }
+
+                                @Override
+                                public void onReopenClosedEntry() {
+                                    RecordUserAction.record(
+                                            "Android.TabStripMenu.ReopenClosedEntry");
+                                    if (mModel != null) mModel.openMostRecentlyClosedEntry();
                                 }
 
                                 @Override

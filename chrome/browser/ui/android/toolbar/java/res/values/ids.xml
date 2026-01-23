@@ -31,6 +31,7 @@ found in the LICENSE file.
     <item type="id" name="name_window" />
     <item type="id" name="mute_site" />
     <item type="id" name="unmute_site" />
+    <item type="id" name="reopen_closed_entry" />
 
     <!-- Presentation is the same as delete_tab_group, but helps handler impl. -->
     <item type="id" name="delete_shared_group" />

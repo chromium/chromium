@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -64,6 +65,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator = new TabStripContextMenuCoordinator(mActivity, mDelegate);
         when(mRectProvider.getRect())
                 .thenReturn(new Rect(10, 10, mActivity.getWindow().getDecorView().getWidth(), 50));
+        when(mDelegate.getRecentlyClosedEntryType()).thenReturn(RecentlyClosedEntryType.TAB);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
         // Verify.
-        verifyMenuState(/* expectedNumItems= */ 2);
+        verifyMenuState(/* expectedNumItems= */ 3);
     }
 
     @Test
@@ -87,7 +89,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
 
         // Verify.
-        verifyMenuState(/* expectedNumItems= */ 1);
+        verifyMenuState(/* expectedNumItems= */ 2);
     }
 
     @Test
@@ -95,7 +97,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 2);
+        verifyMenuState(/* expectedNumItems= */ 3);
         assertEquals(
                 R.string.menu_new_tab,
                 getItemModelAtPosition(0).get(ListMenuItemProperties.TITLE_ID));
@@ -111,19 +113,39 @@ public class TabStripContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void showMenu_verifyReopenClosedEntryOption() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+        verifyMenuState(/* expectedNumItems= */ 3);
+        assertEquals(
+                R.string.menu_reopen_closed_tab,
+                getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+
+        // Act: Select "Reopen closed tab" option.
+        mCoordinator
+                .getListMenuDelegate(mContentView)
+                .onItemSelected(getItemModelAtPosition(1), mListView);
+
+        // Verify.
+        verify(mDelegate).onReopenClosedEntry();
+        assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
     public void showMenu_verifyNameWindowOption() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
-        verifyMenuState(/* expectedNumItems= */ 2);
+        verifyMenuState(/* expectedNumItems= */ 3);
         assertEquals(
                 R.string.menu_name_window,
-                getItemModelAtPosition(1).get(ListMenuItemProperties.TITLE_ID));
+                getItemModelAtPosition(2).get(ListMenuItemProperties.TITLE_ID));
 
         // Act: Select "Name window" option.
         mCoordinator
                 .getListMenuDelegate(mContentView)
-                .onItemSelected(getItemModelAtPosition(1), mListView);
+                .onItemSelected(getItemModelAtPosition(2), mListView);
 
         // Verify.
         verify(mDelegate).onNameWindow();

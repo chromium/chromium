@@ -4405,6 +4405,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NAME_WINDOW" desc="Menu item for naming a window.">
         Name window
       </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_TAB" desc="Menu item for reopening the last closed tab.">
+        Reopen closed tab
+      </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_TABS" desc="Menu item for reopening the last closed tabs.">
+        Reopen closed tabs
+      </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_GROUP" desc="Menu item for reopening the last closed tab group.">
+        Reopen closed group
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR_LIMIT=18]">
