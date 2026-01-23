@@ -5542,11 +5542,7 @@
     ],
     "expiry_milestone": 125
   },
-  {
-    "name": "hub-slide-animation",
-    "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 146
-  },
+
   {
     "name": "hybrid-charger-notifications",
     "owners": [
