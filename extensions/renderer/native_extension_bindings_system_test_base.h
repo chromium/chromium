@@ -156,6 +156,7 @@ class NativeExtensionBindingsSystemUnittest
   void set_allow_unregistered_contexts(bool allow_unregistered_contexts) {
     allow_unregistered_contexts_ = allow_unregistered_contexts;
   }
+  void DestroyBindingsSystem();
 
   // NativeExtensionBindingsSystem::Delegate implementation.
   ScriptContextSetIterable* GetScriptContextSet() override;

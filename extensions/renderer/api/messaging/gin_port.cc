@@ -117,6 +117,7 @@ void GinPort::DispatchOnDisconnect(v8::Local<v8::Context> context) {
   DispatchEvent(context, &args, kOnDisconnectEvent);
 
   InvalidateEvents(context);
+  ClearContextPointers();
 
   DCHECK_NE(state_, State::kActive);
 }
@@ -155,6 +156,7 @@ void GinPort::DisconnectHandler(gin::Arguments* arguments) {
     delegate_->ClosePort(context, port_id_);
   }
   state_ = State::kDisconnected;
+  ClearContextPointers();
 }
 
 void GinPort::PostMessageHandler(gin::Arguments* arguments,
@@ -189,8 +191,7 @@ void GinPort::PostMessageHandler(gin::Arguments* arguments,
 }
 
 void GinPort::OnContextDestroyed() {
-  event_handler_ = nullptr;
-  delegate_ = nullptr;
+  ClearContextPointers();
 }
 
 std::string GinPort::GetName() {
@@ -288,6 +289,15 @@ void GinPort::InvalidateEvents(v8::Local<v8::Context> context) {
                                         GetEvent(context, kOnMessageEvent));
   event_handler_->InvalidateCustomEvent(context,
                                         GetEvent(context, kOnDisconnectEvent));
+}
+
+void GinPort::ClearContextPointers() {
+  // The port is disconnected, so it's no longer tracked in the
+  // `MessagingPerContextData`. This means `OnContextDestroyed()` won't be
+  // called for this port. Clear the pointers now to avoid dangling pointers
+  // if the context is destroyed later.
+  delegate_ = nullptr;
+  event_handler_ = nullptr;
 }
 
 void GinPort::ThrowError(v8::Isolate* isolate, std::string_view error) {

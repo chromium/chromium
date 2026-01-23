@@ -132,6 +132,9 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // Invalidates the port's events after the port has been disconnected.
   void InvalidateEvents(v8::Local<v8::Context> context);
 
+  // Clears the delegate and event handler pointers.
+  void ClearContextPointers();
+
   // Throws the given `error`.
   void ThrowError(v8::Isolate* isolate, std::string_view error);
 

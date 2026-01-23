@@ -816,4 +816,46 @@ TEST_F(NativeRendererMessagingServiceTest, DestroyContext) {
                             "Uncaught Error: Extension context invalidated.");
 }
 
+// Tests that a disconnected port doesn't crash when the messaging service is
+// destroyed before the port is garbage collected. Regression test for
+// https://crbug.com/476266939.
+TEST_F(NativeRendererMessagingServiceTest, DisconnectAndDestroy) {
+  {
+    v8::HandleScope handle_scope(isolate());
+    v8::Local<v8::Context> context = MainContext();
+
+    base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+    const PortId port_id(other_context_id, 0, false,
+                         mojom::SerializationFormat::kJson);
+
+    mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+    mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+        message_port_host_receiver;
+    GinPort* port = messaging_service()->CreatePortForTesting(
+        script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+        message_port_remote, message_port_host_receiver);
+    message_port_remote.EnableUnassociatedUsage();
+    message_port_host_receiver.EnableUnassociatedUsage();
+
+    v8::Local<v8::Object> port_object =
+        port->GetWrapper(isolate()).ToLocalChecked();
+
+    // Disconnect the port.
+    port->DispatchOnDisconnect(context);
+
+    // Release references.
+    port = nullptr;
+    port_object.Clear();
+
+    // Destroy the bindings system (and the messaging service).
+    DestroyBindingsSystem();
+  }
+
+  // Dispose all contexts. This will release the `ScriptContext` (which holds
+  // a strong reference to the `v8::Context`) and trigger garbage collection.
+  // This verifies that the `GinPort` (which is collected during this GC)
+  // doesn't crash when it finds the messaging service destroyed.
+  DisposeAllContexts();
+}
+
 }  // namespace extensions
