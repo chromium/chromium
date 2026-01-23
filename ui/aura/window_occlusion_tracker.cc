@@ -265,6 +265,31 @@ void WindowOcclusionTracker::Track(Window* window) {
     TrackedWindowAddedToRoot(window);
 }
 
+void WindowOcclusionTracker::Untrack(Window* window) {
+  auto builder =
+      occlusion_change_builder_factory_
+          ? occlusion_change_builder_factory_.Run()
+          : WindowOcclusionChangeBuilder::Create(/*disallow_unknown=*/false);
+
+  DCHECK(window);
+  DCHECK(window != window->GetRootWindow());
+
+  if (tracked_windows_.erase(window) == 0) {
+    return;
+  }
+
+  if (window->layer()) {
+    RemoveAnimationObservationForLayer(window->layer());
+  }
+
+  if (window->GetRootWindow()) {
+    RemoveTrackedWindowFromRoot(window);
+  }
+
+  window_observations_.RemoveObservation(window);
+  builder->Add(window, Window::OcclusionState::UNKNOWN, {});
+}
+
 WindowOcclusionTracker::OcclusionData
 WindowOcclusionTracker::ComputeTargetOcclusionForWindow(Window* window) {
   // Compute the occlusion with target state, just for this window.
@@ -1044,16 +1069,20 @@ void WindowOcclusionTracker::OnWindowRemovingFromRootWindow(Window* window,
                                                             Window* new_root) {
   DCHECK(window->GetRootWindow());
   if (WindowIsTracked(window)) {
-    Window* const root_window = window->GetRootWindow();
-    DCHECK(root_window);
-    maybe_removed_host_ = root_window->GetHost();
-
-    auto root_window_state_it = root_windows_.find(root_window);
-
-    CHECK(root_window_state_it != root_windows_.end());
-    --root_window_state_it->second.num_tracked_windows;
+    RemoveTrackedWindowFromRoot(window);
   }
   RemoveObserverFromWindowAndDescendants(window);
+}
+
+void WindowOcclusionTracker::RemoveTrackedWindowFromRoot(Window* window) {
+  Window* const root_window = window->GetRootWindow();
+  DCHECK(root_window);
+  maybe_removed_host_ = root_window->GetHost();
+
+  auto root_window_state_it = root_windows_.find(root_window);
+
+  CHECK(root_window_state_it != root_windows_.end());
+  --root_window_state_it->second.num_tracked_windows;
 }
 
 void WindowOcclusionTracker::OnWindowRemoved(Window* window) {

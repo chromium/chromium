@@ -16,7 +16,8 @@ namespace aura {
 class DefaultWindowOcclusionChangeBuilder
     : public WindowOcclusionChangeBuilder {
  public:
-  DefaultWindowOcclusionChangeBuilder() = default;
+  explicit DefaultWindowOcclusionChangeBuilder(bool disallow_unknown)
+      : disallow_unknown_state_(disallow_unknown) {}
 
   DefaultWindowOcclusionChangeBuilder(
       const DefaultWindowOcclusionChangeBuilder&) = delete;
@@ -48,8 +49,11 @@ class DefaultWindowOcclusionChangeBuilder
   void Add(Window* window,
            Window::OcclusionState occlusion_state,
            SkRegion occluded_region) override {
-    // Change back to UNKNOWN is not allowed.
-    DCHECK_NE(occlusion_state, Window::OcclusionState::UNKNOWN);
+    if (disallow_unknown_state_) {
+      // Change back to UNKNOWN is not allowed by default.
+      // TODO(crbug.com/436906707): change this to CHECK.
+      DCHECK_NE(occlusion_state, Window::OcclusionState::UNKNOWN);
+    }
 
     windows_.Add(window);
     changes_[window] = {occlusion_state, occluded_region};
@@ -62,12 +66,15 @@ class DefaultWindowOcclusionChangeBuilder
 
   // Stores the accumulated occlusion changes.
   base::flat_map<Window*, OcclusionData> changes_;
+
+  const bool disallow_unknown_state_;
 };
 
 // static
 std::unique_ptr<WindowOcclusionChangeBuilder>
-WindowOcclusionChangeBuilder::Create() {
-  return std::make_unique<DefaultWindowOcclusionChangeBuilder>();
+WindowOcclusionChangeBuilder::Create(bool disallow_unknown) {
+  return std::make_unique<DefaultWindowOcclusionChangeBuilder>(
+      disallow_unknown);
 }
 
 }  // namespace aura

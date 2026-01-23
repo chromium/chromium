@@ -71,26 +71,23 @@ class MockWindowDelegate : public test::ColorTestWindowDelegate {
     expected_occluded_region_ = occluded_region;
   }
 
-  bool is_expecting_call() const {
-    return expected_occlusion_state_ != Window::OcclusionState::UNKNOWN;
-  }
+  bool is_expecting_call() const { return !!expected_occlusion_state_; }
 
   void OnWindowOcclusionChanged(
       Window::OcclusionState old_occlusion_state,
       Window::OcclusionState new_occlusion_state) override {
     SCOPED_TRACE(window_->GetName());
     ASSERT_TRUE(window_);
-    EXPECT_NE(new_occlusion_state, Window::OcclusionState::UNKNOWN);
-    EXPECT_EQ(new_occlusion_state, expected_occlusion_state_);
+    ASSERT_TRUE(expected_occlusion_state_);
+    EXPECT_EQ(new_occlusion_state, expected_occlusion_state_.value());
     EXPECT_EQ(window_->occluded_region_in_root(), expected_occluded_region_);
-    expected_occlusion_state_ = Window::OcclusionState::UNKNOWN;
+    expected_occlusion_state_.reset();
     expected_occluded_region_ = SkRegion();
   }
 
  private:
-  Window::OcclusionState expected_occlusion_state_ =
-      Window::OcclusionState::UNKNOWN;
-  SkRegion expected_occluded_region_ = SkRegion();
+  std::optional<Window::OcclusionState> expected_occlusion_state_;
+  SkRegion expected_occluded_region_;
   raw_ptr<Window> window_ = nullptr;
 };
 
@@ -263,6 +260,43 @@ TEST_F(WindowOcclusionTrackerTest, HiddenWindowCoversWindow) {
   window_b->Show();
   EXPECT_FALSE(delegate_a->is_expecting_call());
   EXPECT_FALSE(delegate_b->is_expecting_call());
+}
+
+TEST_F(WindowOcclusionTrackerTest, Untrack) {
+  MockWindowDelegate* delegate_a = new MockWindowDelegate();
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
+  auto* window_a = CreateTrackedWindow(delegate_a, gfx::Rect(0, 0, 10, 10));
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE,
+                              SkRegion(SkIRect::MakeXYWH(0, 0, 5, 5)));
+  MockWindowDelegate* delegate_aa = new MockWindowDelegate();
+  delegate_aa->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
+  auto* window_aa =
+      CreateTrackedWindow(delegate_aa, gfx::Rect(0, 0, 5, 5), window_a);
+  EXPECT_FALSE(delegate_aa->is_expecting_call());
+
+  delegate_a->set_expectation(Window::OcclusionState::UNKNOWN, SkRegion());
+  window_a->UntrackOcclusionState();
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+
+  MockWindowDelegate* delegate_b = new MockWindowDelegate();
+
+  // Set wrong expectation on window_a. This should not be triggered.
+  delegate_a->set_expectation(Window::OcclusionState::VISIBLE, {});
+  delegate_aa->set_expectation(Window::OcclusionState::OCCLUDED, {});
+  delegate_b->set_expectation(Window::OcclusionState::VISIBLE, {});
+  auto* window_b = CreateTrackedWindow(delegate_b, gfx::Rect(0, 0, 10, 10));
+  EXPECT_TRUE(delegate_a->is_expecting_call());
+  EXPECT_FALSE(delegate_aa->is_expecting_call());
+  EXPECT_EQ(window_aa->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
+  EXPECT_FALSE(delegate_b->is_expecting_call());
+  EXPECT_EQ(window_b->GetOcclusionState(), Window::OcclusionState::VISIBLE);
+
+  delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, {});
+  window_a->TrackOcclusionState();
+  EXPECT_FALSE(delegate_a->is_expecting_call());
+  EXPECT_EQ(window_a->GetOcclusionState(), Window::OcclusionState::OCCLUDED);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

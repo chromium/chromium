@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -162,6 +163,9 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
   // Start tracking the occlusion state of |window|.
   void Track(Window* window);
+
+  // Stop tracking the occlusion state of `window`.
+  void Untrack(Window* window);
 
   // Compute the occlusion state and occluded region that |window| will have
   // once all bounds, transform, opacity, and visibility animations have
@@ -331,6 +335,9 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
 
   // Called when a tracked |window| is removed from a root window.
   void TrackedWindowRemovedFromRoot(Window* window);
+
+  // Remove the tracked window from root.
+  void RemoveTrackedWindowFromRoot(Window* window);
 
   // Removes |this| from the observer list of |window| and its descendants,
   // except if they are in |tracked_windows_| or |windows_being_destroyed_|.

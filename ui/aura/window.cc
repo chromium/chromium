@@ -1486,6 +1486,10 @@ void Window::TrackOcclusionState() {
   Env::GetInstance()->GetWindowOcclusionTracker()->Track(this);
 }
 
+void Window::UntrackOcclusionState() {
+  Env::GetInstance()->GetWindowOcclusionTracker()->Untrack(this);
+}
+
 bool Window::RequiresDoubleTapGestureEvents() const {
   return delegate_ && delegate_->RequiresDoubleTapGestureEvents();
 }
