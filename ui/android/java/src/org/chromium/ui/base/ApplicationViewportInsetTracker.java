@@ -51,7 +51,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
     /** Keyboard related suppliers */
     private @Nullable NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
 
-    private @Nullable MonotonicObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
     private @Nullable MonotonicObservableSupplier<Integer> mBottomSheetInsetSupplier;
 
@@ -154,7 +154,7 @@ public class ApplicationViewportInsetTracker implements Destroyable {
      * <p>Pass null to unset the current supplier.
      */
     public void setKeyboardAccessoryInsetSupplier(
-            @Nullable MonotonicObservableSupplier<Integer> insetSupplier) {
+            @Nullable NonNullObservableSupplier<Integer> insetSupplier) {
         boolean didRemove = false;
         if (mKeyboardAccessoryInsetSupplier != null) {
             mKeyboardAccessoryInsetSupplier.removeObserver(mInsetSupplierObserver);

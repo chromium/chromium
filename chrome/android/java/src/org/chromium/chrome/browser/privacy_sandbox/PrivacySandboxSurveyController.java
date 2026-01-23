@@ -48,7 +48,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /** Class that controls and manages when and if surveys should be shown. */
 @NullMarked
@@ -158,9 +157,7 @@ public class PrivacySandboxSurveyController {
                         mMessage,
                         mMessageDispatcher,
                         mTabModelSelector,
-                        (Supplier<@Nullable Boolean>)
-                                SurveyClientFactory.getInstance()
-                                        .getCrashUploadPermissionSupplier());
+                        SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
                         .createClient(surveyConfig, messageDelegate, mProfile, mTabModelSelector);

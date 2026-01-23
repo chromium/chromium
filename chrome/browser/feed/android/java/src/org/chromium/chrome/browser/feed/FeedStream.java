@@ -31,8 +31,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -402,12 +403,10 @@ public class FeedStream implements Stream {
     class InProgressWorkTracker {
         private int mNextWorkId;
         private final HashSet<Integer> mActiveWork = new HashSet<>();
-        private final ObservableSupplierImpl<Boolean> mWorkPending = new ObservableSupplierImpl<>();
+        private final SettableNonNullObservableSupplier<Boolean> mWorkPending =
+                ObservableSuppliers.createNonNull(false);
 
-        InProgressWorkTracker() {
-            // ObservableSupplierImpl holds null by default.
-            mWorkPending.set(false);
-        }
+        InProgressWorkTracker() {}
 
         /**
          * Record that background work has begun, returns a runnable to be called when work is
@@ -422,9 +421,7 @@ public class FeedStream implements Stream {
 
         /** postTask to call runnable after all in-progress work is complete. */
         void postTaskAfterWorkComplete(Runnable runnable) {
-            Boolean workPendingValue = mWorkPending.get();
-            assert workPendingValue != null;
-            if (!workPendingValue) {
+            if (!mWorkPending.get()) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
             } else {
                 new DoneWatcher(runnable);
@@ -1045,7 +1042,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public MonotonicObservableSupplier<Boolean> hasUnreadContent() {
+    public NonNullObservableSupplier<Boolean> hasUnreadContent() {
         return mUnreadContentObserver != null
                 ? mUnreadContentObserver.mHasUnreadContent
                 : Stream.super.hasUnreadContent();
@@ -1553,11 +1550,11 @@ public class FeedStream implements Stream {
 
     @VisibleForTesting
     static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
-        ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Boolean> mHasUnreadContent =
+                ObservableSuppliers.createNonNull(false);
 
         UnreadContentObserver(boolean isWebFeed) {
             super(isWebFeed);
-            mHasUnreadContent.set(false);
         }
 
         @Override

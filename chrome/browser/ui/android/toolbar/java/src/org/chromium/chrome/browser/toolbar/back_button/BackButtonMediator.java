@@ -17,7 +17,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,7 +44,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     private final ThemeColorProvider mThemeColorProvider;
     private final TabSupplierObserver mTabObserver;
     private @Nullable Tab mCurrentTab;
-    private final MonotonicObservableSupplier<Boolean> mEnabledSupplier;
+    private final NonNullObservableSupplier<Boolean> mEnabledSupplier;
     private final Callback<Boolean> mEnabledObserver;
     private Insets mInsets;
     private final boolean mIsWebApp;
@@ -67,7 +67,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
-            MonotonicObservableSupplier<Boolean> enabledSupplier,
+            NonNullObservableSupplier<Boolean> enabledSupplier,
             Callback<Tab> showNavigationPopup,
             Resources resources,
             Context context,

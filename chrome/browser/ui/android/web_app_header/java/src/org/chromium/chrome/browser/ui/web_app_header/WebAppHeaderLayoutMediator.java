@@ -15,7 +15,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,12 +56,14 @@ class WebAppHeaderLayoutMediator
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
     private final Supplier<List<Rect>> mHeaderControlPositionSupplier;
-    private final ObservableSupplierImpl<Integer> mWidthSupplier;
+    private int mWidth;
+
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
     private final int mHeaderButtonHeight;
     private @Nullable AppHeaderState mCurrentHeaderState;
-    private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
+    private final SettableMonotonicObservableSupplier<Integer> mAppHeaderUnoccludedWidthSupplier =
+            ObservableSuppliers.createMonotonic();
     private final Callback<Boolean> mScrimVisibilityObserver;
     private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
     private final Callback<Boolean> mSetHeaderAsOverlayCallback;
@@ -128,9 +131,6 @@ class WebAppHeaderLayoutMediator
                 };
         mScrimManager = scrimManager;
         mScrimManager.getScrimVisibilitySupplier().addObserver(mScrimVisibilityObserver);
-
-        mWidthSupplier = new ObservableSupplierImpl<>();
-        mAppHeaderUnoccludedWidthSupplier = new ObservableSupplierImpl<>();
 
         mModel = model;
         // View should notify us about initial width.
@@ -208,7 +208,7 @@ class WebAppHeaderLayoutMediator
     }
 
     private void onLayoutWidthUpdated(int width) {
-        mWidthSupplier.set(width);
+        mWidth = width;
 
         // Update background bars and draggable areas even if width hasn't changed, because
         // children might've changed.
@@ -219,7 +219,7 @@ class WebAppHeaderLayoutMediator
     private void onVisibilityChanged(int visibility) {
         // If the web app header view is GONE, we should update the width to reflect this.
         if (visibility == View.GONE) {
-            mWidthSupplier.set(0);
+            mWidth = 0;
         }
     }
 
@@ -433,8 +433,8 @@ class WebAppHeaderLayoutMediator
         return mWebAppMinHeaderHeight;
     }
 
-    public ObservableSupplierImpl<Integer> getWidthSupplierForTesting() {
-        return mWidthSupplier;
+    public int getWidthForTesting() {
+        return mWidth;
     }
 
     static void setMinHeightForTesting(final int height) {

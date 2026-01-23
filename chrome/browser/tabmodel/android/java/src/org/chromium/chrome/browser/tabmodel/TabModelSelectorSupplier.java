@@ -8,7 +8,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,7 +20,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class TabModelSelectorSupplier {
     private static final UnownedUserDataKey<MonotonicObservableSupplier<TabModelSelector>> KEY =
             new UnownedUserDataKey<>();
-    private static @Nullable ObservableSupplierImpl<TabModelSelector> sInstanceForTesting;
+    private static @Nullable NonNullObservableSupplier<TabModelSelector> sInstanceForTesting;
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
     public static @Nullable MonotonicObservableSupplier<TabModelSelector> from(
@@ -61,7 +62,7 @@ public class TabModelSelectorSupplier {
 
     /** Sets an instance for testing. */
     public static void setInstanceForTesting(TabModelSelector tabModelSelector) {
-        sInstanceForTesting = new ObservableSupplierImpl<>(tabModelSelector);
+        sInstanceForTesting = ObservableSuppliers.of(tabModelSelector);
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 

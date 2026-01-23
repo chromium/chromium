@@ -8,8 +8,9 @@ import android.text.TextUtils;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -22,11 +23,10 @@ public class SurveyClientFactory {
     private static @Nullable SurveyClientFactory sInstance;
     private static boolean sHasInstanceForTesting;
 
-    protected final ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
+    protected final SettableNonNullObservableSupplier<Boolean> mCrashUploadPermissionSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     protected SurveyClientFactory(PrivacyPreferencesManager privacyPreferencesManager) {
-        mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>(false);
-
         if (privacyPreferencesManager != null) {
             mCrashUploadPermissionSupplier.set(
                     privacyPreferencesManager.isUsageAndCrashReportingPermitted());
@@ -102,7 +102,7 @@ public class SurveyClientFactory {
     }
 
     /** Get the crash upload supplier initialized in this factory. */
-    public MonotonicObservableSupplier<Boolean> getCrashUploadPermissionSupplier() {
+    public NonNullObservableSupplier<Boolean> getCrashUploadPermissionSupplier() {
         return mCrashUploadPermissionSupplier;
     }
 }

@@ -17,7 +17,9 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -54,7 +56,7 @@ public abstract class PersistedTabData implements UserData {
     private long mLastUpdatedMs = LAST_UPDATE_UNKNOWN;
 
     @VisibleForTesting
-    public @Nullable NonNullObservableSupplier<Boolean> mIsTabSaveEnabledSupplier;
+    public @Nullable MonotonicObservableSupplier<Boolean> mIsTabSaveEnabledSupplier;
 
     private @Nullable Callback<Boolean> mTabSaveEnabledToggleCallback;
     private boolean mFirstSaveDone;
@@ -376,9 +378,7 @@ public abstract class PersistedTabData implements UserData {
     /** Save {@link PersistedTabData} to storage */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void save() {
-        if (mIsTabSaveEnabledSupplier != null
-                && mIsTabSaveEnabledSupplier.get() != null
-                && mIsTabSaveEnabledSupplier.get()) {
+        if (SupplierUtils.getOr(mIsTabSaveEnabledSupplier, false)) {
             mPersistedTabDataStorage.save(
                     mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
         }
@@ -523,7 +523,7 @@ public abstract class PersistedTabData implements UserData {
      *     flag's value.
      */
     public void registerIsTabSaveEnabledSupplier(
-            NonNullObservableSupplier<Boolean> isTabSaveEnabledSupplier) {
+            MonotonicObservableSupplier<Boolean> isTabSaveEnabledSupplier) {
         mIsTabSaveEnabledSupplier = isTabSaveEnabledSupplier;
         mTabSaveEnabledToggleCallback =
                 (isTabSaveEnabled) -> {

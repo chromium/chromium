@@ -222,7 +222,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public MonotonicObservableSupplier<Integer> getBottomInsetSupplier() {
+    public NonNullObservableSupplier<Integer> getBottomInsetSupplier() {
         return mMediator.getBottomInsetSupplier();
     }
 

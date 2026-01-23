@@ -17,7 +17,6 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -153,11 +152,6 @@ public class TestSurveyUtils {
                     mCrashUploadPermissionSupplier,
                     profile,
                     tabModelSelector);
-        }
-
-        @Override
-        public MonotonicObservableSupplier<Boolean> getCrashUploadPermissionSupplier() {
-            return mCrashUploadPermissionSupplier;
         }
     }
 

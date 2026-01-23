@@ -19,6 +19,7 @@ import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,7 +48,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private final TabSupplierObserver mTabObserver;
     private final MonotonicObservableSupplier<Boolean> mNtpLoadingSupplier;
     private final Callback<Boolean> mNtpLoadingObserver;
-    private final MonotonicObservableSupplier<Boolean> mEnabledSupplier;
+    private final NonNullObservableSupplier<Boolean> mEnabledSupplier;
     private final Callback<Boolean> mEnabledObserver;
     private boolean mIsShiftDownForReload;
     private boolean mIsReloading;
@@ -75,7 +76,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
             MonotonicObservableSupplier<Boolean> ntpLoadingSupplier,
-            MonotonicObservableSupplier<Boolean> enabledSupplier,
+            NonNullObservableSupplier<Boolean> enabledSupplier,
             Callback<String> showToast,
             Resources resources,
             Context context,

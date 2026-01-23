@@ -25,9 +25,9 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
@@ -62,7 +62,7 @@ public class MenuItem extends FrameLayout {
     private final @Action int mActionType;
     private final Menu mMenu;
     private final LinearLayout mLayout;
-    private final MonotonicObservableSupplier<LinearLayout> mLayoutSupplier;
+    private final SettableNonNullObservableSupplier<LinearLayout> mLayoutSupplier;
     private final ImageView mPlayButton;
     private final ProgressBar mPlayButtonSpinner;
     private final String mLabel;
@@ -97,7 +97,7 @@ public class MenuItem extends FrameLayout {
                     onClick();
                 });
         mLayout = layout;
-        mLayoutSupplier = new ObservableSupplierImpl(mLayout);
+        mLayoutSupplier = ObservableSuppliers.createNonNull(mLayout);
         new OneShotCallback<>(mLayoutSupplier, this::onLayoutInflated);
         if (iconId != 0) {
             ImageView icon = layout.findViewById(R.id.icon);
@@ -297,7 +297,7 @@ public class MenuItem extends FrameLayout {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public ObservableSupplierImpl<LinearLayout> getLayoutSupplier() {
-        return (ObservableSupplierImpl) mLayoutSupplier;
+    public SettableNonNullObservableSupplier<LinearLayout> getLayoutSupplier() {
+        return mLayoutSupplier;
     }
 }

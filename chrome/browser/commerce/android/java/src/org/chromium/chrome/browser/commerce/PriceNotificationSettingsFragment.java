@@ -18,7 +18,8 @@ import androidx.preference.Preference;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -52,7 +53,8 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
     private PrefService mPrefService;
     private @Nullable TextMessagePreference mMobileNotificationsText;
     private ChromeSwitchPreference mEmailNotificationsSwitch;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     @Initializer

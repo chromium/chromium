@@ -173,14 +173,14 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         return R.string.ntp_customization_main_bottom_sheet_closed;
     }
 
-    /** Sets up ObservableSupplierImpl<Boolean> when opening the bottom sheet. */
+    /** Sets up the supplier when opening the bottom sheet. */
     void onSheetOpened() {
         // Sets the value in the supplier to true to indicate that back press should be handled by
         // the bottom sheet.
         mBackPressStateChangedSupplier.set(true);
     }
 
-    /** Sets up ObservableSupplierImpl<Boolean> when closing the bottom sheet. */
+    /** Sets up the supplier when closing the bottom sheet. */
     void onSheetClosed() {
         // Sets the value in the supplier to false to indicate that back press should not be handled
         // by the bottom sheet.

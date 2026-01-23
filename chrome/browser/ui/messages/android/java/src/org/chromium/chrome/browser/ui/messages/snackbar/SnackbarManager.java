@@ -20,7 +20,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -97,8 +99,7 @@ public class SnackbarManager
                     updateView();
                 }
             };
-    private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier;
     private final ViewGroup mOriginalParentView;
     private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
@@ -153,8 +154,7 @@ public class SnackbarManager
                 || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED) {
             onStart();
         }
-
-        mIsShowingSupplier.set(isShowing());
+        mIsShowingSupplier = ObservableSuppliers.createNonNull(isShowing());
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
@@ -298,7 +298,7 @@ public class SnackbarManager
     /**
      * @return Supplier of whether the snackbar is showing
      */
-    public MonotonicObservableSupplier<Boolean> isShowingSupplier() {
+    public NonNullObservableSupplier<Boolean> isShowingSupplier() {
         return mIsShowingSupplier;
     }
 

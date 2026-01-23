@@ -8,7 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -42,7 +42,7 @@ public interface Player {
         void setHighlighterMode(@Highlighter.Mode int mode);
 
         /** Returns the supplier for the "highlighting enabled" setting. */
-        ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier();
+        SettableNonNullObservableSupplier<Boolean> getHighlightingEnabledSupplier();
 
         /** Returns the supplier for the list of voices to show in the voice menu. */
         MonotonicObservableSupplier<List<PlaybackVoice>> getCurrentLanguageVoicesSupplier();

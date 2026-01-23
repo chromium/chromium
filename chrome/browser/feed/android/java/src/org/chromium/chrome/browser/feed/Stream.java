@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.feed;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
@@ -83,10 +83,8 @@ public interface Stream {
     }
 
     /** Whether the stream has unread content */
-    default MonotonicObservableSupplier<Boolean> hasUnreadContent() {
-        ObservableSupplierImpl<Boolean> result = new ObservableSupplierImpl<>();
-        result.set(false);
-        return result;
+    default NonNullObservableSupplier<Boolean> hasUnreadContent() {
+        return ObservableSuppliers.alwaysFalse();
     }
 
     /** Returns the last content fetch time. */

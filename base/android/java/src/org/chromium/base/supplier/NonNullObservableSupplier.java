@@ -10,7 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.function.Supplier;
 
 /**
- * A specialization of {@link MonotonicObservableSupplier} that is guaranteed to not supply null.
+ * A specialization of {@link MonotonicObservableSupplier} that is never null (except when
+ * destroy()'ed).
  *
  * @param <T> The type of the result.
  */

@@ -309,8 +309,8 @@ public class WebAppHeaderLayoutMediatorTest {
                 mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE));
         assertEquals(
                 "Width supplier should report SCREEN_WIDTH.",
-                Integer.valueOf(SCREEN_WIDTH),
-                mMediator.getWidthSupplierForTesting().get());
+                SCREEN_WIDTH,
+                mMediator.getWidthForTesting());
 
         // Change the app header state to have a View.GONE app header view.
         AppHeaderState goneState =
@@ -323,10 +323,7 @@ public class WebAppHeaderLayoutMediatorTest {
         assertFalse(
                 "IS_VISIBLE property should be false.",
                 mModel.get(WebAppHeaderLayoutProperties.IS_VISIBLE));
-        assertEquals(
-                "Width supplier should be zero.",
-                Integer.valueOf(0),
-                mMediator.getWidthSupplierForTesting().get());
+        assertEquals("Width supplier should be zero.", 0, mMediator.getWidthForTesting());
     }
 
     @Test

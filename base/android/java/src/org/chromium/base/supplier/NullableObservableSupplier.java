@@ -12,7 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** An interface for classes that can be observed. */
+/** An interface for Suppliers that can be observed. Implementations are not thread-safe. */
 @NullMarked
 public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**

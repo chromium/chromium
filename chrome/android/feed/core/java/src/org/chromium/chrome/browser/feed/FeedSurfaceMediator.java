@@ -23,8 +23,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -309,8 +310,8 @@ public class FeedSurfaceMediator
     // It is non-null for NTP on tablets.
     private @Nullable final UiConfig mUiConfig;
     private final DisplayStyleObserver mDisplayStyleObserver = this::onDisplayStyleChanged;
-    private final ObservableSupplierImpl<Integer> mGetRestoringStateSupplier =
-            new ObservableSupplierImpl<>(RestoringState.WAITING_TO_RESTORE);
+    private final SettableNonNullObservableSupplier<Integer> mGetRestoringStateSupplier =
+            ObservableSuppliers.createNonNull(RestoringState.WAITING_TO_RESTORE);
 
     private RecyclerView.@Nullable OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
@@ -786,7 +787,7 @@ public class FeedSurfaceMediator
                     mHasContentListener.hasContentChanged(stream.getStreamKind(), hasUnreadContent);
                 };
         Boolean hasUnreadContent = stream.hasUnreadContent().addObserver(callback);
-        callback.onResult(Boolean.TRUE.equals(hasUnreadContent));
+        callback.onResult(hasUnreadContent);
     }
 
     private int getTabIdForSection(@StreamKind int streamKind) {
@@ -1508,7 +1509,7 @@ public class FeedSurfaceMediator
      *
      * @return The restoring state {@link RestoringState}.
      */
-    public MonotonicObservableSupplier<Integer> getRestoringStateSupplier() {
+    public NonNullObservableSupplier<Integer> getRestoringStateSupplier() {
         return mGetRestoringStateSupplier;
     }
 

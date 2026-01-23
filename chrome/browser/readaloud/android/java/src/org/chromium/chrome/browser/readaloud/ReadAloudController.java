@@ -37,10 +37,11 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -433,18 +434,24 @@ public class ReadAloudController
 
     // Whether or not to highlight the page. Change will only have effect if
     // isHighlightingSupported() returns true.
-    private final ObservableSupplierImpl<Boolean> mHighlightingEnabled;
+    private final SettableNonNullObservableSupplier<Boolean> mHighlightingEnabled =
+            ObservableSuppliers.createNonNull(false);
 
     // Whether or not to show the playback mode selector.
-    private final ObservableSupplierImpl<PlaybackModeSelectionEnablementStatus>
-            mPlaybackModeSelectionEnabled;
+    private final SettableNonNullObservableSupplier<PlaybackModeSelectionEnablementStatus>
+            mPlaybackModeSelectionEnabled =
+                    ObservableSuppliers.createNonNull(
+                            PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
 
     // Voices to show in voice selection menu.
-    private final ObservableSupplierImpl<List<PlaybackVoice>> mCurrentLanguageVoices;
+    private final SettableMonotonicObservableSupplier<List<PlaybackVoice>> mCurrentLanguageVoices =
+            ObservableSuppliers.createMonotonic();
     // Selected voice ID.
-    private final ObservableSupplierImpl<String> mSelectedVoiceId;
+    private final SettableMonotonicObservableSupplier<String> mSelectedVoiceId =
+            ObservableSuppliers.createMonotonic();
 
-    private final ObservableSupplierImpl<FeedbackType> mFeedbackType;
+    private final SettableNonNullObservableSupplier<FeedbackType> mFeedbackType =
+            ObservableSuppliers.createNonNull(FeedbackType.NONE);
     private final ActivityWindowAndroid mActivityWindowAndroid;
 
     /**
@@ -597,15 +604,8 @@ public class ReadAloudController
         mTabModel = tabModel;
         mIncognitoTabModel = incognitoTabModel;
         mBottomSheetController = bottomSheetController;
-        mCurrentLanguageVoices = new ObservableSupplierImpl<>();
-        mSelectedVoiceId = new ObservableSupplierImpl<>();
-        mFeedbackType = new ObservableSupplierImpl<>(FeedbackType.NONE);
         mBottomControlsStacker = bottomControlsStacker;
         mLayoutManagerSupplier = layoutManagerSupplier;
-        mHighlightingEnabled = new ObservableSupplierImpl<>(false);
-        mPlaybackModeSelectionEnabled =
-                new ObservableSupplierImpl<>(
-                        PlaybackModeSelectionEnablementStatus.FEATURE_DISABLED);
         ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
         mActivityWindowAndroid = activityWindowAndroid;
@@ -680,10 +680,9 @@ public class ReadAloudController
                 ReadAloudMetrics.recordIneligibilityReason(
                         ReadAloudFeatures.getIneligibilityReason());
             }
-            mHighlightingEnabled.addObserver(mHighlightingEnabledObserver);
-            mHighlightingEnabled.set(ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
-            Boolean highlightingEnabled = mHighlightingEnabled.get();
-            assumeNonNull(highlightingEnabled);
+            boolean highlightingEnabled = ReadAloudPrefs.isHighlightingEnabled(getPrefService());
+            mHighlightingEnabled.set(highlightingEnabled);
+            mHighlightingEnabled.addSyncObserverAndCallIfNonNull(mHighlightingEnabledObserver);
             ReadAloudMetrics.recordHighlightingEnabledOnStartup(highlightingEnabled);
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
@@ -1395,7 +1394,7 @@ public class ReadAloudController
     }
 
     private void maybeHighlightText(PhraseTiming phraseTiming) {
-        if (assumeNonNull(mHighlightingEnabled.get())
+        if (mHighlightingEnabled.get()
                 && mHighlighter != null
                 && mGlobalRenderFrameId != null
                 && mActivePlaybackTabSupplier.get() != null) {
@@ -1622,7 +1621,7 @@ public class ReadAloudController
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getHighlightingEnabledSupplier() {
+    public SettableNonNullObservableSupplier<Boolean> getHighlightingEnabledSupplier() {
         return mHighlightingEnabled;
     }
 

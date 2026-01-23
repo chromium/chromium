@@ -43,7 +43,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /** Class that contains logic for showing signin survey. */
 @NullMarked
@@ -229,9 +228,7 @@ public class SigninSurveyController implements Destroyable {
                         message,
                         assertNonNull(mMessageDispatcher),
                         assertNonNull(mTabModelSelector),
-                        (Supplier<@Nullable Boolean>)
-                                SurveyClientFactory.getInstance()
-                                        .getCrashUploadPermissionSupplier());
+                        SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         return SurveyClientFactory.getInstance()
                 .createClient(surveyConfig, messageDelegate, mProfile, mTabModelSelector);
     }

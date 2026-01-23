@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -78,7 +78,7 @@ public interface FeedSurfaceProvider {
     void reload();
 
     /** Supplier of the state of the feed stream being restored. See {@link RestoringState}. */
-    MonotonicObservableSupplier<Integer> getRestoringStateSupplier();
+    NonNullObservableSupplier<Integer> getRestoringStateSupplier();
 
     /**
      * @return The list of feed article urls.

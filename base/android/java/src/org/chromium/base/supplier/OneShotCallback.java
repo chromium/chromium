@@ -17,12 +17,12 @@ import java.util.function.Supplier;
  * <p>Assuming the underlying {@link Supplier} gets set with a value, this class will guarantee only
  * a single call makes it back to the passed in {@link Callback}.
  *
- * <p>For {@link MonotonicObservableSupplier}s that already have a valid value set, this will have the same
- * underlying behavior as {@link ObservableSupplierImpl}, which asynchronously triggers the callback
- * when {@link MonotonicObservableSupplier#addObserver(Callback)} is called.
+ * <p>For {@link MonotonicObservableSupplier}s that already have a valid value set, this will have
+ * the same underlying behavior as {@link NullableObservableSupplier}, which asynchronously triggers
+ * the callback when {@link MonotonicObservableSupplier#addObserver(Callback)} is called.
  *
- * <p>This class does not hold a strong reference to the {@link MonotonicObservableSupplier}, but does hold a
- * strong reference to the {@link Callback}.
+ * <p>This class does not hold a strong reference to the {@link MonotonicObservableSupplier}, but
+ * does hold a strong reference to the {@link Callback}.
  *
  * @param <T> The type of the wrapped object.
  */

@@ -22,8 +22,8 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -648,7 +648,8 @@ public class NativePageFactory {
         }
 
         @Override
-        public Destroyable createDefaultMarginAdapter(ObservableSupplierImpl<Rect> supplierImpl) {
+        public Destroyable createDefaultMarginAdapter(
+                SettableMonotonicObservableSupplier<Rect> supplierImpl) {
             return BrowserControlsMarginAdapter.create(mBrowserControlsStateProvider, supplierImpl);
         }
 

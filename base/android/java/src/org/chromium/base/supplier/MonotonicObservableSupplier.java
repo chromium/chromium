@@ -12,17 +12,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * ObservableSupplier wraps an asynchronously provided object E, notifying observers when the
- * dependency is available. This allows classes dependent on E to be provided with a
- * ObservableSupplier during construction and register a Callback<E> to be notified when the needed
- * dependency is available.
- *
- * <p>This class must only be accessed from a single thread.
- *
- * <p>For classes owning the ObservableSupplier and providing it as a dependency to others, see
- * {@link ObservableSupplierImpl}.
- *
- * <p>The behavior of the observer is different depending on which method is called.
+ * A specialization of {@link NullableObservableSupplier} that starts as null, but will never be set
+ * to null (except by destroy(), which does not trigger observers).
  */
 @NullMarked
 // TODO(455874046): Supplier<T> -> Supplier<@Nullable T>

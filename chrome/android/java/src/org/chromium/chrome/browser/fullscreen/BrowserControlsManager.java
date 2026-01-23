@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -22,7 +21,8 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -79,8 +79,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      * An observable for browser controls being at its minimum height or not. This is as good as the
      * controls being hidden when both min heights are 0.
      */
-    private final ObservableSupplierImpl<Boolean> mControlsAtMinHeight =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mControlsAtMinHeight =
+            ObservableSuppliers.createNonNull(false);
 
     private @Nullable TabModelSelectorTabObserver mTabControlsObserver;
     private @Nullable ControlContainer mControlContainer;
@@ -212,7 +212,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         mActivity = activity;
         mControlsPosition = controlsPosition;
-        mControlsAtMinHeight.set(false);
         mHtmlApiHandler =
                 FullscreenHtmlApiHandlerFactory.createInstance(
                         activity,
@@ -430,7 +429,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      */
     @VisibleForTesting
     public boolean areBrowserControlsAtMinHeight() {
-        return assertNonNull(mControlsAtMinHeight.get());
+        return mControlsAtMinHeight.get();
     }
 
     private void bottomControlsAnimationMaybeStarted(

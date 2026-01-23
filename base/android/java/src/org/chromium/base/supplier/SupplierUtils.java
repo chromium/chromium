@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -95,5 +97,16 @@ public class SupplierUtils {
             return () -> assertNonNull(supplier.get());
         }
         return (Supplier<T>) supplier;
+    }
+
+    @Contract("!null -> !null")
+    public static <T extends @Nullable Object> @Nullable T getOrNull(@Nullable Supplier<T> sup) {
+        return sup == null ? null : sup.get();
+    }
+
+    public static <T extends @Nullable Object> @NonNull T getOr(
+            @Nullable Supplier<T> sup, T value) {
+        T ret = sup == null ? null : sup.get();
+        return ret == null ? value : ret;
     }
 }

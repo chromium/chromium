@@ -21,7 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.version_info.VersionInfo;
@@ -160,7 +160,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         this,
                         getWindow().getDecorView().getRootView(),
                         new BrowserStateBrowserControlsVisibilityDelegate(
-                                new ObservableSupplierImpl<>(false)),
+                                ObservableSuppliers.alwaysFalse()),
                         getInsetObserver(),
                         getLifecycleDispatcher(),
                         getSavedInstanceState(),

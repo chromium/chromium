@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -231,9 +232,10 @@ public interface ManualFillingComponent extends BackPressHandler {
     /**
      * The filling UI extends or
      *
-     * @return A {@link MonotonicObservableSupplier <Integer>} providing an inset to shrink the page by.
+     * @return A {@link NonNullObservableSupplier <Integer>} providing an inset to shrink the page
+     *     by.
      */
-    MonotonicObservableSupplier<Integer> getBottomInsetSupplier();
+    NonNullObservableSupplier<Integer> getBottomInsetSupplier();
 
     /**
      * @param observer An {@link Observer} to add.

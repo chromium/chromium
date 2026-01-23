@@ -241,7 +241,7 @@ public class NewTabPage
 
         private final View mView;
         private Animator mAnimator;
-        private MonotonicObservableSupplier<Integer> mRestoringState;
+        private NonNullObservableSupplier<Integer> mRestoringState;
         private boolean mAnimatorStarted;
         private final Handler mHandler = new Handler();
         final Callback<Integer> mOnScrollStateChanged =
@@ -269,7 +269,7 @@ public class NewTabPage
                 };
 
         public NtpSmoothTransitionDelegate(
-                View view, MonotonicObservableSupplier<Integer> restoringState) {
+                View view, NonNullObservableSupplier<Integer> restoringState) {
             mView = view;
             mAnimator = buildSmoothTransition(view);
             mRestoringState = restoringState;

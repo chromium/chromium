@@ -1462,7 +1462,7 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public MonotonicObservableSupplier<Integer> getRestoringStateSupplier() {
+    public NonNullObservableSupplier<Integer> getRestoringStateSupplier() {
         return mMediator.getRestoringStateSupplier();
     }
 

@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -48,7 +48,7 @@ class SurveyClientImpl implements SurveyClient {
     private final SurveyUiDelegate mUiDelegate;
     private final SurveyController mController;
     private final SurveyThrottler mThrottler;
-    private final MonotonicObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
+    private final NonNullObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
     private final Map<String, String> mAggregatedSurveyPsd;
     private final Profile mProfile;
     private final @Nullable TabModelSelector mTabModelSelector;
@@ -64,7 +64,7 @@ class SurveyClientImpl implements SurveyClient {
             SurveyConfig config,
             SurveyUiDelegate uiDelegate,
             SurveyController controller,
-            MonotonicObservableSupplier<Boolean> crashUploadPermissionSupplier,
+            NonNullObservableSupplier<Boolean> crashUploadPermissionSupplier,
             Profile profile,
             @Nullable TabModelSelector tabModelSelector) {
         mConfig = config;
@@ -317,8 +317,7 @@ class SurveyClientImpl implements SurveyClient {
         if (forceShowSurvey()) return true;
 
         // Do not include any logging to avoid reveal the fact user has crash upload disabled.
-        Boolean crashUploadPermission = mCrashUploadPermissionSupplier.get();
-        boolean isCrashUploadAllowed = crashUploadPermission != null && crashUploadPermission;
+        boolean isCrashUploadAllowed = mCrashUploadPermissionSupplier.get();
         boolean isHatsEnabledByPolicy =
                 UserPrefs.get(mProfile).getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED);
         return isCrashUploadAllowed && isHatsEnabledByPolicy;

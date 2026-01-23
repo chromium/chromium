@@ -26,7 +26,9 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -82,7 +84,8 @@ public class AppHeaderCoordinator
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
-    private final ObservableSupplierImpl<Boolean> mDesktopWindowTopResumedActivitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean>
+            mDesktopWindowTopResumedActivitySupplier;
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
@@ -139,7 +142,7 @@ public class AppHeaderCoordinator
                 savedUnfocusedDesktopWindowState || persistedUnfocusedDesktopWindowState;
 
         mDesktopWindowTopResumedActivitySupplier =
-                new ObservableSupplierImpl<Boolean>(!mIsInUnfocusedDesktopWindow);
+                ObservableSuppliers.createNonNull(!mIsInUnfocusedDesktopWindow);
         mDesktopWindowTopResumedActivitySupplier.addObserver(
                 (isFocused) -> {
                     mObservers.forEach(
@@ -404,7 +407,7 @@ public class AppHeaderCoordinator
                 .build();
     }
 
-    /* package */ ObservableSupplierImpl<Boolean> getTopResumedActivitySupplierForTesting() {
+    /* package */ NonNullObservableSupplier<Boolean> getTopResumedActivitySupplierForTesting() {
         return mDesktopWindowTopResumedActivitySupplier;
     }
 }

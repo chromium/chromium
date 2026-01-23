@@ -27,8 +27,9 @@ import androidx.core.graphics.Insets;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -108,7 +109,9 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     private int mUIControlsMinWidthPx;
     private int mAppHeaderUnoccludedWidthPx;
     private final Callback<Integer> mOnUnoccludedWidthCallback;
-    private final ObservableSupplierImpl<Boolean> mControlsEnabledSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mControlsEnabledSupplier =
+            ObservableSuppliers.createNonNull(true);
+
     private final TokenHolder mDisabledControlsHolder;
     private boolean mShowButtons;
     private long mLastButtonVisibilityChangeTime;
@@ -121,8 +124,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
     private final Runnable mRequestRenderRunnable;
     private final Activity mActivity;
     private final boolean mIsTWA;
-    private final ObservableSupplierImpl<MenuButtonState> mMenuButtonStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final Supplier<MenuButtonState> mMenuButtonStateSupplier;
     private @Nullable View mMenuButtonContainer;
     private final @Nullable String mClientPackageName;
     private @Nullable ChromeImageButton mToggleButtonView;
@@ -161,7 +163,6 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         mIsTWA = browserServicesIntentDataProvider.isTrustedWebActivity();
         mDisplayMode = browserServicesIntentDataProvider.getResolvedDisplayMode();
         mHistoryDelegate = historyDelegate;
-        mControlsEnabledSupplier = new ObservableSupplierImpl<>(true);
         mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);
         mScrimManager = scrimManager;
         mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
@@ -181,7 +182,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
         buttonState.lightBadgeIcon = R.drawable.badge_update_light;
         buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
-        mMenuButtonStateSupplier.set(buttonState);
+        mMenuButtonStateSupplier = ObservableSuppliers.of(buttonState);
 
         mClientPackageName = clientPackageName;
 
@@ -362,7 +363,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
                             if (mMediator != null) mMediator.refreshTab(ignoreCache);
                         },
                         mTabSupplier,
-                        new ObservableSupplierImpl<>(),
+                        ObservableSuppliers.alwaysFalse(),
                         mControlsEnabledSupplier,
                         mThemeColorProvider,
                         mIncognitoStateProvider,
