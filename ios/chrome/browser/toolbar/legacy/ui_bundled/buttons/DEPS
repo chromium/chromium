@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/content_suggestions/public",
+  # keep-sorted end
 ]

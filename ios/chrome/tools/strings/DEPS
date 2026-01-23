@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+ui/base/resource/data_pack.h",
   "+ui/base/resource/resource_handle.h",
+  # keep-sorted end
 ]

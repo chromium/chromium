@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+components/data_sharing/data_sharing_internals",
   "+ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h",
+  # keep-sorted end
 ]

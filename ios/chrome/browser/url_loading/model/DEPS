@@ -1,13 +1,15 @@
 include_rules = [
-  "+ios/chrome/browser/web/model",
-  "+ios/chrome/browser/policy/model",
-  "+ios/chrome/browser/snapshots/model",
+  # keep-sorted start
+  "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prerender/model",
-  "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/sessions/model",
-  "+ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h",
+  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/tab_insertion/model",
+  "+ios/chrome/browser/web/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
