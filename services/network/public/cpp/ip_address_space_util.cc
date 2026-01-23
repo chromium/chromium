@@ -481,7 +481,11 @@ std::optional<mojom::IPAddressSpace> GetAddressSpaceFromUrl(const GURL& url) {
   }
 
   if (url.DomainIs("localhost")) {
-    return mojom::IPAddressSpace::kLoopback;
+    // Check IP address space mapping for 127.0.0.1, on the off chance that
+    // there is an override remapping this to something else.
+    net::IPEndPoint endpoint(net::IPAddress::IPv4Localhost(),
+                             url.EffectiveIntPort());
+    return IPEndPointToIPAddressSpace(endpoint);
   }
 
   net::IPAddress address;

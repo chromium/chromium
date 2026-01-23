@@ -972,7 +972,8 @@ TEST_F(IPAddressSpaceOverridesTest, GetAddressSpaceFromUrl) {
 
   std::vector<std::string> rejected_patterns;
   network::IPAddressSpaceOverrides::GetInstance().SetAuxiliaryOverrides(
-      "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
+      "10.2.3.4:80=public,8.8.8.8:8888=local,127.0.0.1:80=public",
+      &rejected_patterns);
   EXPECT_TRUE(rejected_patterns.empty());
 
   EXPECT_EQ(IPAddressSpace::kPublic,
@@ -987,6 +988,10 @@ TEST_F(IPAddressSpaceOverridesTest, GetAddressSpaceFromUrl) {
             GetAddressSpaceFromUrl(GURL("http://8.8.8.8")));
   EXPECT_EQ(IPAddressSpace::kPublic,
             GetAddressSpaceFromUrl(GURL("https://8.8.8.8")));
+  EXPECT_EQ(IPAddressSpace::kPublic,
+            GetAddressSpaceFromUrl(GURL("http://localhost")));
+  EXPECT_EQ(IPAddressSpace::kLoopback,
+            GetAddressSpaceFromUrl(GURL("https://localhost")));
 }
 
 }  // namespace
