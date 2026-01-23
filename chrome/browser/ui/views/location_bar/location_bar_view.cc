@@ -17,6 +17,8 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1153,6 +1155,7 @@ bool LocationBarView::HasSecurityStateChanged() {
 }
 
 void LocationBarView::Update(WebContents* contents) {
+  TRACE_EVENT("omnibox", "LocationBarView::Update");
   if (contents) {
     page_action_icon_controller_->UpdateWebContents(contents);
   }
@@ -1555,6 +1558,7 @@ void LocationBarView::RefreshBackground() {
 }
 
 bool LocationBarView::RefreshContentSettingViews() {
+  TRACE_EVENT("omnibox", "LocationBarView::RefreshContentSettingViews");
   if (web_app::AppBrowserController::IsWebApp(browser_)) {
     // For web apps, the location bar is normally hidden and icons appear in
     // the window frame instead.
@@ -1616,6 +1620,10 @@ void LocationBarView::RefreshAiModePageActionIconView() {
 
 void LocationBarView::RefreshPageActionContainerViewAndIconsVisibility(
     bool should_hide_page_actions) {
+  TRACE_EVENT(
+      "omnibox",
+      "LocationBarView::RefreshPageActionContainerViewAndIconsVisibility",
+      "should_hide_page_actions", should_hide_page_actions);
   page_actions::PageActionController* page_action_controller =
       GetPageActionController();
   page_action_container_->SetController(page_action_controller);
@@ -1942,6 +1950,7 @@ void LocationBarView::OnChildViewRemoved(View* observed_view, View* child) {
 }
 
 void LocationBarView::OnChanged() {
+  TRACE_EVENT("omnibox", "LocationBarView::OnChanged");
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
   location_icon_view_->Update(

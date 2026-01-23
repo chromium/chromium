@@ -13,6 +13,8 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -210,6 +212,7 @@ void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
 }
 
 void OmniboxView::RevertAll() {
+  TRACE_EVENT("omnibox", "OmniboxView::RevertAll");
   // This will clear the model's `user_input_in_progress_`.
   controller()->edit_model()->Revert();
   TextChanged();

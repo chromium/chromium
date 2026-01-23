@@ -590,6 +590,7 @@ void OmniboxEditModel::SetInputInProgress(bool in_progress) {
 }
 
 void OmniboxEditModel::Revert() {
+  TRACE_EVENT("omnibox", "OmniboxEditModel::Revert");
   SetInputInProgress(false);
   input_.Clear();
   paste_state_ = PasteState::kNone;
@@ -2194,6 +2195,8 @@ void OmniboxEditModel::UpdatePopupSelectionOnResultChanged() {
   if (!popup_view_) {
     return;
   }
+  TRACE_EVENT("omnibox",
+              "OmniboxEditModel::UpdatePopupSelectionOnResultChanged");
   rich_suggestion_bitmaps_.clear();
   const AutocompleteResult& result = autocomplete_controller()->result();
 
@@ -2215,6 +2218,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
   if (!popup_view_) {
     return;
   }
+  TRACE_EVENT("omnibox", "OmniboxEditModel::OnPopupResultChanged");
   UpdatePopupSelectionOnResultChanged();
   observers_.Notify(&Observer::OnContentsChanged);
 }

@@ -466,6 +466,7 @@ void OmniboxViewViews::EmphasizeURLComponents() {
 }
 
 void OmniboxViewViews::Update() {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::Update");
   if (controller()->edit_model()->ResetDisplayTexts()) {
     RevertAll();
 
@@ -520,6 +521,7 @@ void OmniboxViewViews::SelectAll(bool reversed) {
 }
 
 void OmniboxViewViews::RevertAll() {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::RevertAll");
   saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
   OmniboxView::RevertAll();
   // This will stop the `AutocompleteController`. This should happen after
@@ -980,6 +982,7 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
                                                 size_t caret_pos,
                                                 bool update_popup,
                                                 bool notify_text_changed) {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::SetWindowTextAndCaretPos");
   const gfx::Range range(caret_pos);
   SetTextAndSelectedRange(text, range);
 
@@ -993,6 +996,7 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
 }
 
 void OmniboxViewViews::SetCaretPos(size_t caret_pos) {
+  TRACE_EVENT("omnibox", "OmniboxViewViews::SetCaretPos");
   SetSelectedRange(gfx::Range(caret_pos, caret_pos));
 }
 
