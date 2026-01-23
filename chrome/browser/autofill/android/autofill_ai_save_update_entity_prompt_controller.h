@@ -28,7 +28,6 @@ class AutofillAiSaveUpdateEntityPromptView;
 // address profile. The class is responsible for showing the view and handling
 // user interactions. The controller owns its java counterpart and the
 // corresponding view.
-// TODO: crbug.com/460410690 - Write tests.
 class AutofillAiSaveUpdateEntityPromptController {
  public:
   AutofillAiSaveUpdateEntityPromptController(
