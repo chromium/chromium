@@ -51,7 +51,7 @@ CastWebUI::CastWebUI(content::WebUI* webui,
 CastWebUI::~CastWebUI() {}
 
 void CastWebUI::InvokeCallback(const std::string& message,
-                               const base::Value::List& args) {
+                               const base::ListValue& args) {
   if (message_callbacks_.count(message) == 0) {
     return;
   }
@@ -68,7 +68,7 @@ void CastWebUI::RegisterMessageCallback(
 }
 
 void CastWebUI::CallJavascriptFunction(const std::string& function,
-                                       base::Value::List args) {
+                                       base::ListValue args) {
   message_handler_->CallJavascriptFunction(
       function, std::vector<base::ValueView>(args.begin(), args.end()));
 }

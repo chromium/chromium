@@ -115,7 +115,7 @@ class DeviceCapabilities {
     Data& operator=(const Data&) = delete;
 
     // Accessor for complete capabilities in dictionary format.
-    const base::Value::Dict& dictionary() const { return dictionary_; }
+    const base::DictValue& dictionary() const { return dictionary_; }
 
     // Accessor for complete capabilities string in JSON format.
     const std::string& json_string() const { return json_string_; }
@@ -129,10 +129,10 @@ class DeviceCapabilities {
     // Constructs empty dictionary with no capabilities.
     Data();
     // Uses |dictionary| as capabilities dictionary.
-    explicit Data(base::Value::Dict dictionary);
+    explicit Data(base::DictValue dictionary);
     ~Data();
 
-    const base::Value::Dict dictionary_;
+    const base::DictValue dictionary_;
     std::string json_string_;
   };
 
@@ -225,7 +225,7 @@ class DeviceCapabilities {
 
   // Iterates through entries in |dict| and calls SetCapability() for each one.
   // This method is asynchronous.
-  virtual void MergeDictionary(const base::Value::Dict& dict) = 0;
+  virtual void MergeDictionary(const base::DictValue& dict) = 0;
 
   // Adds/removes an observer. It doesn't take the ownership of |observer|.
   virtual void AddCapabilitiesObserver(Observer* observer) = 0;
@@ -239,7 +239,7 @@ class DeviceCapabilities {
   // Creates empty dictionary with no capabilities.
   static scoped_refptr<Data> CreateData();
   // Uses |dictionary| as capabilities dictionary.
-  static scoped_refptr<Data> CreateData(base::Value::Dict dictionary);
+  static scoped_refptr<Data> CreateData(base::DictValue dictionary);
 
  private:
   // Internally update the capability residing at |path| to |new_value|. This

@@ -700,12 +700,12 @@ void RuntimeApplicationServiceImpl::OnAllBindingsReceived(
   std::move(callback).Run(cast_receiver::OkStatus(), std::move(bindings));
 }
 
-base::Value::Dict RuntimeApplicationServiceImpl::GetRendererFeatures() const {
+base::DictValue RuntimeApplicationServiceImpl::GetRendererFeatures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry =
       FindEntry(feature::kCastCoreRendererFeatures, config_.extra_features());
 
-  base::Value::Dict renderer_features;
+  base::DictValue renderer_features;
   if (!entry) {
     return renderer_features;
   }
@@ -713,7 +713,7 @@ base::Value::Dict RuntimeApplicationServiceImpl::GetRendererFeatures() const {
 
   for (const cast::common::Dictionary::Entry& feature :
        entry->value().dictionary().entries()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     if (feature.has_value()) {
       CHECK(feature.value().has_dictionary());
       for (const cast::common::Dictionary::Entry& feature_arg :
@@ -792,8 +792,8 @@ void RuntimeApplicationServiceImpl::InnerContentsCreated(
   }
 
 #if DCHECK_IS_ON()
-  base::Value::Dict features;
-  base::Value::Dict dev_mode_config;
+  base::DictValue features;
+  base::DictValue dev_mode_config;
   dev_mode_config.Set(feature::kDevModeOrigin, url);
   features.Set(feature::kEnableDevMode, std::move(dev_mode_config));
   inner_contents->AddRendererFeatures(std::move(features));

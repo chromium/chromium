@@ -77,7 +77,7 @@ class CastWebContentsImpl : public CastWebContents,
                             additional_feature_permission_origins) override;
   void SetGroupInfo(const std::string& session_id,
                     bool is_multizone_launch) override;
-  void AddRendererFeatures(base::Value::Dict features) override;
+  void AddRendererFeatures(base::DictValue features) override;
   void SetInterfacesForRenderer(
       mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) override;
   void LoadUrl(const GURL& url) override;
@@ -175,7 +175,7 @@ class CastWebContentsImpl : public CastWebContents,
   content::RenderProcessHost* main_process_host_;
 
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
-  base::Value::Dict renderer_features_;
+  base::DictValue renderer_features_;
 
   const int tab_id_;
   const int id_;

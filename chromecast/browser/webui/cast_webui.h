@@ -44,15 +44,14 @@ class CastWebUI : public mojom::WebUi, public content::WebUIController {
   content::BrowserContext* const browser_context_;
 
  private:
-  void InvokeCallback(const std::string& message,
-                      const base::Value::List& args);
+  void InvokeCallback(const std::string& message, const base::ListValue& args);
 
   // mojom::WebUI implementation:
   void RegisterMessageCallback(
       const std::string& message,
       mojo::PendingRemote<mojom::MessageCallback> callback) override;
   void CallJavascriptFunction(const std::string& function,
-                              base::Value::List args) override;
+                              base::ListValue args) override;
 
   // Pointer to the generic message handler owned by the Web UI. The message
   // handler is guaranteed to outlive CastWebUI since |this| is the first member

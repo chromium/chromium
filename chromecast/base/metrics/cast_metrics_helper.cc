@@ -288,8 +288,8 @@ void CastMetricsHelper::LogMediumTimeHistogramEvent(const std::string& name,
                         50);
 }
 
-base::Value::Dict CastMetricsHelper::CreateEventBase(const std::string& name) {
-  base::Value::Dict cast_event;
+base::DictValue CastMetricsHelper::CreateEventBase(const std::string& name) {
+  base::DictValue cast_event;
   cast_event.Set("name", name);
   const double time = (Now() - base::TimeTicks()).InMicrosecondsF();
   cast_event.Set("time", time);
@@ -298,7 +298,7 @@ base::Value::Dict CastMetricsHelper::CreateEventBase(const std::string& name) {
 
 void CastMetricsHelper::RecordEventWithValue(const std::string& event,
                                              int value) {
-  base::Value::Dict cast_event = CreateEventBase(event);
+  base::DictValue cast_event = CreateEventBase(event);
   cast_event.Set("value", value);
   RecordSimpleAction(base::WriteJson(cast_event).value_or(""));
 }
@@ -311,7 +311,7 @@ void CastMetricsHelper::RecordApplicationEvent(const std::string& app_id,
                                                const std::string& session_id,
                                                const std::string& sdk_version,
                                                const std::string& event) {
-  base::Value::Dict cast_event = CreateEventBase(event);
+  base::DictValue cast_event = CreateEventBase(event);
   cast_event.Set("app_id", app_id);
   cast_event.Set("session_id", session_id);
   cast_event.Set("sdk_version", sdk_version);
@@ -321,7 +321,7 @@ void CastMetricsHelper::RecordApplicationEvent(const std::string& app_id,
 void CastMetricsHelper::RecordApplicationEventWithValue(
     const std::string& event,
     int value) {
-  base::Value::Dict cast_event = CreateEventBase(event);
+  base::DictValue cast_event = CreateEventBase(event);
   cast_event.Set("app_id", app_id_);
   cast_event.Set("session_id", session_id_);
   cast_event.Set("sdk_version", sdk_version_);
@@ -335,7 +335,7 @@ void CastMetricsHelper::RecordApplicationEventWithValue(
     const std::string& sdk_version,
     const std::string& event,
     int value) {
-  base::Value::Dict cast_event = CreateEventBase(event);
+  base::DictValue cast_event = CreateEventBase(event);
   cast_event.Set("app_id", app_id);
   cast_event.Set("session_id", session_id);
   cast_event.Set("sdk_version", sdk_version);

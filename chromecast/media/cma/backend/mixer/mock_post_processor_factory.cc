@@ -37,7 +37,7 @@ MockPostProcessor::MockPostProcessor(MockPostProcessorFactory* factory,
     CHECK(solib);
 
     if (*solib == "delay.so") {
-      const base::Value::Dict* processor_config_dict =
+      const base::DictValue* processor_config_dict =
           elem.GetDict().FindDict("config");
       CHECK(processor_config_dict);
       std::optional<int> delay = processor_config_dict->FindInt("delay");

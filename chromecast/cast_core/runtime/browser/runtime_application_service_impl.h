@@ -139,7 +139,7 @@ class RuntimeApplicationServiceImpl : public cast_receiver::EmbedderApplication,
   bool IsTouchInputAllowed() const;
 
   // Returns renderer features.
-  base::Value::Dict GetRendererFeatures() const;
+  base::DictValue GetRendererFeatures() const;
 
   // Returns whether feature permissions should be enforced.
   bool IsFeaturePermissionsEnforced() const;

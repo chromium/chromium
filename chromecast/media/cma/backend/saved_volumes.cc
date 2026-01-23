@@ -75,7 +75,7 @@ base::flat_map<AudioContentType, double> LoadSavedVolumes(
 
   const auto& cast_audio_config_dict = cast_audio_config->GetDict();
 
-  const base::Value::Dict* default_volume_dict =
+  const base::DictValue* default_volume_dict =
       cast_audio_config_dict.FindDict(kKeyDefaultVolume);
   if (!default_volume_dict) {
     LOG(INFO) << "No default volumes specified in " << path;

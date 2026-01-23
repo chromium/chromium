@@ -244,7 +244,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     return false;
   }
 
-  const base::Value::Dict& value_dict = value->GetDict();
+  const base::DictValue& value_dict = value->GetDict();
   const std::string* name = value_dict.FindString(kEventName);
   if (!name) {
     LOG(ERROR) << "Missing field:" << kEventName;
@@ -279,7 +279,7 @@ bool CastRuntimeMetricsRecorder::RecordJsonCastEvent(const std::string& event) {
     sdk_version = *maybe_sdk_version;
   }
 
-  const base::Value::Dict* multiple_events =
+  const base::DictValue* multiple_events =
       value_dict.FindDict(kEventEventsPair);
   if (!multiple_events) {
     std::unique_ptr<CastEventBuilder> event_builder(CreateEventBuilder(*name));

@@ -356,7 +356,7 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
   }
 
   base::FilePath storage_path_;
-  base::Value::Dict stored_values_;
+  base::DictValue stored_values_;
 
   base::Lock volume_lock_;
   base::flat_map<AudioContentType, float> volumes_;

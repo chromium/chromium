@@ -134,8 +134,8 @@ class SynchronizedMinidumpManager {
 
   // Write deserialized |dumps| to |lockfile_path_| and the deserialized
   // |metadata| to |metadata_path_|.
-  bool WriteFiles(const base::Value::List& dumps,
-                  const base::Value::Dict& metadata);
+  bool WriteFiles(const base::ListValue& dumps,
+                  const base::DictValue& metadata);
 
   // Creates an empty lock file and an initialized metadata file.
   bool InitializeFiles();
@@ -146,8 +146,8 @@ class SynchronizedMinidumpManager {
   const base::FilePath lockfile_path_;
   const base::FilePath metadata_path_;
   int lockfile_fd_;
-  std::optional<base::Value::Dict> metadata_;
-  std::optional<base::Value::List> dumps_;
+  std::optional<base::DictValue> metadata_;
+  std::optional<base::ListValue> dumps_;
 };
 
 }  // namespace chromecast

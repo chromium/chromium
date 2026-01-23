@@ -60,7 +60,7 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
   for (const base::Value& processor_description_value :
        filter_description_list->GetList()) {
     DCHECK(processor_description_value.is_dict());
-    const base::Value::Dict& processor_description_dict =
+    const base::DictValue& processor_description_dict =
         processor_description_value.GetDict();
 
     std::string processor_name;

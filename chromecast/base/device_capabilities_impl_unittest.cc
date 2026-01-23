@@ -184,7 +184,7 @@ base::Value GetSampleDynamicCapabilityNewValue() {
 bool JsonStringEquals(const std::string& json,
                       const std::string& key,
                       const base::Value& value) {
-  return base::WriteJson(base::Value::Dict().Set(key, value.Clone()))
+  return base::WriteJson(base::DictValue().Set(key, value.Clone()))
              .value_or("") == json;
 }
 
@@ -303,7 +303,7 @@ TEST_F(DeviceCapabilitiesImplTest, Unregister) {
 
   EXPECT_FALSE(capabilities()->GetValidator(key));
   std::string empty_dict_string =
-      base::WriteJson(base::Value::Dict()).value_or("");
+      base::WriteJson(base::DictValue()).value_or("");
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetCapability(key).is_none());
 }
@@ -416,10 +416,10 @@ TEST_F(DeviceCapabilitiesImplTest, SetPublicPrivateCapabilities) {
   base::Value init_value(true);
 
   // Dictionary of only public values.
-  base::Value::Dict public_dict;
+  base::DictValue public_dict;
   public_dict.Set(key_public, init_value.Clone());
   // Dictionary of public and private values.
-  base::Value::Dict full_dict;
+  base::DictValue full_dict;
   full_dict.Set(key_public, init_value.Clone());
   full_dict.Set(key_private, init_value.Clone());
 
@@ -439,10 +439,10 @@ TEST_F(DeviceCapabilitiesImplTest, NoValidatorDefaultsToPublicCapability) {
   base::Value init_value(true);
 
   // Dictionary of only public values.
-  base::Value::Dict public_dict;
+  base::DictValue public_dict;
   public_dict.Set(key_public, init_value.Clone());
   // Dictionary of public and private values.
-  base::Value::Dict full_dict;
+  base::DictValue full_dict;
   full_dict.Set(key_public, init_value.Clone());
   full_dict.Set(key_private, init_value.Clone());
 
@@ -582,7 +582,7 @@ TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionaryInvalid) {
 
 // Test MergeDictionary.
 TEST_F(DeviceCapabilitiesImplTest, MergeDictionary) {
-  std::optional<base::Value::Dict> deserialized_value =
+  std::optional<base::DictValue> deserialized_value =
       base::JSONReader::ReadDict(kSampleDictionaryCapability,
                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(deserialized_value);

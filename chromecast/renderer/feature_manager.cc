@@ -80,7 +80,7 @@ void FeatureManager::ConfigureFeatures(
 
 void FeatureManager::ConfigureFeaturesInternal() {
   if (FeatureEnabled(feature::kEnableDevMode)) {
-    const base::Value::Dict& dev_mode_config =
+    const base::DictValue& dev_mode_config =
         (features_map_.find(feature::kEnableDevMode)->second)->config;
     const std::string* dev_mode_origin =
         dev_mode_config.FindString(feature::kDevModeOrigin);

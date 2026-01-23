@@ -38,7 +38,7 @@ std::vector<const base::Feature*>& GetTestFeatures() {
   return *features_for_test;
 }
 
-void SetExperimentIds(const base::Value::List& list) {
+void SetExperimentIds(const base::ListValue& list) {
   DCHECK(!g_experiment_ids_initialized);
   std::unordered_set<int32_t> ids;
   for (const auto& it : list) {
@@ -215,8 +215,8 @@ const std::vector<const base::Feature*>& GetFeatures() {
   return *features;
 }
 
-void InitializeFeatureList(const base::Value::Dict& dcs_features,
-                           const base::Value::List& dcs_experiment_ids,
+void InitializeFeatureList(const base::DictValue& dcs_features,
+                           const base::ListValue& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
@@ -314,9 +314,9 @@ bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);
 }
 
-base::Value::Dict GetOverriddenFeaturesForStorage(
-    const base::Value::Dict& features) {
-  base::Value::Dict persistent_dict;
+base::DictValue GetOverriddenFeaturesForStorage(
+    const base::DictValue& features) {
+  base::DictValue persistent_dict;
 
   // |features| maps feature names to either a boolean or a dict of params.
   for (const auto feature : features) {
@@ -327,7 +327,7 @@ base::Value::Dict GetOverriddenFeaturesForStorage(
 
     if (feature.second.is_dict()) {
       const base::Value* params_dict = &feature.second;
-      base::Value::Dict params;
+      base::DictValue params;
 
       for (const auto [param_key, param_val] : params_dict->GetDict()) {
         if (param_val.is_bool()) {

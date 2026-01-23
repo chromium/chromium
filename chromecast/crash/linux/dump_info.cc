@@ -57,7 +57,7 @@ const char kServerUrl[] = "server_url";
 // Convenience wrapper around Value::Dict::FindString(), for easier use in if
 // statements. If `key` is a string in `dict`, writes it to `out` and returns
 // true. Leaves `out` alone and returns false otherwise.
-bool FindString(const base::Value::Dict& dict,
+bool FindString(const base::DictValue& dict,
                 std::string_view key,
                 std::string& out) {
   const std::string* value = dict.FindString(key);
@@ -89,7 +89,7 @@ DumpInfo::DumpInfo(const std::string& crashed_process_dump,
 DumpInfo::~DumpInfo() {}
 
 base::Value DumpInfo::GetAsValue() const {
-  base::Value::Dict result;
+  base::DictValue result;
 
   result.Set(kDumpTimeKey, base::UnlocalizedTimeFormatWithPattern(
                                dump_time_, "yyyy-MM-dd HH:mm:ss"));
@@ -99,7 +99,7 @@ base::Value DumpInfo::GetAsValue() const {
   result.Set(kUptimeKey, uptime);
   result.Set(kLogfileKey, logfile_);
 
-  base::Value::List attachments_list;
+  base::ListValue attachments_list;
   for (const auto& attachment : attachments_) {
     attachments_list.Append(attachment);
   }
@@ -136,7 +136,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   if (!entry)
     return false;
 
-  const base::Value::Dict* dict = entry->GetIfDict();
+  const base::DictValue* dict = entry->GetIfDict();
   if (!dict)
     return false;
 
@@ -163,7 +163,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   size_t num_params = kNumRequiredParams;
 
   // Extract all other optional fields.
-  const base::Value::List* attachments_list = dict->FindList(kAttachmentsKey);
+  const base::ListValue* attachments_list = dict->FindList(kAttachmentsKey);
   if (attachments_list) {
     ++num_params;
     for (const auto& attachment : *attachments_list) {

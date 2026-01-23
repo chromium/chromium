@@ -39,7 +39,7 @@ class TestFileProvider : public CastAudioJsonProvider {
   }
 
  private:
-  std::optional<base::Value::Dict> GetCastAudioConfig() override {
+  std::optional<base::DictValue> GetCastAudioConfig() override {
     return base::test::ParseJsonDict(file_contents_);
   }
 

@@ -48,8 +48,8 @@ const std::vector<const base::Feature*>& GetFeatures();
 // called, the other functions in this file may be called on any thread.
 // TODO(juke): Keep type info of params by passing in base::flat_map and
 // std::vector instead of base::Value.
-void InitializeFeatureList(const base::Value::Dict& dcs_features,
-                           const base::Value::List& dcs_experiment_ids,
+void InitializeFeatureList(const base::DictValue& dcs_features,
+                           const base::ListValue& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
@@ -62,8 +62,8 @@ bool IsFeatureEnabled(const base::Feature& feature);
 // Given a dictionary of features, create a copy that is ready to be persisted
 // to disk. Encodes all values as strings,  which is how the FieldTrial
 // classes expect the param data.
-base::Value::Dict GetOverriddenFeaturesForStorage(
-    const base::Value::Dict& features);
+base::DictValue GetOverriddenFeaturesForStorage(
+    const base::DictValue& features);
 
 // Query the set of experiment ids set for this run. Intended only for metrics
 // reporting. Must be called after InitializeFeatureList(). May be called on any

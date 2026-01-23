@@ -116,8 +116,8 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // Write |dcs_features| to the pref store. This method is intended to be
   // overridden in internal test to utilize the real production codepath for
   // setting features from the server.
-  virtual void SetFeatures(const base::Value::Dict& dcs_features) {
-    base::Value::Dict pref_features =
+  virtual void SetFeatures(const base::DictValue& dcs_features) {
+    base::DictValue pref_features =
         GetOverriddenFeaturesForStorage(dcs_features);
     ScopedDictPrefUpdate dict(pref_service(), prefs::kLatestDCSFeatures);
     for (auto [pref_name, pref_value] : pref_features) {
@@ -140,7 +140,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // setting features from the server.
   virtual void SetExperimentIds(
       const std::unordered_set<int32_t>& experiment_ids) {
-    base::Value::List list;
+    base::ListValue list;
     for (auto id : experiment_ids)
       list.Append(id);
     pref_service()->SetList(prefs::kActiveDCSExperiments, std::move(list));
@@ -149,7 +149,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
 
   // Clear the set experiment id's.
   void ClearExperimentIds() {
-    pref_service()->SetList(prefs::kActiveDCSExperiments, base::Value::List());
+    pref_service()->SetList(prefs::kActiveDCSExperiments, base::ListValue());
     pref_service()->CommitPendingWrite();
   }
 };
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(chromecast::IsFeatureEnabled(kTestFeat4));
 
   // Set the features to be used on next boot.
-  base::Value::Dict features;
+  base::DictValue features;
   features.Set("test_feat_1", true);
   features.Set("test_feat_4", false);
   SetFeatures(std::move(features));
@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_FALSE(chromecast::IsFeatureEnabled(kTestFeat11));
 
   // Set the features to be used on next boot.
-  base::Value::Dict features;
-  base::Value::Dict params;
+  base::DictValue features;
+  base::DictValue params;
   params.Set("bool_param", true);
   params.Set("bool_param_2", false);
   params.Set("str_param", "foo");
@@ -259,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(chromecast::IsFeatureEnabled(kTestFeat24));
 
   // Set both good parameters...
-  base::Value::Dict features;
+  base::DictValue features;
   features.Set("test_feat_21", true);
   features.Set("test_feat_24", false);
 
   // ... and bad parameters.
   features.Set("test_feat_22", "False");
-  base::Value::List empty_list;
+  base::ListValue empty_list;
   features.Set("test_feat_23", std::move(empty_list));
 
   SetFeatures(std::move(features));

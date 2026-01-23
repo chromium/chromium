@@ -71,8 +71,8 @@ class PostProcessingPipelineParser {
   StreamPipelineDescriptor GetPipelineByKey(const std::string& key);
 
   const base::FilePath file_path_;
-  base::Value::Dict config_dict_;
-  const base::Value::Dict* postprocessor_config_ = nullptr;
+  base::DictValue config_dict_;
+  const base::DictValue* postprocessor_config_ = nullptr;
 };
 
 }  // namespace media

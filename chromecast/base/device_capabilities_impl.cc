@@ -75,7 +75,7 @@ scoped_refptr<DeviceCapabilities::Data> DeviceCapabilities::CreateData() {
 }
 
 scoped_refptr<DeviceCapabilities::Data> DeviceCapabilities::CreateData(
-    base::Value::Dict dictionary) {
+    base::DictValue dictionary) {
   return base::WrapRefCounted(new Data(std::move(dictionary)));
 }
 
@@ -96,9 +96,9 @@ void DeviceCapabilities::Validator::SetPrivateValidatedValue(
   capabilities_->SetPrivateValidatedValue(path, std::move(new_value));
 }
 
-DeviceCapabilities::Data::Data() : Data(base::Value::Dict()) {}
+DeviceCapabilities::Data::Data() : Data(base::DictValue()) {}
 
-DeviceCapabilities::Data::Data(base::Value::Dict dictionary)
+DeviceCapabilities::Data::Data(base::DictValue dictionary)
     : dictionary_(std::move(dictionary)),
       json_string_(base::WriteJson(dictionary_).value_or("")) {}
 
@@ -274,7 +274,7 @@ void DeviceCapabilitiesImpl::SetCapability(const std::string& path,
   SetPublicValidatedValue(path, std::move(proposed_value));
 }
 
-void DeviceCapabilitiesImpl::MergeDictionary(const base::Value::Dict& dict) {
+void DeviceCapabilitiesImpl::MergeDictionary(const base::DictValue& dict) {
   for (const auto [key, value] : dict) {
     SetCapability(key, value.Clone());
   }
@@ -402,10 +402,10 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(const std::string& path,
 }
 
 scoped_refptr<DeviceCapabilities::Data>
-DeviceCapabilitiesImpl::GenerateDataWithNewValue(const base::Value::Dict& dict,
+DeviceCapabilitiesImpl::GenerateDataWithNewValue(const base::DictValue& dict,
                                                  const std::string& path,
                                                  base::Value new_value) {
-  base::Value::Dict dict_deep_copy(dict.Clone());
+  base::DictValue dict_deep_copy(dict.Clone());
   dict_deep_copy.SetByDottedPath(path, std::move(new_value));
   return CreateData(std::move(dict_deep_copy));
 }
