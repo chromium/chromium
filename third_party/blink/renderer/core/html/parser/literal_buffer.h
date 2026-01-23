@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -55,17 +56,22 @@ class LiteralBufferBase {
   // Iterators, so this type meets the requirements of
   // `std::ranges::contiguous_range`.
   ALWAYS_INLINE iterator begin() const {
-    return UNSAFE_TODO(iterator(begin_, end_));
+    // SAFETY: The iterator is constructed with the start and end of the
+    // allocated buffer, so it is safe.
+    return UNSAFE_BUFFERS(iterator(begin_, end_));
   }
   ALWAYS_INLINE iterator end() const {
-    return UNSAFE_TODO(iterator(begin_, end_, end_));
+    // SAFETY: The iterator is constructed with the start and end of the
+    // allocated buffer, so it is safe.
+    return UNSAFE_BUFFERS(iterator(begin_, end_, end_));
   }
 
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 
   ALWAYS_INLINE const T& operator[](blink::wtf_size_t index) const {
     CHECK_GT(size(), index);
-    // SAFETY: Check above.
+    // SAFETY: The CHECK_GT above ensures that `index` is within the bounds of
+    // the buffer.
     return UNSAFE_BUFFERS(begin_[index]);
   }
 
@@ -77,21 +83,31 @@ class LiteralBufferBase {
 
   ALWAYS_INLINE void AddCharImpl(T val) {
     if (end_ == end_of_storage_) [[unlikely]] {
-      end_ = Grow();
+      Grow();
     }
-    UNSAFE_TODO(*end_++) = val;
+    // SAFETY: The `Grow()` call above ensures that there is always at least one
+    // byte of available capacity, so `end_` will never be equal to
+    // `end_of_storage_` at this point. Therefore, it is safe to write to
+    // `*end_` and increment it.
+    UNSAFE_BUFFERS(*end_++) = val;
   }
 
   template <typename OtherT, blink::wtf_size_t kOtherSize>
+
   void AppendLiteralImpl(const LiteralBufferBase<OtherT, kOtherSize>& val) {
     static_assert(sizeof(T) >= sizeof(OtherT),
                   "T is not big enough to contain OtherT");
-    size_t count = val.size();
-    size_t new_size = size() + count;
-    if (capacity() < new_size)
+    blink::wtf_size_t count = val.size();
+    blink::wtf_size_t new_size =
+        (base::CheckedNumeric<blink::wtf_size_t>(size()) + count).ValueOrDie();
+    if (capacity() < new_size) {
       Grow(new_size);
-    std::copy_n(val.data(), count, end_);
-    UNSAFE_TODO(end_ += count);
+    }
+    // SAFETY: The `Grow()` call above ensures that there is enough capacity to
+    // append `count` characters, or the program would have crashed due to
+    // overflow.
+    UNSAFE_BUFFERS(std::copy_n(val.data(), count, end_));
+    UNSAFE_BUFFERS(end_ += count);
   }
 
   template <blink::wtf_size_t kOtherInlineSize>
@@ -103,10 +119,13 @@ class LiteralBufferBase {
         blink::Partitions::BufferFree(begin_);
       begin_ = static_cast<T*>(blink::Partitions::BufferMalloc(
           AllocationSize(other_size), "LiteralBufferBase"));
-      end_of_storage_ = UNSAFE_TODO(begin_ + other_size);
+      // SAFETY: `begin_` was just allocated with `other_size` capacity.
+      UNSAFE_BUFFERS(end_of_storage_ = begin_ + other_size);
     }
-    std::copy_n(other.data(), other_size, begin_);
-    end_ = UNSAFE_TODO(begin_ + other_size);
+    // SAFETY: The capacity check and reallocation above ensure that there is
+    // enough space to copy `other_size` characters.
+    UNSAFE_BUFFERS(std::copy_n(other.data(), other_size, begin_));
+    UNSAFE_BUFFERS(end_ = begin_ + other_size);
   }
 
   void Move(LiteralBufferBase&& other) {
@@ -119,22 +138,30 @@ class LiteralBufferBase {
       end_of_storage_ = other.end_of_storage_;
       other.begin_ = &other.inline_storage[0];
       other.end_ = other.begin_;
-      other.end_of_storage_ =
-          UNSAFE_TODO(other.begin_ + BUFFER_INLINE_CAPACITY);
+      // SAFETY: We are resetting the `other` buffer to its inline storage.
+      // This pointer arithmetic is safe because `other.begin_` points to the
+      // start of `other.inline_storage` and `BUFFER_INLINE_CAPACITY` is the
+      // size of that array.
+      UNSAFE_BUFFERS(other.end_of_storage_ =
+                         other.begin_ + BUFFER_INLINE_CAPACITY);
     } else {
       DCHECK_GE(capacity(), other.size());  // Sanity check.
       blink::wtf_size_t other_size = other.size();
-      std::copy_n(other.data(), other_size, begin_);
-      end_ = UNSAFE_TODO(begin_ + other_size);
+      // SAFETY: The `DCHECK_GE` above ensures that there is enough capacity to
+      // copy `other_size` characters.
+      UNSAFE_BUFFERS(std::copy_n(other.data(), other_size, begin_));
+      UNSAFE_BUFFERS(end_ = begin_ + other_size);
     }
   }
 
  private:
-  size_t AllocationSize(size_t capacity) {
+  blink::wtf_size_t AllocationSize(blink::wtf_size_t capacity) {
     return blink::PartitionAllocator::QuantizedSize<T>(capacity);
   }
 
-  ALWAYS_INLINE size_t capacity() const { return end_of_storage_ - begin_; }
+  ALWAYS_INLINE blink::wtf_size_t capacity() const {
+    return end_of_storage_ - begin_;
+  }
 
   ALWAYS_INLINE bool is_stored_inline() const {
     return begin_ == &inline_storage[0];
@@ -158,16 +185,20 @@ class LiteralBufferBase {
   NOINLINE T* Grow(size_t min_capacity) {
     DCHECK_GE(end_, begin_);
     size_t in_use = end_ - begin_;
-    size_t new_capacity =
-        RoundUpToPowerOfTwo(std::max(min_capacity, 2 * capacity()));
+    size_t new_capacity = RoundUpToPowerOfTwo(
+        std::max(min_capacity, 2 * static_cast<size_t>(capacity())));
     T* new_storage = static_cast<T*>(blink::Partitions::BufferMalloc(
         AllocationSize(new_capacity), "LiteralBufferBase"));
-    std::copy_n(begin_, in_use, new_storage);
+    // SAFETY: The new storage is allocated with `new_capacity`, which is
+    // guaranteed to be large enough to hold `in_use` characters.
+    UNSAFE_BUFFERS(std::copy_n(begin_, in_use, new_storage));
     if (!is_stored_inline())
       blink::Partitions::BufferFree(begin_);
     begin_ = new_storage;
-    end_ = UNSAFE_TODO(new_storage + in_use);
-    end_of_storage_ = UNSAFE_TODO(new_storage + new_capacity);
+    // SAFETY: `new_storage` was allocated with `new_capacity` and `in_use`
+    // is less than or equal to `new_capacity`.
+    UNSAFE_BUFFERS(end_ = new_storage + in_use);
+    UNSAFE_BUFFERS(end_of_storage_ = new_storage + new_capacity);
     return end_;
   }
 
@@ -177,7 +208,9 @@ class LiteralBufferBase {
   // register.
   T* begin_ = &inline_storage[0];
   T* end_ = begin_;
-  T* end_of_storage_ = UNSAFE_TODO(begin_ + BUFFER_INLINE_CAPACITY);
+  // SAFETY: `begin_` points to the start of `inline_storage` and
+  // `BUFFER_INLINE_CAPACITY` is the size of that array.
+  T* end_of_storage_ = UNSAFE_BUFFERS(begin_ + BUFFER_INLINE_CAPACITY);
   T inline_storage[BUFFER_INLINE_CAPACITY];
 };
 
