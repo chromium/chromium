@@ -211,8 +211,6 @@ size_t OmniboxFieldTrial::GetProviderMaxMatches(
   return default_max_matches_per_provider;
 }
 
-
-
 void OmniboxFieldTrial::GetDefaultHUPScoringParams(
     HUPScoringParams* scoring_params) {
   ScoreBuckets* type_score_buckets = &scoring_params->typed_count_buckets;
@@ -651,9 +649,9 @@ bool IsHideSuggestionGroupHeadersEnabledInContext(
 
 bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service) {
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint,
-      omnibox::kAiModeOmniboxEntryPointEnUs);
+  // `aim_eligibility_service` can be null in tests.
+  return base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
+         aim_eligibility_service && aim_eligibility_service->IsAimEligible();
 }
 
 bool IsAimStarterPackEnabled(

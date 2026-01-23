@@ -80,17 +80,15 @@ class AiModePageActionControllerInteractiveUiTest
   }
 
   virtual void InitializeFeatures() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kAiModeOmniboxEntryPoint, {}},
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {{
+        features::kPageActionsMigration,
         {
-            features::kPageActionsMigration,
             {
-                {
-                    features::kPageActionsMigrationAiMode.name,
-                    "true",
-                },
+                features::kPageActionsMigrationAiMode.name,
+                "true",
             },
-        }};
+        },
+    }};
 
     std::vector<base::test::FeatureRef> disabled_features = {
         kHideAimEntrypointOnUserInput};
@@ -200,7 +198,6 @@ class AiModePageActionControllerHideEntryPointOnEditInteractiveUiTest
  protected:
   void InitializeFeatures() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kAiModeOmniboxEntryPoint, {}},
         {kHideAimEntrypointOnUserInput, {}},
         {
             features::kPageActionsMigration,

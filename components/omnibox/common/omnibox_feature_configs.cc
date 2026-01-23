@@ -77,8 +77,6 @@ AiMode::AiMode() {
 
 AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
   enabled = base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
-  enabledEnUs =
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPointEnUs);
 
   hide_aim_hint_text =
       base::FeatureParam<bool>(&omnibox::kAiModeOmniboxEntryPoint,

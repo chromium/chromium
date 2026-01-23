@@ -168,12 +168,7 @@ BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 
 // Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button. Only
 // used on desktop platforms.
-// The first feature enables the entrypoint for all users. The second feature
-// enables the entrypoint only for users who have their locale set to English
-// and are located in the US, and has no effect if the first feature is
-// enabled.
-BASE_FEATURE(kAiModeOmniboxEntryPoint, DISABLED);
-BASE_FEATURE(kAiModeOmniboxEntryPointEnUs, ENABLED);
+BASE_FEATURE(kAiModeOmniboxEntryPoint, ENABLED);
 
 // Hides the AIM entrypoint in the Omnibox when user input is in progress. Only
 // used on desktop platforms.
