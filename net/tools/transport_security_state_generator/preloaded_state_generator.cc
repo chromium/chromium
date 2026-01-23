@@ -176,8 +176,8 @@ std::string PreloadedStateGenerator::Generate(
   ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
              &output);
 
-  VLOG(1) << "PreloadedStateGenerator wrote " << new_writer.bytes().size()
-          << " bytes for the huffman table and " << huffman_tree.size()
+  VLOG(1) << "PreloadedStateGenerator wrote " << huffman_tree.size()
+          << " bytes for the huffman table and " << new_writer.bytes().size()
           << " bytes for the trie.";
 
   return output;
