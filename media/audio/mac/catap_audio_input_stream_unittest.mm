@@ -717,6 +717,41 @@ TEST_F(CatapAudioInputStreamTest, ApplicationLoopback) {
   }
 }
 
+TEST_F(CatapAudioInputStreamTest,
+       ApplicationLoopbackSucceedWithoutAudioDevices) {
+  if (@available(macOS 14.2, *)) {
+    base::ProcessId process_id = getpid();
+    CreateStream(
+        /*with_permissions=*/true,
+        /*device_id=*/media::CreateApplicationLoopbackDeviceId(process_id));
+
+    // Arbitrary number of CoreAudio process audio device IDs to be returned by
+    // GetProcessAudioDeviceIds.
+    constexpr AudioDeviceID kProcessFirstDeviceId = 1;
+    constexpr AudioDeviceID kProcessSecondDeviceId = 2;
+    constexpr AudioDeviceID kOtherProcessDeviceId = 3;
+    fake_catap_api()->process_audio_devices = {
+        kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
+    fake_catap_api()->process_pids[kProcessFirstDeviceId] = process_id + 1;
+    fake_catap_api()->process_pids[kProcessSecondDeviceId] = process_id + 1;
+    fake_catap_api()->process_pids[kOtherProcessDeviceId] = process_id + 1;
+
+    // Initialize the stream.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+
+    EXPECT_EQ([fake_catap_api()->last_tap_description processes].count, 0U);
+    // For application loopback, the `processes` list contains the specific
+    // `AudioObjects` we want to capture (include). Therefore, the `exclusive`
+    // flag must be false.
+    EXPECT_FALSE([fake_catap_api()->last_tap_description isExclusive]);
+
+    // In application loopback we capture all output devices. In that case
+    // Device UID and stream should not have been set.
+    EXPECT_EQ([fake_catap_api()->last_tap_description deviceUID], nullptr);
+    EXPECT_EQ([fake_catap_api()->last_tap_description stream], nullptr);
+  }
+}
+
 TEST_F(CatapAudioInputStreamTest, LoopbackWithMuteDevice) {
   if (@available(macOS 14.2, *)) {
     CreateStream(
