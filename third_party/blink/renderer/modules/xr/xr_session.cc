@@ -94,6 +94,9 @@ const char kMultiLayersNotEnabled[] =
 
 const char kDuplicateLayer[] = "All layers in render state must be unique.";
 
+const char kTooManyLayers[] =
+    "The number of layers to be enabled exceeds maxRenderLayers.";
+
 const char kInlineVerticalFOVNotSupported[] =
     "This session does not support inlineVerticalFieldOfView";
 
@@ -542,6 +545,13 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
         !IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                         kMultiLayersNotEnabled);
+      return;
+    }
+
+    // Validate that the number of layers is allowed.
+    if (init->layers()->size() > maxRenderLayers()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        kTooManyLayers);
       return;
     }
 

@@ -666,6 +666,8 @@ XrResult OpenXrApiWrapper::InitSession(
   DVLOG(1) << __func__ << " : Vendor Id: " << system_properties.vendorId
            << " : System Name: " << system_properties.systemName;
 
+  max_layer_count_ = system_properties.graphicsProperties.maxLayerCount;
+
   RETURN_IF_XR_FAILED(CreateSession());
   RETURN_IF_XR_FAILED(
       CreateSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, &local_space_));
@@ -1175,11 +1177,15 @@ XrResult OpenXrApiWrapper::EndFrame() {
     }
   }
 
+  CHECK_LE(layers->PrimaryLayerCount(), max_layer_count_);
+
   XrFrameEndInfo end_frame_info = {XR_TYPE_FRAME_END_INFO};
   end_frame_info.layerCount = layers->PrimaryLayerCount();
   end_frame_info.layers = layers->PrimaryLayerData();
   end_frame_info.displayTime = frame_state_.predictedDisplayTime;
   end_frame_info.environmentBlendMode = blend_mode_;
+
+  TRACE_COUNTER1("xr", "ActiveLayers", end_frame_info.layerCount);
 
   XrSecondaryViewConfigurationFrameEndInfoMSFT secondary_view_end_frame_info = {
       XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT};
@@ -1636,6 +1642,15 @@ uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
                return view.RecommendedSwapchainSampleCount();
              })
       ->RecommendedSwapchainSampleCount();
+}
+
+uint16_t OpenXrApiWrapper::GetMaxRenderLayers() const {
+  if (max_layer_count_ == 0) {
+    return 0;
+  }
+  // Stereo layers, except for the projection layer, need 2 XrCompositionLayer
+  // objects (one per eye). We also reserve one layer for our own use.
+  return static_cast<uint16_t>((max_layer_count_ - 1) / 2);
 }
 
 bool OpenXrApiWrapper::CanEnableAntiAliasing() const {

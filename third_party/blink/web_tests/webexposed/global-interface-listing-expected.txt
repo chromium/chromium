@@ -12948,6 +12948,7 @@ interface XRSession : EventTarget
     getter inputSources
     getter interactionMode
     getter isSystemKeyboardSupported
+    getter maxRenderLayers
     getter onend
     getter onframeratechange
     getter oninputsourceschange

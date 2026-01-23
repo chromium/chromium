@@ -1013,6 +1013,7 @@ XrResult xrGetSystemProperties(XrInstance instance,
 
   *system_properties = g_test_helper.GetSystemProperties();
   system_properties->systemId = system_id;
+  system_properties->graphicsProperties.maxLayerCount = 16;
 
   return XR_SUCCESS;
 }

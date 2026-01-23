@@ -102,6 +102,10 @@ struct XRSessionDeviceConfig {
   // If the session supports depth-sensing API, the depth configuration must be
   // non-null.
   XRDepthConfig? depth_configuration;
+
+  // The max number of layers that can be enabled at same time. See
+  // SetEnabledCompositionLayers.
+  uint16 max_render_layers = 1;
 };
 
 // This structure contains all the mojo interfaces for different kinds of

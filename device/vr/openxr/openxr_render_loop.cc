@@ -411,6 +411,9 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   if (auto* depth = openxr_->GetDepthSensor(); depth) {
     session->device_config->depth_configuration = depth->GetDepthConfig();
   }
+  if (openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    session->device_config->max_render_layers = openxr_->GetMaxRenderLayers();
+  }
 
   session->enviroment_blend_mode =
       openxr_->PickEnvironmentBlendModeForSession(options->mode);
@@ -1088,11 +1091,19 @@ void OpenXrRenderLoop::DestroyCompositionLayer(const LayerId& layer_id) {
 void OpenXrRenderLoop::SetEnabledCompositionLayers(
     const std::vector<LayerId>& layer_ids) {
   if (!openxr_->IsFeatureEnabled(mojom::XRSessionFeature::LAYERS)) {
+    layer_manager_receiver_.ReportBadMessage("Layers feature is not enabled.");
     return;
   }
   if (!context_provider_) {
+    layer_manager_receiver_.ReportBadMessage("Context was lost.");
     return;
   }
+  if (layer_ids.size() > openxr_->GetMaxRenderLayers()) {
+    layer_manager_receiver_.ReportBadMessage(
+        "Tried to enable too many layers.");
+    return;
+  }
+
   graphics_binding_->SetEnabledCompositionLayers(
       layer_ids, openxr_->session(),
       openxr_->GetRecommendedSwapchainSampleCount(),
