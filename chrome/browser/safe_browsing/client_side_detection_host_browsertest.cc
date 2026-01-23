@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
@@ -373,6 +374,63 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
       .Run(page_url, true, net::HTTP_OK, std::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
+                       SamePageNavigationShouldNotAffectClientSideDetection) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(web_contents);
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+
+  fake_csd_service.SendModelToRenderers();
+
+  GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  // Bypass the pre-classification checks.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+
+  run_loop.Run();
+
+  // A same page navigation committing should not cancel classification.
+  // The worst case if navigation in an iframe, so locate the iframe.
+  size_t frame_counter = 0;
+  content::RenderFrameHost* iframe_rfh = nullptr;
+  web_contents->ForEachRenderFrameHostWithAction(
+      [&frame_counter, &iframe_rfh](content::RenderFrameHost* current_frame) {
+        if (frame_counter == 1) {
+          iframe_rfh = current_frame;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        frame_counter++;
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  ASSERT_TRUE(content::ExecJs(iframe_rfh, "window.location.hash='#foo';"));
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  // Expect an interstitial to be shown. We intentionally use real ui manager to
+  // check that all ui manager pipeline works correctly.
+  content::TestNavigationObserver observer(web_contents);
+  std::move(fake_csd_service.saved_callback())
+      .Run(page_url, true, net::HTTP_OK, std::nullopt);
+  observer.Wait();
+  EXPECT_TRUE(
+      chrome_browser_interstitials::IsShowingInterstitial(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,

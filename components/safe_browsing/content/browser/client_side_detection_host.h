@@ -197,6 +197,9 @@ class ClientSideDetectionHost
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            PrerenderShouldNotAffectClientSideDetection);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      SamePageNavigationShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
   FRIEND_TEST_ALL_PREFIXES(

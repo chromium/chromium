@@ -903,7 +903,16 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
 
 void ClientSideDetectionHost::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  current_navigation_id_ = navigation_handle->GetNavigationId();
+  // `current_navigation_id_` will be set to UnsafeResource, and later in
+  // `BaseUIManager::DisplayBlockingPage` we will check
+  // `AsyncCheckTracker::IsMainPageResourceLoadPending`, and `AsyncCheckTracker`
+  // tracks only committed not-same-document navigations, see
+  // `AsyncCheckTracker::DidFinishNavigation`. So we should never set
+  // `current_navigation_id_` to non-comitted or same-document navigations.
+  if ((navigation_handle->HasCommitted() &&
+       !navigation_handle->IsSameDocument())) {
+    current_navigation_id_ = navigation_handle->GetNavigationId();
+  }
 }
 
 void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
