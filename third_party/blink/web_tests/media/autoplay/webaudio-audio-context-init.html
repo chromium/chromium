@@ -56,14 +56,14 @@ promise_test(async t => {
 
   await activateDocument(t);
 
-  return new Promise((resolve) => {
-    const audioContext = new AudioContext();
-    assert_equals(audioContext.state, 'running');
+  const audioContext = new AudioContext();
+  // AudioContext starts in "suspended" state and transitions to "running"
+  // asynchronously when allowed to start.
+  assert_equals(audioContext.state, 'suspended');
+  await audioContext.resume();
+  assert_equals(audioContext.state, 'running');
 
-    const offlineAudioContext = new OfflineAudioContext(1, 512, 3000);
-    assert_equals(offlineAudioContext.state, 'suspended');
-
-    resolve();
-  });
-}, 'With document actiovation, AudioContext is created running and OfflineAudioContext suspended');
+  const offlineAudioContext = new OfflineAudioContext(1, 512, 3000);
+  assert_equals(offlineAudioContext.state, 'suspended');
+}, 'With document activation, AudioContext can resume to running and OfflineAudioContext is suspended');
 </script>

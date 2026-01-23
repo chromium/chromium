@@ -635,6 +635,13 @@
       public: true,
     },
     {
+      // The transition to "running" after construction happens asynchronously.
+      // Same for the transition to "suspended" after suspend() is called.
+      // https://webaudio.github.io/web-audio-api/#AudioContext-constructors
+      name: "AudioContextAsyncStateTransitions",
+      status: "experimental",
+    },
+    {
       // AudioContext.playoutStats interface.
       // https://chromestatus.com/feature/5172818344148992
       name: "AudioContextPlayoutStats",

@@ -64,14 +64,27 @@ function runMediaTest() {
   });
 }
 
-function runWebAudioTest() {
+async function runWebAudioTest() {
   const audioContext = new AudioContext();
+
+  if (audioContext.state === 'running') {
+    results.webAudio = audioContext.state;
+    return;
+  }
+
+  // When autoplay is allowed, we wait for the state transition to "running".
+  // When autoplay is blocked, no "statechange" event will be fired.
+  if (results.media?.name !== 'NotAllowedError') {
+    await new Promise(resolve => {
+      audioContext.onstatechange = resolve;
+    });
+  }
   results.webAudio = audioContext.state;
 }
 
 async function runAutoplayTest() {
   await runMediaTest();
-  runWebAudioTest();
+  await runWebAudioTest();
   tearDown();
 }
 
