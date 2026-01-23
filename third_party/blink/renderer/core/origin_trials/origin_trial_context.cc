@@ -541,6 +541,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
   }
 
+  if (trial_name == "UserMediaElement") {
+    return base::FeatureList::IsEnabled(blink::features::kUserMediaElement);
+  }
+
   if (trial_name == "AIRewriterAPI") {
     return base::FeatureList::IsEnabled(features::kAIRewriterAPI);
   }
