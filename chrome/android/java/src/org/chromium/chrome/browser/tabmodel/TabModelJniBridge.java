@@ -489,6 +489,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         target.setParentId(opener.getId());
     }
 
+    @CalledByNative
+    private @Nullable @JniType("TabAndroid*") Tab getOpenerForTab(
+            @JniType("TabAndroid*") Tab target) {
+        return getTabById(target.getParentId());
+    }
+
     /**
      * Highlights a given list of tabs and makes one of them the active tab.
      *

@@ -172,6 +172,12 @@ void TabListBridge::SetOpenerForTab(tabs::TabHandle target,
   tab_strip_->SetOpenerOfWebContentsAt(target_index, opener_contents);
 }
 
+tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
+  const int target_index = GetIndexOfTab(target);
+  CHECK_NE(target_index, TabStripModel::kNoTab);
+  return tab_strip_->GetOpenerOfTabAt(target_index);
+}
+
 void TabListBridge::DiscardTab(tabs::TabHandle tab) {
   content::WebContents* contents = tab.Get()->GetContents();
   if (contents) {

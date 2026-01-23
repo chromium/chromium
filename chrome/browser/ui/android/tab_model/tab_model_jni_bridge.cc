@@ -35,6 +35,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -479,6 +480,16 @@ void TabModelJniBridge::SetOpenerForTab(tabs::TabHandle target,
   }
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_setOpenerForTab(env, target_tab, opener_tab);
+}
+
+tabs::TabInterface* TabModelJniBridge::GetOpenerForTab(tabs::TabHandle target) {
+  TabAndroid* target_tab = TabAndroid::FromTabHandle(target);
+  if (!target_tab) {
+    return nullptr;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  return Java_TabModelJniBridge_getOpenerForTab(env, jobj, target_tab);
 }
 
 void TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {

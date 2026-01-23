@@ -68,6 +68,9 @@ class TabListInterface {
   virtual void SetOpenerForTab(tabs::TabHandle target,
                                tabs::TabHandle opener) = 0;
 
+  // Get the `opener` tab from `target` tab.
+  virtual tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) = 0;
+
   // Attempts to discard the renderer for the `tab` from memory.
   //
   // For details refer to:

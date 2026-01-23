@@ -260,6 +260,40 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetAllTabs) {
                                    MatchesTab(url3)));
 }
 
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetOpenerForTab) {
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+  const GURL url3("http://three.example");
+
+  TabListInterface* tab_list_interface = TabListBridge::From(browser());
+  ASSERT_TRUE(tab_list_interface);
+
+  // Open three tabs. All should be returned (in order).
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Focus the first tab.
+  tab_list_interface->ActivateTab(tab_list_interface->GetTab(0)->GetHandle());
+  EXPECT_EQ(0, tab_list_interface->GetActiveIndex());
+
+  // Set Opener for the first tab
+  tab_list_interface->SetOpenerForTab(
+      tab_list_interface->GetTab(0)->GetHandle(),
+      tab_list_interface->GetTab(1)->GetHandle());
+
+  // Get Opener for the first tab
+  EXPECT_THAT(tab_list_interface->GetOpenerForTab(
+                  tab_list_interface->GetTab(0)->GetHandle()),
+              MatchesTab(url2));
+}
+
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, GetActiveTab) {
   const GURL url1("http://one.example");
   const GURL url2("http://two.example");
