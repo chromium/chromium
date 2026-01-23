@@ -12091,16 +12091,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           =1 {Add Tab to New Group}
           other {Add Tabs to New Group}}
         </message>
-        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT" desc="In Title Case: The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
           Add Tab to New Split View
         </message>
-        <message name="IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT" desc="The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
+        <message name="IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT" desc="In Title Case: The label of the tab context menu submenu for creating a split view between the selected tab and the active tab.">
           New Split View with Current Tab
         </message>
-        <message name="IDS_TAB_CXMENU_ARRANGE_SPLIT" desc="The label of the tab context menu submenu for exiting split view.">
+        <message name="IDS_TAB_CXMENU_ARRANGE_SPLIT" desc="In Title Case: The label of the tab context menu submenu for exiting split view.">
           Arrange Split View
         </message>
-        <message name="IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT" desc="The label of the tab context menu item for swapping a tab with the current view in the split.">
+        <message name="IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT" desc="In Title Case: The label of the tab context menu item for swapping a tab with the current view in the split.">
           Move Tab into Split View
         </message>
         <message name="IDS_TAB_CXMENU_SUBMENU_NEW_GROUP" desc="In Title Case: The label of the tab context menu sub-menu item for adding one more tabs to a new group.">
@@ -12109,7 +12109,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP" desc="In Title Case: The label of the tab context menu item for removing one or more tabs from the groups that contain them.">
           Remove From Group
         </message>
-        <message name="IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE" desc="The descriptive placeholder title of a group used when the user has not explicitly named a group. The plural value refers to the number of tabs in the group other than the one explicitly named. [ICU Syntax]">
+        <message name="IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE" desc="In Title Case: The descriptive placeholder title of a group used when the user has not explicitly named a group. The plural value refers to the number of tabs in the group other than the one explicitly named. [ICU Syntax]">
           {NUM_OTHER_TABS, plural, =0 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>"} =1 {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and 1 Other Tab} other {"<ph name="TAB_TITLE">$1<ex>Google News</ex></ph>" and # Other Tabs}}
         </message>
         <message name="IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW" desc="In Title Case: The label of the 'Move Tabs to New Window' Tab context menu item. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
@@ -12131,7 +12131,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
           Compare Tabs
         </message>
-        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="The label for the tab context menu item to add the current tab to a new comparison table">
+        <message name="IDS_TAB_CXMENU_ADD_TAB_TO_NEW_COMPARISON_TABLE" desc="In Title Case: The label for the tab context menu item to add the current tab to a new comparison table">
           Add Tab to New Comparison Table
         </message>
       </if>
