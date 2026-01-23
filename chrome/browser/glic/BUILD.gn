@@ -517,7 +517,10 @@ source_set("browser_tests") {
       "widget/application_hotkey_delegate_browsertest.cc",
     ]
   }
-  deps = [ "//chrome/browser/glic/common:browser_tests" ]
+  deps = [
+    "//chrome/browser/glic/common:browser_tests",
+    "//chrome/browser/ui/tabs:tab_list_interface",
+  ]
   if (!is_android) {
     deps += [
       ":glic",

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 
 #include "base/test/run_until.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -125,5 +128,102 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   }));
 }
 #endif
+
+class GlicActiveInstanceSharingManagerProfileStateTest
+    : public NonInteractiveGlicTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicActiveInstanceSharingManagerProfileStateTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlic, features::kGlicMultiInstance,
+        mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsUnifiedFreEnabled()) {
+      enabled_features.push_back(features::kGlicUnifiedFreScreen);
+    } else {
+      disabled_features.push_back(features::kGlicUnifiedFreScreen);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsUnifiedFreEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicActiveInstanceSharingManagerProfileStateTest,
+                       RespectsProfileState) {
+  browser_activator().SetMode(BrowserActivator::Mode::kManual);
+
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  ASSERT_TRUE(service);
+
+  // 1. Start with revoked consent.
+  SetFRECompletion(browser()->profile(), prefs::FreStatus::kIncomplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  // 2. Toggle UI.
+  service->ToggleUI(browser(), false,
+                    mojom::InvocationSource::kTopChromeButton);
+
+  auto& manager = service->sharing_manager();
+
+  if (IsUnifiedFreEnabled()) {
+    // Case 1: UnifiedFreScreen Enabled.
+    // Instance should be created (showing FRE).
+    auto* instance = service->GetInstanceForActiveTab(browser());
+    ASSERT_TRUE(instance);
+
+    instance->host().sharing_manager().PinTabs({tab->GetHandle()},
+                                               GlicPinTrigger::kUnknown);
+
+    // Verify delegation is OFF (manager doesn't see it).
+    EXPECT_FALSE(manager.IsTabPinned(tab->GetHandle()));
+
+    // Grant consent.
+    SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+
+    // Verify delegation resumes (dynamic update).
+    EXPECT_TRUE(manager.IsTabPinned(tab->GetHandle()));
+
+  } else {
+    // Case 2: UnifiedFreScreen Disabled (Legacy).
+    // Instance should NOT be created (FRE dialog shown instead).
+    auto* instance = service->GetInstanceForActiveTab(browser());
+    EXPECT_FALSE(instance);
+
+    // Verify delegation is OFF (obviously, no instance).
+    EXPECT_FALSE(manager.IsTabPinned(tab->GetHandle()));
+
+    // Grant consent.
+    SetFRECompletion(browser()->profile(), prefs::FreStatus::kCompleted);
+
+    // Delegation should still be OFF (no instance yet).
+    EXPECT_FALSE(manager.IsTabPinned(tab->GetHandle()));
+
+    // Toggle UI again (now should create instance).
+    service->ToggleUI(browser(), false,
+                      mojom::InvocationSource::kTopChromeButton);
+    instance = service->GetInstanceForActiveTab(browser());
+    ASSERT_TRUE(instance);
+
+    instance->host().sharing_manager().PinTabs({tab->GetHandle()},
+                                               GlicPinTrigger::kUnknown);
+
+    // Verify delegation is ON.
+    EXPECT_TRUE(manager.IsTabPinned(tab->GetHandle()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicActiveInstanceSharingManagerProfileStateTest,
+                         testing::Bool());
 
 }  // namespace glic
