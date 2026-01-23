@@ -32,9 +32,6 @@ void UploadAllLocalExtensions(Profile* profile) {
   }
 }
 
-// TODO(crbug.com/464239112): Clean up these tests. Many cover initial-merge
-// logic which might be redundant with batch upload. We probably just need one
-// test to cover batch upload.
 class TwoClientExtensionsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
@@ -64,40 +61,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          TwoClientExtensionsSyncTest,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
-
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
-                       E2E_ENABLED(StartWithNoExtensions)) {
-  ASSERT_TRUE(ResetSyncForPrimaryAccount());
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(ExtensionsMatchChecker().Wait());
-}
-
-// Flaky on Mac: http://crbug.com/535996
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StartWithSameExtensions DISABLED_StartWithSameExtensions
-#else
-#define MAYBE_StartWithSameExtensions StartWithSameExtensions
-#endif
-IN_PROC_BROWSER_TEST_P(TwoClientExtensionsSyncTest,
-                       E2E_ENABLED(MAYBE_StartWithSameExtensions)) {
-  ASSERT_TRUE(ResetSyncForPrimaryAccount());
-  ASSERT_TRUE(SetupClients());
-
-  const int kNumExtensions = 5;
-  for (int i = 0; i < kNumExtensions; ++i) {
-    InstallExtension(GetProfile(0), i);
-    InstallExtension(GetProfile(1), i);
-  }
-
-  ASSERT_TRUE(SetupSync());
-  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-    UploadAllLocalExtensions(GetProfile(0));
-    UploadAllLocalExtensions(GetProfile(1));
-  }
-  ASSERT_TRUE(ExtensionsMatchChecker().Wait());
-  EXPECT_EQ(kNumExtensions,
-            static_cast<int>(GetInstalledExtensions(GetProfile(0)).size()));
-}
 
 // Flaky on Mac: http://crbug.com/535996
 #if BUILDFLAG(IS_MAC)
