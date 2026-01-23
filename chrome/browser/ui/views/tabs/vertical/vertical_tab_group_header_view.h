@@ -61,17 +61,32 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
       ui::mojom::MenuSourceType source_type) override;
 
   void OnDataChanged(
-      const tab_groups::TabGroupVisualData* tab_group_visual_data);
+      const tab_groups::TabGroupVisualData* tab_group_visual_data,
+      bool needs_attention,
+      bool is_shared);
 
   views::LabelButton* editor_bubble_button() { return editor_bubble_button_; }
   views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }
+  views::ImageView* attention_indicator_for_testing() {
+    return attention_indicator_;
+  }
 
  private:
   void UpdateEditorBubbleButtonVisibility();
   void ShowEditorBubble();
 
+  // The sync icon that is displayed in the tab group header of saved groups in
+  // the tabstrip.
+  const raw_ptr<views::ImageView> sync_icon_ = nullptr;
+
   const raw_ptr<views::Label> group_header_label_ = nullptr;
+
+  // The circle indicator rendered after the title when a tab group needs
+  // attention.
+  const raw_ptr<views::ImageView> attention_indicator_ = nullptr;
+
   const raw_ptr<views::LabelButton> editor_bubble_button_ = nullptr;
+
   const raw_ptr<views::ImageView> collapse_icon_ = nullptr;
   const raw_ptr<Delegate> delegate_ = nullptr;
 
