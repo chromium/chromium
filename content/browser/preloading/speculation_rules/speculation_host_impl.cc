@@ -95,14 +95,17 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
     bool enable_cross_origin_prerender_iframes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!CandidatesAreValid(candidates))
+  if (!CandidatesAreValid(candidates)) {
     return;
+  }
 
   // Only handle messages from an active main frame.
-  if (!render_frame_host().IsActive())
+  if (!render_frame_host().IsActive()) {
     return;
-  if (render_frame_host().GetParent())
+  }
+  if (render_frame_host().GetParent()) {
     return;
+  }
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());

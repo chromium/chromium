@@ -60,8 +60,9 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
 }
 
 PrerenderNewTabHandle::~PrerenderNewTabHandle() {
-  if (web_contents_)
+  if (web_contents_) {
     web_contents_->SetDelegate(nullptr);
+  }
 }
 
 PrerenderHostId PrerenderNewTabHandle::StartPrerendering(
@@ -85,8 +86,7 @@ PrerenderHostId PrerenderNewTabHandle::StartPrerendering(
   auto* preloading_attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           creating_predictor, enacting_predictor, PreloadingType::kPrerender,
-          std::move(same_url_matcher),
-          triggered_primary_page_source_id));
+          std::move(same_url_matcher), triggered_primary_page_source_id));
   preloading_data->AddPreloadingPrediction(
       enacting_predictor, confidence,
       PreloadingData::GetSameURLMatcher(attributes_.prerendering_url),

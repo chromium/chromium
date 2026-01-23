@@ -18,8 +18,9 @@ Preconnector::Preconnector(RenderFrameHost& render_frame_host) {
 Preconnector::~Preconnector() = default;
 
 void Preconnector::MaybePreconnect(const GURL& url) {
-  if (preconnect_delegate_)
+  if (preconnect_delegate_) {
     preconnect_delegate_->MaybePreconnect(url);
+  }
 }
 
 }  // namespace content

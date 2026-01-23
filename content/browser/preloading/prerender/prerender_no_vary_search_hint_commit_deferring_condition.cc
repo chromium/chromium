@@ -171,8 +171,8 @@ PrerenderNoVarySearchHintCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
-const char*
-PrerenderNoVarySearchHintCommitDeferringCondition::TraceEventName() const {
+const char* PrerenderNoVarySearchHintCommitDeferringCondition::TraceEventName()
+    const {
   return "PrerenderNoVarySearchHintCommitDeferringCondition";
 }
 

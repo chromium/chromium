@@ -151,8 +151,9 @@ bool PrefetchTLSCanaryCheckEnabled() {
 GURL PrefetchTLSCanaryCheckURL(const GURL& default_tls_canary_check_url) {
   GURL url(base::GetFieldTrialParamValueByFeature(
       features::kPrefetchCanaryCheckerParams, "tls_canary_url"));
-  if (url.is_valid())
+  if (url.is_valid()) {
     return url;
+  }
 
   return default_tls_canary_check_url;
 }
@@ -160,8 +161,9 @@ GURL PrefetchTLSCanaryCheckURL(const GURL& default_tls_canary_check_url) {
 GURL PrefetchDNSCanaryCheckURL(const GURL& default_dns_canary_check_url) {
   GURL url(base::GetFieldTrialParamValueByFeature(
       features::kPrefetchCanaryCheckerParams, "dns_canary_url"));
-  if (url.is_valid())
+  if (url.is_valid()) {
     return url;
+  }
 
   return default_dns_canary_check_url;
 }

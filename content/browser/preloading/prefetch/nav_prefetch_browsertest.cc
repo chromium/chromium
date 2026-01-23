@@ -124,8 +124,7 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     return *ukm_recorder_;
   }
 
-  const test::PreloadingAttemptUkmEntryBuilder&
-  attempt_entry_builder() {
+  const test::PreloadingAttemptUkmEntryBuilder& attempt_entry_builder() {
     return *attempt_ukm_entry_builder_;
   }
 
@@ -257,15 +256,17 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
   // 3. The cookie was written into the real cookie storage.
   EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
   EXPECT_EQ(GetRequestCount(des_url), 1);
-  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                   "document.cookie"), server_cookie);
+  EXPECT_EQ(
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), "document.cookie"),
+      server_cookie);
 
   // 4. Navigate to another same-site page to confirm the cookie is persistent.
   GURL after_prefetch_url = GetUrl("b.test", "/title2.html");
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", after_prefetch_url));
-  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                   "document.cookie"), server_cookie);
+  EXPECT_EQ(
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), "document.cookie"),
+      server_cookie);
 }
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
@@ -294,8 +295,10 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
 
   // 3. Check the cookie set by discarded prefetch response cannot affect the
   // real jar.
-  EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
-                       "document.cookie").ExtractString(), "");
+  EXPECT_EQ(
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(), "document.cookie")
+          .ExtractString(),
+      "");
 }
 
 IN_PROC_BROWSER_TEST_F(

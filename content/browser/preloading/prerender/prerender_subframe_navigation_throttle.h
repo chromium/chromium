@@ -28,7 +28,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
  private:
   explicit PrerenderSubframeNavigationThrottle(
-          NavigationThrottleRegistry& registry);
+      NavigationThrottleRegistry& registry);
 
   // NavigationThrottle
   const char* GetNameForLogging() override;

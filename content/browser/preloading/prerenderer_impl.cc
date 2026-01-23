@@ -140,8 +140,9 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
 void PrerendererImpl::ProcessCandidatesForPrerender(
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     bool enable_cross_origin_prerender_iframes) {
-  if (!registry_)
+  if (!registry_) {
     return;
+  }
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
@@ -342,8 +343,9 @@ bool PrerendererImpl::MaybePrerender(
   CHECK(!render_frame_host_->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));
 
-  if (!registry_)
+  if (!registry_) {
     return false;
+  }
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
 

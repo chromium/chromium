@@ -30,8 +30,9 @@ PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
     return nullptr;
   }
 
-  if (!proxy_url.is_valid())
+  if (!proxy_url.is_valid()) {
     return nullptr;
+  }
 
   return std::make_unique<PrefetchProxyConfigurator>(proxy_url, api_key);
 }

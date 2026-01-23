@@ -395,8 +395,9 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   }
 
   void TearDown() override {
-    if (PrefetchDocumentManager::GetForCurrentDocument(main_rfh()))
+    if (PrefetchDocumentManager::GetForCurrentDocument(main_rfh())) {
       PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+    }
     PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     mock_navigation_handle_.reset();
     PrefetchService::SetURLLoaderFactoryForTesting(nullptr);
@@ -828,8 +829,9 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 
   std::optional<PrefetchServingPageMetrics>
   GetMetricsForMostRecentNavigation() {
-    if (!mock_navigation_handle_)
+    if (!mock_navigation_handle_) {
       return std::nullopt;
+    }
 
     return PrefetchServingPageMetrics::GetForNavigationHandle(
         *mock_navigation_handle_);

@@ -1129,8 +1129,7 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
                            redirect_chain_.size());
 
   if (GetNonRedirectResponseReader()) {
-    UpdatePrefetchRequestMetrics(
-        GetNonRedirectResponseReader()->GetHead());
+    UpdatePrefetchRequestMetrics(GetNonRedirectResponseReader()->GetHead());
     UpdateServingPageMetrics();
   } else {
     DVLOG(1) << *this << "::OnPrefetchComplete:"
@@ -1240,9 +1239,10 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
   DVLOG(1) << *this << "::UpdatePrefetchRequestMetrics:"
            << "head = " << head;
 
-  if (head)
+  if (head) {
     header_latency_ =
         head->load_timing.receive_headers_end - head->load_timing.request_start;
+  }
 }
 
 PrefetchServableState PrefetchContainer::GetServableState(

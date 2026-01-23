@@ -183,8 +183,9 @@ void PreloadingAttemptImpl::SetFailureReason(PreloadingFailureReason reason) {
 
   // It could be possible that the TriggeringOutcome is already kFailure, when
   // we try to set FailureReason after setting TriggeringOutcome to kFailure.
-  if (triggering_outcome_ != PreloadingTriggeringOutcome::kFailure)
+  if (triggering_outcome_ != PreloadingTriggeringOutcome::kFailure) {
     SetTriggeringOutcome(PreloadingTriggeringOutcome::kFailure);
+  }
   failure_reason_ = reason;
 }
 

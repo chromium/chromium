@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 
-#include "content/public/browser/preloading.h"
-
 #include "content/common/content_export.h"
+#include "content/public/browser/preloading.h"
 
 namespace content {
 

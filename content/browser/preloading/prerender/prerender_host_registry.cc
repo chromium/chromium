@@ -68,8 +68,10 @@ bool IsBackground(Visibility visibility) {
 bool DeviceHasEnoughMemoryForPrerender() {
   // This method disallows prerendering on low-end devices if the
   // kPrerender2MemoryControls feature is enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2MemoryControls))
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerender2MemoryControls)) {
     return true;
+  }
 
   // On Android, Prerender2 is only enabled for 2GB+ high memory devices.  The
   // default threshold value is set to 1700 MB to account for all 2GB devices
@@ -524,8 +526,9 @@ PrerenderHostRegistry::~PrerenderHostRegistry() {
   DestructPrerenderHosts(pending_deletion_hosts_);
 
   Observe(nullptr);
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnRegistryDestroyed();
+  }
 }
 
 void PrerenderHostRegistry::AddObserver(Observer* observer) {
@@ -707,8 +710,9 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
     }
 
     // Once all eligibility checks are completed, set the status to kEligible.
-    if (attempt)
+    if (attempt) {
       attempt->SetEligibility(PreloadingEligibility::kEligible);
+    }
 
     // Normally CheckIfShouldHoldback() computes the holdback status based on
     // PreloadingConfig. In special cases, we call SetHoldbackOverride() to
@@ -1272,8 +1276,9 @@ PrerenderHostRegistry::ReserveHostToActivate(
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
     PrerenderHostId prerender_host_id) {
-  if (!reserved_prerender_host_)
+  if (!reserved_prerender_host_) {
     return nullptr;
+  }
 
   CHECK_EQ(prerender_host_id, reserved_prerender_host_->prerender_host_id());
 
@@ -1367,8 +1372,9 @@ std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
   for (auto& i : prerender_host_by_id_) {
     result.push_back(&i.second->GetPrerenderFrameTree());
   }
-  if (reserved_prerender_host_)
+  if (reserved_prerender_host_) {
     result.push_back(&reserved_prerender_host_->GetPrerenderFrameTree());
+  }
 
   return result;
 }
@@ -1636,16 +1642,18 @@ void PrerenderHostRegistry::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
 
-  if (navigation_request->IsSameDocument())
+  if (navigation_request->IsSameDocument()) {
     return;
+  }
 
   PrerenderHostId main_frame_host_id = navigation_request->frame_tree_node()
                                            ->frame_tree()
                                            .delegate()
                                            ->GetPrerenderHostId();
   PrerenderHost* prerender_host = FindNonReservedHostById(main_frame_host_id);
-  if (!prerender_host)
+  if (!prerender_host) {
     return;
+  }
 
   prerender_host->DidFinishNavigation(navigation_handle);
 
@@ -2088,12 +2096,12 @@ std::unique_ptr<PrerenderHost>
 PrerenderHostRegistry::FindAndTakePrerenderHostToReuse(
     const PrerenderAttributes& attributes) {
   const GURL prerender_url = attributes.prerendering_url;
-  auto iter = std::find_if(prerender_host_by_id_.begin(),
-                           prerender_host_by_id_.end(),
-                           [&prerender_url](const auto& pair) {
-                             return pair.second->IsUrlSameSite(prerender_url) &&
-                                    pair.second->IsReusable();
-                           });
+  auto iter =
+      std::find_if(prerender_host_by_id_.begin(), prerender_host_by_id_.end(),
+                   [&prerender_url](const auto& pair) {
+                     return pair.second->IsUrlSameSite(prerender_url) &&
+                            pair.second->IsReusable();
+                   });
   if (iter != prerender_host_by_id_.end()) {
     std::unique_ptr<PrerenderHost> reuse_host = std::move(iter->second);
     prerender_host_by_id_.erase(iter);
