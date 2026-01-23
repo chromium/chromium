@@ -166,6 +166,7 @@ class PrivacyHubCameraTestBase : public AshTestBase,
   void TearDown() override {
     // We need to destroy the delegate while the Ash still exists.
     scoped_delegate_.reset();
+    mock_switch_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -184,7 +185,7 @@ class PrivacyHubCameraTestBase : public AshTestBase,
   }
 
  protected:
-  raw_ptr<::testing::NiceMock<MockSwitchAPI>, DanglingUntriaged> mock_switch_;
+  raw_ptr<::testing::NiceMock<MockSwitchAPI>> mock_switch_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
