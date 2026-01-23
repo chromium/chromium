@@ -22,13 +22,47 @@
 #include "ui/views/view_utils.h"
 
 class VerticalSplitTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  RootTabCollectionNode* root_node() {
+    return browser()
+        ->GetBrowserView()
+        .vertical_tab_strip_region_view_for_testing()
+        ->root_node_for_testing();
+  }
+
+  void CreateSplitTab() {
+    // Add pinned split tabs.
+    content::WebContents* contents1 = AppendTab();
+    content::WebContents* contents2 = AppendTab();
+
+    const int index1 = tab_strip_model()->GetIndexOfWebContents(contents1);
+    const int index2 = tab_strip_model()->GetIndexOfWebContents(contents2);
+
+    tab_strip_model()->ActivateTabAt(
+        index1, TabStripUserGestureDetails(
+                    TabStripUserGestureDetails::GestureType::kOther));
+
+    tab_strip_model()->AddToNewSplit(
+        {index2}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  }
+
+ protected:
+  // Appends a new tab to the end of the tab strip.
+  content::WebContents* AppendTab() {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    tab_strip_model()->AppendWebContents(std::move(contents), true);
+    return raw_contents;
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
-                    ->view();
+  CreateSplitTab();
+  auto split =
+      root_node()->children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
       static_cast<VerticalSplitTabView*>(split);
@@ -53,10 +87,9 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
-                    ->view();
+  CreateSplitTab();
+  auto split =
+      root_node()->children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
       static_cast<VerticalSplitTabView*>(split);
@@ -86,10 +119,9 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
-  AppendSplitTab();
-  auto* split = unpinned_collection_node()
-                    ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
-                    ->view();
+  CreateSplitTab();
+  auto split =
+      root_node()->children()[1]->get_view_for_testing()->children()[1];
   EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split));
   VerticalSplitTabView* split_tab_view =
       static_cast<VerticalSplitTabView*>(split);

@@ -11,18 +11,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
-#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 
 // Template to be used as a mixin class for vertical tabs tests extending
@@ -88,53 +84,6 @@ class VerticalTabsBrowserTestMixin : public T {
   virtual const std::vector<base::test::FeatureRefAndParams>
   GetEnabledFeatures() {
     return {{tabs::kVerticalTabs, {}}};
-  }
-
-  RootTabCollectionNode* root_node() {
-    VerticalTabStripRegionView* region_view =
-        T::browser()
-            ->GetBrowserView()
-            .vertical_tab_strip_region_view_for_testing();
-    return region_view->root_node_for_testing();
-  }
-
-  TabCollectionNode* unpinned_collection_node() {
-    return root_node()->GetChildNodeOfType(
-        RootTabCollectionNode::Type::UNPINNED);
-  }
-
-  TabCollectionNode* pinned_collection_node() {
-    return root_node()->GetChildNodeOfType(RootTabCollectionNode::Type::PINNED);
-  }
-
-  void AppendPinnedTab() {
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(T::browser()->profile()));
-    tab_strip_model()->InsertWebContentsAt(
-        tab_strip_model()->count(), std::move(contents),
-        ADD_INHERIT_OPENER | ADD_ACTIVE | ADD_PINNED);
-  }
-
-  void AppendTab() {
-    NavigateToURLWithDisposition(
-        T::browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  }
-
-  void AppendSplitTab() {
-    AppendTab();
-    const int index1 = tab_strip_model()->active_index();
-    AppendTab();
-    const int index2 = tab_strip_model()->active_index();
-
-    tab_strip_model()->ActivateTabAt(
-        index1, TabStripUserGestureDetails(
-                    TabStripUserGestureDetails::GestureType::kOther));
-
-    tab_strip_model()->AddToNewSplit(
-        {index2}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
   }
 
  private:

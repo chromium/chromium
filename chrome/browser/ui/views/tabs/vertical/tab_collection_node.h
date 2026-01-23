@@ -130,6 +130,7 @@ class TabCollectionNode {
 
   void NotifyDataChanged();
 
+  views::View* get_view_for_testing() { return node_view_; }
   void SetController(VerticalTabStripController* controller);
   VerticalTabStripController* GetController() { return tab_strip_controller_; }
 
