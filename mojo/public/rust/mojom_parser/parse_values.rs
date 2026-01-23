@@ -24,7 +24,6 @@ use std::sync::Arc;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
-    let _ = (parse_f32, parse_f64); // Silence dead code warning until this is used
     match ty {
         PackedLeafType::Bool => Ok(MojomValue::Bool(parse_u8(data)? == 1)),
         PackedLeafType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
@@ -35,6 +34,8 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResu
         PackedLeafType::Int16 => Ok(MojomValue::Int16(parse_i16(data)?)),
         PackedLeafType::Int32 => Ok(MojomValue::Int32(parse_i32(data)?)),
         PackedLeafType::Int64 => Ok(MojomValue::Int64(parse_i64(data)?)),
+        PackedLeafType::Float32 => Ok(MojomValue::Float32(parse_f32(data)?.into())),
+        PackedLeafType::Float64 => Ok(MojomValue::Float64(parse_f64(data)?.into())),
         PackedLeafType::Enum { is_valid } => {
             let value = parse_u32(data)?;
             if is_valid.call(value) {

@@ -102,6 +102,8 @@ fn deparse_leaf_value(
         (MojomValue::UInt32(value), PackedLeafType::UInt32) => data.extend(value.to_le_bytes()),
         (MojomValue::Int64(value), PackedLeafType::Int64) => data.extend(value.to_le_bytes()),
         (MojomValue::UInt64(value), PackedLeafType::UInt64) => data.extend(value.to_le_bytes()),
+        (MojomValue::Float32(value), PackedLeafType::Float32) => data.extend(value.to_le_bytes()),
+        (MojomValue::Float64(value), PackedLeafType::Float64) => data.extend(value.to_le_bytes()),
         (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
         _ => wrong_type!(leaf_type, value),
     }

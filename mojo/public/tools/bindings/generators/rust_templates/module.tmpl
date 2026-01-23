@@ -23,6 +23,8 @@ use mojo_rust_bindings_api as bindings;
 
 #[allow(unused_imports)]
 use std::collections::HashMap;
+#[allow(unused_imports)]
+use ordered_float::OrderedFloat;
 
 {%- for enum in module.enums %}
 {{- declare_enum(enum.name, enum)}}

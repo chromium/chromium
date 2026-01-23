@@ -138,6 +138,7 @@ template("mojom_rust") {
         "//mojo/public/rust/bindings:mojo_rust_bindings_api",
         "//mojo/public/rust/mojom_parser",
         "//third_party/rust/anyhow/v1:lib",
+        "//third_party/rust/ordered_float/v5:lib",
       ]
 
       public_deps = []

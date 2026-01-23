@@ -22,6 +22,7 @@ chromium::import! {
 use std::iter;
 
 use mojom_parser_core::*;
+use ordered_float::OrderedFloat;
 use parser_unittests_rust::parser_unittests::*;
 use rust_gtest_interop::prelude::*;
 
@@ -104,11 +105,20 @@ fn test_primitives() -> anyhow::Result<()> {
     validate_parsing(9223372036854775807i64, "[s8]9223372036854775807")?;
     validate_parsing(-9223372036854775808i64, "[s8]-9223372036854775808")?;
 
+    validate_parsing(3.14f32, "[f]3.14")?;
+    validate_parsing(0.0f32, "[f]0.0")?;
+    validate_parsing(-1.0f32, "[f]-1.0")?;
+
+    validate_parsing(2.71828f64, "[d]2.71828")?;
+    validate_parsing(0.0f64, "[d]0.0")?;
+    validate_parsing(-123.456f64, "[d]-123.456")?;
+
     // Also make sure we correctly fail to parse things.
     // Since all bit patterns are valid, the only way for this to happen is if we
     // don't have enough data.
     validate_parsing_failure::<u16>("[u1]8")?;
     validate_parsing_failure::<i64>("[s4]1006")?;
+    validate_parsing_failure::<f64>("[s4]1006")?;
 
     Ok(())
 }
@@ -361,6 +371,7 @@ fn test_unions() -> anyhow::Result<()> {
             "[anchr]f1_ptr [u4]24 [u4]0 [s1]5 [u1]0 [s2]6 [s4]7 [s8]8", // FourInts
         ),
     )?;
+    validate_parsing(BaseUnion::fl(3.14f32), "[u4]16 [u4]7 [f]3.14 [u4]0")?;
 
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]99 [u8]0")?;
     validate_parsing_failure::<BaseUnion>("[u4]16 [u4]6 [u8]0")?;
@@ -448,21 +459,21 @@ fn test_unions() -> anyhow::Result<()> {
             u1: NestedUnion::n(50),
             i1: 11,
             u2: NestederUnion::b(false),
-            i2: 22,
+            d1: 3.14159,
             u3: BaseUnion::n1(55),
             u4: NestederUnion::n(12),
-            i3: 33,
-            i4: 44,
+            i2: 33,
+            i3: 44,
         },
         concat!(
             "[u4]96 [u4]0 ",              // WithManyUnions Header
-            "[u4]16 [u4]0 [u8]50 ",       // NestedUnion::n(50)
-            "[s1]11 [u1]0 [u2]0 [s4]33 ", // i1, i3
-            "[u4]16 [u4]0 [u8]0 ",        // NestederUnion::b(false)
-            "[s8]22 ",                    // i2
-            "[u4]16 [u4]0 [u8]55 ",       // BaseUnion::n1(55)
-            "[u4]16 [u4]1 [u8]12 ",       // NestederUnion::n(12)
-            "[s4]44 [u4]0",               // i4
+            "[u4]16 [u4]0 [u8]50 ",       // u1
+            "[s1]11 [u1]0 [u2]0 [s4]33 ", // i1, padding, i2
+            "[u4]16 [u4]0 [u8]0 ",        // u2
+            "[d]3.14159 ",                // d1
+            "[u4]16 [u4]0 [u8]55 ",       // u3
+            "[u4]16 [u4]1 [u8]12 ",       // u4
+            "[s4]44 [u4]0",               // i3, padding
         ),
     )?;
 
@@ -472,25 +483,25 @@ fn test_unions() -> anyhow::Result<()> {
             u1: NestedUnion::u(BaseUnion::b1(true)),
             i1: -1,
             u2: NestederUnion::u(NestedUnion::u(BaseUnion::e1(TestEnum::Seven))),
-            i2: -2,
+            d1: 2.71828,
             u3: BaseUnion::b2(false),
             u4: NestederUnion::w(WithNestedUnion {
                 n1: 2000,
                 u: NestedUnion::u(BaseUnion::f1(FourInts { a: 12, b: 13, c: 14, d: 15 })),
                 n2: 3000,
             }),
-            i3: -3,
-            i4: -4,
+            i2: -3,
+            i3: -4,
         },
         concat!(
             "[u4]96 [u4]0 ",                                    // WithManyUnions Header
             "[u4]16 [u4]1 [dist8]u1_ptr ",                      // NestedUnion::u
-            "[s1]-1 [u1]0 [u2]0 [s4]-3 ",                       // i1, i3
+            "[s1]-1 [u1]0 [u2]0 [s4]-3 ",                       // i1, padding, i2
             "[u4]16 [u4]2 [dist8]u2_ptr ",                      // NestederUnion::u
-            "[s8]-2 ",                                          // i2
+            "[d]2.71828 ",                                      // d1
             "[u4]16 [u4]4 [u8]0 ",                              // BaseUnion::b2(false)
             "[u4]16 [u4]3 [dist8]u4_ptr ",                      // NestederUnion::w
-            "[s4]-4 [u4]0 ",                                    // i4
+            "[s4]-4 [u4]0 ",                                    // i3, padding
             "[anchr]u1_ptr [u4]16 [u4]3 [u8]1 ",                // BaseUnion::b1(true) - u1.u
             "[anchr]u2_ptr [u4]16 [u4]1 [dist8]u2_u_ptr ",      // NestedUnion::u - u2.u
             "[anchr]u2_u_ptr [u4]16 [u4]2 [u8]7 ",              // BaseUnion::e1(...) - u2.u.e1
@@ -533,6 +544,12 @@ fn test_array_parsing() -> anyhow::Result<()> {
             true, true, false, true, true, false, true,
         ],
         "[u4]11 [u4]20 [b]10110110 [b]01101101 [b]00001011 [u1]0 [u4]0",
+    )?;
+
+    // array<float>
+    validate_parsing::<Vec<f32>>(
+        vec![1.0, -2.5, 3.14],
+        "[u4]20 [u4]3 [f]1.0 [f]-2.5 [f]3.14 [u4]0",
     )?;
 
     // array<TestEnum>
@@ -694,6 +711,16 @@ fn test_map_parsing() -> anyhow::Result<()> {
         "[anchr]values_ptr [u4]10 [u4]2 ",
         "[s1]2 [s1]3 [s2]0 [s4]0 ",
     ))?;
+    validate_parsing_failure::<HashMap<OrderedFloat<f64>, i8>>(concat!(
+        // Map struct
+        "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+        // keys array
+        "[anchr]keys_ptr [u4]24 [u4]2 ",
+        "[d]1.233e-4 [d]1.233e-4 ",
+        // values array
+        "[anchr]values_ptr [u4]10 [u4]2 ",
+        "[s1]2 [s1]3 [s2]0 [s4]0 ",
+    ))?;
 
     validate_parsing::<HashMap<bool, u16>>(
         [(false, 1020), (true, 3040)].into(),
@@ -706,6 +733,20 @@ fn test_map_parsing() -> anyhow::Result<()> {
             // values array
             "[anchr]values_ptr ",
             "[u4]12 [u4]2 [u2]1020 [u2]3040 [u4]0",
+        ),
+    )?;
+
+    validate_parsing::<HashMap<OrderedFloat<f32>, i32>>(
+        [(1.1f32.into(), 10), (2.2f32.into(), 20)].into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr ",
+            "[u4]16 [u4]2 [f]1.1 [f]2.2 ",
+            // values array
+            "[anchr]values_ptr ",
+            "[u4]16 [u4]2 [s4]10 [s4]20 ",
         ),
     )?;
 
@@ -904,8 +945,17 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
 #[gtest(MojomParser, TestNullableParsing)]
 fn test_nullable_parsing() -> anyhow::Result<()> {
     validate_parsing::<NullableBasics>(
-        NullableBasics { b: None, n1: None, n2: None, empty: None, e: None, fourints: None },
-        "[u4]32 [u4]0 [b]00000000 [u1]0 [u2]0 [u4]0 [u8]0 [u8]0",
+        NullableBasics {
+            b: None,
+            n1: None,
+            n2: None,
+            empty: None,
+            e: None,
+            fourints: None,
+            f1: None,
+            f2: None,
+        },
+        "[u4]48 [u4]0 [b]00000000 [u1]0 [u2]0 [u4]0 [u8]0 [u8]0 [f]0 [u4]0 [d]0",
     )?;
 
     validate_parsing::<NullableBasics>(
@@ -916,9 +966,11 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             empty: None,
             e: None,
             fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+            f1: None,
+            f2: Some(2.71828),
         },
         concat!(
-            "[u4]32 [u4]0 [b]00001011 [u1]12 [u2]0 [u4]0 [u8]0 [dist8]fourints_ptr ",
+            "[u4]48 [u4]0 [b]01001011 [u1]12 [u2]0 [u4]0 [u8]0 [dist8]fourints_ptr [f]0 [u4]0 [d]2.71828 ",
             "[anchr]fourints_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4",
         ),
     )?;
@@ -931,9 +983,11 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             empty: Some(Empty {}),
             e: Some(TestEnum::Four),
             fourints: None,
+            f1: Some(3.14),
+            f2: None,
         },
         concat!(
-            "[u4]32 [u4]0 [b]00010100 [u1]0 [u2]33 [u4]4 [dist8]empty_ptr [u8]0 ",
+            "[u4]48 [u4]0 [b]00110100 [u1]0 [u2]33 [u4]4 [dist8]empty_ptr [u8]0 [f]3.14 [u4]0 [d]0 ",
             "[anchr]empty_ptr [u4]8 [u4]0",
         ),
     )?;
@@ -946,9 +1000,11 @@ fn test_nullable_parsing() -> anyhow::Result<()> {
             empty: Some(Empty {}),
             e: Some(TestEnum::Zero),
             fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+            f1: Some(1.23),
+            f2: Some(4.56),
         },
         concat!(
-            "[u4]32 [u4]0 [b]00011101 [u1]22 [u2]44 [u4]0 [dist8]empty_ptr [dist8]fourints_ptr ",
+            "[u4]48 [u4]0 [b]01111101 [u1]22 [u2]44 [u4]0 [dist8]empty_ptr [dist8]fourints_ptr [f]1.23 [u4]0 [d]4.56 ",
             "[anchr]empty_ptr [u4]8 [u4]0 ",
             "[anchr]fourints_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4",
         ),

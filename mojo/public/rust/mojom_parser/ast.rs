@@ -7,6 +7,7 @@
 //! This module provides the ability to represent Mojom types and values as
 //! rust enums.
 
+use ordered_float::OrderedFloat;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
@@ -34,6 +35,8 @@ pub enum MojomType {
     UInt32,
     Int64,
     UInt64,
+    Float32,
+    Float64,
     String,
     Enum { is_valid: Predicate<u32> },
     Union { variants: BTreeMap<u32, MojomType> },
@@ -49,6 +52,9 @@ pub enum MojomType {
 
 /// Representation of a value of a MojomType. These are what get encoded/decoded
 /// into/from Mojom messages.
+///
+/// Note: the Hash trait is used to verify that maps don't have duplicate keys;
+/// the Ord trait is used so we can store these in BTreeMaps.
 // FOR_RELEASE: For the first iteration of the parser where we don't worry
 // about trying to be zero-copy, we just have this type own all its data.
 // We should migrate to a view type when we figure out how.
@@ -63,6 +69,8 @@ pub enum MojomValue {
     UInt32(u32),
     Int64(i64),
     UInt64(u64),
+    Float32(OrderedFloat<f32>),
+    Float64(OrderedFloat<f64>),
     String(String),
     Enum(u32),
     Union(u32, Box<MojomValue>),
@@ -176,6 +184,8 @@ pub enum PackedLeafType {
     UInt32,
     Int64,
     UInt64,
+    Float32,
+    Float64,
     Enum { is_valid: Predicate<u32> },
 }
 
@@ -225,8 +235,8 @@ impl MojomWireType {
             MojomWireType::Leaf { leaf_type, .. } => match leaf_type {
                 PackedLeafType::Int8 | PackedLeafType::UInt8 | PackedLeafType::Bool => 1,
                 PackedLeafType::Int16 | PackedLeafType::UInt16 => 2,
-                PackedLeafType::Int32 | PackedLeafType::UInt32 => 4,
-                PackedLeafType::Int64 | PackedLeafType::UInt64 => 8,
+                PackedLeafType::Int32 | PackedLeafType::UInt32 | PackedLeafType::Float32 => 4,
+                PackedLeafType::Int64 | PackedLeafType::UInt64 | PackedLeafType::Float64 => 8,
                 PackedLeafType::Enum { .. } => 4,
             },
             MojomWireType::Pointer { .. } => 8,

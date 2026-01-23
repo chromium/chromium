@@ -249,6 +249,12 @@ pub fn pack_mojom_type(ty: &MojomType) -> MojomWireType {
         MojomType::UInt16 => MojomWireType::Leaf { leaf_type: PackedLeafType::UInt16, is_nullable },
         MojomType::UInt32 => MojomWireType::Leaf { leaf_type: PackedLeafType::UInt32, is_nullable },
         MojomType::UInt64 => MojomWireType::Leaf { leaf_type: PackedLeafType::UInt64, is_nullable },
+        MojomType::Float32 => {
+            MojomWireType::Leaf { leaf_type: PackedLeafType::Float32, is_nullable }
+        }
+        MojomType::Float64 => {
+            MojomWireType::Leaf { leaf_type: PackedLeafType::Float64, is_nullable }
+        }
         MojomType::Enum { is_valid } => MojomWireType::Leaf {
             leaf_type: PackedLeafType::Enum { is_valid: *is_valid },
             is_nullable,
