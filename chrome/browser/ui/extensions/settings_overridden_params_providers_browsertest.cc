@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 
 class SettingsOverriddenParamsProvidersBrowserTest
@@ -541,3 +542,37 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   EXPECT_EQ(extension->id(), params->controlling_extension_id);
   EXPECT_EQ(u"Did you mean to change this page?", params->content.dialog_title);
 }
+
+// Test class specific to the explicit-choice dialog variation.
+class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
+    : public SettingsOverriddenParamsProvidersBrowserTest {
+ public:
+  ExtensionControllingSearchExplicitChoiceParamsBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kSearchEngineExplicitChoiceDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// The chrome_settings_overrides API that allows extensions to override the
+// default search provider is only available on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    ParamsHasNewSearchIcon) {
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  ASSERT_TRUE(new_setting.value().image.IsImage());
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

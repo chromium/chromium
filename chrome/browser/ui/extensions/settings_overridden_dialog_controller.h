@@ -23,7 +23,7 @@ class SettingsOverriddenDialogController {
  public:
   // Describes the visual elements (texts, icon) of a selectable option in the
   // dialog.
-  struct ChoiceOption {
+  struct SettingOption {
     // The primary text of the option.
     std::u16string text;
 
@@ -55,8 +55,8 @@ class SettingsOverriddenDialogController {
     // whether to use the new setting or previous, rather than a
     // keep-or-go-back presentation. The dialog will issue the same dialog
     // result, either way.
-    std::optional<ChoiceOption> previous_setting;
-    std::optional<ChoiceOption> new_setting;
+    std::optional<SettingOption> previous_setting;
+    std::optional<SettingOption> new_setting;
   };
 
   // The result (i.e., user input) from the dialog being shown.

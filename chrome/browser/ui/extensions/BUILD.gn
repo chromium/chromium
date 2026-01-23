@@ -221,6 +221,7 @@ source_set("impl") {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/extensions",
+      "//chrome/browser/favicon",
       "//chrome/browser/infobars",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/location_bar",
