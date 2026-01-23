@@ -685,6 +685,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.StartComponent" enum="ProcessCreationReason"
+    expires_after="2026-06-28">
+  <owner>nafisabedin@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Records the component type that was being started which triggered the start
+    as determined by Android's ApplicationStartInfo API. Only available starting
+    with Android B and above.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
     expires_after="2026-06-28">
   <owner>nafisabedin@google.com</owner>

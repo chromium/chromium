@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.base;
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AppComponentFactory;
+import android.app.ApplicationStartInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentProvider;
@@ -16,17 +18,21 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 /**
  * There are some cases where the ClassLoader for components in the chrome split does not match the
@@ -48,6 +54,7 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         ProcessCreationReason.SERVICE,
         ProcessCreationReason.CONTENT_PROVIDER,
         ProcessCreationReason.BROADCAST_RECEIVER,
+        ProcessCreationReason.OTHER,
         ProcessCreationReason.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -58,7 +65,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         int SERVICE = 1;
         int CONTENT_PROVIDER = 2;
         int BROADCAST_RECEIVER = 3;
-        int NUM_ENTRIES = 4;
+        int OTHER = 4;
+        int NUM_ENTRIES = 5;
     }
 
     private static @ProcessCreationReason int sProcessCreationReason =
@@ -120,10 +128,49 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         if (sProcessCreationReason > ProcessCreationReason.PENDING) return;
         sProcessCreationReason = reason;
         if (!SplitCompatApplication.isBrowserProcess()) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    SplitCompatAppComponentFactory::recordStartComponentHistogram);
+        }
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Startup.Android.BrowserProcessCreationReason",
                 reason,
                 ProcessCreationReason.NUM_ENTRIES);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.BAKLAVA)
+    private static void recordStartComponentHistogram() {
+        ActivityManager activityManager =
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+        List<ApplicationStartInfo> startInfos = activityManager.getHistoricalProcessStartReasons(1);
+        if (startInfos == null || startInfos.isEmpty()) return;
+
+        int startComponent = startInfos.get(0).getStartComponent();
+        @ProcessCreationReason int reason;
+        switch (startComponent) {
+            case ApplicationStartInfo.START_COMPONENT_ACTIVITY:
+                reason = ProcessCreationReason.ACTIVITY;
+                break;
+            case ApplicationStartInfo.START_COMPONENT_SERVICE:
+                reason = ProcessCreationReason.SERVICE;
+                break;
+            case ApplicationStartInfo.START_COMPONENT_CONTENT_PROVIDER:
+                reason = ProcessCreationReason.CONTENT_PROVIDER;
+                break;
+            case ApplicationStartInfo.START_COMPONENT_BROADCAST:
+                reason = ProcessCreationReason.BROADCAST_RECEIVER;
+                break;
+            case ApplicationStartInfo.START_COMPONENT_OTHER:
+            default:
+                reason = ProcessCreationReason.OTHER;
+                break;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Startup.Android.StartComponent", reason, ProcessCreationReason.NUM_ENTRIES);
     }
 
     public static @ProcessCreationReason int getProcessCreationReason() {
