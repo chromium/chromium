@@ -13,6 +13,18 @@
 
 namespace autofill {
 
+class AttributeInstanceTestApi {
+ public:
+  explicit AttributeInstanceTestApi(AttributeInstance* attribute)
+      : attribute_(CHECK_DEREF(attribute)) {}
+  ~AttributeInstanceTestApi() = default;
+
+  void mark_as_masked() { attribute_->masked_ = true; }
+
+ private:
+  raw_ref<AttributeInstance> attribute_;
+};
+
 class EntityInstanceTestApi {
  public:
   explicit EntityInstanceTestApi(EntityInstance* entity)
@@ -26,6 +38,10 @@ class EntityInstanceTestApi {
  private:
   raw_ref<EntityInstance> entity_;
 };
+
+inline AttributeInstanceTestApi test_api(AttributeInstance& attribute) {
+  return AttributeInstanceTestApi(&attribute);
+}
 
 inline EntityInstanceTestApi test_api(EntityInstance& entity) {
   return EntityInstanceTestApi(&entity);

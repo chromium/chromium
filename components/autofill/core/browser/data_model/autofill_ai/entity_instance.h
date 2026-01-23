@@ -148,10 +148,16 @@ class AttributeInstance final {
   // candidate).
   void FinalizeInfo();
 
+  // Returns whether the stored value is a mask of the full value, e.g., it
+  // contains the last four digits of the full value.
+  bool masked() const { return masked_; }
+
   friend bool operator==(const AttributeInstance& lhs,
                          const AttributeInstance& rhs) = default;
 
  private:
+  friend class AttributeInstanceTestApi;
+
   using StateInfo = base::StrongAlias<class StateInfoTag, std::u16string>;
   using InfoStructure =
       std::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
@@ -160,6 +166,7 @@ class AttributeInstance final {
 
   AttributeType type_;
   InfoStructure info_;
+  bool masked_ = false;
 };
 
 struct AttributeInstance::CompareByType {
@@ -377,6 +384,21 @@ class EntityInstance final {
   // Returns true if all attributes of `this` are present in `other` with the
   // same values or if `this` is a proper subset of `other`.
   bool IsSubsetOf(const EntityInstance& other) const;
+
+  // Returns whether any of the attributes are masked. This can only happen
+  // if `record_type()` is `kServerWallet`.
+  //
+  // Note that there can be entities with `record_type()` `kServerWallet` for
+  // which `IsMaskedServerEntity() == IsUnmaskedServerEntity() == false`.
+  // Examples include vehicle information, flight reservation entities,
+  // passport entities without a saved number, etc.
+  bool IsMaskedServerEntity() const;
+
+  // Returns whether `this` has `record_type() == kServerWallet` and any of
+  // its obfuscated attributes is not `masked()`.
+  // That is, `this` is an `EntityInstance` returned unmasked from a Wallet
+  // server; it is strictly transient and must never be persisted to disk.
+  bool IsUnmaskedServerEntity() const;
 
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;

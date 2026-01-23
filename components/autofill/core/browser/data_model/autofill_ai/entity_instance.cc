@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ranges>
+#include <utility>
 #include <variant>
 
 #include "base/notreached.h"
@@ -98,6 +99,16 @@ std::u16string Format(
       break;
   }
   return s;
+}
+
+bool IsMaskableRecordType(EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return false;
+    case EntityInstance::RecordType::kServerWallet:
+      return true;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -533,6 +544,21 @@ bool EntityInstance::IsSubsetOf(const EntityInstance& other) const {
     }
   }
   return true;
+}
+
+bool EntityInstance::IsMaskedServerEntity() const {
+  const bool masked =
+      std::ranges::any_of(attributes_, &AttributeInstance::masked);
+  CHECK(!masked || IsMaskableRecordType(record_type_));
+  return masked;
+}
+
+bool EntityInstance::IsUnmaskedServerEntity() const {
+  return IsMaskableRecordType(record_type_) &&
+         std::ranges::any_of(
+             attributes_, [](const AttributeInstance& attribute) {
+               return !attribute.masked() && attribute.type().is_obfuscated();
+             });
 }
 
 EntityInstance::FrecencyOrder::FrecencyOrder(base::Time now) : now_(now) {}

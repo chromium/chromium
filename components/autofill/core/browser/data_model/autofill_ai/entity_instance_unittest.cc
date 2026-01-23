@@ -5,12 +5,15 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -34,6 +37,60 @@ std::u16string GetInfo(const AttributeInstance& a,
                        FieldType field_type,
                        GetInfoParams params = {}) {
   return a.GetInfo(field_type, params.app_locale, params.format_string);
+}
+
+TEST(AutofillEntityInstanceTest, MaskedAttribute) {
+  AttributeInstance attribute((AttributeType(kPassportNumber)));
+  EXPECT_FALSE(attribute.masked());
+
+  test_api(attribute).mark_as_masked();
+  EXPECT_TRUE(attribute.masked());
+}
+
+TEST(AutofillEntityInstanceTest, MaskedServerEntityWithMaskedAttributes) {
+  AttributeInstance attribute((AttributeType(kPassportNumber)));
+  ASSERT_TRUE(attribute.type().is_obfuscated());
+  test_api(attribute).mark_as_masked();
+
+  EntityInstance entity = test::GetEntityInstance(
+      {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_TRUE(entity.IsMaskedServerEntity());
+  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+
+  // Local entities must never have masked attributes.
+  EntityInstance invalid_entity = test::GetEntityInstance(
+      {attribute}, {.record_type = EntityInstance::RecordType::kLocal});
+  EXPECT_CHECK_DEATH(invalid_entity.IsMaskedServerEntity());
+}
+
+TEST(AutofillEntityInstanceTest, NeitherMaskedNorUnmaskedServerEntity) {
+  AttributeInstance attribute((AttributeType(kPassportNumber)));
+  ASSERT_TRUE(attribute.type().is_obfuscated());
+
+  EntityInstance entity = test::GetEntityInstance(
+      {attribute}, {.record_type = EntityInstance::RecordType::kLocal});
+  EXPECT_FALSE(entity.IsMaskedServerEntity());
+  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+}
+
+TEST(AutofillEntityInstanceTest, ServerEntityWithoutObfuscatedAttributes) {
+  AttributeInstance attribute((AttributeType(kPassportName)));
+  ASSERT_FALSE(attribute.type().is_obfuscated());
+
+  EntityInstance entity = test::GetEntityInstance(
+      {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_FALSE(entity.IsMaskedServerEntity());
+  EXPECT_FALSE(entity.IsUnmaskedServerEntity());
+}
+
+TEST(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
+  AttributeInstance attribute((AttributeType(kPassportNumber)));
+  ASSERT_TRUE(attribute.type().is_obfuscated());
+
+  EntityInstance entity = test::GetEntityInstance(
+      {attribute}, {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_FALSE(entity.IsMaskedServerEntity());
+  EXPECT_TRUE(entity.IsUnmaskedServerEntity());
 }
 
 TEST(AutofillEntityInstanceTest, Attributes) {

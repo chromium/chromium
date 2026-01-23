@@ -1293,6 +1293,24 @@ EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
   return GetFlightReservationEntityInstance(options);
 }
 
+EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
+                                 EntityOptions options) {
+  CHECK(!attributes.empty()) << "Attributes must be non-empty.";
+  const EntityType type = attributes[0].type().entity_type();
+  CHECK(std::ranges::all_of(attributes,
+                            [&](const AttributeInstance& attribute) {
+                              return attribute.type().entity_type() == type;
+                            }))
+      << "All attribute types must belong to the same entity type";
+  return EntityInstance(
+      type, std::move(attributes),
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname),
+      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
+      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
+      options.are_attributes_read_only, /*frecency_override=*/"");
+}
+
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types) {
   possible_field_types.emplace_back();
