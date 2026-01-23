@@ -26,15 +26,15 @@ using TransactionCallback = base::OnceCallback<bool(OpenTransaction*)>;
 namespace {
 
 // MayBlock - DB access may involve disk I/O.
-// BEST_EFFORT - Default priority except during critical restore and shutdown
-//   tasks.
+// USER_VISIBLE - Increased priority since the result of tasks will be visible
+//   to the user on start up.
 // BLOCK_SHUTDOWN - Ensure all data is persisted to disk before shutdown. This
 //   may not work reliably on Android due to the OS killing the process.
 // MUST_USE_FOREGROUND - This reduces the benefit of the BEST_EFFORT, but is
 //   required to ensure a priority inversion does not occur when boosting the
 //   priority.
 constexpr base::TaskTraits kDBTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
     base::ThreadPolicy::MUST_USE_FOREGROUND};
 
@@ -165,7 +165,7 @@ void TabStateStorageBackend::IncrementBoostCounter() {
 void TabStateStorageBackend::DecrementBoostCounter() {
   boosted_priority_count_--;
   if (boosted_priority_count_ == 0) {
-    db_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+    db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
   }
 }
 
