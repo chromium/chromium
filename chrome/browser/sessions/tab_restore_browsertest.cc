@@ -1809,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({tab_count - 1});
   tab_groups::TabGroupVisualData group2_data(
-      u"Bar", tab_groups::TabGroupColorId::kBlue);
+      u"Bar", tab_groups::TabGroupColorId::kBlue, true);
   browser()->GetTabStripModel()->ChangeTabGroupVisuals(group2, group2_data);
 
   CloseBrowserSynchronously(browser());

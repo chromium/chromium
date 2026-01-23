@@ -71,6 +71,17 @@ AndroidLiveTabContextCloseWrapper::GetSavedTabGroupIdForGroup(
   return it == saved_tab_group_ids_.end() ? std::nullopt : it->second;
 }
 
+const std::optional<tab_groups::TabGroupId>
+AndroidLiveTabContextCloseWrapper::GetGroupIdForSavedGroup(
+    const base::Uuid& saved) const {
+  for (auto const& pair : saved_tab_group_ids_) {
+    if (pair.second && pair.second.value() == saved) {
+      return pair.first;
+    }
+  }
+  return std::nullopt;
+}
+
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
     int relative_index) const {
   DCHECK_LT(base::checked_cast<size_t>(relative_index), closed_tabs_.size());

@@ -104,6 +104,13 @@ LiveTabContextBrowserAgent::GetSavedTabGroupIdForGroup(
   NOTREACHED();
 }
 
+const std::optional<tab_groups::TabGroupId>
+LiveTabContextBrowserAgent::GetGroupIdForSavedGroup(
+    const base::Uuid& saved) const {
+  // Not supported by iOS... yet.
+  NOTREACHED();
+}
+
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {

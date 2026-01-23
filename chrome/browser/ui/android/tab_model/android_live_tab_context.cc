@@ -111,6 +111,12 @@ AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
   return std::nullopt;
 }
 
+const std::optional<tab_groups::TabGroupId>
+AndroidLiveTabContext::GetGroupIdForSavedGroup(const base::Uuid& saved) const {
+  // Implemented in AndroidLiveTabContextCloseWrapper.
+  return std::nullopt;
+}
+
 bool AndroidLiveTabContext::IsTabPinned(int index) const {
   TabAndroid* tab_android = tab_model_->GetTabAt(index);
   return tab_android && tab_android->IsPinned();

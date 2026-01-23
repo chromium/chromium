@@ -58,6 +58,8 @@ class SESSIONS_EXPORT LiveTabContext {
       const tab_groups::TabGroupId& group) const = 0;
   virtual const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const = 0;
+  virtual const std::optional<tab_groups::TabGroupId> GetGroupIdForSavedGroup(
+      const base::Uuid& saved) const = 0;
   virtual bool IsTabPinned(int index) const = 0;
   // Update |group|'s metadata. Should only be called for |group| if a tab has
   // been restored in |group| via AddRestoredTab() or ReplaceRestoredTab().

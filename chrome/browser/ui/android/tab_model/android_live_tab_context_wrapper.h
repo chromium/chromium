@@ -82,6 +82,9 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group_id) const override;
 
+  const std::optional<tab_groups::TabGroupId> GetGroupIdForSavedGroup(
+      const base::Uuid& saved) const override;
+
  private:
   TabAndroid* GetTabAt(int relative_index) const;
 
