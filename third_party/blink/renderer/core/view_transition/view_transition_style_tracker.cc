@@ -736,15 +736,14 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // (unless changed by something like z-index on the pseudo-elements).
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
-
-  if ((root_style.Contain() & kContainsViewTransition) && element_ &&
-      (root_object.GetNode() != *element_)) {
-    // Having "contain: view-transition" on a descendant of the scoped element
-    // halts propagation of tag discovery into the descendant's subtree.
-    // If the scoped element itself has "contain: view-transition", the tag
+  if (element_ && (root_object.GetNode() != *element_) &&
+      (root_style.ViewTransitionScope() == EViewTransitionScope::kAuto)) {
+    // Having "view-transition-scope: auto" on a descendant of the scoped
+    // element halts propagation of tag discovery into the descendant's subtree.
+    // If the scoped element itself has "view-transition-scope: auto", the tag
     // discovery process proceeds normally.
-    // TODO(crbug.com/422522044): Should "contain: strict" include
-    // view-transition
+    // TODO(crbug.com/478214441): Handle "view-transition-scope: auto" on an
+    // element with "display: contents".
     return;
   }
 

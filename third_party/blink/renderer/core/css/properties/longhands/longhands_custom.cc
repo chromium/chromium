@@ -3029,7 +3029,6 @@ const CSSValue* Contain::ParseSingleValue(
   CSSIdentifierValue* layout = nullptr;
   CSSIdentifierValue* style = nullptr;
   CSSIdentifierValue* paint = nullptr;
-  CSSIdentifierValue* view_transition = nullptr;
   while (true) {
     id = stream.Peek().Id();
     if ((id == CSSValueID::kSize ||
@@ -3042,9 +3041,6 @@ const CSSValue* Contain::ParseSingleValue(
       style = css_parsing_utils::ConsumeIdent(stream);
     } else if (id == CSSValueID::kPaint && !paint) {
       paint = css_parsing_utils::ConsumeIdent(stream);
-    } else if (id == CSSValueID::kViewTransition && !view_transition &&
-               RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-      view_transition = css_parsing_utils::ConsumeIdent(stream);
     } else {
       break;
     }
@@ -3061,9 +3057,6 @@ const CSSValue* Contain::ParseSingleValue(
   }
   if (paint) {
     list->Append(*paint);
-  }
-  if (view_transition) {
-    list->Append(*view_transition);
   }
   if (!list->length()) {
     return nullptr;
@@ -3103,9 +3096,6 @@ const CSSValue* Contain::CSSValueFromComputedStyleInternal(
   }
   if (style.Contain() & kContainsPaint) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kPaint));
-  }
-  if (style.Contain() & kContainsViewTransition) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kViewTransition));
   }
   DCHECK(list->length());
   return list;
@@ -8358,6 +8348,14 @@ const CSSValue* ViewTransitionGroup::CSSValueFromComputedStyleInternal(
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       style.ViewTransitionGroup().CustomName());
+}
+
+const CSSValue* ViewTransitionScope::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.ViewTransitionScope());
 }
 
 const CSSValue* PaintOrder::ParseSingleValue(

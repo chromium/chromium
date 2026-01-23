@@ -286,17 +286,6 @@ void ViewTransitionSupplement::OnTransitionFinished(
   } else {
     Element* scope = transition->Scope();
     element_transitions_.erase(scope);
-    LayoutObject* layout_object = scope->GetLayoutObject();
-    if (scope != scope->GetDocument().documentElement() && layout_object &&
-        !(layout_object->StyleRef().Contain() & kContainsViewTransition) &&
-        layout_object->HasLayer()) {
-      // Element may have had an added stacking context purely for being the
-      // scope of a view transition. Ensure correctness of the adjusted style.
-      layout_object->EnclosingLayer()->SetNeedsCompositingInputsUpdate();
-      scope->SetNeedsStyleRecalc(kLocalStyleChange,
-                                 StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kViewTransition));
-    }
   }
 
   // Notify the animator if the set of active view transitions is empty.

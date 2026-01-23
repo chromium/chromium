@@ -992,6 +992,7 @@ enum CSSSampleId {
     kTimelineTriggerActiveRange = 922,
     kGridLanesPack = 923,
     kTextFit = 924,
+    kViewTransitionScope = 925,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

@@ -439,6 +439,7 @@ view-timeline-name: none
 view-transition-class: none
 view-transition-group: normal
 view-transition-name: none
+view-transition-scope: none
 visibility: visible
 white-space-collapse: collapse
 widows: 2

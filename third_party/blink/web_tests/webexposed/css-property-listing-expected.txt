@@ -474,6 +474,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-transition-class
     view-transition-group
     view-transition-name
+    view-transition-scope
     visibility
     white-space-collapse
     widows

@@ -18,8 +18,8 @@
     view-transition-name: inner;
   }
 
-  .containment {
-    contain: view-transition;
+  .scoped {
+    view-transition-scope: auto;
   }
 </style>
 <body>
@@ -47,44 +47,44 @@
         'Retrieve all names in absence of contain style');
     vt.skipTransition();
 
-    document.documentElement.classList.toggle('containment');
+    document.documentElement.classList.toggle('scoped');
     vt = document.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['inner', 'outer', 'root'],
-        'contain on the root element does not affect tag discovery');
+        'scope on the root element does not affect tag discovery');
     vt.skipTransition();
 
-    outer.classList.toggle('containment');
+    outer.classList.toggle('scoped');
     vt = document.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
       capturedNames(), ['root'],
-      'contain on outer element blocks tag discovery in subtree');
+      'scope on outer element blocks tag discovery in subtree');
     vt.skipTransition();
 
     vt = outer.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['inner', 'outer'],
-        'contain on the scoped element includes self');
+        'scope on the scoped element includes self');
     vt.skipTransition();
 
     vt = inner.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['inner'],
-        'contain on ancestor of the scoped element does not affect tag ' +
+        'scope on ancestor of the scoped element does not affect tag ' +
         'discovery');
     vt.skipTransition();
 
-    outer.classList.toggle('containment');
-    inner.classList.toggle('containment');
+    outer.classList.toggle('scoped');
+    inner.classList.toggle('scoped');
     vt = document.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['outer', 'root'],
-        'contain on inner element still permits tag discovery of ancestor ' +
+        'scope on inner element still permits tag discovery of ancestor ' +
         'elements');
     vt.skipTransition();
 
@@ -92,15 +92,16 @@
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['outer'],
-        'contain on inner element limits tag discovery on outer element');
+        'scope on inner element limits tag discovery on outer element');
     vt.skipTransition();
 
     vt = inner.startViewTransition(() => {});
     await vt.ready;
     assert_array_equals(
         capturedNames(), ['inner'],
-        'contain permits tag discovery on scoped element');
+        'scope permits tag discovery on scoped element');
     vt.skipTransition();
-  }, 'Contain: view-transition blocks propagation of name discovery.');
+  }, 'Setting view-transition-scope to auto blocks propagation of name ' +
+     'discovery.');
 </script>
 </html>
