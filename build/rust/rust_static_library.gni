@@ -110,6 +110,20 @@ import("//build/rust/gni_impl/rust_target.gni")
 #     This will automatically add appropriate dependencies: there's no
 #     need to depend on the cxx crate or any generated bindings.
 #
+#   cpp_api_from_rust (optional)
+#     A dictionary that if present opts-into using Crubit's tools to generate
+#     a C++ `.h` file with C++ bindings for public Rust APIs exported by the
+#     create.  The dictionary may have the following additional entries:
+#
+#       target_name
+#         The name of the C++ `source_set` that `build/rust/*.gni` should create
+#         and which will provide the auto-generated bindings.
+#
+#       features (optional)
+#         Not implemented yet.  A list of strings that may enable additional,
+#         experimental Crubit features - see
+#         https://github.com/google/crubit/blob/main/features/README.md
+#
 #   allow_circular_includes_from (optional)
 #     If cxx_bindings is present, this will allow the generated cxx bindings to
 #     include headers from the listed targets. Generally, this should only be

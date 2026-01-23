@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
+import("//build/config/rust.gni")
 import("//testing/test.gni")
 
 executable("test_cpp_including_rust") {
@@ -22,6 +23,9 @@ test("test_cpp_including_rust_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_cpp_api_from_rust) {
+    deps += [ "//build/rust/tests/test_cpp_api_from_rust" ]
+  }
 }
 
 if (is_component_build) {

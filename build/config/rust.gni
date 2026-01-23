@@ -102,6 +102,18 @@ declare_args() {
   # * Fixing pre-existing violations of `clippy` lints (crbug.com/472355480)
   # * Deciding on a policy (e.g. which trybots can/should cover `clippy`)
   enable_rust_clippy = false
+
+  # Whether expansion of GN templates like `rust_static_library` will expand
+  # (if `cpp_api_from_rust` is set as an attribute of `rust_static_library`) to
+  # create a target for invoking Crubit tools to generate C++ bindings for the
+  # Rust library.
+  #
+  # TODO(crbug.com/470466915): Change `false` to `build_with_chromium` (after
+  # officially supporting building and distributing the `cpp_api_from_rust`
+  # (soon to be renamed to `cpp_api_from_rust`) tool - i.e. no more
+  # `fail_hard=False` when invoking `build_crubit.py` from
+  # `tools/rust/build_rust.py`).
+  enable_cpp_api_from_rust = false
 }
 
 declare_args() {

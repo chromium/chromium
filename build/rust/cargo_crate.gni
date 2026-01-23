@@ -21,6 +21,7 @@ import("//build/rust/rust_static_library.gni")
 #  aliased_deps
 #  allow_unsafe
 #  build_native_rust_unit_tests
+#  cpp_api_from_rust
 #  crate_name
 #  crate_root
 #  deps
