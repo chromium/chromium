@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/font/public/cpp/font_loader.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
@@ -33,36 +35,44 @@ bool WebSandboxSupportLinux::GetFallbackFontForCharacter(
     gfx::FallbackFontData* fallback_font) {
   TRACE_EVENT0("fonts", "WebSandboxSupportLinux::GetFallbackFontForCharacter");
 
+  bool success = false;
+
   {
     base::AutoLock lock(lock_);
     const auto iter = unicode_font_families_.find(character);
     if (iter != unicode_font_families_.end()) {
       *fallback_font = iter->second;
-      return true;
+      success = true;
     }
   }
 
-  font_service::mojom::FontIdentityPtr font_identity;
-  bool is_bold = false;
-  bool is_italic = false;
-  std::string family_name;
-  if (!font_loader_->FallbackFontForCharacter(character, preferred_locale,
-                                              &font_identity, &family_name,
-                                              &is_bold, &is_italic))
-    return false;
+  if (!success) {
+    font_service::mojom::FontIdentityPtr font_identity;
+    bool is_bold = false;
+    bool is_italic = false;
+    std::string family_name;
 
-  // mojom::FontIdentityPtr cannot be exposed on the blink/public interface.
-  // Use gfx::FallbackFontData as the container to pass this to blink.
-  fallback_font->name = family_name;
-  fallback_font->fontconfig_interface_id = font_identity->id;
-  fallback_font->filepath = font_identity->filepath;
-  fallback_font->ttc_index = font_identity->ttc_index;
-  fallback_font->is_bold = is_bold;
-  fallback_font->is_italic = is_italic;
+    if (font_loader_->FallbackFontForCharacter(character, preferred_locale,
+                                               &font_identity, &family_name,
+                                               &is_bold, &is_italic)) {
+      fallback_font->name = family_name;
+      fallback_font->fontconfig_interface_id = font_identity->id;
+      fallback_font->filepath = font_identity->filepath;
+      fallback_font->ttc_index = font_identity->ttc_index;
+      fallback_font->is_bold = is_bold;
+      fallback_font->is_italic = is_italic;
 
-  base::AutoLock lock(lock_);
-  unicode_font_families_.emplace(character, *fallback_font);
-  return true;
+      success = true;
+
+      base::AutoLock lock(lock_);
+      unicode_font_families_.emplace(character, *fallback_font);
+    }
+  }
+
+  UMA_HISTOGRAM_BOOLEAN(
+      "Renderer.WebSandboxSupportLinux.GetFallbackFontForCharacter", success);
+
+  return success;
 }
 
 bool WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName(
@@ -76,12 +86,19 @@ bool WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName(
   std::string family_name;
   if (!font_loader_->MatchFontByPostscriptNameOrFullFontName(font_unique_name,
                                                              &font_identity)) {
+    base::UmaHistogramBoolean(
+        "Renderer.WebSandboxSupportLinux."
+        "MatchFontByPostscriptNameOrFullFontName",
+        false);
     return false;
   }
 
   fallback_font->fontconfig_interface_id = font_identity->id;
   fallback_font->filepath = font_identity->filepath;
   fallback_font->ttc_index = font_identity->ttc_index;
+  base::UmaHistogramBoolean(
+      "Renderer.WebSandboxSupportLinux.MatchFontByPostscriptNameOrFullFontName",
+      true);
   return true;
 }
 
@@ -97,8 +114,12 @@ void WebSandboxSupportLinux::GetWebFontRenderStyleForStrike(
 
   *out = blink::WebFontRenderStyle();
 
-  if (size < 0 || size > std::numeric_limits<uint16_t>::max())
+  if (size < 0 || size > std::numeric_limits<uint16_t>::max()) {
+    base::UmaHistogramBoolean(
+        "Renderer.WebSandboxSupportLinux.GetWebFontRenderStyleForStrike",
+        false);
     return;
+  }
 
   font_service::mojom::FontRenderStylePtr font_render_style;
   if (!font_loader_->FontRenderStyleForStrike(family, size, is_bold, is_italic,
@@ -108,6 +129,9 @@ void WebSandboxSupportLinux::GetWebFontRenderStyleForStrike(
     LOG(ERROR) << "GetRenderStyleForStrike did not receive a response for "
                   "family and size: "
                << (family ? family : "<empty>") << ", " << size;
+    base::UmaHistogramBoolean(
+        "Renderer.WebSandboxSupportLinux.GetWebFontRenderStyleForStrike",
+        false);
     return;
   }
 
@@ -120,6 +144,8 @@ void WebSandboxSupportLinux::GetWebFontRenderStyleForStrike(
       static_cast<char>(font_render_style->use_subpixel_rendering);
   out->use_subpixel_positioning =
       static_cast<char>(font_render_style->use_subpixel_positioning);
+  base::UmaHistogramBoolean(
+      "Renderer.WebSandboxSupportLinux.GetWebFontRenderStyleForStrike", true);
 }
 
 }  // namespace content

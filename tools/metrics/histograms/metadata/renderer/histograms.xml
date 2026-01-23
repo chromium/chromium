@@ -652,6 +652,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Renderer.WebSandboxSupportLinux.GetFallbackFontForCharacter"
+    enum="BooleanFound" expires_after="2026-07-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when WebSandboxSupportLinux::GetFallbackFontForCharacter() is
+    called, which uses the FontLoader instead of the Font Manager, and whether a
+    fallback font was found. Recorded once per function call.
+  </summary>
+</histogram>
+
+<histogram
+    name="Renderer.WebSandboxSupportLinux.GetWebFontRenderStyleForStrike"
+    enum="BooleanFound" expires_after="2026-07-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when WebSandboxSupportLinux::GetWebFontRenderStyleForStrike() is
+    called, which uses the FontLoader instead of the Font Manager, and whether
+    style information was found. Recorded once per function call.
+  </summary>
+</histogram>
+
+<histogram
+    name="Renderer.WebSandboxSupportLinux.MatchFontByPostscriptNameOrFullFontName"
+    enum="BooleanFound" expires_after="2026-07-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when
+    WebSandboxSupportLinux::MatchFontByPostscriptNameOrFullFontName() is called,
+    which uses the FontLoader instead of the Font Manager, and whether a
+    matching font was found. Recorded once per function call.
+  </summary>
+</histogram>
+
 <histogram name="RendererScheduler.DiscreteInputResponseDuration" units="ms"
     expires_after="2026-07-12">
   <owner>shaseley@chromium.org</owner>
