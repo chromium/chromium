@@ -7,7 +7,7 @@ desc: |-
   Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
   A First-Party Set must contain a primary site and one or more member sites.
   A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
-  See https://github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+  See https://github.com/WICG/first-party-sets for more information on how First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
   All sites in a First-Party Set must be a registrable domain served over HTTPS. Each site in a First-Party Set must also be unique,
   meaning a site cannot be listed more than once in a First-Party Set.
