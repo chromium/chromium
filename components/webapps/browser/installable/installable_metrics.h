@@ -190,7 +190,8 @@ enum class WebappUninstallSource {
   // App management surface, currently ChromeOS-only.
   kAppManagement = 5,
 
-  // Migration.
+  // Uninstalled because this app was replaced by another app specified via
+  // policy, maintaining app list positions and shelf pins.
   kMigration = 6,
 
   // App List (Launcher in ChromeOS).
@@ -252,8 +253,11 @@ enum class WebappUninstallSource {
   // When IWA is blocklisted it is automatically removed from the device.
   kIwaBlocklisted = 24,
 
+  // Removed because this app was migrated to be a different PWA.
+  kAppMigration = 25,
+
   // Add any new values above this one.
-  kMaxValue = kIwaBlocklisted,
+  kMaxValue = kAppMigration,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebappUninstallSource)

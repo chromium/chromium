@@ -475,6 +475,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to commit update to jump list"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppApplyManifestMigrationResult) -->
+
+<enum name="WebAppApplyManifestMigrationResult">
+  <int value="0" label="System was shutdown"/>
+  <int value="1" label="Source app is invalid for migration"/>
+  <int value="2" label="Destination app not found during migration"/>
+  <int value="3" label="Source app not removed during migration"/>
+  <int value="4" label="Destination app did not link to source app"/>
+  <int value="5" label="A suggested migration was successful"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h:ApplyManifestMigrationResult) -->
+
 <!-- LINT.IfChange(WebAppApplyPendingManifestUpdateResult) -->
 
 <enum name="WebAppApplyPendingManifestUpdateResult">
@@ -771,6 +784,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Healthcare app cleaning up during sessions."/>
   <int value="22" label="IWA enterprise policy"/>
   <int value="23" label="PWA.uninstall from devtools"/>
+  <int value="24" label="Via IWA blocklist"/>
+  <int value="25" label="source app is policy installed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/webapps/browser/installable/installable_metrics.h:WebappUninstallSource) -->

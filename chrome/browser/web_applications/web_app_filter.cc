@@ -168,4 +168,11 @@ WebAppFilter WebAppFilter::IsAppSurfaceableToUser() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsAppValidMigrationSource() {
+  WebAppFilter filter;
+  filter.is_valid_migration_source_ = true;
+  return filter;
+}
+
 }  // namespace web_app

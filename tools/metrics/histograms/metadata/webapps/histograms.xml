@@ -1910,6 +1910,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Migration.ApplyResult"
+    enum="WebAppApplyManifestMigrationResult" expires_after="2027-01-27">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of applying the final step of an app migration, where the
+    source app is removed, and the migrated app is fully installed with OS
+    integration. The migration is triggered only if the user confirms the
+    changes through the web app identity update dialog. This operation will
+    result in the web app's origin being updated, with name and icon also being
+    updated if needed.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Migrations.DefaultDisplayModeToPlatform" units="apps"
     expires_after="2026-12-19">
   <owner>dmurph@chromium.org</owner>

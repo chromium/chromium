@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
@@ -719,6 +720,16 @@ class WebAppCommandScheduler {
   // migration info for all apps.
   virtual void ScheduleResolveWebAppPendingMigrationInfo(
       base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
+  // Schedules the command to finish an app migration by removing the source app
+  // and fully installing the migrated app.
+  void ApplyManifestMigration(
+      const webapps::AppId& source_app_id,
+      const webapps::AppId& destination_app_id,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      ApplyManifestMigrationResultCallback callback,
       const base::Location& location = FROM_HERE);
 
   // TODO(crbug.com/40215411): expose all commands for web app

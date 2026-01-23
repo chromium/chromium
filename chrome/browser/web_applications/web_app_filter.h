@@ -85,6 +85,11 @@ class WebAppFilter {
   // migration are not included here.
   static WebAppFilter IsAppSurfaceableToUser();
 
+  // Only consider web apps that are valid sources to be migrated to a different
+  // app. This mainly includes apps that have valid OS integration and are not
+  // installed by policy.
+  static WebAppFilter IsAppValidMigrationSource();
+
   WebAppFilter(const WebAppFilter&);
   WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
@@ -128,6 +133,7 @@ class WebAppFilter {
   bool is_isolated_apps_including_uninstalling_ = false;
   bool is_app_suggested_from_migration_ = false;
   bool is_app_surfaceable_to_user_ = false;
+  bool is_valid_migration_source_ = false;
 };
 
 }  // namespace web_app

@@ -1104,6 +1104,11 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return (app && app->WasInstalledByTrustedSources());
   }
 
+  if (filter.is_valid_migration_source_) {
+    return install_state == proto::INSTALLED_WITH_OS_INTEGRATION &&
+           !IsInstalledByPolicy(app_id);
+  }
+
   return false;
 }
 

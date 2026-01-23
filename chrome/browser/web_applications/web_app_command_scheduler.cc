@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/app_update_data_read_command.h"
+#include "chrome/browser/web_applications/commands/apply_manifest_migration_command.h"
 #include "chrome/browser/web_applications/commands/apply_pending_manifest_update_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
@@ -872,6 +873,21 @@ void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ResolveWebAppPendingMigrationInfoCommand>(
+          std::move(callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ApplyManifestMigration(
+    const webapps::AppId& source_app_id,
+    const webapps::AppId& destination_app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    ApplyManifestMigrationResultCallback callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ApplyManifestMigrationCommand>(
+          source_app_id, destination_app_id, &profile_.get(),
+          std::move(keep_alive), std::move(profile_keep_alive),
           std::move(callback)),
       location);
 }

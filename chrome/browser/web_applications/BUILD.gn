@@ -16,6 +16,8 @@ source_set("web_applications") {
     "callback_utils.h",
     "commands/app_update_data_read_command.cc",
     "commands/app_update_data_read_command.h",
+    "commands/apply_manifest_migration_command.cc",
+    "commands/apply_manifest_migration_command.h",
     "commands/apply_pending_manifest_update_command.cc",
     "commands/apply_pending_manifest_update_command.h",
     "commands/clear_browsing_data_command.cc",
@@ -301,6 +303,8 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
     "preinstalled_web_apps/preinstalled_web_apps.cc",
     "preinstalled_web_apps/preinstalled_web_apps.h",
+    "scheduler/apply_manifest_migration_result.cc",
+    "scheduler/apply_manifest_migration_result.h",
     "scheduler/apply_pending_manifest_update_result.cc",
     "scheduler/apply_pending_manifest_update_result.h",
     "scheduler/fetch_install_info_from_install_url_result.cc",
@@ -898,6 +902,7 @@ source_set("web_applications_unit_tests") {
   testonly = true
 
   sources = [
+    "commands/apply_manifest_migration_command_unittest.cc",
     "commands/apply_pending_manifest_update_command_unittest.cc",
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/dedupe_install_urls_command_unittest.cc",
