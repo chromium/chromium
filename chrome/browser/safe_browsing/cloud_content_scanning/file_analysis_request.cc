@@ -9,12 +9,15 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/file_util_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"
-#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/public/browser/browser_thread.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/file_util_service.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/utils.h"
+#endif
 
 namespace safe_browsing {
 
@@ -48,6 +51,7 @@ FileAnalysisRequest::FileAnalysisRequest(
 
 FileAnalysisRequest::~FileAnalysisRequest() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
 void FileAnalysisRequest::ProcessZipFile(Data data) {
   auto callback =
       base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
@@ -97,5 +101,6 @@ void FileAnalysisRequest::OnCheckedForEncryption(
   CacheResultAndData(result, std::move(data));
   RunCallback();
 }
+#endif
 
 }  // namespace safe_browsing

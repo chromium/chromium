@@ -45,8 +45,10 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
   void OpenFile();
 
  protected:
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   virtual void ProcessZipFile(Data data) = 0;
   virtual void ProcessRarFile(Data data) = 0;
+#endif
 
   void OnGotFileData(std::pair<ScanRequestUploadResult, Data> result_and_data);
 

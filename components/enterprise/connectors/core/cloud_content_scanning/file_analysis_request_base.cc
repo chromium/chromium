@@ -32,6 +32,7 @@ namespace {
 constexpr size_t kReadFileChunkSize = 4096;
 constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool IsZipFile(const base::FilePath::StringType& extension,
                const std::string& mime_type) {
   return extension == FILE_PATH_LITERAL(".zip") ||
@@ -45,6 +46,7 @@ bool IsRarFile(const base::FilePath::StringType& extension,
          mime_type == "application/vnd.rar" ||
          mime_type == "application/x-rar-compressed";
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 std::string GetFileMimeType(const base::FilePath& path,
                             std::string_view first_bytes) {
@@ -255,11 +257,17 @@ void FileAnalysisRequestBase::OnGotFileData(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::kSuccess,
+                     std::move(result_and_data.second));
+  RunCallback();
+#else
   const std::string& mime_type = cached_data_.mime_type.empty()
                                      ? result_and_data.second.mime_type
                                      : cached_data_.mime_type;
   base::FilePath::StringType ext(file_name_.FinalExtension());
   std::ranges::transform(ext, ext.begin(), tolower);
+
   if (IsZipFile(ext, mime_type)) {
     ProcessZipFile(std::move(result_and_data.second));
   } else if (IsRarFile(ext, mime_type)) {
@@ -269,6 +277,7 @@ void FileAnalysisRequestBase::OnGotFileData(
                        std::move(result_and_data.second));
     RunCallback();
   }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void FileAnalysisRequestBase::CacheResultAndData(ScanRequestUploadResult result,
