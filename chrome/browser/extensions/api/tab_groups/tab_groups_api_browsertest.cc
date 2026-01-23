@@ -124,6 +124,13 @@ tab_groups::SavedTabGroup CreateSavedTabGroupFromLocalId(
   return saved_group;
 }
 
+// Closes all tabs in `tab_list`, closing the leftmost one each time.
+void CloseAllTabs(TabListInterface* tab_list) {
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    tab_list->GetTab(0)->Close();
+  }
+}
+
 class TabGroupsApiBrowserTest : public ExtensionBrowserTest {
  public:
   TabGroupsApiBrowserTest() = default;
@@ -710,16 +717,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   EXPECT_EQ(group, tab_list2->GetTab(2)->GetGroup().value());
   EXPECT_EQ(group, tab_list2->GetTab(3)->GetGroup().value());
 
-  // Close tabs in the second window, closing the leftmost each time.
-  for (int i = 0; i < tab_list2->GetTabCount(); ++i) {
-    tab_list2->CloseTab(tab_list2->GetTab(0)->GetHandle());
-  }
+  // Close tabs in the second window.
+  CloseAllTabs(tab_list2);
 
-  // Close tabs in the original window, closing the leftmost each time.
+  // Close tabs in the original window.
   TabListInterface* tab_list = GetTabListInterface();
-  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
-    tab_list->CloseTab(tab_list->GetTab(0)->GetHandle());
-  }
+  CloseAllTabs(tab_list);
 }
 
 // Test that a group is cannot be moved into the pinned tabs region.
@@ -822,21 +825,20 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
     EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that moving a group within the same window but specifying the window id
 // does not cause unexpected behavior.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
                        TabGroupsMoveGroupWithinSameWindowWithWindowId) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
   // Create a group with multiple tabs.
-  TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  TabGroupId group = CreateTabGroup({1, 2, 3});
   int group_id = ExtensionTabUtil::GetGroupId(group);
-  int window_id = ExtensionTabUtil::GetWindowId(browser());
+  int window_id = ExtensionTabUtil::GetWindowId(browser_window_interface());
 
   // Move the group to index 1, specifying the current window id.
   auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
@@ -848,21 +850,21 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
 
   // Verify the tabs are in the correct order.The group should now be at
   // index 1.
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contents(0));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contents(1));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contents(2));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contents(3));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contents(4));
-  EXPECT_EQ(tab_strip_model->GetWebContentsAt(5), web_contents(5));
+  TabListInterface* tab_list = GetTabListInterface();
+  EXPECT_EQ(tab_list->GetTab(0)->GetContents(), web_contents(0));
+  EXPECT_EQ(tab_list->GetTab(1)->GetContents(), web_contents(1));
+  EXPECT_EQ(tab_list->GetTab(2)->GetContents(), web_contents(2));
+  EXPECT_EQ(tab_list->GetTab(3)->GetContents(), web_contents(3));
+  EXPECT_EQ(tab_list->GetTab(4)->GetContents(), web_contents(4));
+  EXPECT_EQ(tab_list->GetTab(5)->GetContents(), web_contents(5));
 
   // Verify that the group is still associated with the correct tabs.
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1).value());
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
-  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3).value());
+  EXPECT_EQ(group, tab_list->GetTab(1)->GetGroup().value());
+  EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup().value());
+  EXPECT_EQ(group, tab_list->GetTab(3)->GetGroup().value());
 
-  tab_strip_model->CloseAllTabs();
+  CloseAllTabs(tab_list);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsOnCreated) {
   ASSERT_TRUE(SupportsTabGroups());
