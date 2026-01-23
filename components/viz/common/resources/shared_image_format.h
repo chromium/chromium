@@ -332,8 +332,6 @@ inline constexpr SharedImageFormat kP010 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k10);
-// NOTE: These formats do not have an equivalent BufferFormat as they are not
-// used with GpuMemoryBuffers.
 inline constexpr SharedImageFormat kNV16 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k422,
