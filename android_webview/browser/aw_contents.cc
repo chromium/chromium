@@ -17,6 +17,7 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_pdf_exporter.h"
 #include "android_webview/browser/aw_render_process.h"
+#include "android_webview/browser/aw_render_process_keep_alive.h"
 #include "android_webview/browser/aw_renderer_priority.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
@@ -109,6 +110,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "net/base/auth.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -312,6 +314,38 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       web_contents_.get(), &browser_view_renderer_);
   AwContentsLifecycleNotifier::GetInstance().OnWebViewCreated(this);
   AwBrowserProcess::GetInstance()->visibility_metrics_logger()->AddClient(this);
+
+  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
+    UpdateAwRenderProcessAssociation();
+  }
+}
+
+void AwContents::UpdateAwRenderProcessAssociation() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Get the current RPH ID.
+  content::RenderProcessHost* rph =
+      web_contents_->GetPrimaryMainFrame()->GetProcess();
+  content::ChildProcessId new_id = rph->GetID();
+
+  if (new_id == associated_rph_id_) {
+    return;
+  }
+
+  if (associated_rph_id_) {
+    if (auto* old_rph =
+            content::RenderProcessHost::FromID(associated_rph_id_)) {
+      AwRenderProcessKeepAlive::GetInstanceForRenderProcessHost(old_rph)
+          ->RemoveAwContents();
+    }
+  }
+
+  if (rph) {
+    AwRenderProcessKeepAlive::GetInstanceForRenderProcessHost(rph)
+        ->AddAwContents();
+  }
+
+  associated_rph_id_ = new_id;
 }
 
 void AwContents::SetJavaPeers(
@@ -373,6 +407,18 @@ void AwContents::InitSensitiveContentClient(JNIEnv* env) {
 
 AwContents::~AwContents() {
   DCHECK_EQ(this, AwContents::FromWebContents(web_contents_.get()));
+
+  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
+    if (associated_rph_id_) {
+      if (auto* old_rph =
+              content::RenderProcessHost::FromID(associated_rph_id_)) {
+        AwRenderProcessKeepAlive::GetInstanceForRenderProcessHost(old_rph)
+            ->RemoveAwContents();
+      }
+      associated_rph_id_ = content::ChildProcessId();
+    }
+  }
+
   web_contents_->RemoveUserData(kAwContentsUserDataKey);
   AwContentsClientBridge::Dissociate(web_contents_.get());
   if (find_helper_.get())
@@ -1613,6 +1659,9 @@ void LogSiteVisitOnBackgroundThread(int64_t site_hash) {
 }  // namespace
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
+  if (base::FeatureList::IsEnabled(features::kWebViewRendererKeepAlive)) {
+    UpdateAwRenderProcessAssociation();
+  }
   // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
   // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
   // the issue for the context.

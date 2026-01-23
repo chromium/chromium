@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_H_
 
 #include "android_webview/common/mojom/renderer.mojom.h"
+#include "base/android/child_process_binding_types.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,8 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
   bool TerminateChildProcess(JNIEnv* env);
 
   bool IsProcessLockedToSiteForTesting(JNIEnv* env);
+
+  base::android::ChildBindingState GetEffectiveChildBindingState(JNIEnv* env);
 
   explicit AwRenderProcess(content::RenderProcessHost* render_process_host);
 

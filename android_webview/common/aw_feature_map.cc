@@ -60,6 +60,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewReducedSeedExpiration,
     &features::kWebViewReducedSeedRequestPeriod,
+    &features::kWebViewRendererKeepAlive,
     &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewStartupTasksYieldToNative,
     &features::kWebViewStopBrowserStartupInIsMultiProcessEnabled,

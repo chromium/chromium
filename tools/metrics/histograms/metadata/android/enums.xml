@@ -2652,6 +2652,16 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Text dark, night mode off"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewRendererKeepAliveEvent) -->
+
+<enum name="WebViewRendererKeepAliveEvent">
+  <int value="0" label="Reused"/>
+  <int value="1" label="Timed out"/>
+  <int value="2" label="Pending reuse"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/aw_render_process_keep_alive.cc:RendererKeepAliveEvent) -->
+
 <!-- LINT.IfChange(WebViewSendIntentState) -->
 
 <enum name="WebViewSendIntentState">

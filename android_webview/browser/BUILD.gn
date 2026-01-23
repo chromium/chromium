@@ -107,6 +107,8 @@ source_set("browser") {
     "aw_render_process.cc",
     "aw_render_process.h",
     "aw_render_process_gone_delegate.h",
+    "aw_render_process_keep_alive.cc",
+    "aw_render_process_keep_alive.h",
     "aw_renderer_priority.h",
     "aw_settings.cc",
     "aw_settings.h",

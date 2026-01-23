@@ -115,7 +115,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool FastShutdownIfPossible(size_t page_count,
                               bool skip_unload_handlers,
                               bool ignore_workers,
-                              bool ignore_keep_alive) override;
+                              bool ignore_keep_alive,
+                              bool ignore_pending_reuse) override;
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;

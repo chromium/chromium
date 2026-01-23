@@ -6,9 +6,11 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.ChildBindingState;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -39,6 +41,11 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
         return mNativeRenderProcess != 0;
     }
 
+    public @ChildBindingState int getEffectiveChildBindingStateForTesting() {
+        if (mNativeRenderProcess == 0) return ChildBindingState.UNBOUND;
+        return AwRenderProcessJni.get().getEffectiveChildBindingState(mNativeRenderProcess);
+    }
+
     @CalledByNative
     private static AwRenderProcess create() {
         return new AwRenderProcess();
@@ -54,5 +61,9 @@ public final class AwRenderProcess extends AwSupportLibIsomorphic {
         boolean terminateChildProcess(long nativeAwRenderProcess);
 
         boolean isProcessLockedToSiteForTesting(long nativeAwRenderProcess);
+
+        @JniType("base::android::ChildBindingState")
+        @ChildBindingState
+        int getEffectiveChildBindingState(long nativeAwRenderProcess);
     }
 }

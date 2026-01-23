@@ -256,6 +256,14 @@ BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
 BASE_FEATURE(kPrerender2WarmUpCompositorForWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Keeps the renderer process alive after the last WebView is destroyed to
+// allow for reuse.
+BASE_FEATURE(kWebViewRendererKeepAlive, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kWebViewRendererKeepAliveDuration{
+    &kWebViewRendererKeepAlive, "webview_renderer_keep_alive_duration",
+    base::Seconds(30)};
+
 // Enables fetching the Origin Trials configuration update component in the
 // embedded WebView.
 BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
