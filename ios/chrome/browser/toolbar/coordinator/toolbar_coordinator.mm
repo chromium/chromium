@@ -260,6 +260,21 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   if (!self.started) {
     return;
   }
+
+  if (IsChromeNextIaEnabled()) {
+    [_topToolbarMediator disconnect];
+    _topToolbarMediator = nil;
+    [_topLocationBarCoordinator stop];
+    _topLocationBarCoordinator = nil;
+    _topToolbarViewController = nil;
+
+    [_bottomToolbarMediator disconnect];
+    _bottomToolbarMediator = nil;
+    [_bottomLocationBarCoordinator stop];
+    _bottomLocationBarCoordinator = nil;
+    _bottomToolbarViewController = nil;
+  }
+
   self.orchestrator.editViewAnimatee = nil;
   self.orchestrator.locationBarAnimatee = nil;
   self.orchestrator = nil;
