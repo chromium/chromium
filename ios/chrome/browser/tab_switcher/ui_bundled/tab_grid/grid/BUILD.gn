@@ -187,6 +187,7 @@ source_set("tab_group_grid_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/color_palette:group_color",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:utils",

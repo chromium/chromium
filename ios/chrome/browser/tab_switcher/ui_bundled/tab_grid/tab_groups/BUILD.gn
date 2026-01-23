@@ -184,6 +184,7 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/color_palette:group_color",
     "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui",

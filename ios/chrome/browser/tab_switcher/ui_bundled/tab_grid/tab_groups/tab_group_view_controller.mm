@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_grid_view_controller.h"
@@ -120,7 +121,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIView* _topToolbarBackground;
   // The stack view containing the buttons of the top toolbar.
   UIStackView* _topToolbarButtonsStackView;
-  // The the tab group menu button.
+  // The tab group menu button.
   UIButton* _menuButton;
   // Tab Groups handler.
   __weak id<TabGroupsCommands> _handler;
@@ -166,6 +167,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIPanGestureRecognizer* _swipeDownGestureRecognizer;
   // Face pile provider.
   id<FacePileProviding> _facePileProvider;
+  // The color palette for the tab group view.
+  TabGroupColorPalette* _tabGroupColorPalette;
 }
 
 #pragma mark - Public
@@ -440,6 +443,16 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   _groupColor = color;
   _gridViewController.groupColor = color;
   [_coloredDotView setBackgroundColor:_groupColor];
+
+  if (!IsTabGroupColorOnSurfaceEnabled()) {
+    return;
+  }
+  // Create the palette.
+  _tabGroupColorPalette =
+      [[TabGroupColorPalette alloc] initWithSeedColor:color];
+  [_coloredDotView setBackgroundColor:_tabGroupColorPalette.commonColor];
+  // Forward it to the TabGroupGridViewController.
+  _gridViewController.tabGroupColorPalette = _tabGroupColorPalette;
 }
 
 - (void)setShareAvailable:(BOOL)shareAvailable {
@@ -692,6 +705,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
       _incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
   bottomToolbar.mode = TabGridMode::kNormal;
   bottomToolbar.isInTabGroupView = YES;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    [_bottomToolbar
+        updateNewTabButtonBackgroundColor:_tabGroupColorPalette.commonColor];
+  }
 
   [_container addSubview:bottomToolbar];
 

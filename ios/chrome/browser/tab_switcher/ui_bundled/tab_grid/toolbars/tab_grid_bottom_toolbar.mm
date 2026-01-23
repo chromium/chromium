@@ -203,6 +203,11 @@ CGFloat CompactButtonHorizontalPadding() {
                                  animated:animated];
 }
 
+- (void)updateNewTabButtonBackgroundColor:(UIColor*)backgroundColor {
+  _smallNewTabButton.buttonColor = backgroundColor;
+  _largeNewTabButton.buttonColor = backgroundColor;
+}
+
 #pragma mark Close Tabs
 
 - (void)setCloseTabsButtonEnabled:(BOOL)enabled {

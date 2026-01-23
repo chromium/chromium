@@ -16,6 +16,7 @@
 @class GridCell;
 typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @class LayoutGuideCenter;
+@class TabGroupColorPalette;
 
 // Informs the receiver of actions on the cell.
 @protocol GridCellDelegate
@@ -36,6 +37,8 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @property(nonatomic, weak) UIImage* icon;
 @property(nonatomic, weak) UIImage* snapshot;
 @property(nonatomic, copy) NSString* title;
+// The color palette for surfaces.
+@property(nonatomic, copy) TabGroupColorPalette* tabGroupColorPalette;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.

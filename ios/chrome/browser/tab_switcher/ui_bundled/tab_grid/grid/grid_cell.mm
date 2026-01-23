@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -389,6 +390,20 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 - (void)setIcon:(UIImage*)icon {
   self.iconView.image = icon;
   _icon = icon;
+}
+
+- (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
+  if (_tabGroupColorPalette == tabGroupColorPalette) {
+    return;
+  }
+  CHECK(tabGroupColorPalette);
+  // Apply the tones to every surfaces.
+  _tabGroupColorPalette = tabGroupColorPalette;
+  self.border.layer.borderColor = tabGroupColorPalette.commonColor.CGColor;
+  self.topBar.backgroundColor = tabGroupColorPalette.backgroundColor;
+  self.emptyView.backgroundColor = tabGroupColorPalette.snapshotBackgroundColor;
+  self.containerView.backgroundColor = tabGroupColorPalette.backgroundColor;
+  self.emptyView.barColor = tabGroupColorPalette.barColor;
 }
 
 - (void)showFaviconActivityIndicator {

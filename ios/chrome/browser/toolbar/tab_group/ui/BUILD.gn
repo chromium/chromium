@@ -17,6 +17,7 @@ source_set("ui") {
     "//ios/chrome/browser/saved_tab_groups/ui",
     "//ios/chrome/browser/share_kit/model:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util/color_palette:group_color",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/browser/toolbar/ui:height_delegate",

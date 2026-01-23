@@ -45,6 +45,7 @@ const CGFloat kSquareCornerRadius = 10;
 - (instancetype)initWithLargeSize:(BOOL)largeSize {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    _buttonColor = [UIColor colorNamed:kStaticBlue400Color];
     CGFloat symbolSize;
     CGFloat buttonSize;
     if (largeSize) {
@@ -98,6 +99,14 @@ const CGFloat kSquareCornerRadius = 10;
   [self setSymbolPage:page];
 }
 
+- (void)setButtonColor:(UIColor*)buttonColor {
+  if (_buttonColor == buttonColor) {
+    return;
+  }
+  _buttonColor = buttonColor;
+  [self setSymbolPage:self.page];
+}
+
 #pragma mark - Private
 
 // Sets page using a symbol image.
@@ -127,15 +136,13 @@ const CGFloat kSquareCornerRadius = 10;
 
       if (@available(iOS 18, *)) {
         UIButtonConfiguration* config = self.configuration;
-        config.background.backgroundColor =
-            [UIColor colorNamed:kStaticBlue400Color];
+        config.background.backgroundColor = _buttonColor;
         // Set the corner style to display a circle button.
         config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
         self.configuration = config;
       } else {
-        _imageContainer.image = SymbolWithPalette(
-            _symbol,
-            @[ UIColor.blackColor, [UIColor colorNamed:kStaticBlue400Color] ]);
+        _imageContainer.image =
+            SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
       }
 
       break;
@@ -146,16 +153,14 @@ const CGFloat kSquareCornerRadius = 10;
 
         if (@available(iOS 18, *)) {
           UIButtonConfiguration* config = self.configuration;
-          config.background.backgroundColor =
-              [UIColor colorNamed:kStaticBlue400Color];
+          config.background.backgroundColor = _buttonColor;
           // Set the corner style and radius to display a square button.
           config.cornerStyle = UIButtonConfigurationCornerStyleFixed;
           config.background.cornerRadius = kSquareCornerRadius;
           self.configuration = config;
         } else {
-          _imageContainer.image = SymbolWithPalette(_symbol, @[
-            UIColor.blackColor, [UIColor colorNamed:kStaticBlue400Color]
-          ]);
+          _imageContainer.image =
+              SymbolWithPalette(_symbol, @[ UIColor.blackColor, _buttonColor ]);
         }
       }
       break;

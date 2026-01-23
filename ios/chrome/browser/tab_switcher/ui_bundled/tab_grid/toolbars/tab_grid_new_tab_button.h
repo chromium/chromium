@@ -13,6 +13,9 @@
 
 @property(nonatomic, assign) TabGridPage page;
 
+// Color for the button, StaticBlue400 by default.
+@property(nonatomic) UIColor* buttonColor;
+
 // Init with a large/small symbol.
 - (instancetype)initWithLargeSize:(BOOL)largeSize NS_DESIGNATED_INITIALIZER;
 
