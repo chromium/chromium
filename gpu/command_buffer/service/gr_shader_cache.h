@@ -25,7 +25,8 @@ namespace raster {
 
 class RASTER_EXPORT GrShaderCache
     : public GrContextOptions::PersistentCache,
-      public base::trace_event::MemoryDumpProvider {
+      public base::trace_event::MemoryDumpProvider,
+      public base::MemoryPressureListener {
  public:
   class RASTER_EXPORT Client {
    public:
@@ -57,11 +58,14 @@ class RASTER_EXPORT GrShaderCache
 
   void PopulateCache(const std::string& key, const std::string& data);
   void CacheClientIdOnDisk(int32_t client_id);
-  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
+
+  // base::MemoryPressureListener implementation.
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   size_t num_cache_entries() const;
   size_t curr_size_bytes_for_testing() const;
@@ -110,21 +114,25 @@ class RASTER_EXPORT GrShaderCache
 
   using Store = base::HashingLRUCache<CacheKey, CacheData, CacheKeyHash>;
 
-  void EnforceLimits(size_t size_needed);
+  void EnforceLimits(size_t size_needed) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  Store::iterator AddToCache(CacheKey key, CacheData data);
+  // Returns the size limit of the cache, which changes according to the current
+  // memory pressure level.
+  size_t GetCurrentCacheSizeLimit() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  Store::iterator AddToCache(CacheKey key, CacheData data)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   template <typename Iterator>
-  void EraseFromCache(Iterator it);
+  void EraseFromCache(Iterator it) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void WriteToDisk(const CacheKey& key, CacheData* data);
+  void WriteToDisk(const CacheKey& key, CacheData* data)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  bool IsVkPipelineCacheEntry(const CacheKey& key);
-
-  int32_t current_client_id() const;
+  int32_t current_client_id() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   mutable base::Lock lock_;
-  size_t cache_size_limit_ GUARDED_BY(lock_) = 0u;
-  size_t curr_size_bytes_ GUARDED_BY(lock_) = 0u;
+  const size_t cache_size_limit_;
+  size_t curr_size_bytes_ GUARDED_BY(lock_);
   Store store_ GUARDED_BY(lock_);
   raw_ptr<Client> const client_ GUARDED_BY(lock_);
   base::flat_set<int32_t> client_ids_to_cache_on_disk_ GUARDED_BY(lock_);
@@ -134,6 +142,15 @@ class RASTER_EXPORT GrShaderCache
   base::flat_map<base::PlatformThreadId, int32_t> current_client_id_
       GUARDED_BY(lock_);
   bool need_store_pipeline_cache_ GUARDED_BY(lock_) = false;
+
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
+
+  // The current memory pressure level.
+  // MemoryPressureListener::memory_pressure_level() can't be used because it is
+  // not thread-safe.
+  base::MemoryPressureLevel memory_pressure_level_ GUARDED_BY(lock_) =
+      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
 
   // Bound to the thread on which GrShaderCache is created. Some methods can
   // only be called on this thread. GrShaderCache is created on gpu main thread.

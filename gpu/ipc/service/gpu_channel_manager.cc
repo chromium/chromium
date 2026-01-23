@@ -836,9 +836,6 @@ void GpuChannelManager::OnMemoryPressure(
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
 
-  if (gr_shader_cache_) {
-    gr_shader_cache_->PurgeMemory(memory_pressure_level);
-  }
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   if (dawn_caching_interface_factory()) {
     dawn_caching_interface_factory()->PurgeMemory(memory_pressure_level);
