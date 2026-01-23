@@ -247,7 +247,6 @@ _protoc_gen_ts_runtime_deps = [
   "//third_party/node/node_modules/ts-proto/build/src/generate-type-registry.js",
   "//third_party/node/node_modules/ts-proto/build/src/main.js",
   "//third_party/node/node_modules/ts-proto/build/src/options.js",
-  "//third_party/node/node_modules/ts-proto/build/src/options.js",
   "//third_party/node/node_modules/ts-proto/build/src/plugin.js",
   "//third_party/node/node_modules/ts-proto/build/src/schema.js",
   "//third_party/node/node_modules/ts-proto/build/src/sourceInfo.js",
@@ -626,9 +625,16 @@ template("proto_library") {
     # proto_library target using it AND every library that transitively includes
     # it. To prevent having massive side-effects to build files on changes, this
     # simply adds the input and import_dir for descriptor.proto to all targets.
+    #
+    # Protos can also import cpp_features.proto in order to provide C++ specific
+    # options for code generation.
+    #
     # The import_dirs modification can be removed if http://crbug.com/691451 is
     # fixed.
-    inputs += [ "//third_party/protobuf/src/google/protobuf/descriptor.proto" ]
+    inputs += [
+      "//third_party/protobuf/src/google/protobuf/descriptor.proto",
+      "//third_party/protobuf/src/google/protobuf/cpp_features.proto",
+    ]
     _import_dirs = [ "//third_party/protobuf/src" ]
     if (defined(invoker.import_dirs)) {
       _import_dirs += invoker.import_dirs

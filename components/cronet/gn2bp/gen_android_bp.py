@@ -2108,7 +2108,14 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
     self._set_value_arg('--protoc', '$(location %s)' % self._protoc)
     self._update_value_arg('--proto-path', self._sanitize_proto_path)
     self._set_value_arg('--srcjar', '$(out)')
-    self._update_arg_at(-1, self._sanitize_filepath_with_location_tag)
+    for i, arg in enumerate(self.target.args):
+      if arg == '--import-dir':
+        self.target.args[
+            i +
+            1] = f"{tree_path}/{self.target.args[i+1].removeprefix('../../')}"
+      elif arg.startswith('../../') and arg.removeprefix(
+          '../../') in self.get_srcs():
+        self.target.args[i] = self._sanitize_filepath_with_location_tag(arg)
 
   def _sanitize_inputs(self):
     super()._sanitize_inputs()
