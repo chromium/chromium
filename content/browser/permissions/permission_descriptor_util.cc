@@ -84,9 +84,9 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
           blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER);
     case blink::PermissionType::MIDI:
       return CreateMidiPermissionDescriptor(false);
-    case blink::PermissionType::DURABLE_STORAGE:
+    case blink::PermissionType::PERSISTENT_STORAGE:
       return CreatePermissionDescriptor(
-          blink::mojom::PermissionName::DURABLE_STORAGE);
+          blink::mojom::PermissionName::PERSISTENT_STORAGE);
     case blink::PermissionType::AUDIO_CAPTURE:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::AUDIO_CAPTURE);

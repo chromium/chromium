@@ -43,7 +43,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, 21},
     {ContentSettingsType::APP_BANNER, 22},
     {ContentSettingsType::SITE_ENGAGEMENT, 23},
-    {ContentSettingsType::DURABLE_STORAGE, 24},
+    {ContentSettingsType::PERSISTENT_STORAGE, 24},
     // Removed "Key generation setting"
     {ContentSettingsType::BLUETOOTH_GUARD, 26},
     {ContentSettingsType::BACKGROUND_SYNC, 27},

@@ -20,8 +20,8 @@ bool ShellSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
   return true;
 }
 
-bool ShellSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
-  // The plan is to forbid extensions from acquiring the durable storage
+bool ShellSpecialStoragePolicy::IsStoragePersistent(const GURL& origin) {
+  // The plan is to forbid extensions from acquiring the persistent storage
   // permission because they can specify 'unlimitedStorage' in the manifest.
   return false;
 }

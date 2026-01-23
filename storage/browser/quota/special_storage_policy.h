@@ -66,8 +66,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SpecialStoragePolicy
   // Unlimited storage is not subject to quota or storage pressure eviction.
   virtual bool IsStorageUnlimited(const GURL& origin) = 0;
 
-  // Durable storage is not subject to storage pressure eviction.
-  virtual bool IsStorageDurable(const GURL& origin) = 0;
+  // Persistent storage is not subject to storage pressure eviction.
+  virtual bool IsStoragePersistent(const GURL& origin) = 0;
 
   // Checks if the origin contains per-site isolated storage.
   virtual bool HasIsolatedStorage(const GURL& origin) = 0;

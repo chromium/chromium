@@ -2368,7 +2368,7 @@ Called by update_net_error_codes.py.-->
       label="Protected media identifier setting (Android/ChromeOS only)"/>
   <int value="22" label="App banner setting (Android only)"/>
   <int value="23" label="Site engagement setting"/>
-  <int value="24" label="Durable storage setting"/>
+  <int value="24" label="Persistent storage setting"/>
   <int value="25" label="Key generation setting [removed]"/>
   <int value="26" label="Bluetooth guard setting"/>
   <int value="27" label="Background sync setting"/>
@@ -22732,7 +22732,7 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="PERMISSION_GEOLOCATION"/>
   <int value="5" label="PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
   <int value="6" label="PERMISSION_MIDI"/>
-  <int value="7" label="PERMISSION_DURABLE_STORAGE"/>
+  <int value="7" label="PERMISSION_PERSISTENT_STORAGE"/>
   <int value="8" label="PERMISSION_AUDIO_CAPTURE"/>
   <int value="9" label="PERMISSION_VIDEO_CAPTURE"/>
   <int value="10" label="PERMISSION_BACKGROUND_SYNC"/>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/storage/durable_storage_permission_context.h"
+#include "chrome/browser/storage/persistent_storage_permission_context.h"
 
 #include <algorithm>
 #include <variant>
@@ -38,14 +38,14 @@
 using bookmarks::BookmarkModel;
 using PermissionStatus = blink::mojom::PermissionStatus;
 
-DurableStoragePermissionContext::DurableStoragePermissionContext(
+PersistentStoragePermissionContext::PersistentStoragePermissionContext(
     content::BrowserContext* browser_context)
     : permissions::ContentSettingPermissionContextBase(
           browser_context,
-          ContentSettingsType::DURABLE_STORAGE,
+          ContentSettingsType::PERSISTENT_STORAGE,
           network::mojom::PermissionsPolicyFeature::kNotFound) {}
 
-void DurableStoragePermissionContext::DecidePermission(
+void PersistentStoragePermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -146,7 +146,7 @@ void DurableStoragePermissionContext::DecidePermission(
                           .is_final = true});
 }
 
-void DurableStoragePermissionContext::UpdateContentSetting(
+void PersistentStoragePermissionContext::UpdateContentSetting(
     const permissions::PermissionRequestData& request_data,
     ContentSetting content_setting,
     bool is_one_time) {
@@ -160,6 +160,6 @@ void DurableStoragePermissionContext::UpdateContentSetting(
 
   HostContentSettingsMapFactory::GetForProfile(browser_context())
       ->SetContentSettingDefaultScope(request_data.requesting_origin, GURL(),
-                                      ContentSettingsType::DURABLE_STORAGE,
+                                      ContentSettingsType::PERSISTENT_STORAGE,
                                       content_setting);
 }

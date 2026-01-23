@@ -79,7 +79,7 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
-#include "chrome/browser/storage/durable_storage_permission_context.h"
+#include "chrome/browser/storage/persistent_storage_permission_context.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -3133,24 +3133,24 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTranslateBlocklist) {
   EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList("maps.google.com"));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentPermission) {
   // Add our settings.
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  DurableStoragePermissionContext durable_permission(GetProfile());
-  durable_permission.UpdateContentSetting(
+  PersistentStoragePermissionContext persistent_permission(GetProfile());
+  persistent_permission.UpdateContentSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           /*user_gesture=*/true, kOrigin1, GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
-  durable_permission.UpdateContentSetting(
+  persistent_permission.UpdateContentSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           /*user_gesture=*/true, kOrigin2, GURL()),
       CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
 
@@ -3161,17 +3161,17 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
   filter->AddRegisterableDomain(kTestRegisterableDomain1);
   filter->AddRegisterableDomain(kTestRegisterableDomain3);
   BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
-                              constants::DATA_TYPE_DURABLE_PERMISSION,
+                              constants::DATA_TYPE_PERSISTENT_PERMISSION,
                               std::move(filter));
 
-  EXPECT_EQ(constants::DATA_TYPE_DURABLE_PERMISSION, GetRemovalMask());
+  EXPECT_EQ(constants::DATA_TYPE_PERSISTENT_PERMISSION, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
 
   // Verify we only have allow for the first origin.
   ContentSettingsForOneType host_settings =
       host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::DURABLE_STORAGE);
+          ContentSettingsType::PERSISTENT_STORAGE);
 
   ASSERT_EQ(2u, host_settings.size());
   // Only the first should should have a setting.
@@ -3188,20 +3188,20 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       DurablePermissionIsPartOfEmbedderDOMStorage) {
+       PersistentPermissionIsPartOfEmbedderDOMStorage) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
-  DurableStoragePermissionContext durable_permission(GetProfile());
-  durable_permission.UpdateContentSetting(
+  PersistentStoragePermissionContext persistent_permission(GetProfile());
+  persistent_permission.UpdateContentSetting(
       permissions::PermissionRequestData(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           /*user_gesture=*/true, GURL("http://host1.com:1"), GURL()),
       CONTENT_SETTING_ALLOW,
       /*is_one_time=*/false);
   ContentSettingsForOneType host_settings =
       host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::DURABLE_STORAGE);
+          ContentSettingsType::PERSISTENT_STORAGE);
   EXPECT_EQ(2u, host_settings.size());
 
   BlockUntilBrowsingDataRemoved(
@@ -3210,7 +3210,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   // After the deletion, only the wildcard should remain.
   host_settings = host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE);
+      ContentSettingsType::PERSISTENT_STORAGE);
   EXPECT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)
@@ -3424,7 +3424,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
         kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin2, ContentSettingsType::DURABLE_STORAGE));
+        kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_FALSE(
         tester.IsEmbargoed(kOrigin2, ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
@@ -3447,8 +3447,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
         0, tester.GetDismissCount(kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    EXPECT_EQ(1, tester.GetIgnoreCount(kOrigin2,
-                                       ContentSettingsType::DURABLE_STORAGE));
+    EXPECT_EQ(1, tester.GetIgnoreCount(
+                     kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_EQ(3, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
     EXPECT_TRUE(
@@ -3464,8 +3464,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
         0, tester.GetDismissCount(kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    EXPECT_EQ(0, tester.GetIgnoreCount(kOrigin2,
-                                       ContentSettingsType::DURABLE_STORAGE));
+    EXPECT_EQ(0, tester.GetIgnoreCount(
+                     kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_EQ(0, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(
@@ -3483,7 +3483,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
         kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_FALSE(tester.IsEmbargoed(kOrigin1, ContentSettingsType::MIDI_SYSEX));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin2, ContentSettingsType::DURABLE_STORAGE));
+        kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_FALSE(tester.RecordDismissAndEmbargo(
         kOrigin2, ContentSettingsType::NOTIFICATIONS));
 
@@ -3498,8 +3498,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
         1, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
         1, tester.GetDismissCount(kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    EXPECT_EQ(0, tester.GetIgnoreCount(kOrigin2,
-                                       ContentSettingsType::DURABLE_STORAGE));
+    EXPECT_EQ(0, tester.GetIgnoreCount(
+                     kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_EQ(0, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
 
@@ -3521,8 +3521,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
         0, tester.GetIgnoreCount(kOrigin1, ContentSettingsType::NOTIFICATIONS));
     EXPECT_EQ(
         0, tester.GetDismissCount(kOrigin1, ContentSettingsType::MIDI_SYSEX));
-    EXPECT_EQ(0, tester.GetIgnoreCount(kOrigin2,
-                                       ContentSettingsType::DURABLE_STORAGE));
+    EXPECT_EQ(0, tester.GetIgnoreCount(
+                     kOrigin2, ContentSettingsType::PERSISTENT_STORAGE));
     EXPECT_EQ(0, tester.GetDismissCount(kOrigin2,
                                         ContentSettingsType::NOTIFICATIONS));
     EXPECT_FALSE(tester.IsEmbargoed(kOrigin1, ContentSettingsType::MIDI_SYSEX));

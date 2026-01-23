@@ -87,7 +87,7 @@ export const contentSettingGroups:
       {
         name: 'File System & Storage',
         settings: [
-          ContentSettingsType.DURABLE_STORAGE,
+          ContentSettingsType.PERSISTENT_STORAGE,
           ContentSettingsType.FILE_SYSTEM_ACCESS_CHOOSER_DATA,
           ContentSettingsType.FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
           ContentSettingsType.FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,

@@ -135,7 +135,7 @@ int GetScoreForReason(ImportantReason reason) {
   switch (reason) {
     case ImportantReason::ENGAGEMENT:
       return 1 << 0;
-    case ImportantReason::DURABLE:
+    case ImportantReason::PERSISTENT:
       return 1 << 1;
     case ImportantReason::BOOKMARKS:
       return 1 << 2;
@@ -368,8 +368,8 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
       ImportantReason::NOTIFICATIONS, &important_info);
 
   PopulateInfoMapWithContentTypeAllowed(
-      profile, ContentSettingsType::DURABLE_STORAGE, ImportantReason::DURABLE,
-      &important_info);
+      profile, ContentSettingsType::PERSISTENT_STORAGE,
+      ImportantReason::PERSISTENT, &important_info);
 
   PopulateInfoMapWithBookmarks(profile, engagement_map, &important_info);
 

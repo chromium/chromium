@@ -165,7 +165,7 @@ Response PermissionDescriptorToPermissionType(
   } else if (name == "notifications") {
     *permission_type = PermissionType::NOTIFICATIONS;
   } else if (name == "persistent-storage") {
-    *permission_type = PermissionType::DURABLE_STORAGE;
+    *permission_type = PermissionType::PERSISTENT_STORAGE;
   } else if (name == "push") {
     if (!descriptor->GetUserVisibleOnly(false)) {
       return Response::InvalidParams(
@@ -261,7 +261,7 @@ Response FromProtocolPermissionType(
   } else if (type == protocol::Browser::PermissionTypeEnum::Midi) {
     *out_type = PermissionType::MIDI;
   } else if (type == protocol::Browser::PermissionTypeEnum::DurableStorage) {
-    *out_type = PermissionType::DURABLE_STORAGE;
+    *out_type = PermissionType::PERSISTENT_STORAGE;
   } else if (type == protocol::Browser::PermissionTypeEnum::AudioCapture) {
     *out_type = PermissionType::AUDIO_CAPTURE;
   } else if (type == protocol::Browser::PermissionTypeEnum::VideoCapture) {
@@ -571,6 +571,7 @@ Response BrowserHandler::SetDownloadBehavior(
                                    std::move(download_path));
   if (!response.IsSuccess())
     return response;
+
   SetDownloadEventsEnabled(events_enabled.value_or(false));
   return response;
 }

@@ -220,12 +220,12 @@ void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
       CONTENT_SETTING_DEFAULT);
 }
 
-bool CookieSettings::IsStorageDurable(const GURL& origin) const {
+bool CookieSettings::IsStoragePersistent(const GURL& origin) const {
   // TODO(dgrogan): Don't use host_content_settings_map_ directly.
   // https://crbug.com/539538
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       origin /*primary*/, origin /*secondary*/,
-      ContentSettingsType::DURABLE_STORAGE);
+      ContentSettingsType::PERSISTENT_STORAGE);
   return setting == CONTENT_SETTING_ALLOW;
 }
 

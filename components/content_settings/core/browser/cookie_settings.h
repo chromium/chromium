@@ -174,7 +174,7 @@ class CookieSettings
   // This should only be called on the UI thread.
   void ResetThirdPartyCookieSetting(const GURL& first_party_url);
 
-  bool IsStorageDurable(const GURL& origin) const;
+  bool IsStoragePersistent(const GURL& origin) const;
 
   // Returns true if third party cookies should be blocked.
   //

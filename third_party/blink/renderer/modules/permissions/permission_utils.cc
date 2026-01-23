@@ -85,7 +85,7 @@ String PermissionNameToString(PermissionName name) {
       return "midi";
     case PermissionName::PROTECTED_MEDIA_IDENTIFIER:
       return "protected_media_identifier";
-    case PermissionName::DURABLE_STORAGE:
+    case PermissionName::PERSISTENT_STORAGE:
       return "durable_storage";
     case PermissionName::AUDIO_CAPTURE:
       return "audio_capture";
@@ -293,7 +293,7 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
       return CreatePermissionDescriptor(PermissionName::BACKGROUND_SYNC);
 
     case V8PermissionName::Enum::kPersistentStorage:
-      return CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE);
+      return CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE);
 
     case V8PermissionName::Enum::kAmbientLightSensor:
       if (!RuntimeEnabledFeatures::SensorExtraClassesEnabled()) {

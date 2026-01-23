@@ -1069,7 +1069,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
       base::MakeFixedFlatSet<ContentSettingsType>({
           // clang-format off
           ContentSettingsType::MIDI,
-          ContentSettingsType::DURABLE_STORAGE,
+          ContentSettingsType::PERSISTENT_STORAGE,
           ContentSettingsType::NFC,
           ContentSettingsType::FILE_SYSTEM_READ_GUARD,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,

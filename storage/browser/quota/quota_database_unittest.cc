@@ -492,8 +492,8 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   ASSERT_EQ(1U, result.size());
   EXPECT_EQ(bucket_id2, result.begin()->id);
 
-  // Test that durable origins are excluded from eviction.
-  policy->AddDurable(storage_key2.origin().GetURL());
+  // Test that persistent origins are excluded from eviction.
+  policy->AddPersistent(storage_key2.origin().GetURL());
   ASSERT_OK_AND_ASSIGN(result, db->GetBucketsForEviction(
                                    1, {}, bucket_exceptions, policy.get()));
   ASSERT_EQ(1U, result.size());
@@ -1158,7 +1158,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(2U, stale_buckets.size());
   policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-  policy->AddDurable(default_bucket.storage_key.origin().GetURL());
+  policy->AddPersistent(default_bucket.storage_key.origin().GetURL());
   db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(2U, stale_buckets.size());
@@ -1170,7 +1170,7 @@ TEST_P(QuotaDatabaseTest, Stale) {
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(3U, stale_buckets.size());
   policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
-  policy->AddDurable(named_bucket.storage_key.origin().GetURL());
+  policy->AddPersistent(named_bucket.storage_key.origin().GetURL());
   db.SetAlreadyEvictedStaleStorageForTesting(false);
   ASSERT_OK_AND_ASSIGN(stale_buckets, db.GetExpiredBuckets(policy.get()));
   EXPECT_EQ(3U, stale_buckets.size());
@@ -1335,9 +1335,9 @@ TEST_P(QuotaDatabaseTest, PersistentPolicy) {
   ASSERT_EQ(1U, lru_result.size());
   EXPECT_EQ(default_id, lru_result.begin()->id);
 
-  // Check that durable policy applies to the default bucket but not the non
+  // Check that persistent policy applies to the default bucket but not the non
   // default (non default buckets use the persist columnn in the database).
-  policy->AddDurable(storage_key.origin().GetURL());
+  policy->AddPersistent(storage_key.origin().GetURL());
   ASSERT_OK_AND_ASSIGN(lru_result,
                        db.GetBucketsForEviction(1, {}, {}, policy.get()));
   ASSERT_EQ(1U, lru_result.size());

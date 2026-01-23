@@ -664,7 +664,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     const bool is_default = statement.ColumnStringView(2) == kDefaultBucketName;
     const GURL read_gurl = read_storage_key->origin().GetURL();
     if (is_default && special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_gurl) ||
+        (special_storage_policy->IsStoragePersistent(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
@@ -796,7 +796,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
     // Only the default bucket is persisted by `navigator.storage.persist()`.
     const GURL read_gurl = bucket->storage_key.origin().GetURL();
     if (bucket->is_default() && special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_gurl) ||
+        (special_storage_policy->IsStoragePersistent(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }

@@ -261,8 +261,8 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::MIDI_SYSEX:
       *out = PermissionType::MIDI_SYSEX;
       break;
-    case ContentSettingsType::DURABLE_STORAGE:
-      *out = PermissionType::DURABLE_STORAGE;
+    case ContentSettingsType::PERSISTENT_STORAGE:
+      *out = PermissionType::PERSISTENT_STORAGE;
       break;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
       *out = PermissionType::VIDEO_CAPTURE;
@@ -486,8 +486,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
 #else
       break;
 #endif
-    case PermissionType::DURABLE_STORAGE:
-      return ContentSettingsType::DURABLE_STORAGE;
+    case PermissionType::PERSISTENT_STORAGE:
+      return ContentSettingsType::PERSISTENT_STORAGE;
     case PermissionType::AUDIO_CAPTURE:
       return ContentSettingsType::MEDIASTREAM_MIC;
     case PermissionType::VIDEO_CAPTURE:

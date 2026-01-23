@@ -52,7 +52,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::MIDI_SYSEX:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-    case PermissionType::DURABLE_STORAGE:
+    case PermissionType::PERSISTENT_STORAGE:
     case PermissionType::AUDIO_CAPTURE:
     case PermissionType::VIDEO_CAPTURE:
     case PermissionType::CLIPBOARD_READ_WRITE:

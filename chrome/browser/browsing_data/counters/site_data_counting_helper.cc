@@ -103,11 +103,11 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
       std::move(cdm_storage_callback), begin_, end_);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  // Counting site usage data and durable permissions.
+  // Counting site usage data and persistent permissions.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
   const ContentSettingsType content_settings[] = {
-    ContentSettingsType::DURABLE_STORAGE,
-    ContentSettingsType::APP_BANNER,
+      ContentSettingsType::PERSISTENT_STORAGE,
+      ContentSettingsType::APP_BANNER,
   };
   for (auto type : content_settings) {
     tasks_ += 1;

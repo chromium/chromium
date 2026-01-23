@@ -336,10 +336,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       FROM_HERE, slow_pending_tasks_closure_.callback(), kSlowTaskTimeout);
 
   // Embedder-defined DOM-accessible storage currently contains only
-  // one datatype, which is the durable storage permission.
+  // one datatype, which is the persistent storage permission.
   if (remove_mask &
       content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE) {
-    remove_mask |= constants::DATA_TYPE_DURABLE_PERMISSION;
+    remove_mask |= constants::DATA_TYPE_PERSISTENT_PERMISSION;
   }
 
   if (origin_type_mask &
@@ -825,11 +825,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // DATA_TYPE_DURABLE_PERMISSION
-  if (remove_mask & constants::DATA_TYPE_DURABLE_PERMISSION) {
+  // DATA_TYPE_PERSISTENT_PERMISSION
+  if (remove_mask & constants::DATA_TYPE_PERSISTENT_PERMISSION) {
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::DURABLE_STORAGE, base::Time(), base::Time::Max(),
-        website_settings_filter);
+        ContentSettingsType::PERSISTENT_STORAGE, base::Time(),
+        base::Time::Max(), website_settings_filter);
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -135,7 +135,7 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::POPUPS,
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::ADS,
-      ContentSettingsType::DURABLE_STORAGE,
+      ContentSettingsType::PERSISTENT_STORAGE,
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
       ContentSettingsType::REQUEST_DESKTOP_SITE,
       ContentSettingsType::KEYBOARD_LOCK,

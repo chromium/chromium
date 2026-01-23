@@ -232,7 +232,7 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::DURABLE_STORAGE, "durable-storage",
+  Register(ContentSettingsType::PERSISTENT_STORAGE, "durable-storage",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/

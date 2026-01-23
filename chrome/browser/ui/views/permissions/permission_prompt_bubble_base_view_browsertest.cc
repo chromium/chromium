@@ -185,7 +185,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
                             std::make_unique<DownloadPermissionRequest>(
                                 nullptr, url::Origin::Create(GetTestUrl())));
         break;
-      case ContentSettingsType::DURABLE_STORAGE:
+      case ContentSettingsType::PERSISTENT_STORAGE:
         // TODO(tapted): Prompt for quota request.
         break;
       case ContentSettingsType::MEDIASTREAM_MIC:

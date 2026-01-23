@@ -116,7 +116,7 @@ ScriptPromise<IDLBoolean> StorageManager::persist(
   auto promise = resolver->Promise();
 
   GetPermissionService(window)->RequestPermission(
-      CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
+      CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
       BindOnce(&StorageManager::PermissionRequestComplete, WrapPersistent(this),
                WrapPersistent(resolver)));
@@ -142,7 +142,7 @@ ScriptPromise<IDLBoolean> StorageManager::persisted(
 
   GetPermissionService(ExecutionContext::From(script_state))
       ->HasPermission(
-          CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE),
+          CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE),
           BindOnce(&StorageManager::PermissionRequestComplete,
                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
@@ -206,8 +206,9 @@ void StorageManager::PermissionRequestComplete(
     ScriptPromiseResolver<IDLBoolean>* resolver,
     mojom::blink::PermissionStatus status) {
   if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
+  }
   resolver->Resolve(status == mojom::blink::PermissionStatus::GRANTED);
 }
 

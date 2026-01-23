@@ -181,7 +181,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SSL_CERT_DECISIONS, nullptr},
     {ContentSettingsType::APP_BANNER, nullptr},
     {ContentSettingsType::SITE_ENGAGEMENT, nullptr},
-    {ContentSettingsType::DURABLE_STORAGE, nullptr},
+    {ContentSettingsType::PERSISTENT_STORAGE, nullptr},
     {ContentSettingsType::AUTOPLAY, nullptr},
     {ContentSettingsType::IMPORTANT_SITE_INFO, nullptr},
     {ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, nullptr},

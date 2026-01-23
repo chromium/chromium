@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/storage/durable_storage_permission_context.h"
+#include "chrome/browser/storage/persistent_storage_permission_context.h"
 
 #include <memory>
 #include <string>
@@ -37,10 +37,11 @@ using PermissionStatus = blink::mojom::PermissionStatus;
 
 namespace {
 
-class TestDurablePermissionContext : public DurableStoragePermissionContext {
+class TestPersistentPermissionContext
+    : public PersistentStoragePermissionContext {
  public:
-  explicit TestDurablePermissionContext(Profile* profile)
-      : DurableStoragePermissionContext(profile) {}
+  explicit TestPersistentPermissionContext(Profile* profile)
+      : PersistentStoragePermissionContext(profile) {}
 
   int permission_set_count() const { return permission_set_count_; }
   bool last_permission_set_persisted() const {
@@ -53,7 +54,7 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
         ->GetContentSetting(url_a.DeprecatedGetOriginAsURL(),
                             url_b.DeprecatedGetOriginAsURL(),
-                            ContentSettingsType::DURABLE_STORAGE);
+                            ContentSettingsType::PERSISTENT_STORAGE);
   }
 
  private:
@@ -66,7 +67,7 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_set_decision_ = decision.overall_decision;
-    DurableStoragePermissionContext::NotifyPermissionSet(
+    PersistentStoragePermissionContext::NotifyPermissionSet(
         request_data, std::move(callback), persist, decision);
   }
 
@@ -77,7 +78,7 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
 
 }  // namespace
 
-class DurableStoragePermissionContextTest
+class PersistentStoragePermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  protected:
   void MakeOriginImportant(const GURL& origin) {
@@ -86,8 +87,8 @@ class DurableStoragePermissionContextTest
   }
 };
 
-TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
-  TestDurablePermissionContext permission_context(profile());
+TEST_F(PersistentStoragePermissionContextTest, Bookmarked) {
+  TestPersistentPermissionContext permission_context(profile());
   GURL url("https://www.google.com");
   MakeOriginImportant(url);
   NavigateAndCommit(url);
@@ -103,7 +104,7 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
@@ -112,8 +113,8 @@ TEST_F(DurableStoragePermissionContextTest, Bookmarked) {
   EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
-  TestDurablePermissionContext permission_context(
+TEST_F(PersistentStoragePermissionContextTest, BookmarkAndIncognitoMode) {
+  TestPersistentPermissionContext permission_context(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   GURL url("https://www.google.com");
   MakeOriginImportant(url);
@@ -130,7 +131,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
@@ -139,8 +140,9 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndIncognitoMode) {
   EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
-  TestDurablePermissionContext permission_context(
+TEST_F(PersistentStoragePermissionContextTest,
+       BookmarkAndNonPrimaryOTRProfile) {
+  TestPersistentPermissionContext permission_context(
       profile()->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUniqueForTesting(),
           /*create_if_needed=*/true));
@@ -159,7 +161,7 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // Success.
@@ -168,8 +170,8 @@ TEST_F(DurableStoragePermissionContextTest, BookmarkAndNonPrimaryOTRProfile) {
   EXPECT_EQ(PermissionDecision::kAllow, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
-  TestDurablePermissionContext permission_context(profile());
+TEST_F(PersistentStoragePermissionContextTest, NoBookmark) {
+  TestPersistentPermissionContext permission_context(profile());
   GURL url("https://www.google.com");
   NavigateAndCommit(url);
 
@@ -184,7 +186,7 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, url, url),
       base::DoNothing());
 
@@ -194,8 +196,8 @@ TEST_F(DurableStoragePermissionContextTest, NoBookmark) {
   EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
-  TestDurablePermissionContext permission_context(profile());
+TEST_F(PersistentStoragePermissionContextTest, CookiesNotAllowed) {
+  TestPersistentPermissionContext permission_context(profile());
   GURL url("https://www.google.com");
   MakeOriginImportant(url);
   NavigateAndCommit(url);
@@ -216,7 +218,7 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, url, url),
       base::DoNothing());
   // We shouldn't be granted.
@@ -225,8 +227,8 @@ TEST_F(DurableStoragePermissionContextTest, CookiesNotAllowed) {
   EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
-  TestDurablePermissionContext permission_context(profile());
+TEST_F(PersistentStoragePermissionContextTest, EmbeddedFrame) {
+  TestPersistentPermissionContext permission_context(profile());
   GURL url("https://www.google.com");
   GURL requesting_url("https://www.youtube.com");
   MakeOriginImportant(url);
@@ -243,7 +245,7 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
   permission_context.DecidePermission(
       std::make_unique<permissions::PermissionRequestData>(
           std::make_unique<permissions::ContentSettingPermissionResolver>(
-              ContentSettingsType::DURABLE_STORAGE),
+              ContentSettingsType::PERSISTENT_STORAGE),
           id, /*user_gesture=*/true, requesting_url, url),
       base::DoNothing());
   // We shouldn't be granted.
@@ -252,8 +254,8 @@ TEST_F(DurableStoragePermissionContextTest, EmbeddedFrame) {
   EXPECT_EQ(PermissionDecision::kNone, permission_context.last_set_decision());
 }
 
-TEST_F(DurableStoragePermissionContextTest, NonsecureOrigin) {
-  TestDurablePermissionContext permission_context(profile());
+TEST_F(PersistentStoragePermissionContextTest, NonsecureOrigin) {
+  TestPersistentPermissionContext permission_context(profile());
   GURL url("http://www.google.com");
 
   EXPECT_EQ(

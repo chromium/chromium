@@ -1659,9 +1659,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1366" label="AudioListenerSetPosition"/>
   <int value="1367" label="AudioListenerSetOrientation"/>
   <int value="1368" label="IntersectionObserver_Constructor"/>
-  <int value="1369" label="DurableStoragePersist"/>
-  <int value="1370" label="DurableStoragePersisted"/>
-  <int value="1371" label="DurableStorageEstimate"/>
+  <int value="1369" label="PersistentStoragePersist"/>
+  <int value="1370" label="PersistentStoragePersisted"/>
+  <int value="1371" label="PersistentStorageEstimate"/>
   <int value="1372" label="UntrustedEventDefaultHandled"/>
   <int value="1373" label="FixedRasterScaleBlurryContent"/>
   <int value="1374" label="FixedRasterScalePotentialPerformanceRegression"/>

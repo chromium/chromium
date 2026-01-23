@@ -68,7 +68,7 @@ void BucketHost::Persist(PersistCallback callback) {
   }
 
   if (receivers_.current_context()->GetPermissionStatus(
-          blink::PermissionType::DURABLE_STORAGE) ==
+          blink::PermissionType::PERSISTENT_STORAGE) ==
       blink::mojom::PermissionStatus::GRANTED) {
     GetQuotaManagerProxy()->UpdateBucketPersistence(
         bucket_id_, /*persistent=*/true,

@@ -21,7 +21,7 @@
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "chrome/browser/storage/durable_storage_permission_context.h"
+#include "chrome/browser/storage/persistent_storage_permission_context.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
@@ -116,8 +116,11 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::DISPLAY_CAPTURE] =
       std::make_unique<DisplayCapturePermissionContext>(profile);
 
-  permission_contexts[ContentSettingsType::DURABLE_STORAGE] =
-      std::make_unique<DurableStoragePermissionContext>(profile);
+  // TODO(crbug.com/40703864): Permission is granted based on browser heuristics
+  // (e.g. site engagement) and is not planned for WebLayer until it supports
+  // installing PWAs.
+  permission_contexts[ContentSettingsType::PERSISTENT_STORAGE] =
+      std::make_unique<PersistentStoragePermissionContext>(profile);
 
   permission_contexts[ContentSettingsType::IDLE_DETECTION] =
       std::make_unique<IdleDetectionPermissionContext>(profile);

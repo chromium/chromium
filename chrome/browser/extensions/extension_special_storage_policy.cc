@@ -188,8 +188,8 @@ bool ExtensionSpecialStoragePolicy::HasIsolatedStorage(const GURL& origin) {
   return isolated_extensions_.Contains(origin);
 }
 
-bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
-  return cookie_settings_->IsStorageDurable(origin);
+bool ExtensionSpecialStoragePolicy::IsStoragePersistent(const GURL& origin) {
+  return cookie_settings_->IsStoragePersistent(origin);
 }
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(

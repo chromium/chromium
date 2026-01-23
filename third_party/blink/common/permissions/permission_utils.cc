@@ -36,7 +36,7 @@ std::string GetPermissionString(PermissionType permission) {
       return "Notifications";
     case PermissionType::MIDI_SYSEX:
       return "MidiSysEx";
-    case PermissionType::DURABLE_STORAGE:
+    case PermissionType::PERSISTENT_STORAGE:
       return "DurableStorage";
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       return "ProtectedMediaIdentifier";
@@ -176,7 +176,7 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return network::mojom::PermissionsPolicyFeature::kLoopbackNetwork;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
-    case PermissionType::DURABLE_STORAGE:
+    case PermissionType::PERSISTENT_STORAGE:
     case PermissionType::BACKGROUND_SYNC:
     // TODO(crbug.com/1384434): decouple this to separated types of sensor,
     // with a corresponding permission policy.
@@ -282,8 +282,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       NOTIMPLEMENTED();
       return std::nullopt;
 #endif  // defined(ENABLE_PROTECTED_MEDIA_IDENTIFIER_PERMISSION)
-    case PermissionName::DURABLE_STORAGE:
-      return PermissionType::DURABLE_STORAGE;
+    case PermissionName::PERSISTENT_STORAGE:
+      return PermissionType::PERSISTENT_STORAGE;
     case PermissionName::AUDIO_CAPTURE:
       return PermissionType::AUDIO_CAPTURE;
     case PermissionName::VIDEO_CAPTURE:

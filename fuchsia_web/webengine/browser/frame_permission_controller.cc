@@ -43,7 +43,7 @@ const url::Origin& GetCanonicalOrigin(PermissionType permission,
   // - AUDIO_CAPTURE
   // - VIDEO_CAPTURE
   // - PROTECTED_MEDIA_IDENTIFIER
-  // - DURABLE_STORAGE
+  // - PERSISTENT_STORAGE
   return embedding_origin;
 }
 
@@ -81,7 +81,7 @@ void FramePermissionController::SetPermissionState(PermissionType permission,
   DCHECK(permission == PermissionType::AUDIO_CAPTURE ||
          permission == PermissionType::VIDEO_CAPTURE ||
          permission == PermissionType::PROTECTED_MEDIA_IDENTIFIER ||
-         permission == PermissionType::DURABLE_STORAGE ||
+         permission == PermissionType::PERSISTENT_STORAGE ||
          permission == PermissionType::NOTIFICATIONS);
 
   auto it = per_origin_permissions_.find(origin);

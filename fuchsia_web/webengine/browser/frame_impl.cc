@@ -213,7 +213,7 @@ std::optional<blink::PermissionType> FidlPermissionTypeToContentPermissionType(
     case fuchsia::web::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       return blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER;
     case fuchsia::web::PermissionType::PERSISTENT_STORAGE:
-      return blink::PermissionType::DURABLE_STORAGE;
+      return blink::PermissionType::PERSISTENT_STORAGE;
     case fuchsia::web::PermissionType::NOTIFICATIONS:
       return blink::PermissionType::NOTIFICATIONS;
     default:

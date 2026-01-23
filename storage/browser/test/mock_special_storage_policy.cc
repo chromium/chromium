@@ -32,8 +32,8 @@ bool MockSpecialStoragePolicy::HasSessionOnlyOrigins() {
   return !session_only_.empty();
 }
 
-bool MockSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
-  return durable_.contains(origin);
+bool MockSpecialStoragePolicy::IsStoragePersistent(const GURL& origin) {
+  return persistent_.contains(origin);
 }
 
 MockSpecialStoragePolicy::~MockSpecialStoragePolicy() = default;
