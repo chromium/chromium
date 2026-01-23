@@ -1487,9 +1487,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.EditsInSaveBubble"
-    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2026-02-22">
-  <owner>vasilii@chromium.org</owner>
+    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2026-05-22">
   <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Indication whether users change the credentials (username and password) in
     the save bubble of the password manager, considering only cases where the
@@ -1581,16 +1581,6 @@ chromium-metrics-reviews@google.com.
     Recorded when the failed login signal is detected. The recorded value
     represents whether Password Manager ignored the signal or not. When Password
     Manager takes the signal into account the Save/Update bubbles won't show up.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
-    expires_after="2026-02-22">
-  <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Measures whether a password vote had a field name collision, i.e. multiple
-    fields that should have an Autofill type uploaded have the same name.
   </summary>
 </histogram>
 
