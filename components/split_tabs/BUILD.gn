@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("split_tabs") {
+  sources = [
+    "split_tab_id.h",
+    "split_tab_visual_data.cc",
+    "split_tab_visual_data.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/tab_groups",
+  ]
+}

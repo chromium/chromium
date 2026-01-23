@@ -1,5 +1,6 @@
 include_rules = [
   "+components/tab_groups",
+  "+components/split_tabs",
   "+ui/gfx",
   "+ui/views",
 ]

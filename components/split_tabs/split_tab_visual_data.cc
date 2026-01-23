@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 
 namespace split_tabs {
 

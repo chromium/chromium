@@ -199,8 +199,6 @@ test("components_unittests") {
     "//components/bookmarks/browser:unit_tests",
     "//components/bookmarks/managed:unit_tests",
     "//components/breadcrumbs/core:unit_tests",
-    "//components/browser_apis/browser_controls:unit_tests",
-    "//components/browser_apis/tab_strip:unit_tests",
     "//components/browser_sync:unit_tests",
     "//components/browsing_data/core:unit_tests",
     "//components/captive_portal/core:unit_tests",
@@ -378,7 +376,6 @@ test("components_unittests") {
     "//components/sync_user_events:unit_tests",
     "//components/system_cpu:unit_tests",
     "//components/system_media_controls:unit_tests",
-    "//components/tabs:unit_tests",
     "//components/test:run_all_unittests",
     "//components/themes:unit_tests",
     "//components/tpcd/metadata/browser:unit_tests",
@@ -624,6 +621,8 @@ test("components_unittests") {
       "//components/autofill/content/renderer:unit_tests",
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
+      "//components/browser_apis/browser_controls:unit_tests",
+      "//components/browser_apis/tab_strip:unit_tests",
       "//components/content_settings/browser/ui:unit_tests",
       "//components/headless/test:unit_tests",
       "//components/media_router/browser:unit_tests",
@@ -640,6 +639,7 @@ test("components_unittests") {
       "//components/site_isolation:unit_tests",
       "//components/spellcheck/browser:unit_tests",
       "//components/spellcheck/renderer:unit_tests",
+      "//components/tabs:unit_tests",
       "//components/user_data_importer/content:unit_tests",
     ]
 

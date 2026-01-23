@@ -22,9 +22,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {

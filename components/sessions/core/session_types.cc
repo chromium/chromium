@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include "components/sessions/core/session_command.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace sessions {

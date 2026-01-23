@@ -37,13 +37,13 @@ source_set("public") {
 
 source_set("split_tabs") {
   sources = [
-    "impl/split_tab_visual_data.cc",
     "public/split_tab_id.h",
     "public/split_tab_visual_data.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/split_tabs",
     "//ui/gfx/range",
   ]
 
