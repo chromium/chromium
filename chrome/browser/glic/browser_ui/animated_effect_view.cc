@@ -221,9 +221,7 @@ void AnimatedEffectView::OnGpuInfoUpdate() {
 }
 
 bool AnimatedEffectView::IsShowing() const {
-  // `compositor_` is set when the effect starts to show and is unset when the
-  // effect stops showing.
-  return !!compositor_;
+  return is_showing_;
 }
 
 float AnimatedEffectView::GetEffectTimeForTesting() const {
@@ -231,17 +229,16 @@ float AnimatedEffectView::GetEffectTimeForTesting() const {
 }
 
 void AnimatedEffectView::Show() {
-  if (compositor_) {
-    // The user can click on the glic icon after the window is shown. The
-    // animation is already playing at that time.
-    return;
-  }
-
   if (!parent()) {
     base::debug::DumpWithoutCrashing();
     return;
   }
 
+  if (compositor_) {
+    StopShowing();
+  }
+
+  is_showing_ = true;
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(corner_radius_);
@@ -269,8 +266,9 @@ void AnimatedEffectView::Show() {
 }
 
 void AnimatedEffectView::StopShowing() {
+  is_showing_ = false;
+
   if (!compositor_) {
-    VLOG(1) << "StopShowing no-op, no compositor";
     return;
   }
 
@@ -377,6 +375,8 @@ float AnimatedEffectView::GetOpacity(base::TimeTicks timestamp) {
 }
 
 void AnimatedEffectView::StartRampingDown() {
+  is_showing_ = false;
+
   if (!compositor_) {
     return;
   }

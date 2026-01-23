@@ -50,7 +50,9 @@ class AnimatedEffectView : public views::View,
 
   bool IsShowing() const;
 
-  // Called to start showing the view.
+  // Called to start showing the view. Note that consecutive calls will hide and
+  // restart the showing animation - callers should first check the state with
+  // `IsShowing()`.
   void Show();
 
   // Called to stop showing the view.
@@ -171,6 +173,13 @@ class AnimatedEffectView : public views::View,
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;
+
+  // Represents the state of the view if in a steady state, or the final state
+  // of the view if in an animating state. This means this is true when the view
+  // is animating in and when it is visible and not animating, and false when
+  // the view is animating out and when it is not visible and not animating. See
+  // crbug.com/477665728 for details.
+  bool is_showing_ = false;
 };
 
 BEGIN_VIEW_BUILDER(, AnimatedEffectView, views::View)
