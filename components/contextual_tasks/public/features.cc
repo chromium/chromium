@@ -91,7 +91,7 @@ constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
 const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     &kContextualTasks,
     "ContextualTasksEntryPoint",
-    EntryPointOption::kNoEntryPoint,
+    EntryPointOption::kToolbarPermanent,
     &kEntryPointOptions);
 
 const base::FeatureParam<bool> kTaskScopedSidePanel(&kContextualTasks,
@@ -110,7 +110,7 @@ const base::FeatureParam<bool> kEnableLensInContextualTasks(
 
 const base::FeatureParam<bool> kForceGscInTabMode(&kContextualTasks,
                                                   "ForceGscInTabMode",
-                                                  true);
+                                                  false);
 
 // The user agent suffix to use for requests from the contextual tasks UI.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
