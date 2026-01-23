@@ -53,6 +53,9 @@ class WTF_EXPORT StringView {
   DISALLOW_NEW();
 
  public:
+  using size_type = string_size_t;
+  static constexpr size_type npos = kNotFound;
+
   // A buffer that allows for short strings to be held on the stack during a
   // transform. This is a performance optimization for very hot paths and
   // should rarely need to be used.

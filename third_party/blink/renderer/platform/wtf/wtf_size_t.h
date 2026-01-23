@@ -35,6 +35,10 @@ namespace blink {
 using wtf_size_t = uint32_t;
 const wtf_size_t kNotFound = UINT_MAX;
 
+// The size type for Blink string classes.
+// The name is lower_snake_case for consistency with wtf_size_t.
+using string_size_t = wtf_size_t;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_SIZE_T_H_

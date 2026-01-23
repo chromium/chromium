@@ -57,6 +57,9 @@ class WTF_EXPORT AtomicString {
   USING_FAST_MALLOC(AtomicString);
 
  public:
+  using size_type = string_size_t;
+  static constexpr size_type npos = kNotFound;
+
   // The function is defined in StringStatics.cpp.
   static void Init();
 
