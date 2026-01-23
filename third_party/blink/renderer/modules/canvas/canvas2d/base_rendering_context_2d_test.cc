@@ -165,9 +165,12 @@ class TestRenderingContext2D final
       return false;
     }
     auto* selector = Host()->GetFontSelector();
-    FontDescription font_description =
+    std::optional<FontDescription> maybe_desc =
         FontStyleResolver::ComputeFont(*style, selector->BaseFontSelector());
-    GetState().SetFont(font_description, selector);
+    if (!maybe_desc.has_value()) {
+      return false;
+    }
+    GetState().SetFont(maybe_desc.value(), selector);
     return true;
   }
 

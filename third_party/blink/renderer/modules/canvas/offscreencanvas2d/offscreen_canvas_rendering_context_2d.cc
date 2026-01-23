@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
@@ -491,8 +493,12 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     if (!style) {
       return false;
     }
-    FontDescription desc = FontStyleResolver::ComputeFont(
+    std::optional<FontDescription> maybe_desc = FontStyleResolver::ComputeFont(
         *style, host->GetFontSelector()->BaseFontSelector());
+    if (!maybe_desc.has_value()) {
+      return false;
+    }
+    FontDescription desc = maybe_desc.value();
     desc.SetLocale(locale);
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, host->GetFontSelector());

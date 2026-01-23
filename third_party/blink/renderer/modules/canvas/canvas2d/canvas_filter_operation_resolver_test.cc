@@ -326,9 +326,12 @@ TEST(CSSResolutionTest,
       MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
   // Pre-condition for using style resolution for fonts.
   ASSERT_NE(canvas->GetDocument().GetFrame(), nullptr);
-  Font* font = MakeGarbageCollected<Font>(FontStyleResolver::ComputeFont(
-      *CSSParser::ParseFont("10px sans-serif", scope.GetExecutionContext()),
-      canvas->GetFontSelector()->BaseFontSelector()));
+  auto* parsed =
+      CSSParser::ParseFont("10px sans-serif", scope.GetExecutionContext());
+  auto maybe_desc = FontStyleResolver::ComputeFont(
+      *parsed, canvas->GetFontSelector()->BaseFontSelector());
+  ASSERT_TRUE(maybe_desc.has_value());
+  Font* font = MakeGarbageCollected<Font>(maybe_desc.value());
   EXPECT_THAT(
       CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
           String("drop-shadow(1em 1em 0 black)"),
