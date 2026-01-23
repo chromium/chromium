@@ -29,7 +29,7 @@
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"

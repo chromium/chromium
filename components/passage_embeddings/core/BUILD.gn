@@ -30,7 +30,7 @@ static_library("passage_embeddings_internal") {
   ]
 }
 
-static_library("passage_embeddings") {
+static_library("core") {
   sources = [
     "passage_embedder_model_observer.cc",
     "passage_embedder_model_observer.h",
@@ -64,7 +64,7 @@ static_library("test_support") {
     "passage_embeddings_test_util.h",
   ]
   deps = [
-    ":passage_embeddings",
+    ":core",
     "//base",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
@@ -81,7 +81,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":passage_embeddings",
+    ":core",
     ":passage_embeddings_internal",
     ":test_support",
     "//base/test:test_support",
@@ -94,7 +94,6 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
     "//components/page_content_annotations/core:test_support",
-    "//components/passage_embeddings",
     "//mojo/public/cpp/bindings",
     "//services/passage_embeddings/public/mojom",
     "//testing/gtest",

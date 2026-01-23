@@ -45,7 +45,7 @@
 // TODO(crbug.com/382447738): Fix tflite defines; this might not build for
 // tflite right now.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"

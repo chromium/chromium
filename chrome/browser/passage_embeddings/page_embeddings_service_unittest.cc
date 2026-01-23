@@ -14,7 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"

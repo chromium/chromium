@@ -5,7 +5,7 @@
 #include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
 
 #include "base/strings/strcat.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 
 namespace passage_embeddings {
 

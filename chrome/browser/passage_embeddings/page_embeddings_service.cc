@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 

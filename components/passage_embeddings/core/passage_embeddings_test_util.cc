@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 
 #include <memory>
 
@@ -16,8 +16,8 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

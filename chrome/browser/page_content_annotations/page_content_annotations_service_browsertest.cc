@@ -46,7 +46,7 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

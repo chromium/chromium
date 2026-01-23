@@ -32,7 +32,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_test.h"
 

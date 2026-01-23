@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TYPES_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TYPES_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TYPES_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TYPES_H_
 
 #include <optional>
 #include <set>
@@ -90,7 +90,8 @@ struct EmbedderMetadata {
   std::optional<double> search_score_threshold;
 };
 
-// Observer interface for getting notified when the embedder metadata is updated.
+// Observer interface for getting notified when the embedder metadata is
+// updated.
 class EmbedderMetadataObserver : public base::CheckedObserver {
  public:
   // Called when the embedder metadata is updated.
@@ -190,4 +191,4 @@ class Embedder {
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TYPES_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TYPES_H_

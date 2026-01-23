@@ -38,8 +38,8 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {

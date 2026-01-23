@@ -14,7 +14,7 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/passage_embeddings/passage_embedder_model_observer.h"
+#include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 #include "components/permissions/features.h"
 
 // static

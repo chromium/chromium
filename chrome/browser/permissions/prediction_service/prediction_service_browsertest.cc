@@ -44,7 +44,7 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"

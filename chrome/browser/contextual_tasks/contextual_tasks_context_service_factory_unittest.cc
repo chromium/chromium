@@ -10,7 +10,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

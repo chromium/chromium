@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/passage_embedder_model_observer.h"
+#include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 
 #include <memory>
 
@@ -10,8 +10,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace passage_embeddings {

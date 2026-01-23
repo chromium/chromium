@@ -177,7 +177,7 @@ source_set("permissions") {
     }
     deps += [
       "//chrome/browser/passage_embeddings",
-      "//components/passage_embeddings",
+      "//components/passage_embeddings/core",
       "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     ]
   }
@@ -212,7 +212,7 @@ source_set("test_support") {
 
   deps = [
     ":permissions",
-    "//components/passage_embeddings:test_support",
+    "//components/passage_embeddings/core:test_support",
     "//components/permissions:test_support",
     "//testing/gmock",
   ]
@@ -318,7 +318,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
-      "//components/passage_embeddings:test_support",
+      "//components/passage_embeddings/core:test_support",
     ]
 
     if (is_chromeos) {

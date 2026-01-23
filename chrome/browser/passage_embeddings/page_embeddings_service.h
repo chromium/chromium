@@ -17,7 +17,7 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 

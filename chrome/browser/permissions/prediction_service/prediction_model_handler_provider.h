@@ -10,7 +10,7 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/request_type.h"
 
 class OptimizationGuideKeyedService;

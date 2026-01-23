@@ -584,7 +584,7 @@ if (!is_android) {
       "//components/image_fetcher/core",
       "//components/lens",
       "//components/metrics:content",
-      "//components/passage_embeddings",
+      "//components/passage_embeddings/core",
       "//components/performance_manager",
       "//components/permissions",
       "//components/pref_registry",

@@ -14,7 +14,7 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 
 #include <ranges>
 
@@ -13,9 +13,9 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/passage_embeddings/internal/scheduling_embedder.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/internal/scheduling_embedder.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 

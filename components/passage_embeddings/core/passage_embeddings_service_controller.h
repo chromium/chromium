@@ -1,8 +1,8 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 
@@ -132,4 +132,4 @@ class PassageEmbeddingsServiceController : public EmbedderMetadataProvider {
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_SERVICE_CONTROLLER_H_

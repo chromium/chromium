@@ -9,7 +9,7 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace permissions {
 

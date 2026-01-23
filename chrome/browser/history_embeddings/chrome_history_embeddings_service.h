@@ -9,7 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/browser_context.h"
 
 class Profile;

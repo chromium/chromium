@@ -32,7 +32,7 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_web_ui.h"

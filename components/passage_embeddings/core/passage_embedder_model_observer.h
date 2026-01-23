@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -53,4 +53,4 @@ class PassageEmbedderModelObserver
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDER_MODEL_OBSERVER_H_

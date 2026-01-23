@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_INTERNAL_SCHEDULING_EMBEDDER_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_INTERNAL_SCHEDULING_EMBEDDER_H_
 
 #include <deque>
 #include <memory>
@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
@@ -171,4 +171,4 @@ class SchedulingEmbedder
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_INTERNAL_SCHEDULING_EMBEDDER_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_INTERNAL_SCHEDULING_EMBEDDER_H_

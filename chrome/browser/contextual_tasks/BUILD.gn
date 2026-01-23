@@ -38,7 +38,7 @@ source_set("contextual_tasks") {
     public_deps += [
       ":mojo_bindings",
       "//chrome/browser/passage_embeddings",
-      "//components/passage_embeddings:passage_embeddings_types",
+      "//components/passage_embeddings/core:passage_embeddings_types",
     ]
   }
 }
@@ -248,8 +248,8 @@ if (!is_android) {
       "//components/optimization_guide/core:model_execution_test_support",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
-      "//components/passage_embeddings",
-      "//components/passage_embeddings:test_support",
+      "//components/passage_embeddings/core",
+      "//components/passage_embeddings/core:test_support",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
@@ -319,7 +319,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",
-      "//components/passage_embeddings",
+      "//components/passage_embeddings/core",
       "//components/tabs:test_support",
       "//components/variations:test_support",
     ]

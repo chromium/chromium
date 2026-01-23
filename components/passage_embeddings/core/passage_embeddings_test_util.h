@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TEST_UTIL_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TEST_UTIL_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TEST_UTIL_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TEST_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace passage_embeddings {
 
@@ -81,4 +81,4 @@ class TestEnvironment {
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_TEST_UTIL_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TEST_UTIL_H_

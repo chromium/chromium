@@ -23,7 +23,7 @@ source_set("passage_embeddings") {
     ]
   }
 
-  public_deps = [ "//components/passage_embeddings" ]
+  public_deps = [ "//components/passage_embeddings/core" ]
 
   deps = [
     "//chrome/browser:browser_process",
@@ -54,7 +54,7 @@ source_set("unit_tests") {
       ":passage_embeddings",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/test:test_support",
-      "//components/passage_embeddings:passage_embeddings_types",
+      "//components/passage_embeddings/core:passage_embeddings_types",
       "//testing/gmock",
       "//testing/gtest",
     ]

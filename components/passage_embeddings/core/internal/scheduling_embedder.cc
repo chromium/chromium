@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/internal/scheduling_embedder.h"
+#include "components/passage_embeddings/core/internal/scheduling_embedder.h"
 
 #include <memory>
 #include <numeric>
@@ -15,7 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace passage_embeddings {
 

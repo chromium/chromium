@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_
+#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_FEATURES_H_
+#define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_FEATURES_H_
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
@@ -82,4 +82,4 @@ extern const base::FeatureParam<bool> kUseBackgroundPassageEmbedder;
 
 }  // namespace passage_embeddings
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_PASSAGE_EMBEDDINGS_FEATURES_H_
+#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_FEATURES_H_

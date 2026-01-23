@@ -17,7 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 class GURL;
 class OptimizationGuideKeyedService;

@@ -77,7 +77,7 @@ static_library("core") {
     "//components/google/core/common",
     "//components/omnibox/common",
     "//components/optimization_guide/core:features",
-    "//components/passage_embeddings:passage_embeddings_types",
+    "//components/passage_embeddings/core:passage_embeddings_types",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
   ]

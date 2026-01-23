@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/passage_embedder_model_observer.h"
+#include "components/passage_embeddings/core/passage_embedder_model_observer.h"
 
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/passage_embeddings/passage_embeddings_service_controller.h"
+#include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/download/public/background_service/download_params.h"

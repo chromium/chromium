@@ -104,7 +104,7 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/security_interstitials/core/features.h"
