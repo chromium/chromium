@@ -7595,7 +7595,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Wait for the completion of `accessOriginPrivateFileSystem`.
   EXPECT_EQ(true, EvalJs(prerender_render_frame_host, "result;"));
   // Check the event sequence seen in the prerendered page.
-  base::Value::List results_list =
+  base::ListValue results_list =
       EvalJs(prerender_render_frame_host, "eventsSeen").TakeValue().TakeList();
   std::vector<std::string> eventsSeen;
   for (auto& result : results_list) {

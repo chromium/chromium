@@ -1223,8 +1223,8 @@ ContentBrowserClient::GetNetworkContextsParentDirectory() {
   return {};
 }
 
-base::Value::Dict ContentBrowserClient::GetNetLogConstants() {
-  return base::Value::Dict();
+base::DictValue ContentBrowserClient::GetNetLogConstants() {
+  return base::DictValue();
 }
 
 #if BUILDFLAG(IS_ANDROID)

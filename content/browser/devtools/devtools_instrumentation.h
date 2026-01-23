@@ -272,7 +272,7 @@ void OnInterestGroupAuctionEventOccurred(
     InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
-    const base::Value::Dict& auction_config);
+    const base::DictValue& auction_config);
 void OnInterestGroupAuctionNetworkRequestCreated(
     FrameTreeNodeId frame_tree_node_id,
     InterestGroupAuctionFetchType type,

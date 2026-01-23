@@ -905,12 +905,12 @@ static void CheckJSONIsSubsetOfJSON(std::string_view subset_str,
       base::JSONReader::Read(subset_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(subset);
   ASSERT_TRUE(subset->is_dict());
-  const base::Value::Dict& subset_dict = subset->GetDict();
+  const base::DictValue& subset_dict = subset->GetDict();
   std::optional<base::Value> test =
       base::JSONReader::Read(test_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(test);
   ASSERT_TRUE(test->is_dict());
-  const base::Value::Dict& test_dict = test->GetDict();
+  const base::DictValue& test_dict = test->GetDict();
 
   for (auto item : subset_dict) {
     const base::Value* test_value = test_dict.Find(item.first);

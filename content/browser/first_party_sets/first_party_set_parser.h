@@ -63,7 +63,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // Returns the parsed lists and a list of warnings if successful; otherwise,
   // returns an error.
   [[nodiscard]] static PolicyParseResult ParseSetsFromEnterprisePolicy(
-      const base::Value::Dict& policy);
+      const base::DictValue& policy);
 
   [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
       const std::string& switch_value);

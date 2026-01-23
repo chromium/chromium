@@ -69,7 +69,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     BiddingPartition(int partition_id,
                      const std::set<std::string>* interest_group_names,
                      const std::set<std::string>* keys,
-                     const base::Value::Dict* additional_params,
+                     const base::DictValue* additional_params,
                      const std::string* buyer_tkv_signals);
     BiddingPartition(BiddingPartition&&);
 
@@ -85,7 +85,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
-    base::raw_ref<const base::Value::Dict> additional_params;
+    base::raw_ref<const base::DictValue> additional_params;
 
     raw_ptr<const std::string> buyer_tkv_signals;
   };
@@ -97,7 +97,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     ScoringPartition(int partition_id,
                      const GURL* render_url,
                      const std::set<GURL>* component_render_urls,
-                     const base::Value::Dict* additional_params,
+                     const base::DictValue* additional_params,
                      const std::string* seller_tkv_signals);
     ScoringPartition(ScoringPartition&&);
 
@@ -116,7 +116,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
     // At the moment, valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes". We could take them separately, but seems better
     // to take one field rather than several?
-    base::raw_ref<const base::Value::Dict> additional_params;
+    base::raw_ref<const base::DictValue> additional_params;
 
     raw_ptr<const std::string> seller_tkv_signals;
   };

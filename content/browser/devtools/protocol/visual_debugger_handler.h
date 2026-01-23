@@ -24,7 +24,7 @@ class VisualDebuggerHandler : public DevToolsDomainHandler,
   void Wire(UberDispatcher* dispatcher) override;
 
   DispatchResponse FilterStream(
-      std::unique_ptr<base::Value::Dict> in_filter) override;
+      std::unique_ptr<base::DictValue> in_filter) override;
 
   DispatchResponse StartStream() override;
   DispatchResponse StopStream() override;

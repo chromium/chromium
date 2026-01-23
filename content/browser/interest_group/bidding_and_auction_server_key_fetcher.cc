@@ -84,11 +84,11 @@ const struct {
 };
 
 std::vector<BiddingAndAuctionServerKey> ParseKeysList(
-    const base::Value::List* keys_list) {
+    const base::ListValue* keys_list) {
   std::vector<BiddingAndAuctionServerKey> keys;
   for (const auto& entry : *keys_list) {
     BiddingAndAuctionServerKey key;
-    const base::Value::Dict* key_dict = entry.GetIfDict();
+    const base::DictValue* key_dict = entry.GetIfDict();
     if (!key_dict) {
       continue;
     }
@@ -586,13 +586,13 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeys(
     return;
   }
 
-  const base::Value::Dict* response_dict = result->GetIfDict();
+  const base::DictValue* response_dict = result->GetIfDict();
   if (!response_dict) {
     FailAllCallbacks(coordinator);
     return;
   }
 
-  const base::Value::List* keys_list = response_dict->FindList("keys");
+  const base::ListValue* keys_list = response_dict->FindList("keys");
   if (!keys_list) {
     FailAllCallbacks(coordinator);
     return;
@@ -623,7 +623,7 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
     return;
   }
 
-  const base::Value::Dict* response_dict = result->GetIfDict();
+  const base::DictValue* response_dict = result->GetIfDict();
   if (!response_dict) {
     FailAllCallbacks(coordinator);
     return;
@@ -631,7 +631,7 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
   std::vector<std::pair<url::Origin, std::vector<BiddingAndAuctionServerKey>>>
       origin_scoped_keys;
 
-  const base::Value::Dict* origin_scoped_keys_dict =
+  const base::DictValue* origin_scoped_keys_dict =
       response_dict->FindDict("originScopedKeys");
   if (!origin_scoped_keys_dict) {
     FailAllCallbacks(coordinator);
@@ -652,7 +652,7 @@ void BiddingAndAuctionServerKeyFetcher::OnParsedKeysV2(
       FailAllCallbacks(coordinator);
       return;
     }
-    const base::Value::List* keys_list =
+    const base::ListValue* keys_list =
         per_origin_keys_value.GetDict().FindList("keys");
     if (!keys_list) {
       FailAllCallbacks(coordinator);

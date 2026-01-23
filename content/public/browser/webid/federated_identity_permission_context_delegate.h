@@ -104,8 +104,7 @@ class FederatedIdentityPermissionContextDelegate {
   // `identity_provider`. If the signin status is false or no profile
   // information was stored, returns an empty List. The consumer is responsible
   // for checking validity of accounts.
-  virtual base::Value::List GetAccounts(
-      const url::Origin& identity_provider) = 0;
+  virtual base::ListValue GetAccounts(const url::Origin& identity_provider) = 0;
 
   // Updates the IDP sign-in status. This could be called by
   //   1. IdpSigninStatus API

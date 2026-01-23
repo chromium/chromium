@@ -25,10 +25,10 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
     const std::vector<std::string>& base64_public_keys) {
   CHECK_EQ(private_keys.size(), base64_public_keys.size());
 
-  base::Value::Dict signed_additional_bid;
+  base::DictValue signed_additional_bid;
   signed_additional_bid.Set("bid", bid_string);
 
-  base::Value::List signatures_list;
+  base::ListValue signatures_list;
 
   std::string bid_string_to_sign = bid_string;
   if (inject_fault == SignedAdditionalBidFault::kInvalidSignature ||
@@ -42,7 +42,7 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
         sig, reinterpret_cast<const uint8_t*>(bid_string_to_sign.data()),
         bid_string_to_sign.size(), private_keys[i]);
     CHECK(ok);
-    base::Value::Dict sig_dict;
+    base::DictValue sig_dict;
     sig_dict.Set("key", base64_public_keys[i]);
     sig_dict.Set("signature", base::Base64Encode(sig));
     signatures_list.Append(std::move(sig_dict));

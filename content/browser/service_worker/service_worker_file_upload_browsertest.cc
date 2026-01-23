@@ -37,7 +37,7 @@ namespace content {
 
 namespace {
 
-void GetKey(const base::Value::Dict& dict,
+void GetKey(const base::DictValue& dict,
             const std::string& key,
             std::string* out_value) {
   const std::string* value = dict.FindString(key);
@@ -45,7 +45,7 @@ void GetKey(const base::Value::Dict& dict,
   *out_value = *value;
 }
 
-void GetKey(const base::Value::Dict& dict,
+void GetKey(const base::DictValue& dict,
             const std::string& key,
             int* out_value) {
   std::optional<int> value = dict.FindInt(key);
@@ -55,8 +55,8 @@ void GetKey(const base::Value::Dict& dict,
 
 // Helper since the default output of EXPECT_EQ isn't useful when debugging
 // failures, it doesn't recurse into the dictionary.
-void ExpectEqual(const base::Value::Dict& expected,
-                 const base::Value::Dict& actual) {
+void ExpectEqual(const base::DictValue& expected,
+                 const base::DictValue& actual) {
   EXPECT_EQ(expected, actual)
       << "\nExpected: " << expected << "\nActual: " << actual;
 }
@@ -197,7 +197,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
   void RunRespondWithTest(const std::string& target_query,
                           TargetOrigin target_origin,
                           std::string* out_filename,
-                          base::Value::Dict& out_result) {
+                          base::DictValue& out_result) {
     std::string result;
     RunTest(BuildTargetUrl("/service_worker/upload", target_query),
             TargetOrigin::kSameOrigin, out_filename, &result);
@@ -324,7 +324,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
            BuildTerminator(boundary);
   }
 
-  base::Value::Dict BuildExpectedBodyAsFormData(const std::string& filename) {
+  base::DictValue BuildExpectedBodyAsFormData(const std::string& filename) {
     std::string expectation = R"({
       "entries": [
         {
@@ -369,7 +369,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
 // Tests using Request.text().
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsText) {
   std::string filename;
-  base::Value::Dict dict;
+  base::DictValue dict;
   RunRespondWithTest("getAs=text", TargetOrigin::kSameOrigin, &filename, dict);
 
   std::string boundary;
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsText) {
 // Tests using Request.blob().
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsBlob) {
   std::string filename;
-  base::Value::Dict dict;
+  base::DictValue dict;
   RunRespondWithTest("getAs=blob", TargetOrigin::kSameOrigin, &filename, dict);
 
   std::string boundary;
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsBlob) {
 // Tests using Request.formData().
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsFormData) {
   std::string filename;
-  base::Value::Dict dict;
+  base::DictValue dict;
   RunRespondWithTest("getAs=formData", TargetOrigin::kSameOrigin, &filename,
                      dict);
 
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, NetworkFallback) {
 // target. Regression test for https://crbug.com/916070.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFileUploadTest, AsFormData_CrossOrigin) {
   std::string filename;
-  base::Value::Dict dict;
+  base::DictValue dict;
   RunRespondWithTest("getAs=formData", TargetOrigin::kCrossOrigin, &filename,
                      dict);
 
@@ -445,7 +445,7 @@ std::pair<std::string, std::string> ExtractBoundaryAndBody(
   std::optional<base::Value> parsed_result = base::test::ParseJson(result);
   CHECK(parsed_result) << result;
   CHECK(parsed_result->is_dict()) << result;
-  base::Value::Dict dict = std::move(*parsed_result).TakeDict();
+  base::DictValue dict = std::move(*parsed_result).TakeDict();
 
   std::string boundary;
   GetKey(dict, "boundary", &boundary);

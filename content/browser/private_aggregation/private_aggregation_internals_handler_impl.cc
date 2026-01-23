@@ -61,7 +61,7 @@ CreateWebUIAggregatableReport(
                                    contribution.bucket, contribution.value);
                          });
 
-  base::Value::Dict report_body;
+  base::DictValue report_body;
   if (report.has_value()) {
     report_body = report->GetAsJson();
   } else {

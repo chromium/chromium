@@ -227,7 +227,7 @@ class BrowserToPageConnector {
     SendProtocolMessageToPage("Page.enable", base::Value());
     SendProtocolMessageToPage("Runtime.enable", base::Value());
 
-    base::Value::Dict add_binding_params;
+    base::DictValue add_binding_params;
     add_binding_params.Set("name", binding_name);
     // Expose to the default execution context only.
     add_binding_params.Set("executionContextName", "");
@@ -237,7 +237,7 @@ class BrowserToPageConnector {
     std::string initializer_script =
         base::StringPrintf(kInitializerScript, binding_name.c_str());
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("source", initializer_script);
     params.Set("worldName", "");
     // Run the initializer script immediately on the current page. This is
@@ -261,7 +261,7 @@ class BrowserToPageConnector {
 
  private:
   int SendProtocolMessageToPage(const char* method, base::Value params) {
-    base::Value::Dict message_dict;
+    base::DictValue message_dict;
     int id = page_message_id_++;
     message_dict.Set("id", id);
     message_dict.Set("method", method);
@@ -278,7 +278,7 @@ class BrowserToPageConnector {
     std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
                                 message.size());
     if (agent_host == page_host_.get()) {
-      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      std::optional<base::DictValue> value = base::JSONReader::ReadDict(
           message_sp, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!value) {
         return;
@@ -298,7 +298,7 @@ class BrowserToPageConnector {
         return;
       }
 
-      const base::Value::Dict* params = value->FindDict("params");
+      const base::DictValue* params = value->FindDict("params");
       if (!params) {
         return;
       }
@@ -326,7 +326,7 @@ class BrowserToPageConnector {
     eval_code.append(encoded);
     eval_code.append(eval_suffix);
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", std::move(eval_code));
     SendProtocolMessageToPage("Runtime.evaluate",
                               base::Value(std::move(params)));
@@ -543,7 +543,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DCHECK(!flatten_protocol_);
 
     if (throttle_ || worker_throttle_) {
-      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      std::optional<base::DictValue> value = base::JSONReader::ReadDict(
           std::string_view(reinterpret_cast<const char*>(message.data()),
                            message.size()),
           base::JSON_PARSE_CHROMIUM_EXTENSIONS);

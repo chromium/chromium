@@ -91,7 +91,7 @@ void OnDownloadedJson(ParseJsonCallback parse_json_callback,
 }  // namespace
 
 GURL ExtractEndpoint(const GURL& provider,
-                     const base::Value::Dict& response,
+                     const base::DictValue& response,
                      const char* key) {
   const std::string* endpoint = response.FindString(key);
   if (!endpoint || endpoint->empty()) {

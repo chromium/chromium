@@ -15,7 +15,7 @@ void TrackedDictionary::ResetChangeTracking() {
 }
 
 void TrackedDictionary::ApplyUntrackedChanges(
-    const base::Value::Dict& new_changes) {
+    const base::DictValue& new_changes) {
   current_values_.Merge(new_changes.Clone());
 
   for (const auto [key, value] : new_changes) {

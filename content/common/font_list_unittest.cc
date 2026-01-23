@@ -18,7 +18,7 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-bool HasFontWithName(const base::Value::List& list,
+bool HasFontWithName(const base::ListValue& list,
                      std::string_view expected_font_id,
                      std::string_view expected_display_name) {
   for (const auto& font : list) {
@@ -42,7 +42,7 @@ TEST(FontList, GetFontList) {
 
   content::GetFontListTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([] {
-        base::Value::List fonts = content::GetFontList_SlowBlocking();
+        base::ListValue fonts = content::GetFontList_SlowBlocking();
 
 #if BUILDFLAG(IS_WIN)
         EXPECT_TRUE(HasFontWithName(fonts, "MS Gothic", "MS Gothic"));
@@ -61,11 +61,11 @@ TEST(FontList, GetFontList) {
 #if BUILDFLAG(IS_WIN)
 TEST(FontList, GetFontListLocalized) {
   base::i18n::SetICUDefaultLocale("ja-JP");
-  base::Value::List ja_fonts = content::GetFontList_SlowBlocking();
+  base::ListValue ja_fonts = content::GetFontList_SlowBlocking();
   EXPECT_TRUE(HasFontWithName(ja_fonts, "MS Gothic", "ＭＳ ゴシック"));
 
   base::i18n::SetICUDefaultLocale("ko-KR");
-  base::Value::List ko_fonts = content::GetFontList_SlowBlocking();
+  base::ListValue ko_fonts = content::GetFontList_SlowBlocking();
   EXPECT_TRUE(HasFontWithName(ko_fonts, "Malgun Gothic", "맑은 고딕"));
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -75,7 +75,7 @@ TEST(FontList, GetFontListLocalized) {
 // Ensure that someone (CTFontManager or our FontList code) filters these fonts
 // on all OS versions that we support.
 TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
-  base::Value::List fonts = content::GetFontList_SlowBlocking();
+  base::ListValue fonts = content::GetFontList_SlowBlocking();
 
   for (const auto& font : fonts) {
     const auto& font_names = font.GetList();

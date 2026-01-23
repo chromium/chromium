@@ -10,8 +10,8 @@
 
 namespace content {
 
-base::Value::List GetFontList_SlowBlocking() {
-  return base::Value::List();
+base::ListValue GetFontList_SlowBlocking() {
+  return base::ListValue();
 }
 
 }  // namespace content

@@ -99,7 +99,7 @@ struct AttributionSimulationEvent {
 // schema.
 
 base::expected<std::vector<AttributionSimulationEvent>, std::string>
-    ParseAttributionInteropInput(base::Value::Dict);
+    ParseAttributionInteropInput(base::DictValue);
 
 struct AttributionInteropConfig {
   AttributionConfig attribution_config;
@@ -123,10 +123,10 @@ struct AttributionInteropConfig {
 };
 
 base::expected<AttributionInteropConfig, std::string>
-    ParseAttributionInteropConfig(base::Value::Dict);
+    ParseAttributionInteropConfig(base::DictValue);
 
 base::expected<void, std::string> MergeAttributionInteropConfig(
-    base::Value::Dict,
+    base::DictValue,
     AttributionInteropConfig&);
 
 struct AttributionInteropOutput {
@@ -142,7 +142,7 @@ struct AttributionInteropOutput {
     Report(const Report&);
     Report& operator=(const Report&);
 
-    base::Value::Dict ToJson() const;
+    base::DictValue ToJson() const;
 
     // TODO(apaseltiner): The payload comparison here is too brittle. Reports
     // can be logically equivalent without having exactly the same JSON
@@ -161,10 +161,10 @@ struct AttributionInteropOutput {
   AttributionInteropOutput(AttributionInteropOutput&&);
   AttributionInteropOutput& operator=(AttributionInteropOutput&&);
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   static base::expected<AttributionInteropOutput, std::string> Parse(
-      base::Value::Dict);
+      base::DictValue);
 };
 
 std::ostream& operator<<(std::ostream&,
@@ -177,7 +177,7 @@ struct AttributionInteropRun {
   AttributionInteropConfig config;
 
   static base::expected<AttributionInteropRun, std::string> Parse(
-      base::Value::Dict,
+      base::DictValue,
       const AttributionInteropConfig& default_config);
 
   AttributionInteropRun();

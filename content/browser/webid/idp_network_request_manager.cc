@@ -166,7 +166,7 @@ bool IsEmptyOrWhitespace(const std::string* input) {
   return trimmed_string.empty();
 }
 
-GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
+GURL ExtractUrl(const base::DictValue& response, const char* key) {
   const std::string* response_url = response.FindString(key);
   if (!response_url) {
     return GURL();
@@ -178,7 +178,7 @@ GURL ExtractUrl(const base::Value::Dict& response, const char* key) {
   return url;
 }
 
-std::string ExtractString(const base::Value::Dict& response, const char* key) {
+std::string ExtractString(const base::DictValue& response, const char* key) {
   const std::string* str = response.FindString(key);
   if (!str) {
     return "";
@@ -186,7 +186,7 @@ std::string ExtractString(const base::Value::Dict& response, const char* key) {
   return *str;
 }
 
-IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
+IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
                                        const std::string& client_id) {
   auto* id = account.FindString(webid::kAccountIdKey);
   auto* email = account.FindString(webid::kAccountEmailKey);
@@ -302,7 +302,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
 
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
-bool ParseAccounts(const base::Value::List& accounts,
+bool ParseAccounts(const base::ListValue& accounts,
                    std::vector<IdentityRequestAccountPtr>& account_list,
                    const std::string& client_id,
                    bool from_accounts_push,
@@ -311,7 +311,7 @@ bool ParseAccounts(const base::Value::List& accounts,
 
   base::flat_set<std::string> account_ids;
   for (auto& account : accounts) {
-    const base::Value::Dict* account_dict = account.GetIfDict();
+    const base::DictValue* account_dict = account.GetIfDict();
     if (!account_dict) {
       parsing_error = AccountsResponseInvalidReason::kAccountIsNotDict;
       return false;
@@ -350,13 +350,13 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
   return SkColorSetA(color, 0xff);
 }
 
-GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
+GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
                              int brand_icon_ideal_size,
                              int brand_icon_minimum_size,
                              const GURL& config_url) {
   std::vector<blink::Manifest::ImageResource> icons;
   for (const base::Value& icon_value : *icons_value) {
-    const base::Value::Dict* icon_value_dict = icon_value.GetIfDict();
+    const base::DictValue* icon_value_dict = icon_value.GetIfDict();
     if (!icon_value_dict) {
       continue;
     }
@@ -398,7 +398,7 @@ GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
 
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
 // with the parsed value.
-void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
+void ParseIdentityProviderMetadata(const base::DictValue& idp_metadata_value,
                                    int brand_icon_ideal_size,
                                    int brand_icon_minimum_size,
                                    IdentityProviderMetadata& idp_metadata) {
@@ -407,7 +407,7 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
   idp_metadata.brand_text_color = ParseCssColor(
       idp_metadata_value.FindString(kIdpBrandingForegroundColorKey));
 
-  const base::Value::List* icons_value =
+  const base::ListValue* icons_value =
       idp_metadata_value.FindList(kBrandingIconsKey);
   if (!icons_value) {
     return;
@@ -433,7 +433,7 @@ void OnWellKnownParsed(
     return;
   }
 
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::DictValue* dict = result->GetIfDict();
   if (!dict) {
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -448,7 +448,7 @@ void OnWellKnownParsed(
     std::move(callback).Run(fetch_status, std::move(well_known));
     return;
   }
-  const base::Value::List* list = dict->FindList(kProviderUrlListKey);
+  const base::ListValue* list = dict->FindList(kProviderUrlListKey);
   if (!list) {
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -496,7 +496,7 @@ void OnConfigParsed(const GURL& provider,
     return;
   }
 
-  const base::Value::Dict& response = result->GetDict();
+  const base::DictValue& response = result->GetDict();
 
   Endpoints endpoints;
   endpoints.token = ExtractEndpoint(provider, response, kIdAssertionEndpoint);
@@ -509,7 +509,7 @@ void OnConfigParsed(const GURL& provider,
       ExtractEndpoint(provider, response, kDisconnectEndpoint);
   endpoints.issuance = ExtractEndpoint(provider, response, kVcIssuanceEndpoint);
 
-  const base::Value::Dict* idp_metadata_value =
+  const base::DictValue* idp_metadata_value =
       response.FindDict(kIdpBrandingKey);
   IdentityProviderMetadata idp_metadata;
   idp_metadata.config_url = provider;
@@ -522,7 +522,7 @@ void OnConfigParsed(const GURL& provider,
       ExtractEndpoint(provider, response, kLoginUrlKey);
 
   if (webid::IsDelegationEnabled()) {
-    const base::Value::List* formats = response.FindList(kFormatsKey);
+    const base::ListValue* formats = response.FindList(kFormatsKey);
     if (formats) {
       for (const auto& format : *formats) {
         if (format.is_string()) {
@@ -533,7 +533,7 @@ void OnConfigParsed(const GURL& provider,
   }
 
   if (webid::IsIdPRegistrationEnabled()) {
-    const base::Value::List* types = response.FindList(kTypesKey);
+    const base::ListValue* types = response.FindList(kTypesKey);
     if (types) {
       for (const auto& type : *types) {
         if (type.is_string()) {
@@ -570,7 +570,7 @@ void OnClientMetadataParsed(
   }
 
   IdpNetworkRequestManager::ClientMetadata data;
-  const base::Value::Dict& response = result->GetDict();
+  const base::DictValue& response = result->GetDict();
   data.privacy_policy_url = ExtractUrl(response, kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(response, kTermsOfServiceKey);
   if (is_cross_site_iframe) {
@@ -587,7 +587,7 @@ void OnClientMetadataParsed(
     data.client_is_third_party_to_top_frame_origin = value.value_or(false);
   }
 
-  const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
+  const base::ListValue* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
     data.brand_icon_url =
         FindBestMatchingIconUrl(icons_value, rp_brand_icon_ideal_size,
@@ -611,8 +611,8 @@ void OnAccountsRequestParsed(
     return;
   }
 
-  const base::Value::Dict& response_dict = result->GetDict();
-  const base::Value::List* accounts = response_dict.FindList(kAccountsKey);
+  const base::DictValue& response_dict = result->GetDict();
+  const base::ListValue* accounts = response_dict.FindList(kAccountsKey);
 
   if (!accounts) {
     webid::RecordAccountsResponseInvalidReason(
@@ -711,7 +711,7 @@ ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {
 TokenResponseType GetTokenResponseType(const base::Value* token,
                                        const std::string* continue_on,
                                        const std::string* redirect_to,
-                                       const base::Value::Dict* error) {
+                                       const base::DictValue* error) {
   // TODO(crbug.com/474120843): break down the TokenResponseType further so that
   // we can log the distinction between the continue_on and the redirect_to
   // cases.
@@ -785,7 +785,7 @@ void OnTokenRequestParsed(
   // 5) Result has continue_on URL - return success
   // 6) Neither token nor continue_on nor HTTP error - return error
 
-  const base::Value::Dict* response =
+  const base::DictValue* response =
       parse_succeeded ? &result->GetDict() : nullptr;
   bool can_use_response =
       response && IsOkResponseCode(fetch_status.response_code);
@@ -808,7 +808,7 @@ void OnTokenRequestParsed(
   const std::string* redirect_to = can_use_response && redirect_to_callback
                                        ? response->FindString(kRedirectToKey)
                                        : nullptr;
-  const base::Value::Dict* response_error =
+  const base::DictValue* response_error =
       response ? response->FindDict(kErrorKey) : nullptr;
 
   TokenResponseType token_response_type = GetTokenResponseType(
@@ -922,7 +922,7 @@ void OnDisconnectResponseParsed(
     return;
   }
 
-  const base::Value::Dict& response = result->GetDict();
+  const base::DictValue& response = result->GetDict();
   const std::string* account_id = response.FindString(kDisconnectAccountId);
 
   if (account_id && !account_id->empty()) {
@@ -1110,7 +1110,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
     const std::string& client_id,
     AccountsRequestCallback callback) {
   if (webid::IsLightweightModeEnabled()) {
-    base::Value::List accounts = permission_delegate_->GetAccounts(idp_origin);
+    base::ListValue accounts = permission_delegate_->GetAccounts(idp_origin);
     FetchStatus success_status = {
         .parse_status = ParseStatus::kSuccess,
         .response_code = 200,
@@ -1121,7 +1121,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
       OnAccountsRequestParsed(
           client_id, std::move(callback), success_status,
           data_decoder::DataDecoder::ValueOrError(
-              base::Value::Dict().Set(kAccountsKey, std::move(accounts))));
+              base::DictValue().Set(kAccountsKey, std::move(accounts))));
       return false;
     }
 
@@ -1131,7 +1131,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
       OnAccountsRequestParsed(
           client_id, std::move(callback), success_status,
           data_decoder::DataDecoder::ValueOrError(
-              base::Value::Dict().Set(kAccountsKey, base::Value::List())));
+              base::DictValue().Set(kAccountsKey, base::ListValue())));
       return false;
     }
   }

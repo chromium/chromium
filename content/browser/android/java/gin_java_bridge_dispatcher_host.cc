@@ -365,8 +365,8 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     const GlobalRenderFrameHostId& routing_id,
     GinJavaBoundObject::ObjectID object_id,
     const std::string& method_name,
-    const base::Value::List& arguments,
-    base::Value::List* wrapped_result,
+    const base::ListValue& arguments,
+    base::ListValue* wrapped_result,
     content::mojom::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   DCHECK(routing_id);
@@ -480,10 +480,10 @@ void GinJavaBridgeDispatcherHost::HasMethod(const std::string& method_name,
 }
 
 void GinJavaBridgeDispatcherHost::InvokeMethod(const std::string& method_name,
-                                               base::Value::List arguments,
+                                               base::ListValue arguments,
                                                InvokeMethodCallback callback) {
   CHECK(JavaBridgeThread::CurrentlyOn());
-  base::Value::List wrapped_result;
+  base::ListValue wrapped_result;
   content::mojom::GinJavaBridgeError error_code;
   OnInvokeMethod(object_receivers_.current_context().first,
                  object_receivers_.current_context().second, method_name,

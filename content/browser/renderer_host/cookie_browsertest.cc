@@ -66,7 +66,7 @@ namespace {
 
 void EnableDevtoolsThirdPartyCookieRestriction(
     TestDevToolsProtocolClient& frame_devtools_client) {
-  base::Value::Dict command_params;
+  base::DictValue command_params;
   frame_devtools_client.SendCommandSync("Network.enable");
   command_params.Set("enableThirdPartyCookieRestriction", true);
   command_params.Set("disableThirdPartyCookieMetadata", false);

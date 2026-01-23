@@ -272,7 +272,7 @@ std::string ExecuteJavaScriptMethodAndGetResult(
     RenderFrameHostImpl* render_frame,
     const std::string& object,
     const std::string& method,
-    base::Value::List arguments) {
+    base::ListValue arguments) {
   bool executing = true;
   std::string result;
   base::OnceCallback<void(base::Value)> call_back = base::BindOnce(
@@ -438,18 +438,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* render_frame = web_contents()->GetPrimaryMainFrame();
   render_frame->AllowInjectingJavaScript();
 
-  base::Value::List empty_arguments;
+  base::ListValue empty_arguments;
   std::string result = ExecuteJavaScriptMethodAndGetResult(
       render_frame, "window", "someMethod", std::move(empty_arguments));
   EXPECT_EQ(result, "called someMethod()");
 
-  base::Value::List single_arguments;
+  base::ListValue single_arguments;
   single_arguments.Append("arg1");
   result = ExecuteJavaScriptMethodAndGetResult(
       render_frame, "window", "someMethod", std::move(single_arguments));
   EXPECT_EQ(result, "called someMethod(arg1)");
 
-  base::Value::List four_arguments;
+  base::ListValue four_arguments;
   four_arguments.Append("arg1");
   four_arguments.Append("arg2");
   four_arguments.Append("arg3");

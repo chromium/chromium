@@ -57,7 +57,7 @@ class WebUIDataSource {
 
   CONTENT_EXPORT static void Update(BrowserContext* browser_context,
                                     const std::string& source_name,
-                                    const base::Value::Dict& update);
+                                    const base::DictValue& update);
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(std::string_view name, std::u16string_view value) = 0;
@@ -76,7 +76,7 @@ class WebUIDataSource {
 
   // Add strings from `localized_strings` to our dictionary.
   virtual void AddLocalizedStrings(
-      const base::Value::Dict& localized_strings) = 0;
+      const base::DictValue& localized_strings) = 0;
 
   // Adds a boolean keyed to its name to our dictionary.
   virtual void AddBoolean(std::string_view name, bool value) = 0;

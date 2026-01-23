@@ -360,7 +360,7 @@ void FocusFrame(FrameTreeNode* frame) {
 }
 
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;

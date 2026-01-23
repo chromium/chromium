@@ -48,7 +48,7 @@ class TestAggregationService {
                     url::Origin reporting_origin,
                     GURL processing_url,
                     bool is_debug_mode_enabled,
-                    base::Value::Dict additional_fields,
+                    base::DictValue additional_fields,
                     std::string api_version,
                     std::string api_identifier);
     AssembleRequest(AssembleRequest&& other);
@@ -71,7 +71,7 @@ class TestAggregationService {
     bool is_debug_mode_enabled;
 
     // Additional fields to add to shared_info.
-    base::Value::Dict additional_fields;
+    base::DictValue additional_fields;
 
     // Specifies the API version.
     std::string api_version;
@@ -100,12 +100,12 @@ class TestAggregationService {
                              base::OnceCallback<void(bool)> callback) = 0;
 
   // Construct an aggregatable report from the information in `request`.
-  // `callback` will be run once completed which takes a `base::Value::Dict` for
+  // `callback` will be run once completed which takes a `base::DictValue` for
   // the JSON representation of the aggregatable report. Empty
-  // `base::Value::Dict` will be returned in case of error.
+  // `base::DictValue` will be returned in case of error.
   virtual void AssembleReport(
       AssembleRequest request,
-      base::OnceCallback<void(base::Value::Dict)> callback) = 0;
+      base::OnceCallback<void(base::DictValue)> callback) = 0;
 
   // Sends the aggregatable report to the specified reporting endpoint `url`.
   // `callback` will be run once completed which returns whether the report was

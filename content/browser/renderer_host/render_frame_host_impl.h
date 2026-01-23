@@ -512,7 +512,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            const std::string& message) override;
   void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                const std::u16string& method_name,
-                               base::Value::List arguments,
+                               base::ListValue arguments,
                                JavaScriptResultCallback callback) override;
   void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
@@ -4078,7 +4078,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Based on the termination |status| and |exit_code|, may generate a crash
   // report to be routed to the Reporting API.
   void MaybeGenerateCrashReport(base::TerminationStatus status, int exit_code);
-  base::Value::Dict ReadCrashReportAPIBody();
+  base::DictValue ReadCrashReportAPIBody();
 
   // Bitfield values for recording navigation frame-type (main or subframe)
   // combined with whether a sudden termination disabler is present. Currently

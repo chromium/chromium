@@ -93,7 +93,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     const base::flat_set<url::Origin>& interest_group_buyers,
     const url::Origin& seller,
     base::optional_ref<const url::Origin> top_level_seller) {
-  const base::Value::Dict* result_dict = bid_in.GetIfDict();
+  const base::DictValue* result_dict = bid_in.GetIfDict();
   if (!result_dict) {
     return base::unexpected(
         base::StrCat({"Additional bid on auction with seller '",
@@ -255,7 +255,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   synth_interest_group.interest_group.owner = std::move(ig_owner);
   synth_interest_group.interest_group.bidding_url = std::move(ig_bidding_url);
   // Add ads.
-  const base::Value::Dict* bid_dict = result_dict->FindDict("bid");
+  const base::DictValue* bid_dict = result_dict->FindDict("bid");
   if (!bid_dict) {
     return base::unexpected(base::StrCat(
         {"Additional bid on auction with seller '", seller.Serialize(),
@@ -354,8 +354,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   const base::Value* ad_components_val = bid_dict->Find("adComponents");
   std::vector<InterestGroupAuction::Bid::ComponentAdInfo> ad_components;
   if (ad_components_val) {
-    const base::Value::List* ad_components_list =
-        ad_components_val->GetIfList();
+    const base::ListValue* ad_components_list = ad_components_val->GetIfList();
     if (!ad_components_list) {
       return base::unexpected(base::StrCat(
           {"Additional bid on auction with seller '", seller.Serialize(),
@@ -419,7 +418,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   }
 
   if (multiple_negative_ig) {
-    const base::Value::Dict* multiple_negative_ig_dict =
+    const base::DictValue* multiple_negative_ig_dict =
         multiple_negative_ig->GetIfDict();
     if (!multiple_negative_ig_dict) {
       return base::unexpected(base::StrCat(
@@ -441,7 +440,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
     result.negative_target_joining_origin =
         url::Origin::Create(joining_origin_url);
 
-    const base::Value::List* interest_group_names =
+    const base::ListValue* interest_group_names =
         multiple_negative_ig_dict->FindList("interestGroupNames");
     if (!interest_group_names) {
       return base::unexpected(base::StrCat(
@@ -517,7 +516,7 @@ std::vector<size_t> SignedAdditionalBid::VerifySignatures() {
 
 base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
     base::Value signed_additional_bid_in) {
-  base::Value::Dict* in_dict = signed_additional_bid_in.GetIfDict();
+  base::DictValue* in_dict = signed_additional_bid_in.GetIfDict();
   if (!in_dict) {
     return base::unexpected("Signed additional bid not a dictionary.");
   }
@@ -531,7 +530,7 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
   }
   result.additional_bid_json = std::move(*bid_json);
 
-  const base::Value::List* signature_list = in_dict->FindList("signatures");
+  const base::ListValue* signature_list = in_dict->FindList("signatures");
   if (!signature_list) {
     return base::unexpected(
         "Signed additional bid missing list 'signatures' field.");
@@ -540,7 +539,7 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
   for (const base::Value& sig_entry : *signature_list) {
     SignedAdditionalBidSignature decoded_signature;
 
-    const base::Value::Dict* sig_entry_dict = sig_entry.GetIfDict();
+    const base::DictValue* sig_entry_dict = sig_entry.GetIfDict();
     if (!sig_entry_dict) {
       return base::unexpected(
           "Signed additional bid 'signatures' list entry not a dictionary.");

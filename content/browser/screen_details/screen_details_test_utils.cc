@@ -11,8 +11,8 @@
 
 namespace content::test {
 
-base::Value::List GetExpectedScreenDetails() {
-  base::Value::List expected_screens;
+base::ListValue GetExpectedScreenDetails() {
+  base::ListValue expected_screens;
   auto* screen = display::Screen::Get();
   std::vector<display::Display> displays = screen->GetAllDisplays();
 
@@ -23,7 +23,7 @@ base::Value::List GetExpectedScreenDetails() {
     return a.bounds().y() < b.bounds().y();
   });
   for (const auto& display : displays) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("availHeight", display.work_area().height());
     dict.Set("availLeft", display.work_area().x());
     dict.Set("availTop", display.work_area().y());

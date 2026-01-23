@@ -249,9 +249,9 @@ std::optional<bool> InMemoryFederatedPermissionContext::GetIdpSigninStatus(
   }
 }
 
-base::Value::List InMemoryFederatedPermissionContext::GetAccounts(
+base::ListValue InMemoryFederatedPermissionContext::GetAccounts(
     const url::Origin& idp_origin) {
-  base::Value::List result;
+  base::ListValue result;
 
   auto options = idp_login_status_options_.find(idp_origin.Serialize());
   if (options == idp_login_status_options_.end()) {
@@ -259,8 +259,8 @@ base::Value::List InMemoryFederatedPermissionContext::GetAccounts(
   }
 
   for (const auto& account : options->second.accounts) {
-    base::Value::Dict new_account =
-        base::Value::Dict()
+    base::DictValue new_account =
+        base::DictValue()
             .Set(webid::kAccountIdKey, account.id)
             .Set(webid::kAccountEmailKey, account.email)
             .Set(webid::kAccountNameKey, account.name);

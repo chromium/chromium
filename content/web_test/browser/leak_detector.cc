@@ -77,12 +77,12 @@ void LeakDetector::OnLeakDetectionComplete(
     blink::mojom::LeakDetectionResultPtr result) {
   LeakDetectionReport report;
   report.leaked = false;
-  base::Value::Dict detail;
+  base::DictValue detail;
 
   if (previous_result_ && !result.is_null()) {
     if (previous_result_->number_of_live_audio_nodes <
         result->number_of_live_audio_nodes) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_audio_nodes));
       list.Append(static_cast<int>(result->number_of_live_audio_nodes));
@@ -90,20 +90,20 @@ void LeakDetector::OnLeakDetectionComplete(
     }
     if (previous_result_->number_of_live_documents <
         result->number_of_live_documents) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(previous_result_->number_of_live_documents));
       list.Append(static_cast<int>(result->number_of_live_documents));
       detail.Set("numberOfLiveDocuments", std::move(list));
     }
     if (previous_result_->number_of_live_nodes < result->number_of_live_nodes) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(previous_result_->number_of_live_nodes));
       list.Append(static_cast<int>(result->number_of_live_nodes));
       detail.Set("numberOfLiveNodes", std::move(list));
     }
     if (previous_result_->number_of_live_layout_objects <
         result->number_of_live_layout_objects) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_layout_objects));
       list.Append(static_cast<int>(result->number_of_live_layout_objects));
@@ -114,14 +114,14 @@ void LeakDetector::OnLeakDetectionComplete(
     if (previous_result_->number_of_live_resources <
         (result->number_of_live_resources -
          result->number_of_live_ua_css_resources)) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(previous_result_->number_of_live_resources));
       list.Append(static_cast<int>(result->number_of_live_resources));
       detail.Set("numberOfLiveResources", std::move(list));
     }
     if (previous_result_->number_of_live_context_lifecycle_state_observers <
         result->number_of_live_context_lifecycle_state_observers) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(
           previous_result_->number_of_live_context_lifecycle_state_observers));
       list.Append(static_cast<int>(
@@ -130,14 +130,14 @@ void LeakDetector::OnLeakDetectionComplete(
     }
     if (previous_result_->number_of_live_frames <
         result->number_of_live_frames) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(previous_result_->number_of_live_frames));
       list.Append(static_cast<int>(result->number_of_live_frames));
       detail.Set("numberOfLiveFrames", std::move(list));
     }
     if (previous_result_->number_of_live_v8_per_context_data <
         result->number_of_live_v8_per_context_data) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(static_cast<int>(
           previous_result_->number_of_live_v8_per_context_data));
       list.Append(static_cast<int>(result->number_of_live_v8_per_context_data));
@@ -145,7 +145,7 @@ void LeakDetector::OnLeakDetectionComplete(
     }
     if (previous_result_->number_of_worker_global_scopes <
         result->number_of_worker_global_scopes) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(
           static_cast<int>(previous_result_->number_of_worker_global_scopes));
       list.Append(static_cast<int>(result->number_of_worker_global_scopes));
@@ -153,7 +153,7 @@ void LeakDetector::OnLeakDetectionComplete(
     }
     if (previous_result_->number_of_live_resource_fetchers <
         result->number_of_live_resource_fetchers) {
-      base::Value::List list;
+      base::ListValue list;
       list.Append(
           static_cast<int>(previous_result_->number_of_live_resource_fetchers));
       list.Append(static_cast<int>(result->number_of_live_resource_fetchers));

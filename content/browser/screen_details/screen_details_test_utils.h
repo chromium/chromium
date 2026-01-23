@@ -37,7 +37,7 @@ constexpr char kGetScreenDetailsScript[] = R"JS(
 )JS";
 
 // Get display::Screen info in a list of dictionaries to facilitate comparison.
-base::Value::List GetExpectedScreenDetails();
+base::ListValue GetExpectedScreenDetails();
 
 }  // namespace content::test
 

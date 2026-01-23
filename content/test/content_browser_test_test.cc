@@ -245,21 +245,21 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
   base::GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  std::optional<base::Value::Dict> root =
+  std::optional<base::DictValue> root =
       base::test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  base::Value::Dict* dict = root->FindDict("test_locations");
+  base::DictValue* dict = root->FindDict("test_locations");
   ASSERT_TRUE(dict);
   EXPECT_EQ(3u, dict->size());
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestLocations(
       *dict, "MockContentBrowserTest"));
 
-  base::Value::List* list = root->FindList("per_iteration_data");
+  base::ListValue* list = root->FindList("per_iteration_data");
   ASSERT_TRUE(list);
   ASSERT_EQ(1u, list->size());
 
-  base::Value::Dict* iteration_dict = (*list)[0].GetIfDict();
+  base::DictValue* iteration_dict = (*list)[0].GetIfDict();
   ASSERT_TRUE(iteration_dict);
   EXPECT_EQ(3u, iteration_dict->size());
   // We expect the result to be stripped of disabled prefix.

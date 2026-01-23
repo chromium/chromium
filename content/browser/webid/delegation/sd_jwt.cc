@@ -45,7 +45,7 @@ Jwk::~Jwk() = default;
 Jwk::Jwk(const Jwk& other) = default;
 
 // static
-std::optional<Jwk> Jwk::From(const base::Value::Dict& dict) {
+std::optional<Jwk> Jwk::From(const base::DictValue& dict) {
   Jwk result;
 
   auto* kty = dict.FindString("kty");
@@ -114,8 +114,8 @@ std::optional<Jwk> Jwk::From(const base::Value::Dict& dict) {
   return result;
 }
 
-base::Value::Dict Jwk::ToDict() const {
-  base::Value::Dict result;
+base::DictValue Jwk::ToDict() const {
+  base::DictValue result;
 
   result.Set("kty", kty);
   if (kty == "EC") {
@@ -153,7 +153,7 @@ Disclosure::~Disclosure() = default;
 Disclosure::Disclosure(const Disclosure& other) = default;
 
 // static
-std::optional<Disclosure> Disclosure::From(const base::Value::List& list) {
+std::optional<Disclosure> Disclosure::From(const base::ListValue& list) {
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#name-disclosures
   if (list.size() != 3) {
     return std::nullopt;
@@ -179,7 +179,7 @@ std::optional<Disclosure> Disclosure::From(const base::Value::List& list) {
 }
 
 std::optional<JSONString> Disclosure::ToJson() const {
-  base::Value::List list;
+  base::ListValue list;
 
   list.Append(salt.value());
   list.Append(name);
@@ -217,7 +217,7 @@ Base64String Disclosure::CreateSalt() {
   return Base64String(salt);
 }
 
-std::optional<SdJwt> SdJwt::From(const base::Value::List& list) {
+std::optional<SdJwt> SdJwt::From(const base::ListValue& list) {
   if (list.size() != 2) {
     return std::nullopt;
   }
@@ -248,7 +248,7 @@ std::optional<SdJwt> SdJwt::From(const base::Value::List& list) {
 }
 
 // static
-std::optional<base::Value::List> SdJwt::Parse(const std::string_view& sdjwt) {
+std::optional<base::ListValue> SdJwt::Parse(const std::string_view& sdjwt) {
   // First, split the token into the issued JWT and the disclosures.
   auto pair = base::SplitStringOnce(sdjwt, "~");
   if (!pair) {
@@ -260,7 +260,7 @@ std::optional<base::Value::List> SdJwt::Parse(const std::string_view& sdjwt) {
     return std::nullopt;
   }
 
-  base::Value::List disclosures;
+  base::ListValue disclosures;
 
   if (!pair->second.empty()) {
     if (pair->second.back() != '~') {
@@ -289,7 +289,7 @@ std::optional<base::Value::List> SdJwt::Parse(const std::string_view& sdjwt) {
     }
   }
 
-  base::Value::List result;
+  base::ListValue result;
   result.Append(std::move(*jwt));
   result.Append(std::move(disclosures));
 
@@ -301,7 +301,7 @@ Header::~Header() = default;
 Header::Header(const Header& other) = default;
 
 // static
-std::optional<Header> Header::From(const base::Value::Dict& json) {
+std::optional<Header> Header::From(const base::DictValue& json) {
   Header result;
 
   auto* typ = json.FindString("typ");
@@ -326,7 +326,7 @@ std::optional<Header> Header::From(const base::Value::Dict& json) {
 }
 
 std::optional<JSONString> Header::ToJson() const {
-  base::Value::Dict header_dict;
+  base::DictValue header_dict;
 
   header_dict.Set("typ", typ);
   header_dict.Set("alg", alg);
@@ -361,7 +361,7 @@ Payload::~Payload() = default;
 Payload::Payload(const Payload& other) = default;
 
 // static
-std::optional<Payload> Payload::From(const base::Value::Dict& json) {
+std::optional<Payload> Payload::From(const base::DictValue& json) {
   Payload result;
 
   auto* aud = json.FindString("aud");
@@ -439,7 +439,7 @@ std::optional<Payload> Payload::From(const base::Value::Dict& json) {
 }
 
 std::optional<JSONString> Payload::ToJson() const {
-  base::Value::Dict payload_dict;
+  base::DictValue payload_dict;
 
   if (!iss.empty()) {
     payload_dict.Set("iss", iss);
@@ -454,9 +454,9 @@ std::optional<JSONString> Payload::ToJson() const {
   }
 
   if (cnf) {
-    base::Value::Dict jwk;
+    base::DictValue jwk;
 
-    base::Value::Dict cnf_dict;
+    base::DictValue cnf_dict;
     cnf_dict.Set("jwk", cnf->jwk.ToDict());
     payload_dict.Set("cnf", std::move(cnf_dict));
   }
@@ -482,7 +482,7 @@ std::optional<JSONString> Payload::ToJson() const {
   }
 
   if (_sd.size() > 0) {
-    base::Value::List list;
+    base::ListValue list;
     for (const auto& disclosure : _sd) {
       list.Append(disclosure.value());
     }
@@ -529,7 +529,7 @@ JSONString Jwt::Serialize() const {
 }
 
 // static
-std::optional<Jwt> Jwt::From(const base::Value::List& list) {
+std::optional<Jwt> Jwt::From(const base::ListValue& list) {
   if (list.size() != 3) {
     return std::nullopt;
   }
@@ -547,7 +547,7 @@ std::optional<Jwt> Jwt::From(const base::Value::List& list) {
 }
 
 // static
-std::optional<base::Value::List> Jwt::Parse(const std::string_view& jwt) {
+std::optional<base::ListValue> Jwt::Parse(const std::string_view& jwt) {
   // TODO: implement the validations described here:
   // https://www.rfc-editor.org/rfc/rfc7519.html#section-7.2
 
@@ -564,7 +564,7 @@ std::optional<base::Value::List> Jwt::Parse(const std::string_view& jwt) {
     return std::nullopt;
   }
 
-  base::Value::List result;
+  base::ListValue result;
   result.Append(*header);
 
   auto payload = Base64UrlDecode(parts[1]);

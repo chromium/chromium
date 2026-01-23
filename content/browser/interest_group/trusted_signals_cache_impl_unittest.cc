@@ -112,7 +112,7 @@ struct BiddingParams {
   GURL trusted_signals_url;
   url::Origin coordinator;
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   std::optional<std::string> buyer_tkv_signals;
 };
 
@@ -134,7 +134,7 @@ struct ScoringParams {
   url::Origin joining_origin;
   GURL render_url;
   std::vector<GURL> component_render_urls;
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   std::optional<std::string> seller_tkv_signals;
 };
 
@@ -143,7 +143,7 @@ struct FetcherBiddingPartitionArgs {
   int partition_id;
   std::set<std::string> interest_group_names;
   std::set<std::string> keys;
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   std::optional<std::string> buyer_tkv_signals;
 };
 
@@ -152,7 +152,7 @@ struct FetcherScoringPartitionArgs {
   int partition_id;
   GURL render_url;
   std::set<GURL> component_render_urls;
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   std::optional<std::string> seller_tkv_signals;
 };
 

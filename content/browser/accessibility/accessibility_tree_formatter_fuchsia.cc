@@ -201,20 +201,20 @@ void AccessibilityTreeFormatterFuchsia::AddDefaultFilters(
                     AXPropertyFilter::DENY);
 }
 
-base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTree(
+base::DictValue AccessibilityTreeFormatterFuchsia::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   if (!root) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   RecursiveBuildTree(*root, &dict);
   return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     const ui::AXPlatformNodeDelegate& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   if (!ShouldDumpNode(node)) {
     return;
   }
@@ -224,7 +224,7 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     return;
   }
 
-  base::Value::List children;
+  base::ListValue children;
 
   fuchsia_accessibility_semantics::Node fuchsia_node =
       static_cast<const ui::BrowserAccessibilityFuchsia&>(node)
@@ -238,24 +238,24 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
 
     ui::AXPlatformNodeDelegate* child_delegate = child_node->GetDelegate();
 
-    base::Value::Dict child_dict;
+    base::DictValue child_dict;
     RecursiveBuildTree(*child_delegate, &child_dict);
     children.Append(std::move(child_dict));
   }
   dict->Set(kChildrenDictAttr, std::move(children));
 }
 
-base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildNode(
+base::DictValue AccessibilityTreeFormatterFuchsia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   CHECK(node);
-  base::Value::Dict dict;
+  base::DictValue dict;
   AddProperties(*node, &dict);
   return dict;
 }
 
 void AccessibilityTreeFormatterFuchsia::AddProperties(
     const ui::AXPlatformNodeDelegate& node,
-    base::Value::Dict* dict) const {
+    base::DictValue* dict) const {
   dict->Set("id", node.GetId());
 
   const ui::BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
@@ -420,7 +420,7 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
 }
 
 std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
-    const base::Value::Dict& node) const {
+    const base::DictValue& node) const {
   if (const std::string* error_value = node.FindString("error")) {
     return *error_value;
   }
@@ -474,10 +474,10 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
   return line;
 }
 
-base::Value::Dict AccessibilityTreeFormatterFuchsia::BuildTreeForSelector(
+base::DictValue AccessibilityTreeFormatterFuchsia::BuildTreeForSelector(
     const AXTreeSelector&) const {
   NOTIMPLEMENTED();
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 }  // namespace content

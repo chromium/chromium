@@ -56,8 +56,8 @@ std::string ConvertSite(const related_website_sets::proto::Site& site) {
   return out;
 }
 
-base::Value::Dict ConvertSet(const related_website_sets::proto::Set& set) {
-  base::Value::Dict json_set;
+base::DictValue ConvertSet(const related_website_sets::proto::Set& set) {
+  base::DictValue json_set;
   json_set.Set(kPrimary, ConvertSite(set.primary()));
   for (const auto& site : set.associated()) {
     json_set.EnsureList(kAssociated)->Append(ConvertSite(site));
@@ -85,9 +85,9 @@ std::string ConvertProto(
   return out;
 }
 
-base::Value::Dict ConvertProto(
+base::DictValue ConvertProto(
     const related_website_sets::proto::Policy& policy) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const related_website_sets::proto::Set& set : policy.replacements()) {
     dict.EnsureList(kReplacements)->Append(ConvertSet(set));
   }
@@ -112,7 +112,7 @@ std::string ConvertProto(
 
 struct NativeInputs {
   std::string public_sets;
-  base::Value::Dict policy;
+  base::DictValue policy;
   std::string command_line_switch;
 };
 

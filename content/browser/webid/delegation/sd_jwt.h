@@ -111,9 +111,9 @@ struct CONTENT_EXPORT Jwk {
   ~Jwk();
   Jwk(const Jwk& other);
 
-  static std::optional<Jwk> From(const base::Value::Dict& json);
+  static std::optional<Jwk> From(const base::DictValue& json);
 
-  base::Value::Dict ToDict() const;
+  base::DictValue ToDict() const;
   std::optional<std::string> Serialize() const;
 };
 
@@ -135,7 +135,7 @@ struct CONTENT_EXPORT Header {
   ~Header();
   Header(const Header& other);
 
-  static std::optional<Header> From(const base::Value::Dict& json);
+  static std::optional<Header> From(const base::DictValue& json);
 
   std::optional<JSONString> ToJson() const;
   std::optional<Base64String> Serialize() const;
@@ -192,7 +192,7 @@ struct CONTENT_EXPORT Payload {
   ~Payload();
   Payload(const Payload& other);
 
-  static std::optional<Payload> From(const base::Value::Dict& json);
+  static std::optional<Payload> From(const base::DictValue& json);
 
   std::optional<JSONString> ToJson() const;
   std::optional<Base64String> Serialize() const;
@@ -219,8 +219,8 @@ struct CONTENT_EXPORT Jwt {
 
   bool Sign(Signer signer);
 
-  static std::optional<Jwt> From(const base::Value::List& json);
-  static std::optional<base::Value::List> Parse(const std::string_view& jwt);
+  static std::optional<Jwt> From(const base::ListValue& json);
+  static std::optional<base::ListValue> Parse(const std::string_view& jwt);
   JSONString Serialize() const;
 };
 
@@ -253,7 +253,7 @@ struct CONTENT_EXPORT Disclosure {
   ~Disclosure();
   Disclosure(const Disclosure& other);
 
-  static std::optional<Disclosure> From(const base::Value::List& list);
+  static std::optional<Disclosure> From(const base::ListValue& list);
 
   // Creates a random value with the following requirements:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#name-entropy-of-the-salt
@@ -273,8 +273,8 @@ struct CONTENT_EXPORT SdJwt {
   ~SdJwt();
   SdJwt(const SdJwt& other);
 
-  static std::optional<SdJwt> From(const base::Value::List& json);
-  static std::optional<base::Value::List> Parse(const std::string_view& sdjwt);
+  static std::optional<SdJwt> From(const base::ListValue& json);
+  static std::optional<base::ListValue> Parse(const std::string_view& sdjwt);
 
   static std::optional<std::vector<JSONString>> Disclose(
       const std::vector<std::pair<std::string, JSONString>>& disclosures,

@@ -222,7 +222,7 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
   explicit TestSharedStorageDevToolsClient(RenderFrameHost* rfh) {
     AttachToFrameTreeHost(rfh);
     SendCommandSync("Storage.setSharedStorageTracking",
-                    base::Value::Dict().Set("enable", true));
+                    base::DictValue().Set("enable", true));
   }
   ~TestSharedStorageDevToolsClient() override { DetachProtocolClient(); }
 
@@ -259,7 +259,7 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
     std::sort(selected_key_paths.begin(), selected_key_paths.end());
     std::vector<std::map<std::string, std::string>>
         selected_params_for_notifications_;
-    for (const base::Value::Dict& params :
+    for (const base::DictValue& params :
          params_for_notifications_with_expected_method_) {
       selected_params_for_notifications_.push_back(
           std::map<std::string, std::string>());
@@ -276,7 +276,7 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
 
  private:
   std::string expected_notification_method_;
-  std::vector<base::Value::Dict> params_for_notifications_with_expected_method_;
+  std::vector<base::DictValue> params_for_notifications_with_expected_method_;
 };
 
 }  // namespace
@@ -380,8 +380,8 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
   }
 
   // Virtual so that a derived class can build more a realistic vector of
-  // values. We use base::Value instead of base::Value::List, even though a
-  // correctly formatted entry would be a base::Value::List, so that a derived
+  // values. We use base::Value instead of base::ListValue, even though a
+  // correctly formatted entry would be a base::ListValue, so that a derived
   // class can test the parse error that would happen if the JSON returned isn't
   // a list.
   //
@@ -391,9 +391,9 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
   virtual std::vector<base::Value> BuildWellKnownTrustedOriginsLists() {
     std::vector<base::Value> trusted_origins_lists;
     trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::List().Append(base::Value::Dict()
-                                       .Set("scriptOrigin", "*")
-                                       .Set("contextOrigin", "*"))));
+        base::ListValue().Append(base::DictValue()
+                                     .Set("scriptOrigin", "*")
+                                     .Set("contextOrigin", "*"))));
     return trusted_origins_lists;
   }
 
@@ -5525,7 +5525,7 @@ IN_PROC_BROWSER_TEST_P(
         std::get<0>(string_test_cases[i]);
     std::u16string test_string =
         std::u16string(char_code_array.begin(), char_code_array.end());
-    base::Value::List char_code_values;
+    base::ListValue char_code_values;
     for (uint16_t char_code : char_code_array) {
       char_code_values.Append(static_cast<int>(char_code));
     }
@@ -5590,7 +5590,7 @@ IN_PROC_BROWSER_TEST_P(
         std::get<0>(string_test_cases[i]);
     std::u16string test_string =
         std::u16string(char_code_array.begin(), char_code_array.end());
-    base::Value::List char_code_values;
+    base::ListValue char_code_values;
     for (uint16_t char_code : char_code_array) {
       char_code_values.Append(static_cast<int>(char_code));
     }
@@ -5655,7 +5655,7 @@ IN_PROC_BROWSER_TEST_P(
         std::get<0>(string_test_cases[i]);
     std::u16string test_string =
         std::u16string(char_code_array.begin(), char_code_array.end());
-    base::Value::List char_code_values;
+    base::ListValue char_code_values;
     for (uint16_t char_code : char_code_array) {
       char_code_values.Append(static_cast<int>(char_code));
     }
@@ -5720,7 +5720,7 @@ IN_PROC_BROWSER_TEST_P(
         std::get<0>(string_test_cases[i]);
     std::u16string test_string =
         std::u16string(char_code_array.begin(), char_code_array.end());
-    base::Value::List char_code_values;
+    base::ListValue char_code_values;
     for (uint16_t char_code : char_code_array) {
       char_code_values.Append(static_cast<int>(char_code));
     }
@@ -9228,88 +9228,88 @@ class SharedStorageCreateWorkletCustomDataOriginBrowserTest
     // context origin "https://a.test:{{port}}" when one of the following values
     // is served.
     trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::Dict()
+        base::DictValue()
             .Set("scriptOrigin", "https://b.test:{{port}}")
             .Set("contextOrigin", "https://a.test:{{port}}")));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List()));
+        static_cast<base::Value>(base::ListValue()));
     trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::List().Append(base::Value::List()
-                                       .Append("https://b.test:{{port}}")
-                                       .Append("https://a.test:{{port}}"))));
-    trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::List().Append(base::Value::Dict().Set(
+        base::ListValue().Append(base::ListValue()
+                                     .Append("https://b.test:{{port}}")
+                                     .Append("https://a.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::ListValue().Append(base::DictValue().Set(
             "contextOrigin", "https://a.test:{{port}}"))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
-                .Set("scriptOrigin", base::Value::List())
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
+                .Set("scriptOrigin", base::ListValue())
                 .Set("contextOrigin", "https://a.test:{{port}}"))));
-    trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::List().Append(base::Value::Dict().Set(
-            "scriptOrigin", "https://b.test:{{port}}"))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue().Set("scriptOrigin", "https://b.test:{{port}}"))));
+    trusted_origins_lists.push_back(
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
                 .Set("scriptOrigin", "https://b.test:{{port}}")
-                .Set("contextOrigin", base::Value::List()))));
+                .Set("contextOrigin", base::ListValue()))));
     trusted_origins_lists.push_back(static_cast<base::Value>(
-        base::Value::List()
-            .Append(base::Value::Dict()
+        base::ListValue()
+            .Append(base::DictValue()
                         .Set("scriptOrigin", "https://a.test:{{port}}")
                         .Set("contextOrigin", "*"))
-            .Append(base::Value::Dict()
+            .Append(base::DictValue()
                         .Set("scriptOrigin", "*")
                         .Set("contextOrigin", "https://b.test:{{port}}"))));
     // We expect success for script with origin "https://b.test:{{port}}" and
     // context origin "https://a.test:{{port}}" when one of the following values
     // is served.
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
                 .Set("scriptOrigin", "https://b.test:{{port}}")
                 .Set("contextOrigin", "https://a.test:{{port}}"))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
                 .Set("scriptOrigin", "https://b.test:{{port}}")
                 .Set("contextOrigin", "*"))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
                 .Set("scriptOrigin", "*")
                 .Set("contextOrigin", "https://a.test:{{port}}"))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
-                .Set("scriptOrigin", base::Value::List()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
+                .Set("scriptOrigin", base::ListValue()
                                          .Append("https://x.test:{{port}}")
                                          .Append("https://b.test:{{port}}"))
                 .Set("contextOrigin",
-                     base::Value::List()
+                     base::ListValue()
                          .Append("https://a.test:{{port}}")
                          .Append("https://y.test:{{port}}")))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
-                .Set("scriptOrigin", base::Value::List()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
+                .Set("scriptOrigin", base::ListValue()
                                          .Append("https://b.test:{{port}}")
                                          .Append("https://y.test:{{port}}")
                                          .Append("https://x.test:{{port}}"))
                 .Set("contextOrigin",
-                     base::Value::List()
+                     base::ListValue()
                          .Append("https://y.test:{{port}}")
                          .Append("*")
                          .Append("https://z.test:{{port}}")))));
     trusted_origins_lists.push_back(
-        static_cast<base::Value>(base::Value::List().Append(
-            base::Value::Dict()
-                .Set("scriptOrigin", base::Value::List()
+        static_cast<base::Value>(base::ListValue().Append(
+            base::DictValue()
+                .Set("scriptOrigin", base::ListValue()
                                          .Append("https://x.test:{{port}}")
                                          .Append("https://y.test:{{port}}")
                                          .Append("*"))
                 .Set("contextOrigin",
-                     base::Value::List()
+                     base::ListValue()
                          .Append("https://y.test:{{port}}")
                          .Append("https://a.test:{{port}}")))));
     return trusted_origins_lists;

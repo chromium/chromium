@@ -45,7 +45,7 @@ class DevToolsFrontendHostImpl : public DevToolsFrontendHost,
 
  private:
   // blink::mojom::DevToolsFrontendHost implementation.
-  void DispatchEmbedderMessage(base::Value::Dict message) override;
+  void DispatchEmbedderMessage(base::DictValue message) override;
 
   HandleMessageCallback handle_message_callback_;
   mojo::AssociatedReceiver<blink::mojom::DevToolsFrontendHost> receiver_{this};

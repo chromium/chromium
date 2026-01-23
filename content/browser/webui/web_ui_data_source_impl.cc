@@ -64,7 +64,7 @@ WebUIDataSource* WebUIDataSource::CreateAndAdd(BrowserContext* browser_context,
 // static
 void WebUIDataSource::Update(BrowserContext* browser_context,
                              const std::string& source_name,
-                             const base::Value::Dict& update) {
+                             const base::DictValue& update) {
   URLDataManager::UpdateWebUIDataSource(browser_context, source_name,
                                         std::move(update));
 }
@@ -253,7 +253,7 @@ void WebUIDataSourceImpl::AddLocalizedStrings(
 }
 
 void WebUIDataSourceImpl::AddLocalizedStrings(
-    const base::Value::Dict& localized_strings) {
+    const base::DictValue& localized_strings) {
   localized_strings_.Merge(localized_strings.Clone());
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
@@ -368,7 +368,7 @@ void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
 
   add_load_time_data_defaults_ = false;
   std::string locale = GetContentClient()->browser()->GetApplicationLocale();
-  base::Value::Dict defaults;
+  base::DictValue defaults;
   webui::SetLoadTimeDataDefaults(locale, &defaults);
   AddLocalizedStrings(defaults);
 }
@@ -535,7 +535,7 @@ void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(
       base::MakeRefCounted<base::RefCountedString>(std::move(template_data)));
 }
 
-const base::Value::Dict* WebUIDataSourceImpl::GetLocalizedStrings() const {
+const base::DictValue* WebUIDataSourceImpl::GetLocalizedStrings() const {
   return &localized_strings_;
 }
 

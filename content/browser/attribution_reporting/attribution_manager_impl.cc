@@ -1400,7 +1400,7 @@ void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
       storage_partition_->GetAggregationService();
   if (!aggregation_service) {
     NotifyAggregatableDebugReportSent(
-        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        result.report, /*report_body=*/base::DictValue(), result.result,
         SendAggregatableDebugReportResult(
             SendAggregatableDebugReportResult::AssemblyFailed()));
     return;
@@ -1409,7 +1409,7 @@ void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
       result.report.CreateAggregatableReportRequest();
   if (!request.has_value()) {
     NotifyAggregatableDebugReportSent(
-        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        result.report, /*report_body=*/base::DictValue(), result.result,
         SendAggregatableDebugReportResult(
             SendAggregatableDebugReportResult::AssemblyFailed()));
     return;
@@ -1429,7 +1429,7 @@ void AttributionManagerImpl::OnAggregatableDebugReportAssembled(
     AggregationService::AssemblyStatus) {
   if (!assembled_report.has_value()) {
     NotifyAggregatableDebugReportSent(
-        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        result.report, /*report_body=*/base::DictValue(), result.result,
         SendAggregatableDebugReportResult(
             SendAggregatableDebugReportResult::AssemblyFailed()));
     return;

@@ -2535,7 +2535,7 @@ IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
       sharing_context()->GetIdpSigninStatus(url::Origin::Create(configURL));
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(*value);
-  base::Value::List accounts =
+  base::ListValue accounts =
       sharing_context()->GetAccounts(url::Origin::Create(configURL));
   ASSERT_EQ(1U, accounts.size());
   EXPECT_EQ("12345", *accounts[0].GetDict().FindString("id"));

@@ -49,7 +49,7 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
   }
 
   void WaitForDummyIssueNotification() {
-    base::Value::Dict notification =
+    base::DictValue notification =
         WaitForNotification("Audits.issueAdded", true);
     EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
               protocol::Audits::InspectorIssueCodeEnum::CookieIssue);
@@ -163,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   SendCommandSync("Audits.enable");
 
   // Verify that we have received the notification for issue.
-  base::Value::Dict notification =
-      WaitForNotification("Audits.issueAdded", true);
+  base::DictValue notification = WaitForNotification("Audits.issueAdded", true);
 
   EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
             protocol::Audits::InspectorIssueCodeEnum::GenericIssue);
@@ -211,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
   // Verify that we have received the notification for the issue.
   // The issue should be about the navigation to 'title1.html' in the iframe
   // being skippable.
-  base::Value::Dict notification =
-      WaitForNotification("Audits.issueAdded", true);
+  base::DictValue notification = WaitForNotification("Audits.issueAdded", true);
 
   EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
             protocol::Audits::InspectorIssueCodeEnum::GenericIssue);

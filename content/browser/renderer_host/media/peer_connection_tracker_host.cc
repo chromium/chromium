@@ -146,7 +146,7 @@ void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
 }
 
 void PeerConnectionTrackerHost::AddStandardStats(int lid,
-                                                 base::Value::List value) {
+                                                 base::ListValue value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto& observer : GetObserverList()) {

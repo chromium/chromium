@@ -349,7 +349,7 @@ TrustedSignalsFetcher::BiddingPartition::BiddingPartition(
     int partition_id,
     const std::set<std::string>* interest_group_names,
     const std::set<std::string>* keys,
-    const base::Value::Dict* additional_params,
+    const base::DictValue* additional_params,
     const std::string* buyer_tkv_signals)
     : partition_id(partition_id),
       interest_group_names(*interest_group_names),
@@ -370,7 +370,7 @@ TrustedSignalsFetcher::ScoringPartition::ScoringPartition(
     int partition_id,
     const GURL* render_url,
     const std::set<GURL>* component_render_urls,
-    const base::Value::Dict* additional_params,
+    const base::DictValue* additional_params,
     const std::string* seller_tkv_signals)
     : partition_id(partition_id),
       render_url(*render_url),
@@ -633,10 +633,10 @@ TrustedSignalsFetcher::ParseDataDecoderResult(
     return base::unexpected(CreateError("Response body is not a map"));
   }
 
-  base::Value::Dict& dict = value_or_error->GetDict();
+  base::DictValue& dict = value_or_error->GetDict();
 
   // Get compression groups.
-  base::Value::List* compression_groups = dict.FindList("compressionGroups");
+  base::ListValue* compression_groups = dict.FindList("compressionGroups");
   if (!compression_groups) {
     return base::unexpected(
         CreateError("Response is missing compressionGroups array"));
@@ -676,7 +676,7 @@ TrustedSignalsFetcher::ParseCompressionGroup(
         base::StringPrintf("Compression group is not of type map")));
   }
 
-  base::Value::Dict& compression_group_dict = compression_group_value.GetDict();
+  base::DictValue& compression_group_dict = compression_group_value.GetDict();
   std::optional<int> compression_group_id_opt =
       compression_group_dict.FindInt("compressionGroupId");
   if (!compression_group_id_opt.has_value() || *compression_group_id_opt < 0) {

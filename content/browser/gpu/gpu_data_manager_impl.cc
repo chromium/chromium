@@ -332,7 +332,7 @@ void GpuDataManagerImpl::ProcessCrashed() {
   private_->ProcessCrashed();
 }
 
-base::Value::List GpuDataManagerImpl::GetLogMessages() const {
+base::ListValue GpuDataManagerImpl::GetLogMessages() const {
   base::AutoLock auto_lock(lock_);
   return private_->GetLogMessages();
 }

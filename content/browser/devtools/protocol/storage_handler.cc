@@ -1144,7 +1144,7 @@ void SendGetInterestGroup(
     return;
   }
 
-  base::Value::Dict ig_serialization =
+  base::DictValue ig_serialization =
       SerializeInterestGroupForDevtools(storage_group.value()->interest_group);
 
   // "joiningOrigin" is in StorageInterestGroup, not InterestGroup, so it needs
@@ -1152,7 +1152,7 @@ void SendGetInterestGroup(
   ig_serialization.Set("joiningOrigin",
                        storage_group.value()->joining_origin.Serialize());
   callback->sendSuccess(
-      std::make_unique<base::Value::Dict>(std::move(ig_serialization)));
+      std::make_unique<base::DictValue>(std::move(ig_serialization)));
 }
 
 }  // namespace
@@ -2486,7 +2486,7 @@ void StorageHandler::OnReportSent(const AttributionReport& report,
 
   frontend_->AttributionReportingReportSent(
       report.ReportURL(is_debug_report).spec(),
-      std::make_unique<base::Value::Dict>(report.ReportBody()), out_result,
+      std::make_unique<base::DictValue>(report.ReportBody()), out_result,
       net_error, std::move(net_error_name), http_status_code);
 }
 
@@ -2540,7 +2540,7 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
     content::InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
-    const base::Value::Dict& auction_config) {
+    const base::DictValue& auction_config) {
   if (!interest_group_auction_tracking_enabled_) {
     return;
   }
@@ -2556,7 +2556,7 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
   frontend_->InterestGroupAuctionEventOccurred(
       event_time.InSecondsFSinceUnixEpoch(), type_enum, unique_auction_id,
       parent_auction_id.CopyAsOptional(),
-      std::make_unique<base::Value::Dict>(auction_config.Clone()));
+      std::make_unique<base::DictValue>(auction_config.Clone()));
 }
 
 void StorageHandler::NotifyInterestGroupAuctionNetworkRequestCreated(

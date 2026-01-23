@@ -168,13 +168,13 @@ void PreloadingConfig::ParseConfig() {
   if (!config_value) {
     return;
   }
-  base::Value::List* entries = config_value->GetIfList();
+  base::ListValue* entries = config_value->GetIfList();
   if (!entries) {
     return;
   }
 
   for (const base::Value& entry : *entries) {
-    const base::Value::Dict* config_dict = entry.GetIfDict();
+    const base::DictValue* config_dict = entry.GetIfDict();
     DCHECK(config_dict);
     if (!config_dict) {
       continue;
@@ -241,7 +241,7 @@ PreloadingConfig::Key PreloadingConfig::Key::FromEnums(
 }
 
 PreloadingConfig::Entry PreloadingConfig::Entry::FromDict(
-    const base::Value::Dict* dict) {
+    const base::DictValue* dict) {
   Entry entry;
   std::optional<bool> holdback = dict->FindBool("holdback");
   if (holdback) {

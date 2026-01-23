@@ -651,8 +651,8 @@ std::unique_ptr<LoginDelegate> ShellContentBrowserClient::CreateLoginDelegate(
   return nullptr;
 }
 
-base::Value::Dict ShellContentBrowserClient::GetNetLogConstants() {
-  base::Value::Dict client_constants;
+base::DictValue ShellContentBrowserClient::GetNetLogConstants() {
+  base::DictValue client_constants;
   client_constants.Set("name", "content_shell");
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
@@ -661,7 +661,7 @@ base::Value::Dict ShellContentBrowserClient::GetNetLogConstants() {
 #else
   client_constants.Set("command_line", command_line);
 #endif
-  base::Value::Dict constants;
+  base::DictValue constants;
   constants.Set("clientInfo", std::move(client_constants));
   return constants;
 }

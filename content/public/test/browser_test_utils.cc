@@ -1669,7 +1669,7 @@ double EvalJsResult::ExtractDouble() const {
   return value()->GetDouble();
 }
 
-const base::Value::List& EvalJsResult::ExtractList() const {
+const base::ListValue& EvalJsResult::ExtractList() const {
   CHECK(is_ok())
       << "Can't ExtractList() because the script encountered a problem: "
       << *error();
@@ -1679,7 +1679,7 @@ const base::Value::List& EvalJsResult::ExtractList() const {
   return value()->GetList();
 }
 
-const base::Value::Dict& EvalJsResult::ExtractDict() const {
+const base::DictValue& EvalJsResult::ExtractDict() const {
   CHECK(is_ok())
       << "Can't ExtractDict() because the script encountered a problem: "
       << *error();
@@ -4051,7 +4051,7 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
 
     if (*notification == "Media.playerEventsAdded") {
       bool last_auto_pip_event_info_set = false;
-      const base::Value::List* events =
+      const base::ListValue* events =
           parsed_message.FindListByDottedPath("params.events");
       if (events) {
         for (const base::Value& event : *events) {
@@ -4780,7 +4780,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   ScopedTestDevToolsProtocolClient devtools_client(rfh);
 
   // Get the document node.
-  const base::Value::Dict* result =
+  const base::DictValue* result =
       devtools_client.SendCommandSync("DOM.getDocument");
   CHECK(result);
 
@@ -4788,7 +4788,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   CHECK(document_id.has_value());
 
   // Find a node matching the selector in the document.
-  auto params = base::Value::Dict()
+  auto params = base::DictValue()
                     .Set("nodeId", document_id.value())
                     .Set("selector", query_selector);
   result =
@@ -4803,7 +4803,7 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
 
   // Extract the backendNodeId from the matched node. backendNodeId corresponds
   // to the Blink DOMNodeId
-  params = base::Value::Dict().Set("nodeId", node_id.value());
+  params = base::DictValue().Set("nodeId", node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);
@@ -4822,14 +4822,14 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   content::ScopedTestDevToolsProtocolClient devtools_client(rfh);
 
   // Get the main document node.
-  const base::Value::Dict* result =
+  const base::DictValue* result =
       devtools_client.SendCommandSync("DOM.getDocument");
   CHECK(result);
   std::optional<int> document_id = result->FindIntByDottedPath("root.nodeId");
   CHECK(document_id.has_value());
 
   // Find the <iframe> element node in the main document.
-  auto params = base::Value::Dict()
+  auto params = base::DictValue()
                     .Set("nodeId", document_id.value())
                     .Set("selector", subframe_query_selector);
   result =
@@ -4841,7 +4841,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Get contentDocument of iframe.
-  params = base::Value::Dict().Set("nodeId", iframe_node_id.value());
+  params = base::DictValue().Set("nodeId", iframe_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);
@@ -4852,8 +4852,8 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Resolve that backendNodeId to get a Runtime objectId for the document.
-  params = base::Value::Dict().Set("backendNodeId",
-                                   content_doc_backend_node_id.value());
+  params = base::DictValue().Set("backendNodeId",
+                                 content_doc_backend_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.resolveNode", std::move(params));
   CHECK(result);
@@ -4864,7 +4864,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Request the DOM nodeId for the iframe's document from its objectId.
-  params = base::Value::Dict().Set("objectId", *content_doc_object_id);
+  params = base::DictValue().Set("objectId", *content_doc_object_id);
   result =
       devtools_client.SendCommandSync("DOM.requestNode", std::move(params));
   CHECK(result);
@@ -4874,7 +4874,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
   }
 
   // Query for the target element within the iframe's document.
-  params = base::Value::Dict()
+  params = base::DictValue()
                .Set("nodeId", content_doc_node_id.value())
                .Set("selector", query_selector);
   result =
@@ -4885,7 +4885,7 @@ std::optional<int> GetDOMNodeIdFromSubframe(
     return std::nullopt;
   }
 
-  params = base::Value::Dict().Set("nodeId", final_node_id.value());
+  params = base::DictValue().Set("nodeId", final_node_id.value());
   result =
       devtools_client.SendCommandSync("DOM.describeNode", std::move(params));
   CHECK(result);

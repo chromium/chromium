@@ -43,10 +43,10 @@ class CONTENT_EXPORT V8ValueConverterImpl : public V8ValueConverter {
                                      base::ValueView value) const;
   v8::Local<v8::Value> ToV8Array(v8::Isolate* isolate,
                                  v8::Local<v8::Object> creation_context,
-                                 const base::Value::List& list) const;
+                                 const base::ListValue& list) const;
   v8::Local<v8::Value> ToV8Object(v8::Isolate* isolate,
                                   v8::Local<v8::Object> creation_context,
-                                  const base::Value::Dict& dictionary) const;
+                                  const base::DictValue& dictionary) const;
   v8::Local<v8::Value> ToArrayBuffer(
       v8::Isolate* isolate,
       v8::Local<v8::Object> creation_context,

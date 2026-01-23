@@ -70,12 +70,12 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestHistograms(const base::Value::List& args);
-  void HandleStartMoninoring(const base::Value::List& args);
-  void HandleFetchDiff(const base::Value::List& args);
+  void HandleRequestHistograms(const base::ListValue& args);
+  void HandleStartMoninoring(const base::ListValue& args);
+  void HandleFetchDiff(const base::ListValue& args);
 
   // Calls AllowJavascript() and unpacks the passed params.
-  JsParams AllowJavascriptAndUnpackParams(const base::Value::List& args);
+  JsParams AllowJavascriptAndUnpackParams(const base::ListValue& args);
 
   // Import histograms, and those from subprocesses if |include_subprocesses| is
   // true.
@@ -89,7 +89,7 @@ HistogramsMessageHandler::HistogramsMessageHandler() = default;
 HistogramsMessageHandler::~HistogramsMessageHandler() = default;
 
 JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
-    const base::Value::List& args_list) {
+    const base::ListValue& args_list) {
   AllowJavascript();
   JsParams params;
   if (args_list.size() > 0u && args_list[0].is_string())
@@ -113,10 +113,10 @@ void HistogramsMessageHandler::ImportHistograms(bool include_subprocesses) {
 }
 
 void HistogramsMessageHandler::HandleRequestHistograms(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
   ImportHistograms(params.include_subprocesses);
-  base::Value::List histograms_list;
+  base::ListValue histograms_list;
   for (base::HistogramBase* histogram :
        base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
            base::StatisticsRecorder::GetHistograms(
@@ -124,7 +124,7 @@ void HistogramsMessageHandler::HandleRequestHistograms(
                /*exclude_flags=*/base::HistogramBase::Flags::kNoFlags),
            params.query,
            /*case_sensitive=*/false))) {
-    base::Value::Dict histogram_dict = histogram->ToGraphDict();
+    base::DictValue histogram_dict = histogram->ToGraphDict();
     if (!histogram_dict.empty()) {
       histograms_list.Append(std::move(histogram_dict));
     }
@@ -134,7 +134,7 @@ void HistogramsMessageHandler::HandleRequestHistograms(
 }
 
 void HistogramsMessageHandler::HandleStartMoninoring(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
   ImportHistograms(params.include_subprocesses);
   histogram_monitor_.StartMonitoring();
@@ -142,10 +142,10 @@ void HistogramsMessageHandler::HandleStartMoninoring(
                             base::Value("Success"));
 }
 
-void HistogramsMessageHandler::HandleFetchDiff(const base::Value::List& args) {
+void HistogramsMessageHandler::HandleFetchDiff(const base::ListValue& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
   ImportHistograms(params.include_subprocesses);
-  base::Value::List histograms_list = histogram_monitor_.GetDiff(params.query);
+  base::ListValue histograms_list = histogram_monitor_.GetDiff(params.query);
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             std::move(histograms_list));
 }

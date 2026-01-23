@@ -170,8 +170,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
 
   void ProcessCrashed();
 
-  // Returns a base::Value::List with the log messages.
-  base::Value::List GetLogMessages() const;
+  // Returns a base::ListValue with the log messages.
+  base::ListValue GetLogMessages() const;
 
   // Called when switching GPUs.
   void HandleGpuSwitch();

@@ -28,7 +28,7 @@ class MediaInternalsMessageHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Javascript message handlers.
-  void OnGetEverything(const base::Value::List& list);
+  void OnGetEverything(const base::ListValue& list);
 
   // MediaInternals message handlers.
   void OnUpdate(const std::u16string& update);

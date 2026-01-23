@@ -2620,7 +2620,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
   NOTREACHED();
 }
 
-void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values,
+void TestRunner::WorkQueue::ReplicateStates(const base::DictValue& values,
                                             WebFrameTestProxy& source) {
   states_.ApplyUntrackedChanges(values);
   if (!has_items())
@@ -2979,7 +2979,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 }
 
 void TestRunner::ReplicateWebTestRuntimeFlagsChanges(
-    const base::Value::Dict& changed_values) {
+    const base::DictValue& changed_values) {
   if (!test_is_running_)
     return;
 
@@ -3304,7 +3304,7 @@ void TestRunner::ProcessWorkItem(mojom::WorkItemPtr work_item,
   work_queue_.ProcessWorkItem(std::move(work_item), source);
 }
 
-void TestRunner::ReplicateWorkQueueStates(const base::Value::Dict& values,
+void TestRunner::ReplicateWorkQueueStates(const base::DictValue& values,
                                           WebFrameTestProxy& source) {
   if (!test_is_running_)
     return;

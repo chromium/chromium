@@ -863,7 +863,7 @@ TEST_F(AttributionReportNetworkSenderTest, AggregatableDebugReportSent) {
           net::SchemefulSite::Deserialize("https://d.test"),
           /*aggregation_coordinator_origin=*/std::nullopt,
           /*scheduled_report_time=*/base::Time::Now()),
-      /*report_body=*/base::Value::Dict(), callback.Get());
+      /*report_body=*/base::DictValue(), callback.Get());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAggregatableDebugReportUrl,
@@ -894,7 +894,7 @@ TEST_F(AttributionReportNetworkSenderTest,
           net::SchemefulSite::Deserialize("https://d.test"),
           /*aggregation_coordinator_origin=*/std::nullopt,
           /*scheduled_report_time=*/base::Time::Now()),
-      /*report_body=*/base::Value::Dict(), callback.Get());
+      /*report_body=*/base::DictValue(), callback.Get());
 
   const network::ResourceRequest* pending_request;
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAggregatableDebugReportUrl,

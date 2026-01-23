@@ -38,7 +38,7 @@ class WebUIExtensionData
   // exists in the |variable_map_|.
   std::string GetValue(const std::string& key) const;
 
-  void SendMessage(const std::string& message, base::Value::List args);
+  void SendMessage(const std::string& message, base::ListValue args);
 
  private:
   // Use Create() instead.

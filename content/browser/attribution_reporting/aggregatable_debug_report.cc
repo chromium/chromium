@@ -341,7 +341,7 @@ std::optional<AggregatableReportRequest>
 AggregatableDebugReport::CreateAggregatableReportRequest() const {
   CHECK(report_id_.is_valid());
 
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   SetAttributionDestination(additional_fields, effective_destination_);
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(

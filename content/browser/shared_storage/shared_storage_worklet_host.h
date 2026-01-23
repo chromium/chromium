@@ -234,7 +234,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
 
   void OnOptInRequestComplete(std::optional<std::string> response_body);
 
-  void OnJsonParsed(std::optional<base::Value::List> result);
+  void OnJsonParsed(std::optional<base::ListValue> result);
 
   void MaybeFinishCreateWorklet();
 

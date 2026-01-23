@@ -1162,7 +1162,7 @@ std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
     return {};
   }
 
-  base::Value::List* entries = json_value->GetIfList();
+  base::ListValue* entries = json_value->GetIfList();
   if (!entries) {
     return {};
   }
@@ -3765,7 +3765,7 @@ void RenderFrameHostImpl::AddMessageToConsole(
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
     const std::u16string& object_name,
     const std::u16string& method_name,
-    base::Value::List arguments,
+    base::ListValue arguments,
     JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(CanExecuteJavaScript());
@@ -16485,7 +16485,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
 
   // Construct the crash report.
-  base::Value::Dict body;
+  base::DictValue body;
   if (base::FeatureList::IsEnabled(
           blink::features::kCrashReportingAPIMoreContextData)) {
     body.Set("is_top_level", IsOutermostMainFrame() ? true : false);
@@ -16497,7 +16497,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   // Read the key/value data from the document associated data shared memory
   // buffer that the renderer may have written to; parse it as JSON, and add it
   // to the crash report.
-  base::Value::Dict crash_report_api_body = ReadCrashReportAPIBody();
+  base::DictValue crash_report_api_body = ReadCrashReportAPIBody();
   body.Set("crash_report_api", std::move(crash_report_api_body));
 
   if (!reason.empty()) {
@@ -16530,8 +16530,8 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       std::move(body));
 }
 
-base::Value::Dict RenderFrameHostImpl::ReadCrashReportAPIBody() {
-  base::Value::Dict crash_report_api_body;
+base::DictValue RenderFrameHostImpl::ReadCrashReportAPIBody() {
+  base::DictValue crash_report_api_body;
   if (!document_associated_data_->crash_report_storage_region().IsValid()) {
     return crash_report_api_body;
   }

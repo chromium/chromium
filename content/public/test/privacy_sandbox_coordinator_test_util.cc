@@ -31,21 +31,21 @@ namespace content {
 std::string CreatePrivacySandboxCoordinatorSerializedPublicKeys(
     const url::Origin& coordinator,
     base::span<const url::Origin> origins) {
-  base::Value::Dict origin_scoped_keys;
+  base::DictValue origin_scoped_keys;
   for (const auto& origin : origins) {
-    base::Value::Dict key;
+    base::DictValue key;
     key.Set("key", base::Base64Encode(kTestPrivacySandboxCoordinatorPublicKey));
     key.Set("id", kTestPrivacySandboxCoordinatorIdString);
-    base::Value::List keys;
+    base::ListValue keys;
     keys.Append(std::move(key));
 
-    base::Value::Dict origin_dict;
+    base::DictValue origin_dict;
     origin_dict.Set("keys", std::move(keys));
 
     origin_scoped_keys.Set(origin.Serialize(), std::move(origin_dict));
   }
 
-  base::Value::Dict coordinator_response;
+  base::DictValue coordinator_response;
   coordinator_response.Set("originScopedKeys", std::move(origin_scoped_keys));
 
   std::optional<std::string> serialized_response =

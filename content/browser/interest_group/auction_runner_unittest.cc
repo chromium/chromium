@@ -1448,11 +1448,11 @@ struct BiddingSignalsPerInterestGroupData {
 // Creates a trusted bidding signals response body with the provided data.
 std::string MakeBiddingSignalsWithPerInterestGroupData(
     std::vector<BiddingSignalsPerInterestGroupData> per_interest_group_data) {
-  base::Value::Dict per_interest_group_dict;
+  base::DictValue per_interest_group_dict;
   for (const auto& data : per_interest_group_data) {
-    base::Value::Dict interest_group_dict;
+    base::DictValue interest_group_dict;
     if (data.priority_vector) {
-      base::Value::Dict priority_vector;
+      base::DictValue priority_vector;
       for (const auto& pair : *data.priority_vector) {
         priority_vector.Set(pair.first, pair.second);
       }
@@ -1462,7 +1462,7 @@ std::string MakeBiddingSignalsWithPerInterestGroupData(
                                 std::move(interest_group_dict));
   }
 
-  base::Value::Dict bidding_signals_dict;
+  base::DictValue bidding_signals_dict;
   bidding_signals_dict.Set("perInterestGroupData",
                            std::move(per_interest_group_dict));
 
@@ -1838,7 +1838,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     int partition_id;
     std::set<std::string> interest_group_names;
     std::set<std::string> keys;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<std::string> buyer_tkv_signals;
 
     bool operator<(const BiddingPartitionInfo& other) const {
@@ -1873,7 +1873,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     int partition_id;
     GURL render_url;
     std::set<GURL> component_render_urls;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<std::string> seller_tkv_signals;
 
     bool operator<(const ScoringPartitionInfo& other) const {
@@ -4119,7 +4119,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         {kBidder1Name},
         /*keys=*/{"k1", "k2"},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo>>
         compression_groups;
@@ -4137,7 +4137,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         {kBidder2Name},
         /*keys=*/{"l1", "l2"},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo>>
         compression_groups;
@@ -4179,7 +4179,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad1.com/"),
         /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -4198,7 +4198,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad2.com/"),
         /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -4220,7 +4220,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad2.com/"),
         /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -5031,7 +5031,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           debug.WaitForMethodNotification("Debugger.paused");
 
       ASSERT_TRUE(breakpoint_hit.value.is_dict());
-      base::Value::List* hit_breakpoints =
+      base::ListValue* hit_breakpoints =
           breakpoint_hit.value.GetDict().FindListByDottedPath(
               "params.hitBreakpoints");
       ASSERT_TRUE(hit_breakpoints);
@@ -8741,7 +8741,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
             /*partition_id=*/1,
             /*render_url=*/GURL("https://ad2.com/"),
             /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-            /*additional_params=*/base::Value::Dict()});
+            /*additional_params=*/base::DictValue()});
     auto bidder2_first_request_info = IsolatedBidder2SellerRequestInfo();
     AddScoringSignalsCacheResult(
         std::move(bidder1_first_request_info),
@@ -8752,7 +8752,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
             /*partition_id=*/1,
             /*render_url=*/GURL("https://ad1.com/"),
             /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-            /*additional_params=*/base::Value::Dict()});
+            /*additional_params=*/base::DictValue()});
     AddScoringSignalsCacheResult(
         std::move(bidder2_first_request_info),
         MakeBidder1Bidder2ScoringSignalsTwoPartitionsCompressionGroupMap());
@@ -28894,7 +28894,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
       /*partition_id=*/1,
       {kOtherBidderName},
       /*keys=*/{"l1", "l2"},
-      /*additional_params=*/base::Value::Dict()};
+      /*additional_params=*/base::DictValue()};
   bidder_request_info.compression_groups[0].emplace_back(std::move(partition2));
   auto compression_group_map = MakeCompressionGroupMapForOneGroup(
       R"([
@@ -29013,7 +29013,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
       /*partition_id=*/0,
       {kOtherBidderName},
       /*keys=*/{"l1", "l2"},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   bidder_request_info.compression_groups.emplace(1, std::move(partitions2));
   AddBiddingSignalsCacheResult(std::move(bidder_request_info),
                                std::move(compression_group_map));
@@ -29157,7 +29157,7 @@ TEST_P(
       /*partition_id=*/0,
       /*render_url=*/GURL("https://ad1.com/"),
       /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   std::map<int, std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
       compression_groups;
   compression_groups.emplace(0, std::move(partitions));
@@ -29246,7 +29246,7 @@ function reportWin() {}
       /*partition_id=*/0,
       {},
       /*keys=*/{"k1"},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   for (size_t i = 0; i < 3 * AuctionWorkletManager::kBatchSize; ++i) {
     std::string interest_group_name = base::NumberToString(i);
     partitions[0].interest_group_names.emplace(interest_group_name);

@@ -244,7 +244,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
         manager->IsGpuCompositingDisabledForHardwareGpu();
   }
 
-  base::Value::Dict feature_status_dict;
+  base::DictValue feature_status_dict;
 
   for (auto& gpu_feature_data :
        GetGpuFeatureData(gpu_feature_info, is_gpu_compositing_disabled)) {
@@ -322,7 +322,7 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
         manager->IsGpuCompositingDisabledForHardwareGpu();
   }
 
-  base::Value::List problem_list;
+  base::ListValue problem_list;
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
     std::unique_ptr<gpu::GpuBlocklist> blocklist(gpu::GpuBlocklist::Create());
     blocklist->GetReasons(problem_list, "disabledFeatures",
@@ -336,11 +336,11 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
   }
 
   if (gpu_access_blocked) {
-    base::Value::Dict problem;
+    base::DictValue problem;
     problem.Set("description",
                 "GPU process was unable to boot: " + gpu_access_blocked_reason);
-    problem.Set("crBugs", base::Value::List());
-    base::Value::List disabled_features;
+    problem.Set("crBugs", base::ListValue());
+    base::ListValue disabled_features;
     disabled_features.Append("all");
     problem.Set("affectedGpuSettings", std::move(disabled_features));
     problem.Set("tag", "disabledFeatures");
@@ -351,10 +351,10 @@ base::Value GetProblemsImpl(GpuFeatureInfoType type) {
        GetGpuFeatureData(gpu_feature_info, is_gpu_compositing_disabled)) {
     if (gpu_feature_data.status != gpu::kGpuFeatureStatusEnabled &&
         gpu_feature_data.disabled_info.is_problem) {
-      base::Value::Dict problem;
+      base::DictValue problem;
       problem.Set("description", gpu_feature_data.disabled_info.description);
-      problem.Set("crBugs", base::Value::List());
-      base::Value::List disabled_features;
+      problem.Set("crBugs", base::ListValue());
+      base::ListValue disabled_features;
       disabled_features.Append(gpu_feature_data.name);
       problem.Set("affectedGpuSettings", std::move(disabled_features));
       problem.Set("tag", "disabledFeatures");

@@ -39,7 +39,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddLocalizedString(std::string_view name, int ids) override;
   void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) override;
-  void AddLocalizedStrings(const base::Value::Dict& localized_strings) override;
+  void AddLocalizedStrings(const base::DictValue& localized_strings) override;
   void AddBoolean(std::string_view name, bool value) override;
   void AddInteger(std::string_view name, int32_t value) override;
   void AddDouble(std::string_view name, double value) override;
@@ -91,7 +91,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
                                   bool from_js_module);
 
   // Protected for testing.
-  virtual const base::Value::Dict* GetLocalizedStrings() const;
+  virtual const base::DictValue* GetLocalizedStrings() const;
 
   // Protected for testing.
   int URLToIdrOrDefault(const GURL& url) const;
@@ -138,7 +138,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   // The |replacements_| is intended to replace |localized_strings_|.
   // TODO(dschuyler): phase out |localized_strings_| in Q1 2017. (Or rename
   // to |load_time_flags_| if the usage is reduced to storing flags only).
-  base::Value::Dict localized_strings_;
+  base::DictValue localized_strings_;
   WebUIDataSource::HandleRequestCallback filter_callback_;
   WebUIDataSource::ShouldHandleRequestCallback should_handle_request_callback_;
 

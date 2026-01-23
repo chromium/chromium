@@ -467,7 +467,7 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(
 }
 
 jobject CoerceJavaScriptListToArray(JNIEnv* env,
-                                    const base::Value::List& list,
+                                    const base::ListValue& list,
                                     const JavaType& target_type,
                                     const ObjectRefs& object_refs,
                                     mojom::GinJavaBridgeError* error) {
@@ -515,7 +515,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
 }
 
 jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
-                                          const base::Value::Dict& dict,
+                                          const base::DictValue& dict,
                                           const JavaType& target_type,
                                           const ObjectRefs& object_refs,
                                           mojom::GinJavaBridgeError* error) {

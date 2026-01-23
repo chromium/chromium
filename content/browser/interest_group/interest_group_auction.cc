@@ -2404,7 +2404,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     // Create additional params.
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<int16_t> experiment_id =
         InterestGroupAuction::GetBuyerExperimentId(*auction_->config_,
                                                    interest_group.owner);
@@ -3709,7 +3709,7 @@ InterestGroupAuction::CreateReporter(
       winner->bid->bidding_signals_data_version;
   winning_bid_info.selected_buyer_and_seller_reporting_id =
       winner->bid->selected_buyer_and_seller_reporting_id;
-  base::Value::Dict ad_metadata;
+  base::DictValue ad_metadata;
   ad_metadata.Set("renderURL", winner->bid->ad_descriptor.url.spec());
   if (winner->bid->bid_ad->metadata) {
     ad_metadata.Set("metadata", winner->bid->bid_ad->metadata.value());
@@ -5795,7 +5795,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       interest_group_manager_->trusted_signals_cache() &&
       seller_worklet_handle_->TrustedScoringSignalsUrlAllowed()) {
     int partition_id;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     if (config_->seller_experiment_group_id) {
       additional_params.Set(
           "experimentGroupId",

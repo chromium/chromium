@@ -798,7 +798,7 @@ void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
   if (text_value)
     *parsed_text += *text_value;
 
-  const base::Value::List* children =
+  const base::ListValue* children =
       data_decoder::GetXmlElementChildren(*element);
   if (!children) {
     return;

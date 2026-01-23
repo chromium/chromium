@@ -714,9 +714,9 @@ std::unique_ptr<Network::ConnectTiming> GetConnectTiming(
       .Build();
 }
 
-std::unique_ptr<base::Value::Dict> GetRawHeaders(
+std::unique_ptr<base::DictValue> GetRawHeaders(
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& headers) {
-  auto headers_dict = std::make_unique<base::Value::Dict>();
+  auto headers_dict = std::make_unique<base::DictValue>();
   for (const auto& header : headers) {
     std::string header_value;
     if (!base::ConvertToUtf8AndNormalize(header->value, base::kCodepageLatin1,
@@ -1640,7 +1640,7 @@ NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
             (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
         .SetDepth(report.depth)
         .SetCompletedAttempts(report.attempts)
-        .SetBody(std::make_unique<base::Value::Dict>(report.body.Clone()))
+        .SetBody(std::make_unique<base::DictValue>(report.body.Clone()))
         .SetStatus(BuildReportStatus(report.status))
         .Build();
   }
@@ -2769,9 +2769,9 @@ std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
   return security_details;
 }
 
-std::unique_ptr<base::Value::Dict> BuildResponseHeaders(
+std::unique_ptr<base::DictValue> BuildResponseHeaders(
     const net::HttpResponseHeaders* headers) {
-  auto headers_dict = std::make_unique<base::Value::Dict>();
+  auto headers_dict = std::make_unique<base::DictValue>();
   if (!headers)
     return headers_dict;
   size_t iterator = 0;
@@ -2787,10 +2787,10 @@ std::unique_ptr<base::Value::Dict> BuildResponseHeaders(
   return headers_dict;
 }
 
-std::unique_ptr<base::Value::Dict> BuildRequestHeaders(
+std::unique_ptr<base::DictValue> BuildRequestHeaders(
     const net::HttpRequestHeaders& headers,
     const GURL& referrer) {
-  auto headers_dict = std::make_unique<base::Value::Dict>();
+  auto headers_dict = std::make_unique<base::DictValue>();
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
     headers_dict->Set(it.name(), it.value());
 
@@ -3210,7 +3210,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   request->SetMixedContentType(Security::MixedContentTypeEnum::None);
 
   std::unique_ptr<Network::Initiator> initiator;
-  const std::optional<base::Value::Dict>& initiator_optional =
+  const std::optional<base::DictValue>& initiator_optional =
       nav_request.begin_params().devtools_initiator;
   if (initiator_optional.has_value())
     crdtp::ConvertProtocolValue(initiator_optional.value(), &initiator);
@@ -3580,7 +3580,7 @@ void NetworkHandler::OnSignedExchangeReceived(
           .Build();
 
   if (envelope) {
-    auto headers_dict = std::make_unique<base::Value::Dict>();
+    auto headers_dict = std::make_unique<base::DictValue>();
     for (const auto& it : envelope->response_headers())
       headers_dict->Set(it.first, it.second);
 
@@ -3727,7 +3727,7 @@ void NetworkHandler::ContinueInterceptedRequest(
   std::unique_ptr<DevToolsURLLoaderInterceptor::Modifications::HeadersVector>
       override_headers;
   if (opt_headers) {
-    const base::Value::Dict& headers = *opt_headers;
+    const base::DictValue& headers = *opt_headers;
     override_headers = std::make_unique<
         DevToolsURLLoaderInterceptor::Modifications::HeadersVector>();
     for (const auto entry : headers) {
@@ -3936,7 +3936,7 @@ NetworkHandler::CreateRequestFromResourceRequest(
     const std::string& cookie_line,
     std::vector<base::expected<std::vector<uint8_t>, std::string>>
         request_bodies) {
-  std::unique_ptr<base::Value::Dict> headers_dict =
+  std::unique_ptr<base::DictValue> headers_dict =
       BuildRequestHeaders(request.headers, request.referrer);
   if (!cookie_line.empty())
     headers_dict->Set(net::HttpRequestHeaders::kCookie, cookie_line);

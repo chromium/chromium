@@ -49,7 +49,7 @@ class CONTENT_EXPORT URLDataManagerBackend
   void AddDataSource(URLDataSourceImpl* source);
 
   void UpdateWebUIDataSource(const std::string& source_name,
-                             const base::Value::Dict& update);
+                             const base::DictValue& update);
 
   // DataSource invokes this. Sends the data to the URLRequest. |bytes| may be
   // null, which signals an error handling the request.

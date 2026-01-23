@@ -295,7 +295,7 @@ void RunCallbackHelper(CallbackAndContext* callback_and_context,
 }
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
-                               base::Value::Dict result) {
+                               base::DictValue result) {
   RunCallbackHelper(callback_and_context,
                     std::optional<base::Value>(std::move(result)));
 }

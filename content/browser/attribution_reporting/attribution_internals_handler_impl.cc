@@ -78,9 +78,9 @@ using ::attribution_internals::mojom::WebUIDebugReport;
 
 std::string SerializeBudgetsMap(
     const StoredSource::AggregatableNamedBudgets& map) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& [key, value] : map) {
-    base::Value::Dict inner_dict;
+    base::DictValue inner_dict;
     inner_dict.Set("original_budget", value.original_budget());
     inner_dict.Set("remaining_budget", value.remaining_budget());
     dict.Set(key, std::move(inner_dict));

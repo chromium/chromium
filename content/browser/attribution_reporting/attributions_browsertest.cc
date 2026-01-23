@@ -191,9 +191,7 @@ struct ExpectedReportWaiter {
                        std::string source_type,
                        std::string trigger_data,
                        net::EmbeddedTestServer* server)
-      : ExpectedReportWaiter(std::move(report_url),
-                             base::Value::Dict(),
-                             server) {
+      : ExpectedReportWaiter(std::move(report_url), base::DictValue(), server) {
     expected_body.Set("attribution_destination",
                       std::move(attribution_destination));
     expected_body.Set("source_event_id", std::move(source_event_id));
@@ -204,7 +202,7 @@ struct ExpectedReportWaiter {
   // ControllableHTTPResponses can only wait for relative urls, so only supply
   // the path.
   ExpectedReportWaiter(GURL report_url,
-                       base::Value::Dict body,
+                       base::DictValue body,
                        net::EmbeddedTestServer* server)
       : expected_url(std::move(report_url)),
         expected_body(std::move(body)),
@@ -213,7 +211,7 @@ struct ExpectedReportWaiter {
             expected_url.GetPath())) {}
 
   GURL expected_url;
-  base::Value::Dict expected_body;
+  base::DictValue expected_body;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
 
   bool HasRequest() { return !!response->http_request(); }
@@ -235,7 +233,7 @@ struct ExpectedReportWaiter {
     GURL::Replacements replace_host;
     replace_host.SetHostStr(host);
 
-    base::Value::Dict body = base::test::ParseJsonDict(request.content);
+    base::DictValue body = base::test::ParseJsonDict(request.content);
     EXPECT_THAT(body, base::test::DictionaryHasValues(expected_body));
 
     // The report ID is random, so just test that the field exists here and is a

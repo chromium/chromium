@@ -73,7 +73,7 @@ static constexpr int kGPUInfoWatchdogTimeoutMs =
 
 class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
  public:
-  explicit AuxGPUInfoEnumerator(base::Value::Dict* dictionary)
+  explicit AuxGPUInfoEnumerator(base::DictValue* dictionary)
       : dictionary_(*dictionary) {}
 
  private:
@@ -186,7 +186,7 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
       continue;
     devices->emplace_back(GPUDeviceToProtocol(gpu_info.secondary_gpus[i]));
   }
-  auto aux_attributes = std::make_unique<base::Value::Dict>();
+  auto aux_attributes = std::make_unique<base::DictValue>();
   AuxGPUInfoEnumerator enumerator(aux_attributes.get());
   gpu_info.EnumerateFields(&enumerator);
   aux_attributes->Set("processCrashCount", GpuProcessHost::GetGpuCrashCount());
@@ -194,7 +194,7 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
       "visibilityCallbackCallCount",
       static_cast<int>(gpu_info.visibility_callback_call_count));
 
-  auto feature_status = std::make_unique<base::Value::Dict>(
+  auto feature_status = std::make_unique<base::DictValue>(
       std::move(GetFeatureStatus().GetDict()));
   auto driver_bug_workarounds =
       std::make_unique<protocol::Array<std::string>>(GetDriverBugWorkarounds());

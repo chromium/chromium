@@ -53,7 +53,7 @@ perfetto::TracingSession* g_tracing_session = nullptr;
 
 void OnGotCategories(WebUIDataSource::GotDataCallback callback,
                      const std::set<std::string>& category_set) {
-  base::Value::List category_list;
+  base::ListValue category_list;
   for (const std::string& category : category_set) {
     category_list.Append(category);
   }
@@ -264,7 +264,7 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     LOG(ERROR) << "Options were not valid JSON";
     return false;
   }
-  base::Value::Dict* options_dict = options->GetIfDict();
+  base::DictValue* options_dict = options->GetIfDict();
   if (!options_dict) {
     LOG(ERROR) << "Options must be dict";
     return false;

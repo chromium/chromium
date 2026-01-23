@@ -44,7 +44,7 @@ class CONTENT_EXPORT WebUIController {
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::Value::List& args);
+                                          const base::ListValue& args);
 
   // Called when a WebUI RenderFrame is created.  This is *not* called for every
   // page load because in some cases a RenderFrame will be reused, for example

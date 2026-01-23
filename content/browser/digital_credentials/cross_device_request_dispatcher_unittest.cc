@@ -76,7 +76,7 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
           GetEventCallback(),
           /*must_support_ctap=*/false);
       const GURL url("https://example.com");
-      base::Value::Dict request_value;
+      base::DictValue request_value;
       request_value.Set("foo", "bar");
       RequestInfo request_info{/*request_type=*/GetParam(),
                                url::Origin::Create(url),

@@ -240,14 +240,14 @@ class WebRtcInternalsBrowserTest : public ContentBrowserTest {
   void VerifyMediaRequest(const std::vector<UserMediaRequestEntry>& requests) {
     string json_requests =
         EvalJs(shell(), "JSON.stringify(userMediaRequests);").ExtractString();
-    base::Value::List list_request = base::test::ParseJsonList(json_requests);
+    base::ListValue list_request = base::test::ParseJsonList(json_requests);
 
     EXPECT_EQ(requests.size(), list_request.size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
       const base::Value& value = list_request[i];
       ASSERT_TRUE(value.is_dict());
-      const base::Value::Dict& dict = value.GetDict();
+      const base::DictValue& dict = value.GetDict();
       std::optional<int> rid = dict.FindInt("rid");
       std::optional<int> pid = dict.FindInt("pid");
       ASSERT_TRUE(rid);

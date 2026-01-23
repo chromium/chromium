@@ -164,7 +164,7 @@ bool ActionsParser::Parse() {
 }
 
 bool ActionsParser::ActionsDictionaryUsesTestDriverApi(
-    const base::Value::Dict& action_sequence) {
+    const base::DictValue& action_sequence) {
   // If the JSON format of each action_sequence has "type" element, it is from
   // the new Action API, otherwise it is from
   // gpuBenchmarking.pointerActionSequence API. We have to keep both formats
@@ -177,7 +177,7 @@ bool ActionsParser::ActionsDictionaryUsesTestDriverApi(
 }
 
 bool ActionsParser::ParseGpuBenchmarkingActionSequence(
-    const base::Value::Dict& action_sequence) {
+    const base::DictValue& action_sequence) {
   // The GpuBenchmarking format is implicitly for pointers only and for
   // historic reasons, the "source" key refers to what TestDriver calls the
   // pointer_type_.
@@ -217,7 +217,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
     return false;
   }
 
-  const base::Value::List* actions = action_sequence.FindList("actions");
+  const base::ListValue* actions = action_sequence.FindList("actions");
   if (!actions) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is not defined or not a list",
@@ -237,7 +237,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
 }
 
 bool ActionsParser::ParseTestDriverActionSequence(
-    const base::Value::Dict& action_sequence) {
+    const base::DictValue& action_sequence) {
   if (use_testdriver_api_ !=
       ActionsDictionaryUsesTestDriverApi(action_sequence)) {
     error_message_ = std::string(
@@ -279,7 +279,7 @@ bool ActionsParser::ParseTestDriverActionSequence(
     return false;
   }
 
-  const base::Value::List* actions = action_sequence.FindList("actions");
+  const base::ListValue* actions = action_sequence.FindList("actions");
   if (!actions) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is not defined or not a list",
@@ -307,7 +307,7 @@ bool ActionsParser::ParseTestDriverActionSequence(
 }
 
 bool ActionsParser::ParsePointerParameters(
-    const base::Value::Dict& action_sequence) {
+    const base::DictValue& action_sequence) {
   const base::Value* parameters = action_sequence.Find("parameters");
   // The default pointer type is mouse.
   std::string pointer_type = "mouse";
@@ -369,7 +369,7 @@ bool ActionsParser::ParsePointerParameters(
   return true;
 }
 
-bool ActionsParser::ParseActionItemList(const base::Value::List& actions,
+bool ActionsParser::ParseActionItemList(const base::ListValue& actions,
                                         std::string source_type) {
   DCHECK(source_type == "none" || source_type == source_type_);
   SyntheticPointerActionListParams::ParamList param_list;
@@ -392,7 +392,7 @@ bool ActionsParser::ParseActionItemList(const base::Value::List& actions,
 }
 
 bool ActionsParser::ParseAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     SyntheticPointerActionListParams::ParamList& param_list,
     std::string source_type) {
   std::string subtype;
@@ -427,7 +427,7 @@ bool ActionsParser::ParseAction(
   }
 }
 
-bool ActionsParser::ParseWheelAction(const base::Value::Dict& action,
+bool ActionsParser::ParseWheelAction(const base::DictValue& action,
                                      std::string subtype) {
   if (subtype == "pause") {
     error_message_ = base::StringPrintf(
@@ -468,7 +468,7 @@ bool ActionsParser::ParseWheelAction(const base::Value::Dict& action,
 }
 
 bool ActionsParser::ParsePointerAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string subtype,
     SyntheticPointerActionListParams::ParamList& param_list) {
   double position_x = 0;
@@ -672,7 +672,7 @@ bool ActionsParser::ParsePointerAction(
 }
 
 bool ActionsParser::ParseNullAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string subtype,
     SyntheticPointerActionListParams::ParamList& param_list) {
   PointerActionType pointer_action_type = PointerActionType::NOT_INITIALIZED;
@@ -694,7 +694,7 @@ bool ActionsParser::ParseNullAction(
   return true;
 }
 
-bool ActionsParser::GetPosition(const base::Value::Dict& action,
+bool ActionsParser::GetPosition(const base::DictValue& action,
                                 double& position_x,
                                 double& position_y) {
   const std::optional<double> position_x_optional = action.FindDouble("x");
@@ -718,7 +718,7 @@ bool ActionsParser::GetPosition(const base::Value::Dict& action,
   return true;
 }
 
-bool ActionsParser::GetScrollDelta(const base::Value::Dict& action,
+bool ActionsParser::GetScrollDelta(const base::DictValue& action,
                                    int& delta_x,
                                    int& delta_y) {
   const std::optional<int> delta_x_optional = action.FindInt("deltaX");
@@ -741,7 +741,7 @@ bool ActionsParser::GetScrollDelta(const base::Value::Dict& action,
   return true;
 }
 
-bool ActionsParser::GetPauseDuration(const base::Value::Dict& action,
+bool ActionsParser::GetPauseDuration(const base::DictValue& action,
                                      int& duration) {
   const base::Value* duration_value = action.Find("duration");
   // TODO(lanwei): we should always have a duration value for pause action.

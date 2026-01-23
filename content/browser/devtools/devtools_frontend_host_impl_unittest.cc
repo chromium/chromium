@@ -79,7 +79,7 @@ class DevToolsFrontendHostImplTest : public RenderViewHostTestHarness {
     // TestWebContents::Create, the static_casts are safe.
     devtools_frontend_host_impl_ = DevToolsFrontendHostImpl::CreateForTesting(
         static_cast<TestWebContents*>(web_contents())->GetPrimaryMainFrame(),
-        base::RepeatingCallback<void(base::Value::Dict)>());
+        base::RepeatingCallback<void(base::DictValue)>());
 
     process()->Init();
 

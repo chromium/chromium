@@ -2315,7 +2315,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |GetNetConstants()| and passed to FileNetLogObserver - see documentation
   // of |FileNetLogObserver::CreateBounded()| for more information.  The
   // convention is to put new constants under a subdict at the key "clientInfo".
-  virtual base::Value::Dict GetNetLogConstants();
+  virtual base::DictValue GetNetLogConstants();
 
 #if BUILDFLAG(IS_ANDROID)
   // Only used by Android WebView.

@@ -471,9 +471,9 @@ class BlobUrlDevToolsIssueTest : public ContentBrowserTest {
                                TestDevToolsProtocolClient* client,
                                const std::string& expected_info_enum) {
     // Wait for notification of a Partitioning Blob URL Issue.
-    base::Value::Dict params = client->WaitForMatchingNotification(
+    base::DictValue params = client->WaitForMatchingNotification(
         "Audits.issueAdded",
-        base::BindRepeating([](const base::Value::Dict& params) {
+        base::BindRepeating([](const base::DictValue& params) {
           const std::string* issue_code =
               params.FindStringByDottedPath("issue.code");
           return issue_code && *issue_code == "PartitioningBlobURLIssue";

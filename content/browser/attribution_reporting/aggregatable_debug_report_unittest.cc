@@ -1008,7 +1008,7 @@ TEST(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
           url::Origin::Create(GURL("https://r.test")),
           AggregatableReportSharedInfo::DebugMode::kDisabled,
           /*additional_fields=*/
-          base::Value::Dict().Set("attribution_destination", "https://d.test"),
+          base::DictValue().Set("attribution_destination", "https://d.test"),
           /*api_version=*/"1.0",
           /*api_identifier=*/"attribution-reporting-debug"));
   ASSERT_TRUE(expected_request.has_value());

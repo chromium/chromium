@@ -97,8 +97,7 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 // static
 std::pair<base::expected<void, FirstPartySetsHandler::ParseError>,
           std::vector<FirstPartySetsHandler::ParseWarning>>
-FirstPartySetsHandler::ValidateEnterprisePolicy(
-    const base::Value::Dict& policy) {
+FirstPartySetsHandler::ValidateEnterprisePolicy(const base::DictValue& policy) {
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
@@ -119,7 +118,7 @@ FirstPartySetsHandlerImplInstance::CreateForTesting(
 }
 
 void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
-    base::optional_ref<const base::Value::Dict> policy,
+    base::optional_ref<const base::DictValue> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!policy) {
@@ -511,7 +510,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
 
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
-    const base::Value::Dict& policy,
+    const base::DictValue& policy,
     base::optional_ref<const base::ElapsedTimer> timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());

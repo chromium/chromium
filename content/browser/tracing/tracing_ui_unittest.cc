@@ -22,19 +22,19 @@ class TracingUITest : public testing::Test {
 
 std::string GetConfig() {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("included_categories",
-               base::Value::List().Append(base::Value(
+               base::ListValue().Append(base::Value(
                    base::trace_event::MemoryDumpManager::kTraceCategory)))
           .Set("excluded_categories",
-               base::Value::List().Append(base::Value("filter2")))
+               base::ListValue().Append(base::Value("filter2")))
           .Set("record_mode", "record-continuously")
           .Set("enable_systrace", true)
           .Set("stream_format", "protobuf")
           .Set("memory_dump_config",
-               base::Value::Dict().Set(
-                   "triggers", base::Value::List().Append(
-                                   base::Value::Dict()
+               base::DictValue().Set(
+                   "triggers", base::ListValue().Append(
+                                   base::DictValue()
                                        .Set("mode", "detailed")
                                        .Set("periodic_interval_ms", 10000))));
 

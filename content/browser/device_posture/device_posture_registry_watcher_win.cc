@@ -109,7 +109,7 @@ void DevicePostureRegistryWatcherWin::ComputeFoldableState(
     return;
   }
 
-  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
       base::WideToUTF8(posture_data), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     DVLOG(1) << "Could not read the foldable status.";
@@ -132,7 +132,7 @@ void DevicePostureRegistryWatcherWin::ComputeFoldableState(
     }
   }
 
-  base::Value::List* viewport_segments = dict->FindList("Rectangles");
+  base::ListValue* viewport_segments = dict->FindList("Rectangles");
   if (!viewport_segments) {
     DVLOG(1) << "Could not parse the viewport segments data.";
     return;
@@ -161,7 +161,7 @@ void DevicePostureRegistryWatcherWin::ComputeFoldableState(
 
 std::optional<std::vector<gfx::Rect>>
 DevicePostureRegistryWatcherWin::ParseViewportSegments(
-    const base::Value::List& viewport_segments) {
+    const base::ListValue& viewport_segments) {
   if (viewport_segments.empty()) {
     return std::nullopt;
   }

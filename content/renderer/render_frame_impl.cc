@@ -6217,7 +6217,7 @@ void RenderFrameImpl::BeginNavigationInternal(
       CloneBlobURLToken(info->blob_url_token));
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
-  std::optional<base::Value::Dict> devtools_initiator;
+  std::optional<base::DictValue> devtools_initiator;
   if (!info->devtools_initiator_info.IsNull()) {
     std::optional<base::Value> devtools_initiator_value =
         base::JSONReader::Read(info->devtools_initiator_info.Utf8(),

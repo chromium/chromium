@@ -144,7 +144,7 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
     ASSERT_TRUE(parsed_json.is_list());
 
     for (const auto& entry : parsed_json.GetList()) {
-      const base::Value::Dict* dict = entry.GetIfDict();
+      const base::DictValue* dict = entry.GetIfDict();
       ASSERT_TRUE(dict);
       const std::string* kind = dict->FindString("kind");
       const std::string* device_id = dict->FindString("id");

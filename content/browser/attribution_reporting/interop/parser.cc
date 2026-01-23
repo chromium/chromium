@@ -131,14 +131,14 @@ class AttributionInteropParser {
   AttributionInteropParser& operator=(AttributionInteropParser&&) = delete;
 
   base::expected<std::vector<AttributionSimulationEvent>, std::string>
-  ParseInput(base::Value::Dict input) && {
+  ParseInput(base::DictValue input) && {
     std::vector<AttributionSimulationEvent> events;
 
     static constexpr char kKeyRegistrations[] = "registrations";
     if (base::Value* registrations = input.Find(kKeyRegistrations)) {
       auto context = PushContext(kKeyRegistrations);
       int64_t request_id = 0;
-      ParseListOfDicts(registrations, [&](base::Value::Dict registration) {
+      ParseListOfDicts(registrations, [&](base::DictValue registration) {
         ParseRegistration(std::move(registration), events, request_id++);
       });
     }
@@ -151,12 +151,12 @@ class AttributionInteropParser {
   }
 
   base::expected<AttributionInteropOutput, std::string> ParseOutput(
-      base::Value::Dict dict) && {
+      base::DictValue dict) && {
     AttributionInteropOutput output;
 
     {
       auto context = PushContext(kReportsKey);
-      ParseListOfDicts(dict.Find(kReportsKey), [&](base::Value::Dict report) {
+      ParseListOfDicts(dict.Find(kReportsKey), [&](base::DictValue report) {
         ParseReport(std::move(report), output.reports);
       });
     }
@@ -168,7 +168,7 @@ class AttributionInteropParser {
   }
 
   base::expected<void, std::string> ParseConfig(
-      base::Value::Dict& dict,
+      base::DictValue& dict,
       AttributionInteropConfig& interop_config,
       bool required) && {
     interop_config.needs_cross_app_web =
@@ -343,7 +343,7 @@ class AttributionInteropParser {
       return;
     }
 
-    base::Value::List* list = values->GetIfList();
+    base::ListValue* list = values->GetIfList();
     if (!list) {
       *Error() << "must be a list";
       return;
@@ -362,7 +362,7 @@ class AttributionInteropParser {
 
   void ParseListOfDicts(
       base::Value* values,
-      base::FunctionRef<void(base::Value::Dict)> parse_element) {
+      base::FunctionRef<void(base::DictValue)> parse_element) {
     ParseList(values, [&](base::Value value) {
       if (!EnsureDictionary(&value)) {
         return;
@@ -371,7 +371,7 @@ class AttributionInteropParser {
     });
   }
 
-  void ParseRegistration(base::Value::Dict dict,
+  void ParseRegistration(base::DictValue dict,
                          std::vector<AttributionSimulationEvent>& events,
                          int64_t request_id) {
     const base::Time time =
@@ -391,7 +391,7 @@ class AttributionInteropParser {
     AttributionReportingEligibility eligibility;
     bool fenced = false;
 
-    ParseDict(dict, kRegistrationRequestKey, [&](base::Value::Dict reg_req) {
+    ParseDict(dict, kRegistrationRequestKey, [&](base::DictValue reg_req) {
       context_origin = ParseOrigin(reg_req, "context_origin");
       eligibility = ParseEligibility(reg_req);
       fenced = ParseBool(reg_req, "fenced").value_or(false);
@@ -410,7 +410,7 @@ class AttributionInteropParser {
     {
       auto context = PushContext(kResponsesKey);
       ParseListOfDicts(
-          dict.Find(kResponsesKey), [&](base::Value::Dict response) {
+          dict.Find(kResponsesKey), [&](base::DictValue response) {
             auto url = ParseUrl(response, "url");
 
             const bool debug_permission = ParseDebugPermission(response);
@@ -435,7 +435,7 @@ class AttributionInteropParser {
             }
 
             ParseDict(
-                response, kResponseKey, [&](base::Value::Dict response_dict) {
+                response, kResponseKey, [&](base::DictValue response_dict) {
                   net::HttpResponseHeaders::Builder builder(
                       net::HttpVersion(1, 1),
                       /*status=*/"200 OK");
@@ -471,7 +471,7 @@ class AttributionInteropParser {
                         AttributionSimulationEvent::EndRequest(request_id));
   }
 
-  void ParseReport(base::Value::Dict dict,
+  void ParseReport(base::DictValue dict,
                    std::vector<AttributionInteropOutput::Report>& reports) {
     AttributionInteropOutput::Report report;
 
@@ -501,7 +501,7 @@ class AttributionInteropParser {
     }
   }
 
-  std::optional<SuitableOrigin> ParseOrigin(const base::Value::Dict& dict,
+  std::optional<SuitableOrigin> ParseOrigin(const base::DictValue& dict,
                                             std::string_view key) {
     auto context = PushContext(key);
     return ParseOrigin(dict.Find(key));
@@ -522,7 +522,7 @@ class AttributionInteropParser {
     return origin;
   }
 
-  GURL ParseUrl(const base::Value::Dict& dict, std::string_view key) {
+  GURL ParseUrl(const base::DictValue& dict, std::string_view key) {
     auto context = PushContext(key);
 
     GURL url;
@@ -537,7 +537,7 @@ class AttributionInteropParser {
     return url;
   }
 
-  base::Time ParseTime(const base::Value::Dict& dict,
+  base::Time ParseTime(const base::DictValue& dict,
                        std::string_view key,
                        base::Time previous_time,
                        bool strictly_greater,
@@ -567,7 +567,7 @@ class AttributionInteropParser {
     return base::Time();
   }
 
-  std::optional<bool> ParseBool(const base::Value::Dict& dict,
+  std::optional<bool> ParseBool(const base::DictValue& dict,
                                 std::string_view key) {
     auto context = PushContext(key);
 
@@ -584,14 +584,14 @@ class AttributionInteropParser {
     return v->GetBool();
   }
 
-  bool ParseDebugPermission(const base::Value::Dict& dict) {
+  bool ParseDebugPermission(const base::DictValue& dict) {
     return ParseBool(dict, "debug_permission").value_or(false);
   }
 
   // TODO(apaseltiner): Consider moving this for general use to
   // services/network/attribution/request_headers_internal.h.
   AttributionReportingEligibility ParseEligibility(
-      const base::Value::Dict& dict) {
+      const base::DictValue& dict) {
     static constexpr char kNavigationSource[] = "navigation-source";
     static constexpr char kEventSource[] = "event-source";
     static constexpr char kTrigger[] = "trigger";
@@ -635,7 +635,7 @@ class AttributionInteropParser {
   }
 
   void ParseFakeReport(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       std::vector<attribution_reporting::FakeEventLevelReport>& fake_reports) {
     std::optional<uint32_t> trigger_data;
     {
@@ -669,7 +669,7 @@ class AttributionInteropParser {
   }
 
   attribution_reporting::RandomizedResponse ParseRandomizedResponse(
-      base::Value::Dict& dict) {
+      base::DictValue& dict) {
     attribution_reporting::RandomizedResponse randomized_response;
 
     static constexpr char kRandomizedResponse[] = "randomized_response";
@@ -677,7 +677,7 @@ class AttributionInteropParser {
       auto context = PushContext(kRandomizedResponse);
       std::vector<attribution_reporting::FakeEventLevelReport>& fake_reports =
           randomized_response.emplace();
-      ParseListOfDicts(v, [&](base::Value::Dict dict) {
+      ParseListOfDicts(v, [&](base::DictValue dict) {
         ParseFakeReport(dict, fake_reports);
       });
     }
@@ -685,8 +685,7 @@ class AttributionInteropParser {
     return randomized_response;
   }
 
-  base::flat_set<int> ParseNullAggregatableReportsDays(
-      base::Value::Dict& dict) {
+  base::flat_set<int> ParseNullAggregatableReportsDays(base::DictValue& dict) {
     base::flat_set<int> null_aggregatable_reports_days;
 
     static constexpr char kNullAggregatableReports[] =
@@ -707,9 +706,9 @@ class AttributionInteropParser {
     return null_aggregatable_reports_days;
   }
 
-  bool ParseDict(base::Value::Dict& value,
+  bool ParseDict(base::DictValue& value,
                  std::string_view key,
-                 base::FunctionRef<void(base::Value::Dict)> parse_dict) {
+                 base::FunctionRef<void(base::DictValue)> parse_dict) {
     auto context = PushContext(key);
 
     base::Value* dict = value.Find(key);
@@ -737,7 +736,7 @@ class AttributionInteropParser {
   // Returns true if `key` is present in `dict` and the integer is parsed
   // successfully.
   template <typename T>
-  bool ParseInteger(const base::Value::Dict& dict,
+  bool ParseInteger(const base::DictValue& dict,
                     std::string_view key,
                     T& result,
                     bool (*convert_func)(std::string_view, T*),
@@ -765,7 +764,7 @@ class AttributionInteropParser {
     return false;
   }
 
-  bool ParseInt(const base::Value::Dict& dict,
+  bool ParseInt(const base::DictValue& dict,
                 std::string_view key,
                 int& result,
                 bool required,
@@ -774,7 +773,7 @@ class AttributionInteropParser {
                         allow_zero);
   }
 
-  bool ParseInt64(const base::Value::Dict& dict,
+  bool ParseInt64(const base::DictValue& dict,
                   std::string_view key,
                   int64_t& result,
                   bool required,
@@ -783,7 +782,7 @@ class AttributionInteropParser {
                         allow_zero);
   }
 
-  bool ParseUInt32(const base::Value::Dict& dict,
+  bool ParseUInt32(const base::DictValue& dict,
                    std::string_view key,
                    uint32_t& result,
                    bool required,
@@ -804,7 +803,7 @@ class AttributionInteropParser {
     return false;
   }
 
-  void ParseDouble(const base::Value::Dict& dict,
+  void ParseDouble(const base::DictValue& dict,
                    std::string_view key,
                    double& result,
                    bool required) {
@@ -867,12 +866,12 @@ AttributionSimulationEvent::Response&
 AttributionSimulationEvent::Response::operator=(Response&&) = default;
 
 base::expected<std::vector<AttributionSimulationEvent>, std::string>
-ParseAttributionInteropInput(base::Value::Dict input) {
+ParseAttributionInteropInput(base::DictValue input) {
   return AttributionInteropParser().ParseInput(std::move(input));
 }
 
 base::expected<AttributionInteropConfig, std::string>
-ParseAttributionInteropConfig(base::Value::Dict dict) {
+ParseAttributionInteropConfig(base::DictValue dict) {
   AttributionInteropConfig config;
   RETURN_IF_ERROR(
       AttributionInteropParser().ParseConfig(dict, config, /*required=*/true));
@@ -880,7 +879,7 @@ ParseAttributionInteropConfig(base::Value::Dict dict) {
 }
 
 base::expected<void, std::string> MergeAttributionInteropConfig(
-    base::Value::Dict dict,
+    base::DictValue dict,
     AttributionInteropConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
@@ -888,7 +887,7 @@ base::expected<void, std::string> MergeAttributionInteropConfig(
 
 // static
 base::expected<AttributionInteropOutput, std::string>
-AttributionInteropOutput::Parse(base::Value::Dict dict) {
+AttributionInteropOutput::Parse(base::DictValue dict) {
   return AttributionInteropParser().ParseOutput(std::move(dict));
 }
 
@@ -912,20 +911,20 @@ AttributionInteropOutput::Report::Report(base::Time time,
 AttributionInteropOutput::Report::Report(const Report& other)
     : Report(other.time, other.url, other.payload.Clone()) {}
 
-base::Value::Dict AttributionInteropOutput::Report::ToJson() const {
-  return base::Value::Dict()
+base::DictValue AttributionInteropOutput::Report::ToJson() const {
+  return base::DictValue()
       .Set(kReportTimeKey, TimeAsUnixMillisecondString(time))
       .Set(kReportUrlKey, url.spec())
       .Set(kPayloadKey, payload.Clone());
 }
 
-base::Value::Dict AttributionInteropOutput::ToJson() const {
-  base::Value::List report_list;
+base::DictValue AttributionInteropOutput::ToJson() const {
+  base::ListValue report_list;
   for (const auto& report : reports) {
     report_list.Append(report.ToJson());
   }
 
-  return base::Value::Dict().Set(kReportsKey, std::move(report_list));
+  return base::DictValue().Set(kReportsKey, std::move(report_list));
 }
 
 AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
@@ -948,13 +947,13 @@ std::ostream& operator<<(std::ostream& out,
 
 // static
 base::expected<AttributionInteropRun, std::string> AttributionInteropRun::Parse(
-    base::Value::Dict dict,
+    base::DictValue dict,
     const AttributionInteropConfig& default_config) {
   AttributionInteropRun run;
   run.config = default_config;
 
   if (base::Value* api_config = dict.Find("api_config")) {
-    base::Value::Dict* config_dict = api_config->GetIfDict();
+    base::DictValue* config_dict = api_config->GetIfDict();
     if (!config_dict) {
       return base::unexpected("api_config must be a dict");
     }

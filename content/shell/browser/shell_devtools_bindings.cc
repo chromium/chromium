@@ -62,10 +62,10 @@ std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
   return instance.get();
 }
 
-base::Value::Dict BuildObjectForResponse(const net::HttpResponseHeaders* rh,
-                                         bool success,
-                                         int net_error) {
-  base::Value::Dict response;
+base::DictValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                       bool success,
+                                       int net_error) {
+  base::DictValue response;
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -77,7 +77,7 @@ base::Value::Dict BuildObjectForResponse(const net::HttpResponseHeaders* rh,
   response.Set("netError", net_error);
   response.Set("netErrorName", net::ErrorToString(net_error));
 
-  base::Value::Dict headers;
+  base::DictValue headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
@@ -245,16 +245,16 @@ void ShellDevToolsBindings::WebContentsDestroyed() {
 }
 
 void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
-    base::Value::Dict message) {
+    base::DictValue message) {
   const std::string* method = message.FindString("method");
   if (!method)
     return;
 
   int request_id = message.FindInt("id").value_or(0);
-  base::Value::List* params_value = message.FindList("params");
+  base::ListValue* params_value = message.FindList("params");
 
   // Since we've received message by value, we can take the list.
-  base::Value::List params;
+  base::ListValue params;
   if (params_value) {
     params = std::move(*params_value);
   }
@@ -278,7 +278,7 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 
     GURL gurl(*url);
     if (!gurl.is_valid()) {
-      base::Value::Dict response;
+      base::DictValue response;
       response.Set("statusCode", 404);
       response.Set("urlValid", false);
       SendMessageAck(request_id, std::move(response));
@@ -409,7 +409,7 @@ void ShellDevToolsBindings::CallClientFunction(
 
   web_contents()->GetPrimaryMainFrame()->AllowInjectingJavaScript();
 
-  base::Value::List arguments;
+  base::ListValue arguments;
   if (!arg1.is_none()) {
     arguments.Append(std::move(arg1));
     if (!arg2.is_none()) {
@@ -425,7 +425,7 @@ void ShellDevToolsBindings::CallClientFunction(
 }
 
 void ShellDevToolsBindings::SendMessageAck(int request_id,
-                                           base::Value::Dict arg) {
+                                           base::DictValue arg) {
   CallClientFunction("DevToolsAPI", "embedderMessageAck",
                      base::Value(request_id), base::Value(std::move(arg)));
 }

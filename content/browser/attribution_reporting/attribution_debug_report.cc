@@ -49,11 +49,11 @@ constexpr char kAttributionDestination[] = "attribution_destination";
 
 struct DebugDataTypeAndBody {
   DebugDataType debug_data_type;
-  base::Value::Dict body;
+  base::DictValue body;
 
   explicit DebugDataTypeAndBody(DebugDataType debug_data_type,
                                 base::Value limit = base::Value(),
-                                base::Value::Dict body = base::Value::Dict())
+                                base::DictValue body = base::DictValue())
       : debug_data_type(debug_data_type), body(std::move(body)) {
     if (!limit.is_none()) {
       this->body.Set("limit", std::move(limit));
@@ -70,7 +70,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
     const StoreSourceResult& result) {
   const auto make_report_body = [&](DebugDataType type,
                                     base::Value limit = base::Value()) {
-    base::Value::Dict body;
+    base::DictValue body;
     if (result.destination_limit().has_value()) {
       body.Set("source_destination_limit",
                GetLimit(result.destination_limit().value()));
@@ -281,7 +281,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
           [](const CreateReportResult::InsufficientNamedBudget& v) {
             return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kTriggerAggregateInsufficientNamedBudget,
-                GetLimit(v.budget), base::Value::Dict().Set("name", v.name));
+                GetLimit(v.budget), base::DictValue().Set("name", v.name));
           },
           [](CreateReportResult::ReportWindowPassed) {
             return std::make_optional<DebugDataTypeAndBody>(
@@ -296,7 +296,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
       result);
 }
 
-void SetSourceData(base::Value::Dict& data_body,
+void SetSourceData(base::DictValue& data_body,
                    uint64_t source_event_id,
                    const net::SchemefulSite& source_site,
                    std::optional<uint64_t> source_debug_key) {
@@ -307,8 +307,8 @@ void SetSourceData(base::Value::Dict& data_body,
   }
 }
 
-base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
-                                    const CreateReportResult& result) {
+base::DictValue GetReportDataBody(DebugDataTypeAndBody data,
+                                  const CreateReportResult& result) {
   if (data.debug_data_type == DebugDataType::kTriggerEventExcessiveReports ||
       data.debug_data_type == DebugDataType::kTriggerEventLowPriority) {
     CHECK(result.dropped_event_level_report());
@@ -332,8 +332,8 @@ base::Value::Dict GetReportDataBody(DebugDataTypeAndBody data,
   return std::move(data.body);
 }
 
-base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
-  return base::Value::Dict()
+base::DictValue GetReportData(DebugDataType type, base::DictValue body) {
+  return base::DictValue()
       .Set("type", attribution_reporting::SerializeDebugDataType(type))
       .Set("body", std::move(body));
 }
@@ -381,7 +381,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
                 source.common_info().source_site(), registration.debug_key);
 
   return AttributionDebugReport(
-      base::Value::List::with_capacity(1).Append(
+      base::ListValue::with_capacity(1).Append(
           GetReportData(data->debug_data_type, std::move(data->body))),
       source.common_info().reporting_origin());
 }
@@ -402,7 +402,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     return std::nullopt;
   }
 
-  base::Value::List report_body;
+  base::ListValue report_body;
 
   std::optional<DebugDataType> event_level_type;
   if (std::optional<DebugDataTypeAndBody> event_level_data_type_limit =
@@ -466,9 +466,9 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   RecordVerboseDebugReportType(data_type);
 
   return AttributionDebugReport(
-      base::Value::List::with_capacity(1).Append(GetReportData(
+      base::ListValue::with_capacity(1).Append(GetReportData(
           data_type,
-          base::Value::Dict()
+          base::DictValue()
               .Set(
                   "context_site",
                   net::SchemefulSite(registration.top_level_origin).Serialize())
@@ -491,8 +491,8 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   RecordVerboseDebugReportType(kDataType);
 
   return AttributionDebugReport(
-      base::Value::List::with_capacity(1).Append(GetReportData(
-          kDataType, base::Value::Dict()
+      base::ListValue::with_capacity(1).Append(GetReportData(
+          kDataType, base::DictValue()
                          .Set("context_site",
                               net::SchemefulSite(context_origin).Serialize())
                          .Set("header", error.HeaderName())
@@ -501,7 +501,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 }
 
 AttributionDebugReport::AttributionDebugReport(
-    base::Value::List report_body,
+    base::ListValue report_body,
     attribution_reporting::SuitableOrigin reporting_origin)
     : report_body_(std::move(report_body)),
       reporting_origin_(std::move(reporting_origin)) {

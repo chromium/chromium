@@ -1749,7 +1749,7 @@ void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
 }
 
 void WebTestControlHost::WebTestRuntimeFlagsChanged(
-    base::Value::Dict changed_web_test_runtime_flags) {
+    base::DictValue changed_web_test_runtime_flags) {
   const int render_process_id = receiver_bindings_.current_context();
 
   // Stash the accumulated changes for future, not-yet-created renderers.
@@ -1843,7 +1843,7 @@ void WebTestControlHost::RequestWorkItem() {
 }
 
 void WebTestControlHost::WorkQueueStatesChanged(
-    base::Value::Dict changed_work_queue_states) {
+    base::DictValue changed_work_queue_states) {
   work_queue_states_.Merge(std::move(changed_work_queue_states));
 }
 

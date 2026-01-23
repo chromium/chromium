@@ -23,21 +23,20 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
       const AccessibilityTreeFormatterFuchsia&) = delete;
 
   // ui::AXTreeFormatterBase overrides.
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value::Dict BuildTreeForSelector(const AXTreeSelector&) const override;
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::DictValue BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTreeForSelector(const AXTreeSelector&) const override;
+  base::DictValue BuildNode(ui::AXPlatformNodeDelegate* node) const override;
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
-                          base::Value::Dict* dict) const;
+                          base::DictValue* dict) const;
 
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 
   void AddProperties(const ui::AXPlatformNodeDelegate& node,
-                     base::Value::Dict* dict) const;
+                     base::DictValue* dict) const;
 };
 
 }  // namespace content

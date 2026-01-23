@@ -53,7 +53,7 @@ class MockPeerConnectionTrackerHostObserver
                                    const std::string&) override {}
   void OnAddStandardStats(GlobalRenderFrameHostId,
                           int,
-                          base::Value::List) override {}
+                          base::ListValue) override {}
   void OnGetUserMedia(GlobalRenderFrameHostId,
                       base::ProcessId,
                       int,

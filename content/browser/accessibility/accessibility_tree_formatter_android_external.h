@@ -16,14 +16,13 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroidExternal
   AccessibilityTreeFormatterAndroidExternal();
   ~AccessibilityTreeFormatterAndroidExternal() override;
 
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTree(ui::AXPlatformNodeDelegate* root) const override;
 
  private:
   void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
-                          base::Value::Dict* dict) const;
+                          base::DictValue* dict) const;
 
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 };
 
 }  // namespace content

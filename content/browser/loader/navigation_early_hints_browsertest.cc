@@ -194,7 +194,7 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
   }
 
   std::string WaitForHintedScriptDevtoolsRequestId() {
-    base::Value::Dict result;
+    base::DictValue result;
     while (true) {
       result = WaitForNotification("Network.requestWillBeSent", true);
       const base::Value* request_url = result.FindByDottedPath("request.url");
@@ -205,16 +205,16 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
     }
   }
 
-  base::Value::Dict WaitForDevtoolsEarlyHints() {
-    base::Value::Dict result;
+  base::DictValue WaitForDevtoolsEarlyHints() {
+    base::DictValue result;
     while (true) {
       result = WaitForNotification("Network.responseReceivedEarlyHints", true);
       return result;
     }
   }
 
-  base::Value::Dict WaitForResponseReceived(const std::string& request_id) {
-    base::Value::Dict result;
+  base::DictValue WaitForResponseReceived(const std::string& request_id) {
+    base::DictValue result;
     while (true) {
       result = WaitForNotification("Network.responseReceived", true);
       const std::string* received_id = result.FindString("requestId");
@@ -842,8 +842,8 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
   std::string hinted_id = WaitForHintedScriptDevtoolsRequestId();
 
   {
-    base::Value::Dict early_hints_event = WaitForDevtoolsEarlyHints();
-    base::Value::Dict* early_hints_headers =
+    base::DictValue early_hints_event = WaitForDevtoolsEarlyHints();
+    base::DictValue* early_hints_headers =
         early_hints_event.FindDict("headers");
     ASSERT_TRUE(early_hints_headers);
     HeaderField link_header = CreatePreloadLinkForScript();
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, DevtoolsEventsForEarlyHint) {
   }
 
   {
-    base::Value::Dict result = WaitForResponseReceived(hinted_id);
+    base::DictValue result = WaitForResponseReceived(hinted_id);
     base::Value* from_early_hints_value =
         result.FindByDottedPath("response.fromEarlyHints");
     ASSERT_TRUE(from_early_hints_value);

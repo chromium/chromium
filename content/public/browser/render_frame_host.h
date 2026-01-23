@@ -586,7 +586,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
   virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                        const std::u16string& method_name,
-                                       base::Value::List arguments,
+                                       base::ListValue arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only

@@ -91,7 +91,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
                                MessageCallback callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
-                           base::Value::List args) override;
+                           base::ListValue args) override;
   bool CanCallJavascript() override;
   void CallJavascriptFunctionUnsafe(
       std::string_view function_name,
@@ -117,7 +117,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   friend class WebUIMainFrameObserver;
 
   // mojom::WebUIHost
-  void Send(const std::string& message, base::Value::List args) override;
+  void Send(const std::string& message, base::ListValue args) override;
 
   // Execute a string of raw JavaScript on the page.
   void ExecuteJavascript(const std::u16string& javascript);

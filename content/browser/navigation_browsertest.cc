@@ -7697,10 +7697,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestCredentiallessIframe,
   EXPECT_TRUE(ExecJs(child->current_frame_host(), "location.reload();"));
 
   // Check associated cookies according to devtools
-  base::Value::Dict params = fenced_frame_devtools_client.WaitForNotification(
+  base::DictValue params = fenced_frame_devtools_client.WaitForNotification(
       "Network.requestWillBeSentExtraInfo", /*allow_existing=*/true);
 
-  const base::Value::List* associated_cookies =
+  const base::ListValue* associated_cookies =
       params.FindList("associatedCookies");
 
   EXPECT_THAT(

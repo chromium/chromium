@@ -34,7 +34,7 @@ void MediaInternalsMessageHandler::RegisterMessages() {
 }
 
 void MediaInternalsMessageHandler::OnGetEverything(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   page_load_complete_ = true;
   proxy_->GetEverything();
 }

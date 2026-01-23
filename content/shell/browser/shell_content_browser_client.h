@@ -127,7 +127,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       bool first_auth_attempt,
       GuestPageHolder* guest,
       LoginDelegate::LoginAuthRequiredCallback auth_required_callback) override;
-  base::Value::Dict GetNetLogConstants() override;
+  base::DictValue GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
   std::optional<base::FilePath> GetLocalTracesDirectory() override;

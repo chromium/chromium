@@ -558,7 +558,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       debug_mode_details->is_enabled
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled,
-      /*additional_fields=*/base::Value::Dict(),
+      /*additional_fields=*/base::DictValue(),
       /*api_version=*/kApiReportVersion,
       /*api_identifier=*/
       private_aggregation::GetApiIdentifier(caller_api));

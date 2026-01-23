@@ -63,7 +63,7 @@ TEST(AttributionReportTest, ReportURL) {
 TEST(AttributionReportTest, ReportBody) {
   const struct {
     SourceType source_type;
-    base::Value::Dict expected;
+    base::DictValue expected;
   } kTestCases[] = {
       {SourceType::kNavigation, base::test::ParseJsonDict(R"json({
         "attribution_destination":"https://conversion.test",
@@ -106,7 +106,7 @@ TEST(AttributionReportTest, ReportBody) {
 TEST(AttributionReportTest, ReportBody_MultiDestination) {
   const struct {
     base::flat_set<net::SchemefulSite> destination_sites;
-    base::Value::Dict expected;
+    base::DictValue expected;
   } kTestCases[] = {
       {
           {
@@ -158,7 +158,7 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
   const struct {
     std::optional<uint64_t> source_debug_key;
     std::optional<uint64_t> trigger_debug_key;
-    base::Value::Dict expected;
+    base::DictValue expected;
   } kTestCases[] = {
       {std::nullopt, std::nullopt, base::test::ParseJsonDict(R"json({
         "attribution_destination":"https://conversion.test",
@@ -221,7 +221,7 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
 }
 
 TEST(AttributionReportTest, ReportBody_Aggregatable) {
-  base::Value::Dict expected = base::test::ParseJsonDict(R"json({
+  base::DictValue expected = base::test::ParseJsonDict(R"json({
     "aggregation_service_payloads":"not generated prior to send",
     "shared_info":"not generated prior to send"
   })json");
@@ -242,7 +242,7 @@ TEST(AttributionReportTest, NullAggregatableReport) {
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
 
-  base::Value::Dict expected = base::test::ParseJsonDict(R"json({
+  base::DictValue expected = base::test::ParseJsonDict(R"json({
     "aggregation_coordinator_origin":"https://a.test",
     "aggregation_service_payloads": [{
       "key_id": "key",
@@ -282,7 +282,7 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
 
-  base::Value::Dict expected = base::test::ParseJsonDict(R"json({
+  base::DictValue expected = base::test::ParseJsonDict(R"json({
     "aggregation_coordinator_origin": "https://a.test",
     "aggregation_service_payloads": [{
       "key_id": "key",

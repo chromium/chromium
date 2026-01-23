@@ -822,14 +822,14 @@ TEST(FirstPartySetParser, Logs_MultipleRejections) {
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      Accepts_MissingSetLists) {
   EXPECT_EQ(
-      FirstPartySetParser::ParseSetsFromEnterprisePolicy(base::Value::Dict())
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(base::DictValue())
           .first,
       base::ok(FirstPartySetsOverridesPolicy(net::SetsMutation({}, {}, {}))));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      Accepts_EmptyLists) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [],
                 "additions": []
@@ -842,7 +842,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_MissingPrimary) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -861,7 +861,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongPrimaryType) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -881,7 +881,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongAssociatedSitesFieldType) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -901,7 +901,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidTypeError_WrongAssociatedSiteType) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
           "replacements": [
             {
@@ -922,7 +922,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidOriginError_PrimaryOpaque) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -942,7 +942,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      InvalidOriginError_AssociatedSiteOpaque) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                {
                 "replacements": [
                   {
@@ -961,7 +961,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, PrimaryNonHttps) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                  {
                 "replacements": [
                   {
@@ -981,7 +981,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, PrimaryNonHttps) {
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      AssociatedSiteNonHttps) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                {
                 "replacements": [
                   {
@@ -1007,7 +1007,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   const net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
 
   // The invalid primary invalidates the set, but other sets are still parsed.
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -1057,7 +1057,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
   const net::SchemefulSite associated3(GURL("https://associatedsite3.test"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -1099,7 +1099,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   const net::SchemefulSite primary2(GURL("https://primary2.test"));
   const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -1130,7 +1130,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      RepeatedDomainError_WithinReplacements) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -1150,7 +1150,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_WithinReplacements) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                    {
                 "replacements": [
                   {
@@ -1174,7 +1174,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_WithinAdditions) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                    {
                 "replacements": [],
                 "additions": [
@@ -1198,7 +1198,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      NonDisjointError_AcrossBothLists) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                {
                 "replacements": [
                   {
@@ -1222,7 +1222,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                {
                 "replacements": [
                   {
@@ -1267,7 +1267,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   net::SchemefulSite primary2(GURL("https://primary2.test"));
   net::SchemefulSite associated_site2(GURL("https://associatedsite2.test"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -1308,7 +1308,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   net::SchemefulSite primary3(GURL("https://primary3.test"));
   net::SchemefulSite associatedSite3(GURL("https://associatedsite3.test"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -1364,7 +1364,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   // The following sets are disjoint iff aaaa.test is on the Public Suffix List.
   // If aaaa.test is not on the PSL, then two of the sets become singletons and
   // should be deleted.
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
                 {
                 "replacements": [
                   {
@@ -1416,7 +1416,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   net::SchemefulSite service3(GURL("https://service3.test"));
   net::SchemefulSite service3_cctld(GURL("https://service3.cctld"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -1600,7 +1600,7 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
   net::SchemefulSite associated5(GURL("https://associated5.test"));
   net::SchemefulSite associated6(GURL("https://associated6.test"));
 
-  base::Value::Dict policy_value = base::test::ParseJsonDict(R"(
+  base::DictValue policy_value = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -1645,7 +1645,7 @@ TEST(FirstPartySetParser,
   net::SchemefulSite primary(GURL("https://primary.test"));
   net::SchemefulSite alias(GURL("https://primary.foo"));
 
-  base::Value::Dict policy_dict = base::test::ParseJsonDict(R"(
+  base::DictValue policy_dict = base::test::ParseJsonDict(R"(
              {
                 "additions": [
                   {
@@ -1683,7 +1683,7 @@ TEST(FirstPartySetParser,
   net::SchemefulSite primary(GURL("https://primary.test"));
   net::SchemefulSite alias(GURL("https://primary.foo"));
 
-  base::Value::Dict policy_dict = base::test::ParseJsonDict(R"(
+  base::DictValue policy_dict = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {

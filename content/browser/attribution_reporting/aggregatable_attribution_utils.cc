@@ -164,7 +164,7 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   switch (aggregatable_data->aggregatable_trigger_config()
               .source_registration_time_config()) {
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude:
@@ -212,7 +212,7 @@ base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
   return total_value;
 }
 
-void SetAttributionDestination(base::Value::Dict& dict,
+void SetAttributionDestination(base::DictValue& dict,
                                const net::SchemefulSite& destination) {
   dict.Set("attribution_destination", destination.Serialize());
 }

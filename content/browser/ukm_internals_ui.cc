@@ -52,7 +52,7 @@ class UkmMessageHandler : public WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestUkmData(const base::Value::List& args);
+  void HandleRequestUkmData(const base::ListValue& args);
 
   raw_ptr<const ukm::UkmService> ukm_service_;
 };
@@ -62,8 +62,7 @@ UkmMessageHandler::UkmMessageHandler(const ukm::UkmService* ukm_service)
 
 UkmMessageHandler::~UkmMessageHandler() {}
 
-void UkmMessageHandler::HandleRequestUkmData(
-    const base::Value::List& args_list) {
+void UkmMessageHandler::HandleRequestUkmData(const base::ListValue& args_list) {
   AllowJavascript();
 
   // Identifies the callback, used for when resolving.

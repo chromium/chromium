@@ -60,7 +60,7 @@ bool JSONToPoint(const std::string& str, gfx::PointF* point) {
       base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
-  base::Value::Dict* root = value->GetIfDict();
+  base::DictValue* root = value->GetIfDict();
   if (!root)
     return false;
   std::optional<double> x = root->FindDouble("x");

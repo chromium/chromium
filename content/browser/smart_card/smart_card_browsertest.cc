@@ -978,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ListReaders) {
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   auto expected_reader_names =
-      base::Value(base::Value::List().Append("Foo").Append("Bar"));
+      base::Value(base::ListValue().Append("Foo").Append("Bar"));
 
   EXPECT_EQ(expected_reader_names, EvalJs(shell(), R"((async () => {
        let context = await navigator.smartCard.establishContext();
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ListReadersEmpty) {
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
-  auto expected_reader_names = base::Value(base::Value::List());
+  auto expected_reader_names = base::Value(base::ListValue());
 
   EXPECT_EQ(expected_reader_names, EvalJs(shell(), R"((async () => {
        let context = await navigator.smartCard.establishContext();
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Connect) {
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   auto expected_reader_names =
-      base::Value(base::Value::List().Append("Foo").Append("Bar"));
+      base::Value(base::ListValue().Append("Foo").Append("Bar"));
 
   EXPECT_EQ("[object SmartCardConnection], t1", EvalJs(shell(), R"(
     (async () => {

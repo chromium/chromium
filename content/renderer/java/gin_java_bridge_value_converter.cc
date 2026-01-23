@@ -67,7 +67,7 @@ class TypedArraySerializer {
       v8::Local<v8::TypedArray> typed_array);
   virtual void serializeTo(char* data,
                            size_t data_length,
-                           base::Value::List* out) = 0;
+                           base::ListValue* out) = 0;
 
  protected:
   TypedArraySerializer() {}
@@ -87,7 +87,7 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
 
   void serializeTo(char* data,
                    size_t data_length,
-                   base::Value::List* out) override {
+                   base::ListValue* out) override {
     DCHECK_EQ(data_length, typed_array_->Length() * sizeof(ElementType));
     for (ElementType *element = reinterpret_cast<ElementType*>(data),
                      *end = UNSAFE_TODO(element + typed_array_->Length());
@@ -158,7 +158,7 @@ bool GinJavaBridgeValueConverter::FromV8ArrayBuffer(
     return true;
   }
 
-  base::Value::List result;
+  base::ListValue result;
   std::unique_ptr<TypedArraySerializer> serializer(
       TypedArraySerializer::Create(value.As<v8::TypedArray>()));
   serializer->serializeTo(data, data_length, &result);

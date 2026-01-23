@@ -245,9 +245,9 @@ base::Value JsonToValue(const std::string& json) {
   return std::move(metadata).value();
 }
 
-base::Value::List AdAllowedReportingOriginsToList(
+base::ListValue AdAllowedReportingOriginsToList(
     std::vector<url::Origin> origins) {
-  base::Value::List allowed_reporting_origins;
+  base::ListValue allowed_reporting_origins;
   for (const auto& origin : origins) {
     allowed_reporting_origins.Append(origin.Serialize());
   }
@@ -256,11 +256,10 @@ base::Value::List AdAllowedReportingOriginsToList(
 
 // Creates base::Value representations of ads and adComponents arrays from the
 // provided InterestGroup::Ads.
-base::Value::List MakeAdsValue(
-    const std::vector<blink::InterestGroup::Ad>& ads) {
-  base::Value::List list;
+base::ListValue MakeAdsValue(const std::vector<blink::InterestGroup::Ad>& ads) {
+  base::ListValue list;
   for (const auto& ad : ads) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("renderURL", ad.render_url());
     if (ad.size_group) {
       entry.Set("sizeGroup", std::move(ad.size_group.value()));
@@ -272,7 +271,7 @@ base::Value::List MakeAdsValue(
       entry.Set("buyerAndSellerReportingId", *ad.buyer_and_seller_reporting_id);
     }
     if (ad.selectable_buyer_and_seller_reporting_ids) {
-      base::Value::List selectable_buyer_and_seller_reporting_ids;
+      base::ListValue selectable_buyer_and_seller_reporting_ids;
       for (std::string id : *ad.selectable_buyer_and_seller_reporting_ids) {
         selectable_buyer_and_seller_reporting_ids.Append(id);
       }
@@ -298,18 +297,18 @@ base::Value::List MakeAdsValue(
   return list;
 }
 
-base::Value::Dict StringDoubleMapToDict(
+base::DictValue StringDoubleMapToDict(
     const base::flat_map<std::string, double>& map) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& pair : map) {
     dict.Set(pair.first, pair.second);
   }
   return dict;
 }
 
-base::Value::List SellerCapabilitiesToList(
+base::ListValue SellerCapabilitiesToList(
     blink::SellerCapabilitiesType capabilities) {
-  base::Value::List list;
+  base::ListValue list;
   for (blink::SellerCapabilities capability : capabilities) {
     if (capability == blink::SellerCapabilities::kInterestGroupCounts) {
       list.Append("interest-group-counts");
@@ -323,11 +322,11 @@ base::Value::List SellerCapabilitiesToList(
   return list;
 }
 
-base::Value::Dict SellerCapabilitiesToDict(
+base::DictValue SellerCapabilitiesToDict(
     const std::optional<
         base::flat_map<url::Origin, blink::SellerCapabilitiesType>>& map,
     blink::SellerCapabilitiesType all_sellers_capabilities) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (map) {
     for (const auto& [origin, capabilities] : *map) {
       dict.Set(origin.Serialize(), SellerCapabilitiesToList(capabilities));
@@ -339,8 +338,8 @@ base::Value::Dict SellerCapabilitiesToDict(
   return dict;
 }
 
-base::Value::Dict InterestGroupSizeToDict(const blink::AdSize& size) {
-  base::Value::Dict output;
+base::DictValue InterestGroupSizeToDict(const blink::AdSize& size) {
+  base::DictValue output;
   output.Set("width", base::NumberToString(size.width) +
                           blink::ConvertAdSizeUnitToString(size.width_units));
   output.Set("height", base::NumberToString(size.height) +
@@ -348,20 +347,20 @@ base::Value::Dict InterestGroupSizeToDict(const blink::AdSize& size) {
   return output;
 }
 
-base::Value::Dict AdSizesToDict(
+base::DictValue AdSizesToDict(
     const base::flat_map<std::string, blink::AdSize>& map) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& [size_name, size] : map) {
     dict.Set(size_name, InterestGroupSizeToDict(size));
   }
   return dict;
 }
 
-base::Value::Dict SizeGroupsToDict(
+base::DictValue SizeGroupsToDict(
     const base::flat_map<std::string, std::vector<std::string>>& map) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& [group_name, group] : map) {
-    base::Value::List size_list;
+    base::ListValue size_list;
     for (const std::string& size : group) {
       size_list.Append(size);
     }
@@ -370,9 +369,9 @@ base::Value::Dict SizeGroupsToDict(
   return dict;
 }
 
-base::Value::List AuctionServerRequestFlagsToList(
+base::ListValue AuctionServerRequestFlagsToList(
     const blink::AuctionServerRequestFlags& flags) {
-  base::Value::List result;
+  base::ListValue result;
   if (flags.Has(blink::AuctionServerRequestFlagsEnum::kOmitAds)) {
     result.Append("omit-ads");
   }
@@ -585,7 +584,7 @@ class NetworkResponder {
 
     std::string script_tags;
     for (const SubresourceBundle& bundle : bundles) {
-      base::Value::List subresources;
+      base::ListValue subresources;
       for (const SubresourceResponse& subresource : bundle.subresources) {
         subresources.Append(subresource.subresource_url);
       }
@@ -959,7 +958,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   [[nodiscard]] std::string JoinInterestGroup(
       const blink::InterestGroup& group,
       const std::optional<ToRenderFrameHost> execution_target = std::nullopt) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("name", group.name);
     dict.Set("owner", group.owner.Serialize());
     dict.Set("priority", group.priority);
@@ -1001,7 +1000,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                group.trusted_bidding_signals_coordinator->Serialize());
     }
     if (group.view_and_click_counts_providers) {
-      base::Value::List providers;
+      base::ListValue providers;
       for (const url::Origin& provider :
            *group.view_and_click_counts_providers) {
         providers.Append(provider.Serialize());
@@ -1012,7 +1011,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       dict.Set("userBiddingSignals", JsonToValue(*group.user_bidding_signals));
     }
     if (group.trusted_bidding_signals_keys) {
-      base::Value::List keys;
+      base::ListValue keys;
       for (const auto& key : *group.trusted_bidding_signals_keys) {
         keys.Append(key);
       }
@@ -1159,7 +1158,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
           .ExtractString();
     }
 
-    base::Value::List name_list;
+    base::ListValue name_list;
     for (const auto& group : *groups_to_keep) {
       name_list.Append(group);
     }
@@ -1962,7 +1961,7 @@ function generateBid(
       const GURL& urn_url,
       const base::flat_map<std::string, std::string> replacements,
       std::string* error_out = nullptr) {
-    base::Value::Dict replacement_value;
+    base::DictValue replacement_value;
     for (const auto& replacement : replacements) {
       replacement_value.Set(replacement.first, replacement.second);
     }
@@ -22297,12 +22296,12 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
                   0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
               };
 
-              base::Value::Dict key;
+              base::DictValue key;
               key.Set("key", base::Base64Encode(kTestPublicKey));
               key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
-              base::Value::List keys;
+              base::ListValue keys;
               keys.Append(std::move(key));
-              base::Value::Dict outer;
+              base::DictValue outer;
               outer.Set("keys", std::move(keys));
 
               std::string json_output =

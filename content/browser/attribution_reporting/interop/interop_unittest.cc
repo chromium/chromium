@@ -45,7 +45,7 @@ using ::testing::UnorderedElementsAreArray;
 
 struct AggregatableReportSharedInfo {
   std::string as_string;
-  base::Value::Dict as_dict;
+  base::DictValue as_dict;
 };
 
 constexpr char kDefaultConfigFileName[] = "default_config.json";
@@ -79,7 +79,7 @@ std::vector<base::FilePath> GetInputs() {
   return input_paths;
 }
 
-base::Value::Dict ParseDictFromFile(const base::FilePath& path) {
+base::DictValue ParseDictFromFile(const base::FilePath& path) {
   std::string json;
   CHECK(base::ReadFileToString(path, &json)) << path;
 
@@ -92,14 +92,14 @@ base::Value::Dict ParseDictFromFile(const base::FilePath& path) {
   return std::move(*result).TakeDict();
 }
 
-base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
-                                       const std::string& shared_info) {
+base::ListValue GetDecryptedPayloads(std::optional<base::Value> payloads,
+                                     const std::string& shared_info) {
   CHECK(payloads.has_value());
 
-  base::Value::List payloads_list = std::move(*payloads).TakeList();
+  base::ListValue payloads_list = std::move(*payloads).TakeList();
   CHECK_EQ(payloads_list.size(), 1u);
 
-  base::Value::Dict& payload_dict = payloads_list.front().GetDict();
+  base::DictValue& payload_dict = payloads_list.front().GetDict();
 
   std::optional<base::Value> payload = payload_dict.Extract("payload");
   CHECK(payload.has_value());
@@ -118,7 +118,7 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   const auto it = payload_map.find(cbor::Value("data"));
   CHECK(it != payload_map.end());
 
-  base::Value::List list;
+  base::ListValue list;
 
   for (const cbor::Value& data : it->second.GetArray()) {
     const cbor::Value::MapValue& data_map = data.GetMap();
@@ -141,8 +141,8 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
       continue;
     }
 
-    base::Value::Dict dict =
-        base::Value::Dict()
+    base::DictValue dict =
+        base::DictValue()
             .Set("key", attribution_reporting::HexEncodeAggregationKey(bucket))
             .Set("value", base::checked_cast<int>(value));
 
@@ -159,12 +159,12 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   return list;
 }
 
-void AdjustAggregatableReportBody(base::Value::Dict& report_body) {
+void AdjustAggregatableReportBody(base::DictValue& report_body) {
   std::optional<base::Value> shared_info = report_body.Extract("shared_info");
   CHECK(shared_info.has_value());
   const std::string& shared_info_str = shared_info->GetString();
 
-  std::optional<base::Value::Dict> shared_info_dict =
+  std::optional<base::DictValue> shared_info_dict =
       base::JSONReader::ReadDict(shared_info_str, base::JSON_PARSE_RFC);
   CHECK(shared_info_dict.has_value());
 
@@ -187,7 +187,7 @@ class Adjuster : public ReportBodyAdjuster {
   ~Adjuster() override = default;
 
  private:
-  void AdjustEventLevel(base::Value::Dict& report_body) override {
+  void AdjustEventLevel(base::DictValue& report_body) override {
     if (actual_) {
       // Report IDs are a source of nondeterminism, so remove them.
       report_body.Remove("report_id");
@@ -203,7 +203,7 @@ class Adjuster : public ReportBodyAdjuster {
   }
 
   void AdjustVerboseDebug(std::string_view debug_data_type,
-                          base::Value::Dict& body) override {
+                          base::DictValue& body) override {
     ReportBodyAdjuster::AdjustVerboseDebug(debug_data_type, body);
 
     if (actual_ && debug_data_type == "header-parsing-error") {
@@ -212,7 +212,7 @@ class Adjuster : public ReportBodyAdjuster {
     }
   }
 
-  void AdjustAggregatable(base::Value::Dict& report_body) override {
+  void AdjustAggregatable(base::DictValue& report_body) override {
     if (!actual_) {
       return;
     }
@@ -220,7 +220,7 @@ class Adjuster : public ReportBodyAdjuster {
     AdjustAggregatableReportBody(report_body);
   }
 
-  void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
+  void AdjustAggregatableDebug(base::DictValue& report_body) override {
     if (!actual_) {
       return;
     }
@@ -259,7 +259,7 @@ AttributionInteropConfig AttributionInteropTest::g_config_;
 // See //content/test/data/attribution_reporting/interop/README.md for the
 // JSON schema.
 TEST_P(AttributionInteropTest, HasExpectedOutput) {
-  base::Value::Dict dict = ParseDictFromFile(GetParam());
+  base::DictValue dict = ParseDictFromFile(GetParam());
 
   std::optional<base::Value> output = dict.Extract("output");
   ASSERT_TRUE(output && output->is_dict());

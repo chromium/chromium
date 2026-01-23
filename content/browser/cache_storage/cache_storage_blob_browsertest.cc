@@ -83,7 +83,7 @@ class CacheStorageBlobBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(result.is_ok());
     ASSERT_TRUE(result.is_dict());
 
-    const base::Value::Dict& result_dict = result.ExtractDict();
+    const base::DictValue& result_dict = result.ExtractDict();
     const std::string* text = result_dict.FindString("text");
     ASSERT_TRUE(text);
     std::string expected_prefix = CreateChunk(80);

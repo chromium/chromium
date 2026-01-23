@@ -48,8 +48,8 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
   void SetText(const std::string& text) override;
   const std::string& GetText() override;
 
-  void SetOptions(base::Value::Dict options) override;
-  const base::Value::Dict* GetOptions() override;
+  void SetOptions(base::DictValue options) override;
+  const base::DictValue* GetOptions() override;
 
   void SetSrcId(int src_id) override;
   int GetSrcId() override;
@@ -124,7 +124,7 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance {
 
   // The full options arg passed to tts.speak, which may include fields
   // other than the ones we explicitly parse, below.
-  base::Value::Dict options_;
+  base::DictValue options_;
 
   // The source engine's ID of this utterance, so that it can associate
   // events with the appropriate callback.

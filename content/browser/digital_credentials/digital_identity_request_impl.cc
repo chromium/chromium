@@ -240,7 +240,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
   // the actual request payload.
   std::optional<Value> payload;
   if (const std::string* jwt_str = request_dict->FindString("request")) {
-    std::optional<base::Value::List> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
+    std::optional<base::ListValue> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
     if (!parsed_jwt) {
       return false;
     }

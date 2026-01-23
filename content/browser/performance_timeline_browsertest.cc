@@ -377,7 +377,7 @@ class PerformanceTimelineBackForwardCacheRestorationBrowserTest
   // This method checks a list of performance entries of the
   // back-forward-cache-restoration type. Each entry is created when there is
   // a back/forward cache restoration.
-  void CheckEntries(const base::Value::List lst,
+  void CheckEntries(const base::ListValue lst,
                     int initial_navigation_id) const {
     int prev_navigation_id = initial_navigation_id;
 

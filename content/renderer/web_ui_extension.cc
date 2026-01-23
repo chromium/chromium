@@ -155,7 +155,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
 
   // If they've provided an optional message parameter, convert that into a
   // Value to send to the browser process.
-  base::Value::List content;
+  base::ListValue content;
   if (!args->PeekNext().IsEmpty() && !args->PeekNext()->IsUndefined()) {
     v8::Local<v8::Object> obj;
     if (!args->GetNext(&obj)) {

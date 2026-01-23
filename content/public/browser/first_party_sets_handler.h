@@ -118,7 +118,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // disjointness with other sources, such as the public sets, since this policy
   // will be used override First-Party Sets in those sources.
   static std::pair<base::expected<void, ParseError>, std::vector<ParseWarning>>
-  ValidateEnterprisePolicy(const base::Value::Dict& policy);
+  ValidateEnterprisePolicy(const base::DictValue& policy);
 
   // Returns whether First-Party Sets is enabled.
   //
@@ -165,7 +165,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // context config must be computed after the list of First-Party Sets is
   // initialized which occurs asynchronously.
   virtual void GetContextConfigForPolicy(
-      base::optional_ref<const base::Value::Dict> policy,
+      base::optional_ref<const base::DictValue> policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
 
   // Clear site state of sites that have a FPS membership change for the browser

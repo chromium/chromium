@@ -185,7 +185,7 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
         content::V8ValueConverter::Create()->FromV8Value(params, context);
 
     if (params_value && params_value->is_dict()) {
-      const base::Value::Dict& params_dict = params_value->GetDict();
+      const base::DictValue& params_dict = params_value->GetDict();
       scale = params_dict.FindDouble("scale").value_or(scale);
       if (std::optional<int> stop = params_dict.FindInt("stop")) {
         stop_index = *stop;

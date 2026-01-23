@@ -125,7 +125,7 @@ void URLDataManagerBackend::AddDataSource(URLDataSourceImpl* source) {
 
 void URLDataManagerBackend::UpdateWebUIDataSource(
     const std::string& source_name,
-    const base::Value::Dict& update) {
+    const base::DictValue& update) {
   auto it = data_sources_.find(source_name);
   if (it == data_sources_.end() || !it->second->IsWebUIDataSourceImpl()) {
     NOTREACHED();
@@ -266,8 +266,8 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
 }
 
 bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
-  base::Value::Dict error_codes = net::GetNetConstants();
-  const base::Value::Dict* net_error_codes_dict =
+  base::DictValue error_codes = net::GetNetConstants();
+  const base::DictValue* net_error_codes_dict =
       error_codes.FindDict(kNetworkErrorKey);
   if (net_error_codes_dict) {
     for (auto [key, value] : *net_error_codes_dict) {

@@ -53,7 +53,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                                const std::optional<std::string>& source_file,
                                int line_number,
                                int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("id", id);
     body.Set("message", message);
     if (source_file)
@@ -72,7 +72,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                               const std::optional<std::string>& source_file,
                               int line_number,
                               int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("id", id);
     if (anticipated_removal) {
       body.Set(
@@ -102,7 +102,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                                uint16_t status_code,
                                int line_number,
                                int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("documentURL", document_url);
     if (referrer)
       body.Set("referrer", *referrer);
@@ -129,7 +129,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                                      const std::string& blocked_url,
                                      const std::string& destination,
                                      bool report_only) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("documentURL", document_url);
     body.Set("blockedURL", blocked_url);
     body.Set("destination", destination);
@@ -146,7 +146,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const std::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("policyId", policy_id);
     body.Set("disposition", disposition);
     if (message)
@@ -171,7 +171,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const std::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("policyId", policy_id);
     body.Set("disposition", disposition);
     if (message) {
@@ -205,7 +205,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const std::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("policyId", policy_id);
     body.Set("disposition", disposition);
     if (message)
@@ -225,7 +225,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                           const std::string& integrity_hash,
                           const std::string& type,
                           const std::string& destination) override {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("documentURL", url.spec());
     body.Set("subresourceURL", subresource_url);
     body.Set("hash", integrity_hash);
@@ -240,7 +240,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
   void QueueReport(const GURL& url,
                    const std::string& group,
                    const std::string& type,
-                   base::Value::Dict body) {
+                   base::DictValue body) {
     auto* rph = RenderProcessHost::FromID(render_process_id_);
     if (!rph)
       return;

@@ -55,7 +55,7 @@ class CONTENT_EXPORT PreloadingConfig {
   };
 
   struct Entry {
-    static Entry FromDict(const base::Value::Dict* dict);
+    static Entry FromDict(const base::DictValue* dict);
 
     bool holdback_ = false;
     float sampling_likelihood_ = 1.0;

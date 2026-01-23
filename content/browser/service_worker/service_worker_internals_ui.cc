@@ -84,8 +84,8 @@ base::ProcessId GetRealProcessId(int process_host_id) {
   return base::GetProcId(handle);
 }
 
-base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
-  base::Value::Dict info;
+base::DictValue UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
+  base::DictValue info;
   switch (version.running_status) {
     case blink::EmbeddedWorkerStatus::kStopped:
       info.Set("running_status", "STOPPED");
@@ -154,9 +154,9 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   info.Set("thread_id", version.thread_id);
   info.Set("devtools_agent_route_id", version.devtools_agent_route_id);
 
-  base::Value::List clients;
+  base::ListValue clients;
   for (auto& it : version.clients) {
-    base::Value::Dict client;
+    base::DictValue client;
     client.Set("client_id", it.first);
     if (std::holds_alternative<GlobalRenderFrameHostId>(it.second)) {
       RenderFrameHost* render_frame_host =
@@ -171,11 +171,11 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   return info;
 }
 
-base::Value::List GetRegistrationListValue(
+base::ListValue GetRegistrationListValue(
     const std::vector<ServiceWorkerRegistrationInfo>& registrations) {
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& registration : registrations) {
-    base::Value::Dict registration_info;
+    base::DictValue registration_info;
     registration_info.Set("scope", registration.scope.spec());
     registration_info.Set(
         "third_party_storage_partitioning_enabled",
@@ -217,9 +217,9 @@ base::Value::List GetRegistrationListValue(
   return result;
 }
 
-base::Value::List GetVersionListValue(
+base::ListValue GetVersionListValue(
     const std::vector<ServiceWorkerVersionInfo>& versions) {
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& version : versions) {
     result.Append(UpdateVersionInfo(version));
   }
@@ -308,7 +308,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     if (!handler_) {
       return;
     }
-    base::Value::Dict details;
+    base::DictValue details;
     details.Set("message", info.error_message);
     details.Set("lineNumber", info.line_number);
     details.Set("columnNumber", info.column_number);
@@ -325,7 +325,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
     if (!handler_) {
       return;
     }
-    base::Value::Dict details;
+    base::DictValue details;
     details.Set("sourceIdentifier", static_cast<int>(message.source));
     details.Set("message_level", static_cast<int>(message.message_level));
     details.Set("message", message.message);
@@ -450,7 +450,7 @@ void ServiceWorkerInternalsHandler::OnErrorEvent(
     const std::string& event_name,
     int partition_id,
     int64_t version_id,
-    const base::Value::Dict& details) {
+    const base::DictValue& details) {
   FireWebUIListener(event_name, base::Value(partition_id),
                     base::Value(base::NumberToString(version_id)), details);
 }
@@ -467,7 +467,7 @@ void ServiceWorkerInternalsHandler::OnDidGetRegistrations(
     const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
     const std::vector<ServiceWorkerVersionInfo>& live_versions,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  base::Value::Dict registrations;
+  base::DictValue registrations;
   registrations.Set("liveRegistrations",
                     GetRegistrationListValue(live_registrations));
   registrations.Set("liveVersions", GetVersionListValue(live_versions));
@@ -488,7 +488,7 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const Value::List& args) {
   CHECK(args[0].is_string());
   std::string callback_id = args[0].GetString();
   AllowJavascript();
-  base::Value::Dict options;
+  base::DictValue options;
   options.Set("debug_on_start", ServiceWorkerDevToolsManager::GetInstance()
                                     ->debug_service_worker_on_start());
   ResolveJavascriptCallback(base::Value(callback_id), options);
@@ -595,7 +595,7 @@ void ServiceWorkerInternalsHandler::HandleStopWorker(const Value::List& args) {
 
   if (!args[1].is_dict())
     return;
-  const base::Value::Dict& cmd_args = args[1].GetDict();
+  const base::DictValue& cmd_args = args[1].GetDict();
 
   std::optional<int> partition_id = cmd_args.FindInt("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
@@ -622,7 +622,7 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(
 
   if (!args[1].is_dict())
     return;
-  const base::Value::Dict& cmd_args = args[1].GetDict();
+  const base::DictValue& cmd_args = args[1].GetDict();
 
   std::optional<int> process_host_id = cmd_args.FindInt("process_host_id");
   std::optional<int> devtools_agent_route_id =
@@ -653,7 +653,7 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const Value::List& args) {
 
   if (!args[1].is_dict())
     return;
-  const base::Value::Dict& cmd_args = args[1].GetDict();
+  const base::DictValue& cmd_args = args[1].GetDict();
 
   std::optional<int> partition_id = cmd_args.FindInt("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
@@ -685,7 +685,7 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const Value::List& args) {
 
   if (!args[1].is_dict())
     return;
-  const base::Value::Dict& cmd_args = args[1].GetDict();
+  const base::DictValue& cmd_args = args[1].GetDict();
 
   std::optional<int> partition_id = cmd_args.FindInt("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;

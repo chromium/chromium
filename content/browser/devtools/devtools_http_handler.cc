@@ -606,7 +606,7 @@ void DevToolsHttpHandler::OnJsonRequest(
   }
 
   if (command == "version") {
-    base::Value::Dict version;
+    base::DictValue version;
     version.Set("Protocol-Version", DevToolsAgentHost::GetProtocolVersion());
     version.Set("WebKit-Version", GetWebKitVersion());
     version.Set("Browser", GetContentClient()->browser()->GetProduct());
@@ -675,7 +675,7 @@ void DevToolsHttpHandler::OnJsonRequest(
       return;
     }
     std::string host = info.GetHeaderValue("host");
-    base::Value::Dict descriptor = SerializeDescriptor(agent_host, host);
+    base::DictValue descriptor = SerializeDescriptor(agent_host, host);
     SendJson(connection_id, net::HTTP_OK, descriptor, std::string());
     return;
   }
@@ -739,7 +739,7 @@ void DevToolsHttpHandler::RespondToJsonList(int connection_id,
                                             bool for_tab) {
   DevToolsAgentHost::List agent_hosts = std::move(hosts);
   std::sort(agent_hosts.begin(), agent_hosts.end(), TimeComparator);
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (auto& agent_host : agent_hosts) {
     if (agent_host->GetType() != DevToolsAgentHost::kTypeTab || for_tab) {
       list_value.Append(SerializeDescriptor(agent_host, host));
@@ -1020,10 +1020,10 @@ void DevToolsHttpHandler::AcceptWebSocket(
                                 connection_id, request));
 }
 
-base::Value::Dict DevToolsHttpHandler::SerializeDescriptor(
+base::DictValue DevToolsHttpHandler::SerializeDescriptor(
     scoped_refptr<DevToolsAgentHost> agent_host,
     const std::string& host) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   std::string id = agent_host->GetId();
   dictionary.Set(kTargetIdField, id);
   std::string parent_id = agent_host->GetParentId();

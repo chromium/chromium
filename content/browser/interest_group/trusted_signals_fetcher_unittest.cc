@@ -609,7 +609,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
 
   const url::Origin kDefaultMainFrameOrigin =
       url::Origin::Create(GURL("https://host.test"));
-  const base::Value::Dict kDefaultAdditionalParams;
+  const base::DictValue kDefaultAdditionalParams;
 
   // Default values used by CreateBasicBiddingSignalsRequest().
   const std::set<std::string> kDefaultInterestGroupNames{"group1"};
@@ -923,7 +923,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleInterestGroups) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   additional_params.Set("foo", base::Value("bar"));
   bidding_signals_request[0][0].additional_params = additional_params;
 
@@ -959,7 +959,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsOneAdditionalParam) {
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleAdditionalParams) {
   auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   additional_params.Set("foo", "bar");
   additional_params.Set("Foo", "bAr");
   additional_params.Set("oof", "rab");
@@ -1089,7 +1089,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdComponentRenderUrls) {
 
 TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdditionalParam) {
   auto scoring_signals_request = CreateBasicScoringSignalsRequest();
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   additional_params.Set("foo", base::Value("bar"));
   scoring_signals_request[0][0].additional_params = additional_params;
 
@@ -1121,7 +1121,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsOneAdditionalParam) {
 
 TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleAdditionalParams) {
   auto scoring_signals_request = CreateBasicScoringSignalsRequest();
-  base::Value::Dict additional_params;
+  base::DictValue additional_params;
   additional_params.Set("foo", "bar");
   additional_params.Set("Foo", "bAr");
   additional_params.Set("oof", "rab");
@@ -1854,7 +1854,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  base::Value::Dict additional_params2;
+  base::DictValue additional_params2;
   additional_params2.Set("foo", "bar");
   bidding_partitions->emplace_back(
       /*partition_id=*/1, &kInterestGroupNames2, &kKeys2, &additional_params2,
@@ -1863,7 +1863,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultiplePartitions) {
   const std::set<std::string> kInterestGroupNames3{"group1", "group2",
                                                    "group3"};
   const std::set<std::string> kKeys3{"key1", "key2", "key3"};
-  base::Value::Dict additional_params3;
+  base::DictValue additional_params3;
   additional_params3.Set("foo2", "bar2");
   bidding_partitions->emplace_back(/*partition_id=*/2, &kInterestGroupNames3,
                                    &kKeys3, &additional_params3,
@@ -1935,7 +1935,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
   const GURL renderUrl2("https://render_url2.test/");
   const std::set<GURL> kAdComponentRenderUrls2{
       GURL("https://component2.test/")};
-  base::Value::Dict additional_params2;
+  base::DictValue additional_params2;
   additional_params2.Set("foo", "bar");
   scoring_partitions->emplace_back(
       /*partition_id=*/1, &renderUrl2, &kAdComponentRenderUrls2,
@@ -1944,7 +1944,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultiplePartitions) {
   const GURL renderUrl3("https://render_url3.test/");
   const std::set<GURL> kAdComponentRenderUrls3{
       GURL("https://component3.test/bar"), GURL("https://component3.test/foo")};
-  base::Value::Dict additional_params3;
+  base::DictValue additional_params3;
   additional_params3.Set("foo2", "bar2");
   scoring_partitions->emplace_back(
       /*partition_id=*/2, &renderUrl3, &kAdComponentRenderUrls3,
@@ -2040,7 +2040,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  base::Value::Dict additional_params2;
+  base::DictValue additional_params2;
   additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
   bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
@@ -2052,7 +2052,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsMultipleCompressionGroups) {
                                                    "group3"};
   const std::set<std::string> kKeys3{"key1", "key2", "key3"};
   const std::string kHostname3{"host3.test"};
-  base::Value::Dict additional_params3;
+  base::DictValue additional_params3;
   additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
   bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
@@ -2158,7 +2158,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
   const GURL renderUrl2("https://render_url2.test/");
   const std::set<GURL> kAdComponentRenderUrls2{
       GURL("https://component2.test/")};
-  base::Value::Dict additional_params2;
+  base::DictValue additional_params2;
   additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::ScoringPartition> scoring_partitions2;
   scoring_partitions2.emplace_back(
@@ -2169,7 +2169,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsMultipleCompressionGroups) {
   const GURL renderUrl3("https://render_url3.test/");
   const std::set<GURL> kAdComponentRenderUrls3{
       GURL("https://component3.test/bar"), GURL("https://component3.test/foo")};
-  base::Value::Dict additional_params3;
+  base::DictValue additional_params3;
   additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::ScoringPartition> scoring_partitions3;
   scoring_partitions3.emplace_back(
@@ -2276,7 +2276,7 @@ TEST_F(TrustedSignalsFetcherTest,
 
   const std::set<std::string> kInterestGroupNames2{"group2"};
   const std::set<std::string> kKeys2{"key2"};
-  base::Value::Dict additional_params2;
+  base::DictValue additional_params2;
   additional_params2.Set("foo", "bar");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions2;
   bidding_partitions2.emplace_back(/*partition_id=*/0, &kInterestGroupNames2,
@@ -2287,7 +2287,7 @@ TEST_F(TrustedSignalsFetcherTest,
   const std::set<std::string> kInterestGroupNames3{"group1", "group2",
                                                    "group3"};
   const std::set<std::string> kKeys3{"key1", "key2", "key3"};
-  base::Value::Dict additional_params3;
+  base::DictValue additional_params3;
   additional_params3.Set("foo2", "bar2");
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions3;
   bidding_partitions3.emplace_back(/*partition_id=*/0, &kInterestGroupNames3,
@@ -3223,7 +3223,7 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   const url::Origin kSignalsOrigin = url::Origin::Create(kSignalsUrl);
   const std::set<std::string> kInterestGroupNames{"group1"};
   const std::set<std::string> kKeys;
-  const base::Value::Dict kAdditionalParams;
+  const base::DictValue kAdditionalParams;
   std::vector<TrustedSignalsFetcher::BiddingPartition> bidding_partitions;
   bidding_partitions.emplace_back(
       /*partition_id=*/0, &kInterestGroupNames, &kKeys, &kAdditionalParams,

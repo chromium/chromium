@@ -64,7 +64,7 @@ void URLDataManager::AddDataSource(URLDataSourceImpl* source) {
 }
 
 void URLDataManager::UpdateWebUIDataSource(const std::string& source_name,
-                                           const base::Value::Dict& update) {
+                                           const base::DictValue& update) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   URLDataManagerBackend::GetForBrowserContext(browser_context_)
       ->UpdateWebUIDataSource(source_name, update);
@@ -128,7 +128,7 @@ void URLDataManager::AddWebUIDataSource(BrowserContext* browser_context,
 
 void URLDataManager::UpdateWebUIDataSource(BrowserContext* browser_context,
                                            const std::string& source_name,
-                                           const base::Value::Dict& update) {
+                                           const base::DictValue& update) {
   GetFromBrowserContext(browser_context)
       ->UpdateWebUIDataSource(source_name, std::move(update));
 }

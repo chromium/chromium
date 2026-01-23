@@ -71,7 +71,7 @@ class DigitalIdentityCrossDeviceTransactionTest
   }
 
   static base::Value request() {
-    base::Value::Dict request_value;
+    base::DictValue request_value;
     request_value.Set("foo", "bar");
     return base::Value(std::move(request));
   }

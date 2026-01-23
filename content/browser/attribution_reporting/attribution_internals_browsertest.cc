@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest, DebugReports) {
           net::SchemefulSite::Deserialize("https://d.test"),
           /*aggregation_coordinator_origin=*/std::nullopt,
           /*scheduled_report_time=*/now + base::Hours(3)),
-      /*report_body=*/base::Value::Dict(),
+      /*report_body=*/base::DictValue(),
       attribution_reporting::mojom::ProcessAggregatableDebugReportResult::
           kSuccess,
       SendAggregatableDebugReportResult(

@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsSharedWorkerExposureBrowserTest, Exposure) {
 
   std::string expected_typeof = ShouldBeExposed() ? "function" : "undefined";
   EXPECT_EQ(EvalJs(shell(), kSharedWorkerStart),
-            base::Value::Dict()
+            base::DictValue()
                 .Set("TCPSocket", expected_typeof)
                 .Set("UDPSocket", expected_typeof)
                 .Set("TCPServerSocket", expected_typeof));
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsServiceWorkerExposureBrowserTest,
 
   std::string expected_typeof = ShouldBeExposed() ? "function" : "undefined";
   EXPECT_EQ(EvalJs(shell(), kServiceWorkerStart),
-            base::Value::Dict()
+            base::DictValue()
                 .Set("TCPSocket", expected_typeof)
                 .Set("UDPSocket", expected_typeof)
                 .Set("TCPServerSocket", expected_typeof));

@@ -315,7 +315,7 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  base::Uuid::GenerateRandomV4(),
                  url::Origin::Create(GURL("https://reporting.example")),
                  AggregatableReportSharedInfo::DebugMode::kDisabled,
-                 /*additional_fields=*/base::Value::Dict(),
+                 /*additional_fields=*/base::DictValue(),
                  /*api_version=*/"",
                  /*api_identifier=*/"example-api"),
              delay_type,

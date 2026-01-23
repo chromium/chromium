@@ -41,10 +41,10 @@ std::string RequestTypeToString(RequestInfo::RequestType type) {
 }
 
 std::vector<uint8_t> RequestToJSONBytes(RequestInfo request_info) {
-  base::Value::Dict digital;
+  base::DictValue digital;
   digital.Set("digital", std::move(request_info.request));
 
-  base::Value::Dict toplevel;
+  base::DictValue toplevel;
   toplevel.Set("origin", request_info.rp_origin.Serialize());
   toplevel.Set("requestType", RequestTypeToString(request_info.request_type));
   toplevel.Set("request", std::move(digital));
@@ -130,7 +130,7 @@ void RequestDispatcher::OnComplete(
     return;
   }
 
-  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> json = base::JSONReader::ReadDict(
       std::string_view(reinterpret_cast<const char*>(response->data()),
                        response->size()),
       base::JSON_PARSE_RFC);
@@ -145,14 +145,14 @@ void RequestDispatcher::OnComplete(
       *json, base::JsonOptions::OPTIONS_PRETTY_PRINT, &reserialized);
   FIDO_LOG(EVENT) << "-> " << reserialized;
 
-  const base::Value::Dict* response_dict = json->FindDict("response");
+  const base::DictValue* response_dict = json->FindDict("response");
   if (!response_dict) {
     FIDO_LOG(ERROR) << "no 'response' element in response";
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
     return;
   }
 
-  const base::Value::Dict* digital = response_dict->FindDict("digital");
+  const base::DictValue* digital = response_dict->FindDict("digital");
   if (!digital) {
     FIDO_LOG(ERROR) << "no 'digital' element in response";
     std::move(callback_).Run(base::unexpected(ProtocolError::kInvalidResponse));
@@ -185,7 +185,7 @@ void RequestDispatcher::OnComplete(
   // devices are being migrated to support the CTAP standards. First, try to
   // read the proper format, otherwise, fallback to the legacy format.
   if (data->is_dict()) {
-    const base::Value::Dict& data_dict = data->GetDict();
+    const base::DictValue& data_dict = data->GetDict();
     const base::Value* wallet_data = data_dict.Find("data");
     if (wallet_data) {
       FIDO_LOG(EVENT) << "Standard format is received from the mobile device.";

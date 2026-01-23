@@ -30,7 +30,7 @@ void HandleTestMessage(int number, bool conditional, const std::string& text) {
 TEST_F(WebUITest, TestHandler) {
   web_ui_->RegisterHandlerCallback("testMessage",
                                    base::BindRepeating(&HandleTestMessage));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(11);
   args.Append(true);
   args.Append("test text");

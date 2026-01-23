@@ -196,7 +196,7 @@ std::u16string WebUI::GetJavascriptCall(
 
 // static
 std::u16string WebUI::GetJavascriptCall(std::string_view function_name,
-                                        const base::Value::List& arg_list) {
+                                        const base::ListValue& arg_list) {
   return GetJavascriptCallImpl(function_name, arg_list);
 }
 
@@ -230,7 +230,7 @@ void WebUIImpl::SetProperty(const std::string& name, const std::string& value) {
   remote_->SetProperty(name, value);
 }
 
-void WebUIImpl::Send(const std::string& message, base::Value::List args) {
+void WebUIImpl::Send(const std::string& message, base::ListValue args) {
   const GURL& source_url = frame_host_->GetLastCommittedURL();
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
           frame_host_->GetProcess()->GetDeprecatedID()) ||
@@ -405,7 +405,7 @@ void WebUIImpl::RegisterMessageCallback(std::string_view message,
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
                                     const std::string& message,
-                                    base::Value::List args) {
+                                    base::ListValue args) {
   if (controller_->OverrideHandleWebUIMessage(source_url, message, args))
     return;
 

@@ -514,7 +514,7 @@ class DevToolsWebSocketHandlerTest : public DevToolsHttpHandlerWithServerTest {
     EXPECT_GE(delegate.request_status(), 0);
     std::optional<base::Value> response = base::JSONReader::Read(
         delegate.data_received(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    base::Value::Dict* dict = response->GetIfDict();
+    base::DictValue* dict = response->GetIfDict();
     // Compute HTTP upgrade request URL.
     std::string debugging_url = *dict->FindString("webSocketDebuggerUrl");
     std::string prefix = "ws://";

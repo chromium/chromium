@@ -54,11 +54,11 @@ std::string GetCdmSessionTypeName(media::CdmSessionType session_type) {
   }
 }
 
-base::Value::List VideoCodecInfoToList(
+base::ListValue VideoCodecInfoToList(
     const media::VideoCodecInfo& video_codec_info) {
   auto& profiles = video_codec_info.supported_profiles;
 
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& profile : profiles) {
     list.Append(media::GetProfileName(profile));
   }
@@ -66,11 +66,11 @@ base::Value::List VideoCodecInfoToList(
   return list;
 }
 
-base::Value::Dict CdmCapabilityToDict(
+base::DictValue CdmCapabilityToDict(
     const media::CdmCapability& cdm_capability) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
-  base::Value::List audio_codec_list;
+  base::ListValue audio_codec_list;
   for (const auto& audio_codec : cdm_capability.audio_codecs) {
     audio_codec_list.Append(media::GetCodecName(audio_codec));
   }
@@ -87,14 +87,14 @@ base::Value::Dict CdmCapabilityToDict(
     video_codec_dict->Set(codec_name, VideoCodecInfoToList(video_codec_info));
   }
 
-  base::Value::List encryption_scheme_list;
+  base::ListValue encryption_scheme_list;
   for (const auto& encryption_scheme : cdm_capability.encryption_schemes) {
     encryption_scheme_list.Append(
         media::GetEncryptionSchemeName(encryption_scheme));
   }
   dict.Set("Encryption Schemes", std::move(encryption_scheme_list));
 
-  base::Value::List session_type_list;
+  base::ListValue session_type_list;
   for (const auto& session_type : cdm_capability.session_types) {
     session_type_list.Append(GetCdmSessionTypeName(session_type));
   }
@@ -103,8 +103,8 @@ base::Value::Dict CdmCapabilityToDict(
   return dict;
 }
 
-base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
-  base::Value::Dict dict;
+base::DictValue CdmInfoToDict(const CdmInfo& cdm_info) {
+  base::DictValue dict;
   dict.Set("key_system", cdm_info.key_system);
   dict.Set("robustness", GetCdmInfoRobustnessName(cdm_info.robustness));
   dict.Set("name", cdm_info.name);
@@ -137,7 +137,7 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
 }
 
 std::u16string SerializeUpdate(std::string_view function,
-                               const base::Value::List& value) {
+                               const base::ListValue& value) {
   base::ValueView args[] = {value};
   return content::WebUI::GetJavascriptCall(function, args);
 }
@@ -164,7 +164,7 @@ void MediaInternalsCdmHelper::OnKeySystemCapabilitiesUpdated(
     KeySystemCapabilities /*capabilities*/) {
   auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
 
-  base::Value::List cdm_list;
+  base::ListValue cdm_list;
   for (const auto& cdm_info : cdms) {
     DCHECK(cdm_info.status != CdmInfo::Status::kUninitialized);
     cdm_list.Append(CdmInfoToDict(cdm_info));

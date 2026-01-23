@@ -965,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest,
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
 
-  const base::Value::Dict* start_tracing_result =
+  const base::DictValue* start_tracing_result =
       SendCommandSync("Tracing.start");
   ASSERT_TRUE(start_tracing_result);
   background_tracing_helper.ExpectOnScenarioIdle("test_scenario");

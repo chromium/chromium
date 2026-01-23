@@ -1419,7 +1419,7 @@ class DevToolsOverridesThirdPartyCookiesBrowserTest
   void SendSetCookieControls(bool enable_third_party_cookie_restriction,
                              bool disable_third_party_cookie_metadata,
                              bool disable_third_party_cookie_heuristics) {
-    base::Value::Dict command_params;
+    base::DictValue command_params;
     web_contents_devtools_client.SendCommandSync("Network.enable");
     command_params.Set("enableThirdPartyCookieRestriction",
                        enable_third_party_cookie_restriction);
