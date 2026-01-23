@@ -593,17 +593,18 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
     // If omnibox has no results suggestions, then the input plate should be the
     // tallest content. Use _omniboxPopupContainer since no way to access
     // content size of the omnibox popup table view.
-    CGFloat tallestHeight = _omniboxPopupContainer.hidden
-                                ? containerHeight
-                                : _omniboxPopupContainer.bounds.size.height;
-    contentHeight = std::max(tallestHeight, kBlurBottomMargin);
+    CGFloat tallestHeight =
+        _omniboxPopupContainer.hidden
+            ? containerHeight + kBlurBottomMargin
+            : std::max(_omniboxPopupContainer.bounds.size.height,
+                       containerHeight + kBlurBottomMargin);
+    contentHeight = tallestHeight;
   } else {
     // Calculate content height knowing the content size of the omnibox popup
     // table view.
     contentHeight = _inputViewController.inputHeight +
                     std::max(containerHeight, kBlurBottomMargin);
   }
-
   CGFloat totalHeight = contentHeight + kInputPlateMargin;
   if (self.preferredContentSize.height != totalHeight) {
     self.preferredContentSize =
