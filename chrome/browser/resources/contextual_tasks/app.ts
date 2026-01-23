@@ -248,8 +248,19 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.$.composebox.clearInputAndFocus();
     }
 
-    // Check if the initial render should be zero state.
     const threadUrlAsUrl = new URL(threadUrl);
+
+    // If the "open_history" param has any value, open the history panel.
+    if (params.has('open_history')) {
+      threadUrlAsUrl.searchParams.set('atvm', '1');
+
+      // Remove the param so subsequent loads don't show history again.
+      const url = new URL(window.location.href);
+      url.searchParams.delete('open_history');
+      window.history.replaceState({}, '', url.href);
+    }
+
+    // Check if the initial render should be zero state.
     const {isZeroState} = await this.browserProxy_.handler.isZeroState(
         {url: threadUrlAsUrl.href} as Url);
     this.isZeroState_ = isZeroState;
@@ -258,7 +269,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     // webview) until oauth tokens are received from the WebUI controller. This
     // prevents situations where the user is technically signed out of the
     // embedded frame and unable to save or access existing data.
-    this.pendingUrl_ = this.maybeUpdateThreadUrlForRestore(threadUrl);
+    this.pendingUrl_ = this.maybeUpdateThreadUrlForRestore(threadUrlAsUrl.href);
     this.maybeLoadPendingUrl_();
   }
 
