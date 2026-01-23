@@ -205,4 +205,12 @@ void EmbeddedSharedWorkerStub::Terminate() {
   impl_->TerminateWorkerContext();
 }
 
+void EmbeddedSharedWorkerStub::Freeze() {
+  impl_->Freeze();
+}
+
+void EmbeddedSharedWorkerStub::Resume() {
+  impl_->Resume();
+}
+
 }  // namespace content

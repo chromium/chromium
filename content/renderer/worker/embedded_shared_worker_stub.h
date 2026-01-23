@@ -104,6 +104,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   void Connect(int connection_request_id,
                blink::MessagePortDescriptor port) override;
   void Terminate() override;
+  void Freeze() override;
+  void Resume() override;
 
   scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext(
       const blink::StorageKey& constructor_key,

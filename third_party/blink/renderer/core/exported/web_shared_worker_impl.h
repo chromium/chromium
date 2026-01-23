@@ -79,6 +79,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
   // WebSharedWorker methods:
   void Connect(int connection_request_id, MessagePortDescriptor port) override;
   void TerminateWorkerContext() override;
+  void Freeze() override;
+  void Resume() override;
 
   // Callback methods for SharedWorkerReportingProxy.
   void CountFeature(WebFeature);

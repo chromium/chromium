@@ -11,9 +11,35 @@ interface SharedWorker {
   // Called to establish a new client connection to the shared worker.  The
   // |connection_id| parameter will be echoed back to the host via the
   // OnConnected method.
+  // If called while the worker is frozen, the connection request will be
+  // queued and processed upon resumption.
   Connect(int32 connection_id, MessagePortDescriptor message_port);
 
   // Called to terminate the shared worker. This results in the shared worker
   // closing its end of the mojo connection.
+  // If called while the worker is frozen, it terminates immediately. Any queued
+  // messages (e.g., pending `Connect()` calls) are discarded.
   Terminate();
+
+  // The following `Freeze()` and `Resume()` methods pause and resume shared
+  // worker execution.
+  //
+  // Internally, these methods call blink::WorkerThread::Freeze() and Resume(),
+  // which use a counter to support nested suspension:
+  // - `Freeze()` increments the count; execution pauses when the count
+  //   transitions from 0 to 1.
+  // - `Resume()` decrements the count (no-op if already 0); execution resumes
+  //   only when the count returns to 0.
+
+  // Called to freeze the worker schedulers. This is invoked when the worker no
+  // longer has any active clients (e.g., all connected clients are in
+  // BackForwardCache). While frozen, the worker pauses execution and queues
+  // incoming messages instead of processing them immediately.
+  Freeze();
+
+  // Called to resume the worker schedulers. This is invoked when the worker
+  // gains an active client (e.g., a client is restored from BackForwardCache or
+  // a new client connects). Upon resumption, the worker resumes processing any
+  // pending tasks, including Connect events queued while frozen.
+  Resume();
 };

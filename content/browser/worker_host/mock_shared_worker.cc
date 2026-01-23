@@ -74,6 +74,20 @@ void MockSharedWorker::Terminate() {
   terminate_received_ = true;
 }
 
+void MockSharedWorker::Freeze() {
+  freeze_count_++;
+}
+
+void MockSharedWorker::Resume() {
+  if (freeze_count_ > 0) {
+    freeze_count_--;
+  }
+}
+
+bool MockSharedWorker::IsFrozen() const {
+  return freeze_count_ > 0;
+}
+
 MockSharedWorkerFactory::MockSharedWorkerFactory(
     mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> receiver)
     : receiver_(this, std::move(receiver)) {}

@@ -396,4 +396,20 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
   return worker;
 }
 
+void WebSharedWorkerImpl::Freeze() {
+  CHECK(IsMainThread());
+  if (asked_to_terminate_ || !worker_thread_) {
+    return;
+  }
+  worker_thread_->Freeze(true /* is_in_back_forward_cache */);
+}
+
+void WebSharedWorkerImpl::Resume() {
+  CHECK(IsMainThread());
+  if (asked_to_terminate_ || !worker_thread_) {
+    return;
+  }
+  worker_thread_->Resume();
+}
+
 }  // namespace blink
