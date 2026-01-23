@@ -138,4 +138,11 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
     }
     await assertAsync(() => canSwitch === isVisible(button));
   }
+
+  async assertPasswordInputHint(expected: string): Promise<void> {
+    const passwordDialog = await this.openSetLocalPasswordDialog();
+    const input =
+        await retryUntilSome(() => passwordDialog.localPasswordInput());
+    await input.assertHintMessage(expected);
+  }
 }

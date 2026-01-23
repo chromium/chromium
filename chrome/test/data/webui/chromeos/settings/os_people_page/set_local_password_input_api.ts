@@ -52,6 +52,13 @@ export class SetLocalPasswordInputApi implements
     await assertForDuration(property);
   }
 
+  async assertHintMessage(expected: string): Promise<void> {
+    const hint = await retry(() => this.firstInputHint());
+    const property = () => hint.textContent.trim() === expected;
+    await assertAsync(property);
+    await assertForDuration(property);
+  }
+
   private shadowRoot(): ShadowRoot {
     const shadowRoot = this.element.shadowRoot;
     assertTrue(shadowRoot !== null);
@@ -67,6 +74,13 @@ export class SetLocalPasswordInputApi implements
   private confirmInput(): CrInputElement {
     const el = this.shadowRoot().getElementById('confirmInput');
     assertTrue(el instanceof CrInputElement);
+    return el;
+  }
+
+  private firstInputHint(): HTMLElement {
+    const el = this.shadowRoot().getElementById('firstInputHint');
+    assertTrue(!!el);
+    assertTrue(el instanceof HTMLElement);
     return el;
   }
 }

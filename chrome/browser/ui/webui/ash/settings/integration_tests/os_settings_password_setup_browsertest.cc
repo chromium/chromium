@@ -58,6 +58,16 @@ IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithGaiaPassword,
   password_settings.AssertSubmitButtonEnabledForValidPasswordInput();
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithGaiaPassword,
+                       CheckPasswordInputHint) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+  password_settings.AssertPasswordInputHint(
+      "Password must be at least 8 characters");
+}
+
 class OSSettingsAuthFactorSetupTestWithLocalPassword
     : public OSSettingsAuthFactorSetupTest {
  public:
