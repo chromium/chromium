@@ -5,10 +5,10 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
-import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import type {ActionChip, ActionChipsHandlerInterface, PageCallbackRouter} from '../action_chips.mojom-webui.js';
 import {ChipType} from '../action_chips.mojom-webui.js';
@@ -165,7 +165,7 @@ export class ActionChipsElement extends CrLitElement {
 
   protected onCreateImageClick_(chip: ActionChip) {
     recordClick(ChipType.kImage);
-    this.onActionChipClick_(chip.suggestion, [], ComposeboxMode.CREATE_IMAGE);
+    this.onActionChipClick_(chip.suggestion, [], ToolMode.kImageGen);
   }
 
   protected onDeepDiveClick_(chip: ActionChip) {
@@ -179,12 +179,12 @@ export class ActionChipsElement extends CrLitElement {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
     this.onActionChipClick_(
-        chip.suggestion, [deepDiveTabInfo], ComposeboxMode.DEFAULT);
+        chip.suggestion, [deepDiveTabInfo], ToolMode.kUnspecified);
   }
 
   protected onDeepSearchClick_(chip: ActionChip) {
     recordClick(ChipType.kDeepSearch);
-    this.onActionChipClick_(chip.suggestion, [], ComposeboxMode.DEEP_SEARCH);
+    this.onActionChipClick_(chip.suggestion, [], ToolMode.kDeepSearch);
   }
 
   protected onTabContextClick_(chip: ActionChip) {
@@ -198,7 +198,7 @@ export class ActionChipsElement extends CrLitElement {
       origin: TabUploadOrigin.ACTION_CHIP,
     };
     this.onActionChipClick_(
-        chip.suggestion, [recentTabInfo], ComposeboxMode.DEFAULT);
+        chip.suggestion, [recentTabInfo], ToolMode.kUnspecified);
   }
 
   protected handleClick_(chip: ActionChip): void {
@@ -241,7 +241,7 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   private onActionChipClick_(
-      query: string, contextFiles: ContextualUpload[], mode: ComposeboxMode) {
+      query: string, contextFiles: ContextualUpload[], mode: ToolMode) {
     this.fire('action-chip-click', {searchboxText: query, contextFiles, mode});
   }
 

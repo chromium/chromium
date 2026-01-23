@@ -14,7 +14,6 @@ import '//resources/cr_components/search/animated_glow.js';
 import type {ComposeboxFile, ContextualUpload, FileUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import {GlifAnimationState} from '//resources/cr_components/composebox/context_menu_entrypoint.js';
 import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
-import {ComposeboxMode} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -31,6 +30,7 @@ import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/o
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -1247,21 +1247,31 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   protected setDeepSearchMode_() {
-    this.openComposebox_([], ComposeboxMode.DEEP_SEARCH);
+    this.openComposebox_([], ToolMode.kDeepSearch);
   }
 
   protected setCreateImageMode_() {
-    this.openComposebox_([], ComposeboxMode.CREATE_IMAGE);
+    this.openComposebox_([], ToolMode.kImageGen);
+  }
+
+  protected setCanvasMode_() {
+    this.openComposebox_([], ToolMode.kCanvas);
+  }
+
+  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
+    // TODO(dhruvkathpalia): Set the active model based on the clicked model.
+    this.openComposebox_([], ToolMode.kUnspecified, e.detail.model);
   }
 
   protected openComposebox_(
-      uploads: ContextualUpload[] = [],
-      mode: ComposeboxMode = ComposeboxMode.DEFAULT) {
+      uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
+      model: ModelMode = ModelMode.kUnspecified) {
     this.dispatchEvent(new CustomEvent('open-composebox', {
       detail: {
         searchboxText: this.$.input.value,
         contextFiles: uploads,
         mode: mode,
+        model: model,
       },
       bubbles: true,
       composed: true,

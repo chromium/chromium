@@ -21,26 +21,19 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
 import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
-import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
+import {FileUploadErrorType, FileUploadStatus, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {type ContextMenuEntrypointElement, GlifAnimationState} from './context_menu_entrypoint.js';
-import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
+import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import type {RecentTabChipElement} from './recent_tab_chip.js';
-
-// LINT.IfChange(ComposeboxMode)
-export enum ComposeboxMode {
-  DEFAULT = '',
-  DEEP_SEARCH = 'deep-search',
-  CREATE_IMAGE = 'create-image',
-}
-// LINT.ThenChange(chromium/components/omnibox/browser/searchbox.mojom:ComposeboxMode)
 
 export interface ContextualEntrypointAndCarouselElement {
   $: {
@@ -120,12 +113,15 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      inputState: {type: Object},
       contextMenuGlifAnimationState: {type: String, reflect: true},
       // Determines if the entrypoint button should be hidden. This applies
       // specifically to Omnibox Searchbox in compact mode, as opposed to the
       // AIM composebox where the entrypoint is always visible.
       hideEntrypointButton: {type: Boolean},
       inComposebox: {type: Boolean},
+      showCanvas: {type: Boolean},
+      showModelPicker: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -150,14 +146,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       showRecentTabChip: {type: Boolean},
-      inDeepSearchMode_: {
-        reflect: true,
-        type: Boolean,
-      },
-      inCreateImageMode_: {
-        reflect: true,
-        type: Boolean,
-      },
+      activeTool_: {type: Number},
       recentTabForChip_: {type: Object},
       carouselOnTop_: {type: Boolean},
       submitButtonShown: {type: Boolean},
@@ -165,8 +154,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      showCanvas: {type: Boolean},
-      showModelPicker: {type: Boolean},
     };
   }
 
@@ -178,6 +165,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor carouselOnTop_: boolean = false;
   accessor showVoiceSearch: boolean = false;
   accessor showRecentTabChip: boolean = false;
+  accessor inputState: InputState|null = null;
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor inComposebox: boolean = false;
@@ -203,8 +191,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor showFileCarousel_: boolean = false;
-  protected accessor inDeepSearchMode_: boolean = false;
-  protected accessor inCreateImageMode_: boolean = false;
+  protected accessor activeTool_: ComposeboxToolMode =
+      ComposeboxToolMode.kUnspecified;
   protected accessor recentTabForChip_: TabInfo|null = null;
   protected accessor submitButtonShown: boolean = false;
   protected accessor hideEntrypointButton: boolean = false;
@@ -229,7 +217,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get inToolMode_(): boolean {
-    return this.inDeepSearchMode_ || this.inCreateImageMode_;
+    return this.activeTool_ !== ComposeboxToolMode.kUnspecified;
   }
 
   private shouldShowContextualSearchChips_(): boolean {
@@ -264,7 +252,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get toolChipsVisible_(): boolean {
     return this.shouldShowRecentTabChip_ || this.shouldShowLensSearchChip_ ||
-        this.inDeepSearchMode_ || this.inCreateImageMode_;
+        this.inToolMode_;
   }
 
   protected get shouldShowToolChipsForCompactMode_(): boolean {
@@ -315,7 +303,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('files_') ||
-        changedPrivateProperties.has(`inCreateImageMode_`)) {
+        changedPrivateProperties.has(`activeTool_`)) {
       // If only 1 image is uploaded and the create image tool is enabled, we
       // don't want to disable the context menu entrypoint because the user
       // should still be able to use the tool within the context menu.
@@ -327,9 +315,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // 1. The max number of files is reached, and the create image tool button
       //    is not available.
       // 2. The user has an image uploaded and is in create image mode.
-      this.inputsDisabled_ = (this.files_.size >= this.maxFileCount_ &&
-                              !isCreateImageToolAvailableWithImages) ||
-          (this.hasImageFiles() && this.inCreateImageMode_);
+      // 3. The user is in deep search mode.
+      this.inputsDisabled_ =
+          (this.activeTool_ === ComposeboxToolMode.kDeepSearch) ||
+          (this.files_.size >= this.maxFileCount_ &&
+           !isCreateImageToolAvailableWithImages) ||
+          (this.hasImageFiles() &&
+           this.activeTool_ === ComposeboxToolMode.kImageGen);
       this.showFileCarousel_ = this.files_.size > 0;
       this.fire('on-context-files-changed', {files: this.files_.size});
     }
@@ -392,16 +384,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  setInitialMode(mode: ComposeboxMode) {
-    switch (mode) {
-      case ComposeboxMode.DEEP_SEARCH:
-        this.onDeepSearchClick_();
-        break;
-      case ComposeboxMode.CREATE_IMAGE:
-        this.onCreateImageClick_();
-        break;
-      default:
-        break;
+  setInitialMode(mode: ComposeboxToolMode) {
+    if (mode !== ComposeboxToolMode.kUnspecified) {
+      this.handleToolClick_(mode);
     }
   }
 
@@ -466,19 +451,29 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   resetModes() {
-    if (this.inDeepSearchMode_) {
-      this.inDeepSearchMode_ = false;
-      this.inputsDisabled_ = false;
-      this.fire(
-          'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
+    const previousTool = this.activeTool_;
+    this.activeTool_ = ComposeboxToolMode.kUnspecified;
+    this.inputsDisabled_ = false;
+
+    if (previousTool !== ComposeboxToolMode.kUnspecified) {
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
-    } else if (this.inCreateImageMode_) {
-      this.inCreateImageMode_ = false;
-      this.fire('set-create-image-mode', {
-        inCreateImageMode: this.inCreateImageMode_,
-        imagePresent: this.hasImageFiles(),
-      });
-      this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
+    }
+
+    switch (previousTool) {
+      case ComposeboxToolMode.kDeepSearch:
+        this.fire('set-deep-search-mode', {inDeepSearchMode: false});
+        break;
+      case ComposeboxToolMode.kImageGen:
+        this.fire('set-create-image-mode', {
+          inCreateImageMode: false,
+          imagePresent: this.hasImageFiles(),
+        });
+        break;
+      case ComposeboxToolMode.kCanvas:
+        this.fire('set-canvas-mode', {inCanvasMode: false});
+        break;
+      default:
+        break;
     }
   }
 
@@ -589,10 +584,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
     switch (context.toolMode) {
       case ToolMode.kDeepSearch:
-        this.setInitialMode(ComposeboxMode.DEEP_SEARCH);
+        this.setInitialMode(ComposeboxToolMode.kDeepSearch);
         break;
       case ToolMode.kCreateImage:
-        this.setInitialMode(ComposeboxMode.CREATE_IMAGE);
+        this.setInitialMode(ComposeboxToolMode.kImageGen);
         break;
       default:
     }
@@ -818,32 +813,42 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
   }
 
-  protected onDeepSearchClick_() {
-    if (this.entrypointName !== 'Realbox') {
-      if (this.contextMenuDescriptionEnabled_) {
-        this.showContextMenuDescription_ = !this.showContextMenuDescription_;
-      }
-      this.inputsDisabled_ = !this.inputsDisabled_;
-      this.inDeepSearchMode_ = !this.inDeepSearchMode_;
-    }
-    this.fire(
-        'set-deep-search-mode', {inDeepSearchMode: this.inDeepSearchMode_});
+  protected onToolClick_(e: CustomEvent<{tool: ComposeboxToolMode}>) {
+    this.handleToolClick_(e.detail.tool);
   }
 
-  protected onCreateImageClick_() {
+  protected handleToolClick_(tool: ComposeboxToolMode) {
     if (this.entrypointName !== 'Realbox') {
       if (this.contextMenuDescriptionEnabled_) {
         this.showContextMenuDescription_ = !this.showContextMenuDescription_;
       }
-      this.inCreateImageMode_ = !this.inCreateImageMode_;
-      if (this.hasImageFiles()) {
-        this.inputsDisabled_ = !this.inputsDisabled_;
+
+      if (this.activeTool_ === tool) {
+        this.activeTool_ = ComposeboxToolMode.kUnspecified;
+      } else {
+        this.activeTool_ = tool;
       }
     }
-    this.fire('set-create-image-mode', {
-      inCreateImageMode: this.inCreateImageMode_,
-      imagePresent: this.hasImageFiles(),
-    });
+
+    const isActive = this.activeTool_ === tool;
+    switch (tool) {
+      case ComposeboxToolMode.kDeepSearch:
+        this.fire('set-deep-search-mode', {inDeepSearchMode: isActive});
+        break;
+      case ComposeboxToolMode.kImageGen:
+        this.fire('set-create-image-mode', {
+          inCreateImageMode: isActive,
+          imagePresent: this.hasImageFiles(),
+        });
+        break;
+      case ComposeboxToolMode.kCanvas:
+        this.fire('set-canvas-mode', {
+          inCanvasMode: isActive,
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   protected onVoiceSearchClick_() {

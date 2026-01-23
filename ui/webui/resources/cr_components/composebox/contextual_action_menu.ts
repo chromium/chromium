@@ -16,6 +16,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
@@ -51,32 +53,77 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
       fileNum: {type: Number},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
+      inputState: {type: Object},
       enableMultiTabSelection_: {
         reflect: true,
         type: Boolean,
       },
       tabPreviewUrl_: {type: String},
       tabPreviewsEnabled_: {type: Boolean},
-      pdfUploadEnabled_: {
-        type: Boolean,
-      },
     };
   }
 
   accessor fileNum: number = 0;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
+  accessor inputState: InputState|null = null;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
   protected accessor tabPreviewUrl_: string = '';
   protected accessor tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
-  protected accessor pdfUploadEnabled_: boolean =
-      loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
+
+  protected get supportedTools_(): Map<ToolMode, {
+    id: string,
+    icon: string,
+  }> {
+    return new Map([
+      [
+        ToolMode.kDeepSearch,
+        {
+          id: 'deepSearch',
+          icon: 'composebox:deepSearch',
+        },
+      ],
+      [
+        ToolMode.kImageGen,
+        {
+          id: 'createImages',
+          icon: 'composebox:nanoBanana',
+        },
+      ],
+      [
+        ToolMode.kCanvas,
+        {
+          id: 'canvas',
+          icon: 'composebox:canvas',
+        },
+      ],
+    ]);
+  }
+
+  protected get supportedModels_(): Map<ModelMode, {
+    id: string,
+  }> {
+    return new Map([
+      [
+        ModelMode.kGeminiProAutoroute,
+        {
+          id: 'geminiModelAuto',
+        },
+      ],
+      [
+        ModelMode.kGeminiPro,
+        {
+          id: 'geminiModelThinking',
+        },
+      ],
+    ]);
+  }
 
   get open(): boolean {
     return this.$.menu.open;
@@ -94,13 +141,70 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     });
   }
 
+  protected isToolAllowed_(tool: ToolMode): boolean {
+    if (!this.inputState) {
+      return false;
+    }
+    return this.inputState.allowedTools.includes(tool);
+  }
+
+  protected isToolDisabled_(tool: ToolMode): boolean {
+    if (!this.inputState) {
+      return true;
+    }
+    return this.inputState.disabledTools.includes(tool);
+  }
+
+  protected isModelAllowed_(model: ModelMode): boolean {
+    if (!this.inputState) {
+      return false;
+    }
+    return this.inputState.allowedModels.includes(model);
+  }
+
+  protected isModelDisabled_(model: ModelMode): boolean {
+    if (!this.inputState) {
+      return true;
+    }
+    return this.inputState.disabledModels.includes(model);
+  }
+
+  protected isModelActive_(model: ModelMode): boolean {
+    if (!this.inputState) {
+      return false;
+    }
+    return this.inputState.activeModel === model;
+  }
+
+  // Checks if the image upload item in the context menu should be visible.
+  protected get imageUploadAllowed_(): boolean {
+    if (this.inputState) {
+      return this.inputState.allowedInputTypes.includes(InputType.kLensImage);
+    }
+    return false;
+  }
+
   // Checks if the image upload item in the context menu should be disabled.
   protected get imageUploadDisabled_(): boolean {
+    if (this.inputState) {
+      return this.inputState.disabledInputTypes.includes(InputType.kLensImage);
+    }
     return this.fileNum >= this.maxFileCount_;
+  }
+
+  // Checks if the file upload item in the context menu should be visible.
+  protected get fileUploadAllowed_(): boolean {
+    if (this.inputState) {
+      return this.inputState.allowedInputTypes.includes(InputType.kLensFile);
+    }
+    return false;
   }
 
   // Checks if the file upload item in the context menu should be disabled.
   protected get fileUploadDisabled_(): boolean {
+    if (this.inputState) {
+      return this.inputState.disabledInputTypes.includes(InputType.kLensFile);
+    }
     return this.fileNum >= this.maxFileCount_;
   }
 
@@ -201,6 +305,26 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     this.dispatchEvent(new CustomEvent('open-file-upload', {
       bubbles: true,
       composed: true,
+    }));
+    this.$.menu.close();
+  }
+
+  protected onToolClick_(tool: ToolMode) {
+    this.dispatchEvent(new CustomEvent('tool-click', {
+      bubbles: true,
+      composed: true,
+      detail: {tool},
+    }));
+    this.$.menu.close();
+  }
+
+  protected onModelClick_(e: Event) {
+    const button = e.currentTarget as HTMLElement;
+    const model = Number(button.dataset['model']) as ModelMode;
+    this.dispatchEvent(new CustomEvent('model-click', {
+      bubbles: true,
+      composed: true,
+      detail: {model},
     }));
     this.$.menu.close();
   }
