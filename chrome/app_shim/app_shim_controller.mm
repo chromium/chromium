@@ -53,6 +53,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/remote_cocoa.h"
 #include "crypto/hash.h"
@@ -228,6 +229,10 @@ AppShimController::~AppShimController() {
 // static
 void AppShimController::PreInitFeatureState(
     const base::CommandLine& command_line) {
+  // Create a FieldTrialList, although unlike other places where this is done,
+  // we don't have to mark this one as being leaked since it will be deleted and
+  // replaced by a new list by the call to FieldTrialList::ResetInstance in
+  // FinalizeFeatureState below.
   new base::FieldTrialList();
 
   auto feature_list = std::make_unique<base::FeatureList>();
@@ -327,6 +332,8 @@ void AppShimController::FinalizeFeatureState(
   feature_state.ApplyToFeatureAndFieldTrialList(feature_list.get());
 
   base::FeatureList::SetInstance(std::move(feature_list));
+
+  variations::RecreateCrashKeys();
 }
 
 void AppShimController::OnAppFinishedLaunching(

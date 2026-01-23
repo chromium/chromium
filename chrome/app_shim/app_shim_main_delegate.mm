@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
+#include "components/variations/variations_crash_keys.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
@@ -119,6 +120,8 @@ std::variant<int, content::MainFunctionParams> AppShimMainDelegate::RunProcess(
                                                     /*is_main_thread=*/true);
   ui::WindowResizeHelperMac::Get()->Init(main_task_executor.task_runner());
   base::PlatformThread::SetName("CrAppShimMain");
+
+  variations::InitCrashKeys();
 
   AppShimController::Params controller_params;
   controller_params.user_data_dir =

@@ -9,6 +9,7 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -35,6 +36,8 @@
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/variations/hashing.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -57,6 +60,25 @@ namespace {
 constexpr std::string_view kAppShimPathSwitch = "app-shim-path";
 constexpr std::string_view kWebAppIdSwitch = "web-app-id";
 constexpr std::string_view kShimLogFileName = "shim.log";
+
+constexpr std::string_view kTrialName = "AppShimTestTrialName";
+constexpr std::string_view kTrialGroup1Name = "Group1";
+constexpr std::string_view kTrialGroup2Name = "Group2";
+
+std::string GetActiveGroupForTestTrial() {
+  std::string trial_name_hash = variations::HashNameAsHexString(kTrialName);
+  variations::ExperimentListInfo experiments =
+      variations::GetExperimentListInfo();
+  for (const std::string& experiment :
+       base::SplitString(experiments.experiment_list, ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    if (experiment.starts_with(trial_name_hash)) {
+      return experiment.substr(trial_name_hash.length() + 1);
+    }
+  }
+  return "";
+}
+
 }  // namespace
 
 using AppId = webapps::AppId;
@@ -75,7 +97,12 @@ using AppId = webapps::AppId;
 //     browser has terminated, allowing us to test this behavior.
 class AppShimControllerBrowserTest : public InProcessBrowserTest {
  public:
-  AppShimControllerBrowserTest() = default;
+  AppShimControllerBrowserTest() {
+    // Force the chrome that creates the app shim in the first field trial
+    // group, so that state gets persisted to the user_data_dir.
+    base::FieldTrialList::CreateFieldTrial(kTrialName, kTrialGroup1Name)
+        ->Activate();
+  }
   ~AppShimControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -132,10 +159,16 @@ class AppShimControllerBrowserTest : public InProcessBrowserTest {
     base::ReadFileToString(log_file, &log_string);
     std::vector<std::string> log = base::SplitString(
         log_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    EXPECT_THAT(log,
-                testing::ElementsAre(
-                    "Shim Started", "Window Created: BrowserNativeWidgetWindow",
-                    "Window Created: NativeWidgetMacOverlayNSWindow"));
+    EXPECT_THAT(log, testing::ElementsAre(
+                         "Shim Started",
+                         base::StringPrintf(
+                             "Early Trial Group: %s",
+                             variations::HashNameAsHexString(kTrialGroup1Name)),
+                         "Window Created: BrowserNativeWidgetWindow",
+                         base::StringPrintf(
+                             "Final Trial Group: %s",
+                             variations::HashNameAsHexString(kTrialGroup2Name)),
+                         "Window Created: NativeWidgetMacOverlayNSWindow"));
 
     // If the test failed, it can be hard to debug why without getting output
     // from the Chromium process that was launched by the test. So gather that
@@ -169,10 +202,25 @@ IN_PROC_BROWSER_TEST_F(AppShimControllerBrowserTest, LaunchChrome) {
 
 class AppShimControllerDelegate : public AppShimController::TestDelegate {
  public:
+  AppShimControllerDelegate(base::FunctionRef<void(const std::string&)> log)
+      : log_(log) {}
+
   void PopulateChromeCommandLine(base::CommandLine& command_line) override {
     test_launcher_utils::PrepareBrowserCommandLineForTests(&command_line);
     command_line.AppendSwitch(switches::kAllowAppShimSignatureMismatchForTests);
+    log_(base::StringPrintf("Early Trial Group: %s",
+                            GetActiveGroupForTestTrial()));
+
+    // Launching chrome with the force field trials flag means that once this
+    // shim finished connecting to chrome, its field trial state will have
+    // changed so we're now in the different trial group.
+    command_line.AppendSwitchASCII(
+        switches::kForceFieldTrials,
+        base::StringPrintf("*%s/%s", kTrialName, kTrialGroup2Name));
   }
+
+ private:
+  base::FunctionRef<void(const std::string&)> log_;
 };
 
 MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
@@ -192,9 +240,6 @@ MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
   std::string framework_path = base::apple::FrameworkBundlePath().value();
   std::string chrome_path = ::test::GuessAppBundlePath().value();
 
-  AppShimControllerDelegate controller_delegate;
-  AppShimController::SetDelegateForTesting(&controller_delegate);
-
   // Need to reset a bunch of things before we can run the app shim
   // initialization code.
   base::FeatureList::ClearInstanceForTesting();
@@ -210,6 +255,9 @@ MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
     log_file.Flush();
   };
 
+  AppShimControllerDelegate controller_delegate(log);
+  AppShimController::SetDelegateForTesting(&controller_delegate);
+
   log("Shim Started");
 
   // Close a browser window when it gets created. This should cause chrome and
@@ -219,6 +267,8 @@ MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
         log(base::StringPrintf("Window Created: %s",
                                base::SysNSStringToUTF8([window className])));
         if ([window isKindOfClass:[BrowserNativeWidgetWindow class]]) {
+          log(base::StringPrintf("Final Trial Group: %s",
+                                 GetActiveGroupForTestTrial()));
           [window performClose:nil];
         }
       }));

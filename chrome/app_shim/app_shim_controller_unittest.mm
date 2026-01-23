@@ -20,6 +20,7 @@
 #include "base/threading/thread.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/mac/app_mode_common.h"
+#include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -163,6 +164,7 @@ TEST_F(AppShimControllerTest, FinalizeFeatureState) {
   command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                  kFeatureOffByDefaultName);
   AppShimController::PreInitFeatureState(command_line);
+  variations::InitCrashKeys();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
@@ -222,6 +224,7 @@ TEST_F(AppShimControllerTest, FinalizeFeatureStateWithFieldTrials) {
       base::StringPrintf("%s.%s:%s/42", kTrialName, kTrialGroup1Name,
                          kParam2Name));
   AppShimController::PreInitFeatureState(command_line);
+  variations::InitCrashKeys();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);

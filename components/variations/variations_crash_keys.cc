@@ -310,6 +310,13 @@ void InitCrashKeys() {
   ANNOTATE_LEAKING_OBJECT_PTR(g_variations_crash_keys);
 }
 
+void RecreateCrashKeys() {
+  DCHECK(g_variations_crash_keys);
+  delete g_variations_crash_keys;
+  g_variations_crash_keys = nullptr;
+  InitCrashKeys();
+}
+
 void UpdateCrashKeysWithSyntheticTrials(
     const std::vector<SyntheticTrialGroup>& synthetic_trials) {
   DCHECK(g_variations_crash_keys);
