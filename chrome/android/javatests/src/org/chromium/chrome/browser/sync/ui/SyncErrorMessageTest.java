@@ -412,8 +412,8 @@ public class SyncErrorMessageTest {
 
         Intents.init();
         onViewWaiting(allOf(withText("Learn more"), isDisplayed())).perform(click());
-        intended(IntentMatchers.hasData(
-                "https://support.google.com/chrome/answer/165139"));
+        intended(
+                IntentMatchers.hasData(SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL));
         Intents.release();
 
         Assert.assertEquals(

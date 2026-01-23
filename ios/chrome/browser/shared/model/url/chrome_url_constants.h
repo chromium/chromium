@@ -197,7 +197,7 @@ inline constexpr char kMyActivityURL[] =
 
 // Help center URL for the Bookmarks limit exceeded error.
 inline constexpr char kBookmarksLimitExceededHelpCenter[] =
-    "https://support.google.com/chrome/answer/165139";
+    "https://support.google.com/chrome?p=manage_bookmarks_ios";
 
 // "Learn more" URL for the Lens Overlay.
 inline constexpr char kLearnMoreLensURL[] =

@@ -23,8 +23,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.ApkInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -379,6 +377,10 @@ public class SyncSettingsUtils {
         openCustomTabWithURL(activity, MY_ACCOUNT_URL);
     }
 
+    // Help center URL for the Bookmarks limit exceeded error.
+    public static final String BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL =
+            "https://support.google.com/chrome?p=manage_bookmarks_android";
+
     /**
      * Opens a help center article for the bookmark sync limit and acknowledges the error.
      *
@@ -392,8 +394,7 @@ public class SyncSettingsUtils {
             @BookmarksLimitExceededHelpClickedSource int source) {
         assert syncService != null;
         syncService.acknowledgeBookmarksLimitExceededError(source);
-        openCustomTabWithURL(
-                activity, SyncSettingsUtilsJni.get().getBookmarksLimitExceededHelpUrl());
+        openCustomTabWithURL(activity, BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);
     }
 
     /**
@@ -636,10 +637,5 @@ public class SyncSettingsUtils {
                 assert false;
                 return "";
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        String getBookmarksLimitExceededHelpUrl();
     }
 }

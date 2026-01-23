@@ -71,10 +71,8 @@ void OpenTabForSyncTrustedVaultUserAction(
 
 }  // namespace
 
-// TODO(crbug.com/452968646): Update this link with a `p=...` param once it's
-// known.
 const char kBookmarksLimitExceededHelpCenter[] =
-    "https://support.google.com/chrome/answer/165139";
+    "https://support.google.com/chrome?p=manage_bookmarks_desktop";
 
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(

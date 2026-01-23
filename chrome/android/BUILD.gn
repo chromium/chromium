@@ -3058,7 +3058,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
       "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
       "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
-      "java/src/org/chromium/chrome/browser/sync/settings/SyncSettingsUtils.java",
       "java/src/org/chromium/chrome/browser/tab/TabAndroidTestHelper.java",
       "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
       "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",

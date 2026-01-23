@@ -1350,7 +1350,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewBookmarksLimitExceededTest,
   EXPECT_EQ(GetBrowser(0)->tab_strip_model()->count(), tab_count + 1);
   EXPECT_EQ(
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      GURL("https://support.google.com/chrome/answer/165139"));
+      GURL(kBookmarksLimitExceededHelpCenter));
 
   // Check that the error is cleared.
   EXPECT_NE(GetSyncService(0)->GetUserActionableError(),

@@ -168,7 +168,6 @@ source_set("sync") {
 
   if (is_android) {
     sources += [
-      "android/sync_settings_utils_android.cc",
       "glue/synced_tab_delegate_android.cc",
       "glue/synced_tab_delegate_android.h",
       "glue/synced_window_delegate_android.cc",
