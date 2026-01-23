@@ -70,7 +70,8 @@ ProjectsPanelView::ProjectsPanelView(actions::ActionItem* root_action_item,
 
   tab_groups_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelTabGroupsView>(
-          root_action_item_.get(), action_view_controller_.get()));
+          root_action_item_.get(), action_view_controller_.get(),
+          panel_controller_.get()));
 
   auto* threads_list_title =
       content_container_->AddChildView(std::make_unique<views::Label>());

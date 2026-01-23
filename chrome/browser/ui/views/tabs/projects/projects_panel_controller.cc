@@ -7,13 +7,7 @@
 ProjectsPanelController::ProjectsPanelController(
     tab_groups::TabGroupSyncService* tab_group_sync_service)
     : tab_group_sync_service_(tab_group_sync_service) {
-  // Sort groups from newest to oldest creation time.
-  tab_groups_ = tab_group_sync_service_->GetAllGroups();
-  std::sort(tab_groups_.begin(), tab_groups_.end(),
-            [](const tab_groups::SavedTabGroup& left,
-               const tab_groups::SavedTabGroup& right) {
-              return left.creation_time() > right.creation_time();
-            });
+  tab_group_sync_service_observer_.Observe(tab_group_sync_service);
 }
 
 ProjectsPanelController::~ProjectsPanelController() = default;
@@ -29,6 +23,19 @@ void ProjectsPanelController::AddObserver(Observer* observer) {
 
 void ProjectsPanelController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ProjectsPanelController::OnInitialized() {
+  tab_groups_ = tab_group_sync_service_->GetAllGroups();
+  // Sort groups from newest to oldest creation time
+  std::sort(tab_groups_.begin(), tab_groups_.end(),
+            [](const tab_groups::SavedTabGroup& left,
+               const tab_groups::SavedTabGroup& right) {
+              return left.creation_time() > right.creation_time();
+            });
+  for (auto& observer : observers_) {
+    observer.OnTabGroupsInitialized(tab_groups_);
+  }
 }
 
 void ProjectsPanelController::OnTabGroupAdded(

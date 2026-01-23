@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 namespace tab_groups {
@@ -21,6 +22,8 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
+    virtual void OnTabGroupsInitialized(
+        const std::vector<tab_groups::SavedTabGroup>& tab_groups) = 0;
     virtual void OnTabGroupAdded(const tab_groups::SavedTabGroup& group) = 0;
     virtual void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group) = 0;
     virtual void OnTabGroupRemoved(const base::Uuid& sync_id) = 0;
@@ -40,6 +43,7 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
   void RemoveObserver(Observer* observer);
 
   // tab_groups::TabGroupSyncService::Observer:
+  void OnInitialized() override;
   void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
                        tab_groups::TriggerSource source) override;
   void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group,
@@ -52,6 +56,9 @@ class ProjectsPanelController : tab_groups::TabGroupSyncService::Observer {
   std::vector<tab_groups::SavedTabGroup> tab_groups_;
 
   base::ObserverList<Observer> observers_;
+  base::ScopedObservation<tab_groups::TabGroupSyncService,
+                          tab_groups::TabGroupSyncService::Observer>
+      tab_group_sync_service_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLLER_H_

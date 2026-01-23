@@ -11,6 +11,8 @@ source_set("projects") {
     "projects_panel_controls_view.h",
     "projects_panel_recent_threads_view.cc",
     "projects_panel_recent_threads_view.h",
+    "projects_panel_tab_groups_item_view.cc",
+    "projects_panel_tab_groups_item_view.h",
     "projects_panel_tab_groups_view.cc",
     "projects_panel_tab_groups_view.h",
     "projects_panel_thread_item_view.cc",
@@ -24,11 +26,13 @@ source_set("projects") {
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs/projects",
     "//chrome/browser/ui/views/tabs/vertical",
     "//components/contextual_tasks/public",
@@ -44,6 +48,7 @@ source_set("unit_tests") {
   sources = [
     "projects_panel_controller_unittest.cc",
     "projects_panel_recent_threads_view_unittest.cc",
+    "projects_panel_tab_groups_item_view_unittest.cc",
     "projects_panel_thread_item_view_unittest.cc",
   ]
   deps = [

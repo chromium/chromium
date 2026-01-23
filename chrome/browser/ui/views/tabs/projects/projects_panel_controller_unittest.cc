@@ -63,6 +63,10 @@ class MockProjectsPanelControllerObserver
     : public ProjectsPanelController::Observer {
  public:
   MOCK_METHOD(void,
+              OnTabGroupsInitialized,
+              (const std::vector<tab_groups::SavedTabGroup>& tab_groups),
+              (override));
+  MOCK_METHOD(void,
               OnTabGroupAdded,
               (const tab_groups::SavedTabGroup&),
               (override));
@@ -81,6 +85,12 @@ MATCHER_P(GroupIs, expected_group, "") {
 
 class ProjectsPanelControllerTest : public testing::Test {
  protected:
+  std::unique_ptr<ProjectsPanelController> GetInitializedController() {
+    auto controller = std::make_unique<ProjectsPanelController>(
+        &mock_tab_group_sync_service_);
+    controller->OnInitialized();
+    return controller;
+  }
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
 };
@@ -91,8 +101,7 @@ TEST_F(ProjectsPanelControllerTest, SortsGroupsOnConstruction) {
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(groups));
 
-  auto controller =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  auto controller = GetInitializedController();
 
   const auto& tab_groups = controller->GetTabGroups();
   ASSERT_EQ(3u, tab_groups.size());
@@ -107,8 +116,7 @@ TEST_F(ProjectsPanelControllerTest, AddsGroupInCorrectOrder) {
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(groups));
 
-  auto controller =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  auto controller = GetInitializedController();
 
   controller->OnTabGroupAdded(GetGroup2(), tab_groups::TriggerSource::REMOTE);
 
@@ -124,8 +132,7 @@ TEST_F(ProjectsPanelControllerTest, UpdatesExistingGroup) {
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(groups));
 
-  auto controller =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  auto controller = GetInitializedController();
 
   tab_groups::SavedTabGroup updated_group = GetGroup1();
   updated_group.SetTitle(u"Updated Title");
@@ -142,8 +149,7 @@ TEST_F(ProjectsPanelControllerTest, RemovesGroup) {
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(groups));
 
-  auto controller =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  auto controller = GetInitializedController();
 
   controller->OnTabGroupRemoved(GetGroup1().saved_guid(),
                                 tab_groups::TriggerSource::LOCAL);
@@ -156,8 +162,7 @@ TEST_F(ProjectsPanelControllerTest, RemovesGroup) {
 class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {
  public:
   void SetUp() override {
-    controller_ = std::make_unique<ProjectsPanelController>(
-        &mock_tab_group_sync_service_);
+    controller_ = GetInitializedController();
     controller_->AddObserver(&observer_);
   }
 
@@ -175,8 +180,7 @@ TEST_F(ProjectsPanelControllerObserverTest, NotifiesObserverOnUpdate) {
   std::vector<tab_groups::SavedTabGroup> initial_groups = {GetGroup1()};
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(initial_groups));
-  controller_ =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  controller_ = GetInitializedController();
   controller_->AddObserver(&observer_);
 
   tab_groups::SavedTabGroup updated_group = GetGroup1();
@@ -190,8 +194,7 @@ TEST_F(ProjectsPanelControllerObserverTest, NotifiesObserverOnRemove) {
   std::vector<tab_groups::SavedTabGroup> initial_groups = {GetGroup1()};
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
       .WillOnce(testing::Return(initial_groups));
-  controller_ =
-      std::make_unique<ProjectsPanelController>(&mock_tab_group_sync_service_);
+  controller_ = GetInitializedController();
   controller_->AddObserver(&observer_);
 
   EXPECT_CALL(observer_, OnTabGroupRemoved(GetGroup1().saved_guid()));
