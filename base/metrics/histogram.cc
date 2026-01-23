@@ -633,7 +633,7 @@ bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-base::Value::Dict Histogram::ToGraphDict() const {
+base::DictValue Histogram::ToGraphDict() const {
   std::unique_ptr<SampleVector> snapshot = SnapshotAllSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
 }
@@ -773,8 +773,8 @@ std::unique_ptr<SampleVector> Histogram::SnapshotUnloggedSamplesImpl() const {
   return samples;
 }
 
-Value::Dict Histogram::GetParameters() const {
-  Value::Dict params;
+DictValue Histogram::GetParameters() const {
+  DictValue params;
   params.Set("type", HistogramTypeToString(GetHistogramType()));
   params.Set("min", declared_min());
   params.Set("max", declared_max());

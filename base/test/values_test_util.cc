@@ -48,7 +48,7 @@ std::optional<Value> ParseJsonHelper(std::string_view json,
   return std::move(*result);
 }
 
-bool CheckValue(const Value::Dict& dict,
+bool CheckValue(const DictValue& dict,
                 std::string_view template_key,
                 const Value& template_value,
                 testing::MatchResultListener* listener) {
@@ -102,7 +102,7 @@ bool DictionaryHasValueMatcher::MatchAndExplain(
 }
 
 bool DictionaryHasValueMatcher::MatchAndExplain(
-    const Value::Dict& dict,
+    const DictValue& dict,
     testing::MatchResultListener* listener) const {
   return CheckValue(dict, key_, expected_value_, listener);
 }
@@ -118,11 +118,11 @@ void DictionaryHasValueMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
-    const Value::Dict& template_dict)
+    const DictValue& template_dict)
     : template_dict_(template_dict.Clone()) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
-    Value::Dict&& template_dict)
+    DictValue&& template_dict)
     : template_dict_(std::move(template_dict)) {}
 
 DictionaryHasValuesMatcher::DictionaryHasValuesMatcher(
@@ -148,7 +148,7 @@ bool DictionaryHasValuesMatcher::MatchAndExplain(
 }
 
 bool DictionaryHasValuesMatcher::MatchAndExplain(
-    const Value::Dict& dict,
+    const DictValue& dict,
     testing::MatchResultListener* listener) const {
   bool ok = true;
   for (auto [template_key, template_value] : template_dict_) {
@@ -174,20 +174,20 @@ IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(const Value& template_value)
     : template_value_(template_value.Clone()) {}
 
 IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
-    const Value::Dict& template_value)
+    const DictValue& template_value)
     : template_value_(template_value.Clone()) {}
 
 IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
-    const Value::List& template_value)
+    const ListValue& template_value)
     : template_value_(template_value.Clone()) {}
 
 IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value&& template_value)
     : template_value_(std::move(template_value)) {}
 
-IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value::Dict&& template_value)
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(DictValue&& template_value)
     : template_value_(std::move(template_value)) {}
 
-IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(Value::List&& template_value)
+IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(ListValue&& template_value)
     : template_value_(std::move(template_value)) {}
 
 IsSupersetOfValueMatcher::IsSupersetOfValueMatcher(
@@ -230,7 +230,7 @@ bool IsSupersetOfValueMatcher::MatchAndExplain(
 }
 
 bool IsSupersetOfValueMatcher::MatchAndExplain(
-    const Value::Dict& dict,
+    const DictValue& dict,
     testing::MatchResultListener* listener) const {
   if (template_value_.type() != Value::Type::DICT) {
     return testing::ExplainMatchResult(
@@ -238,11 +238,11 @@ bool IsSupersetOfValueMatcher::MatchAndExplain(
         Value::GetTypeName(Value::Type::DICT), listener);
   }
 
-  std::vector<testing::Matcher<const Value::Dict&>> matchers;
+  std::vector<testing::Matcher<const DictValue&>> matchers;
   for (auto [field_name, field_value] : template_value_.GetDict()) {
     matchers.push_back(testing::ResultOf(
         StrCat({"field '", field_name, "'"}),
-        [field_name](const Value::Dict& dict) { return dict.Find(field_name); },
+        [field_name](const DictValue& dict) { return dict.Find(field_name); },
         testing::Pointee(IsSupersetOfValue(field_value))));
   }
   return testing::ExplainMatchResult(testing::AllOfArray(matchers), dict,
@@ -250,7 +250,7 @@ bool IsSupersetOfValueMatcher::MatchAndExplain(
 }
 
 bool IsSupersetOfValueMatcher::MatchAndExplain(
-    const Value::List& list,
+    const ListValue& list,
     testing::MatchResultListener* listener) const {
   if (template_value_.type() != Value::Type::LIST) {
     return testing::ExplainMatchResult(
@@ -308,19 +308,19 @@ IsJsonMatcher::IsJsonMatcher(std::string_view json)
 IsJsonMatcher::IsJsonMatcher(const Value& value)
     : expected_value_(value.Clone()) {}
 
-IsJsonMatcher::IsJsonMatcher(const Value::Dict& value)
+IsJsonMatcher::IsJsonMatcher(const DictValue& value)
     : expected_value_(Value(value.Clone())) {}
 
-IsJsonMatcher::IsJsonMatcher(const Value::List& value)
+IsJsonMatcher::IsJsonMatcher(const ListValue& value)
     : expected_value_(Value(value.Clone())) {}
 
 IsJsonMatcher::IsJsonMatcher(Value&& value)
     : expected_value_(std::move(value)) {}
 
-IsJsonMatcher::IsJsonMatcher(Value::Dict&& value)
+IsJsonMatcher::IsJsonMatcher(DictValue&& value)
     : expected_value_(Value(std::move(value))) {}
 
-IsJsonMatcher::IsJsonMatcher(Value::List&& value)
+IsJsonMatcher::IsJsonMatcher(ListValue&& value)
     : expected_value_(Value(std::move(value))) {}
 
 IsJsonMatcher::IsJsonMatcher(const IsJsonMatcher& other)
@@ -354,13 +354,13 @@ bool IsJsonMatcher::MatchAndExplain(
 }
 
 bool IsJsonMatcher::MatchAndExplain(
-    const Value::Dict& dict,
+    const DictValue& dict,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_.is_dict() && expected_value_.GetDict() == dict;
 }
 
 bool IsJsonMatcher::MatchAndExplain(
-    const Value::List& list,
+    const ListValue& list,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_.is_list() && expected_value_.GetList() == list;
 }
@@ -381,19 +381,19 @@ Value ParseJson(std::string_view json, int options) {
   return result.has_value() ? std::move(*result) : Value();
 }
 
-Value::Dict ParseJsonDict(std::string_view json, int options) {
+DictValue ParseJsonDict(std::string_view json, int options) {
   std::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT, options);
-  return result.has_value() ? std::move(*result).TakeDict() : Value::Dict();
+  return result.has_value() ? std::move(*result).TakeDict() : DictValue();
 }
 
-Value::List ParseJsonList(std::string_view json, int options) {
+ListValue ParseJsonList(std::string_view json, int options) {
   std::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST, options);
-  return result.has_value() ? std::move(*result).TakeList() : Value::List();
+  return result.has_value() ? std::move(*result).TakeList() : ListValue();
 }
 
-Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path) {
+DictValue ParseJsonDictFromFile(const FilePath& json_file_path) {
   std::string json;
   if (!ReadFileToString(json_file_path, &json)) {
     ADD_FAILURE() << "Failed to load json file for parsing. path="

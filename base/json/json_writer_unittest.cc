@@ -70,11 +70,11 @@ TEST(JsonWriterTest, NestedTypes) {
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
   auto dict =
-      Value::Dict().Set("list", Value::List()
-                                    .Append(Value::Dict().Set("inner int", 10))
-                                    .Append(Value::Dict())
-                                    .Append(Value::List())
-                                    .Append(true));
+      DictValue().Set("list", ListValue()
+                                  .Append(DictValue().Set("inner int", 10))
+                                  .Append(DictValue())
+                                  .Append(ListValue())
+                                  .Append(true));
 
   EXPECT_EQ(WriteJson(dict), "{\"list\":[{\"inner int\":10},{},[],true]}");
 
@@ -90,13 +90,13 @@ TEST(JsonWriterTest, NestedTypes) {
 }
 
 TEST(JsonWriterTest, KeysWithPeriods) {
-  EXPECT_EQ(WriteJson(Value::Dict()  //
+  EXPECT_EQ(WriteJson(DictValue()  //
                           .Set("a.b", 3)
                           .Set("c", 2)
-                          .Set("d.e.f", Value::Dict().Set("g.h.i.j", 1))),
+                          .Set("d.e.f", DictValue().Set("g.h.i.j", 1))),
             R"({"a.b":3,"c":2,"d.e.f":{"g.h.i.j":1}})");
 
-  EXPECT_EQ(WriteJson(Value::Dict()  //
+  EXPECT_EQ(WriteJson(DictValue()  //
                           .SetByDottedPath("a.b", 2)
                           .Set("a.b", 1)),
             R"({"a":{"b":2},"a.b":1})");
@@ -112,7 +112,7 @@ TEST(JsonWriterTest, BinaryValues) {
                                  JsonOptions::OPTIONS_OMIT_BINARY_VALUES),
             "");
 
-  auto binary_list = Value::List()
+  auto binary_list = ListValue()
                          .Append(Value(kBinaryData))
                          .Append(5)
                          .Append(Value(kBinaryData))
@@ -123,7 +123,7 @@ TEST(JsonWriterTest, BinaryValues) {
       WriteJsonWithOptions(binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES),
       "[5,2]");
 
-  auto binary_dict = Value::Dict()
+  auto binary_dict = DictValue()
                          .Set("a", Value(kBinaryData))
                          .Set("b", 5)
                          .Set("c", Value(kBinaryData))
@@ -145,11 +145,11 @@ TEST(JsonWriterTest, DoublesAsInts) {
 }
 
 TEST(JsonWriterTest, StackOverflow) {
-  Value::List deep_list;
+  ListValue deep_list;
   const size_t max_depth = 100000;
 
   for (size_t i = 0; i < max_depth; ++i) {
-    Value::List new_top_list;
+    ListValue new_top_list;
     new_top_list.Append(std::move(deep_list));
     deep_list = std::move(new_top_list);
   }
@@ -166,7 +166,7 @@ TEST(JsonWriterTest, StackOverflow) {
   deep_list = std::move(deep_list_value).TakeList();
   while (!deep_list.empty()) {
     DCHECK_EQ(deep_list.size(), 1u);
-    Value::List inner_list = std::move(deep_list[0]).TakeList();
+    ListValue inner_list = std::move(deep_list[0]).TakeList();
     deep_list = std::move(inner_list);
   }
 }
@@ -196,7 +196,7 @@ TEST(JsonWriterTest, JSONWriterWriteSuccess) {
   std::string output_js;
 
   EXPECT_TRUE(
-      JSONWriter::Write(base::Value::Dict().Set("key", "value"), &output_js));
+      JSONWriter::Write(base::DictValue().Set("key", "value"), &output_js));
   EXPECT_EQ(output_js, R"({"key":"value"})");
 }
 
@@ -205,9 +205,8 @@ TEST(JsonWriterTest, JSONWriterWriteFailure) {
   std::string output_js;
 
   EXPECT_FALSE(JSONWriter::Write(
-      base::Value::Dict()  //
-          .Set("key",
-               base::Value::Dict().Set("nested-key", base::Value::Dict())),
+      base::DictValue()  //
+          .Set("key", base::DictValue().Set("nested-key", base::DictValue())),
       &output_js, /*max_depth=*/1));
 }
 
@@ -215,7 +214,7 @@ TEST(JsonWriterTest, JSONWriterWriteFailure) {
 TEST(JsonWriterTest, JSONWriterWriteWithOptionsSuccess) {
   std::string output_js;
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
-      base::Value::Dict().Set("key", "value"), JSONWriter::OPTIONS_PRETTY_PRINT,
+      base::DictValue().Set("key", "value"), JSONWriter::OPTIONS_PRETTY_PRINT,
       &output_js));
   EXPECT_EQ(output_js, FixNewlines(R"({
    "key": "value"
@@ -228,8 +227,8 @@ TEST(JsonWriterTest, JSONWriterWriteWithOptionsFailure) {
   std::string output_js;
 
   EXPECT_FALSE(JSONWriter::WriteWithOptions(
-      base::Value::Dict().Set(
-          "key", base::Value::Dict().Set("nested-key", base::Value::Dict())),
+      base::DictValue().Set(
+          "key", base::DictValue().Set("nested-key", base::DictValue())),
       JSONWriter::OPTIONS_PRETTY_PRINT, &output_js, /*max_depth=*/1));
 }
 

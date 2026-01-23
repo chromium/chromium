@@ -828,9 +828,9 @@ TaskQueue::QueuePriority TaskQueueImpl::GetQueuePriority() const {
   return static_cast<TaskQueue::QueuePriority>(set_index);
 }
 
-Value::Dict TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
+DictValue TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
   base::internal::CheckedAutoLock lock(any_thread_lock_);
-  Value::Dict state;
+  DictValue state;
   state.Set("name", GetName());
   if (any_thread_.unregistered) {
     state.Set("unregistered", true);
@@ -861,7 +861,7 @@ Value::Dict TaskQueueImpl::AsValue(TimeTicks now, bool force_verbose) const {
     state.Set("delay_to_next_task_ms", delay_to_next_task.InMillisecondsF());
   }
   if (main_thread_only().current_fence) {
-    Value::Dict fence_state;
+    DictValue fence_state;
     fence_state.Set(
         "enqueue_order",
         static_cast<int>(
@@ -1054,8 +1054,8 @@ bool TaskQueueImpl::WasBlockedOrLowPriority(EnqueueOrder enqueue_order) const {
 }
 
 // static
-Value::List TaskQueueImpl::QueueAsValue(const TaskDeque& queue, TimeTicks now) {
-  Value::List state;
+ListValue TaskQueueImpl::QueueAsValue(const TaskDeque& queue, TimeTicks now) {
+  ListValue state;
   for (const Task& task : queue) {
     state.Append(TaskAsValue(task, now));
   }
@@ -1063,8 +1063,8 @@ Value::List TaskQueueImpl::QueueAsValue(const TaskDeque& queue, TimeTicks now) {
 }
 
 // static
-Value::Dict TaskQueueImpl::TaskAsValue(const Task& task, TimeTicks now) {
-  Value::Dict state;
+DictValue TaskQueueImpl::TaskAsValue(const Task& task, TimeTicks now) {
+  DictValue state;
   state.Set("posted_from", task.posted_from.ToString());
   if (task.enqueue_order_set()) {
     state.Set("enqueue_order", static_cast<int>(task.enqueue_order()));
@@ -1706,8 +1706,8 @@ void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
   queue_.EraseIf([](const Task& task) { return task.task.IsCancelled(); });
 }
 
-Value::List TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
-  Value::List state;
+ListValue TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
+  ListValue state;
   for (const Task& task : queue_) {
     state.Append(TaskAsValue(task, now));
   }

@@ -217,9 +217,9 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
   return queue;
 }
 
-Value::Dict TaskQueueSelector::AsValue() const {
+DictValue TaskQueueSelector::AsValue() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  Value::Dict state;
+  DictValue state;
   state.Set("immediate_starvation_count", immediate_starvation_count_);
   return state;
 }

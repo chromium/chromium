@@ -52,7 +52,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
     return false;
   }
 
-  const base::Value::Dict& event_dict = event_value->GetDict();
+  const base::DictValue& event_dict = event_value->GetDict();
   const std::string* maybe_phase = event_dict.FindString("ph");
   if (!maybe_phase) {
     LOG(ERROR) << "ph is missing from TraceEvent JSON";
@@ -114,7 +114,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
     return false;
   }
   name = *maybe_name;
-  const base::Value::Dict* maybe_args = event_dict.FindDict("args");
+  const base::DictValue* maybe_args = event_dict.FindDict("args");
   if (!maybe_args) {
     // If argument filter is enabled, the arguments field contains a string
     // value.
@@ -124,7 +124,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
       return false;
     }
   }
-  const base::Value::Dict* maybe_id2 = nullptr;
+  const base::DictValue* maybe_id2 = nullptr;
   if (require_id) {
     const std::string* maybe_id = event_dict.FindString("id");
     maybe_id2 = event_dict.FindDict("id2");
@@ -233,7 +233,7 @@ bool TraceEvent::GetArgAsNumber(const std::string& arg_name,
 }
 
 bool TraceEvent::GetArgAsDict(const std::string& arg_name,
-                              base::Value::Dict* arg) const {
+                              base::DictValue* arg) const {
   const auto it = arg_dicts.find(arg_name);
   if (it != arg_dicts.end()) {
     *arg = it->second.Clone();
@@ -282,9 +282,9 @@ bool TraceEvent::GetKnownArgAsBool(const std::string& arg_name) const {
   return (arg_double != 0.0);
 }
 
-base::Value::Dict TraceEvent::GetKnownArgAsDict(
+base::DictValue TraceEvent::GetKnownArgAsDict(
     const std::string& arg_name) const {
-  base::Value::Dict arg_dict;
+  base::DictValue arg_dict;
   bool result = GetArgAsDict(arg_name, &arg_dict);
   DCHECK(result);
   return arg_dict;
@@ -792,7 +792,7 @@ bool ParseEventsFromJson(const std::string& json,
     return false;
   }
 
-  base::Value::List* list = nullptr;
+  base::ListValue* list = nullptr;
   if (root->is_list()) {
     list = &root->GetList();
   } else if (root->is_dict()) {

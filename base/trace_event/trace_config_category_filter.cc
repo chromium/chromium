@@ -72,13 +72,13 @@ void TraceConfigCategoryFilter::InitializeFromString(
 }
 
 void TraceConfigCategoryFilter::InitializeFromConfigDict(
-    const Value::Dict& dict) {
-  const Value::List* included_category_list =
+    const DictValue& dict) {
+  const ListValue* included_category_list =
       dict.FindList(kIncludedCategoriesParam);
   if (included_category_list) {
     SetCategoriesFromIncludedList(*included_category_list);
   }
-  const Value::List* excluded_category_list =
+  const ListValue* excluded_category_list =
       dict.FindList(kExcludedCategoriesParam);
   if (excluded_category_list) {
     SetCategoriesFromExcludedList(*excluded_category_list);
@@ -189,7 +189,7 @@ void TraceConfigCategoryFilter::Clear() {
   excluded_categories_.clear();
 }
 
-void TraceConfigCategoryFilter::ToDict(Value::Dict& dict) const {
+void TraceConfigCategoryFilter::ToDict(DictValue& dict) const {
   StringList categories(included_categories_);
   categories.insert(categories.end(), disabled_categories_.begin(),
                     disabled_categories_.end());
@@ -206,7 +206,7 @@ std::string TraceConfigCategoryFilter::ToFilterString() const {
 }
 
 void TraceConfigCategoryFilter::SetCategoriesFromIncludedList(
-    const Value::List& included_list) {
+    const ListValue& included_list) {
   included_categories_.clear();
   for (const Value& item : included_list) {
     if (!item.is_string()) {
@@ -223,7 +223,7 @@ void TraceConfigCategoryFilter::SetCategoriesFromIncludedList(
 }
 
 void TraceConfigCategoryFilter::SetCategoriesFromExcludedList(
-    const Value::List& excluded_list) {
+    const ListValue& excluded_list) {
   excluded_categories_.clear();
   for (const Value& item : excluded_list) {
     if (item.is_string()) {
@@ -235,12 +235,12 @@ void TraceConfigCategoryFilter::SetCategoriesFromExcludedList(
 void TraceConfigCategoryFilter::AddCategoriesToDict(
     const StringList& categories,
     const char* param,
-    Value::Dict& dict) const {
+    DictValue& dict) const {
   if (categories.empty()) {
     return;
   }
 
-  Value::List list;
+  ListValue list;
   for (const std::string& category : categories) {
     list.Append(category);
   }

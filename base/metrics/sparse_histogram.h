@@ -60,7 +60,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   void MarkSamplesAsLogged(const HistogramSamples& samples) override;
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
-  base::Value::Dict ToGraphDict() const override;
+  base::DictValue ToGraphDict() const override;
 
  protected:
   // HistogramBase:
@@ -86,7 +86,7 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
 
   // Writes the type of the sparse histogram in the |params|.
-  Value::Dict GetParameters() const override;
+  DictValue GetParameters() const override;
 
   // For constructor calling.
   friend class SparseHistogramTest;

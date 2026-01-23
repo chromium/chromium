@@ -44,12 +44,12 @@ class BASE_EXPORT DummyHistogram : public HistogramBase {
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
   void WriteAscii(std::string* output) const override {}
-  Value::Dict ToGraphDict() const override;
+  DictValue ToGraphDict() const override;
 
  protected:
   // HistogramBase:
   void SerializeInfoImpl(Pickle* pickle) const override {}
-  Value::Dict GetParameters() const override;
+  DictValue GetParameters() const override;
 
  private:
   friend class NoDestructor<DummyHistogram>;

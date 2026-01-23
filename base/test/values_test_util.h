@@ -38,7 +38,7 @@ class DictionaryHasValueMatcher {
 
   ~DictionaryHasValueMatcher();
 
-  bool MatchAndExplain(const Value::Dict& value,
+  bool MatchAndExplain(const DictValue& value,
                        testing::MatchResultListener* listener) const;
   bool MatchAndExplain(const Value& dict,
                        testing::MatchResultListener* listener) const;
@@ -54,8 +54,8 @@ class DictionaryHasValueMatcher {
 
 class DictionaryHasValuesMatcher {
  public:
-  explicit DictionaryHasValuesMatcher(const Value::Dict& template_dict);
-  explicit DictionaryHasValuesMatcher(Value::Dict&& template_dict);
+  explicit DictionaryHasValuesMatcher(const DictValue& template_dict);
+  explicit DictionaryHasValuesMatcher(DictValue&& template_dict);
 
   DictionaryHasValuesMatcher(const DictionaryHasValuesMatcher&);
   DictionaryHasValuesMatcher& operator=(const DictionaryHasValuesMatcher&);
@@ -64,7 +64,7 @@ class DictionaryHasValuesMatcher {
 
   ~DictionaryHasValuesMatcher();
 
-  bool MatchAndExplain(const Value::Dict& dict,
+  bool MatchAndExplain(const DictValue& dict,
                        testing::MatchResultListener* listener) const;
   bool MatchAndExplain(const Value& dict,
                        testing::MatchResultListener* listener) const;
@@ -74,18 +74,18 @@ class DictionaryHasValuesMatcher {
   void DescribeNegationTo(std::ostream* os) const;
 
  private:
-  Value::Dict template_dict_;
+  DictValue template_dict_;
 };
 
 class IsSupersetOfValueMatcher {
  public:
   explicit IsSupersetOfValueMatcher(std::string_view json);
   explicit IsSupersetOfValueMatcher(const Value& template_value);
-  explicit IsSupersetOfValueMatcher(const Value::Dict& template_value);
-  explicit IsSupersetOfValueMatcher(const Value::List& template_value);
+  explicit IsSupersetOfValueMatcher(const DictValue& template_value);
+  explicit IsSupersetOfValueMatcher(const ListValue& template_value);
   explicit IsSupersetOfValueMatcher(Value&& template_value);
-  explicit IsSupersetOfValueMatcher(Value::Dict&& template_value);
-  explicit IsSupersetOfValueMatcher(Value::List&& template_value);
+  explicit IsSupersetOfValueMatcher(DictValue&& template_value);
+  explicit IsSupersetOfValueMatcher(ListValue&& template_value);
 
   IsSupersetOfValueMatcher(const IsSupersetOfValueMatcher&);
   IsSupersetOfValueMatcher& operator=(const IsSupersetOfValueMatcher&);
@@ -96,9 +96,9 @@ class IsSupersetOfValueMatcher {
 
   bool MatchAndExplain(const Value& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const Value::Dict& value,
+  bool MatchAndExplain(const DictValue& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const Value::List& value,
+  bool MatchAndExplain(const ListValue& value,
                        testing::MatchResultListener* listener) const;
 
   void DescribeTo(std::ostream* os) const;
@@ -115,11 +115,11 @@ class IsJsonMatcher {
  public:
   explicit IsJsonMatcher(std::string_view json);
   explicit IsJsonMatcher(const Value& value);
-  explicit IsJsonMatcher(const Value::Dict& value);
-  explicit IsJsonMatcher(const Value::List& value);
+  explicit IsJsonMatcher(const DictValue& value);
+  explicit IsJsonMatcher(const ListValue& value);
   explicit IsJsonMatcher(Value&& value);
-  explicit IsJsonMatcher(Value::Dict&& value);
-  explicit IsJsonMatcher(Value::List&& value);
+  explicit IsJsonMatcher(DictValue&& value);
+  explicit IsJsonMatcher(ListValue&& value);
 
   IsJsonMatcher(const IsJsonMatcher& other);
   IsJsonMatcher& operator=(const IsJsonMatcher& other);
@@ -130,9 +130,9 @@ class IsJsonMatcher {
                        testing::MatchResultListener* listener) const;
   bool MatchAndExplain(const Value& value,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const Value::Dict& dict,
+  bool MatchAndExplain(const DictValue& dict,
                        testing::MatchResultListener* listener) const;
-  bool MatchAndExplain(const Value::List& list,
+  bool MatchAndExplain(const ListValue& list,
                        testing::MatchResultListener* listener) const;
   void DescribeTo(std::ostream* os) const;
   void DescribeNegationTo(std::ostream* os) const;
@@ -144,7 +144,7 @@ class IsJsonMatcher {
 }  // namespace internal
 
 // A custom GMock matcher which matches if a `base::Value` or
-// `base::Value::Dict` has a key `key` that is equal to `expected_value`.
+// `base::DictValue` has a key `key` that is equal to `expected_value`.
 //
 // Example usage:
 //
@@ -158,11 +158,11 @@ DictionaryHasValue(std::string key, T&& expected_value) {
 }
 
 // A custom GMock matcher which matches if a `base::Value` or
-// `base::Value::Dict` contains all key/value pairs from `template_dict`.
+// `base::DictValue` contains all key/value pairs from `template_dict`.
 //
 // Example usage:
 //
-//   base::Value::Dict template_dict = ...;
+//   base::DictValue template_dict = ...;
 //   EXPECT_THAT(actual, DictionaryHasValues(template_dict));
 template <typename T>
 inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
@@ -171,7 +171,7 @@ DictionaryHasValues(T&& template_dict) {
       internal::DictionaryHasValuesMatcher(std::forward<T>(template_dict)));
 }
 
-// Matches when a `base::Value` or `base::Value::Dict` or `base::Value::List` is
+// Matches when a `base::Value` or `base::DictValue` or `base::ListValue` is
 // a superset of `template_value`, ignoring unexpected Dict keys and list items.
 // Uses `testing::DoubleEq` when comparing doubles.
 //
@@ -180,10 +180,10 @@ DictionaryHasValues(T&& template_dict) {
 //   base::Value template_value = ...;
 //   EXPECT_THAT(actual, IsSupersetOfValue(template_value));
 //
-//   base::Value::List template_list = ...;
+//   base::ListValue template_list = ...;
 //   EXPECT_THAT(actual, IsSupersetOfValue(template_list));
 //
-//   base::Value::Dict template_dict = ...;
+//   base::DictValue template_dict = ...;
 //   EXPECT_THAT(actual, IsSupersetOfValue(template_dict));
 //
 //   EXPECT_THAT(actual, IsSupersetOfValue(R("{"goats": 3})")));
@@ -209,10 +209,10 @@ IsSupersetOfValue(T&& template_value) {
 //   base::Value value = ...;
 //   EXPECT_THAT(actual, IsJson(value));
 //
-//   base::Value::Dict value_dict = ...;
+//   base::DictValue value_dict = ...;
 //   EXPECT_THAT(actual, IsJson(value_dict));
 //
-//   base::Value::List value_list = ...;
+//   base::ListValue value_list = ...;
 //   EXPECT_THAT(actual, IsJson(value_list));
 //
 //   EXPECT_THAT(actual, IsJson(R("{"goats": 3})")));
@@ -231,15 +231,15 @@ Value ParseJson(std::string_view json,
 // Just like ParseJson(), except returns Dicts/Lists. If `json` fails to parse
 // or is not of the expected type, causes an EXPECT failure and returns an empty
 // container.
-Value::Dict ParseJsonDict(std::string_view json,
-                          int options = internal::kDefaultJsonParseOptions);
-Value::List ParseJsonList(std::string_view json,
-                          int options = internal::kDefaultJsonParseOptions);
+DictValue ParseJsonDict(std::string_view json,
+                        int options = internal::kDefaultJsonParseOptions);
+ListValue ParseJsonList(std::string_view json,
+                        int options = internal::kDefaultJsonParseOptions);
 
 // Similar to `ParseJsonDict`, however it loads its contents from a file.
-// Returns the parsed `Value::Dict` when successful. Otherwise, it causes an
+// Returns the parsed `DictValue` when successful. Otherwise, it causes an
 // EXPECT failure, and returns an empty dict.
-Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path);
+DictValue ParseJsonDictFromFile(const FilePath& json_file_path);
 
 // An enumaration with the possible types of errors when calling
 // `WriteJsonFile`.

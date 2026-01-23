@@ -331,7 +331,7 @@ std::string HistogramTester::SnapshotToString(
   std::unique_ptr<HistogramSamples> snapshot =
       GetHistogramSamplesSinceCreation(histogram.histogram_name());
 
-  base::Value::Dict graph_dict =
+  base::DictValue graph_dict =
       snapshot->ToGraphDict(histogram.histogram_name(), histogram.flags());
   std::string tmp;
   // The header message describes this histogram samples (name of the histogram

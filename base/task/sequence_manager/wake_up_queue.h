@@ -43,7 +43,7 @@ class BASE_EXPORT WakeUpQueue {
   std::optional<WakeUp> GetNextDelayedWakeUp() const;
 
   // Debug info.
-  Value::Dict AsValue(TimeTicks now) const;
+  DictValue AsValue(TimeTicks now) const;
 
   // Returns true if there are no pending delayed tasks.
   bool empty() const { return wake_up_queue_.empty(); }

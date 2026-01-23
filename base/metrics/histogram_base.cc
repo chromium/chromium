@@ -73,7 +73,7 @@ HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
 
 HistogramBase::CountAndBucketData::CountAndBucketData(Count32 count,
                                                       int64_t sum,
-                                                      Value::List buckets)
+                                                      ListValue buckets)
     : count(count), sum(sum), buckets(std::move(buckets)) {}
 
 HistogramBase::CountAndBucketData::~CountAndBucketData() = default;
@@ -146,10 +146,10 @@ uint32_t HistogramBase::FindCorruption(const HistogramSamples& samples) const {
 void HistogramBase::WriteJSON(std::string* output,
                               JSONVerbosityLevel verbosity_level) const {
   CountAndBucketData count_and_bucket_data = GetCountAndBucketData();
-  Value::Dict parameters = GetParameters();
+  DictValue parameters = GetParameters();
 
   JSONStringValueSerializer serializer(output);
-  Value::Dict root;
+  DictValue root;
   root.Set("name", histogram_name());
   root.Set("count", count_and_bucket_data.count);
   root.Set("sum", static_cast<double>(count_and_bucket_data.sum));
@@ -187,14 +187,14 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   int64_t sum = snapshot->sum();
   std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
 
-  Value::List buckets;
+  ListValue buckets;
   while (!it->Done()) {
     Sample32 bucket_min;
     int64_t bucket_max;
     Count32 bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
 
-    Value::Dict bucket_value;
+    DictValue bucket_value;
     bucket_value.Set("low", bucket_min);
     // TODO(crbug.com/40228085): Make base::Value able to hold int64_t and
     // remove this cast.
@@ -233,7 +233,7 @@ void HistogramBase::WriteAsciiBucketValue(Count32 current,
 }
 
 void HistogramBase::WriteAscii(std::string* output) const {
-  base::Value::Dict graph_dict = ToGraphDict();
+  base::DictValue graph_dict = ToGraphDict();
   output->append(*graph_dict.FindString("header"));
   output->append("\n");
   output->append(*graph_dict.FindString("body"));

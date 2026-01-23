@@ -263,7 +263,7 @@ class RepeatedValueConverter
 
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<Element>>* field) const override {
-    const Value::List* list = value.GetIfList();
+    const ListValue* list = value.GetIfList();
     if (!list) {
       // The field is not a list.
       return false;
@@ -299,7 +299,7 @@ class RepeatedMessageConverter
 
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
-    const Value::List* list = value.GetIfList();
+    const ListValue* list = value.GetIfList();
     if (!list) {
       return false;
     }
@@ -338,7 +338,7 @@ class RepeatedCustomValueConverter
 
   bool Convert(const base::Value& value,
                std::vector<std::unique_ptr<NestedType>>* field) const override {
-    const Value::List* list = value.GetIfList();
+    const ListValue* list = value.GetIfList();
     if (!list) {
       return false;
     }
@@ -505,7 +505,7 @@ class JSONValueConverter {
   }
 
   bool Convert(const base::Value& value, StructType* output) const {
-    const base::Value::Dict* dict = value.GetIfDict();
+    const base::DictValue* dict = value.GetIfDict();
     if (!dict) {
       return false;
     }
@@ -513,7 +513,7 @@ class JSONValueConverter {
     return Convert(*dict, output);
   }
 
-  bool Convert(const base::Value::Dict& dict, StructType* output) const {
+  bool Convert(const base::DictValue& dict, StructType* output) const {
     for (size_t i = 0; i < fields_.size(); ++i) {
       const internal::FieldConverterBase<StructType>* field_converter =
           fields_[i].get();

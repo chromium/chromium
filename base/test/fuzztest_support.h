@@ -74,7 +74,7 @@ auto ArbitraryValueBlob() {
 auto ArbitraryValueList(fuzztest::Domain<base::Value> entry_domain) {
   return fuzztest::ReversibleMap(
       [](std::vector<base::Value> values) {
-        auto list = base::Value::List::with_capacity(values.size());
+        auto list = base::ListValue::with_capacity(values.size());
         for (auto& value : values) {
           list.Append(std::move(value));
         }
@@ -93,8 +93,8 @@ auto ArbitraryValueList(fuzztest::Domain<base::Value> entry_domain) {
 auto ArbitraryValueDict(fuzztest::Domain<base::Value> value_domain) {
   return fuzztest::ReversibleMap(
       [](std::vector<std::pair<std::string, base::Value>> e) {
-        return base::Value(base::Value::Dict(std::make_move_iterator(e.begin()),
-                                             std::make_move_iterator(e.end())));
+        return base::Value(base::DictValue(std::make_move_iterator(e.begin()),
+                                           std::make_move_iterator(e.end())));
       },
       [](const base::Value& value) {
         auto maybe_dict = base::optional_ref(value.GetIfDict());
@@ -133,30 +133,29 @@ class fuzztest::internal::ArbitraryImpl<base::Value>
 };
 
 template <>
-class fuzztest::internal::ArbitraryImpl<base::Value::Dict>
+class fuzztest::internal::ArbitraryImpl<base::DictValue>
     : public fuzztest::internal::ReversibleMapImpl<
-          base::Value::Dict (*)(
-              std::vector<std::pair<std::string, base::Value>>),
+          base::DictValue (*)(std::vector<std::pair<std::string, base::Value>>),
           std::optional<
               std::tuple<std::vector<std::pair<std::string, base::Value>>>> (*)(
-              const base::Value::Dict&),
+              const base::DictValue&),
           fuzztest::internal::ArbitraryImpl<
               std::vector<std::pair<std::string, base::Value>>>> {
  public:
   ArbitraryImpl()
       : fuzztest::internal::ReversibleMapImpl<
-            base::Value::Dict (*)(
+            base::DictValue (*)(
                 std::vector<std::pair<std::string, base::Value>>),
             std::optional<std::tuple<
                 std::vector<std::pair<std::string, base::Value>>>> (*)(
-                const base::Value::Dict&),
+                const base::DictValue&),
             fuzztest::internal::ArbitraryImpl<
                 std::vector<std::pair<std::string, base::Value>>>>(
             [](std::vector<std::pair<std::string, base::Value>> e) {
-              return base::Value::Dict(std::make_move_iterator(e.begin()),
-                                       std::make_move_iterator(e.end()));
+              return base::DictValue(std::make_move_iterator(e.begin()),
+                                     std::make_move_iterator(e.end()));
             },
-            [](const base::Value::Dict& value) {
+            [](const base::DictValue& value) {
               return std::make_optional(
                   std::tuple{base::ToVector(value, [](const auto& entry) {
                     return std::make_pair(entry.first, entry.second.Clone());

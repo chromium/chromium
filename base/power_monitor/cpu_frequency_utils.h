@@ -66,7 +66,7 @@ EstimateCpuThroughput();
 BASE_EXPORT CpuFrequencyInfo GetCpuFrequencyInfo();
 
 #if BUILDFLAG(IS_WIN)
-BASE_EXPORT void GenerateCpuInfoForTracingMetadata(base::Value::Dict* metadata);
+BASE_EXPORT void GenerateCpuInfoForTracingMetadata(base::DictValue* metadata);
 #endif
 }  // namespace base
 

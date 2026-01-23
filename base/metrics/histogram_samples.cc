@@ -353,9 +353,9 @@ void HistogramSamples::RecordNegativeSample(NegativeSampleReason reason,
                      static_cast<int32_t>(id()));
 }
 
-base::Value::Dict HistogramSamples::ToGraphDict(std::string_view histogram_name,
-                                                int32_t flags) const {
-  base::Value::Dict dict;
+base::DictValue HistogramSamples::ToGraphDict(std::string_view histogram_name,
+                                              int32_t flags) const {
+  base::DictValue dict;
   dict.Set("name", histogram_name);
   dict.Set("header", GetAsciiHeader(histogram_name, flags));
   dict.Set("body", GetAsciiBody());

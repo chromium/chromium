@@ -33,9 +33,9 @@ int TestLauncherTracer::RecordProcessExecution(TimeTicks start_time,
 bool TestLauncherTracer::Dump(const FilePath& path) {
   AutoLock lock(lock_);
 
-  Value::List json_events_list;
+  ListValue json_events_list;
   for (const Event& event : events_) {
-    Value::Dict json_event;
+    DictValue json_event;
     json_event.Set("name", event.name);
     json_event.Set("ph", "X");
     json_event.Set("ts",

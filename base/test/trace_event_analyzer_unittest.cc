@@ -100,7 +100,7 @@ TEST_F(TraceEventAnalyzerTest, TraceEvent) {
   double double_num = 3.5;
   const char str[] = "the string";
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("the key", "the value");
 
   TraceEvent event;
@@ -804,7 +804,7 @@ TEST_F(TraceEventAnalyzerTest, ComplexArgument) {
   EXPECT_EQ("name", events[0]->name);
 
   ASSERT_TRUE(events[0]->HasDictArg("arg"));
-  base::Value::Dict arg = events[0]->GetKnownArgAsDict("arg");
+  base::DictValue arg = events[0]->GetKnownArgAsDict("arg");
   EXPECT_EQ(std::optional<std::string>("value"),
             base::OptionalFromPtr(arg.FindString("property")));
 }

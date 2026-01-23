@@ -110,12 +110,12 @@ std::unique_ptr<HistogramSamples> DummyHistogram::SnapshotFinalDelta() const {
   return std::make_unique<DummyHistogramSamples>();
 }
 
-Value::Dict DummyHistogram::ToGraphDict() const {
-  return Value::Dict();
+DictValue DummyHistogram::ToGraphDict() const {
+  return DictValue();
 }
 
-Value::Dict DummyHistogram::GetParameters() const {
-  return Value::Dict();
+DictValue DummyHistogram::GetParameters() const {
+  return DictValue();
 }
 
 }  // namespace base

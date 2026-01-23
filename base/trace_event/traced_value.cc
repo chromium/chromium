@@ -362,7 +362,7 @@ class PickleWriter final : public TracedValue::Writer {
         } break;
 
         case kTypeStartArray: {
-          Value::List new_list;
+          ListValue new_list;
           if (cur_dict) {
             stack.push_back(cur_dict);
             cur_list =

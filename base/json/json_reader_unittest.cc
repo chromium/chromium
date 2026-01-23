@@ -103,7 +103,7 @@ TEST(JSONReaderTest, EmbeddedComments) {
   root = JSONReader::Read("[1, /* comment, 2 ] */ \n 3]",
                           JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  Value::List* list = root->GetIfList();
+  ListValue* list = root->GetIfList();
   ASSERT_TRUE(list);
   ASSERT_EQ(2u, list->size());
   ASSERT_TRUE((*list)[0].is_int());
@@ -355,7 +355,7 @@ TEST(JSONReaderTest, BasicArray) {
   std::optional<Value> root =
       JSONReader::Read("[true, false, null]", JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  Value::List* list = root->GetIfList();
+  ListValue* list = root->GetIfList();
   ASSERT_TRUE(list);
   EXPECT_EQ(3U, list->size());
 
@@ -370,7 +370,7 @@ TEST(JSONReaderTest, EmptyArray) {
   std::optional<Value> value =
       JSONReader::Read("[]", JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   EXPECT_TRUE(list->empty());
 }
@@ -379,7 +379,7 @@ TEST(JSONReaderTest, CompleteArray) {
   std::optional<Value> value = JSONReader::Read("[\"a\", 3, 4.56, null]",
                                                 JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   EXPECT_EQ(4U, list->size());
 }
@@ -390,7 +390,7 @@ TEST(JSONReaderTest, NestedArrays) {
       "[null]], null]",
       JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   EXPECT_EQ(5U, list->size());
 
@@ -425,7 +425,7 @@ TEST(JSONReaderTest, ArrayTrailingComma) {
   std::optional<Value> value =
       JSONReader::Read("[true,]", JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   ASSERT_EQ(1U, list->size());
   const Value& value1 = (*list)[0];
@@ -455,7 +455,7 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "false, \"more\": {} }",
       JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root1);
-  const Value::Dict* root1_dict = root1->GetIfDict();
+  const DictValue* root1_dict = root1->GetIfDict();
   ASSERT_TRUE(root1_dict);
   auto double_val = root1_dict->FindDouble("number");
   ASSERT_TRUE(double_val);
@@ -475,7 +475,7 @@ TEST(JSONReaderTest, CompleteDictionary) {
       "false, \"more\": {},}",
       JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(root2);
-  Value::Dict* root2_dict = root2->GetIfDict();
+  DictValue* root2_dict = root2->GetIfDict();
   ASSERT_TRUE(root2_dict);
   EXPECT_EQ(*root1_dict, *root2_dict);
 
@@ -514,11 +514,11 @@ TEST(JSONReaderTest, NestedDictionaries) {
       "{\"inner\":{\"array\":[true, 3, 4.56, null]},\"false\":false,\"d\":{}}",
       JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root1);
-  const base::Value::Dict* root1_dict = root1->GetIfDict();
+  const base::DictValue* root1_dict = root1->GetIfDict();
   ASSERT_TRUE(root1_dict);
-  const Value::Dict* inner_dict = root1_dict->FindDict("inner");
+  const DictValue* inner_dict = root1_dict->FindDict("inner");
   ASSERT_TRUE(inner_dict);
-  const Value::List* inner_array = inner_dict->FindList("array");
+  const ListValue* inner_array = inner_dict->FindList("array");
   ASSERT_TRUE(inner_array);
   EXPECT_EQ(4U, inner_array->size());
   auto bool_value = root1_dict->FindBool("false");
@@ -540,7 +540,7 @@ TEST(JSONReaderTest, DictionaryKeysWithPeriods) {
       JSONReader::Read("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}",
                        JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  Value::Dict* root_dict = root->GetIfDict();
+  DictValue* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   auto integer_value = root_dict->FindInt("a.b");
@@ -549,7 +549,7 @@ TEST(JSONReaderTest, DictionaryKeysWithPeriods) {
   integer_value = root_dict->FindInt("c");
   ASSERT_TRUE(integer_value);
   EXPECT_EQ(2, *integer_value);
-  const Value::Dict* inner_dict = root_dict->FindDict("d.e.f");
+  const DictValue* inner_dict = root_dict->FindDict("d.e.f");
   ASSERT_TRUE(inner_dict);
   EXPECT_EQ(1U, inner_dict->size());
   integer_value = inner_dict->FindInt("g.h.i.j");
@@ -573,7 +573,7 @@ TEST(JSONReaderTest, DuplicateKeys) {
   std::optional<Value> root = JSONReader::Read("{\"x\":1,\"x\":2,\"y\":3}",
                                                JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  const Value::Dict* root_dict = root->GetIfDict();
+  const DictValue* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   auto integer_value = root_dict->FindInt("x");
@@ -631,7 +631,7 @@ TEST(JSONReaderTest, StackOverflow) {
   std::optional<Value> value =
       JSONReader::Read(not_evil, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   EXPECT_EQ(5001U, list->size());
 }
@@ -647,7 +647,7 @@ TEST(JSONReaderTest, UTF8Input) {
   root = JSONReader::Read("{\"path\": \"/tmp/\xc3\xa0\xc3\xa8\xc3\xb2.png\"}",
                           JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  const Value::Dict* root_dict = root->GetIfDict();
+  const DictValue* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
   const std::string* maybe_string = root_dict->FindString("path");
   ASSERT_TRUE(maybe_string);
@@ -814,12 +814,12 @@ TEST(JSONReaderTest, StringOptimizations) {
         "}",
         JSON_PARSE_RFC);
     ASSERT_TRUE(root);
-    Value::Dict* root_dict = root->GetIfDict();
+    DictValue* root_dict = root->GetIfDict();
     ASSERT_TRUE(root_dict);
 
-    Value::Dict* dict = root_dict->FindDict("test");
+    DictValue* dict = root_dict->FindDict("test");
     ASSERT_TRUE(dict);
-    Value::List* list = root_dict->FindList("list");
+    ListValue* list = root_dict->FindList("list");
     ASSERT_TRUE(list);
 
     Value* to_move = dict->Find("foo");
@@ -933,7 +933,7 @@ TEST(JSONReaderTest, Decode4ByteUtf8Char) {
   const char kUtf8Data[] = "[\"😇\",[],[],[],{\"google:suggesttype\":[]}]";
   std::optional<Value> root = JSONReader::Read(kUtf8Data, JSON_PARSE_RFC);
   ASSERT_TRUE(root);
-  Value::List* list = root->GetIfList();
+  ListValue* list = root->GetIfList();
   ASSERT_TRUE(list);
   ASSERT_EQ(5u, list->size());
   ASSERT_TRUE((*list)[0].is_string());
@@ -1304,25 +1304,25 @@ TEST(JSONReaderTest, UnescapedControls) {
 
 TEST(JSONReaderTest, ReadingJsonIntoDictAndList) {
   {
-    std::optional<base::Value::List> list =
+    std::optional<base::ListValue> list =
         JSONReader::ReadList("[1, 2, 3]", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(list);
   }
 
   {
-    std::optional<base::Value::List> list =
+    std::optional<base::ListValue> list =
         JSONReader::ReadList("{}", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_FALSE(list);
   }
 
   {
-    std::optional<base::Value::Dict> dict =
+    std::optional<base::DictValue> dict =
         JSONReader::ReadDict("{}", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(dict);
   }
 
   {
-    std::optional<base::Value::Dict> dict =
+    std::optional<base::DictValue> dict =
         JSONReader::ReadDict("[1, 2, 3]", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_FALSE(dict);
   }

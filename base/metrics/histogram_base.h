@@ -284,7 +284,7 @@ class BASE_EXPORT HistogramBase {
   // with the following format:
   // {"header": "Name of the histogram with samples, mean, and/or flags",
   // "body": "ASCII histogram representation"}
-  virtual base::Value::Dict ToGraphDict() const = 0;
+  virtual base::DictValue ToGraphDict() const = 0;
 
   // Produce a JSON representation of the histogram with |verbosity_level| as
   // the serialization verbosity. This is implemented with the help of
@@ -298,9 +298,9 @@ class BASE_EXPORT HistogramBase {
   struct BASE_EXPORT CountAndBucketData {
     Count32 count;
     int64_t sum;
-    Value::List buckets;
+    ListValue buckets;
 
-    CountAndBucketData(Count32 count, int64_t sum, Value::List buckets);
+    CountAndBucketData(Count32 count, int64_t sum, ListValue buckets);
     ~CountAndBucketData();
 
     CountAndBucketData(CountAndBucketData&& other);
@@ -311,7 +311,7 @@ class BASE_EXPORT HistogramBase {
   virtual void SerializeInfoImpl(base::Pickle* pickle) const = 0;
 
   // Writes information about the construction parameters in |params|.
-  virtual Value::Dict GetParameters() const = 0;
+  virtual DictValue GetParameters() const = 0;
 
   // Returns information about the current (non-empty) buckets and their sample
   // counts to |buckets|, the total sample count to |count| and the total sum

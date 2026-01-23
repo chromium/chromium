@@ -40,7 +40,7 @@ void MoveOnlyProjections() {
   }); // expected-error@*:* {{no matching function for call to 'ToValueList'}}
 }
 
-// Return type of the projection must be compatible with Value::List::Append().
+// Return type of the projection must be compatible with ListValue::Append().
 void AppendableToList() {
   std::vector<int> vec;
   std::ignore = ToValueList(vec, [](int) -> int* { return nullptr; }); // expected-error@*:* {{no matching function for call to 'ToValueList'}}

@@ -52,11 +52,11 @@ TEST(ToListTest, Projection) {
 }
 
 // Validates that consuming projections work as intended (every single `Value`
-// inside `Value::List` is a move-only type).
+// inside `ListValue` is a move-only type).
 TEST(ToListTest, MoveOnly) {
-  Value::List list;
+  ListValue list;
   list.resize(10);
-  Value::List mapped_list = ToValueList(
+  ListValue mapped_list = ToValueList(
       std::move(list), [](Value& value) { return std::move(value); });
   EXPECT_EQ(mapped_list.size(), 10U);
 }

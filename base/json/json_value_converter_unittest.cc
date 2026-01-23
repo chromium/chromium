@@ -50,7 +50,7 @@ struct SimpleMessage {
   }
 
   static bool GetValueString(const base::Value* value, std::string* result) {
-    const Value::Dict* dict = value->GetIfDict();
+    const DictValue* dict = value->GetIfDict();
     if (!dict) {
       return false;
     }

@@ -40,7 +40,7 @@ class BASE_EXPORT TimeDomain : public TickClock {
                                         bool quit_when_idle_requested) = 0;
 
   // Debug info.
-  Value::Dict AsValue() const;
+  DictValue AsValue() const;
 
  protected:
   TimeDomain() = default;
