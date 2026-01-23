@@ -50,6 +50,7 @@ IF NOT "%ALTERNATE_OPTIONS%"=="" copy %ALTERNATE_OPTIONS% absl\base\options.h
   --define=absl=1 ^
   --enable_bzlmod=true ^
   --keep_going ^
+  --per_file_copt=external/.*@/w ^
   --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" ^
   --test_env=TZDIR="%CD%\absl\time\internal\cctz\testdata\zoneinfo" ^
   --test_output=errors ^
