@@ -114,7 +114,8 @@ void ExtensionsToolbarBridge::OnPinnedActionsChanged() {
 }
 
 void ExtensionsToolbarBridge::OnActiveWebContentsChanged() {
-  // TODO(crbug.c/476295562)
+  Java_ExtensionsToolbarBridge_onActiveWebContentsChanged(AttachCurrentThread(),
+                                                          java_object_);
 }
 
 void ExtensionsToolbarBridge::Destroy(JNIEnv* env) {

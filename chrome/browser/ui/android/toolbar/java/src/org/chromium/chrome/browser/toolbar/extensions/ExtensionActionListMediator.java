@@ -189,6 +189,12 @@ class ExtensionActionListMediator implements Destroyable {
         mModels.get(index).model.set(ExtensionActionButtonProperties.TITLE, action.getTitle());
     }
 
+    private void updateActionPropertiesForAll() {
+        for (ListItem item : mModels) {
+            updateActionProperties(item.model.get(ExtensionActionButtonProperties.ID));
+        }
+    }
+
     // Finds the model for {@code actionId} inside {@code mModels}, and returns
     // the index if it exists. If not, returns -1.
     private int findIndexForId(String actionId, int startIndex) {
@@ -296,6 +302,11 @@ class ExtensionActionListMediator implements Destroyable {
         @Override
         public void onPinnedActionsChanged() {
             reconcileActionItems();
+        }
+
+        @Override
+        public void onActiveWebContentsChanged() {
+            updateActionPropertiesForAll();
         }
     }
 

@@ -136,6 +136,13 @@ public class ExtensionsToolbarBridge implements Destroyable {
         }
     }
 
+    @CalledByNative
+    public void onActiveWebContentsChanged() {
+        for (Observer observer : mObservers) {
+            observer.onActiveWebContentsChanged();
+        }
+    }
+
     public interface Observer {
         // Called after all actions are added to the model.
         void onActionsInitialized();
@@ -151,6 +158,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         // Called when the pinned actions in the model are changed.
         void onPinnedActionsChanged();
+
+        // Called when the active web contents changes due to e.g. navigation or tab change.
+        void onActiveWebContentsChanged();
     }
 
     public interface Delegate {
