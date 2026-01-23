@@ -289,6 +289,7 @@ enum class PermissionPromptDisposition {
 // The reason why the permission prompt disposition was used. Enum used in UKMs,
 // do not re-order or change values. Deprecated items should only be commented
 // out.
+// LINT.IfChange(PermissionPromptDispositionReason)
 enum class PermissionPromptDispositionReason {
   // Disposition was selected in prefs.
   USER_PREFERENCE_IN_SETTINGS = 0,
@@ -308,6 +309,7 @@ enum class PermissionPromptDispositionReason {
   // Permission Prediction Model.
   ON_DEVICE_PREDICTION_MODEL = 4,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionPromptDispositionReason)
 
 enum class AdaptiveTriggers {
   // None of the adaptive triggers were met. Currently this means two or less

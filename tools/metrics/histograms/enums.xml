@@ -22659,6 +22659,8 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="PREVIOUSLY_AUTO_REVOKED"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionPromptDispositionReason) -->
+
 <enum name="PermissionPromptDispositionReason">
   <int value="0" label="User preference in settings"/>
   <int value="1" label="Safe Browsing verdict"/>
@@ -22666,6 +22668,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Default fallback"/>
   <int value="4" label="On-Device prediction model"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDispositionReason) -->
 
 <!-- LINT.IfChange(PermissionRequestType) -->
 
