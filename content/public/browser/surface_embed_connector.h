@@ -30,9 +30,9 @@ class WebContents;
 class CONTENT_EXPORT SurfaceEmbedConnector {
  public:
   enum class FocusOperation {
-    kFocusPlugin,
-    kFocusBeforePlugin,
-    kFocusAfterPlugin
+    kFocusSurface,
+    kFocusBeforeSurface,
+    kFocusAfterSurface
   };
 
   class Delegate {

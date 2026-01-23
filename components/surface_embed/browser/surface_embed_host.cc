@@ -202,21 +202,21 @@ void SurfaceEmbedHost::FocusInEmbedder(
   }
 
   if (focus_op ==
-          content::SurfaceEmbedConnector::FocusOperation::kFocusPlugin &&
+          content::SurfaceEmbedConnector::FocusOperation::kFocusSurface &&
       know_have_focus_) {
     return;
   }
 
   mojom::FocusOperation mojo_focus_op;
   switch (focus_op) {
-    case content::SurfaceEmbedConnector::FocusOperation::kFocusPlugin:
-      mojo_focus_op = mojom::FocusOperation::kFocusPlugin;
+    case content::SurfaceEmbedConnector::FocusOperation::kFocusSurface:
+      mojo_focus_op = mojom::FocusOperation::kFocusSurface;
       break;
-    case content::SurfaceEmbedConnector::FocusOperation::kFocusBeforePlugin:
-      mojo_focus_op = mojom::FocusOperation::kFocusBeforePlugin;
+    case content::SurfaceEmbedConnector::FocusOperation::kFocusBeforeSurface:
+      mojo_focus_op = mojom::FocusOperation::kFocusBeforeSurface;
       break;
-    case content::SurfaceEmbedConnector::FocusOperation::kFocusAfterPlugin:
-      mojo_focus_op = mojom::FocusOperation::kFocusAfterPlugin;
+    case content::SurfaceEmbedConnector::FocusOperation::kFocusAfterSurface:
+      mojo_focus_op = mojom::FocusOperation::kFocusAfterSurface;
       break;
   }
 

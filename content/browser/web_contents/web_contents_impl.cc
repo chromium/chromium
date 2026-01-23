@@ -10397,7 +10397,7 @@ void WebContentsImpl::FocusOwningWebContents(
 
   if (surface_embed_connector_) {
     surface_embed_connector_->FocusInEmbedder(
-        SurfaceEmbedConnector::FocusOperation::kFocusPlugin);
+        SurfaceEmbedConnector::FocusOperation::kFocusSurface);
   }
 
   if (focused_widget != render_widget_host &&

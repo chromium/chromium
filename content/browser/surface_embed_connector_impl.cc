@@ -145,8 +145,8 @@ void SurfaceEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
   // embedder Blink frame is also focused, as a result Blink does *not* call
   // DidFocusFrame() when the focus traverses out. Hence focusing the embedder
   // WebContents explicitly here.
-  if (focus_op == FocusOperation::kFocusBeforePlugin ||
-      focus_op == FocusOperation::kFocusAfterPlugin) {
+  if (focus_op == FocusOperation::kFocusBeforeSurface ||
+      focus_op == FocusOperation::kFocusAfterSurface) {
     embedder_web_contents()->SetAsFocusedWebContentsIfNecessary();
   }
   if (delegate_) {

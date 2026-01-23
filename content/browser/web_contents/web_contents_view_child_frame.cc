@@ -229,8 +229,9 @@ void WebContentsViewChildFrame::TakeFocus(bool reverse) {
           web_contents_->GetSurfaceEmbedConnector()) {
     static_cast<SurfaceEmbedConnectorImpl*>(surface_embed_connector)
         ->FocusInEmbedder(
-            reverse ? SurfaceEmbedConnector::FocusOperation::kFocusBeforePlugin
-                    : SurfaceEmbedConnector::FocusOperation::kFocusAfterPlugin);
+            reverse
+                ? SurfaceEmbedConnector::FocusOperation::kFocusBeforeSurface
+                : SurfaceEmbedConnector::FocusOperation::kFocusAfterSurface);
   } else {
     // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
     // end up here.

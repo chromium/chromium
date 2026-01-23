@@ -401,9 +401,9 @@ void SurfaceEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
     container_->GetElement().Focus();
     auto* frame = container_->GetDocument().GetFrame();
     if (frame) {
-      if (focus_op == mojom::FocusOperation::kFocusBeforePlugin) {
+      if (focus_op == mojom::FocusOperation::kFocusBeforeSurface) {
         frame->View()->AdvanceFocus(/*reverse=*/true);
-      } else if (focus_op == mojom::FocusOperation::kFocusAfterPlugin) {
+      } else if (focus_op == mojom::FocusOperation::kFocusAfterSurface) {
         frame->View()->AdvanceFocus(/*reverse=*/false);
       }
     }
