@@ -14,6 +14,7 @@
 #import "base/test/bind.h"
 #import "base/test/gtest_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -137,6 +138,17 @@ class AuthenticationServiceTestBase : public PlatformTest {
 
     // Force explicit instantiation of the AuthenticationService.
     std::ignore = authentication_service();
+  }
+
+  // Wait until started tasks are executed and expects the absence of primary
+  // identity.
+  void WaitForPrimaryIdentityToBeRemoved() {
+    base::RunLoop run_loop;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+        signin::ConsentLevel::kSignin));
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
@@ -367,6 +379,7 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   fake_system_identity_manager()->ForgetIdentity(
       identity(0), identity_forgotten.GetCallback());
   ASSERT_TRUE(identity_forgotten.Wait());
+  WaitForPrimaryIdentityToBeRemoved();
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
@@ -387,6 +400,13 @@ TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // identity.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
+  WaitForPrimaryIdentityToBeRemoved();
+  base::RunLoop run_loop;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
@@ -447,6 +467,7 @@ TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
   fake_system_identity_manager()->ForgetIdentity(
       identity(0), identity_forgotten.GetCallback());
   ASSERT_TRUE(identity_forgotten.Wait());
+  WaitForPrimaryIdentityToBeRemoved();
 
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
@@ -823,6 +844,11 @@ TEST_P(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
 
   // Set the account restriction.
   SetPattern("foo");
+  WaitForPrimaryIdentityToBeRemoved();
+  base::RunLoop run_loop;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
   EXPECT_FALSE(account_manager_->HasIdentities());
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
