@@ -136,7 +136,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (!is_android && !is_fuchsia) {
+  if (!is_fuchsia) {
     sources += [ "search_content_sharing_policy_handler_unittest.cc" ]
     deps += [
       ":policy_handler",
@@ -145,7 +145,7 @@ source_set("unit_tests") {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_fuchsia) {
   source_set("policy_handler") {
     sources = [
       "search_content_sharing_policy_handler.cc",

@@ -146,9 +146,6 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
-  { policy::key::kLensCameraAssistedSearchEnabled,
-    prefs::kLensCameraAssistedSearchPolicyAllowed,
-    base::Value::Type::BOOLEAN },
   { policy::key::kContextMenuPhotoSharingSettings,
     prefs::kIosSaveToPhotosContextMenuPolicySettings,
     base::Value::Type::INTEGER },
@@ -292,6 +289,15 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
           lens::prefs::kLensOverlaySettings,
           /* convert_policy_value_to_enabled_boolean= */ false)));
+
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          policy::key::kLensCameraAssistedSearchEnabled,
+          prefs::kLensCameraAssistedSearchPolicyAllowed,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
+          prefs::kLensCameraAssistedSearchPolicyAllowed,
+          /* convert_policy_value_to_enabled_boolean= */ true)));
 
   handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(

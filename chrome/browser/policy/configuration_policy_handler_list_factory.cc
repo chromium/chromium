@@ -67,6 +67,7 @@
 #include "components/content_settings/core/browser/cookie_settings_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/contextual_search/search_content_sharing_policy_handler.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/domain_reliability/domain_reliability_prefs.h"
 #include "components/embedder_support/pref_names.h"
@@ -157,7 +158,6 @@
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_user_install_policy_handler.h"
-#include "components/contextual_search/search_content_sharing_policy_handler.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/media_router/common/pref_names.h"
@@ -477,9 +477,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kIsolateOriginsAndroid,
     prefs::kIsolateOrigins,
     base::Value::Type::STRING },
-  { key::kLensCameraAssistedSearchEnabled,
-    lens::kLensCameraAssistedSearchEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kNTPContentSuggestionsEnabled,
     feed::prefs::kEnableSnippets,
     base::Value::Type::BOOLEAN },
@@ -3499,6 +3496,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                             base::Value::Type::BOOLEAN),
       std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
           prefs::kLensRegionSearchEnabled,
+          /* convert_policy_value_to_enabled_boolean= */ true)));
+#else
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kLensCameraAssistedSearchEnabled,
+          lens::kLensCameraAssistedSearchEnabled, base::Value::Type::BOOLEAN),
+      std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
+          lens::kLensCameraAssistedSearchEnabled,
           /* convert_policy_value_to_enabled_boolean= */ true)));
 #endif  // !BUILDFLAG(IS_ANDROID)
   gen_ai_default_policies.emplace_back(
