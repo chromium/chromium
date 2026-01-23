@@ -28,7 +28,7 @@
 
 namespace {
 // Status of the download when it ends, for UMA report.
-// These match tools/metrics/histograms/histograms.xml.
+// These match tools/metrics/histograms/enums.xml’s ReadingListDownloadStatus.
 enum UMADownloadStatus {
   // The download was successful.
   SUCCESS = 0,

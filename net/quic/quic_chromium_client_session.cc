@@ -329,7 +329,7 @@ void RecordHandshakeFailureReason(HandshakeFailureReason reason) {
 }
 
 // Note: these values must be kept in sync with the corresponding values in:
-// tools/metrics/histograms/histograms.xml
+// tools/metrics/histograms/metadata/net/histograms.xml
 enum HandshakeState {
   STATE_STARTED = 0,
   STATE_ENCRYPTION_ESTABLISHED = 1,

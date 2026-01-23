@@ -53,7 +53,8 @@ enum UMAEventType {
   UMA_ET_GESTURE_TAP_UNCONFIRMED = 36,
   UMA_ET_GESTURE_SHORT_PRESS = 37,
   // NOTE: Add new event types only immediately above this line. Make sure to
-  // update the UIEventType enum in tools/metrics/histograms/histograms.xml
+  // update the UIEventType enum in
+  // tools/metrics/histograms/meta/events/histograms.xml
   // accordingly.
   UMA_ET_COUNT
 };
