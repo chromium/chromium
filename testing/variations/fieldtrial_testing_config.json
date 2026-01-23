@@ -8108,33 +8108,6 @@
             ]
         }
     ],
-    "DSEPreconnect2": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithbase_60_30_30_30__20250507",
-                    "params": {
-                        "FallbackInLowPowerMode": "false",
-                        "IdleTimeoutInSeconds": "60",
-                        "MaxPreconnectRetryInterval": "30",
-                        "MaxShortSessionThreshold": "30s",
-                        "PingIntervalInSeconds": "30",
-                        "QuicConnectionOptions": "ECCP"
-                    },
-                    "enable_features": [
-                        "SearchEnginePreconnect2"
-                    ]
-                }
-            ]
-        }
-    ],
     "DSEPrewarm": [
         {
             "platforms": [
@@ -14840,19 +14813,35 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithAll_20251024",
+                    "name": "EnabledWithConfigureMinimalWildcardQuicHintsWithOriginFrame",
                     "params": {
-                        "AdditionalDelay": "100ms",
-                        "DelayMainJobWithAvailableSpdySession": "false",
-                        "QuicHandshakeTimeout": "15s",
-                        "mtu": "1230",
-                        "quic_options": "ORIG"
+                        "quic_hints": "google.com,443,443,www.google.com,443,443",
+                        "quic_options": "ORIG",
+                        "wildcard_quic_hints": ".google.com,443,443,.gstatic.com,443,443,.youtube.com,443,443"
                     },
                     "enable_features": [
-                        "AdditionalDelayMainJob",
                         "ConfigureQuicHints",
-                        "ExtendQuicHandshakeTimeout",
-                        "LowerQuicMaxPacketSize",
+                        "TryQuicByDefault"
+                    ]
+                },
+                {
+                    "name": "EnabledDoubleForPreconnect",
+                    "params": {
+                        "QuicConnectionOptions": "ECCP,IW2X"
+                    },
+                    "enable_features": [
+                        "SearchEnginePreconnect2"
+                    ],
+                    "disable_features": [
+                        "TryQuicByDefault"
+                    ]
+                },
+                {
+                    "name": "EnabledWithIncreasedAmplificationFactor5",
+                    "params": {
+                        "quic_options": "5AFF"
+                    },
+                    "enable_features": [
                         "TryQuicByDefault"
                     ]
                 }
