@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -90,6 +91,7 @@ class GlicTabSubMenuModelTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kGlicMultiInstance,
                               features::kGlicMITabContextMenu,
+                              features::kTabstripComboButton,
 #if BUILDFLAG(IS_CHROMEOS)
                               chromeos::features::kFeatureManagementGlic
 #endif
