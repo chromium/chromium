@@ -1891,7 +1891,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       }
 
 #if BUILDFLAG(IS_ANDROID)
-      if (i->keyword == default_engine->keyword()) {
+      if (default_engine && i->keyword == default_engine->keyword()) {
         continue;
       }
 #endif
