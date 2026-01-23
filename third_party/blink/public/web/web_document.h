@@ -218,8 +218,10 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Executes a script tool with the given `name` and `input_arguments`.
   //
   // The associated callback is invoked once the async execution of the tool is
-  // finished along with the result of the execution. A null response indicates
-  // a failure in tool execution.
+  // finished along with the result of the execution.
+  // A null response indicates a navigation was triggered and the response will
+  // be on the next Document.
+  // An error is returned if the execution failed.
   enum class ScriptToolError {
     kInvalidToolName,
     kInvalidInputArguments,

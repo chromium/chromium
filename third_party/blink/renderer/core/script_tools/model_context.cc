@@ -200,14 +200,8 @@ void ModelContext::ExecuteDeclarativeTool(
       input_arguments,
       blink::BindOnce(
           [](WebDocument::ScriptToolExecutedCallback tool_executed_cb,
-             String result) {
-            if (result.IsNull()) {
-              std::move(tool_executed_cb)
-                  .Run(base::unexpected(
-                      WebDocument::ScriptToolError::kToolInvocationFailed));
-            } else {
-              std::move(tool_executed_cb).Run(result);
-            }
+             base::expected<String, WebDocument::ScriptToolError> result) {
+            std::move(tool_executed_cb).Run(result);
           },
           std::move(tool_executed_cb)));
 }

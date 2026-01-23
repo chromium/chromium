@@ -254,7 +254,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     }
     String ComputeInputSchema() override;
     void ExecuteTool(String input_arguments,
-                     base::OnceCallback<void(String)> done_callback) override;
+                     base::OnceCallback<void(
+                         base::expected<String, WebDocument::ScriptToolError>)>
+                         done_callback) override;
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }

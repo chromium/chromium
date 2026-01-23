@@ -148,19 +148,24 @@ bool HTMLFormElement::IsValidWebMCPForm() const {
 
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     String input_arguments,
-    base::OnceCallback<void(String)> done_callback) {
+    base::OnceCallback<void(
+        base::expected<String, WebDocument::ScriptToolError>)> done_callback) {
   auto fail = [&done_callback]() {
-    // Failure is represented by a null string.
-    return std::move(done_callback).Run(g_null_atom);
+    return std::move(done_callback)
+        .Run(base::unexpected(
+            WebDocument::ScriptToolError::kInvalidInputArguments));
   };
+
   std::unique_ptr<JSONValue> json = ParseJSON(input_arguments);
   if (!json) {
     return fail();
   }
+
   std::unique_ptr<JSONObject> json_obj = JSONObject::From(std::move(json));
   if (!json_obj) {
     return fail();
   }
+
   HeapHashMap<String, Member<HTMLFormControlElement>> controls_map;
   for (ListedElement* element : form_->ListedElements()) {
     if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
@@ -171,6 +176,7 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
       }
     }
   }
+
   // Now loop through what we got, and attempt to match it up.
   for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
     JSONObject::Entry entry = json_obj->at(i);
@@ -178,20 +184,21 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     blink::JSONValue& contents = *entry.second;
     auto it = controls_map.find(parameter_name);
     if (it == controls_map.end()) {
-      LOG(ERROR) << "Can't find a control with name " << parameter_name;
       return fail();
     }
+
     if (!it->value->FillWebMCPData(contents)) {
       return fail();
     }
   }
 
   // Success. Now we can either submit the form or focus the submit button.
-  // form_->ScheduleFormSubmission(/*event*/ nullptr, /*submit_button*/
-  // nullptr);
+  // TODO(masonf): Fire the submit event and set the return value for the
+  // callback based on preventDefault vs not.
+  form_->ScheduleFormSubmission(/*event*/ nullptr, /*submit_button*/ nullptr);
 
-  std::move(done_callback)
-      .Run("The form was filled. The user now needs to submit it.");
+  // Return a null string to indicate that a navigation has been triggered.
+  std::move(done_callback).Run(base::ok(String()));
 }
 
 String HTMLFormElement::HTMLFormMcpTool::ComputeInputSchema() {

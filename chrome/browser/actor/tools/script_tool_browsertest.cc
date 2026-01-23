@@ -166,7 +166,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  // These should eventually pass, once form filling takes place:
+  // TODO(masonf): Testing this state requires the Document to be in a state
+  // where data has been filled and the user needs to interact. Re-enable when
+  // adding support for user interaction.
+  /*
   EXPECT_EQ("text #1",
             EvalJs(web_contents(), "document.getElementById('text1').value"));
   EXPECT_EQ("text #2",
@@ -174,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
   EXPECT_EQ("This is option 2",
             EvalJs(web_contents(),
                    "document.getElementById('select').options[document."
-                   "getElementById('select').selectedIndex].textContent"));
+                   "getElementById('select').selectedIndex].textContent"));*/
 
   const auto& action_results = result.Get<2>();
   ASSERT_EQ(action_results.size(), 1u);
@@ -183,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
             "declarative_tool");
   EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
             declarative_input);
-  // This response is a placeholder until values are retrieved from the site.
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
-            "The form was filled. The user now needs to submit it.");
+
+  // TODO(masonf): Validate the response once the renderer sets it conditionally
+  // for same-document cases.
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
@@ -209,5 +212,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
   EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
             "This is an example sentence.");
 }
+
 }  // namespace
 }  // namespace actor

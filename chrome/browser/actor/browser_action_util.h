@@ -104,15 +104,13 @@ void CopyScriptToolResults(
     T& proto,
     const std::vector<ActionResultWithLatencyInfo>& action_results) {
   for (size_t i = 0; i < action_results.size(); ++i) {
-    if (action_results[i].result->script_tool_response) {
+    const auto& response = action_results[i].result->script_tool_response;
+    if (response && response->result) {
       auto* script_tool_result = proto.add_script_tool_results();
       script_tool_result->set_index_of_script_tool_action(i);
-      script_tool_result->set_result(
-          action_results[i].result->script_tool_response->result);
-      script_tool_result->set_tool_name(
-          action_results[i].result->script_tool_response->name);
-      script_tool_result->set_input_arguments(
-          action_results[i].result->script_tool_response->input_arguments);
+      script_tool_result->set_result(*response->result);
+      script_tool_result->set_tool_name(response->name);
+      script_tool_result->set_input_arguments(response->input_arguments);
     }
   }
 }

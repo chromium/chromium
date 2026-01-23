@@ -537,8 +537,9 @@ struct ScriptToolResponse {
   string name;
   string input_arguments;
 
-  // The result of executing the action.
-  string result;
+  // The result of executing the action. If not provided, the action resulted in
+  // a navigation and the result will be on the next Document.
+  string? result;
 };
 
 struct ActionResult {

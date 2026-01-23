@@ -135,4 +135,65 @@ TEST_F(ModelContextTest, ExecuteToolReturnsObject) {
   EXPECT_EQ(result, "{\"text\":\"hello\"}");
 }
 
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest search_resource("https://example.com/search?query=testing",
+                             "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type="text" name="query">
+      </form>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  model_context->ExecuteTool(
+      "search_tool", "{\"query\": \"testing\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            EXPECT_TRUE(res.has_value());
+            if (res.has_value()) {
+              EXPECT_TRUE(res->IsNull());
+            }
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  search_resource.Complete("");
+}
+
+TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"(
+    <body>
+      <form toolname="search_tool" tooldescription="Search the web" action="/search">
+        <input type="text" name="query">
+      </form>
+    </body>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  base::RunLoop run_loop;
+  // Test with a field that doesn't exist in the form
+  model_context->ExecuteTool(
+      "search_tool", "{\"nonexistent\": \"value\"}",
+      base::BindLambdaForTesting(
+          [&](base::expected<WebString, WebDocument::ScriptToolError> res) {
+            EXPECT_FALSE(res.has_value());
+            EXPECT_EQ(res.error(),
+                      WebDocument::ScriptToolError::kInvalidInputArguments);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
 }  // namespace blink

@@ -23,9 +23,13 @@ class DeclarativeWebMCPTool {
  public:
   // Executes the associated tool and invokes `done_callback` with the result
   // when the execution is finished. The callback is invoked with a null string
-  // if the execution failed.
-  virtual void ExecuteTool(String input_arguments,
-                           base::OnceCallback<void(String)> done_callback) = 0;
+  // if the execution resulted in a navigation, or an error if the execution
+  // failed.
+  virtual void ExecuteTool(
+      String input_arguments,
+      base::OnceCallback<
+          void(base::expected<String, WebDocument::ScriptToolError>)>
+          done_callback) = 0;
 
   // Returns the input json-schema associated with the tool.
   virtual String ComputeInputSchema() = 0;
