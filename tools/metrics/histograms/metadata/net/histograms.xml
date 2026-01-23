@@ -86,12 +86,6 @@ chromium-metrics-reviews@google.com.
   <variant name="H3"/>
 </variants>
 
-<variants name="NetHttpContentLengthType">
-  <variant name=".Http" summary=""/>
-  <variant name=".Https" summary=""/>
-  <variant name=".Video" summary=""/>
-</variants>
-
 <variants name="NetworkTransactionBlockedHostType">
   <variant name=""/>
   <variant name="GoogleHost"/>
@@ -3385,23 +3379,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpContentLengthV2{NetHttpContentLengthType}"
-    units="bytes" expires_after="never">
-<!-- expires-never: Input to Lingo pipelines. -->
-
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    Size of the response body. This is the actual number of bytes received,
-    which usually agrees with but is not necessarily the same as the size
-    specified by the Content-Length header. Replaces Net.HttpContentLength,
-    recording non-DRP Http traffic as &quot;Http.Direct&quot; instead of
-    &quot;Http.Other&quot;. {NetHttpContentLengthType}
-  </summary>
-  <token key="NetHttpContentLengthType" variants="NetHttpContentLengthType">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
     expires_after="2026-06-28">
   <owner>ashleynewson@chromium.org</owner>
@@ -3606,25 +3583,6 @@ chromium-metrics-reviews@google.com.
     No-Vary-Search response header. Recorded each time one is parsed as a
     dictionary, whether or not it affects caching in any way.
   </summary>
-</histogram>
-
-<histogram name="Net.HttpOriginalContentLengthV2{NetHttpContentLengthType}"
-    units="bytes" expires_after="never">
-<!-- expires-never: Input to Lingo pipelines. -->
-
-  <owner>bengr@chromium.org</owner>
-  <summary>
-    Net.HttpOriginalContentLength with non-data reduction proxy traffic properly
-    labeled with the &quot;Direct&quot; suffix.
-
-    Size specified in the X-Original-Content-Length header. If this header is
-    not present in the response, the size of the response body is used. Replaces
-    Net.HttpOriginalContentLength, breaking down traffic by Direct, ViaDRP,
-    Bypassed, and Other. {NetHttpContentLengthType}
-  </summary>
-  <token key="NetHttpContentLengthType" variants="NetHttpContentLengthType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram

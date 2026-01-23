@@ -354,43 +354,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NetHttpContentLengthType2" separator=".">
-  <suffix name="BypassedDRP"
-      label="Bytes of traffic that bypassed the Data Reduction Proxy"/>
-  <suffix name="Direct"
-      label="Bytes of traffic that were ineligible for the Data Reduction
-             Proxy"/>
-  <suffix name="Other"
-      label="Bytes of traffic that don't fit into the other categories of
-             Net.HttpContentLength"/>
-  <suffix name="ViaDRP"
-      label="Bytes of traffic that passed through the Data Reduction Proxy"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Http"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Https"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Http"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Https"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NetHttpContentLengthType3" separator=".">
-  <suffix name="Video" label="Bytes of video traffic"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Http.BypassedDRP"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Http.Direct"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Http.Other"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Http.ViaDRP"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Https.BypassedDRP"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Https.Direct"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Https.Other"/>
-  <affected-histogram name="Net.HttpContentLengthV2.Https.ViaDRP"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Http.BypassedDRP"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Http.Direct"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Http.Other"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Http.ViaDRP"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.BypassedDRP"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.Direct"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.Other"/>
-  <affected-histogram name="Net.HttpOriginalContentLengthV2.Https.ViaDRP"/>
-</histogram_suffixes>
-
 <!-- TODO(crbug.com/40829943): Migrate these histograms to use the patterned histograms instead. -->
 
 <histogram_suffixes name="OmniboxClipboardSuggestionType" separator=".">
