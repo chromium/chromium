@@ -37,6 +37,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/test_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -123,18 +124,20 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
                                            kTestingSessionId, false, false,
                                            std::move(sr_engine), std::nullopt);
 
-    int audio_packet_length_bytes =
-        (SpeechRecognizerImpl::kAudioSampleRate *
-         NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs *
-         ChannelLayoutToChannelCount(SpeechRecognizerImpl::kChannelLayout) *
-         SpeechRecognizerImpl::kNumBitsPerAudioSample) /
-        (8 * 1000);
-    audio_packet_.resize(audio_packet_length_bytes);
-
     const int channels =
         ChannelLayoutToChannelCount(SpeechRecognizerImpl::kChannelLayout);
-    int bytes_per_sample = SpeechRecognizerImpl::kNumBitsPerAudioSample / 8;
-    const int frames = audio_packet_length_bytes / channels / bytes_per_sample;
+
+    const int bytes_per_sample =
+        SpeechRecognizerImpl::kNumBitsPerAudioSample / 8;
+
+    const int frames = media::AudioTimestampHelper::TimeToFrames(
+        base::Milliseconds(
+            NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs),
+        SpeechRecognizerImpl::kAudioSampleRate);
+
+    const int audio_packet_length_bytes = frames * channels * bytes_per_sample;
+    audio_packet_.resize(audio_packet_length_bytes);
+
     audio_bus_ = media::AudioBus::Create(channels, frames);
     audio_bus_->Zero();
   }
@@ -245,9 +248,8 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     static_assert(SpeechRecognizerImpl::kNumBitsPerAudioSample == 16,
                   "FromInterleaved expects 2 bytes.");
     // Copy the created signal into an audio bus in a deinterleaved format.
-    audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-        UNSAFE_TODO(reinterpret_cast<int16_t*>(audio_packet_.data())),
-        audio_bus_->frames());
+    audio_bus_->FromInterleavedBytes<media::SignedInt16SampleTypeTraits>(
+        audio_packet_);
   }
 
   void FillPacketWithTestWaveform() {
