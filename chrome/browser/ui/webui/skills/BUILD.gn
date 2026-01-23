@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
   sources = [ "skills.mojom" ]
   webui_module_path = "/"
   public_deps = [
+    "//components/skills/public:mojo_bindings",
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -37,10 +38,13 @@ source_set("skills") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/resources/skills:resources",
+    "//chrome/browser/skills",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
     "//chrome/common",
     "//components/skills:features",
+    "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
     "//content/public/browser",
     "//ui/base",
     "//ui/web_dialogs",

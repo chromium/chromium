@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/skills/skills.mojom.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills_page_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/skills_resources.h"
@@ -42,7 +42,9 @@ void SkillsUI::BindInterface(
 
 void SkillsUI::CreatePageHandler(
     mojo::PendingReceiver<skills::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<SkillsPageHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<SkillsPageHandler>(
+      std::move(receiver), skills::SkillsServiceFactory::GetForProfile(
+                               Profile::FromWebUI(web_ui())));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SkillsUI)

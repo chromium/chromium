@@ -13,16 +13,24 @@ export function getHtml(this: SkillsDialogAppElement) {
 <h1 id="header">Add Skill</h1>
 <p id="description" class="description">Skills help simplify and automate repetitive tasks</p>
 <div class="form-group">
-  <cr-input class="no-error stroked" type="text" label="Name"
-      placeholder="Simplify For A Kid">
+  <cr-input class="no-error stroked" id="name-text" type="text" label="Name"
+      placeholder="Simplify For A Kid" .value="${this.skill_.name}"
+      @value-changed="${this.onNameChanged_}">
   </cr-input>
-  <cr-textarea type="text" label="Instructions"
-      placeholder="Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words.">
+  <cr-textarea id="instructions-text" type="text" label="Instructions"
+      placeholder="Example: Simplify this concept for a child who is 8 years old. Use simple language and an analogy they would understand. Keep the total explanation concise, under 150 words."
+      .value="${this.skill_.prompt}"
+      @value-changed="${this.onInstructionsChanged_}">
   </cr-textarea>
 </div>
 <div class="buttons-group">
-  <cr-button id="cancel-button" class="cancel-button">$i18n{cancel}</cr-button>
-  <cr-button id="save-button" class="action-button">$i18n{save}</cr-button>
+  <cr-button id="cancel-button" class="cancel-button" @click="${this.cancel_}">
+      $i18n{cancel}
+  </cr-button>
+  <cr-button id="save-button" class="action-button"
+      ?disabled="${this.isSaveButtonDisabled}" @click="${this.submitSkill_}">
+      $i18n{save}
+  </cr-button>
 </div>
 `;
   // clang-format on

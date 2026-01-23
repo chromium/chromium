@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skills.mojom;
+
+// Represents a single skill.
+struct Skill {
+  // A unique identifier for the skill. It's GUID now but can be other IDs in
+  // the future.
+  string id;
+
+  // The user-facing name of the skill.
+  string name;
+
+  // The icon for the skill, will be using emojis for now.
+  string icon;
+
+  // The underlying LLM prompt for the skill.
+  string prompt;
+};

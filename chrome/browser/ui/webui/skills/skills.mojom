@@ -4,6 +4,8 @@
 
 module skills.mojom;
 
+import "components/skills/public/skill.mojom";
+
 // Used by the WebUI page for communication.
 interface PageHandlerFactory {
   // The WebUI page's |BrowserProxy| singleton calls this method when the page
@@ -13,6 +15,12 @@ interface PageHandlerFactory {
 
 // Called from TS side of chrome://skills (Renderer -> Browser)
 interface PageHandler {
-  // TODO(marissashen): Add methods for submitting a skill and closing the
-  // dialog.
+  // Called when the user clicks the "Save" button in the dialog.
+  SubmitSkill(skills.mojom.Skill skill);
+
+  // Called when the user clicks the "Cancel" button in the dialog.
+  CloseDialog();
+
+  // TODO(marissashen): Add `GetInitialSkill` to pass in initial skill and
+  // dialog state (add/edit).
 };
