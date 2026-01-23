@@ -200,8 +200,16 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
   EXPECT_EQ(token_future.Get(), "");
 }
 
+// TODO(crbug.com/477018818): Flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_GetAccessToken_TransientError_Retries \
+  DISABLED_GetAccessToken_TransientError_Retries
+#else
+#define MAYBE_GetAccessToken_TransientError_Retries \
+  GetAccessToken_TransientError_Retries
+#endif
 TEST_P(ContextualTasksUiServiceTestParameterized,
-       GetAccessToken_TransientError_Retries) {
+       MAYBE_GetAccessToken_TransientError_Retries) {
   if (GetParam() == base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
     GTEST_SKIP() << "Retries won't work on SYSTEM_TIME";
   }
