@@ -1050,6 +1050,33 @@ IN_PROC_BROWSER_TEST_P(ActorFunctionalBrowserTestCreateActorTab,
                   .contains(new_tab_handler.value()));
 }
 
+IN_PROC_BROWSER_TEST_P(ActorFunctionalBrowserTestCreateActorTab,
+                       CreateActorTabWithInvalidTask) {
+  // Navigate the current tab to the initiator URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitiatorTabUrl()));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1u);
+  SessionID initiator_window_id = browser()->session_id();
+  tabs::TabHandle initiator_tab = active_tab()->GetHandle();
+
+  base::expected<TaskId, std::string> task_id = CreateTask();
+  ASSERT_TRUE(task_id.has_value()) << task_id.error();
+
+  TaskId invalid_task_id = actor::TaskId(task_id.value().value() + 100);
+
+  // Create a new tab with an invalid task id.
+  base::expected<tabs::TabHandle, std::string> new_tab_handler =
+      CreateActorTab(invalid_task_id, /*open_in_background=*/false,
+                     base::ToString(initiator_tab.raw_value()),
+                     base::ToString(initiator_window_id.id()));
+
+  // CreateActorTab should have returned an error;
+  EXPECT_FALSE(new_tab_handler.has_value());
+
+  // Verify it is bound to the task.
+  EXPECT_TRUE(
+      actor_keyed_service()->GetTask(task_id.value())->GetTabs().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ActorFunctionalBrowserTestCreateActorTab,
