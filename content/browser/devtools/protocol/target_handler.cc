@@ -1297,6 +1297,7 @@ Response TargetHandler::CreateTarget(
     std::optional<bool> background,
     std::optional<bool> for_tab,
     std::optional<bool> hidden,
+    std::optional<bool> focus,
     std::string* out_target_id) {
   if (access_mode_ == AccessMode::kAutoAttachOnly) {
     return Response::ServerError(kNotAllowedError);

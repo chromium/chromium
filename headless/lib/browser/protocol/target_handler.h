@@ -39,6 +39,7 @@ class TargetHandler : public DomainHandler, public Target::Backend {
                         std::optional<bool> background,
                         std::optional<bool> for_tab,
                         std::optional<bool> hidden,
+                        std::optional<bool> focus,
                         std::string* out_target_id) override;
   Response CloseTarget(const std::string& target_id,
                        bool* out_success) override;

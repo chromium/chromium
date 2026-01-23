@@ -316,6 +316,55 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
               AllOf(Not(Contains("click")), Not(Contains("dragenter")),
                     Not(Contains("keydown"))));
 }
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateTargetWithFocus) {
+  AttachToBrowserTarget();
+  content::WebContents* const initial_tab =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(initial_tab);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // By default, creating a new target also focuses it.
+  SendCommandSync("Target.createTarget",
+                  base::Value::Dict().Set("url", "about:blank#1"));
+  ASSERT_FALSE(error());
+  content::WebContents* const focused_tab =
+      chrome_test_utils::GetActiveWebContents(this);
+  EXPECT_NE(initial_tab, focused_tab);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL("about:blank#1"), focused_tab->GetVisibleURL());
+
+  // When focus=false, the new target is not focused.
+  SendCommandSync(
+      "Target.createTarget",
+      base::Value::Dict().Set("url", "about:blank#2").Set("focus", false));
+  ASSERT_FALSE(error());
+  EXPECT_EQ(focused_tab, chrome_test_utils::GetActiveWebContents(this));
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL("about:blank#2"),
+            browser()->tab_strip_model()->GetWebContentsAt(2)->GetVisibleURL());
+
+  // When background=true, the new target is not focused by default.
+  SendCommandSync(
+      "Target.createTarget",
+      base::Value::Dict().Set("url", "about:blank#3").Set("background", true));
+  ASSERT_FALSE(error());
+  EXPECT_EQ(focused_tab, chrome_test_utils::GetActiveWebContents(this));
+  EXPECT_EQ(4, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL("about:blank#3"),
+            browser()->tab_strip_model()->GetWebContentsAt(3)->GetVisibleURL());
+
+  // It's an error to use focus=true and background=true.
+  SendCommandSync("Target.createTarget", base::Value::Dict()
+                                             .Set("url", "about:blank#4")
+                                             .Set("focus", true)
+                                             .Set("background", true));
+  ASSERT_TRUE(error());
+  EXPECT_EQ(
+      "Can't focus a target in the background. Use background=false instead.",
+      *error()->FindString("message"));
+  EXPECT_EQ(4, browser()->tab_strip_model()->count());
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

@@ -42,6 +42,7 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
       std::optional<bool> background,
       std::optional<bool> for_tab,
       std::optional<bool> hidden,
+      std::optional<bool> focus,
       std::string* out_target_id) override;
 
  private:
