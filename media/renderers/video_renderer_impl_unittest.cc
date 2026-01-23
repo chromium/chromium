@@ -38,7 +38,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/wall_clock_time_source.h"
-#include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mock_mappable_shared_image_video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::base::test::RunClosure;
@@ -1370,7 +1370,7 @@ TEST_F(VideoRendererImplTest, VideoFrameRateChange) {
 
 class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
  public:
-  void InitializeWithMockGpuMemoryBufferVideoFramePool() {
+  void InitializeWithMockMappableSharedImageVideoFramePool() {
     renderer_ = std::make_unique<VideoRendererImpl>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         null_video_sink_.get(),
@@ -1378,7 +1378,8 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
                                 CreateVideoDecodersForTest,
                             base::Unretained(this)),
         true, &media_log_,
-        std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_),
+        std::make_unique<MockMappableSharedImageVideoFramePool>(
+            &frame_ready_cbs_),
         MediaPlayerLoggingID(0));
     VideoRendererImplTest::Initialize();
   }
@@ -1388,7 +1389,7 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
 };
 
 TEST_F(VideoRendererImplAsyncAddFrameReadyTest, InitializeAndStartPlayingFrom) {
-  InitializeWithMockGpuMemoryBufferVideoFramePool();
+  InitializeWithMockMappableSharedImageVideoFramePool();
   QueueFrames("0 10 20 30");
   EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
@@ -1407,7 +1408,7 @@ TEST_F(VideoRendererImplAsyncAddFrameReadyTest, InitializeAndStartPlayingFrom) {
 }
 
 TEST_F(VideoRendererImplAsyncAddFrameReadyTest, WeakFactoryDiscardsOneFrame) {
-  InitializeWithMockGpuMemoryBufferVideoFramePool();
+  InitializeWithMockMappableSharedImageVideoFramePool();
   QueueFrames("0 10 20 30");
   StartPlayingFrom(0);
   Flush();

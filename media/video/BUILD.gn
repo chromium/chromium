@@ -94,10 +94,10 @@ static_library("test_support") {
   sources = [
     "fake_video_encode_accelerator.cc",
     "fake_video_encode_accelerator.h",
-    "mock_gpu_memory_buffer_video_frame_pool.cc",
-    "mock_gpu_memory_buffer_video_frame_pool.h",
     "mock_gpu_video_accelerator_factories.cc",
     "mock_gpu_video_accelerator_factories.h",
+    "mock_mappable_shared_image_video_frame_pool.cc",
+    "mock_mappable_shared_image_video_frame_pool.h",
     "mock_video_encode_accelerator.cc",
     "mock_video_encode_accelerator.h",
   ]

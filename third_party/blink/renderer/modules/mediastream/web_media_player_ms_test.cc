@@ -28,8 +28,8 @@
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
-#include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
+#include "media/video/mock_mappable_shared_image_video_frame_pool.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -622,7 +622,7 @@ class WebMediaPlayerMSTest
 #endif  // BUILDFLAG(IS_WIN)
 
     player_->SetGpuMemoryBufferVideoForTesting(
-        new media::MockGpuMemoryBufferVideoFramePool(&frame_ready_cbs_));
+        new media::MockMappableSharedImageVideoFramePool(&frame_ready_cbs_));
   }
 
   // Sets the value of the rendering_ flag. Called from expectations in the

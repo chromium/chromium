@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/mock_mappable_shared_image_video_frame_pool.h"
 
 #include "base/functional/bind.h"
 
 namespace media {
 
-MockGpuMemoryBufferVideoFramePool::MockGpuMemoryBufferVideoFramePool(
+MockMappableSharedImageVideoFramePool::MockMappableSharedImageVideoFramePool(
     std::vector<base::OnceClosure>* frame_ready_cbs)
     : frame_ready_cbs_(frame_ready_cbs) {}
 
-MockGpuMemoryBufferVideoFramePool::~MockGpuMemoryBufferVideoFramePool() {}
+MockMappableSharedImageVideoFramePool::
+    ~MockMappableSharedImageVideoFramePool() {}
 
-void MockGpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame(
+void MockMappableSharedImageVideoFramePool::MaybeCreateHardwareFrame(
     scoped_refptr<VideoFrame> video_frame,
     FrameReadyCB frame_ready_cb) {
   frame_ready_cbs_->push_back(
