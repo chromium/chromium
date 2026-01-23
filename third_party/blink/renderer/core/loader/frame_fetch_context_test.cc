@@ -797,7 +797,12 @@ TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHintsLocalContext) {
   ExpectHeader("http://localhost/1.gif", "Sec-CH-Viewport-Width", false, "");
 }
 
-TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHints) {
+TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHintsOld) {
+  // Test with old limits. See https://crbug.com/454354290
+  // TODO: remove this whole section when feature flag is retired.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kUpdatedDeviceMemoryLimitsFor2026);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(
@@ -820,6 +825,49 @@ TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHints) {
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "0.5");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
                "0.5");
+  ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Width", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", false,
+               "");
+}
+
+TEST_P(FrameFetchContextHintsTest, MonitorDeviceMemoryHints) {
+  // Test with new, 2026 limits - see https://crbug.com/454354290
+  // TODO Remove next two lines when ready to retire feature flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUpdatedDeviceMemoryLimitsFor2026);
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
+  ClientHintsPreferences preferences;
+  preferences.SetShouldSend(
+      network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED);
+  preferences.SetShouldSend(network::mojom::WebClientHintsType::kDeviceMemory);
+  document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(4096);
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "4");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "4");
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(2048);
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "2");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "2");
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(64385);
+#if BUILDFLAG(IS_ANDROID)
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "8");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "8");
+#else
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "32");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "32");
+#endif
+  ApproximatedDeviceMemory::SetPhysicalMemoryMBForTesting(768);
+  ExpectHeader("https://www.example.com/1.gif", "Device-Memory", true, "2");
+  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Device-Memory", true,
+               "2");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Width", false, "");
