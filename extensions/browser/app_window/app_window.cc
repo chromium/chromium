@@ -301,6 +301,7 @@ void AppWindow::Init(const GURL& url,
   WebContentsModalDialogManager::CreateForWebContents(web_contents());
 
   web_contents()->SetDelegate(this);
+  web_contents()->SetIgnoreZoomGestures(true);
   WebContentsModalDialogManager::FromWebContents(web_contents())
       ->SetDelegate(this);
 
@@ -457,11 +458,6 @@ void AppWindow::RequestPointerLock(WebContents* web_contents,
                                    bool last_unlocked_by_target) {
   DCHECK_EQ(AppWindow::web_contents(), web_contents);
   helper_->RequestPointerLock();
-}
-
-bool AppWindow::PreHandleGestureEvent(WebContents* source,
-                                      const blink::WebGestureEvent& event) {
-  return AppWebContentsHelper::ShouldSuppressGestureEvent(event);
 }
 
 content::PictureInPictureResult AppWindow::EnterPictureInPicture(

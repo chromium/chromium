@@ -4552,9 +4552,16 @@ bool WebContentsImpl::PreHandleGestureEvent(
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::PreHandleGestureEvent");
   if (ignore_zoom_gestures_) {
-    if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-        (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap)) {
+    if (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap) {
       return true;
+    }
+
+    // Disable pinch zooming in app windows.
+    if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
+      // Only suppress pinch events that cause a scale change. We still
+      // allow synthetic wheel events for touchpad pinch to go to the page.
+      return !(event.SourceDevice() == blink::WebGestureDevice::kTouchpad &&
+               event.NeedsWheelEvent());
     }
   }
 
