@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/inline/fit_text_utils.h"
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -62,6 +61,7 @@ bool ScaleLine(bool is_grow,
     inline_size += item.inline_size * item.fit_text_scale->scale;
   }
   line_info.SetWidth(line_info.AvailableWidth(), inline_size);
+  line_info.SetTextFitScale(scale_factor);
   return !is_scaled_inline_only && should_scale_line_height;
 }
 
@@ -84,11 +84,7 @@ ShapeResult* ShapeForFit(const InlineItem& item,
 
 std::optional<float> MinimumSize(bool is_grow, const InlineNode node) {
   if (!is_grow) {
-    if (const auto* settings = node.GetDocument().GetSettings()) {
-      if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
-        return min_size * node.GetDocument().GetFrame()->DevicePixelRatio();
-      }
-    }
+    return node.MinimumFontPhysicalSize();
   }
   return std::nullopt;
 }
@@ -449,6 +445,7 @@ bool LineFitter::FitLine(float scale_factor,
       }
       line_info_.SetWidth(line_info_.AvailableWidth(),
                           line_info_.ComputeWidth());
+      line_info_.SetTextFitScale(scale_factor);
       return true;
     }
 

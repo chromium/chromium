@@ -638,6 +638,23 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
   InlineBoxState::AdjustEdges(line_style, *line_style.GetFont(), baseline_type_,
                               should_apply_over, should_apply_under,
                               intrinsic_metrics);
+  if (RuntimeEnabledFeatures::CssFitWidthTextEnabled() && apply_fit_text_) {
+    float scale = line_info.TextFitScale();
+    if (scale < 1.0f) {
+      std::optional<float> min_size = Node().MinimumFontPhysicalSize();
+      if (min_size) {
+        float original_size =
+            line_style.GetFont()->GetFontDescription().ComputedSize();
+        if (original_size * scale < *min_size) {
+          scale = *min_size / original_size;
+        }
+      }
+    }
+    if (scale != 1.0f) {
+      intrinsic_metrics.ascent *= scale;
+      intrinsic_metrics.descent *= scale;
+    }
+  }
 
   if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.

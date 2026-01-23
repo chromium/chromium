@@ -283,6 +283,9 @@ class CORE_EXPORT LineInfo {
     initial_letter_box_block_size_ = block_size;
   }
 
+  void SetTextFitScale(float scale) { text_fit_scale_ = scale; }
+  float TextFitScale() const { return text_fit_scale_; }
+
  private:
   ETextAlign GetTextAlign(bool is_last_line = false) const;
   bool ComputeNeedsAccurateEndPosition() const;
@@ -317,6 +320,10 @@ class CORE_EXPORT LineInfo {
   InlineItemTextIndex start_;
   unsigned end_item_index_;
   unsigned end_offset_for_justify_;
+
+  // Text scaling factor computed in `text-fit` processing.
+  // ApplyTextBoxTrim() refers to this.
+  float text_fit_scale_ = 1.0f;
 
   ETextAlign text_align_ = ETextAlign::kLeft;
   TextDirection base_direction_ = TextDirection::kLtr;
