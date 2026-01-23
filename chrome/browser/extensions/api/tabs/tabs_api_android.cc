@@ -23,13 +23,6 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   return RespondNow(Error(kTabsNotImplemented));
 }
 
-ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
-  std::optional<tabs::Group::Params> params =
-      tabs::Group::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow(Error(kTabsNotImplemented));
-}
-
 ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
   std::optional<tabs::Ungroup::Params> params =
       tabs::Ungroup::Params::Create(args());

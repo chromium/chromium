@@ -110,19 +110,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetFunctionInvalidGroup) {
   EXPECT_EQ("No group with id: 0.", error);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Port to desktop Android when tabs.group() is
-// supported.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, GetApi) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/get")) << message_;
 }
 
-// TODO(crbug.com/371432155): Port to desktop Android when tabs.group() is
-// supported.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/basics")) << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that events are restricted to their respective browser contexts,
 // especially between on-the-record and off-the-record browsers.
@@ -223,9 +217,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/405219902): Enable on desktop Android when tabs.group() is
-// supported.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, SetGroupTitleToEmoji) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/emoji",
                                {.extension_url = "emoji_title.html"}))
@@ -242,7 +233,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, SetGroupTitleToEmoji) {
 
   EXPECT_EQ(visual_data->title(), std::u16string(u"🤡"));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions

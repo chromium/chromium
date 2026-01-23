@@ -300,6 +300,19 @@ bool IsLockedFullscreen(BrowserWindowInterface* browser) {
 #endif
 }
 
+// Returns the tab group ID for the tab at `index`. Returns nullopt if the index
+// is out of range, the tab is not found, or the tab is not part of a group.
+std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+    TabListInterface& tab_list,
+    int index) {
+  if (index < 0 || index >= tab_list.GetTabCount()) {
+    return std::nullopt;
+  }
+  ::tabs::TabInterface* tab = tab_list.GetTab(index);
+  CHECK(tab);
+  return tab->GetGroup();
+}
+
 // Places the window in a special type of fullscreen where the user is locked
 // into one browser window based on `is_locked_fullscreen`.
 void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
@@ -519,7 +532,7 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   TabListInterface* target_tab_list =
       ExtensionTabUtil::GetEditableTabList(*target_browser);
-  DCHECK(target_tab_list);
+  CHECK(target_tab_list);
 
   // Clamp move location to the last position.
   // This is ">" because it can append to a new index position.
@@ -529,17 +542,15 @@ int MoveTabToWindow(ExtensionFunction* function,
     target_index = target_tab_list->GetTabCount();
   }
 
-  // TODO(https://crbug.com/371432155): Update this to use cross-platform
-  // support for checking tab groups.
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* target_tab_strip = ExtensionTabUtil::GetEditableTabStripModel(
-      target_browser->GetBrowserForMigrationOnly());
-  DCHECK(target_tab_strip);
-  if (target_tab_strip->SupportsTabGroups()) {
+  TabListInterface* tab_list =
+      ExtensionTabUtil::GetEditableTabList(*target_browser);
+  CHECK(tab_list);
+  if (ExtensionTabUtil::SupportsTabGroups(target_browser)) {
     std::optional<tab_groups::TabGroupId> next_tab_dst_group =
-        target_tab_strip->GetTabGroupForTab(target_index);
+        GetTabGroupForTab(*tab_list, target_index);
+
     std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
-        target_tab_strip->GetTabGroupForTab(target_index - 1);
+        GetTabGroupForTab(*tab_list, target_index - 1);
 
     // Group contiguity is not respected in the target tabstrip.
     if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
@@ -548,7 +559,6 @@ int MoveTabToWindow(ExtensionFunction* function,
       return -1;
     }
   }
-#endif
 
   BrowserWindowInterface* source_browser =
       source_window->GetBrowserWindowInterface();
@@ -2683,6 +2693,151 @@ void TabsRemoveFunction::TabDestroyed() {
     Respond(NoArguments());
   }
   Release();
+}
+
+ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
+  std::optional<tabs::Group::Params> params =
+      tabs::Group::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::string error;
+
+  // Get the target browser from the parameters.
+  int group_id = -1;
+  WindowController* target_window = nullptr;
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
+  if (params->options.group_id) {
+    if (params->options.create_properties) {
+      return RespondNow(Error(tabs_constants::kGroupParamsError));
+    }
+
+    group_id = *params->options.group_id;
+    if (!ExtensionTabUtil::GetGroupById(
+            group_id, browser_context(), include_incognito_information(),
+            &target_window, &group, nullptr, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+  } else {
+    int window_id = extension_misc::kCurrentWindowId;
+    if (params->options.create_properties &&
+        params->options.create_properties->window_id) {
+      window_id = *params->options.create_properties->window_id;
+    }
+    target_window = ExtensionTabUtil::GetControllerFromWindowID(
+        ChromeExtensionFunctionDetails(this), window_id, &error);
+    if (!target_window) {
+      return RespondNow(Error(std::move(error)));
+    }
+  }
+
+  DCHECK(target_window);
+  if (!target_window->HasEditableTabStrip()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
+  // Get all tab IDs from parameters.
+  std::vector<int> tab_ids;
+  if (params->options.tab_ids.as_integers) {
+    tab_ids = *params->options.tab_ids.as_integers;
+    EXTENSION_FUNCTION_VALIDATE(!tab_ids.empty());
+  } else {
+    EXTENSION_FUNCTION_VALIDATE(params->options.tab_ids.as_integer);
+    tab_ids.push_back(*params->options.tab_ids.as_integer);
+  }
+
+  // Get each tab's current window. All tabs will need to be moved into the
+  // target window before grouping.
+  std::vector<WindowController*> tab_windows;
+  tab_windows.reserve(tab_ids.size());
+  for (int tab_id : tab_ids) {
+    WindowController* tab_window = nullptr;
+    content::WebContents* web_contents = nullptr;
+    if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                   include_incognito_information(), &tab_window,
+                                   &web_contents, nullptr, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    if (tab_window) {
+      tab_windows.push_back(tab_window);
+    }
+
+    if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+    }
+  }
+
+  // Move all tabs to the target browser, appending to the end each time. Only
+  // tabs that are not already in the target browser are moved.
+  for (size_t i = 0; i < tab_ids.size(); ++i) {
+    if (tab_windows[i] != target_window) {
+      if (tabs_internal::MoveTabToWindow(
+              this, tab_ids[i], target_window->GetBrowserWindowInterface(), -1,
+              /*allow_other_window_types=*/false, &error) < 0) {
+        return RespondNow(Error(std::move(error)));
+      }
+    }
+  }
+
+  // Get the resulting tab indices in the target browser. We recalculate these
+  // after all tabs are moved so that any callbacks are resolved and the indices
+  // are final.
+  std::vector<int> tab_indices;
+  tab_indices.reserve(tab_ids.size());
+  for (int tab_id : tab_ids) {
+    int tab_index = -1;
+    if (!tabs_internal::GetTabById(
+            tab_id, browser_context(), include_incognito_information(),
+            /*window_out=*/nullptr, /*contents_out=*/nullptr, &tab_index,
+            &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+    tab_indices.push_back(tab_index);
+  }
+  // Sort and dedupe these indices for processing in the tabstrip.
+  std::sort(tab_indices.begin(), tab_indices.end());
+  tab_indices.erase(std::unique(tab_indices.begin(), tab_indices.end()),
+                    tab_indices.end());
+
+  // Get the remaining group metadata and add the tabs to the group.
+  // At this point, we assume this is a valid action due to the checks above.
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+  BrowserWindowInterface* target_browser =
+      target_window->GetBrowserWindowInterface();
+  if (!ExtensionTabUtil::SupportsTabGroups(target_browser)) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  TabListInterface* tab_list = TabListInterface::From(target_browser);
+  if (!tab_list) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  // Get all the target tabs as handles.
+  std::vector<::tabs::TabHandle> tabs;
+  tabs.reserve(tab_indices.size());
+  for (int tab_index : tab_indices) {
+    tabs.push_back(tab_list->GetTab(tab_index)->GetHandle());
+  }
+  // Either create a new tab group or add to an existing group.
+  std::optional<tab_groups::TabGroupId> final_group = group;
+  if (group.is_empty()) {
+    // Create a new group.
+    final_group = tab_list->CreateTabGroup(tabs);
+  } else {
+    // Add to an existing group. The API requires a set.
+    std::set<::tabs::TabHandle> tab_set(tabs.begin(), tabs.end());
+    final_group = tab_list->AddTabsToGroup(group, tab_set);
+  }
+  if (!final_group) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  group_id = ExtensionTabUtil::GetGroupId(*final_group);
+  DCHECK_GT(group_id, 0);
+
+  return RespondNow(WithArguments(group_id));
 }
 
 ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
