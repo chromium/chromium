@@ -854,16 +854,10 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  // TODO(crbug.com/40159013): Adding a delay to avoid never-ending load on the
-  // last navigation forward. Should be fixed in newer iOS version.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
-  // TODO(crbug.com/40159013): Adding a delay to avoid never-ending load on the
-  // last navigation forward. Should be fixed in newer iOS version.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
 
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
