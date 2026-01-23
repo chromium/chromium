@@ -420,15 +420,17 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
-- (void)onBackgroundChanged {
+- (void)homeBackgroundCustomizationServiceDidChangeBackground:
+    (HomeBackgroundCustomizationService*)service {
   self.themeHasChanged = YES;
 
   id<BackgroundCustomizationConfiguration> currentConfiguration;
 
   std::optional<HomeCustomBackground> customBackground =
-      _backgroundCustomizationService->GetCurrentCustomBackground();
+      service->GetCurrentCustomBackground();
   std::optional<sync_pb::UserColorTheme> colorTheme =
-      _backgroundCustomizationService->GetCurrentColorTheme();
+      service->GetCurrentColorTheme();
+
   if (customBackground) {
     currentConfiguration = [self
         generateConfigurationItemForRecentBackground:customBackground.value()];

@@ -10,7 +10,9 @@ HomeBackgroundCustomizationServiceObserverBridge::
     HomeBackgroundCustomizationServiceObserverBridge(
         HomeBackgroundCustomizationService* service,
         id<HomeBackgroundCustomizationServiceObserving> observer)
-    : observer_(observer) {
+    : observer_(observer), service_(service) {
+  CHECK(observer_);
+  CHECK(service_);
   scoped_observation_.Observe(service);
 }
 
@@ -18,5 +20,5 @@ HomeBackgroundCustomizationServiceObserverBridge::
     ~HomeBackgroundCustomizationServiceObserverBridge() = default;
 
 void HomeBackgroundCustomizationServiceObserverBridge::OnBackgroundChanged() {
-  [observer_ onBackgroundChanged];
+  [observer_ homeBackgroundCustomizationServiceDidChangeBackground:service_];
 }

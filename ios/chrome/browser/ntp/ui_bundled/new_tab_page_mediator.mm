@@ -557,7 +557,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
-- (void)onBackgroundChanged {
+- (void)homeBackgroundCustomizationServiceDidChangeBackground:
+    (HomeBackgroundCustomizationService*)service {
   [self updateBackgroundForInitialLoad:NO];
 }
 
