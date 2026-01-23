@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -774,6 +775,11 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
       initial_config.FindDict("devToolsEnableDurableMessages");
   ASSERT_FALSE(initial_durable_messages);
 
+  const base::Value::Dict* initial_protocol_monitor =
+      initial_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(initial_protocol_monitor);
+  EXPECT_FALSE(initial_protocol_monitor->FindBool("enabled").value_or(true));
+
   const base::Value::Dict* initial_freestyler =
       initial_config.FindDict("devToolsFreestyler");
   ASSERT_TRUE(initial_freestyler);
@@ -783,7 +789,7 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kDevToolsEnableDurableMessages,
-       ::features::kDevToolsFreestyler},
+       ::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler},
       {});
 
   // Verify state of features after enabling them.
@@ -795,7 +801,39 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   ASSERT_TRUE(durable_messages);
   EXPECT_TRUE(durable_messages->FindBool("enabled").value_or(false));
 
+  const base::Value::Dict* protocol_monitor =
+      result.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(protocol_monitor);
+  EXPECT_TRUE(protocol_monitor->FindBool("enabled").value_or(false));
+
   const base::Value::Dict* freestyler = result.FindDict("devToolsFreestyler");
   ASSERT_TRUE(freestyler);
   EXPECT_TRUE(freestyler->FindBool("enabled").value_or(false));
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
+  base::Value::Dict initial_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::Value::Dict* protocol_monitor =
+      initial_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(protocol_monitor);
+  EXPECT_FALSE(protocol_monitor->FindBool("enabled").value_or(true));
+
+  DevToolsUIBindings::SetChromeFlagInternal(profile_.get(),
+                                            "devtools-protocol-monitor", true);
+  base::Value::Dict new_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::Value::Dict* new_protocol_monitor =
+      new_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(new_protocol_monitor);
+  EXPECT_TRUE(new_protocol_monitor->FindBool("enabled").value_or(false));
+
+  DevToolsUIBindings::SetChromeFlagInternal(profile_.get(),
+                                            "devtools-protocol-monitor", false);
+  base::Value::Dict final_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::Value::Dict* final_protocol_monitor =
+      final_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(final_protocol_monitor);
+  EXPECT_FALSE(final_protocol_monitor->FindBool("enabled").value_or(true));
 }
