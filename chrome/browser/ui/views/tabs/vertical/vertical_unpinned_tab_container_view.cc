@@ -145,9 +145,8 @@ void VerticalUnpinnedTabContainerView::ResetCollectionNode() {
 }
 
 VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler() {
-  CHECK(collection_node_);
-  CHECK(collection_node_->GetController());
-  return collection_node_->GetController()->GetDragHandler();
+  return const_cast<VerticalTabDragHandler&>(
+      std::as_const(*this).GetDragHandler());
 }
 
 const VerticalTabDragHandler& VerticalUnpinnedTabContainerView::GetDragHandler()

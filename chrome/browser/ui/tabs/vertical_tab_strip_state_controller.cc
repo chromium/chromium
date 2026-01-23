@@ -86,6 +86,12 @@ VerticalTabStripStateController::~VerticalTabStripStateController() {
 }
 
 // static
+const VerticalTabStripStateController* VerticalTabStripStateController::From(
+    const BrowserWindowInterface* browser_window) {
+  return Get(browser_window->GetUnownedUserDataHost());
+}
+
+// static
 VerticalTabStripStateController* VerticalTabStripStateController::From(
     BrowserWindowInterface* browser_window) {
   return Get(browser_window->GetUnownedUserDataHost());

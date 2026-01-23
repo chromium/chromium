@@ -217,8 +217,8 @@ views::Widget* VerticalTabStripController::ShowGroupEditorBubble(
       /*stop_context_menu_propagation=*/stop_context_menu_propagation);
 }
 
-bool VerticalTabStripController::IsCollapsed() {
-  tabs::VerticalTabStripStateController* state_controller =
+bool VerticalTabStripController::IsCollapsed() const {
+  const tabs::VerticalTabStripStateController* state_controller =
       tabs::VerticalTabStripStateController::From(browser_view_->browser());
   return state_controller && state_controller->IsCollapsed();
 }

@@ -54,7 +54,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   views::Widget* ShowGroupEditorBubble(const tab_groups::TabGroupId& group_id,
                                        views::View* anchor_view,
                                        bool stop_context_menu_propagation);
-  bool IsCollapsed();
+  bool IsCollapsed() const;
 
   TabContextMenuController* GetTabContextMenuController() {
     return context_menu_controller_.get();

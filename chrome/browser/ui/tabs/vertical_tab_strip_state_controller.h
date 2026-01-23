@@ -45,6 +45,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       const VerticalTabStripStateController&) = delete;
   ~VerticalTabStripStateController() override;
 
+  static const VerticalTabStripStateController* From(
+      const BrowserWindowInterface* browser_window);
   static VerticalTabStripStateController* From(
       BrowserWindowInterface* browser_window);
 

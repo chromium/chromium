@@ -252,9 +252,8 @@ bool VerticalTabGroupView::IsCollapsed() const {
 }
 
 VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() {
-  CHECK(collection_node_);
-  CHECK(collection_node_->GetController());
-  return collection_node_->GetController()->GetDragHandler();
+  return const_cast<VerticalTabDragHandler&>(
+      std::as_const(*this).GetDragHandler());
 }
 
 const VerticalTabDragHandler& VerticalTabGroupView::GetDragHandler() const {
