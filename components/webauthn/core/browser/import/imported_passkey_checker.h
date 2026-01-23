@@ -22,24 +22,31 @@ inline constexpr size_t kCredentialIdMinLength = 16u;
 inline constexpr size_t kCredentialIdMaxLength = 1023u;
 
 // Represents status of a validity check for an about to be imported passkey.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ImportedPasskeyStatus)
 enum class ImportedPasskeyStatus {
   // All required fields are present and conform to WebAuthn spec
   // (https://www.w3.org/TR/webauthn-2).
   kOk = 0,
   // Credential ID does not conform to the spec-defined bounds
   // (https://www.w3.org/TR/webauthn-2/#credential-id).
-  kCredentialIdTooShort = 2,
-  kCredentialIdTooLong = 3,
+  kCredentialIdTooShort = 1,
+  kCredentialIdTooLong = 2,
   // User ID exceeds the spec-defined upper bound
   // (https://www.w3.org/TR/webauthn-2/#user-handle).
-  kUserIdTooLong = 4,
+  kUserIdTooLong = 3,
   // Private key is a required field
   // (https://www.w3.org/TR/webauthn-2/#credential-private-key).
-  kPrivateKeyMissing = 5,
+  kPrivateKeyMissing = 4,
   // Relying Party Identifier is a required field
   // (https://www.w3.org/TR/webauthn-2/#relying-party-identifier).
-  kRpIdMissing = 6,
+  kRpIdMissing = 5,
+  kMaxValue = kRpIdMissing,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyImportStatus)
 
 // Checks the validity of a passkey that is about to be imported. This mostly
 // includes conformance to the WebAuthn spec (more details in possible statuses

@@ -5,6 +5,7 @@
 #include "components/webauthn/core/browser/import/passkey_importer.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
 #include "components/webauthn/core/browser/import/imported_passkey_checker.h"
@@ -63,6 +64,8 @@ void PasskeyImporter::ProcessPasskeys(
 
     ImportedPasskeyStatus status = CheckImportedPasskey(passkey);
     if (status != ImportedPasskeyStatus::kOk) {
+      base::UmaHistogramEnumeration(
+          "WebAuthentication.CredentialExchange.PasskeyImportStatus", status);
       result.errors.push_back(SpecificsToImportedPasskeyInfo(passkey, status));
       continue;
     }
@@ -105,6 +108,19 @@ void PasskeyImporter::ImportPasskeys(
                                    duplicate_passkey_count_;
   std::move(passkeys_imported_callback)
       .Run(static_cast<int>(imported_passkeys_count));
+
+  base::UmaHistogramCounts1000(
+      "WebAuthentication.CredentialExchange.PasskeyConflictsCount",
+      static_cast<int>(conflicting_passkeys_.size()));
+  base::UmaHistogramCounts1000(
+      "WebAuthentication.CredentialExchange.PasskeyConflictsResolvedCount",
+      static_cast<int>(selected_conflicting_passkey_ids.size()));
+  base::UmaHistogramCounts1000(
+      "WebAuthentication.CredentialExchange.PasskeyDuplicatesCount",
+      static_cast<int>(duplicate_passkey_count_));
+  base::UmaHistogramCounts1000(
+      "WebAuthentication.CredentialExchange.PasskeysImportedCount",
+      static_cast<int>(imported_passkeys_count));
 }
 
 }  // namespace webauthn
