@@ -394,12 +394,12 @@ mojom_component("base") {
         },
         {
           mojom = "mojo_base.mojom.DictionaryValue"
-          cpp = "::base::Value::Dict"
+          cpp = "::base::DictValue"
           move_only = true
         },
         {
           mojom = "mojo_base.mojom.ListValue"
-          cpp = "::base::Value::List"
+          cpp = "::base::ListValue"
           move_only = true
         },
       ]

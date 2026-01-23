@@ -90,45 +90,45 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   // Note: here and below, it would be nice to use an initializer list, but
   // move-only types and initializer lists don't mix. Initializer lists can't be
   // modified: thus it's not possible to move.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("null", base::Value());
   dict.Set("bool", false);
   dict.Set("int", 0);
   dict.Set("double", 0.0);
   dict.Set("string", "0");
   dict.Set("binary", base::Value::BlobStorage({0}));
-  dict.Set("dictionary", base::Value::Dict());
-  dict.Set("list", base::Value::List());
+  dict.Set("dictionary", base::DictValue());
+  dict.Set("list", base::ListValue());
 
   base::Value in(std::move(dict));
   base::Value out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  base::Value::Dict in_dict = in.GetDict().Clone();
-  base::Value::Dict out_dict;
+  base::DictValue in_dict = in.GetDict().Clone();
+  base::DictValue out_dict;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(
       in_dict, out_dict));
   EXPECT_EQ(in_dict, out_dict);
 }
 
 TEST(ValuesStructTraitsTest, ListValue) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(base::Value());
   list.Append(false);
   list.Append(0);
   list.Append(0.0);
   list.Append("0");
   list.Append(base::Value::BlobStorage({0}));
-  list.Append(base::Value::Dict());
-  list.Append(base::Value::List());
+  list.Append(base::DictValue());
+  list.Append(base::ListValue());
   base::Value in(std::move(list));
   base::Value out;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  base::Value::List in_list = in.GetList().Clone();
-  base::Value::List out_list;
+  base::ListValue in_list = in.GetList().Clone();
+  base::ListValue out_list;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::ListValue>(in_list, out_list));
   EXPECT_EQ(in_list, out_list);
@@ -138,7 +138,7 @@ TEST(ValuesStructTraitsTest, ListValue) {
 TEST(ValuesStructTraitsTest, DeeplyNestedValue) {
   base::Value in;
   for (int i = 0; i < kMaxRecursionDepth; ++i) {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(std::move(in));
     in = base::Value(std::move(list));
   }
@@ -154,7 +154,7 @@ TEST(ValuesStructTraitsTest, DeeplyNestedValue) {
   }
 
   // Add one more depth.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(in));
   in = base::Value(std::move(list));
 

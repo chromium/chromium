@@ -19,14 +19,14 @@
 namespace mojo {
 
 template <>
-struct MapTraits<base::Value::Dict> {
+struct MapTraits<base::DictValue> {
   using Key = std::string;
   using Value = base::Value;
-  using Iterator = base::Value::Dict::const_iterator;
+  using Iterator = base::DictValue::const_iterator;
 
-  static size_t GetSize(const base::Value::Dict& in) { return in.size(); }
+  static size_t GetSize(const base::DictValue& in) { return in.size(); }
 
-  static Iterator GetBegin(const base::Value::Dict& in) { return in.cbegin(); }
+  static Iterator GetBegin(const base::DictValue& in) { return in.cbegin(); }
 
   static void AdvanceIterator(Iterator& it) { ++it; }
 
@@ -37,30 +37,30 @@ struct MapTraits<base::Value::Dict> {
 
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
-    StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value::Dict> {
-  static const base::Value::Dict& storage(const base::Value::Dict& in) {
+    StructTraits<mojo_base::mojom::DictionaryValueDataView, base::DictValue> {
+  static const base::DictValue& storage(const base::DictValue& in) {
     return in;
   }
 
   static bool Read(mojo_base::mojom::DictionaryValueDataView data,
-                   base::Value::Dict* out);
+                   base::DictValue* out);
 };
 
 template <>
-struct ArrayTraits<base::Value::List> {
+struct ArrayTraits<base::ListValue> {
   using Element = base::Value;
 
-  static size_t GetSize(const base::Value::List& in) { return in.size(); }
+  static size_t GetSize(const base::ListValue& in) { return in.size(); }
 
-  static const base::Value& GetAt(const base::Value::List& in, size_t index) {
+  static const base::Value& GetAt(const base::ListValue& in, size_t index) {
     return in[index];
   }
 
-  static base::Value& GetAt(base::Value::List& in, size_t index) {
+  static base::Value& GetAt(base::ListValue& in, size_t index) {
     return in[index];
   }
 
-  static bool Resize(base::Value::List& in, size_t size) {
+  static bool Resize(base::ListValue& in, size_t size) {
     in.resize(size);
     return true;
   }
@@ -68,13 +68,13 @@ struct ArrayTraits<base::Value::List> {
 
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
-    StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List> {
-  static const base::Value::List& storage(const base::Value::List& in) {
+    StructTraits<mojo_base::mojom::ListValueDataView, base::ListValue> {
+  static const base::ListValue& storage(const base::ListValue& in) {
     return in;
   }
 
   static bool Read(mojo_base::mojom::ListValueDataView data,
-                   base::Value::List* out);
+                   base::ListValue* out);
 };
 
 template <>
@@ -120,11 +120,11 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     return value.GetBlob();
   }
 
-  static const base::Value::Dict& dictionary_value(const base::Value& value) {
+  static const base::DictValue& dictionary_value(const base::Value& value) {
     return value.GetDict();
   }
 
-  static const base::Value::List& list_value(const base::Value& value) {
+  static const base::ListValue& list_value(const base::Value& value) {
     return value.GetList();
   }
 

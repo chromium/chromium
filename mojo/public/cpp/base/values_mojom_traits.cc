@@ -12,10 +12,8 @@
 
 namespace mojo {
 
-bool StructTraits<
-    mojo_base::mojom::DictionaryValueDataView,
-    base::Value::Dict>::Read(mojo_base::mojom::DictionaryValueDataView data,
-                             base::Value::Dict* out) {
+bool StructTraits<mojo_base::mojom::DictionaryValueDataView, base::DictValue>::
+    Read(mojo_base::mojom::DictionaryValueDataView data, base::DictValue* out) {
   mojo::MapDataView<mojo::StringDataView, mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
 
@@ -38,9 +36,9 @@ bool StructTraits<
   return true;
 }
 
-bool StructTraits<mojo_base::mojom::ListValueDataView, base::Value::List>::Read(
+bool StructTraits<mojo_base::mojom::ListValueDataView, base::ListValue>::Read(
     mojo_base::mojom::ListValueDataView data,
-    base::Value::List* out) {
+    base::ListValue* out) {
   mojo::ArrayDataView<mojo_base::mojom::ValueDataView> view;
   data.GetStorageDataView(&view);
 
@@ -97,7 +95,7 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::kDictionaryValue: {
-      base::Value::Dict dict;
+      base::DictValue dict;
       if (!data.ReadDictionaryValue(&dict)) {
         return false;
       }
@@ -105,7 +103,7 @@ bool UnionTraits<mojo_base::mojom::ValueDataView, base::Value>::Read(
       return true;
     }
     case mojo_base::mojom::ValueDataView::Tag::kListValue: {
-      base::Value::List list;
+      base::ListValue list;
       if (!data.ReadListValue(&list)) {
         return false;
       }
