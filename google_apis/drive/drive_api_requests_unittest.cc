@@ -2094,11 +2094,11 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
-  base::Value::Dict expected = base::test::ParseJsonDict(
+  base::DictValue expected = base::test::ParseJsonDict(
       "{\"additionalRoles\":[\"commenter\"], \"role\":\"reader\", "
       "\"type\":\"user\",\"value\":\"user@example.com\"}");
 
-  base::Value::Dict result = base::test::ParseJsonDict(http_request_.content);
+  base::DictValue result = base::test::ParseJsonDict(http_request_.content);
   EXPECT_TRUE(http_request_.has_content);
   EXPECT_EQ(expected, result);
 

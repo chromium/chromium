@@ -57,7 +57,7 @@ class CreateContactRequest : public UrlFetchRequestBase {
 
   void OnDataParsed(std::optional<Person> person);
 
-  base::Value::Dict contact_payload_;
+  base::DictValue contact_payload_;
   Callback callback_;
 
   base::WeakPtrFactory<CreateContactRequest> weak_ptr_factory_{this};

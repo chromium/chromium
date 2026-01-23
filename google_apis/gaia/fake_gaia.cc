@@ -116,9 +116,9 @@ void SetCookies(BasicHttpResponse* http_response,
                                        kTestCookieAttributes));
 }
 
-base::Value::Dict GetCookieForMultilogin(const std::string& name,
-                                         const std::string& value) {
-  return base::Value::Dict()
+base::DictValue GetCookieForMultilogin(const std::string& name,
+                                       const std::string& value) {
+  return base::DictValue()
       .Set("name", name)
       .Set("value", value)
       .Set("domain", ".google.fr")
@@ -129,12 +129,12 @@ base::Value::Dict GetCookieForMultilogin(const std::string& name,
       .Set("maxAge", 63070000);
 }
 
-base::Value::List GetCookiesForMultilogin(
+base::ListValue GetCookiesForMultilogin(
     const FakeGaia::Configuration& configuration) {
   CHECK(!configuration.session_sid_cookie.empty());
   CHECK(!configuration.session_lsid_cookie.empty());
 
-  base::Value::List cookies;
+  base::ListValue cookies;
 
   cookies.Append(
       GetCookieForMultilogin("SID", configuration.session_sid_cookie));
@@ -153,21 +153,21 @@ base::Value::List GetCookiesForMultilogin(
   return cookies;
 }
 
-base::Value::Dict GetFailedAccountForMultilogin(const std::string& gaia_id,
-                                                const std::string& status,
-                                                const std::string& challenge) {
-  return base::Value::Dict()
+base::DictValue GetFailedAccountForMultilogin(const std::string& gaia_id,
+                                              const std::string& status,
+                                              const std::string& challenge) {
+  return base::DictValue()
       .Set("obfuscated_id", gaia_id)
       .Set("status", status)
       .Set("token_binding_retry_response",
-           base::Value::Dict().Set("challenge", challenge));
+           base::DictValue().Set("challenge", challenge));
 }
 
-base::Value::List GetFailedAccountsForMultilogin(
+base::ListValue GetFailedAccountsForMultilogin(
     const gaia::MultiOAuthHeader& multi_oauth_header) {
   CHECK_GT(multi_oauth_header.account_requests().size(), 0);
 
-  base::Value::List failed_accounts;
+  base::ListValue failed_accounts;
   failed_accounts.reserve(multi_oauth_header.account_requests().size());
 
   for (const gaia::MultiOAuthHeader_AccountRequest& account_request :
@@ -180,40 +180,40 @@ base::Value::List GetFailedAccountsForMultilogin(
   return failed_accounts;
 }
 
-base::Value::List GetDeviceBoundSessionInfoForMultilogin(
+base::ListValue GetDeviceBoundSessionInfoForMultilogin(
     const FakeGaia::Configuration& configuration) {
-  auto device_bound_session_info = base::Value::Dict()
+  auto device_bound_session_info = base::DictValue()
                                        .Set("domain", "GOOGLE_COM")
                                        .Set("is_device_bound", true);
   if (!configuration.reuse_bound_session) {
-    base::Value::List credentials;
+    base::ListValue credentials;
     if (!configuration.session_1p_sidts_cookie.empty()) {
-      credentials.Append(base::Value::Dict()
+      credentials.Append(base::DictValue()
                              .Set("type", "cookie")
                              .Set("name", "__Secure-1PSIDTS")
-                             .Set("scope", base::Value::Dict()
+                             .Set("scope", base::DictValue()
                                                .Set("domain", ".google.com")
                                                .Set("path", "/")));
     }
     if (!configuration.session_3p_sidts_cookie.empty()) {
-      credentials.Append(base::Value::Dict()
+      credentials.Append(base::DictValue()
                              .Set("type", "cookie")
                              .Set("name", "__Secure-3PSIDTS")
-                             .Set("scope", base::Value::Dict()
+                             .Set("scope", base::DictValue()
                                                .Set("domain", ".google.com")
                                                .Set("path", "/")));
     }
     auto register_session_payload =
-        base::Value::Dict()
+        base::DictValue()
             .Set("session_identifier", "sidts_session")
             .Set("refresh_url", "/RotateBoundCookies");
     if (configuration.spec_compliant_device_bound_session) {
       register_session_payload.Set("scope",
-                                   base::Value::Dict()
+                                   base::DictValue()
                                        .Set("origin", "https://google.com")
                                        .Set("include_site", true));
       register_session_payload.Set("allowed_refresh_initiators",
-                                   base::Value::List().Append("*"));
+                                   base::ListValue().Append("*"));
       for (auto& credential : credentials) {
         credential.GetDict().Set("attributes",
                                  "Secure; HttpOnly; Domain=.google.com; "
@@ -224,7 +224,7 @@ base::Value::List GetDeviceBoundSessionInfoForMultilogin(
     device_bound_session_info.Set("register_session_payload",
                                   std::move(register_session_payload));
   }
-  return base::Value::List().Append(std::move(device_bound_session_info));
+  return base::ListValue().Append(std::move(device_bound_session_info));
 }
 
 MultiloginAction GetMultiloginAction(
@@ -896,7 +896,7 @@ void FakeGaia::HandleAuthToken(const HttpRequest& request,
       refresh_token_to_device_id_map_[configuration_.refresh_token] = device_id;
     }
 
-    auto response_dict = base::Value::Dict()
+    auto response_dict = base::DictValue()
                              .Set("refresh_token", configuration_.refresh_token)
                              .Set("access_token", configuration_.access_token)
                              .Set("expires_in", 3600);
@@ -917,7 +917,7 @@ void FakeGaia::HandleAuthToken(const HttpRequest& request,
     const AccessTokenInfo* token_info =
         FindAccessTokenInfo(refresh_token, client_id, scope);
     if (token_info) {
-      auto response_dict = base::Value::Dict()
+      auto response_dict = base::DictValue()
                                .Set("access_token", token_info->token)
                                .Set("expires_in", 3600)
                                .Set("id_token", token_info->id_token);
@@ -941,7 +941,7 @@ void FakeGaia::HandleTokenInfo(const HttpRequest& request,
 
   if (token_info) {
     auto response_dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set("issued_to", token_info->issued_to)
             .Set("audience", token_info->audience)
             .Set("user_id", token_info->user_id.ToString())
@@ -971,7 +971,7 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
         FindAccessTokenInfo(access_token, client_id, scope);
     if (token_info) {
       auto response_dict =
-          base::Value::Dict()
+          base::DictValue()
               .Set("issueAdvice", "auto")
               .Set("expiresIn", base::NumberToString(token_info->expires_in))
               .Set("token", token_info->token)
@@ -1025,7 +1025,7 @@ void FakeGaia::HandleOAuthUserInfo(const HttpRequest& request,
 
   if (token_info) {
     auto response_dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set("id", GetGaiaIdOfEmail(token_info->email).ToString())
             .Set("email", token_info->email)
             .Set("verified_email", token_info->email)
@@ -1061,13 +1061,13 @@ void FakeGaia::HandleSAMLRedirect(const HttpRequest& request,
 
 void FakeGaia::HandleGetCheckConnectionInfo(const HttpRequest& request,
                                             BasicHttpResponse* http_response) {
-  FormatOkJSONResponse(base::Value::List(), http_response);
+  FormatOkJSONResponse(base::ListValue(), http_response);
 }
 
 void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
                                          BasicHttpResponse* http_response) {
-  base::Value::Dict response_dict;
-  base::Value::Dict error;
+  base::DictValue response_dict;
+  base::DictValue error;
 
   switch (next_reauth_status_) {
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess:
@@ -1117,11 +1117,11 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
   if (configuration_.oauth_multilogin_response_status.has_value()) {
     switch (*configuration_.oauth_multilogin_response_status) {
       case OAuthMultiloginResponseStatus::kInvalidInput:
-        FormatJSONResponse(base::Value::Dict().Set("status", "INVALID_INPUT"),
+        FormatJSONResponse(base::DictValue().Set("status", "INVALID_INPUT"),
                            net::HTTP_BAD_REQUEST, http_response);
         return;
       case OAuthMultiloginResponseStatus::kError:
-        FormatJSONResponse(base::Value::Dict().Set("status", "ERROR"),
+        FormatJSONResponse(base::DictValue().Set("status", "ERROR"),
                            net::HTTP_INTERNAL_SERVER_ERROR, http_response);
         return;
       default:
@@ -1154,8 +1154,8 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
   const MultiloginAction action = GetMultiloginAction(multi_oauth_header);
   switch (action) {
     case MultiloginAction::kReturnUnboundCookies: {
-      const base::Value::Dict response =
-          base::Value::Dict()
+      const base::DictValue response =
+          base::DictValue()
               .Set("status", "OK")
               .Set("cookies", GetCookiesForMultilogin(configuration_));
       FormatOkJSONResponse(response, http_response, kXSSIPrefix);
@@ -1163,8 +1163,8 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
     }
     case MultiloginAction::kReturnBindingChallenge: {
       CHECK(multi_oauth_header.has_value());
-      const base::Value::Dict response =
-          base::Value::Dict()
+      const base::DictValue response =
+          base::DictValue()
               .Set("status", "RETRY")
               .Set("failed_accounts",
                    GetFailedAccountsForMultilogin(*multi_oauth_header));
@@ -1173,8 +1173,8 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
       break;
     }
     case MultiloginAction::kReturnBoundCookies: {
-      const base::Value::Dict response =
-          base::Value::Dict()
+      const base::DictValue response =
+          base::DictValue()
               .Set("status", "OK")
               .Set("cookies", GetCookiesForMultilogin(configuration_))
               .Set("device_bound_session_info",
@@ -1225,7 +1225,7 @@ void FakeGaia::HandleOAuth2TokenRevoke(
 
   const std::string token = request.content.substr(kTokenPrefix.size());
   if (access_token_info_map_.erase(token) == 0) {
-    FormatJSONResponse(base::Value::Dict().Set("error", "invalid_token"),
+    FormatJSONResponse(base::DictValue().Set("error", "invalid_token"),
                        net::HTTP_NOT_FOUND, http_response);
     return;
   }

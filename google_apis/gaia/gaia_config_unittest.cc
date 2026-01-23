@@ -149,7 +149,7 @@ TEST(GaiaConfigTest, ShouldRestoreGlobalInstance) {
   GaiaConfig* original_instance = GaiaConfig::GetInstance();
 
   {
-    auto config_dict = base::Value::Dict().SetByDottedPath(
+    auto config_dict = base::DictValue().SetByDottedPath(
         "urls.test_url.url", "https://overridden.example.com/");
     auto scoped_override = GaiaConfig::SetScopedConfigForTesting(
         std::make_unique<GaiaConfig>(std::move(config_dict)));

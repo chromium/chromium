@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
 
   // Constructs a new GaiaConfig from a parsed JSON dictionary.
   // Prefer GetInstance() over this constructor.
-  explicit GaiaConfig(base::Value::Dict parsed_config);
+  explicit GaiaConfig(base::DictValue parsed_config);
   GaiaConfig(const GaiaConfig&) = delete;
   GaiaConfig& operator=(const GaiaConfig&) = delete;
   ~GaiaConfig();
@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaConfig {
   static std::unique_ptr<GaiaConfig> ReadConfigFromCommandLineSwitches(
       const base::CommandLine* command_line);
 
-  base::Value::Dict parsed_config_;
+  base::DictValue parsed_config_;
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_CONFIG_H_

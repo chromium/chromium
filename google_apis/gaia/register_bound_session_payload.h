@@ -85,7 +85,7 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) RegisterBoundSessionPayload {
   //
   // TODO(crbug.com/457814683): Unify the payload parsing logic with `//net`.
   static base::expected<RegisterBoundSessionPayload, ParserError> ParseFromJson(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       bool parse_for_dbsc_standard);
 
   RegisterBoundSessionPayload();

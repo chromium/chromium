@@ -157,7 +157,7 @@ TEST_F(BaseRequestsTest, ParseValidJson) {
   std::unique_ptr<base::Value> json(ParseJson(kValidJsonString));
 
   ASSERT_TRUE(json);
-  base::Value::Dict* root_dict = json->GetIfDict();
+  base::DictValue* root_dict = json->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   std::optional<int> int_value = root_dict->FindInt("test");

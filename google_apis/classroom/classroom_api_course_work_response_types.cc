@@ -74,7 +74,7 @@ bool ConvertCourseWorkItemAlternateLink(std::string_view input, GURL* output) {
 }
 
 base::TimeDelta GetCourseWorkItemDueTime(
-    const base::Value::Dict& raw_course_work_item) {
+    const base::DictValue& raw_course_work_item) {
   const auto* const time =
       raw_course_work_item.FindDict(kApiResponseCourseWorkItemDueTimeKey);
   if (!time) {
@@ -92,7 +92,7 @@ base::TimeDelta GetCourseWorkItemDueTime(
 }
 
 std::optional<CourseWorkItem::DueDateTime> GetCourseWorkItemDueDateTime(
-    const base::Value::Dict& raw_course_work_item) {
+    const base::DictValue& raw_course_work_item) {
   const auto* const date =
       raw_course_work_item.FindDict(kApiResponseCourseWorkItemDueDateKey);
   if (!date) {
@@ -152,7 +152,7 @@ void CourseWorkItem::RegisterJSONConverter(
 bool CourseWorkItem::ConvertCourseWorkItem(const base::Value* input,
                                            CourseWorkItem* output) {
   base::JSONValueConverter<CourseWorkItem> converter;
-  const base::Value::Dict* dict = input->GetIfDict();
+  const base::DictValue* dict = input->GetIfDict();
   if (!dict || !converter.Convert(*dict, output)) {
     return false;
   }
@@ -170,7 +170,7 @@ CourseWork::~CourseWork() = default;
 // static
 void CourseWork::RegisterJSONConverter(
     base::JSONValueConverter<CourseWork>* converter) {
-  // TODO(crbug.com/40911919): Handle base::Value::Dict here.
+  // TODO(crbug.com/40911919): Handle base::DictValue here.
   converter->RegisterRepeatedCustomValue<CourseWorkItem>(
       kApiResponseCourseWorkKey, &CourseWork::items_,
       &CourseWorkItem::ConvertCourseWorkItem);

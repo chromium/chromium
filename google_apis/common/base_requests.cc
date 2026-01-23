@@ -56,14 +56,14 @@ std::string GetResponseHeadersAsString(
 // Returns the "reason" field from a type.googleapis.com/google.rpc.ErrorInfo
 // dictionary if found in `details`.
 std::optional<std::string> ExtractReasonFromErrorDetails(
-    const base::Value::List& details) {
+    const base::ListValue& details) {
   const char kErrorDetailsTypeKey[] = "@type";
   const char kErrorDetailsTypeName[] =
       "type.googleapis.com/google.rpc.ErrorInfo";
   const char kErrorDetailsReasonKey[] = "reason";
 
   for (const base::Value& detail : details) {
-    const base::Value::Dict* dict = detail.GetIfDict();
+    const base::DictValue* dict = detail.GetIfDict();
     if (!dict) {
       continue;
     }
@@ -98,8 +98,8 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
   const char kErrorDetailsKey[] = "details";
 
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
-  const base::Value::Dict* dictionary = value ? value->GetIfDict() : nullptr;
-  const base::Value::Dict* error =
+  const base::DictValue* dictionary = value ? value->GetIfDict() : nullptr;
+  const base::DictValue* error =
       dictionary ? dictionary->FindDict(kErrorKey) : nullptr;
   if (error) {
     // Get error message and code.
@@ -109,8 +109,8 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
                 << ", message: " << (message ? *message : "");
 
     // Returns the reason of the first error.
-    if (const base::Value::List* errors = error->FindList(kErrorErrorsKey)) {
-      const base::Value::Dict* first_error = errors->front().GetIfDict();
+    if (const base::ListValue* errors = error->FindList(kErrorErrorsKey)) {
+      const base::DictValue* first_error = errors->front().GetIfDict();
       if (first_error) {
         const std::string* reason = first_error->FindString(kErrorReasonKey);
         if (reason) {
@@ -121,7 +121,7 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
 
     // Also check for the error reason in "details" as specified in
     // https://google.aip.dev/193.
-    if (const base::Value::List* details = error->FindList(kErrorDetailsKey)) {
+    if (const base::ListValue* details = error->FindList(kErrorDetailsKey)) {
       std::optional<std::string> reason =
           ExtractReasonFromErrorDetails(*details);
       if (reason) {

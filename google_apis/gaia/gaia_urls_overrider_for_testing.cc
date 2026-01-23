@@ -15,9 +15,9 @@
 GaiaUrlsOverriderForTesting::GaiaUrlsOverriderForTesting(
     const std::string& url_key,
     const std::string& url_value) {
-  auto config_dict = base::Value::Dict().Set(
-      "urls", base::Value::Dict().Set(
-                  url_key, base::Value::Dict().Set("url", url_value)));
+  auto config_dict = base::DictValue().Set(
+      "urls",
+      base::DictValue().Set(url_key, base::DictValue().Set("url", url_value)));
   scoped_config_override_ = GaiaConfig::SetScopedConfigForTesting(
       std::make_unique<GaiaConfig>(std::move(config_dict)));
 

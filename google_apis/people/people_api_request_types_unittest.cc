@@ -19,7 +19,7 @@ using ::base::test::IsJson;
 TEST(PeopleApiRequestTypesTest, EmailWithNoFieldsToDict) {
   EmailAddress email;
 
-  base::Value::Dict dict = std::move(email).ToDict();
+  base::DictValue dict = std::move(email).ToDict();
 
   EXPECT_THAT(dict, IsJson("{}"));
 }
@@ -28,7 +28,7 @@ TEST(PeopleApiRequestTypesTest, EmailWithOnlyValueToDict) {
   EmailAddress email;
   email.value = "afrancois@example.com";
 
-  base::Value::Dict dict = std::move(email).ToDict();
+  base::DictValue dict = std::move(email).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "value": "afrancois@example.com",
@@ -40,7 +40,7 @@ TEST(PeopleApiRequestTypesTest, EmailWithMultipleFieldsToDict) {
   email.value = "afrancois@example.com";
   email.type = "home";
 
-  base::Value::Dict dict = std::move(email).ToDict();
+  base::DictValue dict = std::move(email).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "value": "afrancois@example.com",
@@ -51,7 +51,7 @@ TEST(PeopleApiRequestTypesTest, EmailWithMultipleFieldsToDict) {
 TEST(PeopleApiRequestTypesTest, NameWithNoFieldsToDict) {
   Name name;
 
-  base::Value::Dict dict = std::move(name).ToDict();
+  base::DictValue dict = std::move(name).ToDict();
 
   EXPECT_THAT(dict, IsJson("{}"));
 }
@@ -60,7 +60,7 @@ TEST(PeopleApiRequestTypesTest, NameWithFamilyNameToDict) {
   Name name;
   name.family_name = "Francois";
 
-  base::Value::Dict dict = std::move(name).ToDict();
+  base::DictValue dict = std::move(name).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "familyName": "Francois",
@@ -71,7 +71,7 @@ TEST(PeopleApiRequestTypesTest, NameWithGivenNameToDict) {
   Name name;
   name.given_name = "Andre";
 
-  base::Value::Dict dict = std::move(name).ToDict();
+  base::DictValue dict = std::move(name).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "givenName": "Andre",
@@ -83,7 +83,7 @@ TEST(PeopleApiRequestTypesTest, NameWithMultipleFieldsToDict) {
   name.family_name = "Francois";
   name.given_name = "Andre";
 
-  base::Value::Dict dict = std::move(name).ToDict();
+  base::DictValue dict = std::move(name).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "familyName": "Francois",
@@ -94,7 +94,7 @@ TEST(PeopleApiRequestTypesTest, NameWithMultipleFieldsToDict) {
 TEST(PeopleApiRequestTypesTest, PhoneWithNoFieldsToDict) {
   PhoneNumber phone;
 
-  base::Value::Dict dict = std::move(phone).ToDict();
+  base::DictValue dict = std::move(phone).ToDict();
 
   EXPECT_THAT(dict, IsJson("{}"));
 }
@@ -103,7 +103,7 @@ TEST(PeopleApiRequestTypesTest, PhoneWithOnlyValueToDict) {
   PhoneNumber phone;
   phone.value = "+61400000000";
 
-  base::Value::Dict dict = std::move(phone).ToDict();
+  base::DictValue dict = std::move(phone).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "value": "+61400000000",
@@ -115,7 +115,7 @@ TEST(PeopleApiRequestTypesTest, PhoneWithMultipleFieldsToDict) {
   phone.value = "+61400000000";
   phone.type = "mobile";
 
-  base::Value::Dict dict = std::move(phone).ToDict();
+  base::DictValue dict = std::move(phone).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "value": "+61400000000",
@@ -126,7 +126,7 @@ TEST(PeopleApiRequestTypesTest, PhoneWithMultipleFieldsToDict) {
 TEST(PeopleApiRequestTypesTest, ContactWithNoFieldsToDict) {
   Contact contact;
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson("{}"));
 }
@@ -137,7 +137,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithOneEmailToDict) {
   email.value = "afrancois@example.com";
   contact.email_addresses.push_back(std::move(email));
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "emailAddresses": [
@@ -159,7 +159,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithMultipleEmailsToDict) {
   work_email.type = "work";
   contact.email_addresses.push_back(std::move(work_email));
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "emailAddresses": [
@@ -180,7 +180,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithNameToDict) {
   contact.name.family_name = "Francois";
   contact.name.given_name = "Andre";
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "names": [
@@ -198,7 +198,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithOnePhoneToDict) {
   phone.value = "+61400000000";
   contact.phone_numbers.push_back(std::move(phone));
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "phoneNumbers": [
@@ -220,7 +220,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithMultiplePhonesToDict) {
   home_number.type = "home";
   contact.phone_numbers.push_back(std::move(home_number));
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "phoneNumbers": [
@@ -259,7 +259,7 @@ TEST(PeopleApiRequestTypesTest, ContactWithMultipleFieldsToDict) {
   home_number.type = "home";
   contact.phone_numbers.push_back(std::move(home_number));
 
-  base::Value::Dict dict = std::move(contact).ToDict();
+  base::DictValue dict = std::move(contact).ToDict();
 
   EXPECT_THAT(dict, IsJson(R"json({
     "emailAddresses": [

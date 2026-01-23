@@ -88,12 +88,12 @@ constexpr auto kOAuth2ResponseByErrorReason =
     });
 
 const std::string* FindMessageInErrorResponse(
-    const std::optional<base::Value::Dict>& response) {
+    const std::optional<base::DictValue>& response) {
   if (!response) {
     return nullptr;
   }
 
-  const base::Value::Dict* error = response->FindDict(kError);
+  const base::DictValue* error = response->FindDict(kError);
   if (!error) {
     return nullptr;
   }
@@ -102,22 +102,22 @@ const std::string* FindMessageInErrorResponse(
 }
 
 const std::string* FindReasonInErrorResponse(
-    const std::optional<base::Value::Dict>& response) {
+    const std::optional<base::DictValue>& response) {
   if (!response) {
     return nullptr;
   }
 
-  const base::Value::Dict* error = response->FindDict(kError);
+  const base::DictValue* error = response->FindDict(kError);
   if (!error) {
     return nullptr;
   }
 
-  const base::Value::List* errors = error->FindList(kErrors);
+  const base::ListValue* errors = error->FindList(kErrors);
   if (!errors || errors->empty()) {
     return nullptr;
   }
 
-  const base::Value::Dict* first_error = errors->front().GetIfDict();
+  const base::DictValue* first_error = errors->front().GetIfDict();
   if (!first_error) {
     return nullptr;
   }
@@ -215,7 +215,7 @@ OAuth2ErrorDetails ParseErrorResponse(
             std::nullopt};
   }
 
-  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
       body.value_or(""), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const std::string* message = FindMessageInErrorResponse(dict);
   const std::string* reason = FindReasonInErrorResponse(dict);
@@ -438,7 +438,7 @@ std::string OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(
 void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::optional<std::string> body) {
-  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> dict = base::JSONReader::ReadDict(
       body.value_or(""), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseJsonFailure,
@@ -513,7 +513,7 @@ void OAuth2MintTokenFlow::ProcessApiCallFailure(
 
 // static
 std::optional<OAuth2MintTokenFlow::MintTokenResult>
-OAuth2MintTokenFlow::ParseMintTokenResponse(const base::Value::Dict& dict) {
+OAuth2MintTokenFlow::ParseMintTokenResponse(const base::DictValue& dict) {
   MintTokenResult result;
 
   const std::string* ttl_string = dict.FindString(kExpiresInKey);
@@ -542,7 +542,7 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::Value::Dict& dict) {
   result.granted_scopes.insert(granted_scopes_vector.begin(),
                                granted_scopes_vector.end());
 
-  const base::Value::Dict* token_binding_response =
+  const base::DictValue* token_binding_response =
       dict.FindDict(kTokenBindingResponseKey);
   // The presence of `kDirectedResponseKey` indicates that the returned token is
   // encrypted to the public key provided by the client earlier.
@@ -555,11 +555,11 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::Value::Dict& dict) {
 
 // static
 bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     RemoteConsentResolutionData* resolution_data) {
   CHECK(resolution_data);
 
-  const base::Value::Dict* resolution_dict = dict.FindDict("resolutionData");
+  const base::DictValue* resolution_dict = dict.FindDict("resolutionData");
   if (!resolution_dict)
     return false;
 
@@ -576,7 +576,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
   if (!resolution_url.is_valid())
     return false;
 
-  const base::Value::List* browser_cookies =
+  const base::ListValue* browser_cookies =
       resolution_dict->FindList("browserCookies");
 
   base::Time time_now = base::Time::Now();
@@ -584,7 +584,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
   std::vector<net::CanonicalCookie> cookies;
   if (browser_cookies) {
     for (const auto& cookie_value : *browser_cookies) {
-      const base::Value::Dict* cookie_dict = cookie_value.GetIfDict();
+      const base::DictValue* cookie_dict = cookie_value.GetIfDict();
       if (!cookie_dict) {
         success = false;
         break;

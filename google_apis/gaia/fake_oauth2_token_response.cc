@@ -125,7 +125,7 @@ net::HttpStatusCode GetDefaultHttpStatusCodeForError(OAuth2Response error) {
 std::string BuildIssueTokenSuccess(std::string_view access_token,
                                    base::TimeDelta expires_in) {
   auto response =
-      base::Value::Dict()
+      base::DictValue()
           .Set("token", std::string(access_token))
           .Set("issueAdvice", "auto")
           .Set("expiresIn", base::NumberToString((expires_in.InSeconds())))
@@ -136,15 +136,15 @@ std::string BuildIssueTokenSuccess(std::string_view access_token,
 std::string BuildGetAccessTokenSuccess(std::string_view access_token,
                                        base::TimeDelta expires_in) {
   auto response =
-      base::Value::Dict()
+      base::DictValue()
           .Set("access_token", access_token)
           .Set("expires_in", static_cast<int>(expires_in.InSeconds()));
   return *base::WriteJson(response);
 }
 
 std::string BuildIssueTokenError(OAuth2Response error) {
-  using Dict = base::Value::Dict;
-  using List = base::Value::List;
+  using Dict = base::DictValue;
+  using List = base::ListValue;
   auto response = Dict().Set(
       "error",
       Dict()
@@ -155,8 +155,7 @@ std::string BuildIssueTokenError(OAuth2Response error) {
 }
 
 std::string BuildGetAccessTokenError(OAuth2Response error) {
-  auto response =
-      base::Value::Dict().Set("error", GetGetTokenErrorString(error));
+  auto response = base::DictValue().Set("error", GetGetTokenErrorString(error));
   return *base::WriteJson(response);
 }
 

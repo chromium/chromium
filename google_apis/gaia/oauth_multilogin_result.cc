@@ -110,11 +110,11 @@ OAuthMultiloginResult::OAuthMultiloginResult(
     : status_(status) {}
 
 void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
-    const base::Value::Dict& json_value) {
+    const base::DictValue& json_value) {
   CHECK(status_ == OAuthMultiloginResponseStatus::kInvalidTokens ||
         status_ ==
             OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge);
-  const base::Value::List* failed_accounts =
+  const base::ListValue* failed_accounts =
       json_value.FindList("failed_accounts");
   if (!failed_accounts) {
     VLOG(1) << "No failed accounts found in the response. status_="
@@ -123,7 +123,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     return;
   }
   for (const auto& account : *failed_accounts) {
-    const base::Value::Dict* account_dict = account.GetIfDict();
+    const base::DictValue* account_dict = account.GetIfDict();
     if (!account_dict) {
       VLOG(1) << "failed_accounts list contained a malformed element, ignoring";
       continue;
@@ -166,10 +166,10 @@ OAuthMultiloginResult::GetDeviceBoundSessionsToRegister() const {
 }
 
 void OAuthMultiloginResult::TryParseCookiesFromValue(
-    const base::Value::Dict& json_value,
+    const base::DictValue& json_value,
     const CookieDecryptor& cookie_decryptor) {
   CHECK_EQ(status_, OAuthMultiloginResponseStatus::kOk);
-  const base::Value::List* cookie_list = json_value.FindList("cookies");
+  const base::ListValue* cookie_list = json_value.FindList("cookies");
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
@@ -188,7 +188,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
     return;
   }
   for (const auto& cookie : *cookie_list) {
-    const base::Value::Dict& cookie_dict = cookie.GetDict();
+    const base::DictValue& cookie_dict = cookie.GetDict();
     const std::string* name = cookie_dict.FindString("name");
     const std::string* value = cookie_dict.FindString("value");
     const std::string* domain = cookie_dict.FindString("domain");
@@ -267,10 +267,10 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
 // TODO(crbug.com/312719798): Update the status to `kUnknownStatus` if failed to
 // parse device-bound sessions.
 void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
-    const base::Value::Dict& json_value,
+    const base::DictValue& json_value,
     bool standard_device_bound_session_credentials) {
   CHECK_EQ(status_, OAuthMultiloginResponseStatus::kOk);
-  const base::Value::List* device_bound_sessions_list =
+  const base::ListValue* device_bound_sessions_list =
       json_value.FindList("device_bound_session_info");
   if (!device_bound_sessions_list) {
     // No device-bound sessions info, nothing to do.
@@ -281,7 +281,7 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
   std::vector<DeviceBoundSession> device_bound_sessions;
   for (const base::Value& device_bound_session_val :
        *device_bound_sessions_list) {
-    const base::Value::Dict* device_bound_session_dict =
+    const base::DictValue* device_bound_session_dict =
         device_bound_session_val.GetIfDict();
     if (!device_bound_session_dict) {
       continue;
@@ -313,7 +313,7 @@ void OAuthMultiloginResult::TryParseDeviceBoundSessionsFromValue(
       continue;
     }
 
-    const base::Value::Dict* register_session_payload_dict =
+    const base::DictValue* register_session_payload_dict =
         device_bound_session_dict->FindDict("register_session_payload");
     if (!register_session_payload_dict) {
       // Missing register session payload signals the client to reuse the
@@ -360,7 +360,7 @@ OAuthMultiloginResult::OAuthMultiloginResult(
     return;
   }
 
-  const base::Value::Dict& json_dict = json_data->GetDict();
+  const base::DictValue& json_dict = json_data->GetDict();
   const std::string* status_string = json_dict.FindString("status");
   if (!status_string) {
     RecordMultiloginResponseStatus(status_);

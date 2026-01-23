@@ -83,13 +83,13 @@ void ParseFileResourceWithUploadRangeAndRun(
 
 // Attaches |properties| to the |request_body| if |properties| is not empty.
 void AttachProperties(const Properties& properties,
-                      base::Value::Dict& request_body) {
+                      base::DictValue& request_body) {
   if (properties.empty())
     return;
 
-  base::Value::List properties_value;
+  base::ListValue properties_value;
   for (const auto& property : properties) {
-    base::Value::Dict property_value;
+    base::DictValue property_value;
     std::string visibility_as_string;
     switch (property.visibility()) {
       case Property::VISIBILITY_PRIVATE:
@@ -117,13 +117,13 @@ std::string CreateMultipartUploadMetadataJson(
     const base::Time& modified_date,
     const base::Time& last_viewed_by_me_date,
     const Properties& properties) {
-  base::Value::Dict root;
+  base::DictValue root;
   if (!title.empty())
     root.Set("title", title);
 
   // Fill parent link.
   if (!parent_resource_id.empty()) {
-    base::Value::List parents;
+    base::ListValue parents;
     parents.Append(google_apis::util::CreateParentValue(parent_resource_id));
     root.Set("parents", base::Value(std::move(parents)));
   }
@@ -333,7 +333,7 @@ bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
                                         std::string* upload_content) {
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
 
   if (!last_viewed_by_me_date_.is_null()) {
     root.Set("lastViewedByMeDate",
@@ -347,9 +347,9 @@ bool FilesInsertRequest::GetContentData(std::string* upload_content_type,
     root.Set("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    base::Value::List parents_value;
+    base::ListValue parents_value;
     for (const std::string& parent_id : parents_) {
-      base::Value::Dict parent;
+      base::DictValue parent;
       parent.Set("id", parent_id);
       parents_value.Append(std::move(parent));
     }
@@ -407,7 +407,7 @@ bool FilesPatchRequest::GetContentData(std::string* upload_content_type,
 
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
   if (!title_.empty())
     root.Set("title", title_);
 
@@ -420,9 +420,9 @@ bool FilesPatchRequest::GetContentData(std::string* upload_content_type,
   }
 
   if (!parents_.empty()) {
-    base::Value::List parents_value;
+    base::ListValue parents_value;
     for (const std::string& parent_id : parents_) {
-      base::Value::Dict parent;
+      base::DictValue parent;
       parent.Set("id", parent_id);
       parents_value.Append(std::move(parent));
     }
@@ -464,16 +464,16 @@ bool FilesCopyRequest::GetContentData(std::string* upload_content_type,
 
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
 
   if (!modified_date_.is_null())
     root.Set("modifiedDate", util::FormatTimeAsString(modified_date_));
 
   if (!parents_.empty()) {
-    base::Value::List parents_value;
+    base::ListValue parents_value;
 
     for (const std::string& parent_id : parents_) {
-      base::Value::Dict parent;
+      base::DictValue parent;
       parent.Set("id", parent_id);
       parents_value.Append(std::move(parent));
     }
@@ -663,7 +663,7 @@ bool ChildrenInsertRequest::GetContentData(std::string* upload_content_type,
                                            std::string* upload_content) {
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("id", id_);
 
   *upload_content = base::WriteJson(root).value_or("");
@@ -724,11 +724,11 @@ bool InitiateUploadNewFileRequest::GetContentData(
     std::string* upload_content) {
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("title", title_);
 
   // Fill parent link.
-  base::Value::List parents;
+  base::ListValue parents;
   parents.Append(util::CreateParentValue(parent_resource_id_));
   root.Set("parents", base::Value(std::move(parents)));
 
@@ -789,9 +789,9 @@ InitiateUploadExistingFileRequest::GetExtraRequestHeaders() const {
 bool InitiateUploadExistingFileRequest::GetContentData(
     std::string* upload_content_type,
     std::string* upload_content) {
-  base::Value::Dict root;
+  base::DictValue root;
   if (!parent_resource_id_.empty()) {
-    base::Value::List parents;
+    base::ListValue parents;
     parents.Append(util::CreateParentValue(parent_resource_id_));
     root.Set("parents", base::Value(std::move(parents)));
   }
@@ -1016,7 +1016,7 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
                                               std::string* upload_content) {
   *upload_content_type = util::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
   switch (type_) {
     case PERMISSION_TYPE_ANYONE:
       root.Set("type", "anyone");
@@ -1044,7 +1044,7 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
     case PERMISSION_ROLE_COMMENTER:
       root.Set("role", "reader");
       {
-        base::Value::List list;
+        base::ListValue list;
         list.Append("commenter");
         root.Set("additionalRoles", std::move(list));
       }

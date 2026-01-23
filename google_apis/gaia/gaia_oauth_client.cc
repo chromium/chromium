@@ -537,7 +537,7 @@ void GaiaOAuthClient::Core::HandleResponse(std::optional<std::string> body,
     return;
   }
 
-  std::optional<base::Value::Dict> response_dict;
+  std::optional<base::DictValue> response_dict;
   if (response_code == net::HTTP_OK && body) {
     response_dict =
         base::JSONReader::ReadDict(*body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);

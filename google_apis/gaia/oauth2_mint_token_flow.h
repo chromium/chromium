@@ -200,11 +200,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
   void ReportFailure(const GoogleServiceAuthError& error);
 
   static bool ParseRemoteConsentResponse(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       RemoteConsentResolutionData* resolution_data);
 
   static std::optional<MintTokenResult> ParseMintTokenResponse(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   raw_ptr<Delegate> delegate_;
   Parameters parameters_;

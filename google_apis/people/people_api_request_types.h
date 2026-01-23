@@ -33,7 +33,7 @@ struct EmailAddress {
   //
   // This should be called either with a moved struct, or an explicit copy of
   // one.
-  base::Value::Dict ToDict() &&;
+  base::DictValue ToDict() &&;
 };
 
 // From the People API reference:
@@ -52,7 +52,7 @@ struct Name {
   //
   // This should be called either with a moved struct, or an explicit copy of
   // one.
-  base::Value::Dict ToDict() &&;
+  base::DictValue ToDict() &&;
 };
 
 // A person's phone number.
@@ -85,7 +85,7 @@ struct PhoneNumber {
   //
   // This should be called either with a moved struct, or an explicit copy of
   // one.
-  base::Value::Dict ToDict() &&;
+  base::DictValue ToDict() &&;
 };
 
 // A contact-based Person sent to mutation endpoints. Unlike the general
@@ -128,7 +128,7 @@ struct Contact {
   //
   // This should be called either with a moved struct, or an explicit copy of
   // one.
-  base::Value::Dict ToDict() &&;
+  base::DictValue ToDict() &&;
 };
 
 }  // namespace google_apis::people
