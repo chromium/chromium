@@ -23,7 +23,7 @@ class GLES2Interface;
 }  // namespace gpu
 
 namespace blink {
-class CanvasResourceProviderSharedImage;
+class CanvasResourceProviderSharedImageNon2D;
 
 class PLATFORM_EXPORT StaticBitmapImage : public Image {
  public:
@@ -73,7 +73,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   }
 
   virtual bool CopyToResourceProvider(
-      CanvasResourceProviderSharedImage* resource_provider,
+      CanvasResourceProviderSharedImageNon2D* resource_provider,
       const gfx::Rect& copy_rect) = 0;
 
   virtual void EnsureSyncTokenVerified() { NOTREACHED(); }

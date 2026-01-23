@@ -681,7 +681,7 @@ bool CanvasResourceProviderSharedImage::WritePixels(
   return true;
 }
 
-bool CanvasResourceProviderSharedImage::OverwriteImage(
+bool CanvasResourceProviderSharedImageNon2D::OverwriteImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     const gfx::Rect& copy_rect,
     const gpu::SyncToken& ready_sync_token,
