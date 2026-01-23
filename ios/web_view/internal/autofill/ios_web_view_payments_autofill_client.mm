@@ -308,7 +308,7 @@ IOSWebViewPaymentsAutofillClient::GetRiskBasedAuthenticator() {
 bool IOSWebViewPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()
     const {
   return GetPrefService()->GetBoolean(
-      ios_web_view::kCWVAutofillVCNUsageEnabled);
+      ios_web_view::kRiskBasedAuthenticationEnabled);
 }
 
 bool IOSWebViewPaymentsAutofillClient::IsMandatoryReauthEnabled() {
