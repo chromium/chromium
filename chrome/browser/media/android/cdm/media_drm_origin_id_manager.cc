@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/android_info.h"
+#include "base/android/locale_utils.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -16,7 +17,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -75,6 +78,22 @@ const char kExpirableToken[] = "expirable_token";
 const char kOriginIds[] = "origin_ids";
 const char kLastProvisioningAttemptTimeToken[] =
     "last_provisioning_attempt_time";
+
+std::string_view GetDetailedUserAgent() {
+  // Use NoDestructor to avoid computing this string multiple times for every
+  // provisioning request.
+  static const base::NoDestructor<std::string> user_agent([] {
+    std::string locale = base::android::GetDefaultLocaleString();
+    // Example Format: Widevine CDM v1.0 (Linux; U; Android 35;
+    // en-US; Build/BP1A.250505.005; user)
+    return base::StringPrintf(
+        "Widevine CDM v1.0 (Linux; U; Android %d; %s; Build/%s; %s)",
+        base::android::android_info::sdk_int(), locale.c_str(),
+        base::android::android_info::android_build_id(),
+        base::android::android_info::build_type());
+  }());
+  return *user_agent;
+}
 
 // The maximum number of origin IDs to pre-provision. Chosen to be small to
 // minimize provisioning server load.
@@ -265,9 +284,10 @@ class MediaDrmProvisionHelper {
     DVLOG(1) << __func__;
     DCHECK(pending_shared_url_loader_factory);
     create_fetcher_cb_ =
-        base::BindRepeating(&content::CreateProvisionFetcher,
+        base::BindRepeating(&content::CreateProvisionFetcherWithUserAgent,
                             network::SharedURLLoaderFactory::Create(
-                                std::move(pending_shared_url_loader_factory)));
+                                std::move(pending_shared_url_loader_factory)),
+                            GetDetailedUserAgent());
   }
 
   void Provision(ProvisionedOriginIdCB callback) {
