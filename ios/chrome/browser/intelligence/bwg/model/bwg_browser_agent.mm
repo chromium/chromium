@@ -392,6 +392,9 @@ void BwgBrowserAgent::OnGeminiViewStateExpanded() {
                        weak_factory_.GetWeakPtr()),
         /*full_page_context=*/true);
   }
+  // Show page attachment UI chip every time the floaty is expanded.
+  ios::provider::RequestUIChange(
+      ios::provider::GeminiUIElementType::kContextAttachment);
 }
 
 void BwgBrowserAgent::CollapseFloatyIfInvoked() {

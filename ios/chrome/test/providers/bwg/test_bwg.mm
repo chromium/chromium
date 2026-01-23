@@ -59,4 +59,6 @@ GeminiViewState GetCurrentGeminiViewState() {
   return GeminiViewState::kUnknown;
 }
 
+void RequestUIChange(GeminiUIElementType ui_element_type) {}
+
 }  // namespace ios::provider
