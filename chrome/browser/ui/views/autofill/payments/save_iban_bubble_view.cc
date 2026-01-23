@@ -87,7 +87,11 @@ void SaveIbanBubbleView::AddedToWidget() {
   if (controller_->IsUploadSave()) {
     GetBubbleFrameView()->SetTitleView(
         std::make_unique<TitleWithIconAfterLabelView>(
-            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+            GetWindowTitle(),
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBranding)
+                ? TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET
+                : TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
   }
 }
 
