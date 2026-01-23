@@ -158,8 +158,8 @@ void OnSetRlzPingSent(int retry_count, bool success) {
 std::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::DICT: {
-      base::Value::Dict dict;
-      const base::Value::Dict& dict_in = value.GetDict();
+      base::DictValue dict;
+      const base::DictValue& dict_in = value.GetDict();
 
       for (auto it = dict_in.begin(); it != dict_in.end(); ++it) {
         std::optional<base::Value> item_copy =
@@ -175,7 +175,7 @@ std::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
     }
 
     case base::Value::Type::LIST: {
-      base::Value::List list;
+      base::ListValue list;
       list.reserve(value.GetList().size());
 
       for (const base::Value& item : value.GetList()) {
@@ -317,7 +317,7 @@ bool RlzValueStoreChromeOS::ReadProductEvents(
     Product product,
     std::vector<std::string>* events) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::List* events_list =
+  const base::ListValue* events_list =
       rlz_store_.FindListByDottedPath(GetKeyName(kProductEventKey, product));
   if (!events_list)
     return false;
@@ -462,7 +462,7 @@ void RlzValueStoreChromeOS::WriteStore() {
 
 bool RlzValueStoreChromeOS::AddValueToList(const std::string& list_name,
                                            base::Value value) {
-  base::Value::List* list = rlz_store_.FindListByDottedPath(list_name);
+  base::ListValue* list = rlz_store_.FindListByDottedPath(list_name);
   if (!list) {
     list =
         &rlz_store_
@@ -477,7 +477,7 @@ bool RlzValueStoreChromeOS::AddValueToList(const std::string& list_name,
 
 bool RlzValueStoreChromeOS::RemoveValueFromList(const std::string& list_name,
                                                 const base::Value& to_remove) {
-  base::Value::List* list = rlz_store_.FindListByDottedPath(list_name);
+  base::ListValue* list = rlz_store_.FindListByDottedPath(list_name);
   if (!list)
     return false;
 
@@ -489,7 +489,7 @@ bool RlzValueStoreChromeOS::RemoveValueFromList(const std::string& list_name,
 
 bool RlzValueStoreChromeOS::ListContainsValue(const std::string& list_name,
                                               const base::Value& value) const {
-  const base::Value::List* list = rlz_store_.FindListByDottedPath(list_name);
+  const base::ListValue* list = rlz_store_.FindListByDottedPath(list_name);
   if (!list)
     return false;
 

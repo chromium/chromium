@@ -85,7 +85,7 @@ class RlzValueStoreChromeOS : public RlzValueStore {
   bool HasAccessPointRlz(AccessPoint access_point) const;
 
   // In-memory store with RLZ data.
-  base::Value::Dict rlz_store_;
+  base::DictValue rlz_store_;
 
   base::FilePath store_path_;
 
