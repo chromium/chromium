@@ -4505,6 +4505,14 @@ const FeatureEntry::FeatureVariation kGlicEntrypointVariations[] = {
      std::size(kGlicEntrypointVariationsLabelAndIconAndHighlight), nullptr},
 };
 
+const FeatureEntry::FeatureParam kGlicButtonPressedStateForceSolidIcon[] = {
+    {"glic-button-pressed-force-solid-icon", "true"}};
+
+const FeatureEntry::FeatureVariation kGlicButtonPressedStateVariations[] = {
+    {"force solid color icon when pressed",
+     kGlicButtonPressedStateForceSolidIcon,
+     std::size(kGlicButtonPressedStateForceSolidIcon), nullptr}};
+
 const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant0[] = {
     {"glic-button-alt-label-variant", "0"}};
 const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant1[] = {
@@ -11447,7 +11455,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-button-pressed-state",
      flag_descriptions::kGlicButtonPressedStateName,
      flag_descriptions::kGlicButtonPressedStateDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicButtonPressedState)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicButtonPressedState,
+                                    kGlicButtonPressedStateVariations,
+                                    "GlicButtonPressedState")},
     {"glic-button-alt-label", flag_descriptions::kGlicButtonAltLabelName,
      flag_descriptions::kGlicButtonAltLabelDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicButtonAltLabel,
