@@ -54,6 +54,10 @@ class VerticalTabStripRegionViewTest
     return tabs::VerticalTabStripStateController::From(browser());
   }
 
+  TabStrip* horizontal_tab_strip() {
+    return browser()->GetBrowserView().horizontal_tab_strip_for_testing();
+  }
+
  protected:
   // Appends a new tab to the end of the tab strip.
   content::WebContents* AppendTab() {
@@ -629,4 +633,91 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
     return unpinned_split_tab->children()[0]->size().width() ==
            unpinned_split_tab->children()[1]->size().width();
   }));
+}
+
+// Simulates swapping between horizontal and vertical modes. The inactive
+// TabStrip should have no tabs.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, SwitchModes) {
+  EXPECT_TRUE(root_node());
+
+  TabStripModel* model = browser()->tab_strip_model();
+
+  // 1. Unpinned Tab
+  // This tab is added by default for browser tests.
+
+  // 2. Pinned Tab
+  AppendPinnedTab();
+
+  // 3. Split Tab (Unpinned)
+  {
+    content::WebContents* c1 = AppendTab();
+    content::WebContents* c2 = AppendTab();
+    int i1 = model->GetIndexOfWebContents(c1);
+    int i2 = model->GetIndexOfWebContents(c2);
+    model->ActivateTabAt(i1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+    model->AddToNewSplit({i2}, {},
+                         split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  }
+
+  // 4. Pinned Split Tab
+  {
+    content::WebContents* c1 = AppendPinnedTab();
+    content::WebContents* c2 = AppendPinnedTab();
+    int i1 = model->GetIndexOfWebContents(c1);
+    int i2 = model->GetIndexOfWebContents(c2);
+    model->ActivateTabAt(i1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+    model->AddToNewSplit({i2}, {},
+                         split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  }
+
+  // 5. Grouped Tab
+  {
+    content::WebContents* c = AppendTab();
+    int i = model->GetIndexOfWebContents(c);
+    model->AddToNewGroup({i});
+  }
+
+  // 6. Split within a Group
+  {
+    content::WebContents* c1 = AppendTab();
+    content::WebContents* c2 = AppendTab();
+    int i1 = model->GetIndexOfWebContents(c1);
+    int i2 = model->GetIndexOfWebContents(c2);
+    model->AddToNewGroup({i1, i2});
+    model->ActivateTabAt(i1,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+    model->AddToNewSplit({i2}, {},
+                         split_tabs::SplitTabCreatedSource::kTabContextMenu);
+  }
+
+  // Total tabs: 1 (pinned) + 1 (unpinned) + 2 (split) + 2 (pinned split) + 1
+  // (grouped) + 2 (grouped split) = 9.
+  auto* pinned_tabs_view = root_node()->children()[0]->get_view_for_testing();
+  auto* unpinned_tabs_view = root_node()->children()[1]->get_view_for_testing();
+
+  // Horizontal tabstrip should be empty when in vertical mode.
+  EXPECT_EQ(horizontal_tab_strip()->GetTabCount(), 0);
+
+  // Vertical tabstrip should have the tabs.
+  // Pinned: 1 single + 1 split = 2 children.
+  // Unpinned: 1 single + 1 split + 1 group + 1 group = 4 children.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return pinned_tabs_view->children().size() == 2 &&
+           unpinned_tabs_view->children().size() == 4;
+  }));
+
+  ExitVerticalTabsMode();
+
+  // Root node should be null after exiting vertical tabs mode.
+  EXPECT_FALSE(root_node());
+
+  // Horizontal tabstrip should have the tabs.
+  // 1 pinned + 1 unpinned + 2 split + 2 pinned split + 1 grouped +
+  // 2 grouped split = 10.
+  EXPECT_EQ(horizontal_tab_strip()->GetTabCount(), 9);
 }

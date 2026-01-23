@@ -1551,6 +1551,10 @@ std::optional<int> TabStrip::GetModelIndexOf(const TabSlotView* view) const {
 }
 
 int TabStrip::GetTabCount() const {
+  if (!tab_container_) {
+    return 0;
+  }
+
   return tab_container_->GetTabCount();
 }
 
