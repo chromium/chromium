@@ -11,7 +11,7 @@
 
 [package]
 name = "rustc-demangle"
-version = "0.1.26"
+version = "0.1.27"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = false
 autolib = false

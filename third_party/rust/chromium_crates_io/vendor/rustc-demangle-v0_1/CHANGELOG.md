@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.27](https://github.com/rust-lang/rustc-demangle/compare/rustc-demangle-v0.1.26...rustc-demangle-v0.1.27) - 2026-01-15
+
+### Other
+
+- Support v0 demangling of trait object types with assoc const bindings
+
 ## [0.1.26](https://github.com/rust-lang/rustc-demangle/compare/rustc-demangle-v0.1.25...rustc-demangle-v0.1.26) - 2025-07-16
 
 ### Other
