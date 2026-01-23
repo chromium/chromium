@@ -5978,8 +5978,7 @@
     },
     {
       name: "WebGPUTransientAttachment",
-      status: "experimental",
-      implied_by: ["WebGPUExperimentalFeatures"],
+      status: "stable",
     },
     {
       name: "WebHID",

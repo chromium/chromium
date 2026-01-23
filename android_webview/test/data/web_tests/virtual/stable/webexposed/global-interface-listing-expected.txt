@@ -11286,6 +11286,7 @@ namespace GPUTextureUsage
     attribute RENDER_ATTACHMENT
     attribute STORAGE_BINDING
     attribute TEXTURE_BINDING
+    attribute TRANSIENT_ATTACHMENT
 namespace Temporal
     attribute @@toStringTag
     attribute Now
