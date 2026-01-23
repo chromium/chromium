@@ -60,7 +60,7 @@ public class KeyboardAccessoryButtonGroupViewBinder
         if (model.size() <= 0) return;
         for (int i = 0; i < model.size(); i++) {
             KeyboardAccessoryData.Tab tab = model.get(i);
-            view.addButton(tab.getIcon(), tab.getContentDescription());
+            view.addButton(tab.getIconId(), tab.getContentDescription());
         }
     }
 

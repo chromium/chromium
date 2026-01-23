@@ -151,7 +151,7 @@ public class AccessorySheetViewTest {
                             .add(
                                     new Tab(
                                             "Passwords",
-                                            null,
+                                            0,
                                             null,
                                             R.layout.empty_accessory_sheet,
                                             AccessoryTabType.PASSWORDS,
@@ -386,7 +386,7 @@ public class AccessorySheetViewTest {
     private Tab createTestTabWithTextView(String textViewCaption) {
         return new Tab(
                 "Passwords",
-                null,
+                0,
                 null,
                 R.layout.empty_accessory_sheet,
                 AccessoryTabType.PASSWORDS,

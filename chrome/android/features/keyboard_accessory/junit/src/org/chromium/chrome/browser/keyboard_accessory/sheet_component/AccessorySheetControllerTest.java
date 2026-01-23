@@ -84,10 +84,10 @@ public class AccessorySheetControllerTest {
 
     private final Tab[] mTabs =
             new Tab[] {
-                new Tab("Passwords", null, null, 0, 0, null),
-                new Tab("Passwords", null, null, 0, 0, null),
-                new Tab("Passwords", null, null, 0, 0, null),
-                new Tab("Passwords", null, null, 0, 0, null)
+                new Tab("Passwords", 0, null, 0, 0, null),
+                new Tab("Passwords", 0, null, 0, 0, null),
+                new Tab("Passwords", 0, null, 0, 0, null),
+                new Tab("Passwords", 0, null, 0, 0, null)
             };
 
     private AccessorySheetCoordinator mCoordinator;

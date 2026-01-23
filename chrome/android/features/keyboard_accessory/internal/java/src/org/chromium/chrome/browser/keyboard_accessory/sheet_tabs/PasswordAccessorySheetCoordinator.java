@@ -24,12 +24,11 @@ import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
 /**
- * This component is a tab that can be added to the ManualFillingCoordinator which shows it
- * as bottom sheet below the keyboard accessory.
+ * This component is a tab that can be added to the ManualFillingCoordinator which shows it as
+ * bottom sheet below the keyboard accessory.
  */
 public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final PasswordAccessorySheetMediator mMediator;
-    private final Context mContext;
     private final Profile mProfile;
 
     /**
@@ -45,12 +44,11 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
             RecyclerView.@Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.password_list_title),
-                IconProvider.getIcon(context, R.drawable.ic_password_manager_key),
+                R.drawable.ic_password_manager_key,
                 context.getString(R.string.password_accessory_sheet_toggle),
                 R.layout.password_accessory_sheet,
                 AccessoryTabType.PASSWORDS,
                 scrollListener);
-        mContext = context;
         mProfile = profile;
         mMediator =
                 new PasswordAccessorySheetMediator(
@@ -77,12 +75,10 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     }
 
     private void onToggleChanged(boolean enabled) {
-        getTab().setIcon(
-                        IconProvider.getIcon(
-                                mContext,
-                                enabled
-                                        ? R.drawable.ic_password_manager_key
-                                        : R.drawable.ic_password_manager_key_off));
+        getTab().setIconId(
+                        enabled
+                                ? R.drawable.ic_password_manager_key
+                                : R.drawable.ic_password_manager_key_off);
     }
 
     /**

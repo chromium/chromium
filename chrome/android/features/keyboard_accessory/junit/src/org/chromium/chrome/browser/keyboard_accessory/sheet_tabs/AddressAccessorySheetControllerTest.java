@@ -10,7 +10,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -19,8 +18,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
-
-import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -67,7 +64,6 @@ public class AddressAccessorySheetControllerTest {
     @Before
     public void setUp() {
         when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
-        AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator =
                 new AddressAccessorySheetCoordinator(
                         RuntimeEnvironment.application, mProfile, null);
@@ -84,7 +80,6 @@ public class AddressAccessorySheetControllerTest {
     public void testCreatesValidTab() {
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();
         assertNotNull(tab);
-        assertNotNull(tab.getIcon());
         assertNotNull(tab.getListener());
     }
 

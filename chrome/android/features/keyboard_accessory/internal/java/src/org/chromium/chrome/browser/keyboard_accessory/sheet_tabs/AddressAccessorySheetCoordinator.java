@@ -42,7 +42,7 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
             RecyclerView.@Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.address_accessory_sheet_title),
-                IconProvider.getIcon(context, R.drawable.ic_location_on_fill_24dp),
+                R.drawable.ic_location_on_fill_24dp,
                 context.getString(R.string.address_accessory_sheet_toggle),
                 R.layout.address_accessory_sheet,
                 AccessoryTabType.ADDRESSES,

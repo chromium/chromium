@@ -93,7 +93,7 @@ public class PasswordAccessorySheetViewTest {
                             new KeyboardAccessoryData.Tab[] {
                                 new KeyboardAccessoryData.Tab(
                                         "Passwords",
-                                        null,
+                                        0,
                                         null,
                                         R.layout.password_accessory_sheet,
                                         AccessoryTabType.ALL,

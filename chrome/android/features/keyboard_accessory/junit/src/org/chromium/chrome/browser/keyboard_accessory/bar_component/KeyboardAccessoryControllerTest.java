@@ -124,7 +124,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private Runnable mMockDismissRunnable;
 
     private final KeyboardAccessoryData.Tab mTestTab =
-            new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
+            new KeyboardAccessoryData.Tab("Passwords", 0, null, 0, 0, null);
 
     private KeyboardAccessoryCoordinator mCoordinator;
     private PropertyModel mModel;

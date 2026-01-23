@@ -48,7 +48,7 @@ public class KeyboardAccessoryButtonGroupControllerTest {
     private KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver mMockAccessoryTabObserver;
 
     private final KeyboardAccessoryData.Tab mTestTab =
-            new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
+            new KeyboardAccessoryData.Tab("Passwords", 0, null, 0, 0, null);
 
     private KeyboardAccessoryButtonGroupCoordinator mCoordinator;
     private PropertyModel mModel;

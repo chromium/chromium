@@ -8,17 +8,13 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.SCROLL_LISTENER;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -38,32 +34,12 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
 
     protected final PropertyModel mModel;
 
-    /** Provides the icon used for a sheet. Simplifies mocking in controller tests. */
-    public static class IconProvider {
-        private static Drawable sIconForTesting;
-
-        /**
-         * Loads the icon used for this class. Used to mock icons in unit tests.
-         * @param context The context containing the icon resources.
-         * @param resource The icon resources.
-         * @return The icon as {@link Drawable}.
-         */
-        static Drawable getIcon(Context context, @DrawableRes int resource) {
-            if (sIconForTesting != null) return sIconForTesting;
-            return AppCompatResources.getDrawable(context, resource);
-        }
-
-        public static void setIconForTesting(Drawable icon) {
-            sIconForTesting = icon;
-            ResettersForTesting.register(() -> sIconForTesting = null);
-        }
-    }
-
     /**
      * Creates a keyboard accessory sheet tab coordinator.
      *
      * @param title A {@link String} permanently displayed in the bar above the keyboard.
-     * @param icon The icon that represents this sheet in the keyboard accessory tab switcher.
+     * @param iconId Id of the icon that represents this sheet in the keyboard accessory tab
+     *     switcher.
      * @param contentDescription A description for this sheet used in the tab switcher.
      * @param layout The layout containing all views that are used by this sheet.
      * @param tabType The type of this tab as used in histograms.
@@ -71,14 +47,14 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
      */
     AccessorySheetTabCoordinator(
             String title,
-            Drawable icon,
+            @DrawableRes int iconId,
             String contentDescription,
             @LayoutRes int layout,
             @AccessoryTabType int tabType,
             RecyclerView.@Nullable OnScrollListener scrollListener) {
         mTab =
                 new KeyboardAccessoryData.Tab(
-                        title, icon, contentDescription, layout, tabType, this);
+                        title, iconId, contentDescription, layout, tabType, this);
         mScrollListener = scrollListener;
         mModel =
                 new PropertyModel.Builder(AccessorySheetTabProperties.ALL_KEYS)

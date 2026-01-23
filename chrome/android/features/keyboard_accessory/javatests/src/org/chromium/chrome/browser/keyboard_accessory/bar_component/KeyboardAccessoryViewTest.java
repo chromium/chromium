@@ -1196,14 +1196,9 @@ public class KeyboardAccessoryViewTest {
                             return;
                         }
 
-                        group.addButton(
-                                buttons.getContext()
-                                        .getDrawable(R.drawable.ic_password_manager_key),
-                                "Key Icon");
+                        group.addButton(R.drawable.ic_password_manager_key, "Key Icon");
 
-                        group.addButton(
-                                buttons.getContext().getDrawable(R.drawable.ic_credit_card_black),
-                                "Card Icon 2");
+                        group.addButton(R.drawable.ic_credit_card_black, "Card Icon 2");
                     }
 
                     @Override

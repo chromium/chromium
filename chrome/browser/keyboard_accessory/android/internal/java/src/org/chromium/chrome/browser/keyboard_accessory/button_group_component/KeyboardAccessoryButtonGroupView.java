@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -14,13 +12,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
 
@@ -47,19 +45,15 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     /**
      * Creates a new button and appends it to the end of the button group at the end of the bar.
      *
-     * @param icon The icon to be displayed in the button.
+     * @param iconId Id of the icon to be displayed in the button.
      * @param contentDescription The contentDescription to be used for the button.
      */
-    public void addButton(Drawable icon, CharSequence contentDescription) {
+    public void addButton(@DrawableRes int iconId, CharSequence contentDescription) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         ImageButton button =
                 (ImageButton)
                         inflater.inflate(R.layout.keyboard_accessory_image_button, this, false);
-        button.setImageDrawable(icon.mutate()); // mutate() needed to change the active tint.
-        button.getDrawable()
-                .setColorFilter(
-                        SemanticColorUtils.getDefaultIconColor(getContext()),
-                        PorterDuff.Mode.SRC_IN);
+        button.setImageResource(iconId);
         button.setContentDescription(contentDescription);
         button.setOnClickListener(
                 view -> {

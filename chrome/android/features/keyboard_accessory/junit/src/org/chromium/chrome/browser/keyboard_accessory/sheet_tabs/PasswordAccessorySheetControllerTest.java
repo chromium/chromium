@@ -25,8 +25,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFilling
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_CLICKED;
 import static org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_TOGGLE_IMPRESSION;
 
-import android.graphics.drawable.Drawable;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,7 +68,7 @@ public class PasswordAccessorySheetControllerTest {
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mProfile;
-    @Mock private Callback<Drawable> mMockObserver;
+    @Mock private Callback<Integer> mMockObserver;
 
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -94,7 +92,6 @@ public class PasswordAccessorySheetControllerTest {
     public void testCreatesValidTab() {
         KeyboardAccessoryData.Tab tab = mCoordinator.getTab();
         assertNotNull(tab);
-        assertNotNull(tab.getIcon());
         assertNotNull(tab.getListener());
     }
 
