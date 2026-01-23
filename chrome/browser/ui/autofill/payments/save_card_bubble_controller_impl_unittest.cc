@@ -1484,7 +1484,20 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
             u"faster checkout");
 }
 
-TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
+class SaveCvcBubbleControllerImplTestWithWalletBranding
+    : public SaveCardBubbleControllerImplTest {
+ public:
+  SaveCvcBubbleControllerImplTestWithWalletBranding() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableWalletBranding);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SaveCvcBubbleControllerImplTestWithWalletBranding,
+       UploadCvcOnlySaveDialogContent) {
   // Show the server CVC save bubble.
   ShowUploadBubble(
       /*options=*/SaveCreditCardOptions()
@@ -1496,8 +1509,38 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"This card's CVC will be encrypted and saved in your Google "
-            u"Account for faster checkout");
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD));
+  EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
+}
+
+class SaveCvcBubbleControllerImplTestWithoutWalletBranding
+    : public SaveCardBubbleControllerImplTest {
+ public:
+  SaveCvcBubbleControllerImplTestWithoutWalletBranding() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAutofillEnableWalletBranding);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SaveCvcBubbleControllerImplTestWithoutWalletBranding,
+       UploadCvcOnlySaveDialogContent) {
+  // Show the server CVC save bubble.
+  ShowUploadBubble(
+      /*options=*/SaveCreditCardOptions()
+          .with_card_save_type(CardSaveType::kCvcSaveOnly)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(PaymentsBubbleType::kUploadCvcSave,
+            controller()->GetPaymentsBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
   EXPECT_TRUE(controller()->GetLegalMessageLines().empty());
 }
 
