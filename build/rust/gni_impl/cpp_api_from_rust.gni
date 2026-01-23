@@ -165,7 +165,7 @@ template("cpp_api_from_rust") {
 
     crate_root = _rs_out
     sources = [ crate_root ]
-    configs += [ "//build/rust:edition_2024" ]
+    configs += [ "//build/rust:default_edition" ]
   }
 
   source_set(_h_target_name) {

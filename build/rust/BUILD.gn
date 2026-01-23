@@ -5,6 +5,14 @@
 import("//build/config/rust.gni")
 
 if (toolchain_has_rust) {
+  config("default_edition") {
+    if (rustc_nightly_capability) {
+      configs = [ ":edition_2024" ]
+    } else {
+      configs = [ ":edition_2021" ]
+    }
+  }
+
   config("edition_2024") {
     rustflags = [ "--edition=2024" ]
   }

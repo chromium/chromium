@@ -139,19 +139,18 @@ template("rust_target") {
     }
   }
 
-  # Default to the 2024 edition of the Rust language, but allow the `invoker`
-  # to override this.  See also doc comments for `edition` at the top of
+  assert(!defined(configs))
+  _configs = []
+
+  # Allow the `invoker` to override Rust language edition.  See also doc
+  # comments for `edition` at the top of
   # `//build/rust/rust_static_library.gni`.
-  _edition = "2024"
-  if (!rustc_nightly_capability) {
-    _edition = "2021"
-  }
   if (defined(invoker.edition)) {
-    _edition = invoker.edition
+    _configs += [ "//build/rust:edition_${invoker.edition}" ]
+  } else {
+    _configs += [ "//build/rust:default_edition" ]
   }
 
-  assert(!defined(configs))
-  _configs = [ "//build/rust:edition_${_edition}" ]
   _test_configs = []
   if (invoker.target_type == "executable") {
     _configs += invoker.executable_configs

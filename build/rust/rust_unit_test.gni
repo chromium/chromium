@@ -60,14 +60,11 @@ template("rust_unit_test") {
   }
   _configs = invoker.configs
 
-  _edition = "2024"
-  if (!rustc_nightly_capability) {
-    _edition = "2021"
-  }
   if (defined(invoker.edition)) {
-    _edition = invoker.edition
+    _configs += [ "//build/rust:edition_${invoker.edition}" ]
+  } else {
+    _configs += [ "//build/rust:default_edition" ]
   }
-  _configs += [ "//build/rust:edition_${_edition}" ]
 
   # We require that all source files are listed, even though this is
   # not a requirement for rustc. The reason is to ensure that tools
