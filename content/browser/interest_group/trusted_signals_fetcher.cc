@@ -35,7 +35,6 @@
 #include "content/browser/interest_group/auction_downloader_delegate.h"
 #include "content/browser/interest_group/data_decoder_manager.h"
 #include "content/browser/interest_group/devtools_enums.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"

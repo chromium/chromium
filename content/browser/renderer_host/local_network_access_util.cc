@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -24,7 +24,7 @@ namespace {
 
 using Policy = network::mojom::PrivateNetworkRequestPolicy;
 using AddressSpace = network::mojom::IPAddressSpace;
-using RequestContext = PrivateNetworkRequestContext;
+using RequestContext = LocalNetworkAccessRequestContext;
 
 // Represents the state of feature flags for a given `RequestContext`.
 enum class FeatureState {
@@ -186,7 +186,7 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state,
   }
 }
 
-Policy DerivePrivateNetworkRequestPolicy(
+Policy DeriveLocalNetworkAccessRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
     bool allow_on_non_secure_context,
@@ -217,10 +217,10 @@ Policy DerivePrivateNetworkRequestPolicy(
                                    local_network_access_checks_enabled, policy);
 }
 
-Policy DerivePrivateNetworkRequestPolicy(
+Policy DeriveLocalNetworkAccessRequestPolicy(
     const PolicyContainerPolicies& policies,
     RequestContext private_network_request_context) {
-  return DerivePrivateNetworkRequestPolicy(
+  return DeriveLocalNetworkAccessRequestPolicy(
       policies.ip_address_space, policies.is_web_secure_context,
       policies.allow_non_secure_local_network_access,
       private_network_request_context);
@@ -228,12 +228,12 @@ Policy DerivePrivateNetworkRequestPolicy(
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
     const PolicyContainerPolicies& policies,
-    PrivateNetworkRequestContext private_network_request_context) {
+    LocalNetworkAccessRequestContext private_network_request_context) {
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
       policies.ip_address_space,
-      DerivePrivateNetworkRequestPolicy(policies,
-                                        private_network_request_context),
+      DeriveLocalNetworkAccessRequestPolicy(policies,
+                                            private_network_request_context),
       policies.document_isolation_policy);
 }
 
@@ -314,47 +314,48 @@ AddressSpace CalculateIPAddressSpace(
   return IPAddressSpaceForSpecialScheme(url, client);
 }
 
-network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
-    network::mojom::PrivateNetworkRequestPolicy policy) {
+Policy OverrideToBlockInsteadOfWarn(Policy policy) {
   switch (policy) {
-    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
-      return network::mojom::PrivateNetworkRequestPolicy::kBlock;
-    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
-      return network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
-    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
-    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
-    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
+    case Policy::kWarn:
+      return Policy::kBlock;
+    case Policy::kPermissionWarn:
+      return Policy::kPermissionBlock;
+    case Policy::kAllow:
+    case Policy::kBlock:
+    case Policy::kPermissionBlock:
       return policy;
   }
 }
 
-network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
-    network::mojom::PrivateNetworkRequestPolicy policy) {
+Policy OverrideToWarnInsteadOfBlock(Policy policy) {
   switch (policy) {
-    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
-      return network::mojom::PrivateNetworkRequestPolicy::kWarn;
-    case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
-      return network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
-    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
-    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
-    case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
+    case Policy::kBlock:
+      return Policy::kWarn;
+    case Policy::kPermissionBlock:
+      return Policy::kPermissionWarn;
+    case Policy::kAllow:
+    case Policy::kWarn:
+    case Policy::kPermissionWarn:
       return policy;
   }
 }
 
-network::mojom::PrivateNetworkRequestPolicy OverrideLocalNetworkAccessPolicy(
-    network::mojom::PrivateNetworkRequestPolicy policy,
-    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override) {
+Policy OverrideLocalNetworkAccessPolicy(
+    Policy policy,
+    ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+        policy_override) {
   switch (policy_override) {
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kDefault:
+    case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
+        kDefault:
       return policy;
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kForceAllow:
-      return network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+    case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
+        kForceAllow:
+      return Policy::kAllow;
+    case ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride::
         kBlockInsteadOfWarn:
       return OverrideToBlockInsteadOfWarn(policy);
-    case content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kWarnInsteadOfBlock:
+    case content::ContentBrowserClient::
+        LocalNetworkAccessRequestPolicyOverride::kWarnInsteadOfBlock:
       return OverrideToWarnInsteadOfBlock(policy);
   }
 }

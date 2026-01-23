@@ -2835,7 +2835,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       int child_id,
       const GURL& script_url);
 
-  enum class PrivateNetworkRequestPolicyOverride {
+  enum class LocalNetworkAccessRequestPolicyOverride {
     kForceAllow,
     kBlockInsteadOfWarn,
     kWarnInsteadOfBlock,
@@ -2850,9 +2850,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |browser_context| must not be nullptr. Caller retains ownership.
   // |origin| is the origin of a navigation ready to commit.
-  virtual PrivateNetworkRequestPolicyOverride
-  ShouldOverridePrivateNetworkRequestPolicy(BrowserContext* browser_context,
-                                            const url::Origin& origin);
+  virtual LocalNetworkAccessRequestPolicyOverride
+  ShouldOverrideLocalNetworkAccessRequestPolicy(BrowserContext* browser_context,
+                                                const url::Origin& origin);
 
   // Whether the JIT should be disabled for the given |browser_context| and
   // |site_url|. Pass an empty GURL for |site_url| to get the default JIT policy
