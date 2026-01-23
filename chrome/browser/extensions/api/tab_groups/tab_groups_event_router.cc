@@ -61,7 +61,15 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* model) override {
-    if (!ShouldTrackModel(model)) {
+    // We only want to observe tab models (i.e. windows) associated with this
+    // PlatformDelegate's profile. For example, imagine a regular window with a
+    // regular profile. It has one TabModelEventRouter associated with the
+    // profile and one PlatformDelegate. If we then create an incognito profile
+    // and window, we get a second TabModelEventRouter and PlatformDelegate. But
+    // we only want to observe the TabModel associated with the incognito
+    // profile, not the regular profile, otherwise we'll see event notifications
+    // twice (once per observer). See TestTabGroupEventsAcrossProfiles.
+    if (profile_ != model->GetProfile()) {
       return;
     }
     tab_model_observations_.AddObservation(model);
@@ -105,11 +113,6 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
   }
 
  private:
-  bool ShouldTrackModel(TabModel* model) {
-    // We only track tab models belonging to the same profile.
-    return profile_->IsSameOrParent(model->GetProfile());
-  }
-
   const raw_ptr<TabGroupsEventRouter> owner_;
   const raw_ptr<Profile> profile_;
   base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
