@@ -1047,6 +1047,15 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
   }
 }
 
+void CompoundImageBacking::OnContextLost() {
+  ClearTrackingSharedImageBacking::OnContextLost();
+  for (const auto& element : elements_) {
+    if (element.backing) {
+      element.backing->OnContextLost();
+    }
+  }
+}
+
 SharedImageBackingType CompoundImageBacking::GetType() const {
   return SharedImageBackingType::kCompound;
 }

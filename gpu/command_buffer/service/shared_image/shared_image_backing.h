@@ -145,7 +145,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   std::optional<gfx::BufferUsage> buffer_usage() const { return buffer_usage_; }
   const std::string& debug_label() const { return debug_label_; }
 
-  void OnContextLost();
+  virtual void OnContextLost();
 
   // Creates SkImageInfo matching backing size, format, alpha and color space
   // for the specified `plane_index`.

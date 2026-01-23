@@ -186,6 +186,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
                        RepresentationAccessMode mode);
 
   // SharedImageBacking implementation.
+  void OnContextLost() override;
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool CopyToGpuMemoryBuffer() override;
