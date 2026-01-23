@@ -126,9 +126,6 @@ extern bool GetAutoSubmitVoiceSearchQuery();
 // Returns if the protected page error is enabled.
 extern bool GetIsProtectedPageErrorEnabled();
 
-// Returns if the ghost loader is enabled.
-extern bool GetIsGhostLoaderEnabled();
-
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 

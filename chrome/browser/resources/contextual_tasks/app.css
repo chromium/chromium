@@ -61,9 +61,6 @@
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
-  --ghost-loader-base: #F3F5F6;
-  --ghost-loader-highlight: #DEE1E3;
-
   /* Toolbar colors */
   --toolbar-background-color: var(--search-background-color);
   --toolbar-button-icon-color: var(--cr-fallback-color-on-surface-subtle);
@@ -71,6 +68,7 @@
   --toolbar-favicon-border-color: var(--cr-fallback-color-surface5);
   --toolbar-menu-background-color: rgb(255, 255, 255);
   --toolbar-text-color: rgb(31, 31, 31);
+
 
   background-color: var(--search-background-color);
   display: grid;
@@ -157,8 +155,6 @@
   --remove-button-fill-color: rgba(255, 255, 255, 1);
   --search-background-color: rgba(16, 18, 23, 1);
   --search-background-color-rgb: 16, 18, 23;
-  --ghost-loader-base: #333438;
-  --ghost-loader-highlight: #3A3F50;
 
   /* Toolbar colors - Dark mode */
   --toolbar-divider-color: rgb(94,94,94);
@@ -194,11 +190,7 @@ error-page {
 
 :host([is-error-page-visible_]) #threadFrame,
 :host([is-error-page-visible_]) #composebox,
-:host([is-error-page-visible_]) .flex-center,
-:host([is-ghost-loader-visible_]) #threadFrame,
-:host([is-shown-in-tab_]) #ghostLoader,
-:host(:not([is-ghost-loader-visible_])) #ghostLoader,
-:host([is-error-page-visible_]) #ghostLoader {
+:host([is-error-page-visible_]) .flex-center {
   visibility: hidden;
 }
 
@@ -345,14 +337,4 @@ error-page {
   :host([is-zero-state_]) #composeboxHeaderWrapper {
     width: calc(100% - 58px);
   }
-}
-
-#ghostLoader {
-  background-color: var(--search-background-color);
-  display: block;
-  grid-column: 1;
-  grid-row: 2;
-  height: 100%;
-  overflow: hidden;
-  width: 100%;
 }

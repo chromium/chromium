@@ -145,10 +145,6 @@ const base::FeatureParam<bool> kEnableProtectedPageError(
     "EnableProtectedPageError",
     true);
 
-const base::FeatureParam<bool> kEnableGhostLoader(&kContextualTasks,
-                                                  "EnableGhostLoader",
-                                                  true);
-
 const base::FeatureParam<std::string> kContextualTasksOnboardingTooltipHelpUrl(
     &kContextualTasksShowOnboardingTooltip,
     "ContextualTasksOnboardingTooltipHelpUrl",
@@ -220,10 +216,6 @@ bool GetAutoSubmitVoiceSearchQuery() {
 
 bool GetIsProtectedPageErrorEnabled() {
   return kEnableProtectedPageError.Get();
-}
-
-bool GetIsGhostLoaderEnabled() {
-  return kEnableGhostLoader.Get();
 }
 
 bool ShouldForceGscInTabMode() {

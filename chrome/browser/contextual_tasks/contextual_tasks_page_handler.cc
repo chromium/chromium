@@ -139,11 +139,6 @@ void ContextualTasksPageHandler::IsZeroState(const GURL& url,
   std::move(callback).Run(ContextualTasksUI::IsZeroState(url, ui_service_));
 }
 
-void ContextualTasksPageHandler::IsAiPage(const GURL& url,
-                                          IsAiPageCallback callback) {
-  std::move(callback).Run(ui_service_->IsAiUrl(url));
-}
-
 void ContextualTasksPageHandler::CloseSidePanel() {
   web_ui_controller_->CloseSidePanel();
 }

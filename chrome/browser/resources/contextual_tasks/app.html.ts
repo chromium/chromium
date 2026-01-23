@@ -22,7 +22,6 @@ export function getHtml(this: ContextualTasksAppElement) {
     </div>
   `}
   <webview id="threadFrame"></webview>
-  <ghost-loader id="ghostLoader"></ghost-loader>
   <div class="flex-center">
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.isInBasicMode_}">
