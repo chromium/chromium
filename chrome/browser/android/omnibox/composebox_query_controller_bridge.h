@@ -83,9 +83,14 @@ class ComposeboxQueryControllerBridge
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
   CreateSearchUrlRequestInfoFromUrl(GURL url);
+  contextual_search::ContextualSearchContextController* query_controller()
+      const {
+    return query_controller_.get();
+  }
 
   raw_ptr<Profile> profile_;
-  std::unique_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<contextual_search::ContextualSearchContextController>
+      query_controller_;
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   base::WeakPtrFactory<ComposeboxQueryControllerBridge> weak_ptr_factory_{this};
 };
