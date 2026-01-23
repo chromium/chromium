@@ -312,6 +312,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("clearAllInputsWhenSubmittingQuery", true);
   source->AddBoolean("autoSubmitVoiceSearchQuery",
                      contextual_tasks::GetAutoSubmitVoiceSearchQuery());
+  source->AddBoolean("enableGhostLoader",
+                     contextual_tasks::GetIsGhostLoaderEnabled());
 
   source->AddString(
       "composeboxSource",

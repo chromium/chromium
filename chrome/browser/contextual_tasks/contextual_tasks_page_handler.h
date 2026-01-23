@@ -46,6 +46,7 @@ class ContextualTasksPageHandler
   void SetTaskId(const base::Uuid& uuid) override;
   void SetThreadTitle(const std::string& title) override;
   void IsZeroState(const GURL& url, IsZeroStateCallback callback) override;
+  void IsAiPage(const GURL& url, IsAiPageCallback callback) override;
   void CloseSidePanel() override;
   void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;

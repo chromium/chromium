@@ -4,6 +4,7 @@
 
 import './composebox.js';
 import './error_page.js';
+import './ghost_loader.js';
 import './top_toolbar.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
@@ -122,6 +123,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       },
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
+      isGhostLoaderVisible_: {type: Boolean, reflect: true},
     };
   }
 
@@ -141,6 +143,10 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('friendlyZeroStateSubtitle');
   protected friendlyZeroStateTitle: string =
       loadTimeData.getString('friendlyZeroStateTitle');
+  protected accessor isGhostLoaderVisible_: boolean = false;
+  // Tracks whether the frame is currently loading. Needed to avoid race
+  // condition while awaiting isAiPage.
+  private isFrameLoading: boolean = false;
   private listenerIds_: number[] = [];
   private commonSearchParams_: {[key: string]: string} = {};
   private postMessageHandler_!: PostMessageHandler;
@@ -148,6 +154,8 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getString('forcedEmbeddedPageHost');
   private signInDomains_: string[] =
       loadTimeData.getString('contextualTasksSignInDomains').split(',');
+  private enableGhostLoader_: boolean =
+      loadTimeData.getBoolean('enableGhostLoader');
 
   override firstUpdated() {
     this.postMessageHandler_ =
@@ -217,6 +225,29 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     // Fetch the initial common search params.
     this.updateCommonSearchParams();
+
+    // Listeners for ghost loader
+    if (this.enableGhostLoader_) {
+      this.$.threadFrame.addEventListener('contentload', () => {
+        this.isFrameLoading = false;
+        this.setIsGhostLoaderVisible(false);
+      });
+      this.$.threadFrame.addEventListener('loadabort', () => {
+        this.isFrameLoading = false;
+        this.setIsGhostLoaderVisible(false);
+      });
+      this.$.threadFrame.addEventListener('loadstart', async (ev: any) => {
+        if (!ev.isTopLevel) {
+          return;
+        }
+        this.isFrameLoading = true;
+        const { isAiPage } =
+          await this.browserProxy_.handler.isAiPage(ev.url as string);
+        if (this.isFrameLoading && !isAiPage) {
+          this.setIsGhostLoaderVisible(true);
+        }
+      });
+    }
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -398,6 +429,10 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   getThreadUrlForTesting() {
     return this.$.threadFrame.src;
+  }
+
+  private setIsGhostLoaderVisible(isVisible: boolean) {
+    this.isGhostLoaderVisible_ = isVisible;
   }
 }
 
