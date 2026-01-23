@@ -1177,4 +1177,9 @@ try_.builder(
     executable = "recipe:security/metadata_validator",
     builderless = True,
     contact_team_email = "chops-security-core@google.com",
+    tryjob = try_.job(
+        location_filters = [
+            "regex:.*/README\\.chromium",
+        ],
+    ),
 )
