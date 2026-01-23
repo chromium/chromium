@@ -171,20 +171,19 @@ std::optional<LayoutUnit> ParagraphLineBreaker::AttemptParagraphBalancing(
 
     const LineBreakResults::Status status = normal_lines.BreakLines(
         available_width, lines_until_clamp, line_clamp_ellipsis_width);
-    if (status == LineBreakResults::Status::kFinished) {
-      // The paragraph ended at or before the ellipsis line. Since the number
-      // of lines in this line breaking will be used as the `max_lines` value
-      // when bisecting, it means the ellipsis would be placed on the wrong
-      // line. We clear the ellipsis width here to avoid that.
-      DCHECK_LE(normal_lines.Size(),
-                static_cast<unsigned int>(lines_until_clamp));
-      line_clamp_ellipsis_width = LayoutUnit();
-    } else if (status == LineBreakResults::Status::kMaxLinesExceeded) {
-      DCHECK_EQ(normal_lines.Size(),
-                static_cast<unsigned int>(lines_until_clamp));
-    } else {
-      DCHECK_EQ(status, LineBreakResults::Status::kNotApplicable);
+    if (status == LineBreakResults::Status::kNotApplicable) {
       return std::nullopt;
+    }
+
+    DCHECK_LE(normal_lines.Size(),
+              static_cast<unsigned int>(lines_until_clamp));
+    if (normal_lines.Size() != static_cast<unsigned int>(lines_until_clamp)) {
+      // The paragraph ended before the ellipsis line. The bisecting algorithm
+      // will consider the last line in `normal_lines` as having the ellipsis,
+      // which is wrong in this case. So we clear the ellipsis width to make
+      // sure it doesn't affect balancing.
+      DCHECK_EQ(status, LineBreakResults::Status::kFinished);
+      line_clamp_ellipsis_width = LayoutUnit();
     }
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
