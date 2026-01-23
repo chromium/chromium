@@ -56,9 +56,10 @@ void TabClusterUIClient::OnTabStripModelChanged(
       // Remove the items corresponding to the removed web contents.
       for (const auto& contents : change.GetRemove()->contents) {
         content::WebContents* web_contents = contents.contents;
-        DCHECK(contents_item_map_.contains(web_contents));
-        ash::TabClusterUIItem* item = contents_item_map_[web_contents];
-        contents_item_map_.erase(web_contents);
+        auto it = contents_item_map_.find(web_contents);
+        DCHECK(it != contents_item_map_.end());
+        ash::TabClusterUIItem* item = it->second;
+        contents_item_map_.erase(it);
         controller_->RemoveTabItem(item);
       }
       break;
@@ -66,14 +67,15 @@ void TabClusterUIClient::OnTabStripModelChanged(
       // Update the item whose corresponding contents are replaced.
       {
         auto* replace = change.GetReplace();
-        DCHECK(contents_item_map_.contains(replace->old_contents));
-        auto* item = contents_item_map_[replace->old_contents].get();
+        auto old_contents_it = contents_item_map_.find(replace->old_contents);
+        DCHECK(old_contents_it != contents_item_map_.end());
+        auto* item = old_contents_it->second.get();
 
         item->Init(GenerateTabItemInfo(replace->new_contents));
         controller_->UpdateTabItem(item);
 
         contents_item_map_[replace->new_contents] = item;
-        contents_item_map_.erase(replace->old_contents);
+        contents_item_map_.erase(old_contents_it);
       }
       break;
     case TabStripModelChange::kMoved:
@@ -82,10 +84,9 @@ void TabClusterUIClient::OnTabStripModelChanged(
       break;
   }
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+    auto it = contents_item_map_.find(selection.new_contents);
     auto* old_active_item =
-        contents_item_map_.contains(selection.old_contents)
-            ? contents_item_map_[selection.old_contents].get()
-            : nullptr;
+        it != contents_item_map_.end() ? it->second.get() : nullptr;
     auto* new_active_item = contents_item_map_[selection.new_contents].get();
     controller_->ChangeActiveCandidate(old_active_item, new_active_item);
   }
@@ -97,10 +98,11 @@ void TabClusterUIClient::OnTabChangedAt(tabs::TabInterface* tab,
   content::WebContents* contents = tab->GetContents();
   // Some tests may manually add tabs to browser such that the newly added tabs
   // may start loading before being inserted into the tab strip.
-  if (!contents_item_map_.contains(contents)) {
+  auto it = contents_item_map_.find(contents);
+  if (it == contents_item_map_.end()) {
     return;
   }
-  auto* item = contents_item_map_[contents].get();
+  auto* item = it->second.get();
 
   // If there is only loading progress change, we only update item when the
   // state changes between loading and loaded.
