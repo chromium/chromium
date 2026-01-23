@@ -32,7 +32,7 @@ found in the LICENSE file.
       android:pathData="M37,12C38.657,12 40,13.343 40,15V47C40,48.657 38.657,50 37,50H25C23.343,50 22,48.657 22,47V15C22,13.343 23.343,12 25,12H37Z"
       android:strokeWidth="2"
       android:strokeColor="@color/educational_tip_card_logo_color_4"
-      android:fillColor="#00000000"/>
+      android:fillColor="@android:color/transparent"/>
   <path
       android:pathData="M25,14L37,14A1,1 0,0 1,38 15L38,15A1,1 0,0 1,37 16L25,16A1,1 0,0 1,24 15L24,15A1,1 0,0 1,25 14z"
       android:fillColor="@color/educational_tip_card_logo_color_6"/>
@@ -42,21 +42,21 @@ found in the LICENSE file.
   <path
       android:pathData="M45,15H52"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/educational_tip_card_logo_color_1"/>
   <path
       android:pathData="M17,47H10"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/educational_tip_card_logo_color_1"/>
   <path
       android:pathData="M48,19L44,15L48,11"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/educational_tip_card_logo_color_1"/>
   <path
       android:pathData="M14,43L18,47L14,51"
       android:strokeWidth="2"
-      android:fillColor="#00000000"
+      android:fillColor="@android:color/transparent"
       android:strokeColor="@color/educational_tip_card_logo_color_1"/>
 </vector>

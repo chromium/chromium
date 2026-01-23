@@ -22,16 +22,16 @@ found in the LICENSE file.
     <path
         android:pathData="M53,31C53,43.15 43.15,53 31,53C24.696,53 19.011,50.348 15,46.1M9,31C9,18.85 18.85,9 31,9C37.353,9 43.078,11.693 47.094,16"
         android:strokeWidth="2"
-        android:fillColor="#00000000"
+        android:fillColor="@android:color/transparent"
         android:strokeColor="@color/educational_tip_card_logo_color_1"/>
     <path
         android:pathData="M47,9V16H40"
         android:strokeWidth="2"
-        android:fillColor="#00000000"
+        android:fillColor="@android:color/transparent"
         android:strokeColor="@color/educational_tip_card_logo_color_1"/>
     <path
         android:pathData="M15,53V46H22"
         android:strokeWidth="2"
-        android:fillColor="#00000000"
+        android:fillColor="@android:color/transparent"
         android:strokeColor="@color/educational_tip_card_logo_color_1"/>
 </vector>
