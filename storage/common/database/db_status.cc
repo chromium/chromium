@@ -16,8 +16,16 @@ DbStatus::DbStatus(const DbStatus& rhs) = default;
 
 DbStatus::DbStatus(DbStatus&& rhs) noexcept = default;
 
+DbStatus::DbStatus(int database_engine_code, std::string_view msg)
+    : type_(Type::kDatabaseEngineCode),
+      msg_(msg),
+      database_engine_code_(database_engine_code) {
+  CHECK(!msg_.empty());
+}
+
 DbStatus::DbStatus(DbStatus::Type type, std::string_view msg)
     : type_(type), msg_(msg) {
+  CHECK_NE(type, Type::kDatabaseEngineCode);
   CHECK(!msg_.empty());
 }
 
@@ -53,6 +61,11 @@ DbStatus DbStatus::InvalidArgument(std::string_view msg) {
 }
 
 // static
+DbStatus DbStatus::DatabaseEngineCode(int code, std::string_view msg) {
+  return DbStatus(code, msg);
+}
+
+// static
 DbStatus DbStatus::IOError(std::string_view msg) {
   return DbStatus(Type::kIoError, msg);
 }
@@ -79,6 +92,10 @@ bool DbStatus::IsIOError() const {
 
 bool DbStatus::IsInvalidArgument() const {
   return type_ == Type::kInvalidArgument;
+}
+
+bool DbStatus::IsDatabaseEngineCode() const {
+  return type_ == Type::kDatabaseEngineCode;
 }
 
 std::string DbStatus::ToString() const {

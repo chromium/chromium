@@ -9,11 +9,16 @@ component("database_status") {
   sources = [
     "database/db_status.cc",
     "database/db_status.h",
+    "database/sqlite_status_helper.cc",
+    "database/sqlite_status_helper.h",
   ]
 
   defines = [ "IS_STORAGE_DATABASE_STATUS_IMPL" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//sql",
+  ]
 }
 
 # This helper is in a separate component to help isolate the dependency on

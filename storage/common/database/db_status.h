@@ -26,14 +26,14 @@ class COMPONENT_EXPORT(STORAGE_DATABASE_STATUS) DbStatus {
   DbStatus& operator=(const DbStatus& rhs);
   DbStatus& operator=(DbStatus&&) noexcept;
 
-  // Create a success or error status that didn't originate in the database
-  // engine.
+  // Create a success or error status.
   static DbStatus OK();
   static DbStatus NotFound(std::string_view msg);
   static DbStatus Corruption(std::string_view msg);
   static DbStatus NotSupported(std::string_view msg);
   static DbStatus IOError(std::string_view msg = {});
   static DbStatus InvalidArgument(std::string_view msg);
+  static DbStatus DatabaseEngineCode(int code, std::string_view msg);
 
   // Returns true iff the status indicates the corresponding success or error.
   bool ok() const;
@@ -42,10 +42,16 @@ class COMPONENT_EXPORT(STORAGE_DATABASE_STATUS) DbStatus {
   bool IsNotSupported() const;
   bool IsIOError() const;
   bool IsInvalidArgument() const;
+  bool IsDatabaseEngineCode() const;
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
+
+  // Returns null unless `type_` is `kDatabaseEngineCode`.
+  std::optional<int> database_engine_code() const {
+    return database_engine_code_;
+  }
 
  private:
   enum class Type {
@@ -66,8 +72,17 @@ class COMPONENT_EXPORT(STORAGE_DATABASE_STATUS) DbStatus {
 
     // Possibly transient read or write error.
     kIoError,
+
+    // An error reported by the database engine like SQLite.
+    kDatabaseEngineCode,
   };
 
+  // Initializes `database_engine_code_`.  Sets `type_` to
+  // `kDatabaseEngineCode`.
+  DbStatus(int database_engine_code, std::string_view msg);
+
+  // For all other types.  `type` must not be `kDatabaseEngineCode`.  Leaves
+  // `database_engine_code_` unset.
   DbStatus(Type type, std::string_view msg);
 
   // The specific type of error. Note that the treatment of this is quite
@@ -79,6 +94,9 @@ class COMPONENT_EXPORT(STORAGE_DATABASE_STATUS) DbStatus {
   Type type_;
 
   std::string msg_;
+
+  // Null unless `type_` is `kDatabaseEngineCode`.
+  std::optional<int> database_engine_code_;
 };
 
 // Makes a common return value more concise. For this return type, "no error" is

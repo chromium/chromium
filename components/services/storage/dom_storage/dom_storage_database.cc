@@ -15,7 +15,9 @@
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
-#include "components/services/storage/dom_storage/sqlite/dom_storage_sqlite.h"
+#include "components/services/storage/dom_storage/sqlite/local_storage_sqlite.h"
+#include "components/services/storage/dom_storage/sqlite/session_storage_sqlite.h"
+#include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "components/services/storage/public/cpp/constants.h"
 
 namespace storage {
@@ -204,25 +206,31 @@ void DomStorageDatabaseFactory::Open(
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       GetTaskRunnerForDb(database_path);
 
-  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
-    return CreateSequenceBoundDomStorageDatabase<DomStorageSqlite>(
-        std::move(blocking_task_runner), database_path, memory_dump_id,
-        base::BindOnce(&OnDatabaseOpened<DomStorageSqlite>,
-                       std::move(callback)));
-  }
-
   switch (storage_type) {
-    case StorageType::kLocalStorage:
+    case StorageType::kLocalStorage: {
+      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+        return CreateSequenceBoundDomStorageDatabase<LocalStorageSqlite>(
+            std::move(blocking_task_runner), database_path, memory_dump_id,
+            base::BindOnce(&OnDatabaseOpened<LocalStorageSqlite>,
+                           std::move(callback)));
+      }
       return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
           std::move(blocking_task_runner), database_path, memory_dump_id,
           base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
                          std::move(callback)));
-
-    case StorageType::kSessionStorage:
+    }
+    case StorageType::kSessionStorage: {
+      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+        return CreateSequenceBoundDomStorageDatabase<SessionStorageSqlite>(
+            std::move(blocking_task_runner), database_path, memory_dump_id,
+            base::BindOnce(&OnDatabaseOpened<SessionStorageSqlite>,
+                           std::move(callback)));
+      }
       return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
           std::move(blocking_task_runner), database_path, memory_dump_id,
           base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
                          std::move(callback)));
+    }
   }
   NOTREACHED();
 }
@@ -236,10 +244,16 @@ void DomStorageDatabaseFactory::Destroy(const base::FilePath& database_path,
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       GetTaskRunnerForDb(database_path);
 
+  base::OnceCallback<DbStatus()> destroy_database_callback;
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    destroy_database_callback =
+        base::BindOnce(&sqlite::DestroyDatabase, database_path);
+  } else {
+    destroy_database_callback =
+        base::BindOnce(&DomStorageDatabaseLevelDB::Destroy, database_path);
+  }
   blocking_task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DomStorageDatabaseLevelDB::Destroy, database_path),
-      std::move(callback));
+      FROM_HERE, std::move(destroy_database_callback), std::move(callback));
 }
 
 template <typename TDatabase>

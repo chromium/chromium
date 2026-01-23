@@ -63,6 +63,8 @@ chromium-metrics-reviews@google.com.
   <variant name="InterestGroups" summary="InterestGroups"/>
   <variant name="InterestGroupStorage" summary="InterestGroupStorage"/>
   <variant name="KAnonymityService" summary="KAnonymityService"/>
+  <variant name="LocalStorage" summary="LocalStorage, on-disk"/>
+  <variant name="LocalStorageEphemeral" summary="LocalStorage, in-memory"/>
   <variant name="LocalTraces" summary="LocalTraces"/>
   <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
   <variant name="MediaLicense" summary="MediaLicense"/>
@@ -79,6 +81,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Recovery" summary="Recovery"/>
   <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
   <variant name="ServerCertificate" summary="ServerCertificate"/>
+  <variant name="SessionStorage" summary="SessionStorage, on-disk"/>
+  <variant name="SessionStorageEphemeral" summary="SessionStorage, in-memory"/>
   <variant name="ShaderCache"/>
   <variant name="SharedDictionary" summary="SharedDictionary"/>
   <variant name="SharedStorage" summary="SharedStorage"/>
