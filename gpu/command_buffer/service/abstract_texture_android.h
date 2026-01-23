@@ -31,21 +31,16 @@ class TexturePassthrough;
 // for things that set up textures using some client's decoder.  Creating an
 // AbstractTextureAndroid is similar to "glGenTexture", and deleting it is
 // similar to calling "glDeleteTextures".
-class GPU_GLES2_EXPORT AbstractTextureAndroid final {
+class GPU_GLES2_EXPORT AbstractTextureAndroidValidating final {
  public:
-  static std::unique_ptr<AbstractTextureAndroid> CreateForValidating(
-      gfx::Size size);
-  static std::unique_ptr<AbstractTextureAndroid> CreateForPassthrough(
+  static std::unique_ptr<AbstractTextureAndroidValidating> Create(
       gfx::Size size);
 
-  explicit AbstractTextureAndroid(gles2::Texture* texture);
-  explicit AbstractTextureAndroid(
-      scoped_refptr<gles2::TexturePassthrough> texture,
-      const gfx::Size& size);
+  explicit AbstractTextureAndroidValidating(gles2::Texture* texture);
 
   // The texture is guaranteed to be around while |this| exists, as long as
   // the decoder isn't destroyed / context isn't lost.
-  ~AbstractTextureAndroid();
+  ~AbstractTextureAndroidValidating();
 
   // Return our TextureBase, useful mostly for creating a mailbox.  This may
   // return null if the texture has been destroyed.
@@ -60,10 +55,41 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid final {
   bool have_context_ = true;
 
   raw_ptr<gles2::Texture> texture_ = nullptr;
+  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
+  base::WeakPtrFactory<AbstractTextureAndroidValidating> weak_ptr_factory_{
+      this};
+};
+
+class GPU_GLES2_EXPORT AbstractTextureAndroidPassthrough final {
+ public:
+  static std::unique_ptr<AbstractTextureAndroidPassthrough> Create(
+      gfx::Size size);
+
+  explicit AbstractTextureAndroidPassthrough(
+      scoped_refptr<gles2::TexturePassthrough> texture,
+      const gfx::Size& size);
+
+  // The texture is guaranteed to be around while |this| exists, as long as
+  // the decoder isn't destroyed / context isn't lost.
+  ~AbstractTextureAndroidPassthrough();
+
+  // Return our TextureBase, useful mostly for creating a mailbox.  This may
+  // return null if the texture has been destroyed.
+  TextureBase* GetTextureBase() const;
+
+  // Used to notify the AbstractTexture if the context is lost.
+  void NotifyOnContextLost();
+
+  unsigned int service_id() const { return GetTextureBase()->service_id(); }
+
+ private:
+  bool have_context_ = true;
+
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   gfx::Size texture_passthrough_size_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
-  base::WeakPtrFactory<AbstractTextureAndroid> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AbstractTextureAndroidPassthrough> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace gpu

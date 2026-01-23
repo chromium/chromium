@@ -180,7 +180,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
                                     scoped_refptr<RefCountedLock> drdc_lock)
       : GLTextureImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        texture_(AbstractTextureAndroid::CreateForValidating(size())) {}
+        texture_(AbstractTextureAndroidValidating::Create(size())) {}
 
   ~GLTextureVideoImageRepresentation() override {
     if (!has_context()) {
@@ -232,7 +232,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroid> texture_;
+  std::unique_ptr<AbstractTextureAndroidValidating> texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
 };
@@ -249,7 +249,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        abstract_texture_(AbstractTextureAndroid::CreateForPassthrough(size())),
+        abstract_texture_(AbstractTextureAndroidPassthrough::Create(size())),
         passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
             abstract_texture_->GetTextureBase())) {
     // TODO(crbug.com/40166788): Remove this CHECK.
@@ -304,7 +304,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroid> abstract_texture_;
+  std::unique_ptr<AbstractTextureAndroidPassthrough> abstract_texture_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
