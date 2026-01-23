@@ -24,8 +24,6 @@ source_set("on_device_translation") {
     "service_controller_manager_factory.h",
     "translation_manager_impl.cc",
     "translation_manager_impl.h",
-    "translation_manager_util.cc",
-    "translation_manager_util.h",
   ]
   public_deps = [
     "//chrome/browser/on_device_translation:constants",
@@ -41,14 +39,12 @@ source_set("on_device_translation") {
     "//components/content_settings/core/browser",
     "//components/crx_file",
     "//components/keyed_service/content",
-    "//components/language/core/browser",
     "//components/on_device_translation",
     "//components/on_device_translation/public/mojom",
     "//components/on_device_translation/service:on_device_translation_service",
     "//components/permissions",
     "//components/prefs",
     "//components/update_client",
-    "//components/user_prefs",
     "//content/public/browser",
   ]
   if (is_chromeos) {
@@ -72,7 +68,6 @@ source_set("unit_tests") {
     "../component_updater/translate_kit_component_installer_unittest.cc",
     "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
     "file_operation_proxy_impl_unittest.cc",
-    "translation_manager_util_unittest.cc",
   ]
   deps = [
     ":on_device_translation",
@@ -81,6 +76,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//components/component_updater:test_support",
     "//components/crx_file",
+    "//components/language/core/browser",
     "//components/on_device_translation",
     "//components/on_device_translation:public",
     "//components/on_device_translation/public/mojom",

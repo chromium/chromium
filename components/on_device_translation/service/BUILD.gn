@@ -20,7 +20,7 @@ source_set("on_device_translation_service") {
   ]
   deps = [
     ":translate_kit_api_proto",
-    "//components/on_device_translation",
+    "//components/on_device_translation:features",
   ]
 
   public_deps = [

@@ -6,24 +6,40 @@ import("//components/on_device_translation/buildflags/features.gni")
 
 assert(enable_on_device_translation)
 
-source_set("on_device_translation") {
+source_set("features") {
   sources = [
     "constants.cc",
     "constants.h",
     "features.cc",
     "features.h",
+  ]
+  deps = [
+    "//base",
+    "//crypto",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("on_device_translation") {
+  sources = [
     "metrics.cc",
     "metrics.h",
+    "translation_manager_util.cc",
+    "translation_manager_util.h",
     "translator.cc",
     "translator.h",
   ]
-  public_deps = [
+  public_deps = [ ":features" ]
+  deps = [
+    ":public",
     "//base",
+    "//components/language/core/browser",
     "//components/on_device_translation/public/mojom",
-    "//mojo/public/cpp/bindings",
-    "//third_party/blink/public/common",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//ui/base",
   ]
-  deps = [ ":public" ]
 }
 
 source_set("public") {
@@ -47,6 +63,7 @@ source_set("unit_tests") {
     "features_unittest.cc",
     "metrics_unittest.cc",
     "public/language_pack_unittest.cc",
+    "translation_manager_util_unittest.cc",
   ]
   deps = [
     ":on_device_translation",

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/on_device_translation/translation_manager_util.h"
+#include "components/on_device_translation/translation_manager_util.h"
 
 #include <algorithm>
 
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/public/language_pack.h"
