@@ -147,6 +147,7 @@ public class NtpBackgroundImageCoordinator {
 
         assertNonNull(mUiConfig);
         mUiConfig.removeObserver(mDisplayStyleObserver);
+        mDisplayStyleObserver = null;
     }
 
     private void setImageBackgroundWithMatrices() {
