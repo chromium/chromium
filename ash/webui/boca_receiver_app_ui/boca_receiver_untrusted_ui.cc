@@ -48,7 +48,7 @@ BocaReceiverUntrustedUI::BocaReceiverUntrustedUI(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUntrustedBocaReceiverURL);
-  source->AddResourcePath("", IDR_ASH_BOCA_RECEIVER_UNTRUSTED_UI_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_BOCA_RECEIVER_UNTRUSTED_UI_INDEX_HTML);
   source->AddResourcePaths(kAshBocaReceiverAppBundleResources);
   source->AddResourcePaths(kAshBocaReceiverUntrustedUiResources);
   source->AddFrameAncestor(GURL(kChromeBocaReceiverURL));

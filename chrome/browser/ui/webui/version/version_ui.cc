@@ -111,7 +111,7 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
   VersionUI::AddVersionDetailStrings(html_source);
 
   html_source->AddResourcePaths(kVersionUiResources);
-  html_source->AddResourcePath("", IDR_VERSION_UI_ABOUT_VERSION_HTML);
+  html_source->SetDefaultResource(IDR_VERSION_UI_ABOUT_VERSION_HTML);
   html_source->UseStringsJs();
 
 #if BUILDFLAG(IS_ANDROID)

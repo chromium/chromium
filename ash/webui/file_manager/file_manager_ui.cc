@@ -100,7 +100,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
-  source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
+  source->SetDefaultResource(IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
   source->AddResourcePaths(kFileManagerSwaResources);
 

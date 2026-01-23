@@ -64,7 +64,7 @@ AmbientBackendController* GetAmbientBackendController() {
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
   source->AddResourcePaths(kAshPersonalizationAppResources);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);

@@ -102,7 +102,7 @@ SanitizeDialogUI::SanitizeDialogUI(
   html_source->EnableReplaceI18nInJS();
 
   html_source->AddResourcePaths(kAshSanitizeAppResources);
-  html_source->AddResourcePath("", IDR_ASH_SANITIZE_APP_INDEX_HTML);
+  html_source->SetDefaultResource(IDR_ASH_SANITIZE_APP_INDEX_HTML);
   html_source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   html_source->AddResourcePath("test_loader_util.js",

@@ -36,8 +36,7 @@ void CreateAndAddAnnotatorHTMLSource(content::WebUI* web_ui) {
   source->AddResourcePaths(kAshAnnotatorUntrustedResources);
   source->AddResourcePaths(kChromeosProjectorAppBundleResources);
   source->AddResourcePaths(kAshProjectorCommonResources);
-  source->AddResourcePath("",
-                          IDR_ASH_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
+  source->SetDefaultResource(IDR_ASH_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   // Loads WASM resources shipped to Chromium by chrome://media-app.

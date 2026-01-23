@@ -114,7 +114,7 @@ class ConformanceTestWebUIController : public WebUIController,
         network::mojom::CSPDirectiveName::ScriptSrc,
         "script-src chrome://resources 'self';");
     data_source->AddResourcePaths(kWebUiMojoTestResources);
-    data_source->AddResourcePath("", IDR_WEB_UI_TS_TEST_CONFORMANCE_HTML);
+    data_source->SetDefaultResource(IDR_WEB_UI_TS_TEST_CONFORMANCE_HTML);
   }
 
   ConformanceTestWebUIController(const ConformanceTestWebUIController&) =

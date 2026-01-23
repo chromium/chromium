@@ -26,7 +26,7 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  data_source->AddResourcePath("", IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
+  data_source->SetDefaultResource(IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
   data_source->AddResourcePath(
       "color_internals_tokens.json",
       IDR_WEBUI_UI_CHROMEOS_STYLES_COLOR_INTERNALS_TOKENS_JSON);

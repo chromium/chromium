@@ -41,7 +41,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
 
   source->AddResourcePaths(resources);
-  source->AddResourcePath("", default_resource);
+  source->SetDefaultResource(default_resource);
 }
 
 }  // namespace

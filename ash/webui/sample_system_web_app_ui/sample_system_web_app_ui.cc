@@ -29,7 +29,7 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   content::WebUIDataSource* trusted_source =
       content::WebUIDataSource::CreateAndAdd(browser_context,
                                              kChromeUISampleSystemWebAppHost);
-  trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
+  trusted_source->SetDefaultResource(IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
   trusted_source->AddResourcePaths(kAshSampleSystemWebAppResources);
 
 #if !DCHECK_IS_ON()

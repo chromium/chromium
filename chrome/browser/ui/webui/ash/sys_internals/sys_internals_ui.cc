@@ -33,7 +33,7 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  html_source->AddResourcePath("", IDR_SYS_INTERNALS_HTML);
+  html_source->SetDefaultResource(IDR_SYS_INTERNALS_HTML);
   html_source->AddResourcePath("index.html", IDR_SYS_INTERNALS_HTML);
   html_source->AddResourcePath("index.css", IDR_SYS_INTERNALS_CSS);
   html_source->AddResourcePath("index.js", IDR_SYS_INTERNALS_JS);

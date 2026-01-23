@@ -315,7 +315,7 @@ FocusModeUI::FocusModeUI(content::WebUI* web_ui)
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   // Setup chrome://focus-mode-media main page.
-  source->AddResourcePath("", IDR_ASH_FOCUS_MODE_FOCUS_MODE_HTML);
+  source->SetDefaultResource(IDR_ASH_FOCUS_MODE_FOCUS_MODE_HTML);
   // Add chrome://focus-mode-media content.
   source->AddResourcePaths(kAshFocusModeResources);
 

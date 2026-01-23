@@ -176,7 +176,7 @@ class TestWebUIController : public WebUIController {
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
       data_source->AddResourcePaths(kWebUiMojoTestResources);
-      data_source->AddResourcePath("", IDR_WEB_UI_MOJO_TS_HTML);
+      data_source->SetDefaultResource(IDR_WEB_UI_MOJO_TS_HTML);
     }
     {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(

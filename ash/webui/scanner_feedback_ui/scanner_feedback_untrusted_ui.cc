@@ -174,9 +174,7 @@ ScannerFeedbackUntrustedUI::ScannerFeedbackUntrustedUI(content::WebUI* web_ui)
           browser_context, std::string(kScannerFeedbackUntrustedUrl));
 
   untrusted_source->AddResourcePaths(kAshScannerFeedbackUiResources);
-  // We intentionally do not use `SetDefaultResource` here as we do not want to
-  // serve index.html for non-HTML paths.
-  untrusted_source->AddResourcePath("", IDR_ASH_SCANNER_FEEDBACK_UI_INDEX_HTML);
+  untrusted_source->SetDefaultResource(IDR_ASH_SCANNER_FEEDBACK_UI_INDEX_HTML);
 
   ash::EnableTrustedTypesCSP(untrusted_source);
   untrusted_source->OverrideContentSecurityPolicy(

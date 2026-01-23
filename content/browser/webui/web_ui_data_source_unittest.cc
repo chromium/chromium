@@ -301,7 +301,7 @@ void NamedResourceBarJSCallback(scoped_refptr<base::RefCountedMemory> data) {
 
 TEST_F(WebUIDataSourceTest, NoSetDefaultResource) {
   // Set an empty path resource instead of a default.
-  source()->AddResourcePath("", kDummyDefaultResourceId);
+  source()->SetDefaultResource(kDummyDefaultResourceId);
   source()->AddResourcePath("foobar.html", kDummyResourceId);
   source()->AddResourcePath("bar.js", kDummyJSResourceId);
 

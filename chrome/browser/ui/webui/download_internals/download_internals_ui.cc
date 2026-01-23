@@ -32,8 +32,8 @@ DownloadInternalsUI::DownloadInternalsUI(content::WebUI* web_ui)
   // Required resources.
   html_source->UseStringsJs();
   html_source->AddResourcePaths(kDownloadInternalsResources);
-  html_source->AddResourcePath("",
-                               IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
+  html_source->SetDefaultResource(
+      IDR_DOWNLOAD_INTERNALS_DOWNLOAD_INTERNALS_HTML);
 
   web_ui->AddMessageHandler(
       std::make_unique<

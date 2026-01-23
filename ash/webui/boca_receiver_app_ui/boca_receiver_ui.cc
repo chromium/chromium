@@ -36,7 +36,7 @@ BocaReceiverUI::BocaReceiverUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kBocaReceiverHost);
-  source->AddResourcePath("", IDR_ASH_BOCA_RECEIVER_UI_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_BOCA_RECEIVER_UI_INDEX_HTML);
   source->AddResourcePaths(kAshBocaReceiverUiResources);
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
   source->OverrideContentSecurityPolicy(

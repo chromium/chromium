@@ -169,7 +169,7 @@ class DonutsUI : public content::WebUIController {
             web_ui->GetWebContents()->GetBrowserContext(),
             "donuts");  // "donuts" == hostname
     source->AddString("mmmDonuts", "Mmm, donuts!");  // Translations.
-    source->AddResourcePath("", IDR_DONUTS_HTML);  // Home page.
+    source->SetDefaultResource(IDR_DONUTS_HTML);  // Home page.
 
     // Handles messages from JavaScript to C++ via chrome.send().
     web_ui->AddMessageHandler(std::make_unique<OvenHandler>());

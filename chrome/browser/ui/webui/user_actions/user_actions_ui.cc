@@ -22,7 +22,7 @@ UserActionsUI::UserActionsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
                                              chrome::kChromeUIUserActionsHost);
   html_source->AddResourcePaths(kUserActionsUiResources);
-  html_source->AddResourcePath("", IDR_USER_ACTIONS_UI_USER_ACTIONS_HTML);
+  html_source->SetDefaultResource(IDR_USER_ACTIONS_UI_USER_ACTIONS_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<UserActionsUIHandler>());
 }
