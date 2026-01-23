@@ -139,6 +139,12 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
 
   TabInterface* tab = FindMostRecentTab(*web_ui_);
 
+  const GURL current_url =
+      tab != nullptr ? tab->GetContents()->GetLastCommittedURL() : GURL();
+  if (ShouldThrottleRetrieval(current_url)) {
+    return;
+  }
+
   // Check sensitivity of tab, if tab available and sensitivity checking
   // is available.
   if (ntp_features::kNtpNextClientSensitivityCheckParam.Get() &&
@@ -149,9 +155,8 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
       history_service_) {
     history::QueryOptions options;
     options.max_count = 1;
-    auto tab_url = tab->GetContents()->GetLastCommittedURL().spec();
     history_service_->QueryHistory(
-        base::UTF8ToUTF16(tab_url), options,
+        base::UTF8ToUTF16(current_url.spec()), options,
         base::BindOnce(&ActionChipsHandler::OnGetHistoryData,
                        weak_factory_.GetWeakPtr(), std::move(tab),
                        std::move(start_time)),
@@ -206,4 +211,12 @@ void ActionChipsHandler::OnGetHistoryData(const TabInterface* tab,
       is_sensitive ? nullptr : std::move(tab),
       base::BindOnce(&ActionChipsHandler::SendActionChipsToUi,
                      weak_factory_.GetWeakPtr(), std::move(start_time)));
+}
+
+bool ActionChipsHandler::ShouldThrottleRetrieval(const GURL& current_url) {
+  if (last_processed_url_ == current_url) {
+    return true;
+  }
+  last_processed_url_ = current_url;
+  return false;
 }
