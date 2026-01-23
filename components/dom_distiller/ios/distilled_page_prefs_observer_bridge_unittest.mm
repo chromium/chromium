@@ -20,7 +20,8 @@
   self.notifiedFontFamily = font;
 }
 
-- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme {
+- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme
+           withSource:(dom_distiller::ThemeSettingsUpdateSource)source {
   self.notifiedTheme = theme;
 }
 

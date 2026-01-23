@@ -84,19 +84,25 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(2);
       [self createFontFamilyMenuWithSelectedFamily:fontFamily];
 }
 
-- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme {
-  _lightThemeButton.configuration =
-      [self createLightThemeButtonConfigurationSelected:
-                theme == dom_distiller::mojom::Theme::kLight];
-  _lightThemeButton.selected = theme == dom_distiller::mojom::Theme::kLight;
-  _sepiaThemeButton.configuration =
-      [self createSepiaThemeButtonConfigurationSelected:
-                theme == dom_distiller::mojom::Theme::kSepia];
-  _sepiaThemeButton.selected = theme == dom_distiller::mojom::Theme::kSepia;
+- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme
+              fromSource:(dom_distiller::ThemeSettingsUpdateSource)source {
+  BOOL systemSelected =
+      source == dom_distiller::ThemeSettingsUpdateSource::kSystem;
+  _lightThemeButton.configuration = [self
+      createLightThemeButtonConfigurationSelected:
+          theme == dom_distiller::mojom::Theme::kLight && !systemSelected];
+  _lightThemeButton.selected =
+      theme == dom_distiller::mojom::Theme::kLight && !systemSelected;
+  _sepiaThemeButton.configuration = [self
+      createSepiaThemeButtonConfigurationSelected:
+          theme == dom_distiller::mojom::Theme::kSepia && !systemSelected];
+  _sepiaThemeButton.selected =
+      theme == dom_distiller::mojom::Theme::kSepia && !systemSelected;
   _darkThemeButton.configuration =
       [self createDarkThemeButtonConfigurationSelected:
-                theme == dom_distiller::mojom::Theme::kDark];
-  _darkThemeButton.selected = theme == dom_distiller::mojom::Theme::kDark;
+                theme == dom_distiller::mojom::Theme::kDark && !systemSelected];
+  _darkThemeButton.selected =
+      theme == dom_distiller::mojom::Theme::kDark && !systemSelected;
 }
 
 - (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled {

@@ -182,7 +182,8 @@ const CGFloat kDividerWidth = 1.0;
       IDS_IOS_AI_HUB_READER_MODE_OPTIONS_FONT_LABEL, fontFamilyString);
 }
 
-- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme {
+- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme
+              fromSource:(dom_distiller::ThemeSettingsUpdateSource)source {
   // Nothing to do.
 }
 

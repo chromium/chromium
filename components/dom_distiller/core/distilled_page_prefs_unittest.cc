@@ -170,6 +170,29 @@ TEST_F(DistilledPagePrefsTest, TestingOnChangeThemeCalledMultipleTimes) {
   distilled_page_prefs_->RemoveObserver(&mock_observer);
 }
 
+TEST_F(DistilledPagePrefsTest,
+       TestingOnChangeThemeCalledMultipleTimesWithDefaultTheme) {
+  testing::StrictMock<MockObserver> mock_observer;
+  distilled_page_prefs_->AddObserver(&mock_observer);
+
+  // Set the default theme to dark mode.
+  EXPECT_CALL(mock_observer, OnChangeTheme(mojom::Theme::kDark,
+                                           ThemeSettingsUpdateSource::kSystem));
+  distilled_page_prefs_->SetDefaultTheme(mojom::Theme::kDark);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Set the user preference to dark mode.
+  EXPECT_CALL(mock_observer,
+              OnChangeTheme(mojom::Theme::kDark,
+                            ThemeSettingsUpdateSource::kUserPreference));
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kDark);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  distilled_page_prefs_->RemoveObserver(&mock_observer);
+}
+
 TEST_F(DistilledPagePrefsTest, TestingDefaultThemeSet) {
   testing::StrictMock<MockObserver> mock_observer;
   distilled_page_prefs_->AddObserver(&mock_observer);
@@ -374,6 +397,35 @@ TEST_F(DistilledPagePrefsTest, SetDefaultFontScalingWithUserPref) {
   ASSERT_FLOAT_EQ(1.5f, distilled_page_prefs_->GetFontScaling());
 
   distilled_page_prefs_->RemoveObserver(&obs);
+}
+
+TEST_F(DistilledPagePrefsTest, ClearPrefs) {
+  testing::StrictMock<MockObserver> mock_observer;
+  distilled_page_prefs_->AddObserver(&mock_observer);
+
+  // Set the default theme to dark mode.
+  EXPECT_CALL(mock_observer, OnChangeTheme(mojom::Theme::kDark,
+                                           ThemeSettingsUpdateSource::kSystem));
+  distilled_page_prefs_->SetDefaultTheme(mojom::Theme::kDark);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Set the user preference to sepia.
+  EXPECT_CALL(mock_observer,
+              OnChangeTheme(mojom::Theme::kSepia,
+                            ThemeSettingsUpdateSource::kUserPreference));
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kSepia);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Clear the user preference, implicitly sets the theme back to the default.
+  EXPECT_CALL(mock_observer, OnChangeTheme(mojom::Theme::kDark,
+                                           ThemeSettingsUpdateSource::kSystem));
+  distilled_page_prefs_->ClearUserPrefTheme();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  distilled_page_prefs_->RemoveObserver(&mock_observer);
 }
 
 #if BUILDFLAG(IS_ANDROID)

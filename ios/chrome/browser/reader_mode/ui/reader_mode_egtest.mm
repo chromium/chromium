@@ -394,6 +394,63 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   ExpectBodyHasThemeAndFont("dark", "sans-serif");
 }
 
+// Tests that unselecting the theme in Reading Mode options will apply the
+// default theme on the Reading Mode web page.
+- (void)testUnselectReaderModeTheme {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
+
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+
+  // Set the user-selected preference to Dark theme.
+  [ChromeEarlGrey setIntegerValue:(int)dom_distiller::mojom::Theme::kDark
+                      forUserPref:dom_distiller::prefs::kTheme];
+
+  // Tap the chip to open the options view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kReaderModeChipViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  ExpectBodyHasThemeAndFont("dark", "sans-serif");
+
+  // Tap the Dark theme button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ButtonWithAccessibilityLabelId(
+              IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK)]
+      performAction:grey_tap()];
+
+  // Expect the theme to return to the default theme preference and the button
+  // to be unselected.
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ButtonWithAccessibilityLabelId(
+                  IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK),
+              grey_not(grey_accessibilityTrait(UIAccessibilityTraitSelected)),
+              nil)] assertWithMatcher:grey_notNil()];
+
+  // Tap the Light theme button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          chrome_test_util::ButtonWithAccessibilityLabelId(
+              IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_LIGHT)]
+      performAction:grey_tap()];
+
+  // Expect the theme to register light theme as the user preference and the
+  // button to be selected.
+  ExpectBodyHasThemeAndFont("light", "sans-serif");
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              chrome_test_util::ButtonWithAccessibilityLabelId(
+                  IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_LIGHT),
+              grey_accessibilityTrait(UIAccessibilityTraitSelected), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
 // Tests that font change is applied to the Reading Mode web page.
 - (void)testUpdateReaderModeFont {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];

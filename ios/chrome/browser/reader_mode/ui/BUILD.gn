@@ -62,6 +62,7 @@ source_set("options") {
   ]
   deps = [
     ":constants",
+    "//components/dom_distiller/core",
     "//components/dom_distiller/core:dom_distiller_features",
     "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings:ios_strings_grit",
