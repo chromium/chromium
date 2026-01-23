@@ -381,6 +381,9 @@ class CONTENT_EXPORT DatabaseConnection {
   // Creates a snapshot of the current legacy blob files stored in the database.
   std::set<int64_t> SnapshotLegacyBlobFiles();
 
+  // Gets the absolute file path for the directory containing legacy blob files.
+  base::FilePath GetLegacyBlobDirectory() const;
+
   // Gets the absolute file path for the blob with `blob_id`.
   base::FilePath GetBlobFilePath(int64_t blob_id) const;
 

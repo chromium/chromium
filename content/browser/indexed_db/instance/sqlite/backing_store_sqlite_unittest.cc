@@ -155,6 +155,10 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
                      sql::test::kTestTag);
 
     EXPECT_TRUE(db.Open(db_path));
+
+    base::FilePath blob_dir = db_path.InsertBeforeExtensionASCII("_");
+    base::CreateDirectory(blob_dir);
+
     std::vector<base::FilePath> blob_files;
     {
       sql::Statement statement(
@@ -163,9 +167,9 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
         int64_t row_id = statement.ColumnInt64(0);
         base::span<const uint8_t> bytes = statement.ColumnBlob(1);
 
-        base::FilePath path = db_path.InsertBeforeExtensionASCII(
-            absl::StrFormat("_%" PRIx64, row_id));
-        base::WriteFile(path, bytes);
+        base::FilePath path =
+            blob_dir.AppendASCII(absl::StrFormat("%" PRIx64, row_id));
+        EXPECT_TRUE(base::WriteFile(path, bytes));
         blob_files.push_back(path);
       }
     }
@@ -263,6 +267,74 @@ TEST_F(BackingStoreSqliteTest, LegacyBlobBasics) {
     // And finally, the blob that was not overwritten is still there.
     EXPECT_TRUE(base::PathExists(blob_files[2]));
   }
+
+  // Re-create a blob file, as if it had failed to be deleted at some point.
+  // It will be cleaned up when the database is opened then closed again.
+  EXPECT_TRUE(base::WriteFile(blob_files[0], "some bytes"));
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"name"));
+    // Currently cleanup only occurs if there happens to be a Put.
+    IndexedDBValue value_without_blob("non_blob_payload", {});
+    PutRecord(*db, object_store_id, key2, value_without_blob);
+    db.reset();
+    // The artificially resurrected blob is now gone.
+    EXPECT_FALSE(base::PathExists(blob_files[0]));
+    // The blob that was not resurrected is still gone.
+    EXPECT_FALSE(base::PathExists(blob_files[1]));
+    // The existing blob is unaffected.
+    EXPECT_TRUE(base::PathExists(blob_files[2]));
+  }
+}
+
+// Tests that legacy blob files are cleaned up when the database is deleted.
+TEST_F(BackingStoreSqliteTest, DeleteDatabaseCleansUpLegacyBlobs) {
+  const int64_t object_store_id = 1;
+  const std::string payload("payload");
+  const IndexedDBKey key(u"key");
+
+  // Setup: write a blob into a database.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"name"));
+
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        CreateAndBeginTransaction(
+            *db, blink::mojom::IDBTransactionMode::VersionChange);
+
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(object_store_id, u"object_store_name",
+                                        IndexedDBKeyPath(u"object_store_key"),
+                                        /*auto_increment=*/true)
+                    .ok());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(1).ok());
+
+    IndexedDBValue value("non_blob_payload",
+                         {CreateBlobInfo(u"type", payload)});
+    EXPECT_TRUE(transaction->PutRecord(object_store_id, key, value.Clone())
+                    .has_value());
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  // Convert this blob to a standalone file, as if it had been migrated from a
+  // LevelDB store.
+  std::vector<base::FilePath> blob_files =
+      ConvertInlinedBlobsToLegacyFileBlobs(u"name");
+  ASSERT_EQ(blob_files.size(), 1U);
+  EXPECT_TRUE(base::PathExists(blob_files[0]));
+
+  // Delete the database.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"name"));
+    base::RunLoop run_loop;
+    EXPECT_TRUE(
+        db->DeleteDatabase(CreateDummyLock(), run_loop.QuitClosure()).ok());
+    run_loop.Run();
+  }
+
+  // The legacy blob file should be deleted.
+  EXPECT_FALSE(base::PathExists(blob_files[0]));
 }
 
 // Regression test for https://crbug.com/454824963. Tests that blob IDs are not

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/to_vector.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -20,6 +21,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -111,6 +113,18 @@ std::optional<base::ByteSize> g_max_blob_size_override;
 // https://www.sqlite.org/limits.html
 base::ByteSize GetMaxBlobSize() {
   return g_max_blob_size_override.value_or(base::MiBU(5));
+}
+
+// For a given path, extracts the blob ID if the path matches the pattern for
+// legacy blob files ("<path>_/<0xblob_id>"). Returns nullopt otherwise.
+std::optional<int64_t> GetBlobIdFromLegacyFilePath(
+    const base::FilePath& file_path) {
+  int64_t blob_number;
+  if (base::HexStringToInt64(file_path.BaseName().MaybeAsASCII(),
+                             &blob_number)) {
+    return blob_number;
+  }
+  return std::nullopt;
 }
 
 // The separator used to join the strings when encoding an `IndexedDBKeyPath` of
@@ -878,12 +892,14 @@ DatabaseConnection::~DatabaseConnection() {
       !sql::IsSqliteSuccessCode(sql::ToSqliteResultCode(db_->GetErrorCode()));
 
   // When the database never finished initializing, it will be zygotic. This
-  // could happen if version change transaction was aborted/rolled back. In this
-  // case the newly created database should be deleted.
-  // TODO(crbug.com/419208485): clean up legacy blobs as well.
+  // could happen if version change transaction was aborted/rolled back. In
+  // this case the newly created database should be deleted.
   if (marked_for_permanent_deletion_ || (IsZygotic() && !had_sql_error)) {
     db_.reset();
     sql::Database::Delete(path_);
+    if (!base::DeletePathRecursively(GetLegacyBlobDirectory())) {
+      LogEvent(SpecificEvent::kLegacyBlobFileDeletionFailed);
+    }
   } else if (had_sql_error) {
     LogEvent(SpecificEvent::kDatabaseHadSqlError);
 
@@ -898,6 +914,9 @@ DatabaseConnection::~DatabaseConnection() {
     if (db_->is_open() && sql::IsErrorCatastrophic(db_->GetErrorCode())) {
       db_.reset();
       sql::Database::Delete(path_);
+      if (!base::DeletePathRecursively(GetLegacyBlobDirectory())) {
+        LogEvent(SpecificEvent::kLegacyBlobFileDeletionFailed);
+      }
     }
 #else
     // `RecoverIfPossible` will no-op for several reasons including if the error
@@ -906,6 +925,25 @@ DatabaseConnection::~DatabaseConnection() {
         db_.get(), db_->GetErrorCode(),
         sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
 #endif
+  } else if (legacy_blob_files_) {
+    // Delete any leftover legacy blobs which may have been left behind due to
+    // a past failed recovery or other errors. `legacy_blob_files_` are the
+    // ones still referenced by the DB, so keep those.
+    // TODO(crbug.com/419264073): since this requires reading from disk to
+    // enumerate directory contents, consider combining it with other
+    // potentially slow cleanup steps such as vacuuming, and/or skipping
+    // altogether for non-migrated DBs.
+    base::FileEnumerator(GetLegacyBlobDirectory(), /*recursive=*/false,
+                         base::FileEnumerator::FILES)
+        .ForEach([&](const base::FilePath& blob_path) {
+          std::optional<int64_t> blob_number =
+              GetBlobIdFromLegacyFilePath(blob_path);
+          if (blob_number && !legacy_blob_files_->contains(*blob_number)) {
+            if (!base::DeleteFile(blob_path)) {
+              LogEvent(SpecificEvent::kLegacyBlobFileDeletionFailed);
+            }
+          }
+        });
   }
 }
 
@@ -1340,11 +1378,6 @@ void DatabaseConnection::EndTransaction(
       }
     }
   }
-}
-
-base::FilePath DatabaseConnection::GetBlobFilePath(int64_t blob_id) const {
-  return path_.InsertBeforeExtensionASCII(
-      absl::StrFormat("_%" PRIx64, blob_id));
 }
 
 Status DatabaseConnection::SetDatabaseVersion(
@@ -2384,6 +2417,19 @@ std::set<int64_t> DatabaseConnection::SnapshotLegacyBlobFiles() {
     result.insert(statement.ColumnInt64(0));
   }
   return result;
+}
+
+base::FilePath DatabaseConnection::GetLegacyBlobDirectory() const {
+  // For the sake of avoiding path length limits, the directory is given a short
+  // name instead of a descriptive name.
+  return path_.InsertBeforeExtensionASCII("_");
+}
+
+base::FilePath DatabaseConnection::GetBlobFilePath(int64_t blob_id) const {
+  base::FilePath path = GetLegacyBlobDirectory().AppendASCII(
+      absl::StrFormat("%" PRIx64, blob_id));
+  DCHECK_EQ(blob_id, GetBlobIdFromLegacyFilePath(path).value_or(-1));
+  return path;
 }
 
 // static
