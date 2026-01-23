@@ -1043,7 +1043,26 @@ chromium-metrics-reviews@google.com.
     operations. Recorded when there is an error while communicating with the DB
     for any data type that uses the DataTypeStore. This metric should be used
     together with Sync.DataType[Run|Start]Failures2 to figure out the root cause
-    of the data type failure.
+    of the data type failure. In case of an IOError,
+    `Sync.DataTypeStoreBackendError.{Operation}.IOError` is also recorded.
+  </summary>
+  <token key="Operation">
+    <variant name="DeleteData"/>
+    <variant name="GetStoreVersion"/>
+    <variant name="Init"/>
+    <variant name="ReadAllRecords"/>
+    <variant name="ReadRecords"/>
+    <variant name="WriteModifications"/>
+  </token>
+</histogram>
+
+<histogram name="Sync.DataTypeStoreBackendError.{Operation}.IOError"
+    enum="PlatformFileError" expires_after="2026-08-31">
+  <owner>treib@chromium.org</owner>
+  <owner>mtatarski@google.com</owner>
+  <summary>
+    Records the base::File::Error code for DataTypeStore {Operation} operations
+    when the LevelDB status is IOError.
   </summary>
   <token key="Operation">
     <variant name="DeleteData"/>

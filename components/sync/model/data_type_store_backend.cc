@@ -38,6 +38,18 @@ void LogDbStatusByCallingSiteIfNeeded(const std::string& calling_site,
   base::UmaHistogramEnumeration(histogram_name,
                                 leveldb_env::GetLevelDBStatusUMAValue(status),
                                 leveldb_env::LEVELDB_STATUS_MAX);
+
+  if (status.IsIOError()) {
+    [[maybe_unused]] leveldb_env::MethodID method;
+    base::File::Error file_error = base::File::FILE_OK;
+    if (leveldb_env::ParseMethodAndError(status, &method, &file_error) ==
+        leveldb_env::METHOD_AND_BFE) {
+      // base::File::Error error codes are negative, but UMA histograms require
+      // positive values.
+      base::UmaHistogramExactLinear(histogram_name + ".IOError", -file_error,
+                                    -base::File::FILE_ERROR_MAX + 1);
+    }
+  }
 }
 
 }  // namespace
@@ -79,6 +91,13 @@ DataTypeStoreBackend::CreateInMemoryForTest() {
 scoped_refptr<DataTypeStoreBackend>
 DataTypeStoreBackend::CreateUninitialized() {
   return new DataTypeStoreBackend(/*env=*/nullptr);
+}
+
+// static
+scoped_refptr<DataTypeStoreBackend>
+DataTypeStoreBackend::CreateWithCustomEnvForTest(
+    std::unique_ptr<leveldb::Env> env) {
+  return new DataTypeStoreBackend(std::move(env));
 }
 
 // This is a refcounted class and the destructor is safe on any sequence and

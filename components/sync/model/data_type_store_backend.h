@@ -43,6 +43,11 @@ class DataTypeStoreBackend
   // must be called afterwards, which binds the instance to a certain sequence.
   static scoped_refptr<DataTypeStoreBackend> CreateUninitialized();
 
+  // Creates a new and uninitialized instance of DataTypeStoreBackend with a
+  // custom Env for testing purposes.
+  static scoped_refptr<DataTypeStoreBackend> CreateWithCustomEnvForTest(
+      std::unique_ptr<leveldb::Env> env);
+
   DataTypeStoreBackend(const DataTypeStoreBackend&) = delete;
   DataTypeStoreBackend& operator=(const DataTypeStoreBackend&) = delete;
 
