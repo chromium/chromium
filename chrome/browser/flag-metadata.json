@@ -6750,16 +6750,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "ntp-most-relevant-tab-resumption-module",
-    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "ntp-most-relevant-tab-resumption-module-fallback-to-host",
-    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ntp-next-features",
     "owners": [
       "jennserrano@google.com",
