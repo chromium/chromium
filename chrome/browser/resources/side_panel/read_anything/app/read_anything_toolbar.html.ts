@@ -19,14 +19,20 @@ function getRateButtonHtml(this: ReadAnythingToolbarElement) {
 }
 
 function getToolbarAudioControlsHtml(this: ReadAnythingToolbarElement) {
+  let audioState = 'inactive';
+  if (this.isImmersiveEnabled_) {
+    audioState = 'immersive-enabled';
+  } else if (this.isSpeechActive) {
+    audioState = 'speech-active';
+  }
+
   const shouldBeActive = this.isSpeechActive || this.isImmersiveEnabled_;
   const prevNextAreDisabled = !this.isReadAloudPlayable ||
       (this.isImmersiveEnabled_ && !this.isSpeechActive);
 
   // clang-format off
   return html`<!--_html_template_start_-->
-<span id="audio-controls"
-    class="audio-background-when-active-${shouldBeActive}">
+<span id="audio-controls" class="audio-background-${audioState}">
   <span ?hidden="${this.hideSpinner_}">
     <picture class="spinner toolbar-button audio-controls">
       <source media="(prefers-color-scheme: dark)"
@@ -184,12 +190,11 @@ function getImmersiveToolbarHtml(this: ReadAnythingToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${getToolbarAudioControlsHtml.call(this)}
-<hr class="separator" aria-hidden="true">
 ${renderTextStyleOptions.call(this)}
 <cr-icon-button id="more" tabindex="0" aria-label="$i18n{moreOptionsLabel}"
     title="$i18n{moreOptionsLabel}"
     aria-haspopup="menu"
-    iron-icon="cr:more-vert"
+    iron-icon="cr:settings_icon"
     @click="${this.onMoreOptionsClick_}">
 </cr-icon-button>
 <settings-menu
