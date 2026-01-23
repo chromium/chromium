@@ -26,12 +26,6 @@ struct EntityTypeAndroid {
       const jni_zero::JavaRef<jobject>& j_entity_type);
 
   explicit EntityTypeAndroid(const EntityType& entity_type);
-  EntityTypeAndroid(EntityTypeName type_name,
-                    bool is_read_only,
-                    std::u16string type_name_as_string,
-                    std::u16string add_entity_type_string,
-                    std::u16string edit_entity_type_string,
-                    std::u16string delete_entity_type_string);
   EntityTypeAndroid(const EntityTypeAndroid&);
   EntityTypeAndroid& operator=(const EntityTypeAndroid&);
   EntityTypeAndroid(EntityTypeAndroid&&);
@@ -43,9 +37,9 @@ struct EntityTypeAndroid {
   EntityTypeName type_name;
   bool is_read_only;
   std::u16string type_name_as_string;
-  std::u16string add_entity_type_string;
-  std::u16string edit_entity_type_string;
-  std::u16string delete_entity_type_string;
+  std::string add_entity_type_string;
+  std::string edit_entity_type_string;
+  std::string delete_entity_type_string;
 };
 
 }  // namespace autofill

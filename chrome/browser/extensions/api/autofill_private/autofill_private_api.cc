@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -168,8 +169,9 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           web_contents->GetPrimaryMainFrame());
-  if (!autofill_driver)
+  if (!autofill_driver) {
     return nullptr;
+  }
   // This cast is safe, since `AutofillManager` is always a
   // `BrowserAutofillManager` apart from on WebView.
   return static_cast<autofill::BrowserAutofillManager*>(
@@ -255,8 +257,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   const autofill::AutofillProfile* existing_profile = nullptr;
   if (use_existing_profile) {
     existing_profile = adm->GetProfileByGUID(guid);
-    if (!existing_profile)
+    if (!existing_profile) {
       return RespondNow(Error(kErrorDataUnavailable));
+    }
   }
   std::optional<std::string_view> country_code;
   if (auto it = std::find_if(
@@ -418,8 +421,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
   const autofill::CreditCard* existing_card = nullptr;
   if (use_existing_card) {
     existing_card = paydm->GetCreditCardByGUID(guid);
-    if (!existing_card)
+    if (!existing_card) {
       return RespondNow(Error(kErrorDataUnavailable));
+    }
   }
   autofill::CreditCard credit_card =
       existing_card ? *existing_card
@@ -457,8 +461,9 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
 
   if (use_existing_card) {
     // Only updates when the card info changes.
-    if (existing_card && existing_card->Compare(credit_card) == 0)
+    if (existing_card && existing_card->Compare(credit_card) == 0) {
       return RespondNow(NoArguments());
+    }
 
     if (existing_card->cvc().empty()) {
       if (credit_card.cvc().empty()) {
@@ -736,8 +741,9 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 
   const autofill::CreditCard* card =
       paydm->GetCreditCardByServerId(parameters->card_id);
-  if (!card)
+  if (!card) {
     return RespondNow(Error(kErrorDataUnavailable));
+  }
 
   autofill::BrowserAutofillManager* autofill_manager =
       GetBrowserAutofillManager(GetSenderWebContents());
@@ -1090,14 +1096,8 @@ AutofillPrivateGetWritableEntityTypesFunction::Run() {
 
   std::vector<autofill_private::EntityType> result;
   result.reserve(all_types.size());
-  for (EntityType entity_type : all_types) {
-    if (!entity_type.enabled(
-            autofill_client()->GetVariationConfigCountryCode())) {
-      continue;
-    }
-    if (entity_type.read_only()) {
-      continue;
-    }
+  for (EntityType entity_type : autofill::GetWritableEntityTypes(
+           autofill_client()->GetVariationConfigCountryCode())) {
     // TODO(crbug.com/454892936): Provide the correct value for
     // `supports_wallet_storage`.
     result.push_back(autofill_ai_util::EntityTypeToPrivateApiEntityType(

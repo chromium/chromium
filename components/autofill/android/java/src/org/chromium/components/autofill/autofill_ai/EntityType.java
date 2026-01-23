@@ -36,9 +36,9 @@ public class EntityType {
             @EntityTypeName int typeName,
             boolean isReadOnly,
             @JniType("std::u16string") String typeNameAsString,
-            @JniType("std::u16string") String addEntityTypeString,
-            @JniType("std::u16string") String editEntityTypeString,
-            @JniType("std::u16string") String deleteEntityTypeString) {
+            @JniType("std::string") String addEntityTypeString,
+            @JniType("std::string") String editEntityTypeString,
+            @JniType("std::string") String deleteEntityTypeString) {
         this.typeName = typeName;
         this.isReadOnly = isReadOnly;
         this.typeNameAsString = typeNameAsString;

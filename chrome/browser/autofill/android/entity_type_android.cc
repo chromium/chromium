@@ -7,6 +7,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/android/main_autofill_jni_headers/EntityType_jni.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 
 namespace autofill {
 
@@ -34,24 +35,10 @@ EntityTypeAndroid::EntityTypeAndroid(const EntityType& entity_type)
     : type_name(entity_type.name()),
       is_read_only(entity_type.read_only()),
       type_name_as_string(entity_type.GetNameForI18n()),
-      // Note that the following string values are not relevant in the C++ side,
-      // it is only used by the UI.
-      add_entity_type_string(u""),
-      edit_entity_type_string(u""),
-      delete_entity_type_string(u"") {}
-
-EntityTypeAndroid::EntityTypeAndroid(EntityTypeName type_name,
-                                     bool is_read_only,
-                                     std::u16string type_name_as_string,
-                                     std::u16string add_entity_type_string,
-                                     std::u16string edit_entity_type_string,
-                                     std::u16string delete_entity_type_string)
-    : type_name(type_name),
-      is_read_only(is_read_only),
-      type_name_as_string(std::move(type_name_as_string)),
-      add_entity_type_string(std::move(add_entity_type_string)),
-      edit_entity_type_string(std::move(edit_entity_type_string)),
-      delete_entity_type_string(std::move(delete_entity_type_string)) {}
+      add_entity_type_string(GetAddEntityTypeStringForI18n(entity_type)),
+      edit_entity_type_string(GetEditEntityTypeStringForI18n(entity_type)),
+      delete_entity_type_string(GetDeleteEntityTypeStringForI18n(entity_type)) {
+}
 
 EntityTypeAndroid::EntityTypeAndroid(const EntityTypeAndroid&) = default;
 

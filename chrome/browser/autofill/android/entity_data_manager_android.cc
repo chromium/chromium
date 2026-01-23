@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "base/types/zip.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
+#include "chrome/browser/autofill/android/entity_type_android.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -109,6 +111,17 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
   }
   return base::android::ToJavaArrayOfObjects(env, j_entities);
 }
+
+std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
+    JNIEnv* env) {
+  std::vector<EntityTypeAndroid> entity_types;
+  for (EntityType entity_type : autofill::GetWritableEntityTypes(
+           entity_data_manager_->GetVariationCountryCode())) {
+    entity_types.emplace_back(EntityTypeAndroid(entity_type));
+  }
+  return entity_types;
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(EntityDataManager)

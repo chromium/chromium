@@ -145,6 +145,8 @@ class EntityDataManager : public KeyedService,
     observers_.RemoveObserver(observer);
   }
 
+  const GeoIpCountryCode& GetVariationCountryCode() const;
+
  private:
   void LoadEntities();
 

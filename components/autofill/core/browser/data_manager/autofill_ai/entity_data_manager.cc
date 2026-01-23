@@ -220,4 +220,8 @@ void EntityDataManager::NotifyEntityInstancesChanged() {
   }
 }
 
+const GeoIpCountryCode& EntityDataManager::GetVariationCountryCode() const {
+  return variation_country_code_;
+}
+
 }  // namespace autofill

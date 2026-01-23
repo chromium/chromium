@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
+import org.chromium.components.autofill.autofill_ai.EntityType;
 
 import java.util.List;
 
@@ -71,6 +72,11 @@ public class EntityDataManager implements Destroyable {
                 EntityDataManagerJni.get().getEntitiesWithLabels(mNativeEntityDataManagerAndroid));
     }
 
+    public List<EntityType> getWritableEntityTypes() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get().getWritableEntityTypes(mNativeEntityDataManagerAndroid);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -84,5 +90,8 @@ public class EntityDataManager implements Destroyable {
         void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);
 
         EntityInstanceWithLabels[] getEntitiesWithLabels(long nativeEntityDataManagerAndroid);
+
+        @JniType("std::vector<autofill::EntityTypeAndroid>")
+        List<EntityType> getWritableEntityTypes(long nativeEntityDataManagerAndroid);
     }
 }
