@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -195,8 +196,10 @@ class HttpStreamPool::AttemptManager
   // Cancels all jobs.
   void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
-  // Cancels the QuicAttempt if it exists.
-  void CancelQuicAttempt(int error);
+  // Completes the QuicAttempt with `result` if not completed before.
+  void CompleteQuicAttempt(
+      int result,
+      base::optional_ref<NetErrorDetails> net_error_details = std::nullopt);
 
   // Returns the current load state.
   LoadState GetLoadState() const;

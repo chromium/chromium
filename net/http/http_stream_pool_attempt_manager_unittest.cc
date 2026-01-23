@@ -5223,12 +5223,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
       .set_enable_alternative_services(false)
       .RequestStream(pool());
   base::RunLoop on_complete_loop;
-  // Make sure that QUIC was never attempted.
+  // Make sure that QUIC was never attempted and the result sets aborted.
   requester.associated_attempt_manager()->SetOnCompleteCallbackForTesting(
       base::BindLambdaForTesting([&]() {
-        EXPECT_FALSE(requester.associated_attempt_manager()
-                         ->GetQuicAttemptResultForTesting()
-                         .has_value());
+        EXPECT_THAT(requester.associated_attempt_manager()
+                        ->GetQuicAttemptResultForTesting(),
+                    Optional(IsError(ERR_ABORTED)));
         on_complete_loop.Quit();
       }));
   requester.WaitForResult();

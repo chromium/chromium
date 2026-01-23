@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/types/optional_ref.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
@@ -587,11 +588,24 @@ void HttpStreamPool::AttemptManager::CancelJobs(
   HandleFinalError(error);
 }
 
-void HttpStreamPool::AttemptManager::CancelQuicAttempt(int error) {
-  if (quic_attempt_) {
-    quic_attempt_result_ = error;
-    quic_attempt_.reset();
+void HttpStreamPool::AttemptManager::CompleteQuicAttempt(
+    int result,
+    base::optional_ref<NetErrorDetails> net_error_details) {
+  if (quic_attempt_result_.has_value()) {
+    CHECK(!quic_attempt_);
+    CHECK_NE(result, OK)
+        << "QUIC attempt should not be completed with OK more than once";
+    CHECK_NE(*quic_attempt_result_, OK)
+        << "QUIC attempt should not be completed more than once if initially "
+           "succeeded";
+    return;
   }
+
+  if (net_error_details.has_value()) {
+    net_error_details_ = *net_error_details;
+  }
+  quic_attempt_result_ = result;
+  quic_attempt_.reset();
 }
 
 const HttpStreamKey& HttpStreamPool::AttemptManager::stream_key() const {
@@ -838,9 +852,6 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
   int rv = outcome.result;
   QuicChromiumClientSession* quic_session = outcome.session;
 
-  quic_attempt_result_ = rv;
-  net_error_details_ = std::move(outcome.error_details);
-
   // Record completion time only when QuicAttempt actually attempted QUIC.
   if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
     base::UmaHistogramTimes(
@@ -849,7 +860,7 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
         base::TimeTicks::Now() - quic_attempt_->start_time());
   }
 
-  quic_attempt_.reset();
+  CompleteQuicAttempt(rv, outcome.error_details);
 
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_ATTEMPT_COMPLETED,
@@ -910,7 +921,7 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptSlow() {
       });
 
   if (is_shutting_down()) {
-    CancelQuicAttempt(ERR_ABORTED);
+    CompleteQuicAttempt(ERR_ABORTED);
     MaybeCompleteLater();
   }
 }
@@ -1129,7 +1140,7 @@ void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
 
   if (!CanUseQuic()) {
     // TODO(crbug.com/346835898): Use other error code?
-    CancelQuicAttempt(ERR_ABORTED);
+    CompleteQuicAttempt(ERR_ABORTED);
   }
 }
 
@@ -1170,7 +1181,7 @@ void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
         "Net.HttpStreamPool.ExistingQuicSessionFoundTime",
         base::TimeTicks::Now() - dns_resolution_start_time_);
 
-    CancelQuicAttempt(OK);
+    CompleteQuicAttempt(OK);
     HandleQuicSessionReady(quic_session,
                            StreamSocketCloseReason::kUsingExistingQuicSession);
 
@@ -1662,7 +1673,7 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
       });
 
   CancelTcpBasedAttempts(StreamSocketCloseReason::kAbort);
-  CancelQuicAttempt(final_error_to_notify_jobs());
+  CompleteQuicAttempt(final_error_to_notify_jobs());
   NotifyPreconnectsComplete(final_error_to_notify_jobs());
   NotifyRequestJobsOfFailure();
 
@@ -1839,7 +1850,7 @@ void HttpStreamPool::AttemptManager::MaybeStartDraining() {
   CancelTcpBasedAttempts(StreamSocketCloseReason::kAttemptManagerDraining);
 
   if (quic_attempt_ && quic_attempt_->is_slow()) {
-    CancelQuicAttempt(ERR_ABORTED);
+    CompleteQuicAttempt(ERR_ABORTED);
   }
 
   group_->OnAttemptManagerShuttingDown(this);
@@ -2178,7 +2189,8 @@ void HttpStreamPool::AttemptManager::MaybeMarkQuicBroken() {
   if (*quic_attempt_result_ == OK ||
       *quic_attempt_result_ == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN ||
       *quic_attempt_result_ == ERR_NETWORK_CHANGED ||
-      *quic_attempt_result_ == ERR_INTERNET_DISCONNECTED) {
+      *quic_attempt_result_ == ERR_INTERNET_DISCONNECTED ||
+      *quic_attempt_result_ == ERR_ABORTED) {
     return;
   }
 
