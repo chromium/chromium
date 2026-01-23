@@ -971,12 +971,25 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
 void WebContentsAccessibilityAndroid::HandleAtomicLiveRegionChanged(
     int32_t unique_id) {
   BrowserAccessibilityAndroid* android_root_node = GetAXFromUniqueID(unique_id);
+
+  bool root_has_nonempty_name =
+      !android_root_node
+           ->GetString16Attribute(ax::mojom::StringAttribute::kName)
+           .empty();
+
+  // TODO(accessibility): this condition isn't technically part of accessible
+  // name computation. It should only be valid to do this for roles that support
+  // `ui::SupportsNamingFromChildcontents`. This condition makes it so that we
+  // rarely if ever traverse into descendants.
+  bool root_has_nonempty_text =
+      !android_root_node->GetTextContentUTF16().empty();
+
   // If our root node is a leaf, is "interesting", and has an accessible name
   // which can be announced, simply fire a node changed event for our current
   // node and return early.
   if (android_root_node->IsLeaf() &&
       android_root_node->IsInterestingOnAndroid() &&
-      !android_root_node->GetAccessibleNameUTF16().empty()) {
+      (root_has_nonempty_name || root_has_nonempty_text)) {
     return HandleLiveRegionNodeChanged(android_root_node->GetUniqueId());
   }
 
@@ -987,7 +1000,11 @@ void WebContentsAccessibilityAndroid::HandleAtomicLiveRegionChanged(
   while (current_node) {
     // If node has an accessible name which can be announced, fire a node
     // changed event.
-    if (!current_node->GetAccessibleNameUTF16().empty()) {
+    if (!current_node->GetString16Attribute(ax::mojom::StringAttribute::kName)
+             .empty() ||
+        // TODO(accessibility), similarly to the root, this shouldn't be part of
+        // name computation generally.
+        !current_node->GetTextContentUTF16().empty()) {
       HandleLiveRegionNodeChanged(current_node->GetUniqueId());
     }
 
@@ -1473,7 +1490,7 @@ void WebContentsAccessibilityAndroid::
       node->IsTextField(), node->IsEnabled(), node->IsEditable(),
       node->IsFocusable(), node->IsFocused(), node->IsCollapsed(),
       node->IsExpanded(), node->HasNonEmptyValue(),
-      !node->GetAccessibleNameUTF16().empty(), node->IsSeekControl(),
+      !node->GetTextContentUTF16().empty(), node->IsSeekControl(),
       node->IsFormDescendant());
 }
 
