@@ -1511,7 +1511,7 @@
         Theme Collections
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_TITLE" desc="Open all available theme collections when click the theme collection section in the NTP appearance bottom sheet">
-        Theme
+        Theme collections
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page appearance theme collections bottom sheet.">
         New tab page appearance theme collections bottom sheet
