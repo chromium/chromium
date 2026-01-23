@@ -931,13 +931,20 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
 
     const gfx::Rect damage(5, 10, 20, 15);
     // Surface damage will be affected by the scale, which must be an integer.
-    const gfx::Rect expected_damage = ScaleToEnclosingRect(
-        gfx::Rect(5, 10, 20, 15), 1.f / std::ceil(scale_factor));
-
+    const gfx::Rect expected_damage =
+        GetParam().supports_viewporter_surface_scaling
+            ? ScaleToEnclosingRect(
+                  gfx::Rect(5, 10, 20, 15),
+                  1.f / (static_cast<int>(scale_factor * 120) / 120.f))
+            : ScaleToEnclosingRect(gfx::Rect(5, 10, 20, 15),
+                                   1.f / std::ceil(scale_factor));
     const uint32_t surface_id = window_->root_surface()->get_surface_id();
-    PostToServerAndWait([surface_id,
-                         expected_damage](wl::TestWaylandServerThread* server) {
+    PostToServerAndWait([surface_id, expected_damage,
+                         scale_factor](wl::TestWaylandServerThread* server) {
       auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+      if (mock_surface->fractional_scale()) {
+        mock_surface->fractional_scale()->SendPreferredScale(scale_factor);
+      }
       ASSERT_FALSE(mock_surface->attached_buffer());
       Expectation damage =
           EXPECT_CALL(*mock_surface,

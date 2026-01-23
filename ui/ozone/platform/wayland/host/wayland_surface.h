@@ -228,14 +228,11 @@ class WaylandSurface {
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
-  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
-                           UiScale_HandleFontScaleChange);
-  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest, UiScale_HandleFontScaleChange);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            UiScale_HandleServerTriggeredBoundsChange);
-  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
-                           UiScale_InitScaleAndBounds);
-  FRIEND_TEST_ALL_PREFIXES(PerSurfaceScaleWaylandWindowTest,
-                           UiScale_HandlePopupGeometry);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest, UiScale_InitScaleAndBounds);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest, UiScale_HandlePopupGeometry);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceTest, SetExplicitSyncSuccess);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceExplicitSyncTest,
                            ConfigureWithExplicitSync);

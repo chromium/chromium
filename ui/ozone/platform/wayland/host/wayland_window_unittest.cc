@@ -529,7 +529,6 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
     // Set*() calls do not send wl_surface requests.
     EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
     EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
-    EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(0);
   });
 
   std::vector<gfx::Rect> region_px = {gfx::Rect{500, 300}};
@@ -546,7 +545,6 @@ TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
     // wayland connection flush.
     EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
     EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
-    EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(1);
     EXPECT_CALL(*mock_surface, Commit()).Times(1);
   });
 
@@ -2623,7 +2621,18 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   }
 }
 
-TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
+class WaylandWindowTestNoFractionalScale : public WaylandWindowTest {
+ public:
+  WaylandWindowTestNoFractionalScale() = default;
+  ~WaylandWindowTestNoFractionalScale() override = default;
+
+  WaylandWindowTestNoFractionalScale(
+      const WaylandWindowTestNoFractionalScale&) = delete;
+  WaylandWindowTestNoFractionalScale& operator=(
+      const WaylandWindowTestNoFractionalScale&) = delete;
+};
+
+TEST_P(WaylandWindowTestNoFractionalScale, ToplevelWindowUpdateWindowScale) {
   VerifyAndClearExpectations();
 
   // Surface scale must be 1 when no output has been entered by the window.
@@ -2686,7 +2695,7 @@ TEST_P(WaylandWindowTest, ToplevelWindowUpdateWindowScale) {
   EXPECT_EQ(gfx::Rect(800, 600), window_->GetBoundsInDIP());
 }
 
-TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
+TEST_P(WaylandWindowTestNoFractionalScale, WaylandPopupSurfaceScale) {
   VerifyAndClearExpectations();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2782,7 +2791,7 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
 // PlatformWindowProperties using buffer scale it's going to use that the client
 // is not able to determine before PlatformWindow is created. See
 // WaylandPopup::OnInitialize for more details.
-TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
+TEST_P(WaylandWindowTestNoFractionalScale, WaylandPopupInitialBufferScale) {
   VerifyAndClearExpectations();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -2914,6 +2923,9 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferUsesParentScale) {
         server->GetObject<wl::TestOutput>(secondary_output_id);
 
     wl_surface_send_enter(surface->resource(), output->resource());
+    if (surface->fractional_scale()) {
+      surface->fractional_scale()->SendPreferredScale(2.f);
+    }
   });
 
   constexpr gfx::Rect kBoundsDip{50, 50, 100, 100};
@@ -4706,6 +4718,15 @@ TEST_P(WaylandWindowTest, ScaleChangeWhenStateRequestThrottoled) {
   auto* primary_output =
       connection_->wayland_output_manager()->GetPrimaryOutput();
   primary_output->SetScaleFactorForTesting(kScale);
+  if (GetParam().supports_viewporter_surface_scaling) {
+    const auto surface_id = toplevel->root_surface()->get_surface_id();
+    PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+      auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
+      if (mock_surface->fractional_scale()) {
+        mock_surface->fractional_scale()->SendPreferredScale(kScale);
+      }
+    });
+  }
   toplevel->UpdateWindowScale(true);
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
@@ -4861,34 +4882,7 @@ TEST_P(MultiDisplayWaylandWindowTest, NewWindowsRespectInitParamBounds) {
   EXPECT_EQ(kInitBounds, window->GetBoundsInDIP());
 }
 
-class PerSurfaceScaleWaylandWindowTest : public WaylandWindowTest {
- public:
-  PerSurfaceScaleWaylandWindowTest() = default;
-  ~PerSurfaceScaleWaylandWindowTest() override = default;
-
-  PerSurfaceScaleWaylandWindowTest(const PerSurfaceScaleWaylandWindowTest&) =
-      delete;
-  PerSurfaceScaleWaylandWindowTest& operator=(
-      const PerSurfaceScaleWaylandWindowTest&) = delete;
-
-  void SetUp() override {
-    CHECK(!std::ranges::contains(
-        enabled_features_,
-        base::test::FeatureRef(features::kWaylandPerSurfaceScale)));
-    enabled_features_.push_back(features::kWaylandPerSurfaceScale);
-
-    WaylandWindowTest::SetUp();
-  }
-
-  void TearDown() override {
-    WaylandWindowTest::TearDown();
-
-    CHECK(enabled_features_.back() == features::kWaylandPerSurfaceScale);
-    enabled_features_.pop_back();
-  }
-};
-
-TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
+TEST_P(WaylandWindowTest, UsePreferredSurfaceScale) {
   ASSERT_TRUE(connection_->UsePerSurfaceScaling());
   EXPECT_EQ(1u, screen_->GetAllDisplays().size());
   EXPECT_EQ(1.0f, screen_->GetDisplayForAcceleratedWidget(window_->GetWidget())
@@ -4942,7 +4936,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UsePreferredSurfaceScale) {
                       .device_scale_factor());
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
+TEST_P(WaylandWindowTest, UiScale_HandleFontScaleChange) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Required for emulating mouse events.
@@ -5064,8 +5058,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandleFontScaleChange) {
   EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest,
-       UiScale_HandleServerTriggeredBoundsChange) {
+TEST_P(WaylandWindowTest, UiScale_HandleServerTriggeredBoundsChange) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Initialize surface preferred scale.
@@ -5116,7 +5109,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest,
   EXPECT_EQ(window_->root_surface()->state_.buffer_scale_float, 1.0f);
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
+TEST_P(WaylandWindowTest, UiScale_InitScaleAndBounds) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Set font scale to 1.25.
@@ -5217,7 +5210,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_InitScaleAndBounds) {
   EXPECT_EQ(new_window->root_surface()->state_.buffer_scale_float, 2.0f);
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
+TEST_P(WaylandWindowTest, UiScale_HandlePopupGeometry) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Required for emulating mouse events.
@@ -5338,7 +5331,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_HandlePopupGeometry) {
   EXPECT_EQ(screen_->GetCursorScreenPoint(), gfx::Point(88, 88));
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_SanitizeFontScale) {
+TEST_P(WaylandWindowTest, UiScale_SanitizeFontScale) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   auto test_font_scale = [&](float requested_font_scale,
@@ -5358,7 +5351,7 @@ TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_SanitizeFontScale) {
   test_font_scale(-1.0f, 0.5f);
 }
 
-TEST_P(PerSurfaceScaleWaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
+TEST_P(WaylandWindowTest, UiScale_ForceDeviceScaleFactor) {
   // When enabled, it must take precedence over font scale.
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
   display::Display::SetForceDeviceScaleFactor(2.0);
@@ -5388,12 +5381,12 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandWindowTestNoFractionalScale,
+                         Values(wl::ServerConfig{
+                             .supports_viewporter_surface_scaling = false}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          MultiDisplayWaylandWindowTest,
                          Values(wl::ServerConfig{}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         PerSurfaceScaleWaylandWindowTest,
-                         Values(wl::ServerConfig{
-                             .supports_viewporter_surface_scaling = true}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandSubsurfaceTest,
                          Values(wl::ServerConfig{}));

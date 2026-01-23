@@ -528,8 +528,7 @@ bool WaylandConnection::UseImplicitSyncInterop() const {
 }
 
 bool WaylandConnection::UsePerSurfaceScaling() const {
-  return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
-         supports_viewporter_surface_scaling();
+  return supports_viewporter_surface_scaling();
 }
 
 bool WaylandConnection::IsUiScaleEnabled() const {

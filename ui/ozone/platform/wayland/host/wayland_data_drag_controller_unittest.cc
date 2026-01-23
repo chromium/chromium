@@ -1513,36 +1513,7 @@ TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
   EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
 }
 
-class PerSurfaceScaleWaylandDataDragControllerTest
-    : public WaylandDataDragControllerTest {
- public:
-  PerSurfaceScaleWaylandDataDragControllerTest() = default;
-  ~PerSurfaceScaleWaylandDataDragControllerTest() override = default;
-
-  PerSurfaceScaleWaylandDataDragControllerTest(
-      const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
-  PerSurfaceScaleWaylandDataDragControllerTest& operator=(
-      const PerSurfaceScaleWaylandDataDragControllerTest&) = delete;
-
-  void SetUp() override {
-    CHECK(!std::ranges::contains(
-        enabled_features_,
-        base::test::FeatureRef(features::kWaylandPerSurfaceScale)));
-    enabled_features_.push_back(features::kWaylandPerSurfaceScale);
-
-    WaylandDataDragControllerTest::SetUp();
-  }
-
-  void TearDown() override {
-    WaylandDataDragControllerTest::TearDown();
-
-    CHECK(enabled_features_.back() == features::kWaylandPerSurfaceScale);
-    enabled_features_.pop_back();
-  }
-};
-
-TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
-       ScaleEnterAndMotionEventsLocation) {
+TEST_P(WaylandDataDragControllerTest, ScaleEnterAndMotionEventsLocation) {
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Set font scale to 1.25.
@@ -1588,9 +1559,5 @@ TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,
                          Values(wl::ServerConfig{}));
-INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         PerSurfaceScaleWaylandDataDragControllerTest,
-                         Values(wl::ServerConfig{
-                             .supports_viewporter_surface_scaling = true}));
 
 }  // namespace ui

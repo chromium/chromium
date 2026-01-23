@@ -379,7 +379,7 @@ TEST_P(WaylandScreenTest, OutputPropertyChangesMissingLogicalSize) {
   TestDisplayObserver observer;
   platform_screen_->AddObserver(&observer);
 
-  const uint32_t output_id = 7;
+  const uint32_t output_id = 8;
   const int64_t display_id = 1ll << 34;
   const gfx::Point origin(50, 70);
   const gfx::Size physical_size(1200, 1600);
@@ -963,9 +963,20 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
   EXPECT_EQ(gfx::Point(1912, 1071), platform_screen_->GetCursorScreenPoint());
 }
 
+class WaylandScreenTestNoFractionalScale : public WaylandScreenTest {
+ public:
+  WaylandScreenTestNoFractionalScale() = default;
+  ~WaylandScreenTestNoFractionalScale() override = default;
+
+  WaylandScreenTestNoFractionalScale(
+      const WaylandScreenTestNoFractionalScale&) = delete;
+  WaylandScreenTestNoFractionalScale& operator=(
+      const WaylandScreenTestNoFractionalScale&) = delete;
+};
+
 // Checks that the surface that backs the window receives new scale of the
 // output that it is in.
-TEST_P(WaylandScreenTest, SetWindowScale) {
+TEST_P(WaylandScreenTestNoFractionalScale, SetWindowScale) {
   constexpr int32_t kTripleScale = 3;
 
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
@@ -1015,7 +1026,7 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
 // which implies in its scale being set to the primary output's scale at its
 // initialization, any primary output scale update (or other properties that
 // lead to scale change) must be propagated to the window.
-TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
+TEST_P(WaylandScreenTestNoFractionalScale, SetWindowScaleWithoutEnteredOutput) {
   // Test pre-conditions: single output setup whereas |output_| is the primary
   // output managed by |output_manager_|, with initial scale == 1.
   ASSERT_EQ(1u, output_manager_->GetAllOutputs().size());
@@ -1155,5 +1166,9 @@ TEST_P(WaylandScreenTest, OutputStateIsConsistentWhenNotifyingObservers) {
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
                          Values(wl::ServerConfig{}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandScreenTestNoFractionalScale,
+                         Values(wl::ServerConfig{
+                             .supports_viewporter_surface_scaling = false}));
 
 }  // namespace ui
