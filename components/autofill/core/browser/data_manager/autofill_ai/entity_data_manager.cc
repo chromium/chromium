@@ -24,17 +24,6 @@
 
 namespace autofill {
 
-namespace {
-
-// Returns true if any of the features that use wallet public passes are
-// enabled.
-bool WalletPublicPassesEnabled() {
-  return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
-         base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
-}
-
-}  // namespace
-
 EntityDataManager::EntityDataManager(
     PrefService* pref_service,
     const signin::IdentityManager* identity_manager,
@@ -45,9 +34,7 @@ EntityDataManager::EntityDataManager(
     : webdata_service_(std::move(webdata_service)),
       entity_instance_cleaner_(this, sync_service, pref_service) {
   CHECK(webdata_service_);
-  if (WalletPublicPassesEnabled()) {
-    webdata_service_observation_.Observe(webdata_service_.get());
-  }
+  webdata_service_observation_.Observe(webdata_service_.get());
   LoadEntities();
   if (history_service) {
     history_service_observation_.Observe(history_service);
@@ -204,9 +191,8 @@ bool EntityDataManager::HasPendingQueries() const {
 }
 
 void EntityDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
-  if ((data_type == syncer::AUTOFILL_VALUABLE && WalletPublicPassesEnabled()) ||
-      (data_type == syncer::AUTOFILL_VALUABLE_METADATA &&
-       base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata))) {
+  if (data_type == syncer::AUTOFILL_VALUABLE ||
+      data_type == syncer::AUTOFILL_VALUABLE_METADATA) {
     LoadEntities();
   }
 }

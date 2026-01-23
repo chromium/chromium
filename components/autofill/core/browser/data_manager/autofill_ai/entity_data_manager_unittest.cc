@@ -58,13 +58,7 @@ class MockEntityDataManagerObserver : public EntityDataManager::Observer {
 // Test fixture for the asynchronous database operations in EntityDataManager.
 class EntityDataManagerTest : public testing::Test {
  public:
-  EntityDataManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema,
-         syncer::kSyncWalletFlightReservations,
-         syncer::kSyncWalletVehicleRegistrations},
-        {});
-  }
+  EntityDataManagerTest() = default;
 
   void TearDown() override { sync_service_.Shutdown(); }
 
@@ -75,7 +69,8 @@ class EntityDataManagerTest : public testing::Test {
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiWithDataSchema};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
@@ -428,8 +423,6 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, OnOtherDataTypeChangedBySync) {
 // triggers a reload of entities.
 TEST_F(EntityDataManagerTest_InitiallyEmpty,
        OnAutofillValuableMetadataChangedBySync) {
-  base::test::ScopedFeatureList feature_list{
-      syncer::kSyncAutofillValuableMetadata};
   MockEntityDataManagerObserver observer;
   base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
       observation{&observer};
