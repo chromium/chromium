@@ -95,6 +95,14 @@
   --cr-icon-image: url(//resources/images/icon_visibility_off.svg);
 }
 
+.icon-visibility-refresh {
+  --cr-icon-image: url(//resources/images/icon_visibility_refresh.svg);
+}
+
+.icon-visibility-off-refresh {
+  --cr-icon-image: url(//resources/images/icon_visibility_off_refresh.svg);
+}
+
 .subpage-arrow {
   --cr-icon-image: url(//resources/images/arrow_right.svg);
 }

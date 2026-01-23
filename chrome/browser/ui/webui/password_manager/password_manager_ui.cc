@@ -42,6 +42,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -664,6 +665,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "enablePasswordManagerMojoApi",
       base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordManagerMojoApi));
+
+  bool passwordUploadUiUpdateEnabled = false;
+#if !BUILDFLAG(IS_CHROMEOS)
+  passwordUploadUiUpdateEnabled =
+      base::FeatureList::IsEnabled(switches::kPasswordUploadUiUpdate);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  source->AddBoolean("passwordUploadUiUpdate", passwordUploadUiUpdateEnabled);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
