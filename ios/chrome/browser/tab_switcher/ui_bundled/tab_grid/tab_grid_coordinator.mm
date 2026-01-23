@@ -514,6 +514,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
     strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
 
+    if (IsGeminiCopresenceEnabled()) {
+      id<BWGCommands> geminiHandler = HandlerForProtocol(
+          self.regularBrowser->GetCommandDispatcher(), BWGCommands);
+      [geminiHandler hideFloatyIfInvokedAnimated:NO];
+    }
     if (IsNewTabGridTransitionsEnabled()) {
       BOOL isIncognito = page == TabGridPageIncognitoTabs;
 

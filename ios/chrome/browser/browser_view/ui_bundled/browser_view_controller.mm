@@ -1141,7 +1141,8 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
                               if (completion) {
                                 completion();
                               }
-                              [strongSelf.geminiHandler showFloatyIfInvoked];
+                              [strongSelf.geminiHandler
+                                  showFloatyIfInvokedAnimated:YES];
                             }];
 }
 
@@ -1211,7 +1212,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   // would be changed back to `kVisible` afterwards. Fix the bug and update the
   // visibility state.
 
-  [self.geminiHandler hideFloatyIfInvoked];
+  [self.geminiHandler hideFloatyIfInvokedAnimated:YES];
   void (^superCall)() = ^{
     [super presentViewController:viewControllerToPresent
                         animated:flag

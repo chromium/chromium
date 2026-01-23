@@ -3319,9 +3319,9 @@ const char kChromeAppStoreUrl[] =
   }
 
   if (BWGService->IsBwgAvailableForWebState(webState)) {
-    geminiBrowserAgent->ShowFloatyIfInvoked();
+    geminiBrowserAgent->ShowFloatyIfInvoked(/*animated=*/YES);
   } else {
-    geminiBrowserAgent->HideFloatyIfInvoked();
+    geminiBrowserAgent->HideFloatyIfInvoked(/*animated=*/YES);
   }
 }
 
@@ -3372,24 +3372,24 @@ const char kChromeAppStoreUrl[] =
   [_geminiFirstRunCoordinator start];
 }
 
-- (void)hideFloatyIfInvoked {
+- (void)hideFloatyIfInvokedAnimated:(BOOL)animated {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
     return;
   }
 
-  geminiBrowserAgent->HideFloatyIfInvoked();
+  geminiBrowserAgent->HideFloatyIfInvoked(animated);
 }
 
-- (void)showFloatyIfInvoked {
+- (void)showFloatyIfInvokedAnimated:(BOOL)animated {
   BwgBrowserAgent* geminiBrowserAgent =
       BwgBrowserAgent::FromBrowser(self.browser);
   if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent) {
     return;
   }
 
-  geminiBrowserAgent->ShowFloatyIfInvoked();
+  geminiBrowserAgent->ShowFloatyIfInvoked(animated);
 }
 
 #pragma mark - PromosManagerCommands

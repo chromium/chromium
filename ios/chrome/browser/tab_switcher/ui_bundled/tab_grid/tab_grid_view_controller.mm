@@ -1358,7 +1358,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  [self.geminiHandler showFloatyIfInvoked];
+  [self.geminiHandler showFloatyIfInvokedAnimated:YES];
 }
 
 #pragma mark - UIGestureRecognizerDelegate

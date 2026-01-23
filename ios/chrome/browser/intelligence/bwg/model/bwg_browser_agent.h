@@ -100,14 +100,15 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Dismisses the floaty and resets the Gemini flow.
   void DismissFloaty();
 
-  // Hide Gemini floaty. When in a hidden state, the floaty view is dismissed
-  // but still persists in memory and needs to be properly cleaned up. Properly
-  // cleaning up the floaty can be done by resetting the Gemini instance.
-  void HideFloatyIfInvoked();
+  // Hide Gemini floaty with `animated` flag. When in a hidden state, the floaty
+  // view is dismissed but still persists in memory and needs to be properly
+  // cleaned up. Properly cleaning up the floaty can be done by resetting the
+  // Gemini instance.
+  void HideFloatyIfInvoked(bool animated);
 
-  // Show Gemini floaty. Used to re-show an invoked Gemini floaty with the
-  // `last_view_state_`.
-  void ShowFloatyIfInvoked();
+  // Show Gemini floaty with `animated` flag. Used to re-show an invoked Gemini
+  // floaty with the `last_view_state_`.
+  void ShowFloatyIfInvoked(bool animated);
 
   // Collapses floaty if invoked.
   void CollapseFloatyIfInvoked();
@@ -236,8 +237,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   bool is_floaty_temporarily_hidden_ = false;
 
   // Records when the floaty was last hidden. Prevents the floaty from
-  // reappearing too soon, particularly after a `HideFloatyIfInvoked()` call
-  // during parent/child view transitions.
+  // reappearing too soon, particularly after a
+  // `HideFloatyIfInvoked()` call during parent/child view
+  // transitions.
   base::TimeTicks floaty_hidden_timestamp_;
 
   // Weak pointer factory.

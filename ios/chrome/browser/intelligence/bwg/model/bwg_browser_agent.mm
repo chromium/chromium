@@ -400,7 +400,7 @@ void BwgBrowserAgent::CollapseFloatyIfInvoked() {
   }
 
   ios::provider::UpdateGeminiViewState(
-      ios::provider::GeminiViewState::kCollapsed);
+      ios::provider::GeminiViewState::kCollapsed, /*animated=*/true);
 }
 
 void BwgBrowserAgent::SetLastShownViewState(
@@ -431,7 +431,7 @@ void BwgBrowserAgent::DismissFloaty() {
   ios::provider::ResetGemini();
 }
 
-void BwgBrowserAgent::HideFloatyIfInvoked() {
+void BwgBrowserAgent::HideFloatyIfInvoked(bool animated) {
   if (!is_floaty_invoked_) {
     return;
   }
@@ -442,17 +442,18 @@ void BwgBrowserAgent::HideFloatyIfInvoked() {
       ios::provider::GetCurrentGeminiViewState();
   SetLastShownViewState(current_view_state);
 
-  ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden);
+  ios::provider::UpdateGeminiViewState(ios::provider::GeminiViewState::kHidden,
+                                       animated);
 }
 
-void BwgBrowserAgent::ShowFloatyIfInvoked() {
+void BwgBrowserAgent::ShowFloatyIfInvoked(bool animated) {
   if (!is_floaty_invoked_) {
     return;
   }
 
-  // `HideFloatyIfInvoked()` may be called when a view controller dismisses. If
-  // a view controller dismisses as part of presenting another view controller,
-  // the floaty should not show.
+  // `HideFloatyIfInvoked()` may be called when a view controller
+  // dismisses. If a view controller dismisses as part of presenting another
+  // view controller, the floaty should not show.
   base::TimeDelta time_since_last_hidden =
       base::TimeTicks::Now() - floaty_hidden_timestamp_;
   if (time_since_last_hidden <= base::Seconds(kViewTransitionTime)) {
@@ -460,7 +461,7 @@ void BwgBrowserAgent::ShowFloatyIfInvoked() {
   }
 
   is_floaty_temporarily_hidden_ = false;
-  ios::provider::UpdateGeminiViewState(last_shown_view_state_);
+  ios::provider::UpdateGeminiViewState(last_shown_view_state_, animated);
 }
 
 #pragma mark - TabsDependencyInstaller

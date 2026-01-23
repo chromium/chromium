@@ -403,13 +403,15 @@ void BwgTabHelper::SetLocationBarBadgeCommandsHandler(
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
-    if (IsGeminiCopresenceEnabled()) {
-      [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
-    } else {
+    if (!IsGeminiCopresenceEnabled()) {
       [bwg_commands_handler_
           startGeminiFlowWithEntryPoint:gemini::EntryPoint::TabReopen];
     }
     cached_snapshot_ = nil;
+  }
+
+  if (IsGeminiCopresenceEnabled()) {
+    [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
   }
 }
 
@@ -419,9 +421,7 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
         bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
     is_bwg_session_active_in_background_ = true;
 
-    if (IsGeminiCopresenceEnabled()) {
-      [bwg_commands_handler_ updateFloatyVisibilityForWebState:web_state];
-    } else {
+    if (!IsGeminiCopresenceEnabled()) {
       [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
     }
   }
