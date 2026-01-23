@@ -81,18 +81,23 @@ void ExtensionsToolbarBridge::ToggleExtensionsMenu() {
 }
 
 void ExtensionsToolbarBridge::OnActionsInitialized() {
+  for (const auto& action_id : toolbar_view_model_->GetAllActionIds()) {
+    RegisterIconObserverForAction(action_id);
+  }
   Java_ExtensionsToolbarBridge_onActionsInitialized(AttachCurrentThread(),
                                                     java_object_);
 }
 
 void ExtensionsToolbarBridge::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
+  RegisterIconObserverForAction(action_id);
   Java_ExtensionsToolbarBridge_onActionAdded(AttachCurrentThread(),
                                              java_object_, action_id);
 }
 
 void ExtensionsToolbarBridge::OnActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
+  icon_subscriptions_.erase(action_id);
   Java_ExtensionsToolbarBridge_onActionRemoved(AttachCurrentThread(),
                                                java_object_, action_id);
 }
@@ -171,6 +176,24 @@ void ExtensionsToolbarBridge::ExecuteUserAction(
     const ToolbarActionsModel::ActionId& action_id,
     ToolbarActionViewModel::InvocationSource source) {
   toolbar_view_model_->ExecuteUserAction(action_id, source);
+}
+
+void ExtensionsToolbarBridge::RegisterIconObserverForAction(
+    const ToolbarActionsModel::ActionId& action_id) {
+  ToolbarActionViewModel* action_model =
+      toolbar_view_model_->GetActionModelForId(action_id);
+  DCHECK(action_model);
+
+  icon_subscriptions_.insert_or_assign(
+      action_id, action_model->RegisterIconUpdateObserver(base::BindRepeating(
+                     &ExtensionsToolbarBridge::OnActionIconUpdated,
+                     base::Unretained(this), action_id)));
+}
+
+void ExtensionsToolbarBridge::OnActionIconUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  Java_ExtensionsToolbarBridge_onActionUpdated(AttachCurrentThread(),
+                                               java_object_, action_id);
 }
 
 static int64_t JNI_ExtensionsToolbarBridge_Init(

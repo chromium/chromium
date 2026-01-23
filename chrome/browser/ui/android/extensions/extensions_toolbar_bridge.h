@@ -67,10 +67,20 @@ class ExtensionsToolbarBridge : public ExtensionsToolbarViewModel::Delegate,
                          ToolbarActionViewModel::InvocationSource source);
 
  private:
+  void RegisterIconObserverForAction(
+      const ToolbarActionsModel::ActionId& action_id);
+
+  void OnActionIconUpdated(const ToolbarActionsModel::ActionId& action_id);
+
   const raw_ptr<BrowserWindowInterface> browser_;
 
   // The view model for this container.
   std::unique_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
+
+  // Map of action IDs to their respective `ExtensionActionViewModel` update
+  // subscriptions for icon updates.
+  std::map<ToolbarActionsModel::ActionId, base::CallbackListSubscription>
+      icon_subscriptions_;
 
   // Observes and listens to changes to the view model.
   base::ScopedObservation<ExtensionsToolbarViewModel,
