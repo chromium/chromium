@@ -15,6 +15,7 @@ import './history_sync_promo.js';
 // </if>
 import './history_list.js';
 import './history_toolbar.js';
+import './filter_chips.js';
 import './query_manager.js';
 import './router.js';
 import './side_bar.js';
@@ -172,6 +173,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
       nonEmbeddingsResultClicked_: {type: Boolean},
       numCharsTypedInSearch_: {type: Number},
       historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
+      includeActorVisits_: {type: Boolean},
+      includeUserVisits_: {type: Boolean},
+      isBrowsingHistoryActorIntegrationM3Enabled_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -232,6 +238,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor tabContentScrollOffset_: number = 0;
   protected accessor numCharsTypedInSearch_: number = 0;
   protected accessor nonEmbeddingsResultClicked_: boolean = false;
+  protected accessor includeActorVisits_: boolean = true;
+  protected accessor includeUserVisits_: boolean = true;
+  protected accessor isBrowsingHistoryActorIntegrationM3Enabled_: boolean =
+      loadTimeData.getBoolean('isBrowsingHistoryActorIntegrationM3Enabled');
 
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter =
@@ -885,6 +895,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected onHistoryClustersVisibleChanged_(e: CustomEvent<{value: boolean}>) {
     this.historyClustersVisible_ = e.detail.value;
+  }
+
+  protected onFilterChipsChanged_(
+      e: CustomEvent<{userVisits: boolean, actorVisits: boolean}>) {
+    this.includeUserVisits_ = e.detail.userVisits;
+    this.includeActorVisits_ = e.detail.actorVisits;
+    /* TODO: Implement firing the change query here. */
+  }
+
+  protected showFilterChips_(): boolean {
+    return this.isBrowsingHistoryActorIntegrationM3Enabled_ &&
+        !this.getShowResultsByGroup_();
   }
 }
 

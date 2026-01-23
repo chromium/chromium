@@ -29,6 +29,8 @@ build_webui("build") {
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
+    "filter_chips.html.ts",
+    "filter_chips.ts",
     "history.ts",
     "history_embeddings_promo.html.ts",
     "history_embeddings_promo.ts",
@@ -58,6 +60,7 @@ build_webui("build") {
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "app.css",
+    "filter_chips.css",
     "history_embeddings_promo.css",
     "history_item.css",
     "history_list.css",

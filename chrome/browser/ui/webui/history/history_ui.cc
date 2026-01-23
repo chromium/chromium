@@ -48,6 +48,7 @@
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
@@ -211,6 +212,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
        IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
+  source->AddBoolean("isBrowsingHistoryActorIntegrationM3Enabled",
+                     history::IsBrowsingHistoryActorIntegrationM3Enabled());
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
