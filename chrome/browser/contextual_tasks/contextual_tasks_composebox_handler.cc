@@ -14,10 +14,12 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -876,6 +878,21 @@ void ContextualTasksComposeboxHandler::DeleteContext(
     OnFileUploadStatusChanged(
         file_token, lens::MimeType::kUnknown,
         contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+  }
+
+  // Hide the underline for the tab if it was associated with the deleted
+  // context.
+  if (associated_tab_id.has_value()) {
+    auto* browser_window_interface = webui::GetBrowserWindowInterface(
+        web_ui_controller_->GetWebUIWebContents());
+    auto* active_task_context_provider =
+        browser_window_interface
+            ? browser_window_interface->GetFeatures()
+                  .contextual_tasks_active_task_context_provider()
+            : nullptr;
+    if (active_task_context_provider) {
+      active_task_context_provider->RefreshContext();
+    }
   }
 }
 
