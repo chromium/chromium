@@ -10,9 +10,12 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PASSWORD_CHECKUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAVE_PASSWORDS_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SIGN_IN_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
@@ -69,7 +72,10 @@ public class HomeModulesUtils {
                             HISTORY_SYNC_PROMO,
                             TIPS_NOTIFICATIONS_PROMO,
                             ENHANCED_SAFE_BROWSING_PROMO,
-                            ADDRESS_BAR_PLACEMENT_PROMO));
+                            ADDRESS_BAR_PLACEMENT_PROMO,
+                            SIGN_IN_PROMO,
+                            SAVE_PASSWORDS_PROMO,
+                            PASSWORD_CHECKUP_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -121,6 +127,9 @@ public class HomeModulesUtils {
             case TIPS_NOTIFICATIONS_PROMO:
             case ENHANCED_SAFE_BROWSING_PROMO:
             case ADDRESS_BAR_PLACEMENT_PROMO:
+            case SIGN_IN_PROMO:
+            case SAVE_PASSWORDS_PROMO:
+            case PASSWORD_CHECKUP_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:

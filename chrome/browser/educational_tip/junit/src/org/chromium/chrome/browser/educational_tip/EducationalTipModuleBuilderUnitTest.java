@@ -204,7 +204,10 @@ public class EducationalTipModuleBuilderUnitTest {
         List<Integer> rankedModules =
                 List.of(
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
-                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.SIGN_IN_PROMO,
+                        ModuleType.SAVE_PASSWORDS_PROMO,
+                        ModuleType.PASSWORD_CHECKUP_PROMO);
         SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
 
         EducationalTipModuleBuilder builder1 =
@@ -220,6 +223,24 @@ public class EducationalTipModuleBuilderUnitTest {
         Integer manualOrder2 = builder2.getManualRank();
         assertNotNull(manualOrder2);
         assertEquals(1, manualOrder2.intValue()); // ENHANCED_SAFE_BROWSING_PROMO is at index 1
+
+        EducationalTipModuleBuilder builder3 =
+                new EducationalTipModuleBuilder(ModuleType.SIGN_IN_PROMO, mActionDelegate);
+        Integer manualOrder3 = builder3.getManualRank();
+        assertNotNull(manualOrder3);
+        assertEquals(2, manualOrder3.intValue()); // SIGN_IN_PROMO is at index 2
+
+        EducationalTipModuleBuilder builder4 =
+                new EducationalTipModuleBuilder(ModuleType.SAVE_PASSWORDS_PROMO, mActionDelegate);
+        Integer manualOrder4 = builder4.getManualRank();
+        assertNotNull(manualOrder4);
+        assertEquals(3, manualOrder4.intValue()); // SAVE_PASSWORDS_PROMO is at index 3
+
+        EducationalTipModuleBuilder builder5 =
+                new EducationalTipModuleBuilder(ModuleType.PASSWORD_CHECKUP_PROMO, mActionDelegate);
+        Integer manualOrder5 = builder5.getManualRank();
+        assertNotNull(manualOrder5);
+        assertEquals(4, manualOrder5.intValue()); // PASSWORD_CHECKUP_PROMO is at index 4
     }
 
     @Test

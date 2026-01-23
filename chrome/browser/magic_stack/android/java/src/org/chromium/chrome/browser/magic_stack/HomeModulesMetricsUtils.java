@@ -12,10 +12,13 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PASSWORD_CHECKUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAVE_PASSWORDS_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SETUP_LIST_TWO_CELL_CONTAINER;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SIGN_IN_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
@@ -142,6 +145,12 @@ public class HomeModulesMetricsUtils {
                 return "AddressBarPlacementPromo";
             case SETUP_LIST_TWO_CELL_CONTAINER:
                 return "SetupListContainer";
+            case SIGN_IN_PROMO:
+                return "SignInPromo";
+            case SAVE_PASSWORDS_PROMO:
+                return "SavePasswordsPromo";
+            case PASSWORD_CHECKUP_PROMO:
+                return "PasswordCheckupPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -176,6 +185,12 @@ public class HomeModulesMetricsUtils {
                 return ADDRESS_BAR_PLACEMENT_PROMO;
             case "SetupListContainer":
                 return SETUP_LIST_TWO_CELL_CONTAINER;
+            case "SignInPromo":
+                return SIGN_IN_PROMO;
+            case "SavePasswordsPromo":
+                return SAVE_PASSWORDS_PROMO;
+            case "PasswordCheckupPromo":
+                return PASSWORD_CHECKUP_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

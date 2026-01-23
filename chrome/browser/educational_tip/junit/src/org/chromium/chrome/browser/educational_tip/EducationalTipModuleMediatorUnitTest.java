@@ -190,6 +190,51 @@ public class EducationalTipModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.ANDROID_SETUP_LIST
+    })
+    public void testShowSetupList_SignInPromo() {
+        // Test showing sign in promo card.
+        testShowModuleImpl(
+                ModuleType.SIGN_IN_PROMO,
+                R.string.educational_tip_sign_in_promo_title,
+                R.string.educational_tip_sign_in_promo_description,
+                R.drawable.sign_in_promo_logo);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.ANDROID_SETUP_LIST
+    })
+    public void testShowSetupList_SavePasswordsPromo() {
+        // Test showing save passwords promo card.
+        testShowModuleImpl(
+                ModuleType.SAVE_PASSWORDS_PROMO,
+                R.string.educational_tip_save_passwords_title,
+                R.string.educational_tip_save_passwords_description,
+                R.drawable.save_passwords_promo_logo);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.EDUCATIONAL_TIP_MODULE,
+        ChromeFeatureList.ANDROID_SETUP_LIST
+    })
+    public void testShowSetupList_PasswordCheckupPromo() {
+        // Test showing password checkup promo card.
+        testShowModuleImpl(
+                ModuleType.PASSWORD_CHECKUP_PROMO,
+                R.string.educational_tip_password_checkup_title,
+                R.string.educational_tip_password_checkup_description,
+                R.drawable.password_checkup_promo_logo);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.EDUCATIONAL_TIP_MODULE)
     public void testShowSetupList_Completed() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
@@ -200,7 +245,7 @@ public class EducationalTipModuleMediatorUnitTest {
                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                 R.string.educational_tip_enhanced_safe_browsing_title,
                 R.string.educational_tip_enhanced_safe_browsing_description,
-                R.drawable.enhanced_safe_browsing_promo_completed_logo,
+                R.drawable.setup_list_completed_background_wavy_circle,
                 true);
     }
 

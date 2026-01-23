@@ -27,7 +27,10 @@ public class SetupListModuleUtils {
     // 5. Address bar Placement
     private static final List<Integer> BASE_SETUP_LIST_ORDER =
             Arrays.asList(
+                    ModuleType.SIGN_IN_PROMO,
                     ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                    ModuleType.SAVE_PASSWORDS_PROMO,
+                    ModuleType.PASSWORD_CHECKUP_PROMO,
                     ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
 
     private static final Map<Integer, Integer> sModuleRankMap;

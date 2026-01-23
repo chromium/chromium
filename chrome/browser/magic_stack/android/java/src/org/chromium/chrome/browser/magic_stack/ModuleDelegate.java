@@ -41,6 +41,9 @@ public interface ModuleDelegate {
         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+        ModuleType.SIGN_IN_PROMO,
+        ModuleType.SAVE_PASSWORDS_PROMO,
+        ModuleType.PASSWORD_CHECKUP_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -60,7 +63,10 @@ public interface ModuleDelegate {
         int ENHANCED_SAFE_BROWSING_PROMO = 12;
         int ADDRESS_BAR_PLACEMENT_PROMO = 13;
         int SETUP_LIST_TWO_CELL_CONTAINER = 14;
-        int NUM_ENTRIES = 15;
+        int SIGN_IN_PROMO = 15;
+        int SAVE_PASSWORDS_PROMO = 16;
+        int PASSWORD_CHECKUP_PROMO = 17;
+        int NUM_ENTRIES = 18;
     }
 
     // LINT.ThenChange(//chrome/browser/ntp_customization/java/src/org/chromium/chrome/browser/ntp_customization/ntp_cards/NtpCardsMediator.java:HomeModuleTypes)

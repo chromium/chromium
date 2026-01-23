@@ -11,7 +11,10 @@ import org.chromium.chrome.browser.educational_tip.cards.AddressBarPlacementProm
 import org.chromium.chrome.browser.educational_tip.cards.DefaultBrowserPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.EnhancedSafeBrowsingPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.PasswordCheckupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.SavePasswordsPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.SignInPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TipsNotificationsPromoCoordinator;
@@ -56,6 +59,12 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.ADDRESS_BAR_PLACEMENT_PROMO:
                 return new AddressBarPlacementPromoCoordinator(
                         onModuleClickedCallback, actionDelegate);
+            case ModuleType.SIGN_IN_PROMO:
+                return new SignInPromoCoordinator(onModuleClickedCallback, actionDelegate);
+            case ModuleType.SAVE_PASSWORDS_PROMO:
+                return new SavePasswordsPromoCoordinator(onModuleClickedCallback, actionDelegate);
+            case ModuleType.PASSWORD_CHECKUP_PROMO:
+                return new PasswordCheckupPromoCoordinator(onModuleClickedCallback, actionDelegate);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

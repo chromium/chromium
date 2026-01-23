@@ -593,7 +593,10 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.TIPS_NOTIFICATIONS_PROMO,
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
-                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+                        ModuleType.SIGN_IN_PROMO,
+                        ModuleType.SAVE_PASSWORDS_PROMO,
+                        ModuleType.PASSWORD_CHECKUP_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -612,7 +615,10 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.TIPS_NOTIFICATIONS_PROMO,
                         ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
-                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER);
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+                        ModuleType.SIGN_IN_PROMO,
+                        ModuleType.SAVE_PASSWORDS_PROMO,
+                        ModuleType.PASSWORD_CHECKUP_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -884,38 +890,58 @@ public class HomeModulesMediatorUnitTest {
                                 ModuleType.SINGLE_TAB, // Segmentation
                                 ModuleType.ENHANCED_SAFE_BROWSING_PROMO, // Manual Rank 1
                                 ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, // Manual Rank 0
-                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO // Manual Rank 2
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, // Manual Rank 2
+                                ModuleType.SIGN_IN_PROMO, // Manual Rank 3
+                                ModuleType.SAVE_PASSWORDS_PROMO, // Manual Rank 4
+                                ModuleType.PASSWORD_CHECKUP_PROMO // Manual Rank 5
                                 ));
 
         // Mock Builders
-        ModuleProviderBuilder singleTabBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        ModuleProviderBuilder singleTabBuilder = mock(ModuleProviderBuilder.class);
         when(singleTabBuilder.getManualRank()).thenReturn(null);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SINGLE_TAB))
                 .thenReturn(singleTabBuilder);
 
-        ModuleProviderBuilder enhancedSafeBrowsingBuilder =
-                Mockito.mock(ModuleProviderBuilder.class);
+        ModuleProviderBuilder enhancedSafeBrowsingBuilder = mock(ModuleProviderBuilder.class);
         when(enhancedSafeBrowsingBuilder.getManualRank()).thenReturn(1);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ENHANCED_SAFE_BROWSING_PROMO))
                 .thenReturn(enhancedSafeBrowsingBuilder);
 
-        ModuleProviderBuilder twoCellContainerBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        ModuleProviderBuilder twoCellContainerBuilder = mock(ModuleProviderBuilder.class);
         when(twoCellContainerBuilder.getManualRank()).thenReturn(0);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER))
                 .thenReturn(twoCellContainerBuilder);
 
-        ModuleProviderBuilder addressBarBuilder = Mockito.mock(ModuleProviderBuilder.class);
+        ModuleProviderBuilder addressBarBuilder = mock(ModuleProviderBuilder.class);
         when(addressBarBuilder.getManualRank()).thenReturn(2);
         when(mModuleRegistry.getModuleProviderBuilder(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO))
                 .thenReturn(addressBarBuilder);
 
+        ModuleProviderBuilder signInBuilder = mock(ModuleProviderBuilder.class);
+        when(signInBuilder.getManualRank()).thenReturn(3);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SIGN_IN_PROMO))
+                .thenReturn(signInBuilder);
+
+        ModuleProviderBuilder savePasswordsBuilder = mock(ModuleProviderBuilder.class);
+        when(savePasswordsBuilder.getManualRank()).thenReturn(4);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.SAVE_PASSWORDS_PROMO))
+                .thenReturn(savePasswordsBuilder);
+
+        ModuleProviderBuilder passwordCheckupBuilder = mock(ModuleProviderBuilder.class);
+        when(passwordCheckupBuilder.getManualRank()).thenReturn(5);
+        when(mModuleRegistry.getModuleProviderBuilder(ModuleType.PASSWORD_CHECKUP_PROMO))
+                .thenReturn(passwordCheckupBuilder);
+
         List<Integer> manuallyRankedModules = mMediator.getSortedManuallyRankedModules();
 
         // Assertions
-        assertEquals(3, manuallyRankedModules.size());
+        assertEquals(6, manuallyRankedModules.size());
         assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, (int) manuallyRankedModules.get(0));
         assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) manuallyRankedModules.get(1));
         assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) manuallyRankedModules.get(2));
+        assertEquals(ModuleType.SIGN_IN_PROMO, (int) manuallyRankedModules.get(3));
+        assertEquals(ModuleType.SAVE_PASSWORDS_PROMO, (int) manuallyRankedModules.get(4));
+        assertEquals(ModuleType.PASSWORD_CHECKUP_PROMO, (int) manuallyRankedModules.get(5));
     }
 
     @Test

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 
-/** Coordinator for the enhanced safe browsing promo card. */
+/** Coordinator for the Save Passwords promo card. */
 @NullMarked
-public class EnhancedSafeBrowsingPromoCoordinator
+public class SavePasswordsPromoCoordinator
         implements EducationalTipCardProvider, SetupListCompletable {
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
@@ -27,52 +25,53 @@ public class EnhancedSafeBrowsingPromoCoordinator
      * @param onModuleClickedCallback The callback to be called when the module is clicked.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public EnhancedSafeBrowsingPromoCoordinator(
+    public SavePasswordsPromoCoordinator(
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
     }
 
-    // EducationalTipCardProvider implementation.
     @Override
     public String getCardTitle() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_title);
+                .getString(R.string.educational_tip_save_passwords_title);
     }
 
     @Override
     public String getCardDescription() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_description);
+                .getString(R.string.educational_tip_save_passwords_description);
     }
 
     @Override
     public String getCardButtonText() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_button_go_to_settings);
+                .getString(R.string.educational_tip_save_passwords_button);
     }
 
     @Override
     public @DrawableRes int getCardImage() {
-        return R.drawable.enhanced_safe_browsing_promo_logo;
+        return R.drawable.save_passwords_promo_logo;
     }
 
     @Override
     public void onCardClicked() {
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
+        // TODO(crbug.com/469425754): Displays a bottom sheet with instructions to save passwords
+        // along with an animation
+
+        // Considered complete if the user clicks on the promo
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED, true);
         mOnModuleClickedCallback.run();
     }
 
     @Override
     public boolean isComplete() {
         return ChromeSharedPreferences.getInstance()
-                .readBoolean(
-                        ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
-                        false);
+                .readBoolean(ChromePreferenceKeys.SETUP_LIST_SAVE_PASSWORDS_PROMO_COMPLETED, false);
     }
 
     @Override

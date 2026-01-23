@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 
-/** Coordinator for the enhanced safe browsing promo card. */
+/** Coordinator for the Password Checkup promo card. */
 @NullMarked
-public class EnhancedSafeBrowsingPromoCoordinator
+public class PasswordCheckupPromoCoordinator
         implements EducationalTipCardProvider, SetupListCompletable {
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
@@ -27,8 +25,9 @@ public class EnhancedSafeBrowsingPromoCoordinator
      * @param onModuleClickedCallback The callback to be called when the module is clicked.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public EnhancedSafeBrowsingPromoCoordinator(
+    public PasswordCheckupPromoCoordinator(
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
+        // TODO(crbug.com/469425754): Confirm and add eligibility check
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
     }
@@ -38,32 +37,36 @@ public class EnhancedSafeBrowsingPromoCoordinator
     public String getCardTitle() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_title);
+                .getString(R.string.educational_tip_password_checkup_title);
     }
 
     @Override
     public String getCardDescription() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_description);
+                .getString(R.string.educational_tip_password_checkup_description);
     }
 
     @Override
     public String getCardButtonText() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_button_go_to_settings);
+                .getString(R.string.educational_tip_password_checkup_button);
     }
 
     @Override
     public @DrawableRes int getCardImage() {
-        return R.drawable.enhanced_safe_browsing_promo_logo;
+        return R.drawable.password_checkup_promo_logo;
     }
 
     @Override
     public void onCardClicked() {
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
+        // TODO(crbug.com/469425754): Open password manager
+        // Considered complete if the user clicks on the promo
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(
+                        ChromePreferenceKeys.SETUP_LIST_PASSWORD_CHECKUP_PROMO_COMPLETED, true);
+
         mOnModuleClickedCallback.run();
     }
 
@@ -71,12 +74,11 @@ public class EnhancedSafeBrowsingPromoCoordinator
     public boolean isComplete() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(
-                        ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
-                        false);
+                        ChromePreferenceKeys.SETUP_LIST_PASSWORD_CHECKUP_PROMO_COMPLETED, false);
     }
 
     @Override
     public @DrawableRes int getCardImageCompletedResId() {
-        return R.drawable.setup_list_completed_background_wavy_circle;
+        return R.drawable.password_checkup_promo_completed_logo;
     }
 }

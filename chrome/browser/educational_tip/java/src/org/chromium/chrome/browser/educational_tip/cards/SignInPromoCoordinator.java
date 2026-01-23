@@ -1,7 +1,6 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.chrome.browser.educational_tip.cards;
 
 import androidx.annotation.DrawableRes;
@@ -12,14 +11,15 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
-/** Coordinator for the enhanced safe browsing promo card. */
+/** Coordinator for the sign in promo card. */
 @NullMarked
-public class EnhancedSafeBrowsingPromoCoordinator
-        implements EducationalTipCardProvider, SetupListCompletable {
+public class SignInPromoCoordinator implements EducationalTipCardProvider, SetupListCompletable {
     private final Runnable mOnModuleClickedCallback;
     private final EducationTipModuleActionDelegate mActionDelegate;
 
@@ -27,7 +27,7 @@ public class EnhancedSafeBrowsingPromoCoordinator
      * @param onModuleClickedCallback The callback to be called when the module is clicked.
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public EnhancedSafeBrowsingPromoCoordinator(
+    public SignInPromoCoordinator(
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
@@ -36,43 +36,55 @@ public class EnhancedSafeBrowsingPromoCoordinator
     // EducationalTipCardProvider implementation.
     @Override
     public String getCardTitle() {
-        return mActionDelegate
-                .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_title);
+        return mActionDelegate.getContext().getString(R.string.educational_tip_sign_in_promo_title);
     }
 
     @Override
     public String getCardDescription() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_enhanced_safe_browsing_description);
+                .getString(R.string.educational_tip_sign_in_promo_description);
     }
 
     @Override
     public String getCardButtonText() {
         return mActionDelegate
                 .getContext()
-                .getString(R.string.educational_tip_button_go_to_settings);
+                .getString(R.string.educational_tip_sign_in_promo_button);
     }
 
     @Override
     public @DrawableRes int getCardImage() {
-        return R.drawable.enhanced_safe_browsing_promo_logo;
+        return R.drawable.sign_in_promo_logo;
     }
 
     @Override
     public void onCardClicked() {
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mActionDelegate.getContext(), SafeBrowsingSettingsFragment.class);
+        // TODO(crbug.com/469425754): Launch Sign in flow
         mOnModuleClickedCallback.run();
     }
 
     @Override
     public boolean isComplete() {
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(
-                        ChromePreferenceKeys.SETUP_LIST_ENHANCED_SAFE_BROWSING_PROMO_COMPLETED,
-                        false);
+        if (ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.SETUP_LIST_SIGN_IN_PROMO_COMPLETED, false)) {
+            return true;
+        }
+
+        // Check current sign-in status
+        Profile profile = mActionDelegate.getProfileSupplier().get();
+        if (profile != null) {
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(profile);
+            if (identityManager != null && identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                // User is signed in, mark as complete
+                ChromeSharedPreferences.getInstance()
+                        .writeBoolean(
+                                ChromePreferenceKeys.SETUP_LIST_SIGN_IN_PROMO_COMPLETED, true);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
