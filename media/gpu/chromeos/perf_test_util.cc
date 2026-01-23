@@ -19,7 +19,7 @@ base::FilePath g_source_directory =
     base::FilePath(base::FilePath::kCurrentDirectory);
 
 void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   for (auto i : data) {
     metrics.Set(i.first, i.second);
   }

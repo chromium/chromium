@@ -153,7 +153,7 @@ std::string GetVendor(udev_device* dev) {
   return vendor;
 }
 
-void SetStringIfNonEmpty(base::Value::Dict& value,
+void SetStringIfNonEmpty(base::DictValue& value,
                          std::string_view path,
                          std::string in_value) {
   if (!in_value.empty())
@@ -354,8 +354,8 @@ MidiManagerAlsa::MidiPort::MidiPort(const std::string& path,
 MidiManagerAlsa::MidiPort::~MidiPort() = default;
 
 // Note: keep synchronized with the MidiPort::Match* methods.
-base::Value::Dict MidiManagerAlsa::MidiPort::Value() const {
-  base::Value::Dict value;
+base::DictValue MidiManagerAlsa::MidiPort::Value() const {
+  base::DictValue value;
 
   std::string type;
   switch (type_) {

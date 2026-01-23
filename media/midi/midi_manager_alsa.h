@@ -102,7 +102,7 @@ class MIDI_EXPORT MidiManagerAlsa final : public MidiManager {
     ~MidiPort();
 
     // Gets a Value representation of this object, suitable for serialization.
-    base::Value::Dict Value() const;
+    base::DictValue Value() const;
 
     // Gets a string version of Value in JSON format.
     std::string JSONValue() const;

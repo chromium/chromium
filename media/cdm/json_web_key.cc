@@ -50,16 +50,15 @@ static std::string ShortenTo64Characters(const std::string& input) {
   return escaped_str.substr(0, 61).append("...");
 }
 
-static base::Value::Dict CreateJSONDictionary(
-    base::span<const uint8_t> key,
-    base::span<const uint8_t> key_id) {
+static base::DictValue CreateJSONDictionary(base::span<const uint8_t> key,
+                                            base::span<const uint8_t> key_id) {
   std::string key_string, key_id_string;
   base::Base64UrlEncode(key, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &key_string);
   base::Base64UrlEncode(key_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &key_id_string);
 
-  base::Value::Dict jwk;
+  base::DictValue jwk;
   jwk.Set(kKeyTypeTag, kKeyTypeOct);
   jwk.Set(kKeyTag, key_string);
   jwk.Set(kKeyIdTag, key_id_string);
@@ -69,9 +68,9 @@ static base::Value::Dict CreateJSONDictionary(
 std::string GenerateJWKSet(base::span<const uint8_t> key,
                            base::span<const uint8_t> key_id) {
   // Create the JWK, and wrap it into a JWK Set.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(CreateJSONDictionary(key, key_id));
-  base::Value::Dict jwk_set;
+  base::DictValue jwk_set;
   jwk_set.Set(kKeysTag, std::move(list));
 
   // Finally serialize |jwk_set| into a string and return it.
@@ -80,14 +79,14 @@ std::string GenerateJWKSet(base::span<const uint8_t> key,
 
 std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
                            CdmSessionType session_type) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& key_pair : keys) {
     list.Append(
         base::Value(CreateJSONDictionary(base::as_byte_span(key_pair.second),
                                          base::as_byte_span(key_pair.first))));
   }
 
-  base::Value::Dict jwk_set;
+  base::DictValue jwk_set;
   jwk_set.Set(kKeysTag, std::move(list));
   switch (session_type) {
     case CdmSessionType::kTemporary:
@@ -104,7 +103,7 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
 
 // Processes a JSON Web Key to extract the key id and key value. Sets |jwk_key|
 // to the id/value pair and returns true on success.
-static bool ConvertJwkToKeyPair(const base::Value::Dict& jwk,
+static bool ConvertJwkToKeyPair(const base::DictValue& jwk,
                                 KeyIdAndKeyPair* jwk_key) {
   const base::Value* type = jwk.Find(kKeyTypeTag);
   if (!type || *type != kKeyTypeOct) {
@@ -165,8 +164,8 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   }
 
   // Locate the set from the dictionary.
-  base::Value::Dict* dictionary = root.value().GetIfDict();
-  base::Value::List* list_val = dictionary->FindList(kKeysTag);
+  base::DictValue* dictionary = root.value().GetIfDict();
+  base::ListValue* list_val = dictionary->FindList(kKeysTag);
   if (!list_val) {
     DVLOG(1) << "Missing '" << kKeysTag
              << "' parameter or not a list in JWK Set";
@@ -236,7 +235,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   }
 
   // Locate the set from the dictionary.
-  const base::Value::List* list_val = root->GetDict().FindList(kKeyIdsTag);
+  const base::ListValue* list_val = root->GetDict().FindList(kKeyIdsTag);
   if (!list_val) {
     error_message->assign("Missing '");
     error_message->append(kKeyIdsTag);
@@ -287,8 +286,8 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
                           CdmSessionType session_type,
                           std::vector<uint8_t>* license) {
   // Create the license request.
-  base::Value::Dict request;
-  base::Value::List list;
+  base::DictValue request;
+  base::ListValue list;
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -318,9 +317,9 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
   license->swap(result);
 }
 
-base::Value::Dict MakeKeyIdsDictionary(const KeyIdList& key_ids) {
-  base::Value::Dict dictionary;
-  base::Value::List list;
+base::DictValue MakeKeyIdsDictionary(const KeyIdList& key_ids) {
+  base::DictValue dictionary;
+  base::ListValue list;
   for (const auto& key_id : key_ids) {
     std::string key_id_string;
     base::Base64UrlEncode(
@@ -335,7 +334,7 @@ base::Value::Dict MakeKeyIdsDictionary(const KeyIdList& key_ids) {
 }
 
 std::vector<uint8_t> SerializeDictionaryToVector(
-    const base::Value::Dict& dictionary) {
+    const base::DictValue& dictionary) {
   // Serialize the dictionary as a string.
   std::optional<std::string> json =
       base::WriteJson(dictionary).value_or(std::string());
@@ -382,7 +381,7 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   // Locate the set from the dictionary.
-  const base::Value::List* list_val = root->GetDict().FindList(kKeyIdsTag);
+  const base::ListValue* list_val = root->GetDict().FindList(kKeyIdsTag);
   if (!list_val) {
     DVLOG(1) << "Missing '" << kKeyIdsTag << "' parameter or not a list";
     return false;

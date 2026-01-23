@@ -537,13 +537,13 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   EXPECT_DOUBLE_EQ(it->second, static_cast<double>(num_packets_rtx_rejected));
 }
 
-std::optional<int> GetBucketCount(const base::Value::List& values,
+std::optional<int> GetBucketCount(const base::ListValue& values,
                                   const std::string& bucket) {
   for (const base::Value& value : values) {
     if (!value.is_dict()) {
       continue;
     }
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
     if (!dict.contains(bucket)) {
       continue;
     }
@@ -642,7 +642,7 @@ TEST_F(StatsEventSubscriberTest, Histograms) {
   log_dispatcher().DispatchFrameEvent(std::move(playout_event));
 
   StatsEventSubscriber::SimpleHistogram* histogram;
-  base::Value::List values;
+  base::ListValue values;
 
   histogram = subscriber_->GetHistogramForTesting(
       StatsEventSubscriber::CAPTURE_LATENCY_MS_HISTO);

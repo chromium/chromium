@@ -442,7 +442,7 @@ bool RawVideo::LoadMetadata(const base::FilePath& json_file_path,
                << metadata_result.error().message;
     return false;
   }
-  base::Value::Dict& metadata_dict = metadata_result->GetDict();
+  base::DictValue& metadata_dict = metadata_result->GetDict();
 
   // The json must have either "profile" or "pixel_format".
   // If it has "profile", then the data file is vp9 webm.

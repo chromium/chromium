@@ -51,8 +51,8 @@ struct MediaSerializer<base::Value> {
 
 // Serialize list value.
 template <>
-struct MediaSerializer<base::Value::List> {
-  static base::Value Serialize(const base::Value::List& value) {
+struct MediaSerializer<base::ListValue> {
+  static base::Value Serialize(const base::ListValue& value) {
     return base::Value(value.Clone());
   }
 };
@@ -61,7 +61,7 @@ struct MediaSerializer<base::Value::List> {
 template <typename VecType>
 struct MediaSerializer<std::vector<VecType>> {
   static base::Value Serialize(const std::vector<VecType>& vec) {
-    base::Value::List result;
+    base::ListValue result;
     for (const VecType& value : vec)
       result.Append(MediaSerializer<VecType>::Serialize(value));
     return base::Value(std::move(result));
@@ -260,7 +260,7 @@ struct MediaSerializer<SampleFormat> {
 template <>
 struct MediaSerializer<CdmConfig> {
   static base::Value Serialize(const CdmConfig& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("key_system", value.key_system);
     FIELD_SERIALIZE("allow_distinctive_identifier",
                     value.allow_distinctive_identifier);
@@ -295,7 +295,7 @@ struct MediaSerializer<VideoTransformation> {
 template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("primaries", value.primaries);
     FIELD_SERIALIZE("transfer", value.transfer);
     FIELD_SERIALIZE("matrix", value.matrix);
@@ -308,7 +308,7 @@ struct MediaSerializer<VideoColorSpace> {
 template <>
 struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     if (value.smpte_st_2086.has_value()) {
       FIELD_SERIALIZE("smpte_st_2086", value.smpte_st_2086->ToString());
     }
@@ -329,7 +329,7 @@ struct MediaSerializer<gfx::HDRMetadata> {
 template <>
 struct MediaSerializer<AudioDecoderConfig> {
   static base::Value Serialize(const AudioDecoderConfig& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("bytes per channel", value.bytes_per_channel());
@@ -369,7 +369,7 @@ struct MediaSerializer<VideoDecoderConfig::AlphaMode> {
 template <>
 struct MediaSerializer<VideoDecoderConfig> {
   static base::Value Serialize(const VideoDecoderConfig& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("codec", value.codec());
     FIELD_SERIALIZE("profile", value.profile());
     FIELD_SERIALIZE("alpha mode", value.alpha_mode());
@@ -416,7 +416,7 @@ struct MediaSerializer<BufferingStateChangeReason> {
 template <SerializableBufferingStateType T>
 struct MediaSerializer<SerializableBufferingState<T>> {
   static base::Value Serialize(const SerializableBufferingState<T>& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("state", value.state);
 
     switch (value.reason) {
@@ -454,7 +454,7 @@ struct MediaSerializerDebug<TypedStatus<T>> {
 template <>
 struct MediaSerializer<StatusData> {
   static base::Value Serialize(const StatusData& status) {
-    base::Value::Dict result;
+    base::DictValue result;
     // TODO: replace code with a stringified version, since
     // this representation will only go to medialog anyway.
     FIELD_SERIALIZE(StatusConstants::kCodeKey, status.code);
@@ -472,7 +472,7 @@ struct MediaSerializer<StatusData> {
 template <>
 struct MediaSerializer<base::Location> {
   static base::Value Serialize(const base::Location& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE(StatusConstants::kFileKey,
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
@@ -485,7 +485,7 @@ template <>
 struct MediaSerializer<media::PictureInPictureEventsInfo::AutoPipInfo> {
   static base::Value Serialize(
       const media::PictureInPictureEventsInfo::AutoPipInfo& value) {
-    base::Value::Dict result;
+    base::DictValue result;
     FIELD_SERIALIZE("reason", value.auto_pip_reason);
     FIELD_SERIALIZE("has_audio_focus", value.has_audio_focus);
     FIELD_SERIALIZE("is_playing", value.is_playing);
@@ -600,9 +600,9 @@ struct MediaSerializer<MediaTrack::Id> {
 template <typename T>
 struct MediaSerializer<Ranges<T>> {
   static inline base::Value Serialize(Ranges<T> ranges) {
-    base::Value::List result;
+    base::ListValue result;
     for (size_t i = 0; i < ranges.size(); i++) {
-      base::Value::List tuple;
+      base::ListValue tuple;
       tuple.Append(MediaSerializer<T>::Serialize(ranges.start(i)));
       tuple.Append(MediaSerializer<T>::Serialize(ranges.end(i)));
       result.Append(std::move(tuple));

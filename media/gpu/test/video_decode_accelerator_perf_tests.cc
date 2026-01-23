@@ -263,7 +263,7 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   metrics.Set("FramesDecoded",
               base::checked_cast<int>(perf_metrics_.frames_decoded_));
   metrics.Set("TotalDurationMs",
@@ -291,14 +291,14 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
               perf_metrics_.decode_time_stats_.percentile_75_ms_);
 
   // Write frame delivery times to json.
-  base::Value::List delivery_times;
+  base::ListValue delivery_times;
   for (double frame_delivery_time : frame_delivery_times_) {
     delivery_times.Append(frame_delivery_time);
   }
   metrics.Set("FrameDeliveryTimes", std::move(delivery_times));
 
   // Write frame decodes times to json.
-  base::Value::List decode_times;
+  base::ListValue decode_times;
   for (double frame_decode_time : frame_decode_times_) {
     decode_times.Append(frame_decode_time);
   }

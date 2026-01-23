@@ -33,7 +33,7 @@ struct StructTraits<media::mojom::StatusDataDataView,
     return input.message;
   }
 
-  static const base::Value::List& frames(
+  static const base::ListValue& frames(
       const media::internal::StatusData& input) {
     return input.frames;
   }

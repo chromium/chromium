@@ -80,7 +80,7 @@ bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
                << metadata_result.error().message;
     return false;
   }
-  const base::Value::Dict& metadata_dict = metadata_result->GetDict();
+  const base::DictValue& metadata_dict = metadata_result->GetDict();
 
   const std::string* profile = metadata_dict.FindString("profile");
   auto converted_profile = ConvertStringtoProfile(*profile);
@@ -132,7 +132,7 @@ bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
   metadata.resolution =
       gfx::Size(static_cast<uint32_t>(*width), static_cast<uint32_t>(*height));
 
-  const base::Value::List* md5_checksums =
+  const base::ListValue* md5_checksums =
       metadata_dict.FindList("md5_checksums");
   for (const base::Value& checksum : *md5_checksums) {
     metadata.frame_checksums.push_back(checksum.GetString());
