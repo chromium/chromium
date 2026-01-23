@@ -398,6 +398,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/page_info/model:unit_tests",
     "//ios/chrome/browser/partial_translate/ui_bundled:unit_tests",
     "//ios/chrome/browser/passwords/bottom_sheet/coordinator:unit_tests",
+    "//ios/chrome/browser/passwords/bottom_sheet/ui:unit_tests",
     "//ios/chrome/browser/passwords/model:unit_tests",
     "//ios/chrome/browser/passwords/model/metrics:unit_tests",
     "//ios/chrome/browser/permissions/model:unit_tests",

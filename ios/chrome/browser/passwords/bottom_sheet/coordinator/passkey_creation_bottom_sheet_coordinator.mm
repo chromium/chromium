@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_mediator_delegate.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/passkey_creation_bottom_sheet_view_controller.h"
@@ -53,8 +54,12 @@
           accountForSaving:[self accountForSaving]
                   delegate:self];
 
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
+
   _viewController = [[PasskeyCreationBottomSheetViewController alloc]
-      initWithHandler:self.browserCoordinatorCommandsHandler];
+      initWithHandler:self.browserCoordinatorCommandsHandler
+        faviconLoader:faviconLoader];
 
   _viewController.actionHandler = self;
 
