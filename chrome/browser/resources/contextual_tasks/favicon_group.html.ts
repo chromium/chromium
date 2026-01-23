@@ -14,7 +14,9 @@ export function getHtml(this: ContextualTasksFaviconGroupElement) {
         this.getFaviconUrl_(item)}"></div>
   `)}
   ${this.remainingCount_ > 0 ? html`
-    <span class="more-items">+${this.remainingCount_}</span>` : ''}
+    <div id="more-items" class="favicon-item">
+      +${this.remainingCount_}
+    </div>` : ''}
   <!--_html_template_end_-->`;
   // clang-format on
 }

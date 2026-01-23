@@ -14,8 +14,6 @@
   border-radius: 20px;
   cursor: pointer;
   display: flex;
-  padding: 5px 8px;
-  width: fit-content;
 }
 
 :host([hidden]) {
@@ -28,27 +26,27 @@
 
 .favicon-item {
   align-items: center;
-  background-color: #eee; /* Fallback color */
+  background-color: var(--toolbar-background-color);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
-  border: 2px solid white; /* White border to separate icons */
-  border-radius: 50%;
-  box-sizing: border-box;
+  border: 1px solid var(--toolbar-favicon-border-color);
+  border-radius: 4px;
+  box-sizing: content-box;
+  color: var(--toolbar-button-icon-color);
+  font-size: 11px;
   display: flex;
-  height: 20px;
+  line-height: 16px;
+  font-weight: 500;
+  height: 18px;
   justify-content: center;
   overflow: hidden;
-  width: 20px;
+  width: 18px;
 }
 
 .favicon-item:not(:first-child) {
-  margin-inline-start: -8px; /* Negative margin for overlap */
+  margin-inline-start: -4px; /* Negative margin for overlap */
 }
 
-.more-items {
-  color: var(toolbar-text-color);
-  font-size: 12px;
-  margin-inline-start: 6px; /* Spacing between last icon and text */
-  padding-inline-start: 2px;
+#more-items {
+  background-color: var(--toolbar-favicon-border-color);
 }

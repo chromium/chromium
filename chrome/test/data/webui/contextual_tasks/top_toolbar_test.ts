@@ -306,12 +306,12 @@ suite('TopToolbarTest', () => {
     ];
     await microtasksFinished();
 
-    const faviconItems =
-        sourcesButton.shadowRoot.querySelectorAll('.favicon-item');
+    const faviconItems = sourcesButton.shadowRoot.querySelectorAll(
+        '.favicon-item:not(#more-items)');
     assertEquals(faviconItems.length, 3);
     const moreItems =
-        sourcesButton.shadowRoot.querySelector<HTMLElement>('.more-items');
+        sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
     assertTrue(!!moreItems);
-    assertEquals(moreItems.textContent, '+1');
+    assertEquals(moreItems.innerText, '+1');
   });
 });

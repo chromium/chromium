@@ -63,10 +63,11 @@
   --thumbnail-chip-width: 154px;
   /* Toolbar colors */
   --toolbar-background-color: var(--search-background-color);
-  --toolbar-text-color: rgb(31, 31, 31);
-  --toolbar-button-icon-color: rgb(31, 31, 31);
+  --toolbar-button-icon-color: var(--cr-fallback-color-on-surface-subtle);
   --toolbar-divider-color: rgb(211,227,253);
+  --toolbar-favicon-border-color: var(--cr-fallback-color-surface5);
   --toolbar-menu-background-color: rgb(255, 255, 255);
+  --toolbar-text-color: rgb(31, 31, 31);
 
 
   background-color: var(--search-background-color);
@@ -156,10 +157,9 @@
   --search-background-color-rgb: 16, 18, 23;
 
   /* Toolbar colors - Dark mode */
-  --toolbar-text-color: rgb(227,227,227);
-  --toolbar-button-icon-color: rgb(154,160,166);
   --toolbar-divider-color: rgb(94,94,94);
   --toolbar-menu-background-color: rgb(31, 31, 31);
+  --toolbar-text-color: rgb(227,227,227);
 }
 
 [hidden] {
