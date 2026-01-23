@@ -163,12 +163,12 @@ void SupervisedUserErrorContainer::URLFilterCheckCallback(
 }
 
 void SupervisedUserErrorContainer::OnURLFilterChanged() {
-  supervised_user_service_->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
+  supervised_user_url_filtering_service_->GetFilteringBehavior(
       web_state_->GetLastCommittedURL(),
+      /*skip_manual_parent_filter=*/false,
       base::BindOnce(&SupervisedUserErrorContainer::URLFilterCheckCallback,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*skip_manual_parent_filter=*/false);
-
+      supervised_user::WebFilterMetricsOptions());
   MaybeUpdatePendingApprovals();
 }
 

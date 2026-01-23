@@ -80,6 +80,15 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
 #endif
 }
 
+static constexpr supervised_user::WebFilterMetricsOptions
+    kWebFilterMetricsOptionsForNavigationObserver = {
+        .filtering_context =
+            supervised_user::FilteringContext::kNavigationObserver};
+static constexpr supervised_user::WebFilterMetricsOptions
+    kWebFilterMetricsOptionsForFamilyLinkSettingsUpdated = {
+        .filtering_context =
+            supervised_user::FilteringContext::kFamilyLinkSettingsUpdated};
+
 }  // namespace
 
 using content::NavigationEntry;
@@ -174,15 +183,12 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
     bool skip_manual_parent_filter =
         supervised_user::ShouldContentSkipParentAllowlistFiltering(
             web_contents());
-    supervised_user_service()
-        ->GetURLFilter()
-        ->GetFilteringBehaviorWithAsyncChecks(
-            web_contents()->GetLastCommittedURL(),
-            base::BindOnce(
-                &SupervisedUserNavigationObserver::URLFilterCheckCallback,
-                weak_ptr_factory_.GetWeakPtr(), process_id, routing_id),
-            skip_manual_parent_filter,
-            supervised_user::FilteringContext::kNavigationObserver);
+    supervised_user_url_filtering_service()->GetFilteringBehavior(
+        web_contents()->GetLastCommittedURL(), skip_manual_parent_filter,
+        base::BindOnce(
+            &SupervisedUserNavigationObserver::URLFilterCheckCallback,
+            weak_ptr_factory_.GetWeakPtr(), process_id, routing_id),
+        kWebFilterMetricsOptionsForNavigationObserver);
   }
 }
 
@@ -255,16 +261,13 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
   bool skip_manual_parent_filter =
       supervised_user::ShouldContentSkipParentAllowlistFiltering(
           web_contents());
-  supervised_user_service()
-      ->GetURLFilter()
-      ->GetFilteringBehaviorWithAsyncChecks(
-          web_contents()->GetLastCommittedURL(),
-          base::BindOnce(
-              &SupervisedUserNavigationObserver::URLFilterCheckCallback,
-              weak_ptr_factory_.GetWeakPtr(), main_frame_process_id,
-              routing_id),
-          skip_manual_parent_filter,
-          supervised_user::FilteringContext::kFamilyLinkSettingsUpdated);
+
+  supervised_user_url_filtering_service()->GetFilteringBehavior(
+      web_contents()->GetLastCommittedURL(), skip_manual_parent_filter,
+      base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
+                     weak_ptr_factory_.GetWeakPtr(), main_frame_process_id,
+                     routing_id),
+      kWebFilterMetricsOptionsForFamilyLinkSettingsUpdated);
 
   MaybeUpdateRequestedHosts();
 
@@ -442,17 +445,14 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
     return;
   }
 
-  const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
-  supervised_user_service()
-      ->GetURLFilter()
-      ->GetFilteringBehaviorForSubFrameWithAsyncChecks(
-          last_committed_url, web_contents()->GetLastCommittedURL(),
-          base::BindOnce(
-              &SupervisedUserNavigationObserver::URLFilterCheckCallback,
-              weak_ptr_factory_.GetWeakPtr(),
-              render_frame_host->GetProcess()->GetDeprecatedID(),
-              render_frame_host->GetRoutingID()),
-          supervised_user::FilteringContext::kNavigationObserver);
+  supervised_user_url_filtering_service()->GetFilteringBehaviorForSubFrame(
+      /*url=*/render_frame_host->GetLastCommittedURL(),
+      /*main_frame_url=*/web_contents()->GetLastCommittedURL(),
+      base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     render_frame_host->GetProcess()->GetDeprecatedID(),
+                     render_frame_host->GetRoutingID()),
+      kWebFilterMetricsOptionsForNavigationObserver);
 }
 
 void SupervisedUserNavigationObserver::GoBack() {

@@ -92,11 +92,9 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                              FilteringBehavior expected_behavior,
                              FilteringBehaviorReason expected_reason,
                              bool skip_manual_parent_filter = false) {
-    bool called_synchronously =
-        supervised_user_test_environment_.url_filter()
-            ->GetFilteringBehaviorWithAsyncChecks(GURL(url), base::DoNothing(),
-                                                  skip_manual_parent_filter);
-    ASSERT_TRUE(called_synchronously);
+    supervised_user_test_environment_.url_filtering_service()
+        ->GetFilteringBehavior(GURL(url), skip_manual_parent_filter,
+                               base::DoNothing());
 
     EXPECT_EQ(behavior_, expected_behavior);
     EXPECT_EQ(reason_, expected_reason);
@@ -220,14 +218,12 @@ TEST_F(SupervisedUserURLFilterTest,
       WebFilterType::kAllowAllSites);
 
   SupervisedUserURLFilter::Result result;
-  EXPECT_TRUE(
-      supervised_user_test_environment_.url_filter()
-          ->GetFilteringBehaviorWithAsyncChecks(
-              GURL("http://example.com"),
-              base::BindLambdaForTesting(
-                  [&result](SupervisedUserURLFilter::Result r) { result = r; }),
-              /*skip_manual_parent_filter=*/false))
-      << "The check should be synchronous";
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"),
+          /*skip_manual_parent_filter=*/false,
+          base::BindLambdaForTesting(
+              [&result](SupervisedUserURLFilter::Result r) { result = r; }));
   EXPECT_TRUE(result.IsAllowed())
       << "Plain filter configuration should classify urls as allowed";
 }
@@ -326,10 +322,11 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
-                  ->GetFilteringBehaviorWithAsyncChecks(
-                      GURL("http://example.com"), base::DoNothing(), false,
-                      GetParam().context));
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"),
+          /*skip_manual_parent_filter=*/false, base::DoNothing(),
+          WebFilterMetricsOptions{.filtering_context = GetParam().context});
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -350,10 +347,11 @@ TEST_P(SupervisedUserURLFilterMetricsTest, RecordsTopLevelMetricsForAllow) {
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kCertainSites);
 
-  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
-                  ->GetFilteringBehaviorWithAsyncChecks(
-                      GURL("http://example.com"), base::DoNothing(), false,
-                      GetParam().context));
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"),
+          /*skip_manual_parent_filter=*/false, base::DoNothing(),
+          WebFilterMetricsOptions{.filtering_context = GetParam().context});
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -375,10 +373,11 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
   supervised_user_test_environment_.SetWebFilterType(
       WebFilterType::kAllowAllSites);
 
-  ASSERT_TRUE(supervised_user_test_environment_.url_filter()
-                  ->GetFilteringBehaviorWithAsyncChecks(
-                      GURL("http://example.com"), base::DoNothing(), false,
-                      GetParam().context));
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
+          base::DoNothing(),
+          WebFilterMetricsOptions{.filtering_context = GetParam().context});
 
   if (GetParam().context == FilteringContext::kNavigationThrottle) {
     histogram_tester_.ExpectBucketCount(
@@ -395,10 +394,11 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncBlock) {
-  ASSERT_FALSE(supervised_user_test_environment_.url_filter()
-                   ->GetFilteringBehaviorWithAsyncChecks(
-                       GURL("http://example.com"), base::DoNothing(), false,
-                       GetParam().context));
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
+          base::DoNothing(),
+          WebFilterMetricsOptions{.filtering_context = GetParam().context});
   supervised_user_test_environment_.url_checker_client()->RunCallback(
       safe_search_api::ClientClassification::kRestricted);
 
@@ -417,10 +417,11 @@ TEST_P(SupervisedUserURLFilterMetricsTest,
 
 TEST_P(SupervisedUserURLFilterMetricsTest,
        RecordsTopLevelMetricsForAsyncAllow) {
-  ASSERT_FALSE(supervised_user_test_environment_.url_filter()
-                   ->GetFilteringBehaviorWithAsyncChecks(
-                       GURL("http://example.com"), base::DoNothing(), false,
-                       GetParam().context));
+  supervised_user_test_environment_.url_filtering_service()
+      ->GetFilteringBehavior(
+          GURL("http://example.com"), /*skip_manual_parent_filter=*/false,
+          base::DoNothing(),
+          WebFilterMetricsOptions{.filtering_context = GetParam().context});
   supervised_user_test_environment_.url_checker_client()->RunCallback(
       safe_search_api::ClientClassification::kAllowed);
 

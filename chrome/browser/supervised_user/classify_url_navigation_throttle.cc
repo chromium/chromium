@@ -50,6 +50,15 @@ bool ShouldShowReAuthInterstitial(
   return SupervisedUserVerificationPage::ShouldShowPage(*child_account_service);
 }
 #endif
+
+WebFilterMetricsOptions GetWebFilterMetricsOptions(
+    content::NavigationHandle& navigation_handle) {
+  return {
+      .transition_type = navigation_handle.GetPageTransition(),
+      .filtering_context = FilteringContext::kNavigationThrottle,
+  };
+}
+
 }  // namespace
 
 ClassifyUrlNavigationThrottle::ThrottleCheckResult
@@ -112,21 +121,19 @@ void ClassifyUrlNavigationThrottle::CheckURL() {
   ClassifyUrlCheckList::Key key = list_.NewCheck();
 
   if (navigation_handle()->IsInPrimaryMainFrame()) {
-    url_filter()->GetFilteringBehaviorWithAsyncChecks(
+    url_filtering_service()->GetFilteringBehavior(
         url,
-        base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
-                       weak_ptr_factory_.GetWeakPtr(), key),
         ShouldContentSkipParentAllowlistFiltering(
             navigation_handle()->GetWebContents()->GetOutermostWebContents()),
-        FilteringContext::kNavigationThrottle,
-        navigation_handle()->GetPageTransition());
+        base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
+                       weak_ptr_factory_.GetWeakPtr(), key),
+        GetWebFilterMetricsOptions(*navigation_handle()));
   } else {
-    url_filter()->GetFilteringBehaviorForSubFrameWithAsyncChecks(
+    url_filtering_service()->GetFilteringBehaviorForSubFrame(
         url, navigation_handle()->GetWebContents()->GetVisibleURL(),
         base::BindOnce(&ClassifyUrlNavigationThrottle::OnURLCheckDone,
                        weak_ptr_factory_.GetWeakPtr(), key),
-        FilteringContext::kNavigationThrottle,
-        navigation_handle()->GetPageTransition());
+        GetWebFilterMetricsOptions(*navigation_handle()));
   }
 }
 
@@ -265,6 +272,13 @@ SupervisedUserURLFilter* ClassifyUrlNavigationThrottle::url_filter() const {
 SupervisedUserService* ClassifyUrlNavigationThrottle::supervised_user_service()
     const {
   return SupervisedUserServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext()));
+}
+
+SupervisedUserUrlFilteringService*
+ClassifyUrlNavigationThrottle::url_filtering_service() const {
+  return SupervisedUserUrlFilteringServiceFactory::GetForProfile(
       Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext()));
 }

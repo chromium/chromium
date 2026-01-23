@@ -187,34 +187,6 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
-  // Like `SupervisedUserUrlFilteringService::GetFilteringBehavior`, but also
-  // includes asynchronous checks against a remote service. If the result is
-  // already determined by the synchronous checks, then `callback` will be
-  // called synchronously. Returns true if `callback` was called synchronously.
-  // If `skip_manual_parent_filter` is set to true, it only uses the
-  // asynchronous safe search checks.
-  //
-  // The `url` argument is included in `callback` invocation.
-  //
-  // `context` and `transition_type` parameters control metric-related flow:
-  // `transition_type` is used to record detailed metric in the navigation
-  // throttle `context`; otherwise high-level metrics are split by `context`.
-  bool GetFilteringBehaviorWithAsyncChecks(
-      const GURL& url,
-      ResultCallback callback,
-      bool skip_manual_parent_filter,
-      FilteringContext filtering_context = FilteringContext::kDefault,
-      std::optional<ui::PageTransition> transition_type = std::nullopt);
-
-  // Like `GetFilteringBehaviorWithAsyncChecks` but used for subframes. The
-  // `url` argument is included in `callback` invocation.
-  bool GetFilteringBehaviorForSubFrameWithAsyncChecks(
-      const GURL& url,
-      const GURL& main_frame_url,
-      ResultCallback callback,
-      FilteringContext filtering_context = FilteringContext::kDefault,
-      std::optional<ui::PageTransition> transition_type = std::nullopt);
-
   // Refreshes data structures that hold manually configured url and host
   // exceptions.
   void UpdateManualHosts();
@@ -252,6 +224,24 @@ class SupervisedUserURLFilter {
   // Deprecated. Use SupervisedUserUrlFilteringService::GetFilteringBehavior
   // instead.
   virtual Result GetFilteringBehavior(const GURL& url);
+
+  // Deprecated. Use SupervisedUserUrlFilteringService::GetFilteringBehavior
+  // instead.
+  bool GetFilteringBehaviorWithAsyncChecks(
+      const GURL& url,
+      ResultCallback callback,
+      bool skip_manual_parent_filter,
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
+
+  // Deprecated. Use SupervisedUserUrlFilteringService::
+  // GetFilteringBehaviorForSubFrame instead.
+  bool GetFilteringBehaviorForSubFrameWithAsyncChecks(
+      const GURL& url,
+      const GURL& main_frame_url,
+      ResultCallback callback,
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
 
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 

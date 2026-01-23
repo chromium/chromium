@@ -8,8 +8,8 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
-#import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 #import "ios/net/protocol_handler_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -26,6 +26,15 @@
 using PolicyDecision = web::WebStatePolicyDecider::PolicyDecision;
 
 namespace {
+
+supervised_user::WebFilterMetricsOptions GetWebFilterMetricsOptions(
+    web::WebStatePolicyDecider::RequestInfo request_info) {
+  return {
+      .transition_type = request_info.transition_type,
+      .filtering_context =
+          supervised_user::FilteringContext::kNavigationThrottle,
+  };
+}
 
 void OnURLFilteringDone(
     base::WeakPtr<web::WebState> weak_web_state,
@@ -66,27 +75,24 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state()->GetBrowserState());
 
-  // SupervisedUserService is not created for the off-the-record profile.
+  // SupervisedUserUrlFilteringService is not created for the off-the-record
+  // profile.
   if (profile->IsOffTheRecord()) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
-  if (!supervised_user::IsSubjectToParentalControls(profile)) {
-    std::move(callback).Run(PolicyDecision::Allow());
-    return;
-  }
+  // Url filtering service short-circuits if the profile is not supervised.
 
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
+  supervised_user::SupervisedUserUrlFilteringService* url_filtering_service =
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          profile);
 
   // Set up the callback taking filtering results, and perform URL filtering.
   GURL request_url = net::GURLWithNSURL(request.URL);
-  supervised_user_service->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
-      request_url,
+  url_filtering_service->GetFilteringBehavior(
+      request_url, /*skip_manual_parent_filter=*/false,
       base::BindOnce(&OnURLFilteringDone, web_state()->GetWeakPtr(),
                      request_info, std::move(callback)),
-      /*skip_manual_parent_filter=*/false,
-      supervised_user::FilteringContext::kNavigationThrottle,
-      request_info.transition_type);
+      GetWebFilterMetricsOptions(request_info));
 }

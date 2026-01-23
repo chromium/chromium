@@ -14,6 +14,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -34,16 +35,14 @@ enum class InterstitialResultCallbackActions {
   kCancelWithInterstitial = 1
 };
 
-
 // Navigation throttle that processes requests and redirects in parallel with
 // their verification against ClassifyUrl, up until the response is ready for
 // processing. Only then the navigation can be deferred.
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-// Adds a ClassifyUrlNavigationThrottle to the registry for all profiles except
-// for OffTheRecord profiles.
-  static void MaybeCreateAndAdd(
-  content::NavigationThrottleRegistry& registry);
+  // Adds a ClassifyUrlNavigationThrottle to the registry for all profiles
+  // except for OffTheRecord profiles.
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(
@@ -95,7 +94,8 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     std::optional<base::ElapsedTimer> elapsed_;
   };
 
-  explicit ClassifyUrlNavigationThrottle(content::NavigationThrottleRegistry& registry);
+  explicit ClassifyUrlNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
@@ -142,6 +142,9 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // Returns the supervised user service associated with the navigated under
   // throttling.
   SupervisedUserService* supervised_user_service() const;
+  // Returns the supervised user url filtering service associated with the
+  // navigated under throttling.
+  SupervisedUserUrlFilteringService* url_filtering_service() const;
 
   // All pending and completed checks.
   ClassifyUrlCheckList list_;

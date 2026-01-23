@@ -33,6 +33,23 @@ class SupervisedUserUrlFilteringService : public KeyedService {
   // TODO(crbug.com/465666839): Promote `Result` struct to a standalone entity.
   SupervisedUserURLFilter::Result GetFilteringBehavior(const GURL& url) const;
 
+  // Version of the above method that adds asynchronous checks against a
+  // remote service if GetFilteringBehavior(.) was inconclusive.
+  // `skip_manual_parent_filter` will ignore result from
+  // GetFilteringBehavior(url) even if it was conclusive.
+  void GetFilteringBehavior(
+      const GURL& url,
+      bool skip_manual_parent_filter,
+      SupervisedUserURLFilter::ResultCallback callback,
+      const WebFilterMetricsOptions& options = WebFilterMetricsOptions()) const;
+
+  // Version of the above method that for use in subframe context.
+  void GetFilteringBehaviorForSubFrame(
+      const GURL& url,
+      const GURL& main_frame_url,
+      SupervisedUserURLFilter::ResultCallback callback,
+      const WebFilterMetricsOptions& options = WebFilterMetricsOptions()) const;
+
  private:
   // Provides access to legacy way of resolving URL filtering.
   raw_ref<const SupervisedUserService> supervised_user_service_;

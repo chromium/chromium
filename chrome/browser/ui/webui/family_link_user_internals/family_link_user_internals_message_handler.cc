@@ -266,8 +266,9 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     return;
   }
 
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
+  supervised_user::SupervisedUserUrlFilteringService* url_filtering_service =
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())->GetOriginalProfile());
   content::WebContents* web_contents =
       web_ui() ? web_ui()->GetWebContents() : nullptr;
   bool skip_manual_parent_filter = false;
@@ -278,11 +279,10 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
             web_contents->GetOutermostWebContents());
   }
 
-  filter->GetFilteringBehaviorWithAsyncChecks(
-      url,
+  url_filtering_service->GetFilteringBehavior(
+      url, skip_manual_parent_filter,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
-                     weak_factory_.GetWeakPtr(), callback_id),
-      skip_manual_parent_filter);
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
