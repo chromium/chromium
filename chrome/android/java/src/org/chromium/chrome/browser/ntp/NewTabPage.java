@@ -1039,6 +1039,15 @@ public class NewTabPage
     }
 
     /**
+     * Get the vertical inset applied to the search box bounds.
+     *
+     * @return The vertical inset in pixels.
+     */
+    public int getSearchBoxBoundsVerticalInset() {
+        return mNewTabPageLayout.getSearchBoxBoundsVerticalInset();
+    }
+
+    /**
      * Updates the opacity of the search box when scrolling.
      *
      * @param alpha opacity (alpha) value to use.

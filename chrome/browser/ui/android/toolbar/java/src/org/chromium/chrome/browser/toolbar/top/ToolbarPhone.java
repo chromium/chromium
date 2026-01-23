@@ -1078,6 +1078,16 @@ public class ToolbarPhone extends ToolbarLayout
         ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
         float translationY = mNtpSearchBoxBounds.top - mLocationBar.getPhoneCoordinator().getTop();
 
+        // When edge-to-edge on top is enabled on NTP, the NTP search box bounds calculation
+        // includes mSearchBoxBoundsVerticalInset which accounts for the difference between the
+        // search box height and the toolbar height. However, this inset causes a mismatch when the
+        // search box snaps to the toolbar position. We need to subtract the full inset to align
+        // properly.
+        int searchBoxInset = ntpDelegate.getSearchBoxBoundsVerticalInset();
+        if (mTopPaddingForEdgeToEdgeNtp > 0 && searchBoxInset > 0) {
+            translationY -= searchBoxInset;
+        }
+
         // When Bottom Toolbar v2 is enabled, toolbar is at bottom, and URL has focus, we set the
         // top padding to 0 in updateLayoutParamsForMultiline(). This causes the location bar's
         // getTop() to decrease by the padding amount, which makes translationY larger than it

@@ -332,9 +332,6 @@ public class NewTabPageLayout extends LinearLayout
         onCustomizedBackgroundChanged(
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
 
-        // This should called after flags of composeplate view are initialized.
-        setSearchBoxHeightBoundsVerticalInset();
-
         updateActionButtonVisibility();
         initializeLayoutChangeListener();
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
@@ -1477,6 +1474,8 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         setLogoViewBottomMargin();
+        // Update the search box height and bounds vertical inset since the shadow padding changed.
+        setSearchBoxHeightBoundsVerticalInset();
 
         if (mMostVisitedTilesCoordinator != null) {
             updateTilesLayoutMargins();
@@ -1486,6 +1485,11 @@ public class NewTabPageLayout extends LinearLayout
     /** Returns the top inset of the NTP. */
     int getTopInset() {
         return mTopInset;
+    }
+
+    /** Returns the vertical inset applied to search box bounds. */
+    int getSearchBoxBoundsVerticalInset() {
+        return mSearchBoxBoundsVerticalInset;
     }
 
     private boolean isInSingleUrlMode() {

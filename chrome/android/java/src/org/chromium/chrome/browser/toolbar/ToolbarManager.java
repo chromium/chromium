@@ -2150,6 +2150,12 @@ public class ToolbarManager
         }
 
         @Override
+        public int getSearchBoxBoundsVerticalInset() {
+            NewTabPage ntp = getNewTabPageForCurrentTab();
+            return ntp != null ? ntp.getSearchBoxBoundsVerticalInset() : 0;
+        }
+
+        @Override
         public void setSearchBoxAlpha(float alpha) {
             assert getNewTabPageForCurrentTab() != null;
             getNewTabPageForCurrentTab().setSearchBoxAlpha(alpha);
