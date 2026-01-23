@@ -163,7 +163,7 @@ public class ExtensionActionListMediatorTest {
                             return new ExtensionAction(action.getId(), action.getTitle());
                         });
 
-        when(mExtensionsToolbarBridge.getAllActionIds())
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
                 .thenReturn(new String[] {ACTION1_ID, ACTION2_ID});
 
         // Initialize common objects.
@@ -226,7 +226,7 @@ public class ExtensionActionListMediatorTest {
         ListItem itemForAction2 = mModels.get(1);
 
         // Add action 3 to the list of IDs.
-        when(mExtensionsToolbarBridge.getAllActionIds())
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
                 .thenReturn(new String[] {ACTION1_ID, ACTION2_ID, ACTION3_ID});
         mMediator.reconcileActionItems();
 
@@ -244,7 +244,7 @@ public class ExtensionActionListMediatorTest {
         assertSame("The item object should be reused", itemForAction2, mModels.get(1));
 
         // Remove action 2 from the list of IDs.
-        when(mExtensionsToolbarBridge.getAllActionIds())
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
                 .thenReturn(new String[] {ACTION1_ID, ACTION3_ID});
         mMediator.reconcileActionItems();
 
@@ -272,7 +272,7 @@ public class ExtensionActionListMediatorTest {
         ListItem itemForAction2 = mModels.get(1);
 
         // Swap action 1 and action 2.
-        when(mExtensionsToolbarBridge.getAllActionIds())
+        when(mExtensionsToolbarBridge.getPinnedActionIds())
                 .thenReturn(new String[] {ACTION2_ID, ACTION1_ID});
         mMediator.reconcileActionItems();
 

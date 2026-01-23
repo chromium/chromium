@@ -85,7 +85,7 @@ class ExtensionActionListMediator implements Destroyable {
     // rebuilding the whole list.
     @VisibleForTesting
     void reconcileActionItems() {
-        String[] actionIds = mExtensionsToolbarBridge.getAllActionIds();
+        String[] actionIds = mExtensionsToolbarBridge.getPinnedActionIds();
 
         Tab currentTab = mCurrentTabSupplier.get();
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
