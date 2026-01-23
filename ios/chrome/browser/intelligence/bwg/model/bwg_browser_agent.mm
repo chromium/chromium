@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 
+#import "base/barrier_closure.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -33,8 +34,11 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -412,6 +416,46 @@ void BwgBrowserAgent::SetLastShownViewState(
     return;
   }
   last_shown_view_state_ = view_state;
+}
+
+void BwgBrowserAgent::DismissGeminiFromOtherWindows(
+    base::OnceClosure completion) {
+  // Collect all browsers (excluding the current one) for all profiles.
+  std::vector<base::WeakPtr<Browser>> other_browsers;
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+    const std::set<Browser*>& browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+    for (Browser* browser : browsers) {
+      if (browser == browser_) {
+        continue;
+      }
+      other_browsers.push_back(browser->AsWeakPtr());
+    }
+  }
+
+  if (other_browsers.empty()) {
+    std::move(completion).Run();
+    return;
+  }
+
+  // Gate the completion behind this barrier closure which executes it when all
+  // other browsers have dismissed their Gemini sessions.
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(other_browsers.size(), std::move(completion));
+
+  // Dismiss Gemini in all the other browsers for all profiles.
+  for (base::WeakPtr<Browser> browser : other_browsers) {
+    if (!browser) {
+      barrier.Run();
+      continue;
+    }
+    id<BWGCommands> gemini_commands_handler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
+    [gemini_commands_handler
+        dismissGeminiFlowWithCompletion:base::CallbackToBlock(barrier)];
+  }
 }
 
 void BwgBrowserAgent::DismissFloaty() {

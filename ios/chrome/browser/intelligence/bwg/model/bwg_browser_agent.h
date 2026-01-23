@@ -119,6 +119,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent>,
   // Called when trait collection is updated.
   void UpdateForTraitCollection(UITraitCollection* traitCollection);
 
+  // Dismisses Gemini from all other windows and executes the completion block.
+  void DismissGeminiFromOtherWindows(base::OnceClosure completion);
+
  private:
   explicit BwgBrowserAgent(Browser* browser);
   friend class BrowserUserData<BwgBrowserAgent>;

@@ -4,10 +4,6 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
-#import "base/barrier_closure.h"
-#import "base/functional/bind.h"
-#import "base/memory/weak_ptr.h"
-#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
@@ -21,13 +17,9 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -87,9 +79,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (void)start {
   __weak BWGCoordinator* weakSelf = self;
-  [self dismissBWGFromOtherWindowsWithCompletion:^() {
-    [weakSelf startCoordinator];
-  }];
+  BwgBrowserAgent::FromBrowser(self.browser)
+      ->DismissGeminiFromOtherWindows(base::BindOnce(^{
+        [weakSelf startCoordinator];
+      }));
 }
 
 - (void)stop {
@@ -283,45 +276,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
   if (_entryPoint != gemini::EntryPoint::AIHub) {
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
-  }
-}
-
-// Dismisses BWG from all other windows and executes the completion block.
-- (void)dismissBWGFromOtherWindowsWithCompletion:(ProceduralBlock)completion {
-  base::OnceCallback closure = base::BindOnce(completion);
-
-  // Collect all browsers (excluding the current one) for all profiles.
-  std::vector<base::WeakPtr<Browser>> otherBrowsers;
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    const std::set<Browser*>& browserList =
-        BrowserListFactory::GetForProfile(profile)->BrowsersOfType(
-            BrowserList::BrowserType::kRegular);
-    for (Browser* browser : browserList) {
-      if (browser == self.browser) {
-        continue;
-      }
-      otherBrowsers.push_back(browser->AsWeakPtr());
-    }
-  }
-
-  if (otherBrowsers.empty()) {
-    std::move(closure).Run();
-    return;
-  }
-
-  // Gate the completion behind this barrier closure which executes it when all
-  // other browsers have dismissed their BWG sessions.
-  base::RepeatingClosure barrier =
-      base::BarrierClosure(otherBrowsers.size(), std::move(closure));
-
-  // Dismiss BWG in all the other browsers for all profiles.
-  for (base::WeakPtr<Browser> browser : otherBrowsers) {
-    id<BWGCommands> BWGCommandsHandler =
-        HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
-    [BWGCommandsHandler dismissGeminiFlowWithCompletion:^() {
-      barrier.Run();
-    }];
   }
 }
 

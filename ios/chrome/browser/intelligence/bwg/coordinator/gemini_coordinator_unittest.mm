@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -68,6 +69,7 @@ class GeminiCoordinatorTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(profile);
     browser_list_->AddBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
+    BwgBrowserAgent::CreateForBrowser(browser_.get());
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_bwg_command_handler_ = OCMProtocolMock(@protocol(BWGCommands));
