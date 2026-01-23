@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -40,12 +41,14 @@ class ChromeBrowserCloudManagementRegisterWatcher
   // Blocks until the  chrome browser cloud management enrollment process
   // finishes. Returns the result of enrollment.
   ChromeBrowserCloudManagementController::RegisterResult
-  WaitUntilCloudPolicyEnrollmentFinished();
+  WaitUntilCloudPolicyEnrollmentFinished()
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns whether the dialog is being displayed.
-  bool IsDialogShowing();
+  bool IsDialogShowing() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  void SetDialogCreationCallbackForTesting(DialogCreationCallback callback);
+  void SetDialogCreationCallbackForTesting(DialogCreationCallback callback)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeBrowserCloudManagementRegisterWatcherTest,
@@ -106,21 +109,27 @@ class ChromeBrowserCloudManagementRegisterWatcher
   void OnPolicyRegisterFinished(bool succeeded) override;
 
   // EnterpriseStartupDialog callback.
-  void OnDialogClosed(bool is_accepted, bool can_show_browser_window);
+  void OnDialogClosed(bool is_accepted, bool can_show_browser_window)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  void DisplayErrorMessage();
+  void DisplayErrorMessage() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  const raw_ptr<ChromeBrowserCloudManagementController> controller_;
+  const raw_ptr<ChromeBrowserCloudManagementController> controller_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::optional<bool> register_result_;
-  base::Time visible_start_time_;
+  std::optional<bool> register_result_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::Time visible_start_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::RunLoop run_loop_;
-  std::unique_ptr<EnterpriseStartupDialog> dialog_;
+  base::RunLoop run_loop_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<EnterpriseStartupDialog> dialog_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool is_restart_needed_ = false;
+  bool is_restart_needed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  DialogCreationCallback test_create_dialog_callback_;
+  DialogCreationCallback test_create_dialog_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace policy

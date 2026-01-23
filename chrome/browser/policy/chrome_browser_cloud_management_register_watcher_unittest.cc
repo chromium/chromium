@@ -73,7 +73,7 @@ class MockEnterpriseStartupDialog : public EnterpriseStartupDialog {
   MOCK_METHOD2(DisplayErrorMessage,
                void(const std::u16string&,
                     const std::optional<std::u16string>&));
-  MOCK_METHOD0(IsShowing, bool());
+  bool IsShowing() override { return !callback_.is_null(); }
 
   void SetCallback(EnterpriseStartupDialog::DialogResultCallback callback) {
     callback_ = std::move(callback);
@@ -155,7 +155,6 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest, EnrollmentSucceed) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -180,7 +179,6 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   storage()->SetEnrollmentErrorOption(false);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -209,7 +207,6 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _))
       .WillOnce(
           InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(false); }));
-  EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -237,7 +234,6 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   EXPECT_CALL(*dialog(), DisplayErrorMessage(_, _))
       .WillOnce(
           InvokeWithoutArgs([this] { dialog()->UserClickedTheButton(true); }));
-  EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -332,7 +328,6 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*dialog(), DisplayLaunchingInformationWithThrobber(_));
-  EXPECT_CALL(*dialog(), IsShowing()).WillOnce(Return(true));
   storage()->SetEnrollmentErrorOption(false);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -364,6 +359,7 @@ TEST_F(ChromeBrowserCloudManagementRegisterWatcherTest,
   histogram_tester.ExpectTotalCount(
       ChromeBrowserCloudManagementRegisterWatcher::kStartupDialogHistogramName,
       0);
+  EXPECT_FALSE(watcher()->IsDialogShowing());
 }
 
 }  // namespace policy
