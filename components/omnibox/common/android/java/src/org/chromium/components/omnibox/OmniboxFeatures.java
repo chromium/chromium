@@ -152,6 +152,14 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
 
+    /**
+     * If the expanded set of inputs (model picker as well as canvas tool) should be options. These
+     * new types, as well as all existing types, should be driven through PEC instead of hard coded
+     * into the client when this param is enabled.
+     */
+    public static final BooleanCachedFeatureParam sShowModelPicker =
+            newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_PROD);
 

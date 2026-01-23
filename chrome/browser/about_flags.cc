@@ -2218,6 +2218,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kOmniboxAimMultiContextCompactFusebox[] = {
     {"multi_context", "true"},
     {"compact_fusebox", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimModelPickerAndCanvas[] = {
+    {"multi_context", "true"},
+    {"show_model_picker", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton,
@@ -2234,6 +2237,8 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
      std::size(kOmniboxAimMultiContextDedicatedModeButtonWithHint), "3395755"},
     {"MC Compact", kOmniboxAimMultiContextCompactFusebox,
      std::size(kOmniboxAimMultiContextCompactFusebox), "3395755"},
+    {"Model Picker & Canvas", kOmniboxAimModelPickerAndCanvas,
+     std::size(kOmniboxAimModelPickerAndCanvas), "3395755"},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
