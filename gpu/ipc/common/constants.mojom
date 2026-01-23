@@ -4,7 +4,19 @@
 
 module gpu.mojom;
 
-// See gpu/command_buffer/common/constants.h.
+// See gpu/command_buffer/common/constants.h
+enum CommandBufferNamespace {
+  INVALID = -1,
+
+  GPU_IO,
+  IN_PROCESS,
+  VIZ_SKIA_OUTPUT_SURFACE,
+  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL,
+  GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
+  WEBNN_CONTEXT_INTERFACE
+};
+
+// See gpu/command_buffer/common/constants.h
 enum Error {
   kNoError,
   kInvalidSize,
@@ -17,7 +29,7 @@ enum Error {
   kDeferLaterCommands,
 };
 
-// See gpu/command_buffer/common/constants.h.
+// See gpu/command_buffer/common/constants.h
 enum ContextLostReason {
   kGuilty,
   kInnocent,

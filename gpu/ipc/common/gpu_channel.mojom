@@ -7,6 +7,7 @@ module gpu.mojom;
 import "gpu/ipc/common/capabilities.mojom";
 import "gpu/ipc/common/constants.mojom";
 import "gpu/ipc/common/context_result.mojom";
+import "gpu/ipc/common/context_type.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/shared_image_pool_id.mojom";
@@ -27,22 +28,6 @@ import "ui/gfx/mojom/native_handle_types.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "url/mojom/url.mojom";
-
-// Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
-enum ContextType {
-  kWebGL1,
-  kWebGL2,
-  kOpenGLES2,
-  kOpenGLES3,
-  kOpenGLES31ForTesting,
-};
-
-// Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
-enum ContextColorSpace {
-  kUnspecified,
-  kSRGB,
-  kDisplayP3,
-};
 
 // Maps to its namesake in gpu/command_buffer/common/scheduling_priority.h.
 enum SchedulingPriority {

@@ -123,4 +123,61 @@ bool EnumTraits<gpu::mojom::ContextLostReason, gpu::error::ContextLostReason>::
   return false;
 }
 
+// static
+gpu::mojom::CommandBufferNamespace
+EnumTraits<gpu::mojom::CommandBufferNamespace, gpu::CommandBufferNamespace>::
+    ToMojom(gpu::CommandBufferNamespace namespace_id) {
+  switch (namespace_id) {
+    case gpu::CommandBufferNamespace::INVALID:
+      return gpu::mojom::CommandBufferNamespace::INVALID;
+    case gpu::CommandBufferNamespace::GPU_IO:
+      return gpu::mojom::CommandBufferNamespace::GPU_IO;
+    case gpu::CommandBufferNamespace::IN_PROCESS:
+      return gpu::mojom::CommandBufferNamespace::IN_PROCESS;
+    case gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE:
+      return gpu::mojom::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE;
+    case gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL:
+      return gpu::mojom::CommandBufferNamespace::
+          VIZ_SKIA_OUTPUT_SURFACE_NON_DDL;
+    case gpu::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE:
+      return gpu::mojom::CommandBufferNamespace::
+          GPU_CHANNEL_SHARED_IMAGE_INTERFACE;
+    case gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE:
+      return gpu::mojom::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE;
+    case gpu::CommandBufferNamespace::NUM_COMMAND_BUFFER_NAMESPACES:
+      return gpu::mojom::CommandBufferNamespace::INVALID;
+  }
+}
+
+// static
+bool EnumTraits<gpu::mojom::CommandBufferNamespace,
+                gpu::CommandBufferNamespace>::
+    FromMojom(gpu::mojom::CommandBufferNamespace input,
+              gpu::CommandBufferNamespace* out) {
+  switch (input) {
+    case gpu::mojom::CommandBufferNamespace::INVALID:
+      *out = gpu::CommandBufferNamespace::INVALID;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::GPU_IO:
+      *out = gpu::CommandBufferNamespace::GPU_IO;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::IN_PROCESS:
+      *out = gpu::CommandBufferNamespace::IN_PROCESS;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE:
+      *out = gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL:
+      *out = gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE:
+      *out = gpu::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE;
+      return true;
+    case gpu::mojom::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE:
+      *out = gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE;
+      return true;
+  }
+  return false;
+}
+
 }  // namespace mojo

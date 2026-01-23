@@ -25,6 +25,15 @@ struct EnumTraits<gpu::mojom::ContextLostReason,
                         gpu::error::ContextLostReason* out);
 };
 
+template <>
+struct EnumTraits<gpu::mojom::CommandBufferNamespace,
+                  gpu::CommandBufferNamespace> {
+  static gpu::mojom::CommandBufferNamespace ToMojom(
+      gpu::CommandBufferNamespace namespace_id);
+  static bool FromMojom(gpu::mojom::CommandBufferNamespace input,
+                        gpu::CommandBufferNamespace* out);
+};
+
 }  // namespace mojo
 
 #endif  // GPU_IPC_COMMON_CONSTANTS_MOJOM_TRAITS_H_

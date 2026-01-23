@@ -18,47 +18,9 @@ group("common") {
   }
 }
 
-group("command_buffer_traits") {
-  if (is_component_build) {
-    public_deps = [ "//gpu" ]
-  } else {
-    public_deps = [ ":command_buffer_traits_sources" ]
-  }
-}
-
 source_set("export") {
   visibility = [ "//gpu/ipc/common/*" ]
   sources = [ "gpu_ipc_common_export.h" ]
-}
-
-source_set("command_buffer_traits_sources") {
-  # External code should depend on this via
-  # //gpu/ipc/common:command_buffer_traits above rather than depending on this
-  # directly or the component build will break.
-  visibility = [ "//gpu/*" ]
-
-  sources = [
-    "gpu_command_buffer_traits.cc",
-    "gpu_command_buffer_traits.h",
-    "gpu_command_buffer_traits_multi.h",
-  ]
-
-  configs += [
-    "//gpu:gpu_implementation",
-    "//third_party/khronos:khronos_headers",
-  ]
-
-  public_deps = [
-    ":export",
-    "//gpu/command_buffer/common",
-    "//ipc",
-    "//ui/gfx/ipc",
-  ]
-
-  deps = [
-    "//base",
-    "//ui/gfx/ipc/geometry",
-  ]
 }
 
 source_set("memory_stats_sources") {
@@ -116,7 +78,6 @@ source_set("ipc_common_sources") {
   ]
 
   public_deps = [
-    ":command_buffer_traits_sources",
     ":export",
     ":gpu_channel_mojom",
     ":gpu_peak_memory",
@@ -209,16 +170,6 @@ mojom("gpu_channel_mojom") {
     {
       types = [
         {
-          mojom = "gpu.mojom.ContextType"
-          cpp = "::gpu::ContextType"
-        },
-      ]
-      traits_headers = [ "context_creation_attribs_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu/command_buffer/common" ]
-    },
-    {
-      types = [
-        {
           mojom = "gpu.mojom.CommandBufferState"
           cpp = "::gpu::CommandBuffer::State"
         },
@@ -294,6 +245,7 @@ mojom("interfaces") {
     "capabilities.mojom",
     "constants.mojom",
     "context_result.mojom",
+    "context_type.mojom",
     "device_perf_info.mojom",
     "exported_shared_image.mojom",
     "gpu_disk_cache_type.mojom",
@@ -361,9 +313,23 @@ mojom("interfaces") {
           mojom = "gpu.mojom.ContextLostReason"
           cpp = "::gpu::error::ContextLostReason"
         },
+        {
+          mojom = "gpu.mojom.CommandBufferNamespace"
+          cpp = "::gpu::CommandBufferNamespace"
+        },
       ]
       traits_headers = [ "constants_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.ContextType"
+          cpp = "::gpu::ContextType"
+        },
+      ]
+      traits_headers = [ "context_type_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu/command_buffer/common" ]
     },
     {
       types = [
@@ -796,6 +762,7 @@ source_set("mojom_traits") {
     "constants_mojom_traits.cc",
     "constants_mojom_traits.h",
     "context_result_mojom_traits.h",
+    "context_type_mojom_traits.h",
     "gpu_peak_memory_mojom_traits.h",
     "mailbox_mojom_traits.cc",
     "mailbox_mojom_traits.h",
