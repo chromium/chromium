@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -62,6 +63,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }  // namespace
 
 @interface SceneCoordinator () <AccountMenuCoordinatorDelegate,
+                                PasswordCheckupCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
                                 SettingsNavigationControllerDelegate>
@@ -89,6 +91,8 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   SigninCoordinator* _signinCoordinator;
   // Coordinator for the Safari Data Import flow.
   SafariDataImportMainCoordinator* _safariDataImportCoordinator;
+  // Coordinator for display of the Password Checkup.
+  PasswordCheckupCoordinator* _passwordCheckupCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -136,6 +140,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [self stopAccountMenu];
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   [self stopSafariDataImportCoordinator];
+  [self stopPasswordCheckupCoordinator];
   [self stopSettingsAnimated:NO completion:nil];
   [_tabGridCoordinator stop];
 }
@@ -341,6 +346,40 @@ void RecordIfNeededSigninFullscreenPromoEvent(
       safetyCheckControllerForBrowser:_regularBrowser.get()
                              delegate:self
                              referrer:referrer];
+}
+
+- (void)showPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
+  [self startPasswordCheckupCoordinator:referrer];
+  [self presentSettingsFromViewController:self.activeViewController];
+}
+
+- (void)
+    showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
+                             referrer:(password_manager::PasswordCheckReferrer)
+                                          referrer {
+  [self startPasswordCheckupCoordinator:referrer];
+  [_passwordCheckupCoordinator showPasswordIssuesWithWarningType:warningType];
+  [self presentSettingsFromViewController:self.activeViewController];
+}
+
+- (void)stopPasswordCheckupCoordinator {
+  [_passwordCheckupCoordinator stop];
+  _passwordCheckupCoordinator.delegate = nil;
+  _passwordCheckupCoordinator = nil;
+}
+
+- (void)startPasswordCheckupCoordinator:
+    (password_manager::PasswordCheckReferrer)referrer {
+  [self createSafetyCheckSettingsWithReferrer:referrer];
+
+  _passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
+      initWithBaseNavigationController:self.settingsNavigationController
+                               browser:_regularBrowser.get()
+                          reauthModule:nil
+                              referrer:referrer];
+  _passwordCheckupCoordinator.delegate = self;
+  [_passwordCheckupCoordinator start];
 }
 
 - (void)stopSettingsAnimated:(BOOL)animated
@@ -824,7 +863,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 
 #pragma mark - Properties
 
-- (void)setDelegate:(id<SceneCoordinatorDelegate>)delegate {
+- (void)setDelegate:(id<TabGridCoordinatorDelegate>)delegate {
   _delegate = delegate;
   _tabGridCoordinator.delegate = delegate;
 }
@@ -879,6 +918,22 @@ void RecordIfNeededSigninFullscreenPromoEvent(
   [self stopSafariDataImportCoordinator];
 }
 
+#pragma mark - PasswordCheckupCoordinatorDelegate
+
+- (void)passwordCheckupCoordinatorDidRemove:
+    (PasswordCheckupCoordinator*)coordinator {
+  CHECK_EQ(_passwordCheckupCoordinator, coordinator);
+  [self stopPasswordCheckupCoordinator];
+}
+
+#pragma mark - PasswordManagerReauthenticationDelegate
+
+- (void)dismissPasswordManagerAfterFailedReauthentication {
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler closePresentedViews];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {
@@ -890,7 +945,7 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 - (void)settingsWasDismissed {
   [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
-  [self.delegate sceneCoordinatorDidDismissSettings:self];
+  [self stopPasswordCheckupCoordinator];
 }
 
 #pragma mark - Private

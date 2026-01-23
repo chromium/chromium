@@ -26,16 +26,8 @@ enum class SafariDataImportEntryPoint;
 
 namespace password_manager {
 enum class PasswordCheckReferrer;
+enum class WarningType;
 }  // namespace password_manager
-
-// Delegate for the SceneCoordinator.
-@protocol SceneCoordinatorDelegate <TabGridCoordinatorDelegate>
-
-// Informs the delegate that settings were dismissed (e.g. swipe).
-// Corresponds to `settingsWasDismissed`.
-- (void)sceneCoordinatorDidDismissSettings:(SceneCoordinator*)coordinator;
-
-@end
 
 // Coordinator for the scene, managing the top-level UI.
 @interface SceneCoordinator
@@ -47,7 +39,7 @@ enum class PasswordCheckReferrer;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<SceneCoordinatorDelegate> delegate;
+@property(nonatomic, weak) id<TabGridCoordinatorDelegate> delegate;
 
 // Proxy properties for TabGridCoordinator.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
@@ -130,6 +122,19 @@ enum class PasswordCheckReferrer;
 // exist.
 - (void)createSafetyCheckSettingsWithReferrer:
     (password_manager::PasswordCheckReferrer)referrer;
+
+// Shows the Password Checkup page for `referrer`.
+- (void)showPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer;
+
+// Shows the Password Issues page for `warningType`.
+- (void)
+    showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
+                             referrer:(password_manager::PasswordCheckReferrer)
+                                          referrer;
+
+// Stops the Password Checkup coordinator.
+- (void)stopPasswordCheckupCoordinator;
 
 // Shows the settings navigation controller.
 - (void)presentSettingsFromViewController:(UIViewController*)baseViewController;

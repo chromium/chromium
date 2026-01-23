@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -104,10 +105,6 @@
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
-#import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
@@ -126,9 +123,6 @@
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_saving_scene_agent.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -383,9 +377,7 @@ void OnListFamilyMembersResponse(
 @interface SceneController () <AuthenticationServiceObserving,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
-                               PasswordCheckupCoordinatorDelegate,
                                ProfileStateObserver,
-                               SceneCoordinatorDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
@@ -422,10 +414,6 @@ void OnListFamilyMembersResponse(
       _authServiceObserverBridge;
   BOOL _handleExternalIntentsInProgress;
 }
-
-// Coordinator for display the Password Checkup.
-@property(nonatomic, strong)
-    PasswordCheckupCoordinator* passwordCheckupCoordinator;
 
 // Coordinator for displaying history.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
@@ -1065,35 +1053,10 @@ void OnListFamilyMembersResponse(
 
 
 
-// Creates a `SettingsNavigationController` (if it doesn't already exist) and
-// `PasswordCheckupCoordinator` for `referrer`, then starts the
-// `PasswordCheckupCoordinator`.
-- (void)startPasswordCheckupCoordinator:
-    (password_manager::PasswordCheckReferrer)referrer {
-  Browser* browser = self.mainInterface.browser;
-
-  [self.mainCoordinator createSafetyCheckSettingsWithReferrer:referrer];
-
-  self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
-      initWithBaseNavigationController:self.mainCoordinator
-                                           .settingsNavigationController
-                               browser:browser
-                          reauthModule:nil
-                              referrer:referrer];
-
-  self.passwordCheckupCoordinator.delegate = self;
-
-  [self.passwordCheckupCoordinator start];
-}
-
 // Shows the Password Checkup page for `referrer`.
 - (void)showPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  UIViewController* baseViewController = self.currentInterface.viewController;
-
-  [self startPasswordCheckupCoordinator:referrer];
-
-  [self.mainCoordinator presentSettingsFromViewController:baseViewController];
+  [self.mainCoordinator showPasswordCheckupPageForReferrer:referrer];
 }
 
 // Shows the Incognito interstitial on top of `activeViewController`.
@@ -1385,7 +1348,7 @@ void OnListFamilyMembersResponse(
   // unregister observers and destroy C++ objects before the application is
   // shut down without depending on non-deterministic call to -dealloc.
   [self.mainCoordinator stopSettingsAnimated:NO completion:nil];
-  [self stopPasswordCheckupCoordinator];
+  [self.mainCoordinator stopPasswordCheckupCoordinator];
 
   [_mainCoordinator stop];
   _mainCoordinator = nil;
@@ -1818,14 +1781,8 @@ void OnListFamilyMembersResponse(
     showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
                              referrer:(password_manager::PasswordCheckReferrer)
                                           referrer {
-  UIViewController* baseViewController = self.currentInterface.viewController;
-
-  [self startPasswordCheckupCoordinator:referrer];
-
-  [self.passwordCheckupCoordinator
-      showPasswordIssuesWithWarningType:warningType];
-
-  [self.mainCoordinator presentSettingsFromViewController:baseViewController];
+  [self.mainCoordinator showPasswordIssuesWithWarningType:warningType
+                                                 referrer:referrer];
 }
 
 - (void)showSafeBrowsingSettingsFromViewController:
@@ -2334,12 +2291,6 @@ using UserFeedbackDataCallback =
                 openURL:[NSURL URLWithString:kChromeAppStoreURL]
                 options:@{}
       completionHandler:nil];
-}
-
-#pragma mark - SceneCoordinatorDelegate
-
-- (void)sceneCoordinatorDidDismissSettings:(SceneCoordinator*)coordinator {
-  [self stopPasswordCheckupCoordinator];
 }
 
 #pragma mark - TabGridCoordinatorDelegate
@@ -3398,7 +3349,7 @@ using UserFeedbackDataCallback =
   ProceduralBlock resetAndDismiss = ^{
     __typeof(self) strongSelf = weakSelf;
     // Cleanup Password Checkup after its UI was dismissed.
-    [strongSelf stopPasswordCheckupCoordinator];
+    [strongSelf.mainCoordinator stopPasswordCheckupCoordinator];
     if (completion) {
       completion();
     }
@@ -3545,14 +3496,6 @@ using UserFeedbackDataCallback =
          tabOpenedCompletion:nil];
 }
 
-// Stops and deletes `passwordCheckupCoordinator`.
-- (void)stopPasswordCheckupCoordinator {
-  [self.passwordCheckupCoordinator stop];
-
-  self.passwordCheckupCoordinator.delegate = nil;
-  self.passwordCheckupCoordinator = nil;
-}
-
 // Returns the condition to check in order to show the `IncognitoIntertitial`
 // for a given `ApplicationModeForTabOpening`.
 - (BOOL)canShowIncognitoInterstitialForTargetMode:
@@ -3576,21 +3519,6 @@ using UserFeedbackDataCallback =
     (IncognitoInterstitialCoordinator*)incognitoInterstitial {
   DCHECK(incognitoInterstitial == self.incognitoInterstitialCoordinator);
   [self closePresentedViews:YES completion:nil];
-}
-
-#pragma mark - PasswordCheckupCoordinatorDelegate
-
-- (void)passwordCheckupCoordinatorDidRemove:
-    (PasswordCheckupCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordCheckupCoordinator, coordinator);
-
-  [self stopPasswordCheckupCoordinator];
-}
-
-#pragma mark - PasswordManagerReauthenticationDelegate
-
-- (void)dismissPasswordManagerAfterFailedReauthentication {
-  [self closePresentedViews];
 }
 
 #pragma mark - YoutubeIncognitoCoordinatorDelegate
