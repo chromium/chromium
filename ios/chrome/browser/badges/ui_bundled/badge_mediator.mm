@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type_util.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/badge_state.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
