@@ -52,6 +52,8 @@ class GlobalBrowserCollectionPlatformDelegate final
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
+#else
+  base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   raw_ref<GlobalBrowserCollection> parent_;

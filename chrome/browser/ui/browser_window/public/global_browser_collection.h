@@ -23,7 +23,7 @@
 // exposed on BrowserWindowInterface instead.
 //
 // TODO(crbug.com/474120522): The Android implementation does not yet fire
-// BrowserCollectionObserver events.
+// OnBrowserActivated and OnBrowserDeactivated BrowserCollectionObserver events.
 class GlobalBrowserCollection final : public BrowserCollection {
  public:
   GlobalBrowserCollection();

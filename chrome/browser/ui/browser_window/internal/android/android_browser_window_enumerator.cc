@@ -7,23 +7,20 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindowEnumerator_jni.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 AndroidBrowserWindowEnumerator::AndroidBrowserWindowEnumerator(
     std::vector<BrowserWindowInterface*> browser_windows,
     bool enumerate_new_browser_windows)
-    : browser_windows_(browser_windows) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  j_enumerator_.Reset(Java_AndroidBrowserWindowEnumerator_create(
-      env, reinterpret_cast<int64_t>(this), enumerate_new_browser_windows));
+    : browser_windows_(browser_windows),
+      enumerate_new_browser_windows_(enumerate_new_browser_windows) {
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-AndroidBrowserWindowEnumerator::~AndroidBrowserWindowEnumerator() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AndroidBrowserWindowEnumerator_destroy(env, j_enumerator_);
-}
+AndroidBrowserWindowEnumerator::~AndroidBrowserWindowEnumerator() = default;
 
 BrowserWindowInterface* AndroidBrowserWindowEnumerator::Next() {
   BrowserWindowInterface* browser_window = browser_windows_.front();
@@ -31,20 +28,17 @@ BrowserWindowInterface* AndroidBrowserWindowEnumerator::Next() {
   return browser_window;
 }
 
-void AndroidBrowserWindowEnumerator::OnBrowserWindowAdded(
-    JNIEnv* env,
-    int64_t j_browser_window_ptr) {
-  BrowserWindowInterface* browser_window =
-      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr);
-  DCHECK(!std::ranges::contains(browser_windows_, browser_window));
-  browser_windows_.push_back(browser_window);
+void AndroidBrowserWindowEnumerator::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  if (!enumerate_new_browser_windows_) {
+    return;
+  }
+
+  DCHECK(!std::ranges::contains(browser_windows_, browser));
+  browser_windows_.push_back(browser);
 }
 
-void AndroidBrowserWindowEnumerator::OnBrowserWindowRemoved(
-    JNIEnv* env,
-    int64_t j_browser_window_ptr) {
-  std::erase(browser_windows_,
-             reinterpret_cast<BrowserWindowInterface*>(j_browser_window_ptr));
+void AndroidBrowserWindowEnumerator::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  std::erase(browser_windows_, browser);
 }
-
-DEFINE_JNI(AndroidBrowserWindowEnumerator)

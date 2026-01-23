@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_ENUMERATOR_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_ENUMERATOR_H_
 
-#include <jni.h>
-
 #include <vector>
 
-#include "base/android/jni_android.h"
-#include "base/android/scoped_java_ref.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
 class BrowserWindowInterface;
+class GlobalBrowserCollection;
 
 // Enumerates each android browser window in the system in activation order in a
 // way that is resilient to additions and removals during iteration. Note that
@@ -25,7 +24,7 @@ class BrowserWindowInterface;
 // implementation is heavily based on BrowserListEnumerator.
 //
 // This class is only safe to use as a thread-local variable.
-class AndroidBrowserWindowEnumerator {
+class AndroidBrowserWindowEnumerator : public BrowserCollectionObserver {
  public:
   AndroidBrowserWindowEnumerator(
       std::vector<BrowserWindowInterface*> browser_windows,
@@ -34,19 +33,22 @@ class AndroidBrowserWindowEnumerator {
       delete;
   AndroidBrowserWindowEnumerator& operator=(
       const AndroidBrowserWindowEnumerator&) = delete;
-  ~AndroidBrowserWindowEnumerator();
+  ~AndroidBrowserWindowEnumerator() override;
 
   bool empty() const { return browser_windows_.empty(); }
 
   BrowserWindowInterface* Next();
 
-  void OnBrowserWindowAdded(JNIEnv* env, int64_t j_browser_window_ptr);
-  void OnBrowserWindowRemoved(JNIEnv* env, int64_t j_browser_window_ptr);
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> j_enumerator_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   std::vector<BrowserWindowInterface*> browser_windows_;
+  bool enumerate_new_browser_windows_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BROWSER_WINDOW_ENUMERATOR_H_
