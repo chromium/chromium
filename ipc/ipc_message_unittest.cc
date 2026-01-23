@@ -76,13 +76,13 @@ TEST(IPCMessageTest, Value) {
   expect_value_equals(base::Value(base::Value::BlobStorage({'a', 'b', 'c'})));
 
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("key1", 42);
     dict.Set("key2", "hi");
     expect_value_equals(base::Value(std::move(dict)));
   }
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(42);
     list.Append("hello");
     expect_value_equals(base::Value(std::move(list)));
@@ -97,17 +97,17 @@ TEST(IPCMessageTest, Value) {
 }
 
 TEST(IPCMessageTest, ValueDict) {
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set("null", base::Value());
   input.Set("bool", true);
   input.Set("int", 42);
   input.Set("int.with.dot", 43);
 
-  base::Value::Dict subdict;
+  base::DictValue subdict;
   subdict.Set("str", "forty two");
   subdict.Set("bool", false);
 
-  base::Value::List sublist;
+  base::ListValue sublist;
   sublist.Append(42.42);
   sublist.Append("forty");
   sublist.Append("two");
@@ -118,7 +118,7 @@ TEST(IPCMessageTest, ValueDict) {
   IPC::Message msg;
   IPC::WriteParam(&msg, input);
 
-  base::Value::Dict output;
+  base::DictValue output;
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
