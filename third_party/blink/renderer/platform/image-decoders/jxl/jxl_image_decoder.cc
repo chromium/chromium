@@ -107,10 +107,6 @@ wtf_size_t JXLImageDecoder::DecodeFrameCount() {
   // frames are parsed via FrameCount() -> DecodeFrameCount().
   wtf_size_t count = num_discovered_frames_;
 
-  if (frame_buffer_cache_.size() < count) {
-    frame_buffer_cache_.resize(count);
-  }
-
   return count;
 }
 
@@ -195,7 +191,6 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
     ImageFrame& frame = frame_buffer_cache_[frame_index];
     if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
       frame.SetPremultiplyAlpha(premultiply_alpha_);
-      InitializeNewFrame(frame_index);
       if (!InitFrameBuffer(frame_index)) {
         SetFailed();
         return;
@@ -373,7 +368,6 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
         ImageFrame& frame = frame_buffer_cache_[frame_index];
         if (frame.GetStatus() == ImageFrame::kFrameEmpty) {
           frame.SetPremultiplyAlpha(premultiply_alpha_);
-          InitializeNewFrame(frame_index);
         }
 
         if (!InitFrameBuffer(frame_index)) {
