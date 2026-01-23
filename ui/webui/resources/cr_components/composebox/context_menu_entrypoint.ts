@@ -27,8 +27,6 @@ import {getHtml} from './context_menu_entrypoint.html.js';
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
-/** The string value of the tall bottom context layout mode. */
-const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
 
 export interface ContextMenuEntrypointElement {
   $: {
@@ -138,8 +136,7 @@ export class ContextMenuEntrypointElement extends
   }
 
   openMenuForMultiSelection() {
-    if (this.enableMultiTabSelection_ &&
-        this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (this.enableMultiTabSelection_) {
       this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
     }
   }
@@ -223,9 +220,6 @@ export class ContextMenuEntrypointElement extends
 
   protected deleteTabContext_(uuid: UnguessableToken) {
     this.fire('delete-tab-context', {uuid: uuid});
-    if (this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
-      this.$.menu.close();
-    }
   }
 
 
@@ -237,8 +231,7 @@ export class ContextMenuEntrypointElement extends
       delayUpload: false,
       origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox' ||
-        this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox') {
       this.$.menu.close();
     }
   }
