@@ -90,7 +90,7 @@ export function getHtml(this: HelloWorldAppElement) {
 
 `chrome/browser/resources/hello_world/app.ts`
 ```ts
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -251,7 +251,6 @@ class HelloWorldUI : public content::WebUIController {
 ```c++
 #include "chrome/browser/ui/webui/hello_world/hello_world_ui.h"
 
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -259,6 +258,7 @@ class HelloWorldUI : public content::WebUIController {
 #include "chrome/grit/hello_world_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 
 HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
@@ -280,16 +280,38 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
 HelloWorldUI::~HelloWorldUI() = default;
 ```
 
-To ensure that your code actually gets compiled, you need to add it to `chrome/browser/ui/BUILD.gn`:
+To ensure that your code actually gets compiled, you need to add a
+`BUILD.gn` file defining a target for it, and hook up this target in
+`chrome/browser/BUILD.gn`:
 
+`chrome/browser/ui/webui/hello_world/BUILD.gn`
 ```py
-static_library("ui") {
+source_set("hello_world") {
   sources = [
-    ... (lots)
-    "webui/hello_world/hello_world_ui.cc",
-    "webui/hello_world/hello_world_ui.h",
-    ...
+    "hello_world_ui.cc",
+    "hello_world_ui.h",
   ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/browser/resources/hello_world:resources",
+    "//chrome/common",
+    "//ui/webui",
+  ]
+}
+```
+
+`chrome/browser/BUILD.gn`
+```py
+static_library("browser") {
+...
+# Place in platform-specific deps += section if not on all platforms
+# (e.g., !is_android).
+deps = [
+... (lots)
+  "//chrome/browser/ui/webui/hello_world",
+...
+]
+...
 }
 ```
 
@@ -323,6 +345,21 @@ Register your config in `chrome_web_ui_configs.cc`, for trusted UIs, or
 + #include "chrome/browser/ui/webui/hello_world/hello_world_ui.h"
 ...
 +map.AddWebUIConfig(std::make_unique<hello_world::HelloWorldUIConfig>());
+```
+
+Hook up the configs target to the build target for your new UI:
+`chrome/browser/ui/webui/BUILD.gn`
+```py
+...
+source_set("configs") {
+...
+# Add in platform-specific deps += section if not on all platforms.
+deps = [
+  ...
+  "//chrome/browser/ui/webui/hello_world",
+  ...
+]
+}
 ```
 
 ### Old method: Add your WebUI request handler to the Chrome WebUI factory
