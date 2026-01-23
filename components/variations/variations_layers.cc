@@ -181,8 +181,6 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
     };
   }
 
-  // TODO(crbug.com/40734659): Support a way to expire old/unused layers so they
-  // no longer get processed by the clients.
   for (const Layer& layer_proto : seed.layers()) {
     // Only constructs a layer if its ID is unique. We want to discard all
     // layers with the same ID because changing layer ID re-randomizes the field
