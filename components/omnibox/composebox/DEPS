@@ -10,6 +10,7 @@ include_rules = [
   "+components/variations",
   "+components/version_info",
   "+google_apis",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+services/data_decoder/public/cpp",
   "+services/data_decoder/public/cpp/test_support",
