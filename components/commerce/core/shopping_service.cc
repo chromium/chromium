@@ -165,17 +165,10 @@ class ProductSpecificationsUrlObserver
 // This function can be deleted once the Sync feature is removed.
 signin::ConsentLevel GetConsentLevelForEndpointFetchers(
     PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    return pref_service->GetBoolean(prefs::kExplicitBrowserSignin)
-               ? signin::ConsentLevel::kSignin
-               : signin::ConsentLevel::kSync;
-#else
-    return signin::ConsentLevel::kSignin;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-  }
-  return signin::ConsentLevel::kSync;
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
 }
 
 }  // namespace
