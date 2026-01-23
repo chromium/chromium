@@ -735,7 +735,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidSettingsContainment =
             newCachedFlag(
                     ANDROID_SETTINGS_CONTAINMENT,
