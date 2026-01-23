@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/broadcaster/ui_bundled",
-  "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h",
   "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h",
+  "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper_observer_bridge.h",
+  # keep-sorted end
 ]

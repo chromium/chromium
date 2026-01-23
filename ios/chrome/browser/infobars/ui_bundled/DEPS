@@ -1,9 +1,11 @@
 include_rules = [
-  "+ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h",
-  "+ios/chrome/browser/overlays/ui_bundled",
+  # keep-sorted start
   "+ios/chrome/browser/autofill/model/message/save_card_message_with_links.h",
+  "+ios/chrome/browser/badges/ui_bundled/badge_tappable_item.h",
   "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/overlays/ui_bundled",
   "+ios/chrome/browser/passwords/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

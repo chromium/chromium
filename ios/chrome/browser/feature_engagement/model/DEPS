@@ -1,5 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/default_browser/model",
+  # keep-sorted start
   "+ios/chrome/browser/authentication/ui_bundled/signin",
+  "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/shared/model/paths",
+  # keep-sorted end
 ]

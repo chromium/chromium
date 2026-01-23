@@ -1,7 +1,9 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/tips_manager/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

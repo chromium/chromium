@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
+  # keep-sorted end
 ]
