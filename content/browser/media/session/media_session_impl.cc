@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1986,8 +1987,38 @@ void MediaSessionImpl::BuildMetadata(
       source_title =
           content_client->GetLocalizedString(IDS_MEDIA_SESSION_DATA_SOURCE);
     } else {
+      url::Origin origin = url::Origin::Create(url);
+      GURL format_url = origin.GetURL();
+
+      // If the origin is opaque, use its precursor origin if available.
+      // Otherwise, traverse the opener chain to find the closest ancestor with
+      // a valid precursor origin. This ensures we display a recognizable origin
+      // to the user.
+      if (origin.opaque()) {
+        WebContents* current_web_contents = web_contents();
+        base::flat_set<WebContents*> seen_web_contents;
+
+        while (current_web_contents &&
+               !seen_web_contents.contains(current_web_contents)) {
+          seen_web_contents.insert(current_web_contents);
+
+          url::Origin current_origin =
+              url::Origin::Create(current_web_contents->GetLastCommittedURL());
+          const auto& precursor =
+              current_origin.GetTupleOrPrecursorTupleIfOpaque();
+          if (precursor.IsValid()) {
+            format_url = precursor.GetURL();
+            break;
+          }
+
+          RenderFrameHost* opener = current_web_contents->GetOpener();
+          current_web_contents =
+              opener ? WebContents::FromRenderFrameHost(opener) : nullptr;
+        }
+      }
+
       source_title = url_formatter::FormatUrl(
-          url::Origin::Create(url).GetURL(),
+          format_url,
           url_formatter::kFormatUrlOmitDefaults |
               url_formatter::kFormatUrlOmitHTTPS |
               url_formatter::kFormatUrlOmitTrivialSubdomains,

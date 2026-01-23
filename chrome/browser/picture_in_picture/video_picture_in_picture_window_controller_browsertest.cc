@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -2422,6 +2423,193 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   GetOverlayWindow()->FireEnableControlsAfterMoveTimerForTesting();
   GetOverlayWindow()->initial_title_hide_timer_for_testing().FireNow();
   EXPECT_TRUE(GetOverlayWindow()->AreTitleAndScrimVisibleForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       SourceTitle_OpaqueFallback) {
+  const std::string kTestHost = "example.com";
+  const std::u16string kExpectedTitlePrefix = base::ASCIIToUTF16(kTestHost);
+
+  // Open a sandboxed page, which will have an opaque origin.
+  GURL sandboxed_main_url =
+      embedded_test_server()->GetURL(kTestHost,
+                                     "/set-header?Content-Security-Policy: "
+                                     "sandbox allow-scripts allow-popups");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sandboxed_main_url));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Verify the main frame has an opaque origin.
+  ASSERT_TRUE(active_web_contents->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+
+  // Open an about:blank popup from the sandboxed main frame.
+  content::WebContents* popup_contents;
+  {
+    content::WebContentsAddedObserver new_contents_observer;
+    ASSERT_TRUE(ExecJs(active_web_contents, "window.open('about:blank');"));
+    popup_contents = new_contents_observer.GetWebContents();
+  }
+
+  // Verify that the popup also has an opaque origin
+  // and has established the opener relationship.
+  ASSERT_TRUE(
+      popup_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+  ASSERT_EQ(active_web_contents->GetPrimaryMainFrame(),
+            popup_contents->GetOpener());
+
+  // Inject a video element and play it in the popup.
+  GURL video_url =
+      embedded_test_server()->GetURL(kTestHost, "/media/bear.webm");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const video = document.createElement('video');
+        video.src = '$1';
+        video.loop = true;
+        document.body.appendChild(video);
+        video.play().then(() => video.requestPictureInPicture());
+      )",
+      {video_url.spec()}, nullptr);
+  ASSERT_TRUE(ExecJs(popup_contents, script));
+
+  // Wait until the Picture-in-Picture window is visible and its source title
+  // correctly falls back to the opener's origin (example.com).
+  SetUpWindowController(popup_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* overlay_window = GetOverlayWindow();
+    return overlay_window && overlay_window->IsVisible() &&
+           overlay_window->origin_for_testing() &&
+           base::StartsWith(overlay_window->origin_for_testing()->GetText(),
+                            kExpectedTitlePrefix);
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       SourceTitle_NestedOpaqueFallback) {
+  const std::string kTestHost = "example.com";
+  const std::u16string kExpectedTitlePrefix = base::ASCIIToUTF16(kTestHost);
+
+  // Open a sandboxed page, which will have an opaque origin.
+  GURL sandboxed_main_url =
+      embedded_test_server()->GetURL(kTestHost,
+                                     "/set-header?Content-Security-Policy: "
+                                     "sandbox allow-scripts allow-popups");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), sandboxed_main_url));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open an about:blank popup from the sandboxed main frame.
+  content::WebContents* popup1_contents;
+  {
+    content::WebContentsAddedObserver observer;
+    ASSERT_TRUE(ExecJs(active_web_contents, "window.open('about:blank');"));
+    popup1_contents = observer.GetWebContents();
+  }
+
+  // Open another about:blank popup from the first popup.
+  content::WebContents* popup2_contents;
+  {
+    content::WebContentsAddedObserver observer;
+    ASSERT_TRUE(ExecJs(popup1_contents, "window.open('about:blank');"));
+    popup2_contents = observer.GetWebContents();
+  }
+
+  // Inject a video element and play it in the nested popup.
+  GURL video_url =
+      embedded_test_server()->GetURL(kTestHost, "/media/bear.webm");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const video = document.createElement('video');
+        video.src = '$1';
+        video.loop = true;
+        document.body.appendChild(video);
+        video.play().then(() => video.requestPictureInPicture());
+      )",
+      {video_url.spec()}, nullptr);
+  ASSERT_TRUE(ExecJs(popup2_contents, script));
+
+  // Wait until the Picture-in-Picture window is visible and its source title
+  // correctly falls back through the nested openers to the original origin
+  // (example.com).
+  SetUpWindowController(popup2_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* overlay_window = GetOverlayWindow();
+    return overlay_window && overlay_window->IsVisible() &&
+           overlay_window->origin_for_testing() &&
+           base::StartsWith(overlay_window->origin_for_testing()->GetText(),
+                            kExpectedTitlePrefix);
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
+                       SourceTitle_ClosestAncestorFallback) {
+  const std::string kHost1 = "example.com";
+  const std::string kHost2 = "another-site.com";
+  const std::u16string kExpectedTitlePrefix = base::ASCIIToUTF16(kHost2);
+
+  // Open Host 1 sandboxed.
+  GURL url1 =
+      embedded_test_server()->GetURL(kHost1,
+                                     "/set-header?Content-Security-Policy: "
+                                     "sandbox allow-scripts allow-popups");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open about:blank (Popup 1).
+  content::WebContents* popup1_contents;
+  {
+    content::WebContentsAddedObserver observer;
+    ASSERT_TRUE(ExecJs(active_web_contents, "window.open('about:blank');"));
+    popup1_contents = observer.GetWebContents();
+  }
+
+  // Navigate Popup 1 to Host 2 sandboxed.
+  GURL url2 =
+      embedded_test_server()->GetURL(kHost2,
+                                     "/set-header?Content-Security-Policy: "
+                                     "sandbox allow-scripts allow-popups");
+  {
+    content::TestNavigationObserver nav_observer(popup1_contents);
+    ASSERT_TRUE(ExecJs(popup1_contents,
+                       base::StringPrintf("window.location.href = '%s';",
+                                          url2.spec().c_str())));
+    nav_observer.Wait();
+  }
+
+  // Open another about:blank (Popup 2) from Popup 1 (Host 2).
+  content::WebContents* popup2_contents;
+  {
+    content::WebContentsAddedObserver observer;
+    ASSERT_TRUE(ExecJs(popup1_contents, "window.open('about:blank');"));
+    popup2_contents = observer.GetWebContents();
+  }
+
+  // Play video in Popup 2.
+  GURL video_url = embedded_test_server()->GetURL(kHost2, "/media/bear.webm");
+  std::string script = base::ReplaceStringPlaceholders(
+      R"(
+        const video = document.createElement('video');
+        video.src = '$1';
+        video.loop = true;
+        document.body.appendChild(video);
+        video.play().then(() => video.requestPictureInPicture());
+      )",
+      {video_url.spec()}, nullptr);
+  ASSERT_TRUE(ExecJs(popup2_contents, script));
+
+  // Verify source title is Host 2 (the closest opener with a valid precursor).
+  SetUpWindowController(popup2_contents);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* overlay_window = GetOverlayWindow();
+    return overlay_window && overlay_window->IsVisible() &&
+           overlay_window->origin_for_testing() &&
+           base::StartsWith(overlay_window->origin_for_testing()->GetText(),
+                            kExpectedTitlePrefix);
+  }));
 }
 
 struct InteractionTestParam {
