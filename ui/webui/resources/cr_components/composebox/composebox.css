@@ -463,12 +463,12 @@ search-animated-glow {
 #submitContainer:has(#submitIcon[disabled]) {
   cursor: not-allowed;
 }
-#submitContainer:has(#submitIcon[disabled]) #submitOverlay {
-  pointer-events: none;
+
+#submitContainer:has(#submitIcon[disabled]):hover #submitOverlay {
+  background-color: transparent;
 }
 
 #submitContainer #submitIcon[disabled] {
-  pointer-events: none;
   opacity: 0.4;
 }
 

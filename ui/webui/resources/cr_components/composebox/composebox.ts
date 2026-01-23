@@ -201,6 +201,7 @@ export class ComposeboxElement extends I18nMixinLit
       },
       disableComposeboxAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
+      canSubmitFilesAndInput_: {type: Boolean},
     };
   }
 
@@ -252,6 +253,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor contextFilesSize_: number = 0;
   protected accessor transcript_: string = '';
   protected accessor receivedSpeech_: boolean = false;
+  protected accessor canSubmitFilesAndInput_: boolean = true;
   protected lastQueriedInput_: string = '';
   protected showVoiceSearchInSteadyComposebox_: boolean =
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
@@ -404,8 +406,12 @@ export class ComposeboxElement extends I18nMixinLit
         changedPrivateProperties.has('errorScrimVisible_')) {
       this.showDropdown_ = this.computeShowDropdown_();
     }
+    if (changedPrivateProperties.has('submitEnabled_') ||
+        changedPrivateProperties.has('fileUploadsComplete')) {
+      this.canSubmitFilesAndInput_ =
+          this.submitEnabled_ && this.fileUploadsComplete;
+    }
   }
-
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     const changedPrivateProperties =
@@ -949,7 +955,7 @@ export class ComposeboxElement extends I18nMixinLit
       }
     }
 
-    if (e.key === 'Enter' && this.submitEnabled_ && this.fileUploadsComplete) {
+    if (e.key === 'Enter' && this.canSubmitFilesAndInput_) {
       if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
         e.preventDefault();
         this.submitQuery_(e);
@@ -1094,7 +1100,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected submitQuery_(e: KeyboardEvent|MouseEvent) {
     // If the submit button is disabled, do nothing.
-    if (!this.submitEnabled_) {
+    if (!this.canSubmitFilesAndInput_) {
       return;
     }
 

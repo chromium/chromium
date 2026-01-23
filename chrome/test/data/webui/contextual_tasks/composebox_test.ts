@@ -10,6 +10,7 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -405,6 +406,8 @@ suite('ContextualTasksComposeboxTest', () => {
     );
     await microtasksFinished();
     await composebox.$.context.updateComplete;
+    await microtasksFinished();
+
     assertEquals(
         1, composebox.getRemainingFilesToUpload().size,
         '1 File should be uploading');
@@ -426,8 +429,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    const submitOverlay: HTMLElement|null =
-        submitContainer.querySelector('#submitOverlay');
 
     assertStyle(
         submitButton, 'pointer-events', 'auto',
@@ -437,11 +438,15 @@ suite('ContextualTasksComposeboxTest', () => {
         'Submit button cursor should be pointer');
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
-    assertTrue(!!submitOverlay, 'Submit button overlay should exist');
-    submitOverlay?.click();
+    // `submitContainer` must be clickable for tabbing->enter to submit to work.
+    submitContainer?.click();
 
     await composebox.updateComplete;
     await microtasksFinished();
+
+    assertEquals(
+        composebox.animationState, GlowAnimationState.SUBMITTING,
+        'Query is submitted via submitQuery_()');
 
     assertEquals(0, composebox.$.context.files_.size);
   });
@@ -463,15 +468,28 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(submitButton?.disabled, 'Submit button should be disabled');
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
-    const submitOverlay: HTMLElement|null =
-        submitContainer!.querySelector('#submitOverlay');
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    assertStyle(
-        submitOverlay, 'pointer-events', 'none',
-        'Submit button should be disabled');
+    const submitOverlay: HTMLElement|null =
+        submitContainer.querySelector('#submitOverlay');
+
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
         'Submit button cursor should be not-allowed');
+    assertStyle(
+        submitContainer, 'pointer-events', 'auto',
+        'Submit container should still have pointer-events on,\
+            even when disabled.');
+
+    submitContainer?.click();
+    submitButton?.click();
+    submitOverlay?.click();
+
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(
+        composebox.animationState, GlowAnimationState.EXPANDING,
+        'Query is not submitted via submitQuery_()');
   });
 
   test(
@@ -523,15 +541,16 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
-    const submitOverlay: HTMLElement|null =
-        submitContainer!.querySelector('#submitOverlay');
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    assertStyle(
-        submitOverlay, 'pointer-events', 'none',
-        'Submit button should be disabled');
+
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
         'Submit button cursor should be not-allowed');
+
+    assertStyle(
+        submitContainer, 'pointer-events', 'auto',
+        'Submit container should still have pointer-events on,\
+            even when disabled.');
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
   });
@@ -551,15 +570,15 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
-    const submitOverlay: HTMLElement|null =
-        submitContainer!.querySelector('#submitOverlay');
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    assertStyle(
-        submitOverlay, 'pointer-events', 'none',
-        'Submit button should be disabled');
+
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
         'Submit button cursor should be not-allowed');
+    assertStyle(
+        submitContainer, 'pointer-events', 'auto',
+        'Submit container should still have pointer-events on,\
+            even when disabled.');
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
   });
@@ -579,15 +598,15 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
-    const submitOverlay: HTMLElement|null =
-        submitContainer!.querySelector('#submitOverlay');
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    assertStyle(
-        submitOverlay, 'pointer-events', 'none',
-        'Submit button should be disabled');
+
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
         'Submit button cursor should be not-allowed');
+    assertStyle(
+        submitContainer, 'pointer-events', 'auto',
+        'Submit container should still have pointer-events on,\
+            even when disabled.');
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
   });
@@ -610,15 +629,15 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
     const submitContainer: HTMLElement|null = getSubmitContainer();
-    const submitOverlay: HTMLElement|null =
-        submitContainer!.querySelector('#submitOverlay');
     assertTrue(!!submitContainer, 'Submit container button should exist');
-    assertStyle(
-        submitOverlay, 'pointer-events', 'none',
-        'Submit button should be disabled');
+
     assertStyle(
         submitContainer, 'cursor', 'not-allowed',
         'Submit button cursor should be not-allowed');
+    assertStyle(
+        submitContainer, 'pointer-events', 'auto',
+        'Submit container should still have pointer-events on,\
+            even when disabled.');
 
     assertEquals(0, composebox.getRemainingFilesToUpload().size);
   });
@@ -660,20 +679,20 @@ suite('ContextualTasksComposeboxTest', () => {
 
         const submitButton: HTMLButtonElement|null = getSubmitButton();
         const submitContainer: HTMLElement|null = getSubmitContainer();
-        const submitOverlay: HTMLElement|null =
-            submitContainer!.querySelector('#submitOverlay');
         assertTrue(!!submitButton, 'Submit button should exist');
 
         // There are no more deletable files, so submit should be disabled.
         assertTrue(submitButton?.disabled, 'Button should be disabled');
 
         assertTrue(!!submitContainer, 'Submit container button should exist');
-        assertStyle(
-            submitOverlay, 'pointer-events', 'none',
-            'Submit button should be disabled');
+
         assertStyle(
             submitContainer, 'cursor', 'not-allowed',
             'Submit button cursor should be not-allowed');
+        assertStyle(
+            submitContainer, 'pointer-events', 'auto',
+            'Submit container should still have pointer-events on,\
+                even when disabled.');
 
         // Reupload 2nd deleted file.
         await uploadFileAndVerify(
@@ -705,12 +724,14 @@ suite('ContextualTasksComposeboxTest', () => {
         assertTrue(submitButton?.disabled, 'Button should be disabled');
 
         assertTrue(!!submitContainer, 'Submit container button should exist');
-        assertStyle(
-            submitOverlay, 'pointer-events', 'none',
-            'Submit button should be disabled');
+
         assertStyle(
             submitContainer, 'cursor', 'not-allowed',
             'Submit button cursor should be not-allowed');
+        assertStyle(
+            submitContainer, 'pointer-events', 'auto',
+            'Submit container should still have pointer-events on,\
+                even when disabled.');
         assertEquals(2, composebox.getRemainingFilesToUpload().size);
       });
 
@@ -922,5 +943,59 @@ suite('ContextualTasksComposeboxTest', () => {
   test('ExpandAnimationState', function() {
     contextualTasksApp.$.composebox.startExpandAnimation();
     assertEquals('expanding', composebox.animationState);
+  });
+
+  test('Composebox submits by pressing enter, then clears input', async () => {
+    await uploadFileAndVerify(
+        FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+    // Other processing state should result in not ready to submit.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kProcessingSuggestSignalsReady,
+        /*error_type=*/ null,
+    );
+
+    await microtasksFinished();
+    await composebox.$.context.updateComplete;
+    await composebox.updateComplete;
+
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 File should be uploading');
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Files should not be finished uploading');
+
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kUploadSuccessful,
+        /*error_type=*/ null,
+    );
+
+    await microtasksFinished();
+    await composebox.$.context.updateComplete;
+
+    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    assertTrue(!!submitButton, 'Submit button should exist');
+    assertFalse(submitButton?.disabled, 'Submit button should not be disabled');
+
+    const submitContainer: HTMLElement|null = getSubmitContainer();
+    assertTrue(!!submitContainer, 'Submit container button should exist');
+
+    assertStyle(
+        submitContainer, 'cursor', 'pointer',
+        'Submit button cursor should be pointer');
+    assertTrue(!!submitContainer, 'Submit container button should exist');
+
+    pressEnter(submitContainer);
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(
+        composebox.animationState, GlowAnimationState.SUBMITTING,
+        'Query is submitted via submitQuery_()');
+
+    assertEquals(0, composebox.$.context.files_.size);
   });
 });

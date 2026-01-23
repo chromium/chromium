@@ -975,7 +975,7 @@ suite('NewTabPageComposeboxTest', () => {
         }));
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    composeboxElement.$.submitOverlay.click();
+    composeboxElement.$.submitContainer.click();
     await microtasksFinished();
 
     // Assert call occurs.
@@ -999,7 +999,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(submitButton.hasAttribute('disabled'));
 
     // Act.
-    composeboxElement.$.submitOverlay.click();
+    composeboxElement.$.submitContainer.click();
     await microtasksFinished();
 
     // Assert no calls were made.
@@ -1722,16 +1722,25 @@ suite('NewTabPageComposeboxTest', () => {
     createComposeboxElement();
 
     assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
-    const token = {low: BigInt(1), high: BigInt(2)};
     await uploadFileAndVerify(
-        token, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+        FAKE_TOKEN_STRING, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        FileUploadStatus.kUploadSuccessful,
+        /*error_type=*/ null,
+    );
+    await microtasksFinished();
 
-    composeboxElement.$.submitOverlay.click();
+    composeboxElement.$.submitContainer.click();
     await microtasksFinished();
 
     // Assert call occurs.
-    assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
-    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+    assertEquals(
+        searchboxHandler.getCallCount('submitQuery'), 1,
+        'submitQuery count should be 1');
+    assertEquals(
+        searchboxHandler.getCallCount('openAutocompleteMatch'), 0,
+        'openAutocompleteMatch count should be 0');
   });
 
   test('composebox does not show when image is present', async () => {
@@ -2455,7 +2464,7 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     // Submit query.
-    collapsibleBox.$.submitOverlay.click();
+    collapsibleBox.$.submitContainer.click();
     await collapsibleBox.updateComplete;
     await microtasksFinished();
 
