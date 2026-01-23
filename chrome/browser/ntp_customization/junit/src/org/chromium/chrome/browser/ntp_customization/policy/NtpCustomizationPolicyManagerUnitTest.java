@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.ntp_customization.policy;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.graphics.Color;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +25,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -38,7 +42,6 @@ public class NtpCustomizationPolicyManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private Profile mOriginalProfile;
     @Mock private PrefService mPrefService;
-    @Mock private NtpCustomizationConfigManager mConfigManager;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Captor private ArgumentCaptor<PrefChangeRegistrar.PrefObserver> mPrefObserverCaptor;
 
@@ -48,7 +51,6 @@ public class NtpCustomizationPolicyManagerUnitTest {
     public void setUp() {
         when(mProfile.getOriginalProfile()).thenReturn(mOriginalProfile);
         UserPrefs.setPrefServiceForTesting(mPrefService);
-        NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
         NtpCustomizationPolicyManager.setPrefChangeRegistrarForTesting(mPrefChangeRegistrar);
 
         mManager = new NtpCustomizationPolicyManager();
@@ -113,6 +115,67 @@ public class NtpCustomizationPolicyManagerUnitTest {
 
         when(mPrefService.isManagedPreference(Pref.NTP_CUSTOM_BACKGROUND_DICT)).thenReturn(false);
         assertTrue(mManager.getNtpCustomBackgroundEnabledPolicyValue());
+    }
+
+    @Test
+    public void testOnDeferredStartup_Disabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_ENABLED, false);
+        NtpCustomizationPolicyManager manager = new NtpCustomizationPolicyManager();
+        assertFalse(manager.isNtpCustomBackgroundEnabled());
+
+        // Test case for background image type.
+        var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, Color.BLUE);
+
+        manager.onDeferredStartup();
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR));
+
+        // Test case for background image type.
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                NtpBackgroundImageType.CHROME_COLOR);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID,
+                NtpThemeColorId.NTP_COLORS_BLUE);
+
+        manager.onDeferredStartup();
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID));
+    }
+
+    @Test
+    public void testOnDeferredStartup_Enabled() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_ENABLED, true);
+        NtpCustomizationPolicyManager manager = new NtpCustomizationPolicyManager();
+        assertTrue(manager.isNtpCustomBackgroundEnabled());
+
+        // Set some keys that should NOT be cleared.
+        var sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                NtpBackgroundImageType.IMAGE_FROM_DISK);
+
+        manager.onDeferredStartup();
+        assertEquals(
+                NtpBackgroundImageType.IMAGE_FROM_DISK,
+                sharedPreferencesManager.readInt(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
+                        NtpBackgroundImageType.DEFAULT));
     }
 
     @Test

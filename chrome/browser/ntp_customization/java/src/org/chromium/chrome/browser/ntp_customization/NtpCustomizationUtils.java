@@ -15,11 +15,15 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
@@ -914,6 +918,39 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
+    }
+
+    /** Removes the NTP's background image related keys from the SharedPreference */
+    static void resetCustomizedImage() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
+        deleteBackgroundImageFile(createBackgroundImageFile());
+        deleteBackgroundImageFile(createDailyRefreshBackgroundImageFile());
+    }
+
+    /** Removes all NTP custom background related data. */
+    public static void resetNtpCustomBackgroundData() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE)) {
+            // If the no data has been cached or has been cleaned up before, exits here.
+            return;
+        }
+
+        @NtpBackgroundImageType
+        int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        removeNtpBackgroundImageTypeFromSharedPreference();
+        switch (type) {
+            case CHROME_COLOR -> resetCustomizedColors();
+            case IMAGE_FROM_DISK, THEME_COLLECTION -> resetCustomizedImage();
+        }
     }
 
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */

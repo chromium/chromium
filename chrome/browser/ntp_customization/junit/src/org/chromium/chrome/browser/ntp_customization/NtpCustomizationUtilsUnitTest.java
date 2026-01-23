@@ -24,7 +24,16 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.content.Context;
@@ -333,6 +342,77 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    public void testResetCustomizedImage() {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+
+        // Setup data.
+        sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR, Color.RED);
+        sharedPreferencesManager.writeInt(
+                NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH, Color.BLUE);
+        sharedPreferencesManager.writeString(NTP_CUSTOMIZATION_BACKGROUND_INFO, "background_info");
+        sharedPreferencesManager.writeString(
+                NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH, "daily_refresh_info");
+        sharedPreferencesManager.writeString(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO, "portrait");
+        sharedPreferencesManager.writeString(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO, "landscape");
+        sharedPreferencesManager.writeString(
+                NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH, "daily_refresh_portrait");
+        sharedPreferencesManager.writeString(
+                NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH, "daily_refresh_landscape");
+
+        // Create background image files.
+        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        File imageFile = NtpCustomizationUtils.createBackgroundImageFile();
+        File dailyRefreshImageFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, imageFile);
+        NtpCustomizationUtils.saveBitmapImageToFile(bitmap, dailyRefreshImageFile);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+        assertTrue(imageFile.exists());
+        assertTrue(dailyRefreshImageFile.exists());
+
+        // Call reset.
+        NtpCustomizationUtils.resetCustomizedImage();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        // Verify all keys are removed.
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH));
+        assertFalse(sharedPreferencesManager.contains(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH));
+
+        assertFalse(imageFile.exists());
+        assertFalse(dailyRefreshImageFile.exists());
+    }
+
+    @Test
+    public void testResetNtpCustomBackgroundData() {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE, IMAGE_FROM_DISK);
+
+        NtpCustomizationUtils.resetNtpCustomBackgroundData();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
+        assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE));
+    }
+
+    @Test
     public void testUpdateCustomizedPrimaryColor() {
         @ColorInt int color = Color.BLUE;
 
@@ -369,7 +449,7 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
                 NtpBackgroundImageType.CHROME_COLOR);
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR);
 
         assertNull(
                 NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(

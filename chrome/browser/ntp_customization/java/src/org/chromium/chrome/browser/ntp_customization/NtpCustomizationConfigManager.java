@@ -540,6 +540,7 @@ public class NtpCustomizationConfigManager {
     private void cleanupBackgroundImage() {
         mBackgroundImageInfo = null;
         mOriginalBitmap = null;
+        NtpCustomizationUtils.resetCustomizedImage();
     }
 
     private void cleanupChromeColors() {

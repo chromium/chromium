@@ -12,6 +12,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -76,6 +77,17 @@ public class NtpCustomizationPolicyManager {
         mPrefChangeRegistrar.addObserver(Pref.NTP_CUSTOM_BACKGROUND_DICT, this::onPreferenceChange);
         // Syncs with the latest policy value.
         onPreferenceChange();
+    }
+
+    /**
+     * Called on Activity's onDeferredStartup() to clean up previously cached the NTP's custom
+     * background data if policy is disabled.
+     */
+    public void onDeferredStartup() {
+        if (mIsNtpCustomBackgroundEnabled) return;
+
+        // Removes all NTP custom background related info if disabled by policy.
+        NtpCustomizationUtils.resetNtpCustomBackgroundData();
     }
 
     /** Returns whether New Tab Page customization is allowed by enterprise policy. */
