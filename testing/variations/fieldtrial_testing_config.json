@@ -247,7 +247,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AccessibilityExtendedSelection"
+                        "AccessibilityExtendedSelection",
+                        "AccessibilitySetSelectableOnAllNodesWithText"
                     ]
                 }
             ]
@@ -460,21 +461,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AccessibilitySerializationSizeMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AccessibilitySetSelectableOnAllNodesWithText": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilitySetSelectableOnAllNodesWithText"
                     ]
                 }
             ]
