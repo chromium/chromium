@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -241,9 +241,10 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   auto* browser_window_interface = webui::GetBrowserWindowInterface(
       web_ui_controller_->GetWebUIWebContents());
   if (browser_window_interface) {
-    auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-    if (tab_strip_model) {
-      tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
+    TabListInterface* tab_list =
+        TabListInterface::From(browser_window_interface);
+    if (tab_list) {
+      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
       if (active_tab) {
         active_tab_handle = active_tab->GetHandle();
       }
@@ -930,7 +931,7 @@ ContextualTasksComposeboxHandler::GetLensSearchController() const {
   }
 
   if (auto* controller = LensSearchController::FromTabWebContents(
-          browser->GetTabStripModel()->GetActiveWebContents());
+          TabListInterface::From(browser)->GetActiveTab()->GetContents());
       controller) {
     return controller;
   }
@@ -949,11 +950,11 @@ ContextualTasksComposeboxHandler::GetActiveTabContextId() {
   if (!browser_window_interface) {
     return std::nullopt;
   }
-  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  if (!tab_strip_model) {
+  TabListInterface* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
     return std::nullopt;
   }
-  auto* active_tab = tab_strip_model->GetActiveTab();
+  auto* active_tab = tab_list->GetActiveTab();
   if (!active_tab) {
     return std::nullopt;
   }

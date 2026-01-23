@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -78,7 +79,8 @@ class LocalContextualSearchboxHandlerTestHarness
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL(url::kAboutBlankURL));
-    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    web_contents_ =
+        TabListInterface::From(browser())->GetActiveTab()->GetContents();
   }
 
  protected:
@@ -236,7 +238,7 @@ class ContextualTasksComposeboxHandlerTest
 
     // Setup MockTabContextualizationController
     tabs::TabInterface* active_tab =
-        browser()->tab_strip_model()->GetActiveTab();
+        TabListInterface::From(browser())->GetActiveTab();
     // Clear existing controller to avoid UserData collision
     active_tab->GetTabFeatures()->SetTabContextualizationControllerForTesting(
         nullptr);
@@ -1049,7 +1051,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
   // We need to mock the tab handle resolution. Since we can't easily mock
   // TabHandle::Get() for arbitrary IDs in this test harness without more setup,
   // we will use the active tab's ID which IS set up.
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
   int32_t active_tab_id = active_tab->GetHandle().raw_value();
 
   // Reset and try again with active tab ID.
@@ -1120,7 +1123,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
                   callback) { std::move(callback).Run(std::move(context)); });
 
   // 1. Add delayed tab context.
-  tabs::TabInterface* active_tab = browser()->tab_strip_model()->GetActiveTab();
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
   int32_t active_tab_id = active_tab->GetHandle().raw_value();
   std::optional<base::UnguessableToken> token_opt;
   base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>

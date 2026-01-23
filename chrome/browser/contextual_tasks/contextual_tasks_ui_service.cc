@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -752,10 +753,10 @@ void ContextualTasksUiService::OnTaskChanged(
       new_task_id = task.GetTaskId();
     }
 
-    TabStripModel* tab_strip_model =
-        browser_window_interface->GetTabStripModel();
+    TabListInterface* tab_list =
+        TabListInterface::From(browser_window_interface);
     content::WebContents* active_contents =
-        tab_strip_model->GetActiveWebContents();
+        tab_list->GetActiveTab()->GetContents();
     SessionID active_id = SessionTabHelper::IdForTab(active_contents);
 
     if (kTaskScopedSidePanel.Get()) {
@@ -985,24 +986,24 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
   // Find the tab on the tab strip by the given tab ID. If found, switch to it.
   // Chances are that the tab might have navigated by now, hence check the URL
   // as well.
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
     tabs::TabInterface* tab_interface =
         tabs::TabInterface::GetFromContents(web_contents);
     if (tab_interface && tab_interface->GetHandle().raw_value() == tab_id &&
         web_contents->GetLastCommittedURL() == url) {
-      tab_strip_model->ActivateTabAt(i);
+      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
       return;
     }
   }
 
   // The tab with the given ID and URL wasn't found. Next, try finding a tab
   // that matches the URL. If found, switch to it.
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
     if (web_contents->GetLastCommittedURL() == url) {
-      tab_strip_model->ActivateTabAt(i);
+      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
       return;
     }
   }

@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -32,11 +32,10 @@ TabStripContextDecorator::GetOpenTabUrls() {
         if (browser->GetProfile() != profile) {
           return true;
         }
-        const TabStripModel* const tab_strip_model =
-            browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
+        TabListInterface* const tab_list = TabListInterface::From(browser);
+        for (int i = 0; i < tab_list->GetTabCount(); ++i) {
           content::WebContents* web_contents =
-              tab_strip_model->GetWebContentsAt(i);
+              tab_list->GetTab(i)->GetContents();
           if (web_contents) {
             open_tabs.push_back({web_contents->GetLastCommittedURL(),
                                  web_contents->GetTitle()});
