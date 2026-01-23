@@ -166,6 +166,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags,
       Delegate* delegate = nullptr);
 
+  // Used for WebGPU-specific CanvasResourceProviders. Not for usage with
+  // Canvas2D.
   static std::unique_ptr<CanvasResourceProviderSharedImageNon2D>
   CreateWebGPUImageProvider(
       gfx::Size size,
