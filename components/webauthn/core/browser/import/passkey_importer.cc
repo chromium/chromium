@@ -67,8 +67,13 @@ void PasskeyImporter::ProcessPasskeys(
       continue;
     }
 
-    if (passkey_model_->GetPasskeyByUserId(passkey.rp_id(), passkey.user_id())
-            .has_value()) {
+    std::vector<sync_pb::WebauthnCredentialSpecifics> existing_passkeys =
+        passkey_model_->GetPasskeys(
+            passkey.rp_id(), PasskeyModel::ShadowedCredentials::kExclude);
+    if (std::ranges::any_of(
+            existing_passkeys, [&](const auto& existing_passkey) {
+              return existing_passkey.user_id() == passkey.user_id();
+            })) {
       result.conflicts.push_back(
           SpecificsToImportedPasskeyInfo(passkey, status));
       conflicting_passkeys_.push_back(std::move(passkey));

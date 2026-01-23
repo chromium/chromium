@@ -310,30 +310,6 @@ PasskeySyncBridge::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
   return std::nullopt;
 }
 
-std::optional<sync_pb::WebauthnCredentialSpecifics>
-PasskeySyncBridge::GetPasskeyByUserId(const std::string& rp_id,
-                                      const std::string& user_id) const {
-  // Even if a passkey with a user ID exists, we must not return it if it
-  // has been shadowed. To do that, first collect all passkeys for the RP ID,
-  // then filter shadowed ones, and see if one with the matching credential ID
-  // remains.
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  for (const auto& sync_id_and_passkey : data_) {
-    const sync_pb::WebauthnCredentialSpecifics& passkey =
-        sync_id_and_passkey.second;
-    if (passkey.rp_id() == rp_id) {
-      passkeys.emplace_back(passkey);
-    }
-  }
-  passkeys = passkey_model_utils::FilterShadowedCredentials(passkeys);
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
-    if (passkey.user_id() == user_id) {
-      return passkey;
-    }
-  }
-  return std::nullopt;
-}
-
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
                                       const base::Location& location) {
   // Find the credential with the given |credential_id|.
