@@ -712,7 +712,25 @@ TEST_F(HomeToOverviewNudgeControllerTest,
   }
 }
 
+// Home to Overview Nudge should not be shown when shelf controls are enabled
+// after user login. Only Spoken Feedback is synced between OOBE and new user
+// profile.
+TEST_F(HomeToOverviewNudgeControllerTest, DisableNudgesForShelfControls) {
+  // Enabling accessibility shelf controls should disable the nudge.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kAccessibilitySpokenFeedbackEnabled, true);
+
+  // Enters tablet mode and sets up two minimized windows. This should not
+  // trigger the nudge show timer because shelf controls are on.
+  TabletModeControllerTestApi().EnterTabletMode();
+  SimulateNewUserFirstLogin("test@gmail.com");
+  ScopedWindowList windows = CreateAndMinimizeWindows(2);
+
+  EXPECT_FALSE(GetNudgeController());
+}
+
 // Home to Overview Nudge should be hidden when shelf controls are enabled.
+// See ShelfConfig::ShelfControlsForcedShownForAccessibility.
 TEST_P(HomeToOverviewNudgeControllerTestWithA11yPrefs,
        HideNudgesForShelfControls) {
   SCOPED_TRACE(testing::Message() << "Pref=" << GetParam());
@@ -735,22 +753,5 @@ TEST_P(HomeToOverviewNudgeControllerTestWithA11yPrefs,
       ->GetLastActiveUserPrefService()
       ->SetBoolean(GetParam(), true);
   EXPECT_FALSE(GetNudgeController()->nudge_for_testing());
-}
-
-// Home to Overview Nudge should not be shown when shelf controls are enabled.
-TEST_P(HomeToOverviewNudgeControllerTestWithA11yPrefs,
-       DisableNudgesForShelfControls) {
-  SCOPED_TRACE(testing::Message() << "Pref=" << GetParam());
-  // Enabling accessibility shelf controls should disable the nudge.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      GetParam(), true);
-
-  // Enters tablet mode and sets up two minimized windows. This should not
-  // trigger the nudge show timer because shelf controls are on.
-  TabletModeControllerTestApi().EnterTabletMode();
-  SimulateNewUserFirstLogin("test@gmail.com");
-  ScopedWindowList windows = CreateAndMinimizeWindows(2);
-
-  EXPECT_FALSE(GetNudgeController());
 }
 }  // namespace ash
