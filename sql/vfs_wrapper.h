@@ -15,7 +15,7 @@
 
 namespace sql {
 
-static constexpr char kVfsWrapperName[] = "VFSWrapper";
+inline constexpr char kVfsWrapperName[] = "VFSWrapper";
 
 // Wraps the default VFS and to add on some functionality. The new wrapper
 // becomes the default VFS. This should only be called from
