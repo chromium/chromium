@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -80,6 +81,10 @@ class BrowserUpdaterClient
   // Gets the current enterprise policies for the updater as a JSON blob.
   void GetPoliciesJson(base::OnceCallback<void(const std::string&)> callback);
 
+  // Retrieves metadata about applications managed by the updater.
+  void GetAppStates(
+      base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback);
+
   // Returns the browser's app ID. App IDs are case-insensitive and it may not
   // be in the same case used elsewhere in the browser.
   static std::string GetAppId();
@@ -117,6 +122,9 @@ class BrowserUpdaterClient
   void GetPoliciesJsonCompleted(
       base::OnceCallback<void(const std::string&)> callback,
       const std::string& policies);
+  void GetAppStatesCompleted(
+      base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback,
+      const std::vector<mojom::AppState>& app_states);
 
   template <UpdaterScope scope>
   static scoped_refptr<BrowserUpdaterClient> GetClient(

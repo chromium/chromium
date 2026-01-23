@@ -5,6 +5,7 @@
 #include "chrome/browser/updater/updater.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -73,6 +74,20 @@ void GetUserPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
+}
+
+void GetSystemUpdaterAppStates(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::vector<mojom::AppState>{}));
+}
+
+void GetUserUpdaterAppStates(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::vector<mojom::AppState>{}));
 }
 
 }  // namespace updater

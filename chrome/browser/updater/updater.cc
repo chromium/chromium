@@ -5,6 +5,7 @@
 #include "chrome/browser/updater/updater.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +29,12 @@ void GetUpdaterState(
 void GetPoliciesJson(UpdaterScope scope,
                      base::OnceCallback<void(const std::string&)> callback) {
   BrowserUpdaterClient::Create(scope)->GetPoliciesJson(std::move(callback));
+}
+
+void GetAppStates(
+    UpdaterScope scope,
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+  BrowserUpdaterClient::Create(scope)->GetAppStates(std::move(callback));
 }
 
 }  // namespace
@@ -62,7 +69,8 @@ void GetSystemUpdaterState(
 #if BUILDFLAG(IS_LINUX)
   // There is no mechanism to support communication across the user/root
   // boundary for Chromium Updater on Linux.
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mojom::UpdaterState{}));
 #else
   GetUpdaterState(UpdaterScope::kSystem, std::move(callback));
 #endif
@@ -78,7 +86,8 @@ void GetSystemPoliciesJson(
 #if BUILDFLAG(IS_LINUX)
   // There is no mechanism to support communication across the user/root
   // boundary for Chromium Updater on Linux.
-  std::move(callback).Run({});
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::string{}));
 #else
   GetPoliciesJson(UpdaterScope::kSystem, std::move(callback));
 #endif
@@ -87,6 +96,24 @@ void GetSystemPoliciesJson(
 void GetUserPoliciesJson(
     base::OnceCallback<void(const std::string&)> callback) {
   GetPoliciesJson(UpdaterScope::kUser, std::move(callback));
+}
+
+void GetSystemUpdaterAppStates(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+#if BUILDFLAG(IS_LINUX)
+  // There is no mechanism to support communication across the user/root
+  // boundary for Chromium Updater on Linux.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::vector<mojom::AppState>{}));
+#else
+  GetAppStates(UpdaterScope::kSystem, std::move(callback));
+#endif
+}
+
+void GetUserUpdaterAppStates(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+  GetAppStates(UpdaterScope::kUser, std::move(callback));
 }
 
 }  // namespace updater

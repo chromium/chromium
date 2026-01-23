@@ -175,6 +175,13 @@ void BrowserUpdaterClient::GetPoliciesJson(
                      std::move(callback)));
 }
 
+void BrowserUpdaterClient::GetAppStates(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_service_->GetAppStates(base::BindOnce(
+      &BrowserUpdaterClient::GetAppStatesCompleted, this, std::move(callback)));
+}
+
 void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<UpdateService::AppState>& apps) {
@@ -197,13 +204,25 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
 void BrowserUpdaterClient::GetUpdaterStateCompleted(
     base::OnceCallback<void(const UpdateService::UpdaterState&)> callback,
     const UpdateService::UpdaterState& updater_state) {
-  std::move(callback).Run(updater_state);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), updater_state));
 }
 
 void BrowserUpdaterClient::GetPoliciesJsonCompleted(
     base::OnceCallback<void(const std::string&)> callback,
     const std::string& policies) {
-  std::move(callback).Run(policies);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), policies));
+}
+
+void BrowserUpdaterClient::GetAppStatesCompleted(
+    base::OnceCallback<void(const std::vector<mojom::AppState>&)> callback,
+    const std::vector<mojom::AppState>& app_states) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), app_states));
 }
 
 // User and System BrowserUpdaterClients must be kept separate - the template
