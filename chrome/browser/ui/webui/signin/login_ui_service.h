@@ -86,16 +86,9 @@ class LoginUIService : public KeyedService {
   // option chosen by the user in the confirmation UI.
   void SyncConfirmationUIClosed(SyncConfirmationUIClosedResult result);
 
-  // If `error.message()` is not empty, displays login error message:
-  // - in the Modal Signin Error dialog if `browser` is not null, otherwise
-  // - in a dialog shown on top of the profile picker if `from_profile_picker`
-  //   is true.
-  // TODO(crbug.com/381231566): `from_profile_picker` is not used anymore and is
-  // now dead code, it should be removed in upcoming changes along with
-  // associated code that sets it.
-  void DisplayLoginResult(Browser* browser,
-                          const SigninUIError& error,
-                          bool from_profile_picker);
+  // If `error.message()` is not empty, displays login error message in the
+  // Modal Signin Error dialog if `browser` is not null.
+  void DisplayLoginResult(Browser* browser, const SigninUIError& error);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Gets the last error set through |DisplayLoginResult|.

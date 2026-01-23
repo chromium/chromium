@@ -31,7 +31,7 @@ void ShowLoginErrorForBrowser(const SigninUIError& error, Browser* browser) {
     return;
   }
   LoginUIServiceFactory::GetForProfile(browser->profile())
-      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
+      ->DisplayLoginResult(browser, error);
 }
 
 }  // namespace

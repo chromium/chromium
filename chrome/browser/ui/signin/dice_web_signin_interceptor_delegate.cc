@@ -314,7 +314,7 @@ void DiceWebSigninInterceptorDelegate::ShowSigninError(
 
   LoginUIServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
+      ->DisplayLoginResult(browser, error);
 }
 
 // static

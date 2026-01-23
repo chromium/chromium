@@ -56,8 +56,7 @@ void LoginUIService::SyncConfirmationUIClosed(
 }
 
 void LoginUIService::DisplayLoginResult(Browser* browser,
-                                        const SigninUIError& error,
-                                        bool from_profile_picker) {
+                                        const SigninUIError& error) {
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();

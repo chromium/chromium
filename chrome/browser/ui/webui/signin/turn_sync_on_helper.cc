@@ -143,7 +143,7 @@ void TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     return;
   }
   LoginUIServiceFactory::GetForProfile(browser->profile())
-      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
+      ->DisplayLoginResult(browser, error);
 }
 
 TurnSyncOnHelper::TurnSyncOnHelper(
