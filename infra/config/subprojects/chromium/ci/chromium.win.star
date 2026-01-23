@@ -708,13 +708,6 @@ ci.thin_tester(
             "retry_only_failed_tests",
         ],
         per_test_modifications = {
-            "browser_tests": targets.mixin(
-                swarming = targets.swarming(
-                    # This is for slow test execution that often becomes a
-                    # critical path of swarming jobs. crbug.com/868114
-                    shards = 15,
-                ),
-            ),
             "browser_tests_no_field_trial": targets.remove(
                 reason = "Disabled on similar Windows testers due to crbug/40630866.",
             ),

@@ -1410,11 +1410,6 @@ ci.builder(
                     shards = 6,
                 ),
             ),
-            "browser_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 15,
-                ),
-            ),
             "browser_tests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",
             ),
