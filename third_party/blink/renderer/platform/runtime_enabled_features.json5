@@ -5801,6 +5801,8 @@
     {
       // https://webaudio.github.io/web-audio-api/#dom-baseaudiocontext-renderquantumsize
       name: "WebAudioConfigurableRenderQuantum",
+      origin_trial_feature_name: "WebAudioConfigurableRenderQuantum",
+      status: "experimental",
     },
     // WebAuth is disabled on Android versions prior to N (7.0) due to lack of
     // supporting APIs, see runtime_features.cc.

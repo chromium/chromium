@@ -234,6 +234,7 @@ CONSOLE MESSAGE: [GLOBAL OBJECT]
 CONSOLE MESSAGE:     attribute globalThis
 CONSOLE MESSAGE:     getter currentFrame
 CONSOLE MESSAGE:     getter currentTime
+CONSOLE MESSAGE:     getter renderQuantumSize
 CONSOLE MESSAGE:     getter sampleRate
 CONSOLE MESSAGE:     method gc
 CONSOLE MESSAGE:     method registerProcessor

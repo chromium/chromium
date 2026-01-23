@@ -369,6 +369,7 @@ interface BaseAudioContext : EventTarget
     getter destination
     getter listener
     getter onstatechange
+    getter renderQuantumSize
     getter sampleRate
     getter state
     method constructor
