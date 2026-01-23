@@ -1708,9 +1708,6 @@ class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     PRE_ChromeSignedInTransitionToUnoEnabled) {
-  Profile* profile = browser()->profile();
-  profile->GetPrefs()->ClearPref(
-      prefs::kCookieClearOnExitMigrationNoticeComplete);
   signin::AccountAvailabilityOptionsBuilder builder;
   AccountInfo account_info = signin::MakeAccountAvailable(
       identity_manager(),

@@ -43,7 +43,6 @@ class WebSigninTrackerTest : public ::testing::Test {
 #endif
         std::make_unique<MirrorAccountReconcilorDelegate>(
             identity_test_env_.identity_manager()));
-    account_reconcilor_->RegisterProfilePrefs(prefs_.registry());
     account_reconcilor_->Initialize(
         /*start_reconcile_if_tokens_available=*/false);
   }

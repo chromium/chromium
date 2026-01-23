@@ -17,19 +17,6 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
-// Whether the "clear on exit" migration is complete.
-// If this preference is not true, then the user needs to be migrated.
-// If a user has set clear cookies on exit prior to the activation of explicit
-// signin which changes the behavior of signed in users, they will need to do a
-// migration. The user can be migrated in various ways:
-// - the first time they launch Chrome, if they don't use the cookie setting
-// - by changing the value of the setting when it has the new behavior
-// - by seeing a notice dialog if they close the browser while being in a state
-//   where the new cookie setting behavior makes a difference (signed in with
-//   explicit signin and non-syncing).
-const char kCookieClearOnExitMigrationNoticeComplete[] =
-    "signin.cookie_clear_on_exit_migration_notice_complete";
-
 // A hash of the GAIA accounts present in the content area. Order does not
 // affect the hash, but signed in/out status will. Stored as the Base64 string.
 const char kGaiaCookieHash[] = "gaia_cookie.hash";

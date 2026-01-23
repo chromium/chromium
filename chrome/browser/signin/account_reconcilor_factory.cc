@@ -136,11 +136,6 @@ AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
   return reconcilor;
 }
 
-void AccountReconcilorFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  AccountReconcilor::RegisterProfilePrefs(registry);
-}
-
 // static
 std::unique_ptr<signin::AccountReconcilorDelegate>
 AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {

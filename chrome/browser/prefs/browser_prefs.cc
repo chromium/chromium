@@ -958,11 +958,15 @@ constexpr char kDeviceName[] = "device_name";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-// Deprecated 01/2026
+// Deprecated 01/2026.
 constexpr char kDSEGeolocationSettingDeprecated[] = "dse_geolocation_setting";
 constexpr char kDSEPermissionsSettings[] = "dse_permissions_settings";
 constexpr char kDSEWasDisabledByPolicy[] = "dse_was_disabled_by_policy";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 01/2026.
+constexpr char kCookieClearOnExitMigrationNoticeComplete[] =
+    "signin.cookie_clear_on_exit_migration_notice_complete";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1333,6 +1337,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kDSEPermissionsSettings);
   registry->RegisterBooleanPref(kDSEWasDisabledByPolicy, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 01/2026.
+  registry->RegisterBooleanPref(kCookieClearOnExitMigrationNoticeComplete,
+                                false);
 }
 
 }  // namespace
@@ -2579,6 +2587,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kDSEPermissionsSettings);
   profile_prefs->ClearPref(kDSEWasDisabledByPolicy);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Added 01/2026.
+  profile_prefs->ClearPref(kCookieClearOnExitMigrationNoticeComplete);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -1654,10 +1654,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(account_storage_status.user_selectable_type_set.HasAll(
       {syncer::UserSelectableType::kAutofill,
        syncer::UserSelectableType::kPasswords}));
-
-  // Cookie migration is done.
-  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
 class DiceBrowserTestWithExplicitSignin : public DiceBrowserTest {

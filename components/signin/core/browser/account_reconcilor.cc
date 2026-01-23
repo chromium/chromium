@@ -89,18 +89,6 @@ bool IsAnyAccountInErrorState(
   return false;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// If Uno is enabled and there is no "clear on exit" setting affecting Gaia,
-// consider the migration done.
-void MaybeMigrateClearOnExit(SigninClient& client,
-                             signin::IdentityManager& identity_manager) {
-  PrefService& prefs = *client.GetPrefs();
-  if (!client.AreSigninCookiesDeletedOnExit()) {
-    prefs.SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
-  }
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 }  // namespace
 
 // static
@@ -171,14 +159,6 @@ AccountReconcilor::~AccountReconcilor() {
   DCHECK(!registered_with_identity_manager_);
 }
 
-// static
-void AccountReconcilor::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  registry->RegisterBooleanPref(
-      prefs::kCookieClearOnExitMigrationNoticeComplete, false);
-#endif
-}
-
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
@@ -200,10 +180,6 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
   timeout_ = delegate_->GetReconcileTimeout();
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
     SetState(AccountReconcilorState::kScheduled);
@@ -336,11 +312,6 @@ void AccountReconcilor::OnContentSettingChanged(
   if (!content_type_set.Contains(ContentSettingsType::COOKIES)) {
     return;
   }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Perform the "clear on exit" migration if applicable.
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // If this does not affect GAIA, just ignore. The secondary pattern is not
   // needed.

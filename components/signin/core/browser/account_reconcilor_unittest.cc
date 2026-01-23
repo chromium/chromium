@@ -382,7 +382,6 @@ AccountReconcilorTest::AccountReconcilorTest()
       identity_test_env_(/*test_url_loader_factory=*/nullptr,
                          &pref_service_,
                          &test_signin_client_) {
-  AccountReconcilor::RegisterProfilePrefs(pref_service_.registry());
   signin::SetListAccountsResponseHttpNotFound(&test_url_loader_factory_);
 
   // The reconcilor should not be built before the test can set the account
@@ -1474,86 +1473,6 @@ TEST_F(AccountReconcilorDiceTest, DeleteCookieForSyncingUser) {
   EXPECT_FALSE(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationExplicitSignin) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Explicit signin is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest,
-       CookieSettingMigrationExplicitSigninWithClearOnExit) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-  test_signin_client()->set_are_signin_cookies_deleted_on_exit(true);
-
-  // Explicit signin is not auto-migrated when the setting exists.
-  content_settings::Observer* reconcilor = GetMockReconcilor();
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // Changing cookie settings should trigger the migration.
-  test_signin_client()->set_are_signin_cookies_deleted_on_exit(false);
-  reconcilor->OnContentSettingChanged(
-      /*primary_pattern=*/ContentSettingsPattern(),
-      /*secondary_pattern=*/ContentSettingsPattern(),
-      ContentSettingsTypeSet(ContentSettingsType::COOKIES));
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationSignedOut) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  ASSERT_FALSE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSignin));
-
-  // Signed out state is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationSync) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSync);
-  ASSERT_TRUE(pref_service()->GetBoolean(prefs::kExplicitBrowserSignin));
-
-  // Sync is auto-migrated.
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-
-  // It is auto-migrated when clearing the primary account (and turning sync
-  // off).
-  identity_test_env()->ClearPrimaryAccount();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-}
-
-TEST_F(AccountReconcilorDiceTest, CookieSettingMigrationExplicitPref) {
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
-  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
-      kFakeEmail, signin::ConsentLevel::kSignin);
-
-  GetMockReconcilor();
-  EXPECT_TRUE(pref_service()->GetBoolean(
-      prefs::kCookieClearOnExitMigrationNoticeComplete));
 }
 
 TEST_F(AccountReconcilorDiceTest, PendingStateThenClearPrimaryAccount) {

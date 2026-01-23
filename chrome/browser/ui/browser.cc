@@ -123,7 +123,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
-#include "chrome/browser/ui/signin/cookie_clear_on_exit_migration_notice.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -367,17 +366,6 @@ std::pair<bool, bool> IsLastWindow(const Browser& browser) {
       });
 
   return {last_window, last_window_for_profile};
-}
-
-// Returns whether the cookie migration notice should be shown: the migration
-// is not complete, and this is the last browser window open for this profile.
-bool ShouldShowCookieMigrationNoticeForBrowser(const Browser& browser) {
-  if (!CanShowCookieClearOnExitMigrationNotice(browser)) {
-    return false;
-  }
-
-  auto [last_window, last_window_for_profile] = IsLastWindow(browser);
-  return last_window_for_profile;
 }
 
 void UpdateTabGroupSessionMetadata(Browser* browser,
@@ -987,18 +975,8 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
 
   // `CanCloseWithInProgressDownloads()` may trigger a modal dialog.
   bool can_close_with_downloads = CanCloseWithInProgressDownloads();
-  if (can_close_with_downloads &&
-      !ShouldShowCookieMigrationNoticeForBrowser(*this)) {
-    return WarnBeforeClosingResult::kOkToClose;
-  }
-
-  // If there is no download warning, show the cookie migration notice now.
-  // Otherwise, the download warning is being shown. Cookie migration notice
-  // will be shown after, if needed.
   if (can_close_with_downloads) {
-    ShowCookieClearOnExitMigrationNotice(
-        *this, base::BindOnce(&Browser::CookieMigrationNoticeResponse,
-                              weak_factory_.GetWeakPtr()));
+    return WarnBeforeClosingResult::kOkToClose;
   }
 
   DCHECK(!warn_before_closing_callback_)
@@ -3556,15 +3534,8 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
   if (cancel_downloads) {
     cancel_download_confirmation_state_ =
         CancelDownloadConfirmationState::kResponseReceived;
-
-    if (ShouldShowCookieMigrationNoticeForBrowser(*this)) {
-      ShowCookieClearOnExitMigrationNotice(
-          *this, base::BindOnce(&Browser::CookieMigrationNoticeResponse,
-                                weak_factory_.GetWeakPtr()));
-    } else {
       std::move(warn_before_closing_callback_)
           .Run(WarnBeforeClosingResult::kOkToClose);
-    }
     return;
   }
 
@@ -3580,12 +3551,6 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
 
   std::move(warn_before_closing_callback_)
       .Run(WarnBeforeClosingResult::kDoNotClose);
-}
-
-void Browser::CookieMigrationNoticeResponse(bool proceed_closing) {
-  std::move(warn_before_closing_callback_)
-      .Run(proceed_closing ? WarnBeforeClosingResult::kOkToClose
-                           : WarnBeforeClosingResult::kDoNotClose);
 }
 
 void Browser::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {
