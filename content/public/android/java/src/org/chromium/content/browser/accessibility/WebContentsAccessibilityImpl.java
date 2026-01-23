@@ -1490,7 +1490,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (delegate == null || !delegate.isActionSetExtendedSelectionSupported()) {
                 return false;
             }
-            if (arguments == null) return false;
+            // TODO(crbug.com/443078007): Add tests for this case and below.
+            if (arguments == null) {
+                // Per API specification, clear selection if no argument is provided.
+                WebContentsAccessibilityImplJni.get()
+                        .clearExtendedSelection(mNativeObj, virtualViewId);
+                return true;
+            }
 
             // Since `delegate.isActionSetExtendedSelectionSupported()` is true, extended
             // selection should be readable and hence a null value for start node means
