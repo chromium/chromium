@@ -46,6 +46,8 @@ class CrossDevicePrefTracker : public KeyedService {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.components.sync_preferences.cross_device_pref_tracker)
   // LINT.IfChange(ServiceStatus)
   enum class ServiceStatus {
     // The tracker is fully operational and available for use.

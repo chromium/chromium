@@ -13,10 +13,14 @@ android_library("java") {
   deps = [
     "//base:tasks_java",
     "//components/sync_device_info:sync_device_info_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:gendeps_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":cross_device_pref_tracker_enums_java",
+    ":jni_headers",
+  ]
 }
 
 generate_jni("jni_headers") {
@@ -24,4 +28,8 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/sync_preferences/cross_device_pref_tracker/CrossDevicePrefTracker.java",
     "java/src/org/chromium/components/sync_preferences/cross_device_pref_tracker/TimestampedPrefValue.java",
   ]
+}
+
+java_cpp_enum("cross_device_pref_tracker_enums_java") {
+  sources = [ "../cross_device_pref_tracker.h" ]
 }
