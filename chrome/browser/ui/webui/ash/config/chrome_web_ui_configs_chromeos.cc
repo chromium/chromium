@@ -116,7 +116,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 #include "ui/webui/webui_util.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"

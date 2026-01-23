@@ -5710,6 +5710,8 @@ static_library("browser") {
       "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/experiences/arc/process",
+      "//chromeos/ash/experiences/guest_os/borealis/motd",
+      "//chromeos/ash/experiences/guest_os/borealis/motd:mojo_bindings",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",

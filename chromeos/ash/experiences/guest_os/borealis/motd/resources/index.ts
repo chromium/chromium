@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserProxy} from './browser_proxy.js';
 
 function dismiss() {
-  window.location.hash = '#dismiss';
+  BrowserProxy.getInstance().handler.onDismiss();
 }
 
 function initialize() {
   const btn = document.getElementById('btn')!;
   btn.addEventListener('click', dismiss);
   let timeoutId = setTimeout(function() {
-    window.close();
+    dismiss();
   }, 200);
   addEventListener('message', function() {
     clearTimeout(timeoutId);
