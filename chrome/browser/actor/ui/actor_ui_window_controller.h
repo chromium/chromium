@@ -163,6 +163,11 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   void NotifyControllersOfImmersiveChange();
   void OnImmersiveFullscreenToolbarPrefChanged();
 
+  // Helper to run the immersive change notification asynchronously.
+  void NotifyControllersOfImmersiveChangeInternal();
+  // Helper to run the omnibox popup state change notification asynchronously.
+  void OnOmniboxPopupStateChangedInternal(bool is_open);
+
   bool is_omnibox_popup_open_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
