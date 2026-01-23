@@ -63,18 +63,18 @@ WebGLUnownedTexture* XRWebGLDrawingBufferSwapChain::ProduceTexture() {
                                                    GL_TEXTURE_2D);
 }
 
-scoped_refptr<StaticBitmapImage>
-XRWebGLDrawingBufferSwapChain::TransferToStaticBitmapImage() {
+std::unique_ptr<SharedImageHolder>
+XRWebGLDrawingBufferSwapChain::TransferToSharedImageHolder() {
   WebGLUnownedTexture* texture = ResetCurrentTexture();
   if (texture) {
     // Notify our WebGLUnownedTexture that we have deleted it.
     static_cast<WebGLUnownedTexture*>(texture)->OnGLDeleteTextures();
   }
-  return drawing_buffer_->TransferToStaticBitmapImage();
+  return drawing_buffer_->TransferToSharedImageHolder();
 }
 
 void XRWebGLDrawingBufferSwapChain::OnFrameEnd() {
-  // ResetCurrentTexture handled in TransferToStaticBitmapImage.
+  // ResetCurrentTexture handled in TransferToSharedImageHolder.
 }
 
 void XRWebGLDrawingBufferSwapChain::Trace(Visitor* visitor) const {

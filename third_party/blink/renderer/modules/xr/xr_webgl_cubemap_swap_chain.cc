@@ -321,8 +321,8 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
   // produced texture for the next frame.
 }
 
-scoped_refptr<StaticBitmapImage>
-XRWebGLCubemapSwapChain::TransferToStaticBitmapImage() {
+std::unique_ptr<SharedImageHolder>
+XRWebGLCubemapSwapChain::TransferToSharedImageHolder() {
   return {};
 }
 

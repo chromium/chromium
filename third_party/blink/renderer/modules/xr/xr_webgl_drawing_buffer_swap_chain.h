@@ -24,7 +24,7 @@ class XRWebGLDrawingBufferSwapChain final : public XRWebGLSwapChain {
 
   WebGLUnownedTexture* ProduceTexture() override;
 
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
 
   void OnFrameEnd() override;
 

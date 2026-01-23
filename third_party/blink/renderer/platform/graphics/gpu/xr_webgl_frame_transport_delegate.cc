@@ -6,6 +6,7 @@
 
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "ui/gfx/gpu_fence.h"
@@ -47,9 +48,8 @@ gpu::SyncToken XRWebGLFrameTransportDelegate::GenerateSyncToken() {
 }
 
 std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
-XRWebGLFrameTransportDelegate::CopyImage(
-    const scoped_refptr<StaticBitmapImage>& image,
-    bool last_transfer_succeeded) {
+XRWebGLFrameTransportDelegate::CopyImage(SharedImageHolder* image,
+                                         bool last_transfer_succeeded) {
   if (!image_copier_ || !last_transfer_succeeded) {
     image_copier_ = std::make_unique<ImageToBufferCopier>(
         context_provider_->ContextGL(),
@@ -57,8 +57,8 @@ XRWebGLFrameTransportDelegate::CopyImage(
   }
 
   auto [gpu_memory_buffer_handle, sync_token] =
-      image_copier_->CopyImage(image->GetSharedImage());
-  image->UpdateSyncToken(sync_token);
+      image_copier_->CopyImage(image->shared_image);
+  image->sync_token = sync_token;
 
   DrawingBuffer::Client* client = context_provider_->GetDrawingBufferClient();
   client->DrawingBufferClientRestoreTexture2DBinding();

@@ -19,7 +19,7 @@
 namespace blink {
 
 class DrawingBuffer;
-class StaticBitmapImage;
+struct SharedImageHolder;
 
 class PLATFORM_EXPORT XRWebGLDrawingBuffer
     : public RefCounted<XRWebGLDrawingBuffer> {
@@ -44,7 +44,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
   void Resize(const gfx::Size&);
 
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder();
 
   void UseSharedBuffer(
       const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
@@ -177,6 +177,17 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
   base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
   base::WeakPtrFactory<XRWebGLDrawingBuffer> weak_factory_;
+};
+
+struct PLATFORM_EXPORT SharedImageHolder {
+  SharedImageHolder(scoped_refptr<gpu::ClientSharedImage> shared_image,
+                    const gpu::SyncToken& sync_token,
+                    viz::ReleaseCallback release_callback);
+  ~SharedImageHolder();
+
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
+  gpu::SyncToken sync_token;
+  viz::ReleaseCallback release_callback;
 };
 
 }  // namespace blink

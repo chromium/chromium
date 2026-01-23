@@ -9,7 +9,7 @@
 
 namespace blink {
 
-class StaticBitmapImage;
+struct SharedImageHolder;
 class XRSession;
 class XRFrameTransportDelegate;
 
@@ -18,7 +18,7 @@ class XrLayerClient {
   virtual ~XrLayerClient() = default;
 
   virtual XRSession* session() const = 0;
-  virtual scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() = 0;
+  virtual std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() = 0;
   virtual XRFrameTransportDelegate* GetTransportDelegate() = 0;
 };
 

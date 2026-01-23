@@ -26,7 +26,7 @@ class GpuFence;
 namespace blink {
 
 class ImageToBufferCopier;
-class StaticBitmapImage;
+struct SharedImageHolder;
 
 class PLATFORM_EXPORT XRFrameTransport final
     : public GarbageCollected<XRFrameTransport>,
@@ -54,7 +54,7 @@ class PLATFORM_EXPORT XRFrameTransport final
   bool FrameSubmit(device::mojom::blink::XRPresentationProvider*,
                    XRFrameTransportDelegate* delegate,
                    Vector<device::LayerId> layer_ids,
-                   Vector<scoped_refptr<StaticBitmapImage>> image_refs,
+                   Vector<std::unique_ptr<SharedImageHolder>> image_refs,
                    int16_t vr_frame_id);
 
   void FrameSubmitMissing(device::mojom::blink::XRPresentationProvider*,
@@ -80,7 +80,7 @@ class PLATFORM_EXPORT XRFrameTransport final
 
   // Used to keep the image alive until the next frame if using
   // waitForPreviousTransferToFinish.
-  Vector<scoped_refptr<StaticBitmapImage>> previous_images_;
+  Vector<std::unique_ptr<SharedImageHolder>> previous_images_;
 
   bool waiting_for_previous_frame_transfer_ = false;
   bool last_transfer_succeeded_ = false;

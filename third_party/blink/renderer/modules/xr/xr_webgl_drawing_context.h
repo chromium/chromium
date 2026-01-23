@@ -9,6 +9,7 @@
 
 namespace blink {
 
+struct SharedImageHolder;
 class WebGLRenderingContextBase;
 class XRWebGLSwapChain;
 class XRCompositionLayer;
@@ -22,7 +23,7 @@ class XRWebGLDrawingContext final : public XRLayerDrawingContext {
   ~XRWebGLDrawingContext() override = default;
 
   XRSession* session() const override;
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
 
   uint16_t TextureWidth() const override;

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -43,7 +44,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
 
   void ClearCurrentTexture();
 
-  virtual scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() {
+  virtual std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() {
     return nullptr;
   }
   virtual bool IsCube() const { return false; }

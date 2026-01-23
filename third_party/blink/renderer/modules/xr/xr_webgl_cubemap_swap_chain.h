@@ -29,7 +29,7 @@ class XRWebGLCubemapSwapChain final : public XRWebGLSwapChain {
 
   void SetLayer(XRCompositionLayer* layer) override;
 
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
 
   void Trace(Visitor* visitor) const override;
 

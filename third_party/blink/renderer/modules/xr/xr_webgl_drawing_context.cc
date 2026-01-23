@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_frame_transport_context_impl.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_frame_transport_delegate.h"
 
 namespace blink {
@@ -65,9 +66,9 @@ XRSession* XRWebGLDrawingContext::session() const {
   return color_swap_chain_->layer()->session();
 }
 
-scoped_refptr<StaticBitmapImage>
-XRWebGLDrawingContext::TransferToStaticBitmapImage() {
-  return color_swap_chain_->TransferToStaticBitmapImage();
+std::unique_ptr<SharedImageHolder>
+XRWebGLDrawingContext::TransferToSharedImageHolder() {
+  return color_swap_chain_->TransferToSharedImageHolder();
 }
 
 XRFrameTransportDelegate* XRWebGLDrawingContext::GetTransportDelegate() {

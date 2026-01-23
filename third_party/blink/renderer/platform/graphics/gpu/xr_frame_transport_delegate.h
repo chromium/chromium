@@ -17,7 +17,7 @@ class GpuFence;
 
 namespace blink {
 
-class StaticBitmapImage;
+struct SharedImageHolder;
 
 // This class exists to help serve as an abstraction for whether or not we are
 // running a WebGL or WebGPU based WebXR session. The XrFrameTransport class
@@ -32,7 +32,7 @@ class PLATFORM_EXPORT XRFrameTransportDelegate
   virtual void WaitOnFence(gfx::GpuFence* fence) = 0;
   virtual gpu::SyncToken GenerateSyncToken() = 0;
   virtual std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
-      const scoped_refptr<StaticBitmapImage>& image,
+      SharedImageHolder* image,
       bool last_transfer_succeeded) = 0;
 
   // GarbageCollected override

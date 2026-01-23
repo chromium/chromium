@@ -623,8 +623,8 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
 
-scoped_refptr<StaticBitmapImage>
-XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
+std::unique_ptr<SharedImageHolder>
+XRWebGLDrawingBuffer::TransferToSharedImageHolder() {
   scoped_refptr<ColorBuffer> buffer;
   bool success = false;
 
@@ -656,13 +656,9 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
       base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
   exported_color_buffers_.insert(buffer);
 
-  return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      buffer->shared_image, buffer->produce_sync_token,
-      buffer->shared_image->alpha_type(),
-      drawing_buffer_->ContextProviderWeakPtr(),
-      base::PlatformThread::CurrentRef(),
-      ThreadScheduler::Current()->CleanupTaskRunner(),
-      std::move(release_callback));
+  return std::make_unique<SharedImageHolder>(buffer->shared_image,
+                                             buffer->produce_sync_token,
+                                             std::move(release_callback));
 }
 
 // static
@@ -699,6 +695,20 @@ void XRWebGLDrawingBuffer::MailboxReleased(
     recycled_color_buffer_queue_.TakeLast();
 
   recycled_color_buffer_queue_.push_front(color_buffer);
+}
+
+SharedImageHolder::SharedImageHolder(
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const gpu::SyncToken& sync_token,
+    viz::ReleaseCallback release_callback)
+    : shared_image(std::move(shared_image)),
+      sync_token(sync_token),
+      release_callback(std::move(release_callback)) {}
+
+SharedImageHolder::~SharedImageHolder() {
+  if (release_callback) {
+    std::move(release_callback).Run(sync_token, /*is_lost=*/false);
+  }
 }
 
 }  // namespace blink

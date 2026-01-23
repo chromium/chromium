@@ -15,8 +15,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
 
@@ -92,7 +92,7 @@ bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     XRFrameTransportDelegate* delegate,
     Vector<device::LayerId> layer_ids,
-    Vector<scoped_refptr<StaticBitmapImage>> image_refs,
+    Vector<std::unique_ptr<SharedImageHolder>> image_refs,
     int16_t vr_frame_id) {
   DCHECK(transport_options_);
   CHECK(delegate);
@@ -110,8 +110,8 @@ bool XRFrameTransport::FrameSubmit(
     // TODO(crbug.com/359418629): This only works because we're restricted to a
     // single layer at the moment.
     CHECK_EQ(image_refs.size(), 1UL);
-    auto [gpu_memory_buffer_handle, sync_token] =
-        delegate->CopyImage(*image_refs.begin(), last_transfer_succeeded_);
+    auto [gpu_memory_buffer_handle, sync_token] = delegate->CopyImage(
+        image_refs.begin()->get(), last_transfer_succeeded_);
 
     // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
@@ -140,13 +140,6 @@ bool XRFrameTransport::FrameSubmit(
              device::mojom::blink::XRPresentationTransportMethod::
                  SUBMIT_AS_TEST) {
     CHECK_EQ(image_refs.size(), 1UL);
-
-    // The AcceleratedStaticBitmapImage must be kept alive until the
-    // mailbox is used via CreateAndTexStorage2DSharedImageCHROMIUM, the mailbox
-    // itself does not keep it alive. We must keep a reference to the
-    // image until the mailbox was consumed.
-    StaticBitmapImage* static_image = image_refs.begin()->get();
-    static_image->EnsureSyncTokenVerified();
 
     // Conditionally wait for the previous render to finish. A late wait here
     // attempts to overlap work in parallel with the previous frame's
