@@ -262,6 +262,45 @@ def _RemovePrivilegedHelperId(plist):
   _RemoveKeys(plist, 'SMPrivilegedExecutables')
 
 
+def _SetDirectLaunchUrlScheme(plist, bundle_identifier):
+  """Sets the direct launch URL scheme in the plist."""
+  if not bundle_identifier:
+    return
+
+  scheme = None
+  if bundle_identifier == 'com.google.Chrome':
+    scheme = 'google-chrome'
+    # This logic should match shell_integration::GetDirectLaunchUrlScheme()
+    # in chrome/browser/shell_integration_mac.mm.
+    # Note: chrome/installer/mac/signing/modification.py handles removing
+    # this scheme for non-stable channels during signing.
+  elif bundle_identifier == 'org.chromium.Chromium':
+    scheme = 'chromium'
+
+  url_types = plist.get('CFBundleURLTypes')
+  if not url_types:
+    return
+
+  placeholder = '%DIRECT_LAUNCH_URL_SCHEME%'
+  new_url_types = []
+
+  for url_type in url_types:
+    schemes = url_type.get('CFBundleURLSchemes')
+    if schemes and placeholder in schemes:
+      if len(schemes) != 1:
+        raise Exception(f'Placeholder {placeholder} must be the only scheme.')
+
+      if scheme is not None:
+        schemes[0] = scheme
+        new_url_types.append(url_type)
+      # Else: scheme is None, so we drop this url_type.
+    else:
+      # This url_type does not contain the placeholder, so keep it as is.
+      new_url_types.append(url_type)
+
+  plist['CFBundleURLTypes'] = new_url_types
+
+
 def Main(argv):
   parser = optparse.OptionParser('%prog [options]')
   parser.add_option('--plist',
@@ -448,6 +487,8 @@ def Main(argv):
     _AddPrivilegedHelperId(plist, options.privileged_helper_id)
   else:
     _RemovePrivilegedHelperId(plist)
+
+  _SetDirectLaunchUrlScheme(plist, options.bundle_identifier)
 
   output_path = options.plist_path
   if options.plist_output is not None:

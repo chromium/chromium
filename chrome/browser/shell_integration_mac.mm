@@ -293,6 +293,10 @@ DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type) {
 }
 
 std::string GetDirectLaunchUrlScheme() {
+  // IMPORTANT: This logic is duplicated in build/apple/tweak_info_plist.py
+  // to configure the Info.plist at build time, and in
+  // chrome/installer/mac/signing/modification.py to remove it for non-stable
+  // channels during signing. Ensure all are kept in sync.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!chrome::IsSideBySideCapable()) {
     // If the current Chrome build is not capable of side-by-side installation

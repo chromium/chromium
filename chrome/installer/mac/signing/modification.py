@@ -23,6 +23,29 @@ _KS_CHANNEL_ID = 'KSChannelID'
 _KS_PRODUCT_ID = 'KSProductID'
 
 
+def _should_keep_scheme(scheme, dist):
+    """Returns True if the URL scheme should be kept in the Info.plist."""
+    if scheme not in ('google-chrome', 'chromium'):
+        return True
+
+    if dist.direct_launch_scheme is not None:
+        return scheme == dist.direct_launch_scheme
+
+    # Heuristic for default/unconfigured behavior.
+    # TODO(b/446672134): This logic is temporary to unblock the current CL.
+    # The plan is:
+    # 1. Land the current CL with this heuristic.
+    # 2. Update internal configuration to explicitly set `direct_launch_scheme`
+    #    for all distributions (e.g. empty string for side-by-side channels).
+    # 3. Remove this heuristic in a follow-up CL.
+    if scheme == 'google-chrome':
+        is_sxs = dist.channel in ('beta', 'dev',
+                                  'canary') and dist.product_dirname
+        return not is_sxs
+
+    return True
+
+
 def _modify_plists(paths, dist, config):
     """Modifies several plist files in the bundle.
 
@@ -101,6 +124,25 @@ def _modify_plists(paths, dist, config):
                 continue
             ignore, extra = key.split('-')
             app_plist[key] = '{}-{}'.format(base_channel_tag, extra)
+
+        # The 'google-chrome' and 'chromium' URI schemes are registered by
+        # build/apple/tweak_info_plist.py.
+        # We need to filter them based on the distribution configuration (e.g.
+        # removing them for side-by-side channels).
+        url_types = app_plist.get('CFBundleURLTypes')
+        if url_types:
+            new_url_types = []
+            for url_type in url_types:
+                schemes = url_type.get('CFBundleURLSchemes', [])
+                new_schemes = []
+                for scheme in schemes:
+                    if _should_keep_scheme(scheme, dist):
+                        new_schemes.append(scheme)
+
+                if new_schemes:
+                    url_type['CFBundleURLSchemes'] = new_schemes
+                    new_url_types.append(url_type)
+            app_plist['CFBundleURLTypes'] = new_url_types
 
 
 def _replace_icons(paths, dist, config):

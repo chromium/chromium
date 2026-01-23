@@ -183,6 +183,14 @@
 				<string>file</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Direct launch URL</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>%DIRECT_LAUNCH_URL_SCHEME%</string>
+			</array>
+		</dict>
 	</array>
 	<key>LSEnvironment</key>
 	<dict>
