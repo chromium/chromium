@@ -28,6 +28,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
+            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
         {
             "name": "mojo/mojom_parser",
@@ -37,6 +38,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
+            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
         {
             "name": "mojo/validate_typemap_config",
@@ -46,6 +48,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
+            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
         {
             "name": "mojo/generate_type_mappings",
@@ -55,6 +58,7 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
             "output_local": True,
             "platform_ref": platform_ref,
+            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
     ])
     return step_config

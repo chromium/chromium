@@ -24,6 +24,7 @@ def __step_config(ctx, step_config):
             "remote": remote_run,
             "timeout": "2m",
             "platform_ref": "large",
+            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
     ])
 
