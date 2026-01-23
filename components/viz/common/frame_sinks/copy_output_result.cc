@@ -256,8 +256,8 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
       release_callback_(std::move(release_callback)) {
   // check non-null `shared_image_`
   DCHECK(shared_image_);
-  // If we're constructing empty result, all mailbox_holders must be zero.
-  // Otherwise, the first mailbox must be non-zero.
+  // If we're constructing empty result, all shared image mailboxes must be
+  // zero. Otherwise, the first mailbox must be non-zero.
   DCHECK_EQ(rect.IsEmpty(), shared_image_->mailbox().IsZero());
   // If we're constructing empty result, the callbacks must be empty.
   // From definition of implication: p => q  <=>  !p || q.
