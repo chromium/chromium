@@ -133,7 +133,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      bool is_cross_origin_isolated);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

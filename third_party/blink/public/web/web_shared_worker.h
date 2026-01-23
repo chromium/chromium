@@ -101,7 +101,8 @@ class BLINK_EXPORT WebSharedWorker {
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::ReportingObserverInterfaceBase>
-          dip_reporting_observer);
+          dip_reporting_observer,
+      bool is_cross_origin_isolated);
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(int connection_request_id,

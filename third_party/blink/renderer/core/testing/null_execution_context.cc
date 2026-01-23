@@ -31,6 +31,7 @@ NullExecutionContext::NullExecutionContext(
                        MakeGarbageCollected<Agent>(
                            scheduler->GetAgentGroupScheduler()->Isolate(),
                            base::UnguessableToken::Create(),
+                           blink::Agent::AgentType::kDocument,
                            v8::MicrotaskQueue::New(
                                scheduler->GetAgentGroupScheduler()->Isolate(),
                                v8::MicrotasksPolicy::kScoped))),

@@ -53,7 +53,8 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        dip_reporting_observer) {
+        dip_reporting_observer,
+    bool cross_origin_isolated) {
   // Bound to the lifetime of the underlying blink::WebSharedWorker instance.
   new EmbeddedSharedWorkerStub(
       std::move(info), token, constructor_key, origin,
@@ -67,7 +68,8 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
       std::move(browser_interface_broker), ukm_source_id,
       require_cross_site_request_for_cookies,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      RenderThreadImpl::current()->cors_exempt_header_list());
+      RenderThreadImpl::current()->cors_exempt_header_list(),
+      cross_origin_isolated);
 }
 
 }  // namespace content

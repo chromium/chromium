@@ -6935,7 +6935,7 @@ void Document::setDomain(const String& raw_domain,
   // we'll check both, in order to give warning messages that are more specific
   // about the cause. Note: this means the order of the checks is important.
 
-  if (Agent::IsCrossOriginIsolated()) {
+  if (dom_window_->GetAgent()->IsCrossOriginIsolated()) {
     AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         ConsoleMessage::Source::kSecurity, ConsoleMessage::Level::kWarning,
         "document.domain mutation is ignored because the surrounding agent "

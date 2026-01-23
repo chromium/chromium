@@ -1260,10 +1260,6 @@ void RenderThreadImpl::WriteClangProfilingProfile(
 }
 #endif
 
-void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
-  blink::SetIsCrossOriginIsolated(value);
-}
-
 void RenderThreadImpl::SetIsWebSecurityDisabled(bool value) {
   blink::SetIsWebSecurityDisabled(value);
 }

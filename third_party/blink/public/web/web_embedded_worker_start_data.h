@@ -62,6 +62,9 @@ struct WebEmbeddedWorkerStartData {
 
   WebFetchClientSettingsObject outside_fetch_client_settings_object;
 
+  // Whether the worker has access to cross-origin isolated APIs.
+  bool is_cross_origin_isolated;
+
   // Unique token that identifies this worker across the browser and renderer
   // processes. This is not persistent across worker restarts.
   blink::ServiceWorkerToken service_worker_token;

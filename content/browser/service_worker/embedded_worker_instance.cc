@@ -306,6 +306,11 @@ void EmbeddedWorkerInstance::Start(
   ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(process_id,
                                                                     origin);
 
+  // Pass the cross-origin isolated capability of the worker.
+  params->cross_origin_isolated =
+      rph->GetProcessLock().agent_cluster_key().IsCrossOriginIsolated() ||
+      rph->GetProcessLock().GetWebExposedIsolationInfo().is_isolated();
+
   rph->BindReceiver(client_.BindNewPipeAndPassReceiver());
   client_.set_disconnect_handler(
       base::BindOnce(&EmbeddedWorkerInstance::Detach, base::Unretained(this)));

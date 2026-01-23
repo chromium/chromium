@@ -11,6 +11,7 @@ namespace blink {
 WindowAgent::WindowAgent(AgentGroupScheduler& agent_group_scheduler)
     : blink::Agent(agent_group_scheduler.Isolate(),
                    base::UnguessableToken::Create(),
+                   blink::Agent::AgentType::kDocument,
                    v8::MicrotaskQueue::New(agent_group_scheduler.Isolate(),
                                            v8::MicrotasksPolicy::kScoped)),
       agent_group_scheduler_(&agent_group_scheduler) {
@@ -23,7 +24,8 @@ WindowAgent::WindowAgent(AgentGroupScheduler& agent_group_scheduler,
                    base::UnguessableToken::Create(),
                    v8::MicrotaskQueue::New(agent_group_scheduler.Isolate(),
                                            v8::MicrotasksPolicy::kScoped),
-                   agent_cluster_key),
+                   agent_cluster_key,
+                   blink::Agent::AgentType::kDocument),
       agent_group_scheduler_(&agent_group_scheduler) {
   agent_group_scheduler_->AddAgent(this);
 }

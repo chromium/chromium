@@ -12,12 +12,10 @@
 namespace blink {
 
 namespace {
-bool is_cross_origin_isolated = false;
 bool is_isolated_context = false;
 bool is_web_security_disabled = false;
 
 #if DCHECK_IS_ON()
-bool is_cross_origin_isolated_set = false;
 bool is_isolated_context_set = false;
 bool is_web_security_disabled_set = false;
 #endif
@@ -25,22 +23,26 @@ bool is_web_security_disabled_set = false;
 
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
+             AgentType agent_type,
              std::unique_ptr<v8::MicrotaskQueue> microtask_queue)
     : Agent(isolate,
             cluster_id,
             std::move(microtask_queue),
-            AgentClusterKey::CreateSiteKeyed(KURL())) {}
+            AgentClusterKey::CreateSiteKeyed(KURL()),
+            agent_type) {}
 
 Agent::Agent(v8::Isolate* isolate,
              const base::UnguessableToken& cluster_id,
              std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
-             const AgentClusterKey& agent_cluster_key)
+             const AgentClusterKey& agent_cluster_key,
+             AgentType agent_type)
     : isolate_(isolate),
       rejected_promises_(RejectedPromises::Create()),
       event_loop_(base::AdoptRef(
           new scheduler::EventLoop(this, isolate, std::move(microtask_queue)))),
       cluster_id_(cluster_id),
-      agent_cluster_key_(agent_cluster_key) {}
+      agent_cluster_key_(agent_cluster_key),
+      agent_type_(agent_type) {}
 
 Agent::~Agent() = default;
 
@@ -56,19 +58,19 @@ void Agent::DetachContext(ExecutionContext* context) {
   event_loop_->DetachScheduler(context->GetScheduler());
 }
 
-// static
-bool Agent::IsCrossOriginIsolated() {
-  return is_cross_origin_isolated;
-}
-
-// static
-void Agent::SetIsCrossOriginIsolated(bool value) {
-#if DCHECK_IS_ON()
-  if (is_cross_origin_isolated_set)
-    DCHECK_EQ(is_cross_origin_isolated, value);
-  is_cross_origin_isolated_set = true;
-#endif
-  is_cross_origin_isolated = value;
+bool Agent::IsCrossOriginIsolated() const {
+  switch (agent_type_) {
+    case AgentType::kDocument:
+      return agent_cluster_key_.GetCrossOriginIsolationKey() &&
+             agent_cluster_key_.GetCrossOriginIsolationKey()->mode ==
+                 mojom::blink::CrossOriginIsolationMode::kConcrete;
+    case AgentType::kNonCrossOriginIsolatedWorker:
+      return false;
+    case AgentType::kCrossOriginIsolatedWorker:
+      return true;
+    default:
+  }
+  NOTREACHED();
 }
 
 // static

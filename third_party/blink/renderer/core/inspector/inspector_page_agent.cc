@@ -1361,7 +1361,7 @@ CreateGatedAPIFeaturesArray(LocalDOMWindow* window) {
   //  - agent has the cross-origin isolated bit (but not necessarily the
   //    capability)
   if (RuntimeEnabledFeatures::SharedArrayBufferEnabled(window) ||
-      Agent::IsCrossOriginIsolated()) {
+      window->GetAgent()->IsCrossOriginIsolated()) {
     features->push_back(
         protocol::Page::GatedAPIFeaturesEnum::SharedArrayBuffers);
   }

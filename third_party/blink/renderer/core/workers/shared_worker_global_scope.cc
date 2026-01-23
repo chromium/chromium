@@ -272,7 +272,7 @@ void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
 }
 
 bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
-  return Agent::IsCrossOriginIsolated();
+  return GetAgent()->IsCrossOriginIsolated();
 }
 
 bool SharedWorkerGlobalScope::IsIsolatedContext() const {

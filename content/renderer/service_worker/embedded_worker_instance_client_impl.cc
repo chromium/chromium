@@ -96,6 +96,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
   start_data->policy_container =
       ToWebPolicyContainer(std::move(params->policy_container));
 
+  start_data->is_cross_origin_isolated = params->cross_origin_isolated;
+
   for (const auto& feature : params->forced_enabled_runtime_features) {
     blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
   }

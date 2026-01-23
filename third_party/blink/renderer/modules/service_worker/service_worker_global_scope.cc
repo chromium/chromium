@@ -834,7 +834,7 @@ int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
 // the page, due to an origin mismatch in their cross-origin isolation.
 // See https://crbug.com/1290224 for details.
 bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
-  return Agent::IsCrossOriginIsolated();
+  return GetAgent()->IsCrossOriginIsolated();
 }
 
 bool ServiceWorkerGlobalScope::IsIsolatedContext() const {

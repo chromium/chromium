@@ -681,6 +681,9 @@ WorkerGlobalScope::WorkerGlobalScope(
               (creation_params->agent_cluster_id.is_empty()
                    ? base::UnguessableToken::Create()
                    : creation_params->agent_cluster_id),
+              creation_params->cross_origin_isolated_capability
+                  ? blink::Agent::AgentType::kCrossOriginIsolatedWorker
+                  : blink::Agent::AgentType::kNonCrossOriginIsolatedWorker,
               v8::MicrotaskQueue::New(thread->GetIsolate(),
                                       v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,

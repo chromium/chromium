@@ -117,5 +117,8 @@ interface SharedWorkerFactory {
 
       // Used by a DocumentIsolationPolicyReporter to send reports to the
       // ReportingObservers.
-      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver);
+      pending_receiver<ReportingObserver>? dip_reporting_observer_receiver,
+
+      // Whether the worker has access to cross-origin isolated  APIs or not.
+      bool cross_origin_isolated);
 };

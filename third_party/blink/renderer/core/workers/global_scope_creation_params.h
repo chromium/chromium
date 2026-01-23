@@ -80,7 +80,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
       const std::optional<ExecutionContextToken>& parent_context_token =
           std::nullopt,
-      bool parent_cross_origin_isolated_capability = false,
+      bool cross_origin_isolated_capability = false,
       bool parent_is_isolated_context = false,
       InterfaceRegistry* interface_registry = nullptr,
       scoped_refptr<base::SingleThreadTaskRunner>
@@ -218,8 +218,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   std::optional<ExecutionContextToken> parent_context_token;
 
   // https://html.spec.whatwg.org/C/#concept-settings-object-cross-origin-isolated-capability
-  // Used by dedicated workers, and set to false when there is no parent.
-  const bool parent_cross_origin_isolated_capability;
+  // Whether the execution context has access to cross-origin isolated APIs.
+  const bool cross_origin_isolated_capability;
 
   // Governs whether Direct Sockets are available in a worker context, false
   // when no parent exists.

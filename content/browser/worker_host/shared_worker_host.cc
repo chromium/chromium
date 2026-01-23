@@ -19,6 +19,7 @@
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -436,6 +437,16 @@ void SharedWorkerHost::Start(
     dip_reporter_->BindObserver(std::move(dip_reporting_remote));
   }
 
+  // Check whether the shared worker has access to cross-origin isolated APIs.
+  bool cross_origin_isolated = GetProcessHost()
+                                   ->GetProcessLock()
+                                   .agent_cluster_key()
+                                   .IsCrossOriginIsolated() ||
+                               GetProcessHost()
+                                   ->GetProcessLock()
+                                   .GetWebExposedIsolationInfo()
+                                   .is_isolated();
+
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
@@ -454,7 +465,8 @@ void SharedWorkerHost::Start(
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
       std::move(browser_interface_broker), ukm_source_id_,
       instance_.DoesRequireCrossSiteRequestForCookies(),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
+      cross_origin_isolated);
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();
   }

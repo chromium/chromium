@@ -212,11 +212,6 @@ v8::Isolate* CreateMainThreadIsolate() {
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
-void SetIsCrossOriginIsolated(bool value) {
-  Agent::SetIsCrossOriginIsolated(value);
-}
-
-// Function defined in third_party/blink/public/web/blink.h.
 void SetIsWebSecurityDisabled(bool value) {
   Agent::SetIsWebSecurityDisabled(value);
 }

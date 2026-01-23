@@ -413,7 +413,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteClangProfilingProfile(
       WriteClangProfilingProfileCallback callback) override;
 #endif
-  void SetIsCrossOriginIsolated(bool value) override;
   void SetIsWebSecurityDisabled(bool value) override;
   void SetIsIsolatedContext(bool value) override;
   void SetWebUIResourceUrlToCodeCacheMap(

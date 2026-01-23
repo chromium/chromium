@@ -34,11 +34,19 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
                           public Supplementable<Agent>,
                           public scheduler::EventLoop::Delegate {
  public:
+  // The type of contexts hosted in the Agent.
+  enum class AgentType {
+    kDocument,
+    kNonCrossOriginIsolatedWorker,
+    kCrossOriginIsolatedWorker
+  };
+
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
   // WindowAgentFactory::GetAgentForAgentClusterKey().
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
+        AgentType agent_type,
         std::unique_ptr<v8::MicrotaskQueue> microtask_queue = nullptr);
   virtual ~Agent();
 
@@ -56,16 +64,8 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   const base::UnguessableToken& cluster_id() const { return cluster_id_; }
 
   // Representing agent cluster's "cross-origin isolated" concept.
-  // TODO(yhirano): Have the spec URL.
-  // This property is renderer process global because we ensure that a
-  // renderer process host only cross-origin isolated agents or only
-  // non-cross-origin isolated agents, not both.
-  // This variable is initialized before any frame is created, and will not
-  // be modified after that. Hence this can be accessed from the main thread
-  // and worker/worklet threads.
-  static bool IsCrossOriginIsolated();
-  // Only called from blink::SetIsCrossOriginIsolated.
-  static void SetIsCrossOriginIsolated(bool value);
+  // https://html.spec.whatwg.org/multipage/webappapis.html#agent-cluster-cross-origin-isolation
+  bool IsCrossOriginIsolated() const;
 
   static bool IsWebSecurityDisabled();
   static void SetIsWebSecurityDisabled(bool value);
@@ -99,7 +99,8 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
         std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
-        const AgentClusterKey& agent_cluster_key);
+        const AgentClusterKey& agent_cluster_key,
+        AgentType agent_type);
 
  private:
   // scheduler::EventLoopDelegate overrides:
@@ -110,6 +111,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
   const AgentClusterKey agent_cluster_key_;
+  const AgentType agent_type_;
 };
 
 }  // namespace blink

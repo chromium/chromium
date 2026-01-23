@@ -128,15 +128,6 @@ BLINK_EXPORT void ForceNextWebGLContextCreationToFailForTest();
 // context's ability to deal with that failure gracefully can be tested.
 BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 
-// Set whether this renderer process is "cross-origin isolated". This
-// corresponds to agent cluster's "cross-origin isolated" concept.
-// TODO(yhirano): Have the spec URL.
-// This property is process global because we ensure that a renderer process
-// host only cross-origin isolated agents or only non-cross-origin isolated
-// agents, not both.
-// This is called at most once. This is called earlier than any frame commit.
-BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
-
 // Allows disabling web security. One example of this is that it enables APIs
 // that would otherwise require cross-origin-isolated contexts.
 BLINK_EXPORT void SetIsWebSecurityDisabled(bool value);
