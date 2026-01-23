@@ -484,7 +484,6 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
   ++form_interaction_counts_.autofill_fills;
-  UpdateFlowId();
 }
 
 void CreditCardFormEventLogger::OnDidUndoAutofill() {

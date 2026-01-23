@@ -115,7 +115,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -1139,18 +1138,6 @@ ChromeAutofillClient::GetAutofillMessageController() {
   return autofill_message_controller_.get();
 }
 #endif
-
-FormInteractionsFlowId
-ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
-  constexpr base::TimeDelta max_flow_time = base::Minutes(20);
-  base::Time now = AutofillClock::Now();
-
-  if (now - flow_id_date_ > max_flow_time || now < flow_id_date_) {
-    flow_id_ = FormInteractionsFlowId();
-    flow_id_date_ = now;
-  }
-  return flow_id_;
-}
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) {

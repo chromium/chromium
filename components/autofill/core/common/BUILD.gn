@@ -38,8 +38,6 @@ static_library("common") {
     "form_field_data.h",
     "form_field_data_predictions.cc",
     "form_field_data_predictions.h",
-    "form_interactions_flow.cc",
-    "form_interactions_flow.h",
     "html_field_types.cc",
     "html_field_types.h",
     "is_required.h",

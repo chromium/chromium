@@ -278,13 +278,6 @@ bool WebViewAutofillClientIOS::IsCvcSavingSupported() const {
   return false;
 }
 
-autofill::FormInteractionsFlowId
-WebViewAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
-  // Currently not in use here. See `ChromeAutofillClient` for a proper
-  // implementation.
-  return {};
-}
-
 bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }

@@ -2447,9 +2447,6 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
                   "", Suggestion::Icon::kSettings,
                   SuggestionType::kManageLoyaltyCard)});
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
-
   // Make sure key metrics are logged.
   base::HistogramTester histogram_tester;
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -2470,7 +2467,6 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
                      {Ukm::kFillingAssistanceName, 0},
                      {Ukm::kAutofillFillsName, 0},
                      {Ukm::kFormElementUserModificationsName, 0},
-                     {Ukm::kFlowIdName, flow_id.value()},
                      {Ukm::kFormTypesName,
                       AutofillMetrics::FormTypesToBitVector(
                           {FormTypeNameForLogging::kLoyaltyCardForm})}}}));

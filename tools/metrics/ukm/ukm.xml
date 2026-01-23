@@ -3076,12 +3076,6 @@ be describing additional metrics about the same event.
       corresponded to the submitted data.
     </summary>
   </metric>
-  <metric name="FlowId">
-    <summary>
-      Hashed GUID linking together multiple emissions of this event if emitted
-      within a 20 minutes timeframe.
-    </summary>
-  </metric>
   <metric name="FormElementUserModifications">
     <summary>
       Number of times a user focused on a form element and changed its value.

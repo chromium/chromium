@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -915,8 +916,7 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
     bool suggestions_shown,
     bool edited_autofilled_field,
     bool suggestion_filled,
-    const FormInteractionCounts& form_interaction_counts,
-    const FormInteractionsFlowId& flow_id) {
+    const FormInteractionCounts& form_interaction_counts) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
@@ -927,8 +927,7 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
       .SetAutofillFills(form_interaction_counts.autofill_fills)
       .SetFormElementUserModifications(
-          form_interaction_counts.form_element_user_modifications)
-      .SetFlowId(flow_id.value());
+          form_interaction_counts.form_element_user_modifications);
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
   }

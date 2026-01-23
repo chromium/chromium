@@ -42,21 +42,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->external_delegate_.get();
   }
 
-  FormInteractionsFlowId address_form_interactions_flow_id() const {
-    return manager_->metrics_->address_form_event_logger
-        .form_interactions_flow_id_for_test();
-  }
-
-  FormInteractionsFlowId loyalty_card_form_interactions_flow_id() const {
-    return manager_->metrics_->loyalty_card_form_event_logger
-        .form_interactions_flow_id_for_test();
-  }
-
-  FormInteractionsFlowId otp_form_interactions_flow_id() const {
-    return manager_->metrics_->otp_form_event_logger
-        .form_interactions_flow_id_for_test();
-  }
-
   void set_credit_card_access_manager(
       std::unique_ptr<CreditCardAccessManager> manager) {
     manager_->credit_card_access_manager_ = std::move(manager);

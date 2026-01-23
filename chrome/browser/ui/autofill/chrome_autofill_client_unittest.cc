@@ -49,7 +49,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/core/browser/fake_plus_address_service.h"
 #include "components/plus_addresses/core/browser/plus_address_hats_utils.h"
@@ -336,48 +335,6 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
                 main_driver->GetAutofillManager(), main_form.global_id(),
                 child_form.fields()[0].global_id()),
             expected);
-}
-
-TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {
-  base::TimeDelta below_max_flow_time = base::Minutes(10);
-
-  FormInteractionsFlowId first_interaction_flow_id =
-      client()->GetCurrentFormInteractionsFlowId();
-
-  task_environment()->FastForwardBy(below_max_flow_time);
-
-  EXPECT_EQ(first_interaction_flow_id,
-            client()->GetCurrentFormInteractionsFlowId());
-}
-
-TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AboveMaxFlowTime) {
-  base::TimeDelta above_max_flow_time = base::Minutes(21);
-
-  FormInteractionsFlowId first_interaction_flow_id =
-      client()->GetCurrentFormInteractionsFlowId();
-
-  task_environment()->FastForwardBy(above_max_flow_time);
-
-  EXPECT_NE(first_interaction_flow_id,
-            client()->GetCurrentFormInteractionsFlowId());
-}
-
-TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
-  base::TimeDelta above_half_max_flow_time = base::Minutes(15);
-
-  FormInteractionsFlowId first_interaction_flow_id =
-      client()->GetCurrentFormInteractionsFlowId();
-
-  task_environment()->FastForwardBy(above_half_max_flow_time);
-
-  FormInteractionsFlowId second_interaction_flow_id =
-      client()->GetCurrentFormInteractionsFlowId();
-
-  task_environment()->FastForwardBy(above_half_max_flow_time);
-
-  EXPECT_EQ(first_interaction_flow_id, second_interaction_flow_id);
-  EXPECT_NE(first_interaction_flow_id,
-            client()->GetCurrentFormInteractionsFlowId());
 }
 
 // Ensure that, by default, the plus address service is not available.

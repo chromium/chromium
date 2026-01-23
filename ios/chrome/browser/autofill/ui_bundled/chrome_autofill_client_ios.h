@@ -135,7 +135,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
   bool IsContextSecure() const override;
-  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;

@@ -171,8 +171,6 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
     SubmitForm(form);
   }
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate KeyMetrics expectations.
@@ -204,7 +202,6 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
                        {Ukm::kFillingAssistanceName, 1},
                        {Ukm::kAutofillFillsName, 1},
                        {Ukm::kFormElementUserModificationsName, 0},
-                       {Ukm::kFlowIdName, flow_id.value()},
                        {Ukm::kFormTypesName,
                         AutofillMetrics::FormTypesToBitVector(
                             {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
@@ -292,8 +289,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
                                               form_.fields()[0].global_id());
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -317,7 +312,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
                        {Ukm::kFillingAssistanceName, 0},
                        {Ukm::kAutofillFillsName, 0},
                        {Ukm::kFormElementUserModificationsName, 0},
-                       {Ukm::kFlowIdName, flow_id.value()},
                        {Ukm::kFormTypesName,
                         AutofillMetrics::FormTypesToBitVector(
                             {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
@@ -347,8 +341,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -376,7 +368,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
                        {Ukm::kFillingAssistanceName, 0},
                        {Ukm::kAutofillFillsName, 0},
                        {Ukm::kFormElementUserModificationsName, 2},
-                       {Ukm::kFlowIdName, flow_id.value()},
                        {Ukm::kFormTypesName,
                         AutofillMetrics::FormTypesToBitVector(
                             {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
@@ -405,8 +396,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
 
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -435,7 +424,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
                        {Ukm::kFillingAssistanceName, 1},
                        {Ukm::kAutofillFillsName, 1},
                        {Ukm::kFormElementUserModificationsName, 0},
-                       {Ukm::kFlowIdName, flow_id.value()},
                        {Ukm::kFormTypesName,
                         AutofillMetrics::FormTypesToBitVector(
                             {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
@@ -509,8 +497,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).loyalty_card_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -539,7 +525,6 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
                        {Ukm::kFillingAssistanceName, 1},
                        {Ukm::kAutofillFillsName, 1},
                        {Ukm::kFormElementUserModificationsName, 1},
-                       {Ukm::kFlowIdName, flow_id.value()},
                        {Ukm::kFormTypesName,
                         AutofillMetrics::FormTypesToBitVector(
                             {FormTypeNameForLogging::kLoyaltyCardForm})}}}));

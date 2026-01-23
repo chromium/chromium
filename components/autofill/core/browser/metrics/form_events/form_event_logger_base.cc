@@ -395,8 +395,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
         driver().GetPageUkmSourceId(), submitted_form_types_,
         HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
         has_logged_edited_autofilled_field_,
-        has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
-        flow_id_);
+        has_logged_form_filling_suggestion_filled_, form_interaction_counts_);
   }
   if (has_logged_edited_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {
@@ -552,12 +551,7 @@ void FormEventLoggerBase::OnEditedField(FieldGlobalId field_id) {
   if (field_id != last_field_global_id_modified_by_user_) {
     ++form_interaction_counts_.form_element_user_modifications;
     last_field_global_id_modified_by_user_ = field_id;
-    UpdateFlowId();
   }
-}
-
-void FormEventLoggerBase::UpdateFlowId() {
-  flow_id_ = client().GetCurrentFormInteractionsFlowId();
 }
 
 FormInteractionsUkmLogger::FormEventSet FormEventLoggerBase::GetFormEvents(

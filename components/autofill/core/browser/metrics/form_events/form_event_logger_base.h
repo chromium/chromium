@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -27,6 +26,12 @@ class BrowserAutofillManager;
 }  // namespace autofill
 
 namespace autofill::autofill_metrics {
+
+// Counts of user interactions with forms.
+struct FormInteractionCounts {
+  int64_t form_element_user_modifications = 0;
+  int64_t autofill_fills = 0;
+};
 
 // Utility to log autofill form events in the relevant histograms depending on
 // the presence of server and/or local data.
@@ -94,10 +99,6 @@ class FormEventLoggerBase {
 
   FormInteractionsUkmLogger::FormEventSet GetFormEvents(
       FormGlobalId form_global_id);
-
-  const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
-    return flow_id_;
-  }
 
   // Used for testing purposes to help verify that the correct subclass is
   // constructed.
@@ -185,8 +186,6 @@ class FormEventLoggerBase {
   // Records UMA metrics related to the Undo Autofill feature.
   void RecordUndoMetrics() const;
 
-  void UpdateFlowId();
-
   // Returns whether the logger was notified that any data to fill is available.
   // This is used to emit the readiness key metric.
   virtual bool HasLoggedDataToFillAvailable() const = 0;
@@ -233,9 +232,6 @@ class FormEventLoggerBase {
   // Keeps counts of Autofill fills and form elements that were modified by the
   // user.
   FormInteractionCounts form_interaction_counts_ = {};
-  // Unique random id that is set on the first form interaction and identical
-  // during the flow.
-  FormInteractionsFlowId flow_id_;
 
   // Form types of the identified forms, for logging purposes.
   DenseSet<FormTypeNameForLogging> identified_form_types_;

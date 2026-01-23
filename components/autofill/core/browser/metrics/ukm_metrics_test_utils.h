@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 
 namespace autofill::autofill_metrics {
 

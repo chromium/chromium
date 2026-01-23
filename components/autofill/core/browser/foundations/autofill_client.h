@@ -111,7 +111,6 @@ class FieldClassificationModelHandler;
 enum class FillingProduct;
 class FormDataImporter;
 class FormFieldData;
-struct FormInteractionsFlowId;
 class LogManager;
 class OtpFieldDetector;
 class OtpPhishGuardDelegate;
@@ -624,14 +623,6 @@ class AutofillClient {
   // Whether we can add more information to the contents of suggestions text due
   // to the use of a large keyboard accessory view. See b/40942168.
   virtual bool ShouldFormatForLargeKeyboardAccessory() const;
-
-  // Updates and returns the current form interactions flow id. This is used as
-  // an approximation for keeping track of the number of user interactions with
-  // related forms for logging. Example implementation: the flow id is set to a
-  // GUID on the first call. That same GUID will be returned for consecutive
-  // calls in the next 20 minutes. Afterwards a new GUID is set and the pattern
-  // repeated.
-  virtual FormInteractionsFlowId GetCurrentFormInteractionsFlowId() = 0;
 
   // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
   // platform is not supported.

@@ -38,7 +38,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/metrics_enums.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"

@@ -141,7 +141,6 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   bool IsPasswordManagerEnabled() const override;
   bool IsContextSecure() const override;
   bool IsCvcSavingSupported() const override;
-  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;

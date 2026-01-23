@@ -16,11 +16,12 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
+
+struct FormInteractionCounts;
 
 // To reduce traffic, only a random sample of browser sessions upload UKM data.
 // This function returns whether we should record autofill UKM events for the
@@ -146,8 +147,7 @@ class FormInteractionsUkmLogger {
                      bool suggestions_shown,
                      bool edited_autofilled_field,
                      bool suggestion_filled,
-                     const FormInteractionCounts& form_interaction_counts,
-                     const FormInteractionsFlowId& flow_id);
+                     const FormInteractionCounts& form_interaction_counts);
   void LogFormEvent(ukm::SourceId ukm_source_id,
                     FormEvent form_event,
                     const DenseSet<FormTypeNameForLogging>& form_types,

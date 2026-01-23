@@ -214,7 +214,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // the messages API.
   AutofillMessageController* GetAutofillMessageController();
 #endif
-  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) final;
   bool ShowAutofillFieldIphForFeature(const FormFieldData& field,
@@ -324,7 +323,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       payments_autofill_client_.GetMerchantPromoCodeManager()};
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
-  FormInteractionsFlowId flow_id_;
   base::Time flow_id_date_;
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden

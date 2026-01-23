@@ -268,13 +268,6 @@ bool AndroidAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-autofill::FormInteractionsFlowId
-AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
-  // Currently not in use here. See `ChromeAutofillClient` for a proper
-  // implementation.
-  return {};
-}
-
 autofill::autofill_metrics::FormInteractionsUkmLogger&
 AndroidAutofillClient::GetFormInteractionsUkmLogger() {
   return form_interactions_ukm_logger_;

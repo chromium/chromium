@@ -421,10 +421,6 @@ class TestAutofillClientTemplate : public T {
     return format_for_large_keyboard_accessory_;
   }
 
-  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override {
-    return {};
-  }
-
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
