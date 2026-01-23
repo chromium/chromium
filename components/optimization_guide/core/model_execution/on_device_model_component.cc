@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -73,7 +75,8 @@ void LogInstallCriteria(
                      criteria.enabled_by_enterprise_policy);
   LogInstallCriteria(event_name, "EnabledByUserSetting",
                      criteria.enabled_by_user_setting);
-  LogInstallCriteria(event_name, "All", criteria.should_install());
+  LogInstallCriteria(event_name, "All",
+                     criteria.get_install_mode().has_value());
 }
 
 // Returns the best performance hint for this device based on the supported
@@ -314,24 +317,33 @@ void OnDeviceModelComponentStateManager::SetReady(
           manifest, performance_classifier_->GetPossibleHints())) {
     state_ = std::make_unique<OnDeviceModelComponentState>(install_dir, version,
                                                            *model_spec);
+    component_installer_state_ = ComponentInstallerState::kInstalled;
   }
 
   NotifyStateChanged();
 }
 
-void OnDeviceModelComponentStateManager::InstallerRegistered() {
+void OnDeviceModelComponentStateManager::InstallerRegistered(
+    bool is_already_installed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_already_installed) {
+    component_installer_state_ = ComponentInstallerState::kInstalled;
+  } else {
+    component_installer_state_ =
+        ComponentInstallerState::kBackgroundDownloading;
+  }
   base::UmaHistogramBoolean(
       "OptimizationGuide.ModelExecution."
       "OnDeviceModelInstalledAtRegistrationTime",
       state_ != nullptr);
+  UpdateRegistration();
 }
 
 void OnDeviceModelComponentStateManager::UninstallComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_state_->ClearPref(model_execution::prefs::localstate::
                               kLastTimeEligibleForOnDeviceModelDownload);
-  component_installer_registered_ = false;
+  component_installer_state_ = ComponentInstallerState::kNotRegistered;
 }
 
 void OnDeviceModelComponentStateManager::OnPerformanceClassAvailable() {
@@ -366,6 +378,12 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
   BeginUpdateRegistration();
 }
 
+void OnDeviceModelComponentStateManager::MaybeBeginBackgroundModelDownload() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  background_download_requested_ = true;
+  BeginUpdateRegistration();
+}
+
 void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!performance_classifier_->IsPerformanceClassAvailable()) {
@@ -390,7 +408,7 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
   delegate_->GetFreeDiskSpace(
       delegate_->GetInstallDirectory(),
       base::BindOnce(
-          &OnDeviceModelComponentStateManager::CompleteUpdateRegistration,
+          &OnDeviceModelComponentStateManager::UpdateRegistrationCriteria,
           GetWeakPtr()));
 }
 
@@ -399,6 +417,7 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
     base::ByteCount disk_space_free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegistrationCriteria result;
+  result.background_download_requested = background_download_requested_;
   result.disk_space_free = disk_space_free_bytes;
   result.device_capable = performance_classifier_->IsDeviceCapable();
   result.on_device_feature_recently_used =
@@ -426,7 +445,7 @@ OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
   return result;
 }
 
-void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
+void OnDeviceModelComponentStateManager::UpdateRegistrationCriteria(
     std::optional<base::ByteCount> disk_space_free) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/438265416): Handle failure to get free disk space.
@@ -440,26 +459,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     NotifyStateChanged();
   }
 
-  if (criteria.should_uninstall()) {
-    // Don't allow UpdateRegistration to do anything until after
-    // UninstallComplete.
-    component_installer_registered_ = true;
-    // Uninstall the component which will delete the model files, after a short
-    // delay to give time for the consumers to unload the model.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComponent,
-                       GetWeakPtr()),
-        kUninstallDelay);
-  } else if (!component_installer_registered_ &&
-             (criteria.should_install() || criteria.is_already_installing)) {
-    component_installer_registered_ = true;
-    delegate_->RegisterInstaller(
-        GetWeakPtr(), OnDeviceModelRegistrationAttributes(
-                          performance_classifier_->GetPossibleHints()));
-  }
-
-  if (criteria.should_install()) {
+  if (criteria.get_install_mode().has_value()) {
     local_state_->SetTime(model_execution::prefs::localstate::
                               kLastTimeEligibleForOnDeviceModelDownload,
                           base::Time::Now());
@@ -470,6 +470,56 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     LogInstallCriteria(criteria, "AtRegistration",
                        disk_space_free.value_or(base::ByteCount(-1)).InGiB());
   }
+
+  UpdateRegistration();
+}
+
+void OnDeviceModelComponentStateManager::UpdateRegistration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(registration_criteria_);
+
+  if (component_installer_state_ == ComponentInstallerState::kRegistering ||
+      component_installer_state_ == ComponentInstallerState::kUninstalling) {
+    // Can't do anything right now, wait for InstallerRegistered() /
+    // UninstallComplete() for next action.
+    return;
+  }
+  if (registration_criteria_->should_uninstall()) {
+    component_installer_state_ = ComponentInstallerState::kUninstalling;
+    // Uninstall the component which will delete the model files, after a
+    // short delay to give time for the consumers to unload the model.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComponent,
+                       GetWeakPtr()),
+        kUninstallDelay);
+    return;
+  }
+
+  if (component_installer_state_ == ComponentInstallerState::kNotRegistered) {
+    if (registration_criteria_->get_install_mode().has_value() ||
+        registration_criteria_->is_already_installing) {
+      component_installer_state_ = ComponentInstallerState::kRegistering;
+      delegate_->RegisterInstaller(
+          GetWeakPtr(), OnDeviceModelRegistrationAttributes(
+                            performance_classifier_->GetPossibleHints()));
+    }
+    return;
+  }
+
+  if (component_installer_state_ ==
+      ComponentInstallerState::kBackgroundDownloading) {
+    if (registration_criteria_->get_install_mode() ==
+        ModelInstallMode::kOnDemand) {
+      component_installer_state_ =
+          ComponentInstallerState::kOnDemandDownloading;
+      delegate_->RequestUpdate();
+    }
+    return;
+  }
+  CHECK(component_installer_state_ ==
+            ComponentInstallerState::kOnDemandDownloading ||
+        component_installer_state_ == ComponentInstallerState::kInstalled);
 }
 
 void OnDeviceModelComponentStateManager::UninstallComponent() {
@@ -503,14 +553,17 @@ OnDeviceModelComponentStateManager::GetOnDeviceModelState() {
   if (!registration_criteria_) {
     return base::unexpected(OnDeviceModelStatus::kNotReadyForUnknownReason);
   }
-  if (component_installer_registered_) {
-    return base::unexpected(OnDeviceModelStatus::kInstallNotComplete);
-  }
   if (!registration_criteria_->is_model_allowed()) {
     return base::unexpected(OnDeviceModelStatus::kNotEligible);
   }
   if (!registration_criteria_->is_disk_space_available()) {
     return base::unexpected(OnDeviceModelStatus::kInsufficientDiskSpace);
+  }
+  bool is_installing =
+      component_installer_state_ != ComponentInstallerState::kNotRegistered &&
+      component_installer_state_ != ComponentInstallerState::kUninstalling;
+  if (is_installing) {
+    return base::unexpected(OnDeviceModelStatus::kInstallNotComplete);
   }
   if (!registration_criteria_->on_device_feature_recently_used) {
     return base::unexpected(OnDeviceModelStatus::kNoOnDeviceFeatureUsed);

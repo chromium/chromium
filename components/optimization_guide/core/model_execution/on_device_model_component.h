@@ -133,6 +133,13 @@ class OnDeviceModelComponentState {
   OnDeviceBaseModelSpec model_spec_;
 };
 
+enum class ModelInstallMode {
+  // Install the model on-demand (foreground download).
+  kOnDemand,
+  // Install the model on regular schedule (background download).
+  kBackground,
+};
+
 // The attributes selected when registering an on-device model component.
 struct OnDeviceModelRegistrationAttributes {
  public:
@@ -186,6 +193,10 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // completes.
     virtual void Uninstall(
         base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) = 0;
+
+    // Request on demand update. Assumes that `RegisterInstaller` has already
+    // been called.
+    virtual void RequestUpdate() = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -213,6 +224,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     // The component may or may not be ready.
     bool is_already_installing = false;
 
+    // Whether background download was requested.
+    bool background_download_requested = false;
+
     // Most recently queried disk space available for model install.
     base::ByteCount disk_space_free;
 
@@ -231,12 +245,18 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
              enabled_by_enterprise_policy && enabled_by_user_setting;
     }
 
-    bool should_install() const {
-      if (should_uninstall()) {
-        return false;
+    std::optional<ModelInstallMode> get_install_mode() const {
+      if (should_uninstall() || !is_disk_space_available() ||
+          !is_model_allowed()) {
+        return std::nullopt;
       }
-      return (is_disk_space_available() && is_model_allowed() &&
-              on_device_feature_recently_used);
+      if (on_device_feature_recently_used) {
+        return ModelInstallMode::kOnDemand;
+      }
+      if (background_download_requested) {
+        return ModelInstallMode::kBackground;
+      }
+      return std::nullopt;
     }
 
     bool should_uninstall() const {
@@ -244,6 +264,21 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
               (is_running_out_of_disk_space() || out_of_retention ||
                !enabled_by_enterprise_policy || !enabled_by_user_setting));
     }
+  };
+
+  enum class ComponentInstallerState {
+    // Component not registered, e.g, already uninstalled, never installed.
+    kNotRegistered,
+    // RegisterInstaller called, waiting for completion.
+    kRegistering,
+    // Registration completed and waiting for installation in background.
+    kBackgroundDownloading,
+    // Registered and requested on demand update.
+    kOnDemandDownloading,
+    // Component is fully installed.
+    kInstalled,
+    // Uninstall called, waiting for completion.
+    kUninstalling,
   };
 
   OnDeviceModelComponentStateManager(
@@ -286,13 +321,17 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
                 const base::Value::Dict& manifest);
 
   // Called after the installer is successfully registered.
-  void InstallerRegistered();
+  void InstallerRegistered(bool is_already_installed);
 
   // Called when the on-device component has been uninstalled.
   void UninstallComplete();
 
   // Used by the chrome://on-device-internals page to uninstall the model.
   void ForceUninstall();
+
+  // Starts the background model download. No-op if the component is already
+  // installed. Used for proactively downloading the model.
+  void MaybeBeginBackgroundModelDownload();
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -319,6 +358,10 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
   void CompleteUpdateRegistration(
       std::optional<base::ByteCount> disk_space_free);
 
+  void UpdateRegistrationCriteria(
+      std::optional<base::ByteCount> disk_space_free);
+  void UpdateRegistration();
+
   // Uninstalls the component.
   void UninstallComponent();
 
@@ -334,7 +377,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool component_installer_registered_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  ComponentInstallerState component_installer_state_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = ComponentInstallerState::kNotRegistered;
+  bool background_download_requested_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
   PrefChangeRegistrar pref_change_registrar_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -98,6 +98,11 @@ class OnDeviceModelComponentStateManagerDelegate
     component_updater::UninstallOptimizationGuideOnDeviceModelComponent(
         std::move(state_manager));
   }
+
+  void RequestUpdate() override {
+    component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+        UpdateOnDemand();
+  }
 };
 
 void LaunchService(

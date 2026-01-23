@@ -176,13 +176,9 @@ void RegisterOptimizationGuideOnDeviceModelComponent(
   auto register_callback = base::BindOnce(
       [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
          ComponentUpdateService* cus) {
-        if (!IsOnDeviceModelAlreadyInstalled(cus)) {
-          // If we don't have ANY usable model, trigger an on-demand update
-          // so that we can get one more quickly.
-          OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand();
-        }
         if (state_manager) {
-          state_manager->InstallerRegistered();
+          state_manager->InstallerRegistered(
+              IsOnDeviceModelAlreadyInstalled(cus));
         }
       },
       state_manager->GetWeakPtr(), cus);
