@@ -274,6 +274,7 @@
   display: -webkit-box;
   overflow: hidden;
   word-break: break-word;
+  white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
