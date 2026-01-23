@@ -387,9 +387,13 @@ GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
     icons.push_back(icon);
   }
 
-  return blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-      icons, brand_icon_ideal_size, brand_icon_minimum_size,
-      blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+  blink::ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px = brand_icon_ideal_size;
+  params.minimum_icon_size_in_px = brand_icon_minimum_size;
+  params.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+  auto result =
+      blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
+  return result ? result->icon_url : GURL();
 }
 
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|

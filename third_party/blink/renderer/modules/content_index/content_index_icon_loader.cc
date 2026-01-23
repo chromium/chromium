@@ -63,13 +63,15 @@ std::vector<Manifest::ImageResource> ToImageResource(
 
 KURL FindBestIcon(std::vector<Manifest::ImageResource> image_resources,
                   const gfx::Size& icon_size) {
-  return KURL(ManifestIconSelector::FindBestMatchingIcon(
-      image_resources,
-      /* ideal_icon_height_in_px= */ icon_size.height(),
-      /* minimum_icon_size_in_px= */ 0,
-      /* max_width_to_height_ratio= */ icon_size.width() * 1.0f /
-          icon_size.height(),
-      mojom::ManifestImageResource_Purpose::ANY));
+  ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px = icon_size.height();
+  params.minimum_icon_size_in_px = 0;
+  params.max_width_to_height_ratio =
+      static_cast<float>(icon_size.width()) / icon_size.height();
+  params.purpose = mojom::ManifestImageResource_Purpose::ANY;
+  std::optional<ManifestIconSelectorResult> result =
+      ManifestIconSelector::FindBestMatchingIcon(image_resources, params);
+  return result ? KURL(result->icon_url) : KURL();
 }
 
 }  // namespace

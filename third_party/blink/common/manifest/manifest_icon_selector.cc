@@ -6,113 +6,153 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
 namespace blink {
 
-// static
-BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingSquareIcon(
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    int ideal_icon_size_in_px,
-    int minimum_icon_size_in_px,
-    blink::mojom::ManifestImageResource_Purpose purpose) {
-  return FindBestMatchingIcon(icons, ideal_icon_size_in_px,
-                              minimum_icon_size_in_px,
-                              1 /*max_width_to_height_ratio */, purpose);
-}
+namespace {
 
-// static
-BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    int ideal_icon_height_in_px,
-    int minimum_icon_height_in_px,
-    float max_width_to_height_ratio,
-    blink::mojom::ManifestImageResource_Purpose purpose) {
-  DCHECK_LE(minimum_icon_height_in_px, ideal_icon_height_in_px);
-  DCHECK_GE(max_width_to_height_ratio, 1.0);
+constexpr const char* kLimitedMimeTypes[] = {"image/png", "image/svg+xml",
+                                             "image/webp"};
 
-  // Icon with exact matching size has priority over icon with size "any", which
-  // has priority over icon with closest matching size.
-  int latest_size_any_index = -1;
-  int closest_size_match_index = -1;
-  int best_delta_in_size = std::numeric_limits<int>::min();
+bool IsIconTypeSupported(const Manifest::ImageResource& icon,
+                         bool limited_image_types_for_installable_icon) {
+  // The type field is optional. If it isn't present, fall back on checking
+  // the src extension.
+  std::string mime_type = base::UTF16ToUTF8(icon.type);
+  if (mime_type.empty()) {
+    net::GetWellKnownMimeTypeFromFile(
+        base::FilePath::FromASCII(icon.src.ExtractFileName()), &mime_type);
+    if (mime_type.empty()) {
+      return false;
+    }
+  }
 
-  for (size_t i = 0; i < icons.size(); ++i) {
-    const auto& icon = icons[i];
-
-    // Check for supported image MIME types.
-    if (!icon.type.empty()) {
-      std::string type = base::UTF16ToUTF8(icon.type);
-      if (!(blink::IsSupportedImageMimeType(base::UTF16ToUTF8(icon.type)) ||
-            // The following condition is intended to support image/svg+xml:
-            (base::UTF16ToUTF8(icon.type).starts_with("image/") &&
-             blink::IsSupportedNonImageMimeType(
-                 base::UTF16ToUTF8(icon.type))))) {
-        continue;
+  if (limited_image_types_for_installable_icon) {
+    for (const char* limited_type : kLimitedMimeTypes) {
+      if (mime_type.compare(limited_type) == 0) {
+        return true;
       }
     }
+    return false;
+  }
 
-    // Check for icon purpose.
-    if (!std::ranges::contains(icon.purpose, purpose))
+  return blink::IsSupportedImageMimeType(mime_type) ||
+         (mime_type.starts_with("image/") &&
+          blink::IsSupportedNonImageMimeType(mime_type));
+}
+
+bool IsIconSvg(const Manifest::ImageResource& icon) {
+  if (base::EqualsASCII(icon.type, "image/svg+xml")) {
+    return true;
+  }
+  return icon.type.empty() &&
+         base::EndsWith(icon.src.ExtractFileName(), ".svg",
+                        base::CompareCase::INSENSITIVE_ASCII);
+}
+
+}  // namespace
+
+// static
+std::optional<ManifestIconSelectorResult>
+ManifestIconSelector::FindBestMatchingIcon(
+    const std::vector<blink::Manifest::ImageResource>& icons,
+    const ManifestIconSelectorParams& params) {
+  DCHECK_GE(params.max_width_to_height_ratio, 1.0f);
+
+  std::optional<ManifestIconSelectorResult> best_raster_icon;
+  std::optional<ManifestIconSelectorResult> best_svg_icon;
+  std::optional<ManifestIconSelectorResult> fallback_any_icon;
+  int best_delta = std::numeric_limits<int>::min();
+
+  for (const auto& icon : icons) {
+    if (!std::ranges::contains(icon.purpose, params.purpose) ||
+        !IsIconTypeSupported(icon,
+                             params.limited_image_types_for_installable_icon)) {
       continue;
+    }
 
-    // Check for size constraints.
-    for (const gfx::Size& size : icon.sizes) {
-      // Check for size "any". Return this icon if no better one is found.
+    for (const auto& size : icon.sizes) {
       if (size.IsEmpty()) {
-        latest_size_any_index = i;
+        // Handle "any" size icons.
+        if (IsIconSvg(icon)) {
+          best_svg_icon =
+              ManifestIconSelectorResult{icon.src, gfx::Size(), params.purpose};
+        } else {
+          fallback_any_icon =
+              ManifestIconSelectorResult{icon.src, gfx::Size(), params.purpose};
+        }
+        continue;
+      }
+      // Skip icons with a single dimension of 0.
+      if (size.width() == 0 || size.height() == 0) {
         continue;
       }
 
       // Check for minimum size.
-      if (size.height() < minimum_icon_height_in_px)
+      if (size.height() < params.minimum_icon_size_in_px) {
         continue;
+      }
 
-      // Check for width to height ratio.
+      if (size.width() > params.maximum_icon_size_in_px ||
+          size.height() > params.maximum_icon_size_in_px) {
+        continue;
+      }
+
       float width = static_cast<float>(size.width());
       float height = static_cast<float>(size.height());
       DCHECK_GT(height, 0);
-      float ratio = width / height;
-      if (ratio < 1 || ratio > max_width_to_height_ratio)
-        continue;
-
-      // According to the spec when there are multiple equally appropriate icons
-      // we should choose the last one declared in the list:
-      // https://w3c.github.io/manifest/#icons-member
-      if (size.height() == ideal_icon_height_in_px) {
-        closest_size_match_index = i;
-        best_delta_in_size = 0;
+      DCHECK_GT(width, 0);
+      // Calculate ratio in an orientation-agnostic way.
+      float ratio = width > height ? width / height : height / width;
+      if (ratio > params.max_width_to_height_ratio) {
         continue;
       }
 
-      // Check for closest match.
-      int delta = size.height() - ideal_icon_height_in_px;
-
-      // Smallest icon larger than ideal size has priority over largest icon
-      // smaller than ideal size.
-      if (best_delta_in_size > 0 && delta < 0)
+      int delta = size.height() - params.ideal_icon_size_in_px;
+      if (delta < 0 && best_delta > 0) {
         continue;
-
-      if ((best_delta_in_size > 0 && delta < best_delta_in_size) ||
-          (best_delta_in_size < 0 && delta > best_delta_in_size)) {
-        closest_size_match_index = i;
-        best_delta_in_size = delta;
+      }
+      if (best_delta == std::numeric_limits<int>::min() ||
+          (delta > 0 && best_delta < 0) ||
+          std::abs(delta) <= std::abs(best_delta)) {
+        best_delta = delta;
+        best_raster_icon =
+            ManifestIconSelectorResult{icon.src, size, params.purpose};
       }
     }
   }
-
-  if (best_delta_in_size == 0) {
-    DCHECK_NE(closest_size_match_index, -1);
-    return icons[closest_size_match_index].src;
+  // Now, determine which icon to return based on SVG handling policy.
+  if (best_raster_icon && best_delta == 0) {
+    return best_raster_icon;
   }
-  if (latest_size_any_index != -1)
-    return icons[latest_size_any_index].src;
-  if (closest_size_match_index != -1)
-    return icons[closest_size_match_index].src;
-  return GURL();
+  if (params.svg_handling ==
+      ManifestIconSelectorParams::AnySizeSvgHandling::kAsSecondPriority) {
+    if (best_svg_icon) {
+      return best_svg_icon;
+    }
+    if (fallback_any_icon) {
+      return fallback_any_icon;
+    }
+  }
+  if (best_raster_icon) {
+    return best_raster_icon;
+  }
+  if (best_svg_icon) {
+    DCHECK_EQ(params.svg_handling,
+              ManifestIconSelectorParams::AnySizeSvgHandling::kAsFallback);
+    return best_svg_icon;
+  }
+  if (fallback_any_icon) {
+    return fallback_any_icon;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace blink

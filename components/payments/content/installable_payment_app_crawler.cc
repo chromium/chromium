@@ -471,18 +471,23 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
   }
 
   gfx::NativeView native_view = web_contents->GetNativeView();
-  GURL best_icon_url = blink::ManifestIconSelector::FindBestMatchingIcon(
-      manifest_icons, IconSizeCalculator::IdealIconHeight(native_view),
-      IconSizeCalculator::MinimumIconHeight(),
-      content::ManifestIconDownloader::kMaxWidthToHeightRatio,
-      blink::mojom::ManifestImageResource_Purpose::ANY);
-  if (!best_icon_url.is_valid()) {
+  blink::ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px =
+      IconSizeCalculator::IdealIconHeight(native_view);
+  params.minimum_icon_size_in_px = IconSizeCalculator::MinimumIconHeight();
+  params.max_width_to_height_ratio =
+      content::ManifestIconDownloader::kMaxWidthToHeightRatio;
+  params.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
+  std::optional<blink::ManifestIconSelectorResult> result =
+      blink::ManifestIconSelector::FindBestMatchingIcon(manifest_icons, params);
+  if (!result) {
     log_.Warn(base::StrCat({"No suitable icon found in web app manifest \"",
                             web_app_manifest_url.spec(),
                             "\" for payment handler manifest \"",
                             method_manifest_url.spec(), "\"."}));
     return false;
   }
+  GURL best_icon_url = result->icon_url;
 
   number_of_web_app_icons_to_download_and_decode_++;
 

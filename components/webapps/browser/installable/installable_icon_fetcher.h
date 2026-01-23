@@ -78,11 +78,10 @@ class InstallableIconFetcher {
 
   const raw_ref<const std::vector<blink::Manifest::ImageResource>>
       manifest_icons_;
-  const bool prefer_maskable_;
+  bool prefer_maskable_;
   const bool fetch_favicon_;
   base::OnceCallback<void(InstallableStatusCode)> finish_callback_;
 
-  std::vector<IconPurpose> downloading_icons_type_;
   base::CancelableTaskTracker favicon_task_tracker_;
 
   base::WeakPtrFactory<InstallableIconFetcher> weak_ptr_factory_{this};

@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/webapps/browser/installable/installable_evaluator.h"
+#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -21,7 +22,7 @@ namespace web_app {
 
 namespace {
 
-constexpr SquareSizePx kMaxIconSizeForMaskableIcons = 256;
+constexpr SquareSizePx kMinIconSizeForMaskableIcons = 256;
 constexpr SquareSizePx kIconSizeForSVGNoIntrinsicSize = 1024;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -31,90 +32,47 @@ constexpr bool kPreferMaskableIcons = false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
-
 std::optional<apps::IconInfo> GetTrustedIconsFromManifest(
     const std::vector<blink::Manifest::ImageResource>& icons) {
-  // Keep track of largest icon per purpose based on all the entries in the
-  // manifest.
-  base::flat_map<IconPurpose, IconUrlWithSize> purpose_to_icon_data_map;
-  // Keep track of any SVG icons of no size, if found.
-  base::flat_map<IconPurpose, GURL> svg_icons_no_size;
-  for (const auto& icon : icons) {
-    CHECK(!icon.purpose.empty());
+  blink::ManifestIconSelectorParams params;
+  params.svg_handling =
+      blink::ManifestIconSelectorParams::AnySizeSvgHandling::kAsFallback;
+  params.ideal_icon_size_in_px =
+      webapps::InstallableEvaluator::kMaximumIconSizeInPx;
+  params.maximum_icon_size_in_px =
+      webapps::InstallableEvaluator::kMaximumIconSizeInPx;
+  params.limited_image_types_for_installable_icon = true;
 
-    for (IconPurpose purpose : icon.purpose) {
-      if (std::ranges::contains(icon.sizes, gfx::Size()) &&
-          icon.src.spec().contains(".svg")) {
-        svg_icons_no_size[purpose] = icon.src;
-      }
-
-      for (const auto& size : icon.sizes) {
-        // Exit early if sizes are empty, or if there are no square icons, or if
-        // the size is more than the maximum size supported by the web
-        // applications system.
-        if (size.IsZero() || (size.width() != size.height()) ||
-            (size.width() >
-             webapps::InstallableEvaluator::kMaximumIconSizeInPx)) {
-          continue;
-        }
-
-        auto it = purpose_to_icon_data_map.find(purpose);
-        // Insert or assign if the purpose doesn't exist yet, or if the new icon
-        // is larger than the one we already have for this purpose.
-        if (it == purpose_to_icon_data_map.end() ||
-            size.width() >= it->second.size.width()) {
-          purpose_to_icon_data_map.insert_or_assign(
-              purpose, IconUrlWithSize::Create(icon.src, size));
-          continue;
-        }
-      }
-    }
+  std::optional<blink::ManifestIconSelectorResult> result;
+  if (kPreferMaskableIcons) {
+    // Check for a maskable icon if one is preferred. Maskable icons have
+    // a minimum size, unlike the general case.
+    params.purpose = IconPurpose::MASKABLE;
+    params.minimum_icon_size_in_px = kMinIconSizeForMaskableIcons;
+    result = blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
   }
 
-  // Choose a maskable icon on MacOS and ChromeOS, otherwise choose an icon of
-  // purpose `any`.
-  auto maskable_it = purpose_to_icon_data_map.find(IconPurpose::MASKABLE);
-  if (kPreferMaskableIcons && maskable_it != purpose_to_icon_data_map.end() &&
-      maskable_it->second.size.width() >= kMaxIconSizeForMaskableIcons) {
-    apps::IconInfo primary_icon_info;
-    primary_icon_info.square_size_px = maskable_it->second.size.width();
-    primary_icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
-    primary_icon_info.url = maskable_it->second.url;
-    return primary_icon_info;
+  if (!result) {
+    params.purpose = IconPurpose::ANY;
+    params.minimum_icon_size_in_px = 0;
+    result = blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
   }
 
-  auto any_it = purpose_to_icon_data_map.find(IconPurpose::ANY);
-  if (any_it != purpose_to_icon_data_map.end()) {
-    apps::IconInfo primary_icon_info;
-    primary_icon_info.square_size_px = any_it->second.size.width();
-    primary_icon_info.purpose = apps::IconInfo::Purpose::kAny;
-    primary_icon_info.url = any_it->second.url;
-    return primary_icon_info;
+  if (!result) {
+    return std::nullopt;
   }
 
-  // Fallback to using SVG icons if no existing primary_icon_info is found (AKA
-  // if the manifest has icons of an empty size specified) with the same
-  // behavior applied above.
-  if (kPreferMaskableIcons &&
-      svg_icons_no_size.contains(IconPurpose::MASKABLE)) {
-    apps::IconInfo primary_icon_info;
+  apps::IconInfo primary_icon_info;
+  primary_icon_info.url = result->icon_url;
+  primary_icon_info.purpose =
+      ManifestPurposeToIconInfoPurpose(result->icon_purpose);
+  if (result->icon_size.IsEmpty()) {
     primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
-    primary_icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
-    primary_icon_info.url = svg_icons_no_size[IconPurpose::MASKABLE];
-    return primary_icon_info;
+  } else {
+    primary_icon_info.square_size_px = result->icon_size.width();
   }
 
-  if (svg_icons_no_size.contains(IconPurpose::ANY)) {
-    apps::IconInfo primary_icon_info;
-    primary_icon_info.square_size_px = kIconSizeForSVGNoIntrinsicSize;
-    primary_icon_info.purpose = apps::IconInfo::Purpose::kAny;
-    primary_icon_info.url = svg_icons_no_size[IconPurpose::ANY];
-    return primary_icon_info;
-  }
-
-  // No primary icon was found after parsing, icons will be generated from the
-  // title of the web app itself.
-  return std::nullopt;
+  return primary_icon_info;
 }
 
 }  // namespace web_app

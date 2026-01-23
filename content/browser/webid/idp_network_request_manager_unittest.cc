@@ -1915,7 +1915,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   {
     const std::string privacy_policy_url = "https://privacy.policy";
     const std::string terms_of_service_url = "http://terms.of.service";
-    const std::string brand_icon_url = "http://rp.brand.icon";
+    const std::string brand_icon_url = "http://rp.brand/icon.ico";
 
     IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
         /*client_id=*/"123", R"({"privacy_policy_url": ")" +
@@ -1938,7 +1938,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   {
     const std::string privacy_policy_url = "http://localhost";
     const std::string terms_of_service_url = "http://127.0.0.1";
-    const std::string brand_icon_url = "http://localhost";
+    const std::string brand_icon_url = "http://localhost/icon.ico";
 
     IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
         /*client_id=*/"123", R"({"privacy_policy_url": ")" +

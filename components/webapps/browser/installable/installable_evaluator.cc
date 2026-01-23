@@ -17,6 +17,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
@@ -30,17 +31,6 @@ using IconPurpose = blink::mojom::ManifestImageResource_Purpose;
 // factor of a Nexus 5 device (3x). It is the currently advertised minimum icon
 // size for triggering banners.
 const int kMinimumPrimaryIconSizeInPx = 144;
-
-struct ImageTypeDetails {
-  const char* extension;
-  const char* mimetype;
-};
-
-constexpr ImageTypeDetails kSupportedImageTypes[] = {
-    {".png", "image/png"},
-    {".svg", "image/svg+xml"},
-    {".webp", "image/webp"},
-};
 
 InstallableStatusCode HasManifestOrAtRootScope(
     InstallableCriteria criteria,
@@ -124,54 +114,19 @@ bool HasValidName(const blink::mojom::Manifest& manifest,
   }
 }
 
-bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
-  // The type field is optional. If it isn't present, fall back on checking
-  // the src extension.
-  if (icon.type.empty()) {
-    std::string filename = icon.src.ExtractFileName();
-    for (const ImageTypeDetails& details : kSupportedImageTypes) {
-      if (base::EndsWith(filename, details.extension,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  for (const ImageTypeDetails& details : kSupportedImageTypes) {
-    if (base::EqualsASCII(icon.type, details.mimetype)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Returns whether |manifest| specifies an SVG or PNG icon that has
+// Returns whether |manifest| specifies a supported icon that has
 // IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any").
 bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
-  for (const auto& icon : manifest.icons) {
-    if (!IsIconTypeSupported(icon)) {
-      continue;
-    }
-
-    if (!std::ranges::contains(icon.purpose, IconPurpose::ANY)) {
-      continue;
-    }
-
-    for (const auto& size : icon.sizes) {
-      if (size.IsEmpty()) {  // "any"
-        return true;
-      }
-      if (size.width() >= InstallableEvaluator::GetMinimumIconSizeInPx() &&
-          size.height() >= InstallableEvaluator::GetMinimumIconSizeInPx() &&
-          size.width() <= InstallableEvaluator::kMaximumIconSizeInPx &&
-          size.height() <= InstallableEvaluator::kMaximumIconSizeInPx) {
-        return true;
-      }
-    }
-  }
-
-  return false;
+  blink::ManifestIconSelectorParams params;
+  params.purpose = IconPurpose::ANY;
+  params.minimum_icon_size_in_px =
+      InstallableEvaluator::GetMinimumIconSizeInPx();
+  params.maximum_icon_size_in_px = InstallableEvaluator::kMaximumIconSizeInPx;
+  params.max_width_to_height_ratio = std::numeric_limits<float>::max();
+  params.limited_image_types_for_installable_icon = true;
+  return blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons,
+                                                           params)
+      .has_value();
 }
 
 bool HasNonDefaultFavicon(content::WebContents* web_contents) {

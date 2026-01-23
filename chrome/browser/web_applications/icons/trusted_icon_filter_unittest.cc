@@ -210,10 +210,12 @@ TEST(TrustedIconFilterTest, SvgWithEmptySizeButNotSvgUrl) {
       CreateIcon(GURL("http://example.com/icon.png"), {gfx::Size()},
                  {IconPurpose::ANY}),
   };
-  EXPECT_FALSE(GetTrustedIconsFromManifest(icons).has_value());
+  auto icon_info = GetTrustedIconsFromManifest(icons);
+  ASSERT_TRUE(icon_info.has_value());
+  EXPECT_EQ(icon_info->url, GURL("http://example.com/icon.png"));
 }
 
-TEST(TrustedIconFilterTest, PngWithAnySizeIsIgnoredWithSvgFallback) {
+TEST(TrustedIconFilterTest, PngWithAnySizeIsIgnoredWithSvgFallback1) {
   std::vector<blink::Manifest::ImageResource> icons{
       CreateIcon(GURL("http://example.com/icon.png"), {gfx::Size()},
                  {IconPurpose::ANY}),
@@ -223,6 +225,37 @@ TEST(TrustedIconFilterTest, PngWithAnySizeIsIgnoredWithSvgFallback) {
   auto icon_info = GetTrustedIconsFromManifest(icons);
   ASSERT_TRUE(icon_info.has_value());
   EXPECT_EQ(icon_info->url, GURL("http://example.com/icon.svg"));
+}
+
+TEST(TrustedIconFilterTest, PngWithAnySizeIsIgnoredWithSvgFallback2) {
+  std::vector<blink::Manifest::ImageResource> icons{
+      CreateIcon(GURL("http://example.com/icon.svg"), {gfx::Size()},
+                 {IconPurpose::ANY}),
+      CreateIcon(GURL("http://example.com/icon.png"), {gfx::Size()},
+                 {IconPurpose::ANY})};
+  auto icon_info = GetTrustedIconsFromManifest(icons);
+  ASSERT_TRUE(icon_info.has_value());
+  EXPECT_EQ(icon_info->url, GURL("http://example.com/icon.svg"));
+}
+
+TEST(TrustedIconFilterTest, SvgMaskableVersusPngWithIdealSize) {
+  std::vector<blink::Manifest::ImageResource> icons{
+      CreateIcon(GURL("http://example.com/maskable.svg"), {gfx::Size()},
+                 {IconPurpose::MASKABLE}),
+      CreateIcon(GURL("http://example.com/any.png"), {gfx::Size(256, 256)},
+                 {IconPurpose::ANY})};
+  auto icon_info = GetTrustedIconsFromManifest(icons);
+  ASSERT_TRUE(icon_info.has_value());
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(icon_info->url, GURL("http://example.com/maskable.svg"));
+  EXPECT_EQ(icon_info->square_size_px, 1024);
+  EXPECT_EQ(icon_info->purpose, apps::IconInfo::Purpose::kMaskable);
+#else
+  EXPECT_EQ(icon_info->url, GURL("http://example.com/any.png"));
+  EXPECT_EQ(icon_info->square_size_px, 256);
+  EXPECT_EQ(icon_info->purpose, apps::IconInfo::Purpose::kAny);
+#endif
 }
 
 }  // namespace web_app

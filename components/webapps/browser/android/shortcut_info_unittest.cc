@@ -295,26 +295,26 @@ TEST_F(ShortcutInfoTest, IgnoreEmptyNameAndShortName) {
 TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
   manifest_.shortcuts.push_back(CreateShortcut(
       "shortcut_1",
-      {CreateImage("/i1_1", {16, 16}, Purpose::ANY),
-       CreateImage("/i1_2", {64, 64}, Purpose::ANY),
-       CreateImage("/i1_3", {192, 192}, Purpose::ANY),  // best icon.
-       CreateImage("/i1_4", {256, 256}, Purpose::ANY)}));
+      {CreateImage("/i1_1.ico", {16, 16}, Purpose::ANY),
+       CreateImage("/i1_2.ico", {64, 64}, Purpose::ANY),
+       CreateImage("/i1_3.ico", {192, 192}, Purpose::ANY),  // best icon.
+       CreateImage("/i1_4.ico", {256, 256}, Purpose::ANY)}));
 
   manifest_.shortcuts.push_back(CreateShortcut(
       "shortcut_2",
-      {CreateImage("/i2_1", {192, 194}, Purpose::ANY),  // not square.
-       CreateImage("/i2_2", {194, 194}, Purpose::ANY)}));
+      {CreateImage("/i2_1.ico", {192, 194}, Purpose::ANY),  // not square.
+       CreateImage("/i2_2.ico", {194, 194}, Purpose::ANY)}));
 
   // Nothing chosen.
   manifest_.shortcuts.push_back(CreateShortcut(
-      "shortcut_3", {CreateImage("/i3_1", {16, 16}, Purpose::ANY)}));
+      "shortcut_3", {CreateImage("/i3_1.ico", {16, 16}, Purpose::ANY)}));
 
   WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
   info_.UpdateFromManifest(manifest_);
 
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
-  EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1_3");
-  EXPECT_EQ(info_.best_shortcut_icon_urls[1].GetPath(), "/i2_2");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1_3.ico");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[1].GetPath(), "/i2_2.ico");
   EXPECT_FALSE(info_.best_shortcut_icon_urls[2].is_valid());
 }
 

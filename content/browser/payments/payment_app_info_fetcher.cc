@@ -242,12 +242,19 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
   }
   gfx::NativeView native_view = web_contents_->GetNativeView();
 
-  icon_url_ = blink::ManifestIconSelector::FindBestMatchingIcon(
-      manifest->icons,
-      payments::IconSizeCalculator::IdealIconHeight(native_view),
-      payments::IconSizeCalculator::MinimumIconHeight(),
-      ManifestIconDownloader::kMaxWidthToHeightRatio,
-      blink::mojom::ManifestImageResource_Purpose::ANY);
+  blink::ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px =
+      payments::IconSizeCalculator::IdealIconHeight(native_view);
+  params.minimum_icon_size_in_px =
+      payments::IconSizeCalculator::MinimumIconHeight();
+  params.max_width_to_height_ratio =
+      ManifestIconDownloader::kMaxWidthToHeightRatio;
+  params.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
+  std::optional<blink::ManifestIconSelectorResult> icon_result =
+      blink::ManifestIconSelector::FindBestMatchingIcon(manifest->icons, params);
+  if (icon_result) {
+    icon_url_ = icon_result->icon_url;
+  }
   if (!icon_url_.is_valid()) {
     WarnIfPossible(
         "No suitable payment handler icon found in the \"icons\" field defined "
