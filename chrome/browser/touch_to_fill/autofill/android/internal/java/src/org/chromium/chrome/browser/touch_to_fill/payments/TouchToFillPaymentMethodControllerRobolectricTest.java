@@ -1947,9 +1947,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                 R.string.autofill_bnpl_tos_unlinked_title,
                                 BNPL_ISSUER_TOS_DETAIL_AFFIRM.getIssuerName())));
         assertThat(headerModel.get(0).get(ISSUER_IMAGE_DRAWABLE_ID), is(R.drawable.google_pay));
-        assertThat(
-                headerModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
-                is(R.string.autofill_google_pay_and_affirm_logo_accessible_name));
 
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(bnplTosItemModel.size(), is(3));
@@ -1979,16 +1976,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
-    // Move the assert in this test back to testShowBnplIssuerTos() when the flag is cleaned up.
+    // Move the asserts in this test back to testShowBnplIssuerTos() when the flag is cleaned up.
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testShowBnplIssuerTos_ReviewText_WalletBrandingEnabled() {
+    public void testShowBnplIssuerTos_WalletBrandingEnabled() {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
-        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
+        List<PropertyModel> bnplTosHeaderModel = getModelsOfType(itemList, TOS_HEADER);
+        assertThat(
+                bnplTosHeaderModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
+                is(R.string.autofill_bnpl_affirm));
 
+        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(
                 bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
                 is(
@@ -1999,14 +2000,18 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING})
-    public void testShowBnplIssuerTos_ReviewText_WalletBrandingDisabled() {
+    public void testShowBnplIssuerTos_WalletBrandingDisabled() {
         mCoordinator.showBnplIssuerTos(BNPL_ISSUER_TOS_DETAIL_AFFIRM);
 
         assertThat(mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN), is(BNPL_ISSUER_TOS_SCREEN));
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
-        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
+        List<PropertyModel> bnplTosHeaderModel = getModelsOfType(itemList, TOS_HEADER);
+        assertThat(
+                bnplTosHeaderModel.get(0).get(ICON_CONTENT_DESCRIPTION_ID),
+                is(R.string.autofill_google_pay_and_affirm_logo_accessible_name));
 
+        List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(
                 bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
                 is(

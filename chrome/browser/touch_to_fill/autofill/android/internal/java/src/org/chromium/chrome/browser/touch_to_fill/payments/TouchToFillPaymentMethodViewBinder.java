@@ -69,6 +69,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LINK_OPENER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -91,6 +92,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -414,6 +416,18 @@ class TouchToFillPaymentMethodViewBinder {
         TextView sheetHeaderTitle = view.findViewById(R.id.bnpl_tos_title);
 
         if (propertyKey == ISSUER_IMAGE_DRAWABLE_ID) {
+            // When AUTOFILL_ENABLE_WALLET_BRANDING is enabled, GPay gets removed from the BNPL
+            // issuer icon and the resulting icon appears larger. Because of this, when
+            // AUTOFILL_ENABLE_WALLET_BRANDING is enabled the icon height is reduced.
+            if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING)) {
+                Resources res = view.getContext().getResources();
+                int new_height =
+                        res.getDimensionPixelSize(
+                                R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
+                ViewGroup.LayoutParams params = sheetHeaderImage.getLayoutParams();
+                params.height = new_height;
+                sheetHeaderImage.setLayoutParams(params);
+            }
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(ISSUER_IMAGE_DRAWABLE_ID)));

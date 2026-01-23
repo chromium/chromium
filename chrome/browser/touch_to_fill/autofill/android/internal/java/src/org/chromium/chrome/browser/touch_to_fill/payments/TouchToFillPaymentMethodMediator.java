@@ -1618,13 +1618,24 @@ class TouchToFillPaymentMethodMediator {
     }
 
     private @StringRes int getTosIconContentDescriptionId() {
+        // The "Google Pay" part of the text from the accessibility strings should be removed when
+        // AUTOFILL_ENABLE_WALLET_BRANDING is enabled since the ToS icon would not include GPay
+        // branding anymore.
+        boolean useWalletBranding =
+                ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING);
         switch (mBnplIssuerIdWithTosShown) {
             case "affirm":
-                return R.string.autofill_google_pay_and_affirm_logo_accessible_name;
+                return useWalletBranding
+                        ? R.string.autofill_bnpl_affirm
+                        : R.string.autofill_google_pay_and_affirm_logo_accessible_name;
             case "klarna":
-                return R.string.autofill_google_pay_and_klarna_logo_accessible_name;
+                return useWalletBranding
+                        ? R.string.autofill_bnpl_klarna
+                        : R.string.autofill_google_pay_and_klarna_logo_accessible_name;
             case "zip":
-                return R.string.autofill_google_pay_and_zip_logo_accessible_name;
+                return useWalletBranding
+                        ? R.string.autofill_bnpl_zip
+                        : R.string.autofill_google_pay_and_zip_logo_accessible_name;
             default:
                 return R.string.autofill_google_pay_logo_accessible_name;
         }
