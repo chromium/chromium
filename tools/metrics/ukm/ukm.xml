@@ -18878,6 +18878,59 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PageLoad.CaptchaFrameActivation">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a frame from a known CAPTCHA provider is activated by the
+    client. This could mean the user clicked or tapped on the frame.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+  </summary>
+  <metric name="AgentContext" enum="CaptchaFrameAgentContext">
+    <summary>
+      This metric is split by whether an AI agent was active on the tab at the
+      time of the frame activation. AI agent activity is determined by
+      ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PageLoad.CaptchaFrameLoad">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a sub-frame is loaded from a known CAPTCHA provider.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+  </summary>
+  <metric name="AgentContext" enum="CaptchaFrameAgentContext">
+    <summary>
+      This metric is split by whether an AI agent was active on the tab at the
+      time of the frame load. AI agent activity is determined by
+      ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PageLoad.FromGoogleSearch" singular="True">
   <owner>sullivan@chromium.org</owner>
   <owner>mushan@chromium.org</owner>

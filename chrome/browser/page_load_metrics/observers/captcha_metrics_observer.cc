@@ -11,6 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -75,11 +76,15 @@ void CaptchaMetricsObserver::OnDidFinishSubFrameNavigation(
 
   if (CaptchaProviderManager::GetInstance()->IsCaptchaUrl(
           navigation_handle->GetURL())) {
-    base::UmaHistogramEnumeration(
-        "PageLoad.Clients.CaptchaFrameLoad",
+    const CaptchaFrameAgentContext agent_context =
         IsActorActingOnWebContents(GetDelegate().GetWebContents())
             ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
-            : CaptchaFrameAgentContext::kNoAgentActiveOnTab);
+            : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
+    base::UmaHistogramEnumeration("PageLoad.Clients.CaptchaFrameLoad",
+                                  agent_context);
+    ukm::builders::PageLoad_CaptchaFrameLoad(GetDelegate().GetPageUkmSourceId())
+        .SetAgentContext(static_cast<int64_t>(agent_context))
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 
@@ -91,11 +96,16 @@ void CaptchaMetricsObserver::FrameReceivedUserActivation(
 
   if (CaptchaProviderManager::GetInstance()->IsCaptchaUrl(
           render_frame_host->GetLastCommittedURL())) {
-    base::UmaHistogramEnumeration(
-        "PageLoad.Clients.CaptchaFrameActivation",
+    const CaptchaFrameAgentContext agent_context =
         IsActorActingOnWebContents(GetDelegate().GetWebContents())
             ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
-            : CaptchaFrameAgentContext::kNoAgentActiveOnTab);
+            : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
+    base::UmaHistogramEnumeration("PageLoad.Clients.CaptchaFrameActivation",
+                                  agent_context);
+    ukm::builders::PageLoad_CaptchaFrameActivation(
+        GetDelegate().GetPageUkmSourceId())
+        .SetAgentContext(static_cast<int64_t>(agent_context))
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

@@ -53,6 +53,17 @@ TEST_F(CaptchaMetricsObserverTest, NoCaptchaLoad) {
       "PageLoad.Clients.CaptchaFrameLoad", 0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.CaptchaFrameActivation", 0);
+
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameLoad", {"AgentContext"})
+                .size(),
+            0u);
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameActivation", {"AgentContext"})
+                .size(),
+            0u);
 }
 
 TEST_F(CaptchaMetricsObserverTest, CaptchaLoadAndClick) {
@@ -69,10 +80,32 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaLoadAndClick) {
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.CaptchaFrameActivation", 0);
 
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameLoad", {"AgentContext"})
+                .size(),
+            1u);
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameActivation", {"AgentContext"})
+                .size(),
+            0u);
+
   RenderFrameHostTester::For(subframe)->SimulateUserActivation();
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.CaptchaFrameActivation", 1);
   tester()->histogram_tester().ExpectBucketCount(
       "PageLoad.Clients.CaptchaFrameActivation",
       CaptchaFrameAgentContext::kNoAgentActiveOnTab, 1);
+
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameLoad", {"AgentContext"})
+                .size(),
+            1u);
+  EXPECT_EQ(tester()
+                ->test_ukm_recorder()
+                .GetEntries("PageLoad.CaptchaFrameActivation", {"AgentContext"})
+                .size(),
+            1u);
 }
