@@ -155,6 +155,9 @@ PushNotificationClientManager::GetClients() {
   if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
     client_ids.push_back(PushNotificationClientId::kReminders);
   }
+  if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+    client_ids.push_back(PushNotificationClientId::kCrossPlatformPromos);
+  }
   return client_ids;
 }
 
