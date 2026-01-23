@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
+#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 
 #include <string>
 #include <utility>

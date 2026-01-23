@@ -6,6 +6,12 @@ import("//pdf/features.gni")
 
 source_set("content") {
   sources = [
+    "annotate_page_content_request.cc",
+    "annotate_page_content_request.h",
+    "page_content_annotations_web_contents_observer.cc",
+    "page_content_annotations_web_contents_observer.h",
+    "page_content_extraction_service.cc",
+    "page_content_extraction_service.h",
     "page_content_screenshot_service.cc",
     "page_content_screenshot_service.h",
     "page_context_fetcher.cc",
@@ -27,11 +33,13 @@ source_set("content") {
   ]
 
   deps = [
+    "//components/continuous_search/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
     "//components/services/paint_preview_compositor/public/mojom",
     "//components/viz/common",
+    "//pdf:buildflags",
   ]
 
   if (enable_pdf) {
@@ -40,4 +48,17 @@ source_set("content") {
       "//pdf/mojom",
     ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "annotate_page_content_request_unittest.cc" ]
+  deps = [
+    ":content",
+    "//chrome/test:test_support",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/page_content_annotations/core:features",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }

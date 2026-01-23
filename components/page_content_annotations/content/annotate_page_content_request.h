@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
-#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_ANNOTATE_PAGE_CONTENT_REQUEST_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_ANNOTATE_PAGE_CONTENT_REQUEST_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "content/public/browser/web_contents.h"
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -134,4 +134,4 @@ class AnnotatedPageContentRequest {
 
 }  // namespace page_content_annotations
 
-#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_ANNOTATE_PAGE_CONTENT_REQUEST_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_ANNOTATE_PAGE_CONTENT_REQUEST_H_

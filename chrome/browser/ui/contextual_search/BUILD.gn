@@ -29,6 +29,7 @@ source_set("contextual_search") {
     "//components/omnibox/browser:mojo_bindings",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/page_content_annotations/content",
     "//components/sessions",
     "//components/tabs:public",
     "//components/viz/common",

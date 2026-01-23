@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
+#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "components/content_extraction/content/browser/inner_text.h"
+#include "components/continuous_search/browser/search_result_extractor_client.h"
+#include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/pdf/common/constants.h"

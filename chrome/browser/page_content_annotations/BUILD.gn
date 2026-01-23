@@ -11,12 +11,7 @@ if (is_android) {
 }
 
 source_set("page_content_annotations") {
-  sources = [
-    "annotate_page_content_request.cc",
-    "annotate_page_content_request.h",
-    "page_content_annotations_service_factory.h",
-    "page_content_annotations_web_contents_observer.h",
-  ]
+  sources = [ "page_content_annotations_service_factory.h" ]
   public_deps = [
     ":extraction_service",
     ":fetcher",
@@ -38,12 +33,7 @@ source_set("page_content_annotations") {
 }
 
 source_set("extraction_service") {
-  sources = [
-    "page_content_extraction_service.h",
-    "page_content_extraction_service_factory.h",
-    "page_content_extraction_types.cc",
-    "page_content_extraction_types.h",
-  ]
+  sources = [ "page_content_extraction_service_factory.h" ]
   deps = [
     ":fetcher",
     "//build:buildflag_header_h",

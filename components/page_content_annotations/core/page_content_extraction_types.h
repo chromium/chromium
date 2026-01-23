@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TYPES_H_
-#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TYPES_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_EXTRACTION_TYPES_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_EXTRACTION_TYPES_H_
 
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -39,4 +39,4 @@ struct ExtractedPageContentResult {
 
 }  // namespace page_content_annotations
 
-#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_EXTRACTION_TYPES_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_EXTRACTION_TYPES_H_

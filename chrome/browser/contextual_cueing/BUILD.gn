@@ -50,6 +50,7 @@ source_set("impl") {
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
     "//components/prefs",
     "//components/variations/service",

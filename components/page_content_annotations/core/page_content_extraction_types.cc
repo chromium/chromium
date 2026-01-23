@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 
 namespace page_content_annotations {
 

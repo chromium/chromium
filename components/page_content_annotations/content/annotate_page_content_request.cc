@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -11,13 +11,13 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -247,7 +247,6 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   }
 }
-
 
 bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();

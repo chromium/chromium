@@ -44,6 +44,8 @@ source_set("omnibox") {
       "//components/omnibox/browser:mojo_bindings_shared",
       "//components/omnibox/browser:mojo_bindings_shared_cpp_sources",
       "//components/omnibox/common",
+      "//components/page_content_annotations/content",
+      "//components/page_content_annotations/core",
       "//components/search_engines",
       "//content/public/browser",
       "//services/network/public/mojom:url_loader_base",

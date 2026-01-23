@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
 #include "components/continuous_search/common/search_result_extractor_client_status.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -111,4 +111,4 @@ class PageContentAnnotationsWebContentsObserver
 
 }  // namespace page_content_annotations
 
-#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_

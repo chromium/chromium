@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
-#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
+#include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_content_annotations/core/web_state_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"

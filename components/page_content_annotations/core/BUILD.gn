@@ -35,6 +35,8 @@ static_library("core") {
     "page_content_cache.h",
     "page_content_cache_handler.cc",
     "page_content_cache_handler.h",
+    "page_content_extraction_types.cc",
+    "page_content_extraction_types.h",
     "page_content_store.cc",
     "page_content_store.h",
     "web_state_wrapper.cc",
@@ -65,21 +67,19 @@ static_library("core") {
     "//base",
     "//components/continuous_search/common",
     "//components/continuous_search/common/public/mojom",
-    "//components/google/core/common",
     "//components/history/core/browser",
-    "//components/omnibox/common",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:features",
-    "//components/passage_embeddings:passage_embeddings_types",
     "//components/search",
     "//components/search_engines",
-    "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
   ]
   deps = [
     "//components/database_utils",
-    "//components/os_crypt/async/browser",
-    "//sql",
+    "//components/google/core/common",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core:features",
+    "//components/passage_embeddings:passage_embeddings_types",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 
   if (build_with_tflite_lib) {

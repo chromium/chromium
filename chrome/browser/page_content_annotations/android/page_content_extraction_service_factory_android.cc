@@ -5,8 +5,8 @@
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 
 #include "chrome/browser/page_content_annotations/android/page_content_extraction_service_android.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/page_content_annotations/factory_jni_headers/PageContentExtractionServiceFactory_jni.h"

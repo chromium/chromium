@@ -33,6 +33,8 @@ source_set("passage_embeddings") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles",
+    "//components/page_content_annotations/content",
+    "//components/page_content_annotations/core",
     "//components/performance_manager",
     "//components/permissions:permissions_common",
     "//content/public/browser",

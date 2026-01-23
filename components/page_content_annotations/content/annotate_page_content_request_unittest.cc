@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_content_annotations/annotate_page_content_request.h"
+#include "components/page_content_annotations/content/annotate_page_content_request.h"
+
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -25,9 +27,9 @@ namespace page_content_annotations {
 class TestPageContentExtractionService : public PageContentExtractionService {
  public:
   explicit TestPageContentExtractionService(
-      content::BrowserContext* browser_context)
-      : PageContentExtractionService(/*os_crypt_async=*/nullptr,
-                                     browser_context->GetPath()) {}
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      const base::FilePath& profile_path)
+      : PageContentExtractionService(os_crypt_async, profile_path) {}
   ~TestPageContentExtractionService() override = default;
 
   void OnPageContentExtracted(
@@ -61,11 +63,6 @@ class TestPageContentExtractionService : public PageContentExtractionService {
   base::OnceClosure quit_closure_;
 };
 
-std::unique_ptr<KeyedService> BuildTestPageContentExtractionService(
-    content::BrowserContext* context) {
-  return std::make_unique<TestPageContentExtractionService>(context);
-}
-
 class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
  public:
   AnnotatePageContentRequestTest()
@@ -75,8 +72,12 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
+
+    extraction_service_.emplace(os_crypt_async_.get(), profile()->GetPath());
+
     request_ = AnnotatedPageContentRequest::Create(
-        web_contents(), GetExtractionService(),
+        web_contents(), extraction_service_.value(),
         base::BindRepeating([](content::WebContents&,
                                const FetchPageContextOptions&,
                                std::unique_ptr<FetchPageProgressListener>,
@@ -93,16 +94,10 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
         }));
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() const override {
-    return {
-        TestingProfile::TestingFactory{
-            PageContentExtractionServiceFactory::GetInstance(),
-            base::BindRepeating(&BuildTestPageContentExtractionService)},
-    };
-  }
-
   void TearDown() override {
     request_.reset();
+    extraction_service_.reset();
+    os_crypt_async_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -134,19 +129,20 @@ class AnnotatePageContentRequestTest : public ChromeRenderViewHostTestHarness {
     request_->OnFirstContentfulPaintInPrimaryMainFrame();
   }
 
-  TestPageContentExtractionService& GetExtractionService() {
-    return *static_cast<TestPageContentExtractionService*>(
-        PageContentExtractionServiceFactory::GetForProfile(profile()));
-  }
-
   void WaitForExtraction() {
     base::RunLoop run_loop;
-    GetExtractionService().SetQuitClosure(run_loop.QuitClosure());
+    extraction_service_->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  TestPageContentExtractionService& extraction_service() {
+    return extraction_service_.value();
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::optional<TestPageContentExtractionService> extraction_service_;
   std::unique_ptr<AnnotatedPageContentRequest> request_;
 };
 
@@ -156,13 +152,13 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger) {
   SimulatePageLoad();
   WaitForExtraction();
 
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
-  EXPECT_TRUE(GetExtractionService().last_extracted_content().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_TRUE(extraction_service().last_extracted_content().has_value());
 
   // Hiding should not trigger another extraction.
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
 TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger) {
@@ -171,25 +167,25 @@ TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger) {
   SimulatePageLoad();
 
   // Should not extract on load.
-  EXPECT_EQ(GetExtractionService().extraction_count(), 0);
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
 
   // Hiding should trigger extraction.
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
-  EXPECT_TRUE(GetExtractionService().last_extracted_content().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_TRUE(extraction_service().last_extracted_content().has_value());
 
   // Showing and hiding again should trigger another extraction.
   web_contents()->WasShown();
   request_->OnVisibilityChanged(content::Visibility::VISIBLE);
   // No extraction expected.
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
-  EXPECT_EQ(GetExtractionService().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
 TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
@@ -199,25 +195,25 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
   WaitForExtraction();
 
   // Should extract on load.
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
-  EXPECT_TRUE(GetExtractionService().last_extracted_content().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_TRUE(extraction_service().last_extracted_content().has_value());
 
   // Hiding should trigger another extraction.
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
-  EXPECT_EQ(GetExtractionService().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 
   // Showing and hiding again should trigger another extraction.
   web_contents()->WasShown();
   request_->OnVisibilityChanged(content::Visibility::VISIBLE);
   // No extraction expected.
-  EXPECT_EQ(GetExtractionService().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
-  EXPECT_EQ(GetExtractionService().extraction_count(), 3);
+  EXPECT_EQ(extraction_service().extraction_count(), 3);
 }
 
 TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger_LoadWhileHidden) {
@@ -231,19 +227,19 @@ TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger_LoadWhileHidden) {
   WaitForExtraction();
 
   // Should extract on load, even if hidden.
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
-  EXPECT_TRUE(GetExtractionService().last_extracted_content().has_value());
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_TRUE(extraction_service().last_extracted_content().has_value());
 
   // Showing should not trigger extraction.
   web_contents()->WasShown();
   request_->OnVisibilityChanged(content::Visibility::VISIBLE);
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 
   // Hiding again should trigger another extraction.
   web_contents()->WasHidden();
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
-  EXPECT_EQ(GetExtractionService().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
 TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
@@ -252,7 +248,7 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   SimulatePageLoad();
   WaitForExtraction();
 
-  EXPECT_EQ(GetExtractionService().extraction_count(), 1);
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 
   // New navigation.
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -266,7 +262,7 @@ TEST_F(AnnotatePageContentRequestTest, ResetOnNewNavigation) {
   request_->OnFirstContentfulPaintInPrimaryMainFrame();
   WaitForExtraction();
 
-  EXPECT_EQ(GetExtractionService().extraction_count(), 2);
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
 }  // namespace page_content_annotations

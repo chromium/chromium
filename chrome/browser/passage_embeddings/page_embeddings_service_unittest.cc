@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/check.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"

@@ -86,6 +86,7 @@ source_set("impl") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
+    "//components/page_content_annotations/core",
     "//components/sessions:session_id",
     "//components/sync/model",
     "//content/public/browser",
