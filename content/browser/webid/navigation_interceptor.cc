@@ -8,7 +8,9 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -110,6 +112,16 @@ NavigationInterceptor::ProcessRequest() {
   content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
 
   if (!rfh) {
+    return PROCEED;
+  }
+
+  if (IdentityRegistry::FromWebContents(
+          WebContents::FromRenderFrameHost(rfh)) &&
+      FrameTreeNode::From(rfh)->is_on_initial_empty_document()) {
+    // In pop-up windows that FedCM opens itself, such as when using the
+    // Continuation API or when the user is logged out, the render frame host
+    // needs to be loaded with a valid document before we can intercept
+    // navigations out of it.
     return PROCEED;
   }
 
