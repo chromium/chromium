@@ -183,14 +183,14 @@ use std::marker::PhantomData;
 // where appropriate (maybe all of them?).
 // TODO(crbug.com/477584253): Replace std::sync with std::nonpoison once
 // it's stabilized, if any uses remain.
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Weak};
 
 use mojo_rust_system_api::message_pipe::MessageEndpoint;
 use mojo_rust_system_api::mojo_types::{MojoResult, UntypedHandle};
 use sequences::SequencedTaskRunnerHandle;
 
 use crate::message::MojomMessage;
-use crate::message_pipe_watcher::MessagePipeWatcher;
+use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
 
 /// This trait abstracts over the parts of individual Mojom `interface`s, such
 /// as `MathService`. This trait is what's used by generic `Remote`s and
@@ -218,7 +218,11 @@ pub trait MojomInterface {
     /// For use in `Receiver`s. Takes a message with a parsed header, examines
     /// it to determine which message type it contains, then invokes the
     /// corresponding user-defined handler on the parsed message body
-    fn handle_incoming_message(message: MojomMessage, send_response: impl FnOnce(MojomMessage));
+    fn handle_incoming_message(
+        &mut self,
+        message: MojomMessage,
+        send_response: impl FnOnce(MojomMessage),
+    );
 }
 
 #[doc(hidden)]
@@ -529,6 +533,7 @@ pub mod receiver {
     pub struct Receiver<StateTy: MojomInterface> {
         endpoint_watcher: MessagePipeWatcher,
         runner: SequencedTaskRunnerHandle,
+        // FOR_RELEASE: Replace these with their sequenced equivalents
         state: Arc<Mutex<StateTy>>,
     }
 
@@ -564,7 +569,7 @@ pub mod receiver {
         /// current default sequence.
         pub fn bind<StateTy>(self, state: StateTy) -> Receiver<StateTy>
         where
-            StateTy: MojomInterface<DynTy = T::DynTy>,
+            StateTy: MojomInterface<DynTy = T::DynTy> + Send + 'static,
         {
             Receiver::new(self.endpoint, state)
         }
@@ -577,7 +582,7 @@ pub mod receiver {
             runner: SequencedTaskRunnerHandle,
         ) -> Receiver<StateTy>
         where
-            StateTy: MojomInterface<DynTy = T::DynTy>,
+            StateTy: MojomInterface<DynTy = T::DynTy> + Send + 'static,
         {
             Receiver::new_with_runner(self.endpoint, state, runner)
         }
@@ -585,7 +590,7 @@ pub mod receiver {
 
     impl<StateTy> Receiver<StateTy>
     where
-        StateTy: MojomInterface + Sized,
+        StateTy: MojomInterface + Sized + Send + 'static,
     {
         /// Create a new Receiver from a raw pipe endpoint, bound to the default
         /// sequence.
@@ -609,7 +614,18 @@ pub mod receiver {
             state: StateTy,
             runner: SequencedTaskRunnerHandle,
         ) -> Self {
-            todo!()
+            let state = Arc::new(Mutex::new(state));
+            let state_weak = Arc::downgrade(&state);
+
+            let handler = move |raw_message, sender| {
+                Self::incoming_message_handler(raw_message, &state_weak, &sender)
+            };
+
+            let endpoint_watcher =
+                MessagePipeWatcher::new_with_runner(endpoint, handler, runner.clone())
+                    .expect("FOR_RELEASE: Figure out how to handle errors here");
+
+            Self { endpoint_watcher, runner, state }
         }
 
         // FOR_RELEASE: Provide a mutex-y function so the holder of this `Receiver` can
@@ -626,11 +642,63 @@ pub mod receiver {
         fn unbind(self) -> (PendingReceiver<StateTy::DynTy>, StateTy) {
             // FOR_RELEASE: Figure out when it's safe to unwrap
             let state = Arc::into_inner(self.state).unwrap().into_inner().unwrap();
-            (PendingReceiver::new(self.endpoint_watcher.into_endpoint()), state)
+            let endpoint = self.endpoint_watcher.into_endpoint();
+            (PendingReceiver::new(endpoint), state)
         }
 
-        // We deliberately do not implement `From` and `Into` for `Remote/PendingRemote`
-        // pairs, because binding and unbinding are stateful operations that should be
-        // done explicitly.
+        /// This is the function which is called by the endpoint watcher
+        /// whenever a message comes in. Its job is to parse the message
+        /// header, call the corresponding method on the state object, and then
+        /// send a response back through the pipe (if the message expects one).
+        fn incoming_message_handler(
+            raw_message: (Vec<u8>, Vec<UntypedHandle>),
+            state_weak: &Weak<Mutex<StateTy>>,
+            sender: &ResponseSender,
+        ) {
+            // FOR_RELEASE: This indicates a malformed mojo message, we should figure out
+            // what to do about those
+            let message: MojomMessage = MojomMessage::from_bytes(raw_message.0)
+                .expect("Incoming response failed to parse!");
+
+            let expects_response = message
+                .header
+                .flags
+                .contains(crate::message_header::MessageHeaderFlags::EXPECTS_RESPONSE);
+
+            let Some(state) = state_weak.upgrade() else {
+                // If we can't get the state, then the receiver must have just been
+                // unbound, so there's nothing more for us to do.
+                return;
+            };
+
+            // Call our internal state object's message handler, and provide a
+            // callback that either sends the response or panics because no response
+            // was expected.
+            // We might be able to make this more readable by moving the state calls
+            // out of the if statement using a type like itertools::Either, if we
+            // get that approved for use in chromium.
+            if expects_response {
+                // Make sure the request ID in the response header matches the request.
+                let request_id = message.header.request_id;
+                state.lock().expect("Mutex should never be poisoned").handle_incoming_message(
+                    message,
+                    |mut response: MojomMessage| {
+                        response.header.request_id = request_id;
+                        sender.try_send_response(&response.into_bytes());
+                    },
+                );
+            } else {
+                state
+                    .lock()
+                    .expect("Mutex should never be poisoned")
+                    .handle_incoming_message(message, |_| {
+                        panic!("Tried to send a response to a message that didn't expect one!")
+                    })
+            };
+        }
+
+        // We deliberately do not implement `From` and `Into` for
+        // `Receiver/PendingReceiver` pairs, because binding and unbinding are
+        // stateful operations that should be done explicitly.
     }
 } // End mod receiver

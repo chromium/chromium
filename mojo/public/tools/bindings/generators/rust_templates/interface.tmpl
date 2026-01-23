@@ -139,7 +139,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
     }
   }
 
-  fn handle_incoming_message(_message: bindings::message::MojomMessage, _send_response: impl FnOnce(bindings::message::MojomMessage)) {
+  fn handle_incoming_message(&mut self, _message: bindings::message::MojomMessage, _send_response: impl FnOnce(bindings::message::MojomMessage)) {
     unimplemented!("Call the appropriate trait method directly on the Remote object instead")
   }
 }
