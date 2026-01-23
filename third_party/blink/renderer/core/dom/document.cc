@@ -4518,6 +4518,12 @@ bool Document::DispatchBeforeUnloadEvent(
   if (!body())
     return true;
 
+  // Prevent re-entrant firing of the beforeunload event.
+  // This can occur if a script within the onbeforeunload handler triggers
+  // window.close(). Without this check, such script would recursively invoke
+  // DispatchBeforeUnloadEvent. By returning false here, we treat the nested
+  // attempt as blocked, ensuring the user's intent is handled consistently by
+  // the initial invocation. (See: https://crbug.com/40392560)
   if (ProcessingBeforeUnload())
     return false;
 
