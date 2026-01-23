@@ -52,8 +52,8 @@ export function isVerticalArrow(key: string): boolean {
   return VERTICAL_ARROWS.includes(key);
 }
 
-export function isLineFocusShortcut(key: string): boolean {
-  return key === 'l';
+export function isLineFocusShortcut(e: KeyboardEvent): boolean {
+  return e.key === 'l' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
 }
 
 export function isActivationKey(key: string): boolean {

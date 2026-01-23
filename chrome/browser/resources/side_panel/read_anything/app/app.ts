@@ -697,7 +697,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       e.preventDefault();
       this.lineFocusController_.snapToNextLine(isForwardArrow(e.key));
     } else if (
-        chrome.readingMode.isLineFocusEnabled && isLineFocusShortcut(e.key)) {
+        chrome.readingMode.isLineFocusEnabled && isLineFocusShortcut(e)) {
       this.lineFocusController_.toggle(
           this.$.container, this.$.containerParent.offsetHeight);
       this.styleUpdater_.setLineFocusStyle(
