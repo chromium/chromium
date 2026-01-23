@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPCreateGood) {
 
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_create_function.get(), "[\"udp\"]", browser_context()));
-  const base::Value::Dict& value = result->GetDict();
+  const base::DictValue& value = result->GetDict();
   std::optional<int> socket_id = value.FindInt("socketId");
   ASSERT_TRUE(socket_id);
   EXPECT_GT(*socket_id, 0);
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPCreateGood) {
 
   std::optional<base::Value> result(RunFunctionAndReturnSingleResult(
       socket_create_function.get(), "[\"tcp\"]", browser_context()));
-  const base::Value::Dict& value = result->GetDict();
+  const base::DictValue& value = result->GetDict();
   std::optional<int> socket_id = value.FindInt("socketId");
   ASSERT_TRUE(socket_id);
   ASSERT_GT(*socket_id, 0);

@@ -21,7 +21,7 @@ namespace extensions {
 TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kUnpacked,
-           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
+           base::DictValue().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&warnings);
   EXPECT_EQ(1uL, warnings.size());
@@ -31,7 +31,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
 TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kCommandLine,
-           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
+           base::DictValue().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&warnings);
   EXPECT_EQ(1uL, warnings.size());
@@ -41,7 +41,7 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
 TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
   std::vector<InstallWarning> warnings;
   Manifest(ManifestLocation::kInternal,
-           base::Value::Dict().Set(manifest_keys::kDifferentialFingerprint, ""),
+           base::DictValue().Set(manifest_keys::kDifferentialFingerprint, ""),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&warnings);
   EXPECT_EQ(0uL, warnings.size());
@@ -49,7 +49,7 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
 
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kUnpacked, base::Value::Dict(),
+  Manifest(ManifestLocation::kUnpacked, base::DictValue(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&warnings);
   EXPECT_EQ(0uL, warnings.size());
@@ -57,7 +57,7 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
 
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   std::vector<InstallWarning> warnings;
-  Manifest(ManifestLocation::kInternal, base::Value::Dict(),
+  Manifest(ManifestLocation::kInternal, base::DictValue(),
            crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&warnings);
   EXPECT_EQ(0uL, warnings.size());

@@ -127,7 +127,7 @@ bool CreateUploadDataSourcesFromResourceRequest(
   return true;
 }
 
-std::optional<base::Value::Dict> CreateRequestBodyData(
+std::optional<base::DictValue> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
@@ -135,7 +135,7 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
     return std::nullopt;
   }
 
-  base::Value::Dict request_body_data;
+  base::DictValue request_body_data;
 
   // Get the data presenters, ordered by how specific they are.
   ParsedDataPresenter parsed_data_presenter(request_headers);

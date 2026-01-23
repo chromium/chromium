@@ -69,7 +69,7 @@ class RulesCacheDelegate {
   // Initialize the storage functionality.
   void Init(RulesRegistry* registry);
 
-  void UpdateRules(const ExtensionId& extension_id, base::Value::List value);
+  void UpdateRules(const ExtensionId& extension_id, base::ListValue value);
 
   // Indicates whether or not this registry has any registered rules cached.
   bool HasRules() const;

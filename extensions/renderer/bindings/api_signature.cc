@@ -21,7 +21,7 @@ namespace extensions {
 namespace {
 
 std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
-    const base::Value::List& specification_list,
+    const base::ListValue& specification_list,
     bool uses_returns_async) {
   std::vector<std::unique_ptr<ArgumentSpec>> signatures;
   auto size = specification_list.size();
@@ -39,7 +39,7 @@ std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
 }
 
 std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
-    const base::Value::Dict& returns_async_spec) {
+    const base::DictValue& returns_async_spec) {
   auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
 
   returns_async->promise_support =
@@ -53,7 +53,7 @@ std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
   if (binding::IsResponseValidationEnabled()) {
-    const base::Value::List* callback_params =
+    const base::ListValue* callback_params =
         returns_async_spec.FindList("parameters");
     if (callback_params) {
       returns_async->signature =
@@ -236,7 +236,7 @@ class BaseValueArgumentParser : public ArgumentParser {
     callback_ = callback;
   }
 
-  base::Value::List list_value_;
+  base::ListValue list_value_;
   std::unique_ptr<base::Value> last_arg_;
   v8::Local<v8::Function> callback_;
 };
@@ -600,7 +600,7 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     }
   }
 
-  base::Value::List json;
+  base::ListValue json;
   json.reserve(size);
 
   std::unique_ptr<content::V8ValueConverter> converter =

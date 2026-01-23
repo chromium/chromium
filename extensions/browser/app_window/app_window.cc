@@ -79,7 +79,7 @@ const int kDefaultHeight = 384;
 
 void SetConstraintProperty(const std::string& name,
                            int value,
-                           base::Value::Dict* bounds_properties) {
+                           base::DictValue* bounds_properties) {
   DCHECK(bounds_properties);
   if (value != SizeConstraints::kUnboundedSize)
     bounds_properties->Set(name, value);
@@ -91,9 +91,9 @@ void SetBoundsProperties(const gfx::Rect& bounds,
                          const gfx::Size& min_size,
                          const gfx::Size& max_size,
                          const std::string& bounds_name,
-                         base::Value::Dict* window_properties) {
+                         base::DictValue* window_properties) {
   DCHECK(window_properties);
-  base::Value::Dict bounds_properties;
+  base::DictValue bounds_properties;
 
   bounds_properties.Set("left", bounds.x());
   bounds_properties.Set("top", bounds.y());
@@ -778,7 +778,7 @@ void AppWindow::RestoreAlwaysOnTop() {
     UpdateNativeAlwaysOnTop();
 }
 
-void AppWindow::GetSerializedState(base::Value::Dict* properties) const {
+void AppWindow::GetSerializedState(base::DictValue* properties) const {
   DCHECK(properties);
 
   properties->Set("fullscreen", native_app_window_->IsFullscreenOrPending());

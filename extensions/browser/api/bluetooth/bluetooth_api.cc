@@ -146,7 +146,7 @@ void BluetoothGetDevicesFunction::DoWork(
     scoped_refptr<BluetoothAdapter> adapter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Value::List device_list;
+  base::ListValue device_list;
 
   BluetoothAdapter::DeviceList devices;
 #if BUILDFLAG(IS_CHROMEOS)

@@ -317,10 +317,10 @@ void ModuleSystemTest::TearDown() {
 }
 
 scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {
-  base::Value::Dict manifest = base::Value::Dict()
-                                   .Set("name", "test")
-                                   .Set("version", "1.0")
-                                   .Set("manifest_version", 2);
+  base::DictValue manifest = base::DictValue()
+                                 .Set("name", "test")
+                                 .Set("version", "1.0")
+                                 .Set("manifest_version", 2);
   return ExtensionBuilder().SetManifest(std::move(manifest)).Build();
 }
 

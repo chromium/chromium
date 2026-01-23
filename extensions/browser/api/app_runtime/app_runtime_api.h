@@ -33,7 +33,7 @@ class AppRuntimeEventRouter {
   // Dispatches the onEmbedRequested event to the given app.
   static void DispatchOnEmbedRequestedEvent(
       content::BrowserContext* context,
-      base::Value::Dict app_embedding_request_data,
+      base::DictValue app_embedding_request_data,
       const Extension* extension);
 
   // Dispatches the onLaunched event to the given app.

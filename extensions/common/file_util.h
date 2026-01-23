@@ -87,12 +87,12 @@ scoped_refptr<Extension> LoadExtension(
 
 // Loads an extension manifest from the specified directory. Returns
 // `std::nullopt` on failure, with a description of the error in `error`.
-std::optional<base::Value::Dict> LoadManifest(
+std::optional<base::DictValue> LoadManifest(
     const base::FilePath& extension_root,
     std::string* error);
 
 // Convenience overload for specifying a manifest filename.
-std::optional<base::Value::Dict> LoadManifest(
+std::optional<base::DictValue> LoadManifest(
     const base::FilePath& extension_root,
     const base::FilePath::CharType* manifest_filename,
     std::string* error);

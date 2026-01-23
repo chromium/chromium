@@ -28,8 +28,8 @@ namespace extensions {
 
 namespace {
 
-base::Value::Dict SimpleManifest() {
-  return base::Value::Dict()
+base::DictValue SimpleManifest() {
+  return base::DictValue()
       .Set("name", "extension")
       .Set("manifest_version", 2)
       .Set("version", "1.0");
@@ -68,7 +68,7 @@ using RecordingConditionSet = DeclarativeConditionSet<RecordingCondition>;
 
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(ParseJson("{\"key\": 1}"));
   conditions.Append(ParseJson("{\"bad_key\": 2}"));
 
@@ -81,7 +81,7 @@ TEST(DeclarativeConditionTest, ErrorConditionSet) {
 
 TEST(DeclarativeConditionTest, CreateConditionSet) {
   URLMatcher matcher;
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(ParseJson("{\"key\": 1}"));
   conditions.Append(ParseJson("[\"val1\", 2]"));
 
@@ -139,7 +139,7 @@ struct FulfillableCondition {
       *error = "Expected dict";
       return result;
     }
-    const base::Value::Dict& dict = condition.GetDict();
+    const base::DictValue& dict = condition.GetDict();
     const auto id = dict.FindInt("url_id");
     result->condition_set_id =
         id.has_value() ? static_cast<base::MatcherStringPattern::ID>(id.value())
@@ -160,7 +160,7 @@ struct FulfillableCondition {
 
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
   using FulfillableConditionSet = DeclarativeConditionSet<FulfillableCondition>;
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(ParseJson("{\"url_id\": 1, \"max\": 3}"));
   conditions.Append(ParseJson("{\"url_id\": 2, \"max\": 5}"));
   conditions.Append(ParseJson("{\"url_id\": 3, \"max\": 1}"));
@@ -220,7 +220,7 @@ class SummingAction : public base::RefCounted<SummingAction> {
   static scoped_refptr<const SummingAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       std::string* error,
       bool* bad_message) {
     if (const base::Value* value = dict.Find("error")) {
@@ -261,7 +261,7 @@ class SummingAction : public base::RefCounted<SummingAction> {
 using SummingActionSet = DeclarativeActionSet<SummingAction>;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(ParseJson("{\"value\": 1}"));
   actions.Append(ParseJson("{\"error\": \"the error\"}"));
 
@@ -283,7 +283,7 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
 }
 
 TEST(DeclarativeActionTest, ApplyActionSet) {
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(ParseJson("{\"value\": 1, \"priority\": 5}"));
   actions.Append(ParseJson("{\"value\": 2}"));
 

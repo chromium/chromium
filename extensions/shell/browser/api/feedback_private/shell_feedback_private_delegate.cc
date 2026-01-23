@@ -21,7 +21,7 @@ namespace extensions {
 ShellFeedbackPrivateDelegate::ShellFeedbackPrivateDelegate() = default;
 ShellFeedbackPrivateDelegate::~ShellFeedbackPrivateDelegate() = default;
 
-base::Value::Dict ShellFeedbackPrivateDelegate::GetStrings(
+base::DictValue ShellFeedbackPrivateDelegate::GetStrings(
     content::BrowserContext* browser_context,
     bool from_crash) const {
   NOTIMPLEMENTED();

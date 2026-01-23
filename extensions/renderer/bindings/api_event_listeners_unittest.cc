@@ -247,7 +247,7 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
   v8::Local<v8::Object> empty_filter;
   std::string error;
 
-  const base::Value::Dict empty_dict;
+  const base::DictValue empty_dict;
   // Register function_a with no filter; this is equivalent to registering for
   // all events. The callback should be triggered since this is a 0 -> 1
   // transition.
@@ -297,7 +297,7 @@ TEST_F(APIEventListenersTest, FilteredListeners) {
   // Register function_b with a filter for pathContains: 'foo'. Unlike
   // unfiltered listeners, this *should* trigger the callback, since there is
   // no other listener registered with this same filter.
-  const base::Value::Dict expected_dict =
+  const base::DictValue expected_dict =
       base::test::ParseJsonDict(R"({"url": [{"pathContains": "foo"}]})");
   v8::Local<v8::Object> path_filter;
   {

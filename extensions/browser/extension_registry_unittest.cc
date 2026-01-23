@@ -265,7 +265,7 @@ TEST_F(ExtensionRegistryTest, TerminatedExtensionStoredVersion) {
   ExtensionRegistry registry(nullptr);
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Test")
                            .Set("version", kVersionString)
                            .Set("manifest_version", 2))

@@ -55,7 +55,7 @@ const base::FilePath::CharType kCustomManifestFilename[] =
     FILE_PATH_LITERAL("custom_manifest.json");
 
 scoped_refptr<Extension> LoadExtensionManifest(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& manifest_dir,
     ManifestLocation location,
     int extra_flags,
@@ -71,7 +71,7 @@ scoped_refptr<Extension> LoadExtensionManifest(
     ManifestLocation location,
     int extra_flags,
     std::u16string* error) {
-  std::optional<base::Value::Dict> result = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> result = base::JSONReader::ReadDict(
       manifest_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result) {
     return nullptr;
@@ -481,12 +481,12 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", "test");
   value.Set("version", "1");
   value.Set("manifest_version", 2);
 
-  base::Value::List* scripts =
+  base::ListValue* scripts =
       value.EnsureDict("background")->EnsureList("scripts");
   scripts->Append("foo.js");
 

@@ -428,7 +428,7 @@ void InstallVerifier::SaveToPrefs() {
     DVLOG(1) << "SaveToPrefs - saving NULL";
     prefs_->SetInstallSignature(nullptr);
   } else {
-    base::Value::Dict pref = signature_->ToDict();
+    base::DictValue pref = signature_->ToDict();
     if (VLOG_IS_ON(1)) {
       DVLOG(1) << "SaveToPrefs - saving";
 

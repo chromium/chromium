@@ -78,7 +78,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   }
 
   // Create the manifest
-  base::Value::Dict root;
+  base::DictValue root;
   std::string script_name;
   if (!script.name().empty() && !script.name_space().empty()) {
     script_name = script.name_space() + "/" + script.name();
@@ -156,7 +156,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
 
   content_script.run_at = ConvertRunLocationForAPI(script.run_location());
 
-  base::Value::List content_scripts;
+  base::ListValue content_scripts;
   content_scripts.Append(content_script.ToValue());
   root.Set(api::content_scripts::ManifestKeys::kContentScripts,
            std::move(content_scripts));

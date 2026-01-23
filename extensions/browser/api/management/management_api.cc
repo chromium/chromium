@@ -383,7 +383,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
         base::Value value, std::move(result),
         [&](std::string error) { return Error(std::move(error)); });
 
-    const base::Value::Dict* parsed_manifest = value.GetIfDict();
+    const base::DictValue* parsed_manifest = value.GetIfDict();
     if (!parsed_manifest) {
       return Error(keys::kManifestParseError);
     }
@@ -1195,7 +1195,7 @@ void ManagementEventRouter::BroadcastEvent(
   if (!ShouldExposeViaManagementAPI(*extension)) {
     return;
   }
-  base::Value::List args;
+  base::ListValue args;
   if (event_name == management::OnUninstalled::kEventName) {
     args.Append(extension->id());
   } else {

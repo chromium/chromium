@@ -244,7 +244,7 @@ void ExtensionRegistrar::AddNewOrUpdatedExtension(
     int install_flags,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   extension_prefs_->OnExtensionInstalled(
       extension, disable_reasons, page_ordinal, install_flags,
@@ -261,7 +261,7 @@ void ExtensionRegistrar::OnExtensionInstalled(
     const Extension* extension,
     const syncer::StringOrdinal& page_ordinal,
     int install_flags,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_->OnExtensionInstalled(extension, page_ordinal, install_flags,
                                   std::move(ruleset_install_prefs));

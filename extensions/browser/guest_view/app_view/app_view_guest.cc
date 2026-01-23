@@ -217,7 +217,7 @@ bool AppViewGuest::CheckMediaAccessPermission(
 void AppViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     GuestPageCreatedCallback callback) {
   const std::string* app_id = create_params.FindString(appview::kAppID);
   if (!app_id) {
@@ -230,7 +230,7 @@ void AppViewGuest::CreateInnerPage(
     return;
   }
 
-  const base::Value::Dict* data = create_params.FindDict(appview::kData);
+  const base::DictValue* data = create_params.FindDict(appview::kData);
   if (!data) {
     RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
@@ -269,7 +269,7 @@ void AppViewGuest::CreateInnerPage(
       std::make_unique<LazyContextTaskQueue::ContextInfo>(host));
 }
 
-void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
+void AppViewGuest::DidInitialize(const base::DictValue& create_params) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     return;
   }
@@ -336,7 +336,7 @@ void AppViewGuest::CompleteCreateInnerPage(
 
 void AppViewGuest::LaunchAppAndFireEvent(
     std::unique_ptr<GuestViewBase> owned_this,
-    base::Value::Dict data,
+    base::DictValue data,
     GuestPageCreatedCallback callback,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   bool has_event_listener = EventRouter::Get(browser_context())
@@ -358,7 +358,7 @@ void AppViewGuest::LaunchAppAndFireEvent(
       std::make_unique<ResponseInfo>(extension, std::move(owned_this),
                                      std::move(callback))));
 
-  base::Value::Dict embed_request;
+  base::DictValue embed_request;
   embed_request.Set(appview::kGuestInstanceID, guest_instance_id());
   embed_request.Set(appview::kEmbedderID, owner_host());
   embed_request.Set(appview::kData, std::move(data));

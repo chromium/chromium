@@ -151,7 +151,7 @@ TEST_F(StorageAreaTest, HasOnChanged) {
         FunctionFromString(context, kRegisterListener);
     RunFunctionOnGlobal(add_listener, context, 0, nullptr);
 
-    base::Value::List value = ListValueFromString("['foo']");
+    base::ListValue value = ListValueFromString("['foo']");
     bindings_system()->DispatchEventInContext(
         base::StringPrintf("storage.%s.onChanged", kStorage).c_str(), value,
         nullptr, script_context);

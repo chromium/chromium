@@ -42,8 +42,8 @@ class ManifestTest : public testing::Test {
   class ManifestData {
    public:
     explicit ManifestData(std::string_view name);
-    explicit ManifestData(base::Value::Dict manifest);
-    ManifestData(base::Value::Dict manifest, std::string_view name);
+    explicit ManifestData(base::DictValue manifest);
+    ManifestData(base::DictValue manifest, std::string_view name);
     ManifestData(ManifestData&& other);
     ~ManifestData();
 
@@ -53,13 +53,13 @@ class ManifestTest : public testing::Test {
 
     const std::string& name() const { return name_; }
 
-    const std::optional<base::Value::Dict>& GetManifest(
+    const std::optional<base::DictValue>& GetManifest(
         const base::FilePath& manifest_path,
         std::string* error) const;
 
    private:
     const std::string name_;
-    mutable std::optional<base::Value::Dict> manifest_;
+    mutable std::optional<base::DictValue> manifest_;
   };
 
   // Allows the test implementation to override a loaded test manifest's
@@ -70,8 +70,8 @@ class ManifestTest : public testing::Test {
   // extensions/test/data/manifest_tests.
   virtual base::FilePath GetTestDataDir();
 
-  std::optional<base::Value::Dict> LoadManifest(char const* manifest_name,
-                                                std::string* error);
+  std::optional<base::DictValue> LoadManifest(char const* manifest_name,
+                                              std::string* error);
 
   scoped_refptr<extensions::Extension> LoadExtension(
       const ManifestData& manifest,

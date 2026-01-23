@@ -103,7 +103,7 @@ bool ParseHostsFromJSON(Extension* extension,
   }
 
   // Add all permissions parsed from the manifest to |hosts|.
-  const base::Value::List& list = permissions->GetList();
+  const base::ListValue& list = permissions->GetList();
   for (size_t i = 0; i < list.size(); ++i) {
     if (list[i].is_string()) {
       hosts->push_back(list[i].GetString());

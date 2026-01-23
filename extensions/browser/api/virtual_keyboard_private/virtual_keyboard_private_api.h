@@ -131,7 +131,7 @@ class VirtualKeyboardPrivateGetKeyboardConfigFunction
   ResponseAction Run() override;
 
  private:
-  void OnKeyboardConfig(std::optional<base::Value::Dict> results);
+  void OnKeyboardConfig(std::optional<base::DictValue> results);
 };
 
 class VirtualKeyboardPrivateOpenSettingsFunction

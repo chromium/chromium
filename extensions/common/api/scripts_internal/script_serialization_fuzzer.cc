@@ -48,7 +48,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   parse_options.can_execute_script_everywhere = provider.ConsumeBool();
   parse_options.all_urls_includes_chrome_urls = provider.ConsumeBool();
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder().SetManifest(base::Value::Dict()).Build();
+      ExtensionBuilder().SetManifest(base::DictValue()).Build();
 
   // Run code-under-test.
   std::u16string error;

@@ -70,7 +70,7 @@ enum class PropertiesType { GET, SET };
 // Filters out all properties that are not allowed for the extension in the
 // provided context.
 // Returns list of removed keys.
-std::vector<std::string> FilterProperties(base::Value::Dict& properties,
+std::vector<std::string> FilterProperties(base::DictValue& properties,
                                           PropertiesType type,
                                           const Extension* extension,
                                           mojom::ContextType context,
@@ -155,7 +155,7 @@ NetworkingPrivateGetPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetPropertiesFunction::Result(
-    std::optional<base::Value::Dict> result,
+    std::optional<base::DictValue> result,
     const std::optional<std::string>& error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
@@ -188,7 +188,7 @@ NetworkingPrivateGetManagedPropertiesFunction::Run() {
 }
 
 void NetworkingPrivateGetManagedPropertiesFunction::Result(
-    std::optional<base::Value::Dict> result,
+    std::optional<base::DictValue> result,
     const std::optional<std::string>& error) {
   if (!result) {
     Respond(Error(error.value_or("Failed")));
@@ -219,7 +219,7 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void NetworkingPrivateGetStateFunction::Success(base::Value::Dict result) {
+void NetworkingPrivateGetStateFunction::Success(base::DictValue result) {
   FilterProperties(result, PropertiesType::GET, extension(),
                    source_context_type(), source_url(), context_id(),
                    *GetContextData());
@@ -239,7 +239,7 @@ NetworkingPrivateSetPropertiesFunction::Run() {
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Value::Dict properties = params->properties.ToValue();
+  base::DictValue properties = params->properties.ToValue();
 
   std::vector<std::string> not_allowed_properties = FilterProperties(
       properties, PropertiesType::SET, extension(), source_context_type(),
@@ -284,7 +284,7 @@ NetworkingPrivateCreateNetworkFunction::Run() {
     return RespondNow(Error(networking_private::kErrorAccessToSharedConfig));
   }
 
-  base::Value::Dict properties_dict = params->properties.ToValue();
+  base::DictValue properties_dict = params->properties.ToValue();
 
   std::vector<std::string> not_allowed_properties = FilterProperties(
       properties_dict, PropertiesType::SET, extension(), source_context_type(),
@@ -372,7 +372,7 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
 }
 
 void NetworkingPrivateGetNetworksFunction::Success(
-    base::Value::List network_list) {
+    base::ListValue network_list) {
   return Respond(WithArguments(std::move(network_list)));
 }
 
@@ -416,7 +416,7 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
 }
 
 void NetworkingPrivateGetVisibleNetworksFunction::Success(
-    base::Value::List network_properties_list) {
+    base::ListValue network_properties_list) {
   Respond(WithArguments(std::move(network_properties_list)));
 }
 
@@ -446,11 +446,11 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
 }
 
 void NetworkingPrivateGetEnabledNetworkTypesFunction::Result(
-    base::Value::List enabled_networks_onc_types) {
+    base::ListValue enabled_networks_onc_types) {
   if (enabled_networks_onc_types.empty()) {
     return Respond(Error(networking_private::kErrorNotSupported));
   }
-  base::Value::List enabled_networks_list;
+  base::ListValue enabled_networks_list;
   for (const auto& entry : enabled_networks_onc_types) {
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
@@ -486,7 +486,7 @@ void NetworkingPrivateGetDeviceStatesFunction::Result(
     return Respond(Error(networking_private::kErrorNotSupported));
   }
 
-  base::Value::List device_state_list;
+  base::ListValue device_state_list;
   for (const auto& properties : *device_states) {
     device_state_list.Append(properties.ToValue());
   }
@@ -821,7 +821,7 @@ NetworkingPrivateGetGlobalPolicyFunction::Run() {
 }
 
 void NetworkingPrivateGetGlobalPolicyFunction::Result(
-    std::optional<base::Value::Dict> policy_dict) {
+    std::optional<base::DictValue> policy_dict) {
   // private_api::GlobalPolicy is a subset of the global policy dictionary
   // (by definition), so use the api setter/getter to generate the subset.
   std::optional<private_api::GlobalPolicy> policy =
@@ -849,7 +849,7 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
 }
 
 void NetworkingPrivateGetCertificateListsFunction::Result(
-    base::Value::Dict certificate_lists) {
+    base::DictValue certificate_lists) {
   return Respond(WithArguments(std::move(certificate_lists)));
 }
 

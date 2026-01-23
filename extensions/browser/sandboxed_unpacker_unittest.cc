@@ -140,10 +140,10 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_root,
-                       std::unique_ptr<base::Value::Dict> original_manifest,
+                       std::unique_ptr<base::DictValue> original_manifest,
                        const Extension* extension,
                        const SkBitmap& install_icon,
-                       base::Value::Dict ruleset_install_prefs) override {
+                       base::DictValue ruleset_install_prefs) override {
     temp_dir_ = temp_dir;
     callback_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
   }
@@ -305,8 +305,8 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     sandboxed_unpacker_->extension_root_ = path;
   }
 
-  std::optional<base::Value::Dict> RewriteManifestFile(
-      const base::Value::Dict& manifest) {
+  std::optional<base::DictValue> RewriteManifestFile(
+      const base::DictValue& manifest) {
     return sandboxed_unpacker_->RewriteManifestFile(manifest);
   }
 
@@ -489,8 +489,8 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
   base::WriteFile(extensions_dir_.GetPath().Append(
                       FILE_PATH_LITERAL("manifest.fingerprint")),
                   fingerprint);
-  std::optional<base::Value::Dict> manifest(
-      RewriteManifestFile(base::Value::Dict().Set(kVersionStr, kTestVersion)));
+  std::optional<base::DictValue> manifest(
+      RewriteManifestFile(base::DictValue().Set(kVersionStr, kTestVersion)));
   auto* key = manifest->FindString("key");
   auto* version = manifest->FindString(kVersionStr);
   auto* differential_fingerprint =

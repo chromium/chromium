@@ -117,7 +117,7 @@ class ExtensionIconImageTest : public ExtensionsTest,
       return nullptr;
     }
 
-    const base::Value::Dict* valid_dict = valid_value->GetIfDict();
+    const base::DictValue* valid_dict = valid_value->GetIfDict();
     EXPECT_TRUE(valid_dict);
     if (!valid_dict) {
       return nullptr;

@@ -55,7 +55,7 @@ std::string GetVerifiedContents(const Extension& extension) {
 }
 
 void WriteManifest(TestExtensionDir* dir) {
-  dir->WriteManifest(base::Value::Dict()
+  dir->WriteManifest(base::DictValue()
                          .Set("manifest_version", 2)
                          .Set("name", "Test extension")
                          .Set("version", "1.0"));

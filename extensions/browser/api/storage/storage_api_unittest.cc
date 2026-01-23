@@ -66,7 +66,7 @@ class FakeValueStore : public value_store::ValueStore {
   // Constructor for GetBytesInUseIntOverflow test.
   explicit FakeValueStore(size_t bytes_in_use) : bytes_in_use_(bytes_in_use) {}
   // Constructor for GetOperationExceedsSizeLimit test.
-  explicit FakeValueStore(base::Value::Dict large_value)
+  explicit FakeValueStore(base::DictValue large_value)
       : large_value_(std::move(large_value)) {}
 
   // value_store::ValueStore:
@@ -91,7 +91,7 @@ class FakeValueStore : public value_store::ValueStore {
     NOTREACHED();
   }
   WriteResult Set(WriteOptions options,
-                  const base::Value::Dict& values) override {
+                  const base::DictValue& values) override {
     NOTREACHED();
   }
   WriteResult Remove(const std::string& key) override { NOTREACHED(); }
@@ -102,7 +102,7 @@ class FakeValueStore : public value_store::ValueStore {
 
  private:
   size_t bytes_in_use_ = 0;
-  base::Value::Dict large_value_;
+  base::DictValue large_value_;
 };
 
 // A fake ValueStoreCache that we can assign to a storage area in the
@@ -238,7 +238,7 @@ class StorageApiUnittest : public ApiUnitTest {
       return testing::AssertionFailure() << "No result";
     }
 
-    const base::Value::Dict* dict = result->GetIfDict();
+    const base::DictValue* dict = result->GetIfDict();
     if (!dict) {
       return testing::AssertionFailure() << *result << " was not a dictionary.";
     }
@@ -429,7 +429,7 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
     std::optional<base::Value> result =
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(),
-            base::Value::List().Append("local").Append(base::Value()),
+            base::ListValue().Append("local").Append(base::Value()),
             browser_context());
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_double());
@@ -443,7 +443,7 @@ TEST_F(StorageApiUnittest, GetOperationExceedsSizeLimit) {
   feature_list.InitFromCommandLine("EnforceStorageGetSizeLimit", "");
 
   constexpr size_t kMaxSingleGetSizeBytes = 512 * 1024 * 1024;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kKeyWithLargeValue", std::string(kMaxSingleGetSizeBytes, 'a'));
 
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());

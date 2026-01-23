@@ -210,7 +210,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation()) {
-            base::Value::Dict result;
+            base::DictValue result;
             result.Set("frameToken", frame_token);
             existing_window->GetSerializedState(&result);
             result.Set("existingWindow", true);
@@ -428,7 +428,7 @@ void AppWindowCreateFunction::OnAppWindowFinishedFirstNavigationOrClosed(
   if (source_process_id() == app_frame->GetProcess()->GetDeprecatedID()) {
     frame_token = app_frame->GetFrameToken().ToString();
   }
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("frameToken", frame_token);
   if (is_existing_window) {
     result.Set("existingWindow", true);

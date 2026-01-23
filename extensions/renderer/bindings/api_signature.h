@@ -92,7 +92,7 @@ class APISignature {
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    std::optional<base::Value::List> arguments_list;
+    std::optional<base::ListValue> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;

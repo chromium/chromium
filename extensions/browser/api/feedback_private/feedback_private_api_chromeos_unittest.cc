@@ -34,7 +34,7 @@ using testing::SaveArg;
 // list.
 template <typename T>
 std::string ParamsToJSON(const T& params) {
-  base::Value::List params_value;
+  base::ListValue params_value;
   params_value.Append(base::Value(params.ToValue()));
   std::string params_json_string;
   EXPECT_TRUE(base::JSONWriter::Write(params_value, &params_json_string));
@@ -735,13 +735,13 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
       /*flow=*/api::feedback_private::FeedbackFlow::kAi,
       /*from_assistant=*/false, /*include_bluetooth_logs=*/false,
       /*show_questionnaire=*/false, /*from_chrome_labs_or_kaleidoscope=*/false,
-      /*from_autofill=*/false, /*autofill_metadata=*/base::Value::Dict(),
-      /*ai_metadata=*/base::Value::Dict());
+      /*from_autofill=*/false, /*autofill_metadata=*/base::DictValue(),
+      /*ai_metadata=*/base::DictValue());
 
   EXPECT_EQ(FeedbackCommon::GetChromeBrowserProductId(),
             feedback_info->product_id);
 
-  auto chromeos_ai_metadata = base::Value::Dict();
+  auto chromeos_ai_metadata = base::DictValue();
   chromeos_ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");
   feedback_info = api->CreateFeedbackInfo(
       /*description_template=*/unused, /*description_placeholder_text=*/unused,
@@ -750,7 +750,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
       /*flow=*/api::feedback_private::FeedbackFlow::kAi,
       /*from_assistant=*/false, /*include_bluetooth_logs=*/false,
       /*show_questionnaire=*/false, /*from_chrome_labs_or_kaleidoscope=*/false,
-      /*from_autofill=*/false, /*autofill_metadata=*/base::Value::Dict(),
+      /*from_autofill=*/false, /*autofill_metadata=*/base::DictValue(),
       chromeos_ai_metadata);
 
   EXPECT_EQ(FeedbackCommon::GetChromeOSProductId(), feedback_info->product_id);

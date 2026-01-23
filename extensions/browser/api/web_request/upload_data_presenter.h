@@ -39,7 +39,7 @@ namespace subtle {
 // Appends a dictionary {'key': 'value'} to `list`.
 void AppendKeyValuePair(const char* key,
                         base::Value value,
-                        base::Value::List& list);
+                        base::ListValue& list);
 
 }  // namespace subtle
 
@@ -90,7 +90,7 @@ class RawDataPresenter : public UploadDataPresenter {
   void FeedNextFile(const std::string& filename);
   FRIEND_TEST_ALL_PREFIXES(WebRequestUploadDataPresenterTest, RawData);
 
-  base::Value::List list_;
+  base::ListValue list_;
 };
 
 // This class inspects the contents of bytes elements. It uses the
@@ -131,7 +131,7 @@ class ParsedDataPresenter : public UploadDataPresenter {
 
   std::unique_ptr<FormDataParser> parser_;
   bool success_;
-  std::optional<base::Value::Dict> dictionary_;
+  std::optional<base::DictValue> dictionary_;
 };
 
 }  // namespace extensions

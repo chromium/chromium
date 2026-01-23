@@ -147,7 +147,7 @@ bool AllowAllFeatures(v8::Local<v8::Context> context, const std::string& name) {
 
 void OnEventListenersChanged(const std::string& event_name,
                              binding::EventListenersChanged change,
-                             const base::Value::Dict* filter,
+                             const base::DictValue* filter,
                              bool was_manual,
                              v8::Local<v8::Context> context) {}
 
@@ -380,10 +380,10 @@ class APIBindingUnittest : public APIBindingTest {
   std::unique_ptr<BindingAccessChecker> access_checker_;
   APITypeReferenceMap type_refs_;
 
-  base::Value::List binding_functions_;
-  base::Value::List binding_events_;
-  base::Value::List binding_types_;
-  base::Value::Dict binding_properties_;
+  base::ListValue binding_functions_;
+  base::ListValue binding_events_;
+  base::ListValue binding_types_;
+  base::DictValue binding_properties_;
   std::unique_ptr<APIBindingHooks> binding_hooks_;
   std::unique_ptr<APIBindingHooksDelegate> binding_hooks_delegate_;
   APIBinding::CreateCustomType create_custom_type_;
@@ -775,7 +775,7 @@ TEST_F(APIBindingUnittest, TestRefProperties) {
   auto create_custom_type = [](v8::Isolate* isolate,
                                const std::string& type_name,
                                const std::string& property_name,
-                               const base::Value::List* property_values) {
+                               const base::ListValue* property_values) {
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     v8::Local<v8::Object> result = v8::Object::New(isolate);
     if (type_name == "AlphaRef") {
@@ -1733,16 +1733,17 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
         return RequestResult(RequestResult::HANDLED);
       }));
 
-  auto handle_and_send_request =
-      [](APIRequestHandler* handler, const APISignature*,
-         v8::Local<v8::Context> context, v8::LocalVector<v8::Value>* arguments,
-         const APITypeReferenceMap& map) {
-        handler->StartRequest(
-            context, "test.handleAndSendRequest", base::Value::List(),
-            binding::AsyncResponseType::kNone, v8::Local<v8::Function>(),
-            v8::Local<v8::Function>(), binding::ResultModifierFunction());
-        return RequestResult(RequestResult::HANDLED);
-      };
+  auto handle_and_send_request = [](APIRequestHandler* handler,
+                                    const APISignature*,
+                                    v8::Local<v8::Context> context,
+                                    v8::LocalVector<v8::Value>* arguments,
+                                    const APITypeReferenceMap& map) {
+    handler->StartRequest(context, "test.handleAndSendRequest",
+                          base::ListValue(), binding::AsyncResponseType::kNone,
+                          v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+                          binding::ResultModifierFunction());
+    return RequestResult(RequestResult::HANDLED);
+  };
   hooks->AddHandler(
       "test.handleAndSendRequest",
       base::BindRepeating(handle_and_send_request, request_handler()));
@@ -1888,7 +1889,7 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
   ASSERT_TRUE(last_request());
   EXPECT_TRUE(last_request()->has_async_response_handler);
   request_handler()->CompleteRequest(last_request()->request_id,
-                                     base::Value::List(), std::string());
+                                     base::ListValue(), std::string());
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "calledCustomCallback"));
@@ -2003,7 +2004,7 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
 
     ASSERT_TRUE(last_request());
     request_handler()->CompleteRequest(last_request()->request_id,
-                                       base::Value::List(), "Error message");
+                                       base::ListValue(), "Error message");
     EXPECT_EQ(v8::Promise::kRejected, promise->State());
     ASSERT_TRUE(promise->Result()->IsObject());
     EXPECT_EQ(R"("Error message")",
@@ -2250,7 +2251,7 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
 
     ASSERT_TRUE(last_request());
     request_handler()->CompleteRequest(last_request()->request_id,
-                                       base::Value::List(), "Error message");
+                                       base::ListValue(), "Error message");
 
     EXPECT_EQ(v8::Promise::kRejected, promise->State());
     ASSERT_TRUE(promise->Result()->IsObject());

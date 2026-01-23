@@ -31,7 +31,7 @@ constexpr const char kExceptionHandlerKey[] = "exceptionHandler";
 // arguments were used in construction).
 class APIRequestHandler::ArgumentAdapter {
  public:
-  ArgumentAdapter(const base::Value::List* base_argumements,
+  ArgumentAdapter(const base::ListValue* base_argumements,
                   mojom::ExtraResponseDataPtr extra_data);
   explicit ArgumentAdapter(const v8::LocalVector<v8::Value>& v8_arguments);
 
@@ -48,13 +48,13 @@ class APIRequestHandler::ArgumentAdapter {
   mojom::ExtraResponseDataPtr TakeExtraData() { return std::move(extra_data_); }
 
  private:
-  raw_ptr<const base::Value::List> base_arguments_ = nullptr;
+  raw_ptr<const base::ListValue> base_arguments_ = nullptr;
   mutable std::optional<v8::LocalVector<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
 
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
-    const base::Value::List* base_arguments,
+    const base::ListValue* base_arguments,
     mojom::ExtraResponseDataPtr extra_data)
     : base_arguments_(base_arguments), extra_data_(std::move(extra_data)) {}
 APIRequestHandler::ArgumentAdapter::ArgumentAdapter(
@@ -448,7 +448,7 @@ APIRequestHandler::~APIRequestHandler() = default;
 v8::Local<v8::Promise> APIRequestHandler::StartRequest(
     v8::Local<v8::Context> context,
     const std::string& method,
-    base::Value::List arguments_list,
+    base::ListValue arguments_list,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> callback,
     v8::Local<v8::Function> custom_callback,
@@ -490,7 +490,7 @@ v8::Local<v8::Promise> APIRequestHandler::StartRequest(
 
 void APIRequestHandler::CompleteRequest(
     int request_id,
-    const base::Value::List& response_args,
+    const base::ListValue& response_args,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
   CompleteRequestImpl(request_id,

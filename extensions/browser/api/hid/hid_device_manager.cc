@@ -127,8 +127,8 @@ bool WillDispatchDeviceEvent(
     content::BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter,
-    std::optional<base::Value::List>& event_args_out,
+    const base::DictValue* listener_filter,
+    std::optional<base::ListValue>& event_args_out,
     mojom::EventFilteringInfoPtr& event_filtering_info_out,
     bool* dispatch_separate_event_out) {
   if (device_manager && extension) {
@@ -192,7 +192,7 @@ void HidDeviceManager::GetApiDevices(
   LazyInitialize();
 
   if (enumeration_ready_) {
-    base::Value::List devices = CreateApiDeviceList(extension, filters);
+    base::ListValue devices = CreateApiDeviceList(extension, filters);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(devices)));
   } else {
@@ -372,10 +372,10 @@ void HidDeviceManager::OverrideHidManagerBinderForTesting(
   GetHidManagerBinderOverride() = std::move(binder);
 }
 
-base::Value::List HidDeviceManager::CreateApiDeviceList(
+base::ListValue HidDeviceManager::CreateApiDeviceList(
     const Extension* extension,
     const std::vector<HidDeviceFilter>& filters) {
-  base::Value::List api_devices;
+  base::ListValue api_devices;
   for (const ResourceIdToDeviceInfoMap::value_type& map_entry : devices_) {
     int resource_id = map_entry.first;
     auto& device_info = map_entry.second;
@@ -413,7 +413,7 @@ void HidDeviceManager::OnEnumerationComplete(
   enumeration_ready_ = true;
 
   for (const auto& params : pending_enumerations_) {
-    base::Value::List devices_list =
+    base::ListValue devices_list =
         CreateApiDeviceList(params->extension, params->filters);
     std::move(params->callback).Run(std::move(devices_list));
   }
@@ -423,7 +423,7 @@ void HidDeviceManager::OnEnumerationComplete(
 void HidDeviceManager::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args,
+    base::ListValue event_args,
     const device::mojom::HidDeviceInfo& device_info) {
   std::unique_ptr<Event> event(
       new Event(histogram_value, event_name, std::move(event_args)));

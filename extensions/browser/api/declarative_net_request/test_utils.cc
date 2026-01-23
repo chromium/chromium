@@ -430,7 +430,7 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
 
   // Serialize |rules|.
-  base::Value::List builder;
+  base::ListValue builder;
   for (const auto& rule : rules) {
     builder.Append(rule.ToValue());
   }

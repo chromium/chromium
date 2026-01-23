@@ -43,7 +43,7 @@ std::optional<int> LoadValidSizeFromString(const std::string& string_size) {
 }
 
 bool LoadIconsFromDictionary(const Extension& extension,
-                             const base::Value::Dict& icons_value,
+                             const base::DictValue& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error,
                              std::vector<std::string>* warnings) {

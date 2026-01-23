@@ -25,19 +25,19 @@ const int kIgnoreRoutingId = 0;
 const char kErrorTooManyListeners[] = "Too many listeners.";
 
 // Pseudo-validates the given |filter| and converts it into a
-// base::Value::Dict. Returns true on success.
+// base::DictValue. Returns true on success.
 // TODO(devlin): This "validation" is pretty terrible. It matches the JS
 // equivalent, but it's lousy and makes it easy for users to get it wrong.
 // We should generate an argument spec for it and match it exactly.
 bool ValidateFilter(v8::Local<v8::Context> context,
                     v8::Local<v8::Object> filter,
-                    std::unique_ptr<base::Value::Dict>* filter_dict,
+                    std::unique_ptr<base::DictValue>* filter_dict,
                     std::string* error) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
 
   if (filter.IsEmpty()) {
-    *filter_dict = std::make_unique<base::Value::Dict>();
+    *filter_dict = std::make_unique<base::DictValue>();
     return true;
   }
 
@@ -70,7 +70,7 @@ bool ValidateFilter(v8::Local<v8::Context> context,
     return false;
   }
 
-  *filter_dict = std::make_unique<base::Value::Dict>(value->GetDict().Clone());
+  *filter_dict = std::make_unique<base::DictValue>(value->GetDict().Clone());
   return true;
 }
 
@@ -268,11 +268,11 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
     return false;
   }
 
-  std::unique_ptr<base::Value::Dict> filter_dict;
+  std::unique_ptr<base::DictValue> filter_dict;
   if (!ValidateFilter(context, filter, &filter_dict, error))
     return false;
 
-  base::Value::Dict* filter_weak = filter_dict.get();
+  base::DictValue* filter_weak = filter_dict.get();
   int filter_id = -1;
   bool was_first_of_kind = false;
   LazilySetContextOwner(context);
@@ -371,7 +371,7 @@ void FilteredEventListeners::InvalidateListener(
       << "The context owner must be instantiated if listeners were removed.";
 
   bool was_last_of_kind = false;
-  std::unique_ptr<base::Value::Dict> filter;
+  std::unique_ptr<base::DictValue> filter;
   std::tie(was_last_of_kind, filter) =
       listener_tracker_->RemoveFilteredListener(context_owner_id_, event_name_,
                                                 listener.filter_id);

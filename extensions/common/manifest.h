@@ -20,7 +20,7 @@
 namespace extensions {
 struct InstallWarning;
 
-// Wraps the base::Value::Dict form of extension's manifest. Enforces access to
+// Wraps the base::DictValue form of extension's manifest. Enforces access to
 // properties of the manifest using ManifestFeatureProvider.
 class Manifest final {
  public:
@@ -117,7 +117,7 @@ class Manifest final {
   }
 
   // Returns the Manifest::Type for the given `value`.
-  static Type GetTypeFromManifestValue(const base::Value::Dict& value,
+  static Type GetTypeFromManifestValue(const base::DictValue& value,
                                        bool for_login_screen = false);
 
   // Returns true if an item with the given `location` should always be loaded,
@@ -130,11 +130,11 @@ class Manifest final {
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
       mojom::ManifestLocation location,
-      base::Value::Dict value,
+      base::DictValue value,
       ExtensionId extension_id);
 
   Manifest(mojom::ManifestLocation location,
-           base::Value::Dict value,
+           base::DictValue value,
            ExtensionId extension_id);
 
   Manifest(const Manifest&) = delete;
@@ -186,7 +186,7 @@ class Manifest final {
   std::optional<int> FindIntPath(std::string_view path) const;
   const std::string* FindStringPath(std::string_view path) const;
 
-  const base::Value::Dict* FindDictPath(std::string_view path) const;
+  const base::DictValue* FindDictPath(std::string_view path) const;
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;
@@ -194,19 +194,17 @@ class Manifest final {
   // Returns true if this equals the `other` manifest.
   bool EqualsForTesting(const Manifest& other) const;
 
-  // Gets the underlying base::Value::Dict representing the manifest.
+  // Gets the underlying base::DictValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
-  const base::Value::Dict* value() const { return &value_; }
+  const base::DictValue* value() const { return &value_; }
 
-  // Gets the underlying `base::Value::Dict` representing the manifest with all
+  // Gets the underlying `base::DictValue` representing the manifest with all
   // unavailable manifest keys removed.
-  const base::Value::Dict& available_values() const {
-    return available_values_;
-  }
+  const base::DictValue& available_values() const { return available_values_; }
 
  private:
   Manifest(mojom::ManifestLocation location,
-           base::Value::Dict value,
+           base::DictValue value,
            ExtensionId extension_id,
            bool for_login_screen);
 
@@ -224,10 +222,10 @@ class Manifest final {
   const mojom::ManifestLocation location_;
 
   // The underlying dictionary representation of the manifest.
-  const base::Value::Dict value_;
+  const base::DictValue value_;
 
   // Same as `value_` but comprises only of keys available to this manifest.
-  base::Value::Dict available_values_;
+  base::DictValue available_values_;
 
   const Type type_;
 

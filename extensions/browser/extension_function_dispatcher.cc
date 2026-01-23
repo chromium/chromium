@@ -65,7 +65,7 @@ namespace {
 // called. May be called from any thread.
 void NotifyApiFunctionCalled(const ExtensionId& extension_id,
                              const std::string& api_name,
-                             const base::Value::List& args,
+                             const base::ListValue& args,
                              content::BrowserContext* browser_context) {
   activity_monitor::OnApiFunctionCalled(browser_context, extension_id, api_name,
                                         args);
@@ -80,7 +80,7 @@ bool IsRequestFromServiceWorker(const mojom::RequestParams& request_params) {
 void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
                              ExtensionFunction::ResponseType type,
                              const std::string& error) {
-  std::move(callback).Run(type, base::Value::List(), error, nullptr);
+  std::move(callback).Run(type, base::ListValue(), error, nullptr);
 }
 
 std::optional<bad_message::BadMessageReason> ValidateRequest(
@@ -180,7 +180,7 @@ void ExtensionFunctionDispatcher::Dispatch(
     debug::ScopedScriptInjectionTrackerFailureCrashKeys tracker_keys(
         frame, params->extension_id);
     bad_message::ReceivedBadMessage(&process, *bad_message_code);
-    std::move(callback).Run(/*kFailed=*/true, base::Value::List(),
+    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
                             ToString(*bad_message_code), nullptr);
     return;
   }
@@ -190,7 +190,7 @@ void ExtensionFunctionDispatcher::Dispatch(
       std::move(params), &frame, *frame.GetProcess(),
       base::BindOnce(
           [](mojom::LocalFrameHost::RequestCallback callback,
-             ExtensionFunction::ResponseType type, base::Value::List results,
+             ExtensionFunction::ResponseType type, base::ListValue results,
              const std::string& error,
              mojom::ExtraResponseDataPtr response_data) {
             std::move(callback).Run(
@@ -214,7 +214,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_id);
   if (!rph) {
-    std::move(callback).Run(/*kFailed=*/true, base::Value::List(), "No RPH",
+    std::move(callback).Run(/*kFailed=*/true, base::ListValue(), "No RPH",
                             nullptr);
     return;
   }
@@ -227,7 +227,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   if (auto bad_message_code = ValidateRequest(*params, nullptr, *rph)) {
     // Kill the renderer if it's an invalid request.
     bad_message::ReceivedBadMessage(render_process_id, *bad_message_code);
-    std::move(callback).Run(/*kFailed=*/true, base::Value::List(),
+    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
                             ToString(*bad_message_code), nullptr);
     return;
   }
@@ -237,7 +237,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
                      params->worker_thread_id};
   // Ignore if the worker has already stopped.
   if (!ProcessManager::Get(browser_context_)->HasServiceWorker(worker_id)) {
-    std::move(callback).Run(/*kFailed=*/true, base::Value::List(), "No SW",
+    std::move(callback).Run(/*kFailed=*/true, base::ListValue(), "No SW",
                             nullptr);
     return;
   }
@@ -246,7 +246,7 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
       std::move(params), nullptr, *rph,
       base::BindOnce(
           [](mojom::ServiceWorkerHost::RequestWorkerCallback callback,
-             ExtensionFunction::ResponseType type, base::Value::List results,
+             ExtensionFunction::ResponseType type, base::ListValue results,
              const std::string& error,
              mojom::ExtraResponseDataPtr response_data) {
             std::move(callback).Run(

@@ -25,7 +25,7 @@ class WebViewGuest;
 // API.
 class WebViewFindHelper {
  public:
-  using ForwardResponseCallback = base::OnceCallback<void(base::Value::Dict)>;
+  using ForwardResponseCallback = base::OnceCallback<void(base::DictValue)>;
 
   explicit WebViewFindHelper(WebViewGuest* webview_guest);
 
@@ -74,8 +74,8 @@ class WebViewFindHelper {
                           int active_match_ordinal,
                           bool final_update);
 
-    // Stores find results into a base::Value::Dict.
-    void PrepareResults(base::Value::Dict& results);
+    // Stores find results into a base::DictValue.
+    void PrepareResults(base::DictValue& results);
 
    private:
     int number_of_matches_;
@@ -103,7 +103,7 @@ class WebViewFindHelper {
                           bool final_update);
 
     // Stores find results and other event info into a Value::Dict.
-    void PrepareResults(base::Value::Dict& dict);
+    void PrepareResults(base::DictValue& dict);
 
    private:
     const std::u16string search_text_;

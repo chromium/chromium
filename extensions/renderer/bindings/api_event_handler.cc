@@ -241,7 +241,7 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
 
 void APIEventHandler::FireEventInContext(const std::string& event_name,
                                          v8::Local<v8::Context> context,
-                                         const base::Value::List& args,
+                                         const base::ListValue& args,
                                          mojom::EventFilteringInfoPtr filter) {
   // Don't bother converting arguments if there are no listeners.
   // NOTE(devlin): This causes a double data and EventEmitter lookup, since

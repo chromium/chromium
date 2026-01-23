@@ -61,7 +61,7 @@ std::unique_ptr<GuestViewBase> ExtensionOptionsGuest::Create(
 void ExtensionOptionsGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     GuestPageCreatedCallback callback) {
   // Get the extension's base URL.
   const std::string* extension_id =
@@ -117,7 +117,7 @@ void ExtensionOptionsGuest::CreateInnerPage(
 }
 
 void ExtensionOptionsGuest::DidInitialize(
-    const base::Value::Dict& create_params) {
+    const base::DictValue& create_params) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     return;
   }
@@ -142,8 +142,7 @@ void ExtensionOptionsGuest::MaybeRecreateGuestContents(
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {
   DispatchEventToView(std::make_unique<GuestViewEvent>(
-      api::extension_options_internal::OnLoad::kEventName,
-      base::Value::Dict()));
+      api::extension_options_internal::OnLoad::kEventName, base::DictValue()));
 }
 
 const char* ExtensionOptionsGuest::GetAPINamespace() const {
@@ -236,8 +235,7 @@ bool ExtensionOptionsGuest::GuestHandleContextMenu(
 
 void ExtensionOptionsGuest::GuestClose() {
   DispatchEventToView(std::make_unique<GuestViewEvent>(
-      api::extension_options_internal::OnClose::kEventName,
-      base::Value::Dict()));
+      api::extension_options_internal::OnClose::kEventName, base::DictValue()));
 }
 
 bool ExtensionOptionsGuest::HandleContextMenu(

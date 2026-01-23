@@ -21,7 +21,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
   std::vector<DeclarativeManifestData::Rule> rules =
       manifest_data->RulesForEvent("foo");
   EXPECT_EQ(1u, rules.size());
-  base::Value::Dict expected_rule = base::test::ParseJsonDict(
+  base::DictValue expected_rule = base::test::ParseJsonDict(
       "{"
       "  \"actions\": [{"
       "    \"instanceType\": \"action_type\""

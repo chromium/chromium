@@ -187,7 +187,7 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   std::unique_ptr<PreloadCheckGroup> check_group_;
 
   // Install prefs needed for the Declarative Net Request API.
-  base::Value::Dict ruleset_install_prefs_;
+  base::DictValue ruleset_install_prefs_;
 
   CompletionCallback callback_;
 

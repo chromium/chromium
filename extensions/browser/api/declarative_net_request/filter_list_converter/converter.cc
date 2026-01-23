@@ -243,7 +243,7 @@ class ProtoToJSONRuleConverter {
   }
 
   bool PopulateDomainsInternal(std::string_view sub_key, bool exclude_value) {
-    base::Value::List domains;
+    base::ListValue domains;
 
     // Note: This isn't always correct. Filters consider the $domain option to
     //       match the request domain for main_frame requests - not the
@@ -263,8 +263,8 @@ class ProtoToJSONRuleConverter {
     return true;
   }
 
-  base::Value::List GetResourceTypeList(int element_mask) {
-    base::Value::List resource_types;
+  base::ListValue GetResourceTypeList(int element_mask) {
+    base::ListValue resource_types;
     for (int element_type = 1; element_type <= proto::ElementType_MAX;
          element_type <<= 1) {
       CHECK(proto::ElementType_IsValid(element_type));
@@ -375,7 +375,7 @@ class ProtoToJSONRuleConverter {
       return true;
     }
 
-    base::Value::List resource_types = GetResourceTypeList(element_mask);
+    base::ListValue resource_types = GetResourceTypeList(element_mask);
     if (is_allow_all_requests_rule_) {
       resource_types.Append(
           dnr_api::ToString(dnr_api::ResourceType::kMainFrame));
@@ -456,7 +456,7 @@ class ProtoToJSONRuleConverter {
   proto::UrlRule input_rule_;
   int rule_id_;
   std::string error_;
-  base::Value::Dict json_rule_;
+  base::DictValue json_rule_;
 };
 
 // Writes rules/extension to |output_path| in the format supported by
@@ -520,7 +520,7 @@ class DNRJsonRuleOutputStream : public subresource_filter::RuleOutputStream {
 
  private:
   int rule_id_ = kMinValidID;
-  base::Value::List output_rules_list_;
+  base::ListValue output_rules_list_;
   const base::FilePath output_path_;
   const filter_list_converter::WriteType write_type_;
   const bool noisy_;

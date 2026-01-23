@@ -46,14 +46,14 @@ namespace {
 
 // Removes all headers for which predicate(header_name) returns true.
 void EraseHeadersIf(
-    base::Value::List& headers,
+    base::ListValue& headers,
     base::RepeatingCallback<bool(const std::string&)> predicate) {
   headers.EraseIf([&predicate](const base::Value& v) {
     return predicate.Run(*v.GetDict().FindString(keys::kHeaderNameKey));
   });
 }
 
-void FilterSecurityInfo(base::Value::Dict& result, int extra_info_spec) {
+void FilterSecurityInfo(base::DictValue& result, int extra_info_spec) {
   if (!(extra_info_spec & ExtraInfoSpec::SECURITY_INFO)) {
     result.Remove(keys::kSecurityInfoKey);
     return;
@@ -141,7 +141,7 @@ void WebRequestEventDetails::SetRequestHeaders(
     return;
   }
 
-  request_headers_ = base::Value::List();
+  request_headers_ = base::ListValue();
   for (net::HttpRequestHeaders::Iterator it(request_headers); it.GetNext();) {
     request_headers_->Append(
         helpers::CreateHeaderDictionary(it.name(), it.value()));
@@ -157,7 +157,7 @@ void WebRequestEventDetails::SetAuthInfo(
   if (!auth_info.realm.empty()) {
     dict_.Set(keys::kRealmKey, auth_info.realm);
   }
-  base::Value::Dict challenger;
+  base::DictValue challenger;
   challenger.Set(keys::kHostKey, auth_info.challenger.host());
   challenger.Set(keys::kPortKey, auth_info.challenger.port());
   dict_.Set(keys::kChallengerKey, std::move(challenger));
@@ -177,7 +177,7 @@ void WebRequestEventDetails::SetResponseHeaders(
   }
 
   if (extra_info_spec_ & ExtraInfoSpec::RESPONSE_HEADERS) {
-    response_headers_ = base::Value::List();
+    response_headers_ = base::ListValue();
     if (response_headers) {
       size_t iter = 0;
       std::string name;
@@ -198,7 +198,7 @@ void WebRequestEventDetails::SetSecurityInfo(const WebRequestInfo& request) {
     return;
   }
 
-  base::Value::Dict security_info;
+  base::DictValue security_info;
 
   if (!request.ssl_info || !request.ssl_info->cert) {
     security_info.Set(keys::kStateKey, "insecure");
@@ -209,14 +209,14 @@ void WebRequestEventDetails::SetSecurityInfo(const WebRequestInfo& request) {
       security_info.Set(keys::kStateKey, "secure");
     }
 
-    base::Value::Dict leaf_cert;
+    base::DictValue leaf_cert;
     if (extra_info_spec_ & ExtraInfoSpec::SECURITY_INFO_RAW_DER) {
       base::span<const uint8_t> cert_span = request.ssl_info->cert->cert_span();
       leaf_cert.Set(keys::kRawDerKey, base::Value::BlobStorage(
                                           cert_span.begin(), cert_span.end()));
     }
 
-    base::Value::Dict fingerprint;
+    base::DictValue fingerprint;
     std::array<uint8_t, 32> sha256_bytes =
         net::X509Certificate::CalculateFingerprint256(
             request.ssl_info->cert->cert_buffer());
@@ -225,7 +225,7 @@ void WebRequestEventDetails::SetSecurityInfo(const WebRequestInfo& request) {
 
     leaf_cert.Set(keys::kFingerprintKey, std::move(fingerprint));
 
-    base::Value::List certificates;
+    base::ListValue certificates;
     certificates.Append(std::move(leaf_cert));
 
     security_info.Set(keys::kCertificatesKey, std::move(certificates));
@@ -241,12 +241,12 @@ void WebRequestEventDetails::SetResponseSource(const WebRequestInfo& request) {
   }
 }
 
-base::Value::Dict WebRequestEventDetails::GetFilteredDict(
+base::DictValue WebRequestEventDetails::GetFilteredDict(
     int extra_info_spec,
     PermissionHelper* permission_helper,
     const extensions::ExtensionId& extension_id,
     bool crosses_incognito) const {
-  base::Value::Dict result = dict_.Clone();
+  base::DictValue result = dict_.Clone();
   if ((extra_info_spec & ExtraInfoSpec::REQUEST_BODY) && request_body_) {
     result.Set(keys::kRequestBodyKey, request_body_->Clone());
   }
@@ -255,7 +255,7 @@ base::Value::Dict WebRequestEventDetails::GetFilteredDict(
         content::RenderProcessHost::FromID(render_process_id_);
     content::BrowserContext* browser_context =
         process ? process->GetBrowserContext() : nullptr;
-    base::Value::List request_headers = request_headers_->Clone();
+    base::ListValue request_headers = request_headers_->Clone();
     EraseHeadersIf(request_headers,
                    base::BindRepeating(helpers::ShouldHideRequestHeader,
                                        browser_context, extra_info_spec));
@@ -263,7 +263,7 @@ base::Value::Dict WebRequestEventDetails::GetFilteredDict(
   }
   if ((extra_info_spec & ExtraInfoSpec::RESPONSE_HEADERS) &&
       response_headers_) {
-    base::Value::List response_headers = response_headers_->Clone();
+    base::ListValue response_headers = response_headers_->Clone();
     EraseHeadersIf(response_headers,
                    base::BindRepeating(helpers::ShouldHideResponseHeader,
                                        extra_info_spec));
@@ -285,7 +285,7 @@ base::Value::Dict WebRequestEventDetails::GetFilteredDict(
   return result;
 }
 
-base::Value::Dict WebRequestEventDetails::GetAndClearDict() {
+base::DictValue WebRequestEventDetails::GetAndClearDict() {
   return std::move(dict_);
 }
 

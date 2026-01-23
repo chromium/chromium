@@ -252,7 +252,7 @@ void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params,
                                       RequestWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetBrowserContext()) {
-    std::move(callback).Run(/*kFailed=*/true, base::Value::List(),
+    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
                             "No browser context", nullptr);
     return;
   }

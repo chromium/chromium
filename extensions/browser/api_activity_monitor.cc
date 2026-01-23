@@ -45,7 +45,7 @@ void SetWebRequestMonitor(WebRequestMonitor web_request_monitor) {
 void OnApiEventDispatched(content::BrowserContext* browser_context,
                           const ExtensionId& extension_id,
                           const std::string& event_name,
-                          const base::Value::List& event_args) {
+                          const base::ListValue& event_args) {
   if (g_event_monitor) {
     g_event_monitor(browser_context, extension_id, event_name, event_args);
   }
@@ -55,7 +55,7 @@ void OnApiEventDispatched(content::BrowserContext* browser_context,
 void OnApiFunctionCalled(content::BrowserContext* browser_context,
                          const ExtensionId& extension_id,
                          const std::string& api_name,
-                         const base::Value::List& args) {
+                         const base::ListValue& args) {
   if (g_function_monitor) {
     g_function_monitor(browser_context, extension_id, api_name, args);
   }
@@ -66,7 +66,7 @@ void OnWebRequestApiUsed(content::BrowserContext* browser_context,
                          const GURL& url,
                          bool is_incognito,
                          const std::string& api_call,
-                         base::Value::Dict details) {
+                         base::DictValue details) {
   if (g_web_request_monitor) {
     g_web_request_monitor(browser_context, extension_id, url, is_incognito,
                           api_call, std::move(details));

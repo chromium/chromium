@@ -57,7 +57,7 @@ const char kEmptyDocumentUrl[] = "data:text/html,";
     }                                                        \
   } while (0)
 
-helpers::RequestCookie ParseRequestCookie(const base::Value::Dict& dict) {
+helpers::RequestCookie ParseRequestCookie(const base::DictValue& dict) {
   helpers::RequestCookie result;
   if (const std::string* name = dict.FindString(keys::kNameKey))
     result.name = *name;
@@ -66,7 +66,7 @@ helpers::RequestCookie ParseRequestCookie(const base::Value::Dict& dict) {
   return result;
 }
 
-void ParseResponseCookieImpl(const base::Value::Dict& dict,
+void ParseResponseCookieImpl(const base::DictValue& dict,
                              helpers::ResponseCookie* cookie) {
   if (const std::string* v = dict.FindString(keys::kNameKey))
     cookie->name = *v;
@@ -89,14 +89,14 @@ void ParseResponseCookieImpl(const base::Value::Dict& dict,
   }
 }
 
-helpers::ResponseCookie ParseResponseCookie(const base::Value::Dict& dict) {
+helpers::ResponseCookie ParseResponseCookie(const base::DictValue& dict) {
   helpers::ResponseCookie result;
   ParseResponseCookieImpl(dict, &result);
   return result;
 }
 
 helpers::FilterResponseCookie ParseFilterResponseCookie(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   helpers::FilterResponseCookie result;
   ParseResponseCookieImpl(dict, &result);
 
@@ -117,7 +117,7 @@ helpers::FilterResponseCookie ParseFilterResponseCookie(
 template <class T>
 scoped_refptr<const WebRequestAction> CallConstructorFactoryMethod(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   return base::MakeRefCounted<T>();
@@ -125,7 +125,7 @@ scoped_refptr<const WebRequestAction> CallConstructorFactoryMethod(
 
 scoped_refptr<const WebRequestAction> CreateRedirectRequestAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   const std::string* redirect_url_string =
@@ -137,7 +137,7 @@ scoped_refptr<const WebRequestAction> CreateRedirectRequestAction(
 
 scoped_refptr<const WebRequestAction> CreateRedirectRequestByRegExAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   const std::string* from = value.FindString(keys::kFromKey);
@@ -162,7 +162,7 @@ scoped_refptr<const WebRequestAction> CreateRedirectRequestByRegExAction(
 
 scoped_refptr<const WebRequestAction> CreateSetRequestHeaderAction(
     const std::string& instance_type,
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string* error,
     bool* bad_message) {
   const std::string* name = dict.FindString(keys::kNameKey);
@@ -183,7 +183,7 @@ scoped_refptr<const WebRequestAction> CreateSetRequestHeaderAction(
 
 scoped_refptr<const WebRequestAction> CreateRemoveRequestHeaderAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   const std::string* name = value.FindString(keys::kNameKey);
@@ -197,7 +197,7 @@ scoped_refptr<const WebRequestAction> CreateRemoveRequestHeaderAction(
 
 scoped_refptr<const WebRequestAction> CreateAddResponseHeaderAction(
     const std::string& instance_type,
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string* error,
     bool* bad_message) {
   const std::string* name = dict.FindString(keys::kNameKey);
@@ -218,7 +218,7 @@ scoped_refptr<const WebRequestAction> CreateAddResponseHeaderAction(
 
 scoped_refptr<const WebRequestAction> CreateRemoveResponseHeaderAction(
     const std::string& instance_type,
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string* error,
     bool* bad_message) {
   const std::string* name = dict.FindString(keys::kNameKey);
@@ -241,7 +241,7 @@ scoped_refptr<const WebRequestAction> CreateRemoveResponseHeaderAction(
 
 scoped_refptr<const WebRequestAction> CreateIgnoreRulesAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   bool has_parameter = false;
@@ -270,7 +270,7 @@ scoped_refptr<const WebRequestAction> CreateIgnoreRulesAction(
 
 scoped_refptr<const WebRequestAction> CreateRequestCookieAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   using extension_web_request_api_helpers::RequestCookieModification;
@@ -290,18 +290,18 @@ scoped_refptr<const WebRequestAction> CreateRequestCookieAction(
   // Get filter.
   if (modification.type == helpers::EDIT ||
       modification.type == helpers::REMOVE) {
-    const base::Value::Dict* filter = value.FindDict(keys::kFilterKey);
+    const base::DictValue* filter = value.FindDict(keys::kFilterKey);
     INPUT_FORMAT_VALIDATE(filter);
     modification.filter = ParseRequestCookie(*filter);
   }
 
   // Get new value.
   if (modification.type == helpers::ADD) {
-    const base::Value::Dict* cookie_dict = value.FindDict(keys::kCookieKey);
+    const base::DictValue* cookie_dict = value.FindDict(keys::kCookieKey);
     INPUT_FORMAT_VALIDATE(cookie_dict);
     modification.modification = ParseRequestCookie(*cookie_dict);
   } else if (modification.type == helpers::EDIT) {
-    const base::Value::Dict* modification_dict =
+    const base::DictValue* modification_dict =
         value.FindDict(keys::kModificationKey);
     INPUT_FORMAT_VALIDATE(modification_dict);
     modification.modification = ParseRequestCookie(*modification_dict);
@@ -313,7 +313,7 @@ scoped_refptr<const WebRequestAction> CreateRequestCookieAction(
 
 scoped_refptr<const WebRequestAction> CreateResponseCookieAction(
     const std::string& instance_type,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   using extension_web_request_api_helpers::ResponseCookieModification;
@@ -333,19 +333,18 @@ scoped_refptr<const WebRequestAction> CreateResponseCookieAction(
   // Get filter.
   if (modification.type == helpers::EDIT ||
       modification.type == helpers::REMOVE) {
-    const base::Value::Dict* filter = value.FindDict(keys::kFilterKey);
+    const base::DictValue* filter = value.FindDict(keys::kFilterKey);
     INPUT_FORMAT_VALIDATE(filter);
     modification.filter = ParseFilterResponseCookie(*filter);
   }
 
   // Get new value.
   if (modification.type == helpers::ADD) {
-    const base::Value::Dict* dict_value = value.FindDict(keys::kCookieKey);
+    const base::DictValue* dict_value = value.FindDict(keys::kCookieKey);
     INPUT_FORMAT_VALIDATE(dict_value);
     modification.modification = ParseResponseCookie(*dict_value);
   } else if (modification.type == helpers::EDIT) {
-    const base::Value::Dict* dict_value =
-        value.FindDict(keys::kModificationKey);
+    const base::DictValue* dict_value = value.FindDict(keys::kModificationKey);
     INPUT_FORMAT_VALIDATE(dict_value);
     modification.modification = ParseResponseCookie(*dict_value);
   }
@@ -356,7 +355,7 @@ scoped_refptr<const WebRequestAction> CreateResponseCookieAction(
 
 scoped_refptr<const WebRequestAction> CreateSendMessageToExtensionAction(
     const std::string& name,
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error,
     bool* bad_message) {
   const std::string* message = value.FindString(keys::kMessageKey);
@@ -365,7 +364,7 @@ scoped_refptr<const WebRequestAction> CreateSendMessageToExtensionAction(
 }
 
 struct WebRequestActionFactory {
-  using FactoryT = DedupingFactory<WebRequestAction, const base::Value::Dict&>;
+  using FactoryT = DedupingFactory<WebRequestAction, const base::DictValue&>;
   FactoryT factory;
 
   WebRequestActionFactory() : factory(5) {
@@ -482,7 +481,7 @@ bool WebRequestAction::HasPermission(ApplyInfo* apply_info,
 scoped_refptr<const WebRequestAction> WebRequestAction::Create(
     content::BrowserContext* browser_context,
     const Extension* extension,
-    const base::Value::Dict& json_action,
+    const base::DictValue& json_action,
     std::string* error,
     bool* bad_message) {
   *error = "";

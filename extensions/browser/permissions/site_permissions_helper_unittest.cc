@@ -81,7 +81,7 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
                void(const Extension* extension,
                     const syncer::StringOrdinal& page_ordinal,
                     int install_flags,
-                    base::Value::Dict ruleset_install_prefs));
+                    base::DictValue ruleset_install_prefs));
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

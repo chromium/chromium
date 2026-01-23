@@ -39,7 +39,7 @@ class Command : public ui::Command {
   static bool IsActionRelatedCommand(std::string_view command_name);
 
   // Parse the command.
-  bool Parse(const base::Value::Dict& command,
+  bool Parse(const base::DictValue& command,
              std::string_view command_name,
              int index,
              std::u16string* error);

@@ -45,7 +45,7 @@ void CheckParse(const ConstCommandsTestData& data,
                "| index: " + base::NumberToString(i));
 
   extensions::Command command;
-  base::Value::Dict input;
+  base::DictValue input;
   std::u16string error;
 
   // First, test the parse of a string suggested_key value.
@@ -74,7 +74,7 @@ void CheckParse(const ConstCommandsTestData& data,
       return;
     }
 
-    base::Value::Dict key_dict;
+    base::DictValue key_dict;
     for (const auto& platform : platforms) {
       key_dict.Set(platform, data.key);
     }
@@ -212,11 +212,11 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
 
   // Test that platform specific keys are honored on each platform, despite
   // fallback being given.
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set("description", description);
 
-  base::Value::Dict& key_dict =
-      input.Set("suggested_key", base::Value::Dict())->GetDict();
+  base::DictValue& key_dict =
+      input.Set("suggested_key", base::DictValue())->GetDict();
   key_dict.Set("default", "Ctrl+Shift+D");
   key_dict.Set("windows", "Ctrl+Shift+W");
   key_dict.Set("mac", "Ctrl+Shift+M");
@@ -353,7 +353,7 @@ TEST(CommandTest, ExtensionCommandParsingPlatformSpecific) {
 // specified for platform-specific keys.
 TEST(CommandTest, ExtensionCommandParsingInvalidPlatformForCommandOption) {
   extensions::Command command;
-  base::Value::Dict input;
+  base::DictValue input;
   std::u16string error;
   std::string description = "desc";
   std::string command_name = "foo";
@@ -362,14 +362,14 @@ TEST(CommandTest, ExtensionCommandParsingInvalidPlatformForCommandOption) {
   input.Set("description", description);
 
   error.clear();
-  base::Value::Dict key_dict_cmd;
+  base::DictValue key_dict_cmd;
   key_dict_cmd.Set(platform, "Command+G");
   input.Set("suggested_key", key_dict_cmd.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
   EXPECT_TRUE(error.contains(u"Command key is not supported"));
 
   error.clear();
-  base::Value::Dict key_dict_opt;
+  base::DictValue key_dict_opt;
   key_dict_opt.Set(platform, "Option+H");
   input.Set("suggested_key", key_dict_opt.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
@@ -380,7 +380,7 @@ TEST(CommandTest, ExtensionCommandParsingInvalidPlatformForCommandOption) {
 // specified for the "default" platform key.
 TEST(CommandTest, ExtensionCommandParsingDefaultNonMacForCommandOption) {
   extensions::Command command;
-  base::Value::Dict input;
+  base::DictValue input;
   std::u16string error;
   std::string description = "desc";
   std::string command_name = "foo";
@@ -388,14 +388,14 @@ TEST(CommandTest, ExtensionCommandParsingDefaultNonMacForCommandOption) {
   input.Set("description", description);
 
   error.clear();
-  base::Value::Dict key_dict_cmd_default;
+  base::DictValue key_dict_cmd_default;
   key_dict_cmd_default.Set("default", "Command+G");
   input.Set("suggested_key", key_dict_cmd_default.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
   EXPECT_TRUE(error.contains(u"Command key is not supported"));
 
   error.clear();
-  base::Value::Dict key_dict_opt_default;
+  base::DictValue key_dict_opt_default;
   key_dict_opt_default.Set("default", "Option+H");
   input.Set("suggested_key", key_dict_opt_default.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
@@ -406,7 +406,7 @@ TEST(CommandTest, ExtensionCommandParsingDefaultNonMacForCommandOption) {
 // platforms.
 TEST(CommandTest, ExtensionCommandParsingSubstringCommandOption) {
   extensions::Command command;
-  base::Value::Dict input;
+  base::DictValue input;
   std::u16string error;
   std::string description = "desc";
   std::string command_name = "foo";
@@ -416,7 +416,7 @@ TEST(CommandTest, ExtensionCommandParsingSubstringCommandOption) {
   // Fails because "NotACommand" is not a valid key. This is the expected
   // behavior.
   error.clear();
-  base::Value::Dict key_dict_cmd_default;
+  base::DictValue key_dict_cmd_default;
   key_dict_cmd_default.Set("default", "Ctrl+NotACommand");
   input.Set("suggested_key", key_dict_cmd_default.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
@@ -425,7 +425,7 @@ TEST(CommandTest, ExtensionCommandParsingSubstringCommandOption) {
   // Fails because "NotAnOption" is not a valid key. This is the expected
   // behavior.
   error.clear();
-  base::Value::Dict key_dict_opt_default;
+  base::DictValue key_dict_opt_default;
   key_dict_opt_default.Set("default", "Ctrl+NotAnOption");
   input.Set("suggested_key", key_dict_opt_default.Clone());
   EXPECT_FALSE(command.Parse(input, command_name, 0, &error));
@@ -439,14 +439,14 @@ TEST(CommandTest, ExtensionCommandParsingSubstringCommandOption) {
 // original value provided by the developer, not the normalized value.
 TEST(CommandTest, ExtensionCommandParsingNormalizedError) {
   extensions::Command command;
-  base::Value::Dict input;
+  base::DictValue input;
   std::u16string error;
   std::string description = "desc";
   std::string command_name = "foo";
 
   input.Set("description", description);
 
-  base::Value::Dict key_dict;
+  base::DictValue key_dict;
   // This is an intentional invalid shortcut for Mac, and is used to test that
   // the error message contains the original, non-normalized values.
   std::string invalid_shortcut = "Command+Option+Z";

@@ -278,7 +278,7 @@ void SendOnMessageEventOnUI(
     return;
   }
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(event_details->GetAndClearDict());
 
   EventRouter* event_router = EventRouter::Get(browser_context);
@@ -573,13 +573,13 @@ WebRequestEventRouter::EventListener::~EventListener() = default;
 // static
 std::unique_ptr<WebRequestEventRouter::EventListener>
 WebRequestEventRouter::EventListener::InitFromInactiveListenerValue(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     const ExtensionId& extension_id,
     content::BrowserContext* context,
     std::string* error) {
   const std::string* sub_event_name =
       value.FindString(kListenerSubEventNameKey);
-  const base::Value::Dict* filter_dict = value.FindDict(kListenerFilterKey);
+  const base::DictValue* filter_dict = value.FindDict(kListenerFilterKey);
   std::optional<int> extra_info = value.FindInt(kListenerExtraInfoSpecKey);
 
   if (!sub_event_name || !filter_dict || !extra_info) {
@@ -625,9 +625,9 @@ WebRequestEventRouter::EventListener::InitFromInactiveListenerValue(
   return listener;
 }
 
-base::Value::Dict
-WebRequestEventRouter::EventListener::ToInactiveListenerValue() const {
-  base::Value::Dict dict;
+base::DictValue WebRequestEventRouter::EventListener::ToInactiveListenerValue()
+    const {
+  base::DictValue dict;
   dict.Set(kListenerSubEventNameKey, id.sub_event_name);
   dict.Set(kListenerExtraInfoSpecKey, extra_info_spec);
   dict.Set(kListenerFilterKey, filter.ToValue());
@@ -730,9 +730,9 @@ helpers::EventResponseDelta CalculateDelta(
   }
 }
 
-base::Value::List SerializeResponseHeaders(
+base::ListValue SerializeResponseHeaders(
     const helpers::ResponseHeaders& headers) {
-  base::Value::List serialized_headers;
+  base::ListValue serialized_headers;
   for (const auto& it : headers) {
     serialized_headers.Append(
         helpers::CreateHeaderDictionary(it.first, it.second));
@@ -741,15 +741,15 @@ base::Value::List SerializeResponseHeaders(
 }
 
 // Convert a RequestCookieModifications/ResponseCookieModifications object to a
-// base::Value::List which summarizes the changes made.  This is templated since
+// base::ListValue which summarizes the changes made.  This is templated since
 // the two types (request/response) are different but contain essentially the
 // same fields.
 template <typename CookieType>
-base::Value::List SummarizeCookieModifications(
+base::ListValue SummarizeCookieModifications(
     const std::vector<CookieType>& modifications) {
-  base::Value::List cookie_modifications;
+  base::ListValue cookie_modifications;
   for (const CookieType& mod : modifications) {
-    base::Value::Dict summary;
+    base::DictValue summary;
     switch (mod.type) {
       case helpers::ADD:
         summary.Set(activity_log::kCookieModificationTypeKey,
@@ -789,10 +789,10 @@ base::Value::List SummarizeCookieModifications(
 
 // Converts an EventResponseDelta object to a dictionary value suitable for the
 // activity log.
-base::Value::Dict SummarizeResponseDelta(
+base::DictValue SummarizeResponseDelta(
     const std::string& event_name,
     const helpers::EventResponseDelta& delta) {
-  base::Value::Dict details;
+  base::DictValue details;
   if (delta.cancel) {
     details.Set(activity_log::kCancelKey, true);
   }
@@ -800,7 +800,7 @@ base::Value::Dict SummarizeResponseDelta(
     details.Set(activity_log::kNewUrlKey, delta.new_url.spec());
   }
 
-  base::Value::List modified_headers;
+  base::ListValue modified_headers;
   net::HttpRequestHeaders::Iterator iter(delta.modified_request_headers);
   while (iter.GetNext()) {
     modified_headers.Append(
@@ -811,7 +811,7 @@ base::Value::Dict SummarizeResponseDelta(
                 std::move(modified_headers));
   }
 
-  base::Value::List deleted_headers;
+  base::ListValue deleted_headers;
   for (const std::string& header : delta.deleted_request_headers) {
     deleted_headers.Append(header);
   }
@@ -845,7 +845,7 @@ base::Value::Dict SummarizeResponseDelta(
 }  // namespace
 
 bool WebRequestEventRouter::RequestFilter::InitFromValue(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string* error) {
   if (!value.Find(kRequestFilterUrlsKey)) {
     return false;
@@ -897,13 +897,13 @@ bool WebRequestEventRouter::RequestFilter::InitFromValue(
   return true;
 }
 
-base::Value::Dict WebRequestEventRouter::RequestFilter::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue WebRequestEventRouter::RequestFilter::ToValue() const {
+  base::DictValue dict;
 
   dict.Set(kRequestFilterUrlsKey, urls.ToValue());
 
   if (!types.empty()) {
-    base::Value::List types_list;
+    base::ListValue types_list;
     for (WebRequestResourceType type : types) {
       types_list.Append(WebRequestResourceTypeToString(type));
     }
@@ -1784,7 +1784,7 @@ void WebRequestEventRouter::DispatchEventToListeners(
     }
 
     // Filter out the optional keys that this listener didn't request.
-    base::Value::List args_filtered;
+    base::ListValue args_filtered;
 
     args_filtered.Append(event_details->GetFilteredDict(
         listener->extra_info_spec, PermissionHelper::Get(browser_context),
@@ -2163,7 +2163,7 @@ void WebRequestEventRouter::AddPersistedLazyListener(
   }
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  const base::Value::List* existing_listeners =
+  const base::ListValue* existing_listeners =
       prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
 
   // Ensure we don't add duplicate listeners.
@@ -2180,7 +2180,7 @@ void WebRequestEventRouter::AddPersistedLazyListener(
     }
   }
 
-  base::Value::List new_listeners;
+  base::ListValue new_listeners;
   if (existing_listeners) {
     new_listeners = existing_listeners->Clone();
   }
@@ -2204,14 +2204,14 @@ void WebRequestEventRouter::RemovePersistedLazyListener(
   }
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  const base::Value::List* existing_listeners =
+  const base::ListValue* existing_listeners =
       prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
   if (!existing_listeners) {
     return;
   }
 
   // Remove the listener(s) with the matching sub-event name.
-  base::Value::List new_listeners = existing_listeners->Clone();
+  base::ListValue new_listeners = existing_listeners->Clone();
   new_listeners.EraseIf([&](const base::Value& entry) {
     if (!entry.is_dict()) {
       return false;
@@ -2421,7 +2421,7 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
     return;
   }
 
-  const base::Value::List* persisted_listeners =
+  const base::ListValue* persisted_listeners =
       prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
   if (!persisted_listeners) {
     return;

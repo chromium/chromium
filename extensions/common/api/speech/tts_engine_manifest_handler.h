@@ -33,7 +33,7 @@ struct TtsVoice {
 struct TtsEngine : public Extension::ManifestData {
   TtsEngine();
   ~TtsEngine() override;
-  static bool Parse(const base::Value::List& tts_voices,
+  static bool Parse(const base::ListValue& tts_voices,
                     TtsEngine* out_engine,
                     std::u16string* error);
 

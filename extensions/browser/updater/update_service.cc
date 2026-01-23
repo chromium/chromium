@@ -133,7 +133,7 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
   }
 
   if (should_perform_action_on_omaha_attributes) {
-    base::Value::Dict attributes = GetExtensionOmahaAttributes(item);
+    base::DictValue attributes = GetExtensionOmahaAttributes(item);
     // Note that it's important to perform actions even if |attributes| is
     // empty, missing values may default to false and have associated logic.
     ExtensionSystem::Get(browser_context_)
@@ -277,9 +277,9 @@ void UpdateService::RemoveUpdateClientObserver(
   }
 }
 
-base::Value::Dict UpdateService::GetExtensionOmahaAttributes(
+base::DictValue UpdateService::GetExtensionOmahaAttributes(
     const update_client::CrxUpdateItem& update_item) {
-  base::Value::Dict attributes;
+  base::DictValue attributes;
 
   for (const char* key : kOmahaAttributes) {
     auto iter = update_item.custom_updatecheck_data.find(key);

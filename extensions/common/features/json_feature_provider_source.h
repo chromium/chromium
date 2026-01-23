@@ -28,13 +28,13 @@ class JSONFeatureProviderSource {
   void LoadJSON(int resource_id);
 
   // Returns the parsed dictionary.
-  const base::Value::Dict& dictionary() { return dictionary_; }
+  const base::DictValue& dictionary() { return dictionary_; }
 
  private:
   // The name of this feature type; only used for debugging.
   const std::string name_;
 
-  base::Value::Dict dictionary_;
+  base::DictValue dictionary_;
 };
 
 }  // namespace extensions

@@ -45,15 +45,15 @@ base::Value ToValue(const TestRulesetInfo& info) {
 }
 
 template <typename T>
-base::Value::List ToValue(const std::vector<T>& vec) {
-  base::Value::List builder;
+base::ListValue ToValue(const std::vector<T>& vec) {
+  base::ListValue builder;
   for (const T& t : vec)
     builder.Append(ToValue(t));
   return builder;
 }
 
 template <typename T>
-void SetValue(base::Value::Dict& dict,
+void SetValue(base::DictValue& dict,
               const char* key,
               const std::optional<T>& value) {
   if (!value)
@@ -70,8 +70,8 @@ TestRuleCondition::TestRuleCondition(const TestRuleCondition&) = default;
 TestRuleCondition& TestRuleCondition::operator=(const TestRuleCondition&) =
     default;
 
-base::Value::Dict TestRuleCondition::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleCondition::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kUrlFilterKey, url_filter);
   SetValue(dict, kRegexFilterKey, regex_filter);
   SetValue(dict, kIsUrlFilterCaseSensitiveKey, is_url_filter_case_sensitive);
@@ -103,8 +103,8 @@ TestRuleQueryKeyValue::TestRuleQueryKeyValue(const TestRuleQueryKeyValue&) =
 TestRuleQueryKeyValue& TestRuleQueryKeyValue::operator=(
     const TestRuleQueryKeyValue&) = default;
 
-base::Value::Dict TestRuleQueryKeyValue::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleQueryKeyValue::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kQueryKeyKey, key);
   SetValue(dict, kQueryValueKey, value);
   SetValue(dict, kQueryReplaceOnlyKey, replace_only);
@@ -118,8 +118,8 @@ TestRuleQueryTransform::TestRuleQueryTransform(const TestRuleQueryTransform&) =
 TestRuleQueryTransform& TestRuleQueryTransform::operator=(
     const TestRuleQueryTransform&) = default;
 
-base::Value::Dict TestRuleQueryTransform::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleQueryTransform::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kQueryTransformRemoveParamsKey, remove_params);
   SetValue(dict, kQueryTransformAddReplaceParamsKey, add_or_replace_params);
   return dict;
@@ -131,8 +131,8 @@ TestRuleTransform::TestRuleTransform(const TestRuleTransform&) = default;
 TestRuleTransform& TestRuleTransform::operator=(const TestRuleTransform&) =
     default;
 
-base::Value::Dict TestRuleTransform::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleTransform::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kTransformSchemeKey, scheme);
   SetValue(dict, kTransformHostKey, host);
   SetValue(dict, kTransformPortKey, port);
@@ -151,8 +151,8 @@ TestRuleRedirect::TestRuleRedirect(const TestRuleRedirect&) = default;
 TestRuleRedirect& TestRuleRedirect::operator=(const TestRuleRedirect&) =
     default;
 
-base::Value::Dict TestRuleRedirect::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleRedirect::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kExtensionPathKey, extension_path);
   SetValue(dict, kTransformKey, transform);
   SetValue(dict, kRedirectUrlKey, url);
@@ -170,8 +170,8 @@ TestHeaderInfo::~TestHeaderInfo() = default;
 TestHeaderInfo::TestHeaderInfo(const TestHeaderInfo&) = default;
 TestHeaderInfo& TestHeaderInfo::operator=(const TestHeaderInfo&) = default;
 
-base::Value::Dict TestHeaderInfo::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestHeaderInfo::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kHeaderNameKey, header);
   SetValue(dict, kHeaderOperationKey, operation);
   SetValue(dict, kHeaderValueKey, value);
@@ -190,8 +190,8 @@ TestHeaderCondition::TestHeaderCondition(const TestHeaderCondition&) = default;
 TestHeaderCondition& TestHeaderCondition::operator=(
     const TestHeaderCondition&) = default;
 
-base::Value::Dict TestHeaderCondition::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestHeaderCondition::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kHeaderNameKey, header);
   SetValue(dict, kHeaderValuesKey, values);
   SetValue(dict, kHeaderExcludedValuesKey, excluded_values);
@@ -203,8 +203,8 @@ TestRuleAction::~TestRuleAction() = default;
 TestRuleAction::TestRuleAction(const TestRuleAction&) = default;
 TestRuleAction& TestRuleAction::operator=(const TestRuleAction&) = default;
 
-base::Value::Dict TestRuleAction::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRuleAction::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kRuleActionTypeKey, type);
   SetValue(dict, kRequestHeadersKey, request_headers);
   SetValue(dict, kResponseHeadersKey, response_headers);
@@ -217,8 +217,8 @@ TestRule::~TestRule() = default;
 TestRule::TestRule(const TestRule&) = default;
 TestRule& TestRule::operator=(const TestRule&) = default;
 
-base::Value::Dict TestRule::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue TestRule::ToValue() const {
+  base::DictValue dict;
   SetValue(dict, kIDKey, id);
   SetValue(dict, kPriorityKey, priority);
   SetValue(dict, kRuleConditionKey, condition);
@@ -247,7 +247,7 @@ TestRule CreateRegexRule(int id) {
 }
 
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id_and_path,
-                                 base::Value::List rules_value,
+                                 base::ListValue rules_value,
                                  bool enabled)
     : TestRulesetInfo(manifest_id_and_path,
                       manifest_id_and_path,
@@ -256,7 +256,7 @@ TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id_and_path,
 
 TestRulesetInfo::TestRulesetInfo(const std::string& manifest_id,
                                  const std::string& relative_file_path,
-                                 base::Value::List rules_value,
+                                 base::ListValue rules_value,
                                  bool enabled)
     : manifest_id(manifest_id),
       relative_file_path(relative_file_path),
@@ -278,7 +278,7 @@ TestRulesetInfo::TestRulesetInfo(const TestRulesetInfo& info)
                       info.rules_value.Clone(),
                       info.enabled) {}
 
-base::Value::Dict TestRulesetInfo::GetManifestValue() const {
+base::DictValue TestRulesetInfo::GetManifestValue() const {
   dnr_api::Ruleset ruleset;
   ruleset.id = manifest_id;
   ruleset.path = relative_file_path;
@@ -286,12 +286,11 @@ base::Value::Dict TestRulesetInfo::GetManifestValue() const {
   return ruleset.ToValue();
 }
 
-base::Value::Dict CreateManifest(
-    const std::vector<TestRulesetInfo>& ruleset_info,
-    const std::vector<std::string>& hosts,
-    unsigned flags,
-    const std::string& extension_name) {
-  base::Value::Dict manifest_builder;
+base::DictValue CreateManifest(const std::vector<TestRulesetInfo>& ruleset_info,
+                               const std::vector<std::string>& hosts,
+                               unsigned flags,
+                               const std::string& extension_name) {
+  base::DictValue manifest_builder;
 
   bool is_manifest_version_2 = flags & kConfig_DEPRECATED_ManifestVersion2;
 
@@ -339,7 +338,7 @@ base::Value::Dict CreateManifest(
   if (flags & kConfig_HasAction) {
     // Manifest Version 2 does not support 'action' manifest key.
     DCHECK(!is_manifest_version_2);
-    manifest_builder.Set(keys::kAction, base::Value::Dict());
+    manifest_builder.Set(keys::kAction, base::DictValue());
   }
 
   // Set 'background' manifest entry.
@@ -361,17 +360,16 @@ base::Value::Dict CreateManifest(
   if (flags & kConfig_OmitDeclarativeNetRequestKey) {
     DCHECK(ruleset_info.empty());
   } else {
-    manifest_builder.Set(
-        dnr_api::ManifestKeys::kDeclarativeNetRequest,
-        base::Value::Dict().Set(dnr_api::DNRInfo::kRuleResources,
-                                ToValue(ruleset_info)));
+    manifest_builder.Set(dnr_api::ManifestKeys::kDeclarativeNetRequest,
+                         base::DictValue().Set(dnr_api::DNRInfo::kRuleResources,
+                                               ToValue(ruleset_info)));
   }
 
   // Set 'sandbox.pages' manifest entry.
   if (flags & kConfig_HasManifestSandbox) {
     manifest_builder.SetByDottedPath(
         keys::kSandboxedPages,
-        base::Value::List().Append(kManifestSandboxPageFilepath));
+        base::ListValue().Append(kManifestSandboxPageFilepath));
   }
 
   // std::move() to trigger rvalue overloads.
@@ -380,11 +378,11 @@ base::Value::Dict CreateManifest(
       .Set(keys::kVersion, "1.0");
 }
 
-base::Value::List ToListValue(const std::vector<std::string>& vec) {
+base::ListValue ToListValue(const std::vector<std::string>& vec) {
   return ToValue(vec);
 }
 
-base::Value::List ToListValue(const std::vector<TestRule>& rules) {
+base::ListValue ToListValue(const std::vector<TestRule>& rules) {
   return ToValue(rules);
 }
 

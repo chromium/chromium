@@ -82,13 +82,13 @@ class TestExtensionPrefs {
 
   // Similar to AddExtension, but takes a dictionary with manifest values.
   scoped_refptr<Extension> AddExtensionWithManifest(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       mojom::ManifestLocation location);
 
   // Similar to AddExtension, but takes a dictionary with manifest values
   // and extension flags.
   scoped_refptr<Extension> AddExtensionWithManifestAndFlags(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       mojom::ManifestLocation location,
       int extra_flags);
 
@@ -107,7 +107,7 @@ class TestExtensionPrefs {
   void set_extensions_disabled(bool extensions_disabled);
 
   static void AddDefaultManifestKeys(const std::string& name,
-                                     base::Value::Dict& dict);
+                                     base::DictValue& dict);
 
  protected:
   class IncrementalClock;

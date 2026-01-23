@@ -36,9 +36,9 @@ const char kDuplicateRuleId[] = "Duplicate rule ID: %s";
 const char kErrorCannotRemoveManifestRules[] =
     "Rules declared in the 'event_rules' manifest field cannot be removed";
 
-base::Value::List RulesToValue(
+base::ListValue RulesToValue(
     const std::vector<const api::events::Rule*>& rules) {
-  base::Value::List value;
+  base::ListValue value;
   for (const auto* rule : rules)
     value.Append(rule->ToValue());
   return value;

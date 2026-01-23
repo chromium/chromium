@@ -209,7 +209,7 @@ WebViewPermissionHelper* WebViewPermissionHelper::FromRenderFrameHostId(
 void WebViewPermissionHelper::RequestMediaAccessPermission(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  base::Value::Dict request_info;
+  base::DictValue request_info;
   request_info.Set(guest_view::kUrl, request.security_origin.spec());
   RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_MEDIA, std::move(request_info),
@@ -379,7 +379,7 @@ WebViewPermissionHelper::OverridePermissionResult(ContentSettingsType type) {
 
 void WebViewPermissionHelper::RequestPermission(
     WebViewPermissionType permission_type,
-    base::Value::Dict request_info,
+    base::DictValue request_info,
     PermissionResponseCallback callback,
     bool allowed_by_default) {
   // If there are too many pending permission requests then reject this request.
@@ -398,7 +398,7 @@ void WebViewPermissionHelper::RequestPermission(
   int request_id = next_permission_request_id_++;
   pending_permission_requests_[request_id] = PermissionResponseInfo(
       std::move(callback), permission_type, allowed_by_default);
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set(webview::kRequestInfo, std::move(request_info));
   args.Set(webview::kRequestId, request_id);
   switch (permission_type) {

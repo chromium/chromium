@@ -119,7 +119,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
     URLMatcherConditionFactory* url_matcher_condition_factory,
     const base::Value& condition,
     std::string* error) {
-  const base::Value::Dict* condition_dict = condition.GetIfDict();
+  const base::DictValue* condition_dict = condition.GetIfDict();
   if (!condition_dict) {
     *error = kExpectedDictionary;
     return nullptr;
@@ -149,7 +149,7 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
         condition_attribute_name == keys::kDeprecatedThirdPartyKey) {
       // Skip this.
     } else if (condition_attribute_name == keys::kUrlKey) {
-      const base::Value::Dict* dict = condition_attribute_value.GetIfDict();
+      const base::DictValue* dict = condition_attribute_value.GetIfDict();
       if (!dict) {
         *error = base::StringPrintf(kInvalidTypeOfParamter,
                                     condition_attribute_name.c_str());

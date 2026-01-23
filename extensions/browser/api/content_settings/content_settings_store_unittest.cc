@@ -256,10 +256,10 @@ TEST_F(ContentSettingsStoreTest, SetFromList) {
   EXPECT_CALL(observer, OnContentSettingChanged(ext_id, false));
 
   // Build a preference list in JSON format.
-  base::Value::List pref_list;
+  base::ListValue pref_list;
   // {"primaryPattern": pattern, "secondaryPattern": pattern, "type": "cookies",
   //  "setting": "allow"}
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   dict_value.Set(ContentSettingsStore::kPrimaryPatternKey, pattern.ToString());
   dict_value.Set(ContentSettingsStore::kSecondaryPatternKey,
                  pattern.ToString());
@@ -269,7 +269,7 @@ TEST_F(ContentSettingsStoreTest, SetFromList) {
   // Test content settings types that have been removed. Should be ignored.
   // {"primaryPattern": pattern, "secondaryPattern": pattern,
   //  "type": "fullscreen", "setting": "allow"}
-  dict_value = base::Value::Dict();
+  dict_value = base::DictValue();
   dict_value.Set(ContentSettingsStore::kPrimaryPatternKey, pattern.ToString());
   dict_value.Set(ContentSettingsStore::kSecondaryPatternKey,
                  pattern.ToString());
@@ -278,7 +278,7 @@ TEST_F(ContentSettingsStoreTest, SetFromList) {
   pref_list.Append(std::move(dict_value));
   // {"primaryPattern": pattern, "secondaryPattern": pattern,
   //  "type": "mouselock", "setting": "allow"}
-  dict_value = base::Value::Dict();
+  dict_value = base::DictValue();
   dict_value.Set(ContentSettingsStore::kPrimaryPatternKey, pattern.ToString());
   dict_value.Set(ContentSettingsStore::kSecondaryPatternKey,
                  pattern.ToString());
@@ -319,8 +319,8 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   EXPECT_CALL(observer, OnContentSettingChanged(ext_id, false)).Times(1);
 
   // Build a preference list in JSON format.
-  base::Value::List pref_list;
-  base::Value::Dict dict_value;
+  base::ListValue pref_list;
+  base::DictValue dict_value;
   dict_value.Set(ContentSettingsStore::kPrimaryPatternKey,
                  primary_pattern.ToString());
   dict_value.Set(ContentSettingsStore::kSecondaryPatternKey,
@@ -329,7 +329,7 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   dict_value.Set(ContentSettingsStore::kContentSettingKey, "allow");
   pref_list.Append(std::move(dict_value));
 
-  dict_value = base::Value::Dict();
+  dict_value = base::DictValue();
   dict_value.Set(ContentSettingsStore::kPrimaryPatternKey,
                  primary_pattern.ToString());
   dict_value.Set(ContentSettingsStore::kSecondaryPatternKey,
@@ -392,7 +392,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   std::string extension = "extension_id";
   RegisterExtension(extension);
 
-  base::Value::Dict valid_setting;
+  base::DictValue valid_setting;
   valid_setting.Set(ContentSettingsStore::kPrimaryPatternKey,
                     "http://example1.com");
   valid_setting.Set(ContentSettingsStore::kSecondaryPatternKey, "*");
@@ -401,7 +401,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   valid_setting.Set(ContentSettingsStore::kContentSettingKey, "allow");
 
   // Missing secondary key.
-  base::Value::Dict invalid_setting1;
+  base::DictValue invalid_setting1;
   invalid_setting1.Set(ContentSettingsStore::kPrimaryPatternKey,
                        "http://example2.com");
   invalid_setting1.Set(ContentSettingsStore::kContentSettingsTypeKey,
@@ -409,7 +409,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   invalid_setting1.Set(ContentSettingsStore::kContentSettingKey, "allow");
 
   // Invalid secondary pattern.
-  base::Value::Dict invalid_setting2;
+  base::DictValue invalid_setting2;
   invalid_setting2.Set(ContentSettingsStore::kPrimaryPatternKey,
                        "http://example3.com");
   invalid_setting2.Set(ContentSettingsStore::kSecondaryPatternKey, "[*.].");
@@ -418,7 +418,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   invalid_setting2.Set(ContentSettingsStore::kContentSettingKey, "allow");
 
   // Invalid setting.
-  base::Value::Dict invalid_setting3;
+  base::DictValue invalid_setting3;
   invalid_setting3.Set(ContentSettingsStore::kPrimaryPatternKey,
                        "http://example4.com");
   invalid_setting3.Set(ContentSettingsStore::kSecondaryPatternKey, "*");
@@ -426,7 +426,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
                        "javascript");
   invalid_setting3.Set(ContentSettingsStore::kContentSettingKey, "notasetting");
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(valid_setting.Clone());
   list.Append(invalid_setting1.Clone());
   list.Append(invalid_setting2.Clone());
@@ -434,7 +434,7 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   store()->SetExtensionContentSettingFromList(extension, list,
                                               ChromeSettingScope::kRegular);
 
-  base::Value::List expected;
+  base::ListValue expected;
   expected.Append(valid_setting.Clone());
   EXPECT_EQ(expected, store()->GetSettingsForExtension(
                           extension, ChromeSettingScope::kRegular));

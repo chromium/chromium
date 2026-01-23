@@ -66,7 +66,7 @@ std::string GetJSEnumEntryName(const std::string& original) {
 }
 
 std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
-    const base::Value::Dict* dict) {
+    const base::DictValue* dict) {
   const base::Value* params = dict->Find("parameters");
   if (params && !params->is_list())
     params = nullptr;
@@ -167,7 +167,7 @@ struct APIBinding::EventData {
 struct APIBinding::CustomPropertyData {
   CustomPropertyData(const std::string& type_name,
                      const std::string& property_name,
-                     const base::Value::List* property_values,
+                     const base::ListValue* property_values,
                      const CreateCustomType& create_custom_type)
       : type_name(type_name),
         property_name(property_name),
@@ -180,16 +180,16 @@ struct APIBinding::CustomPropertyData {
   // chrome.storage.local.
   std::string property_name;
   // Values curried into this particular type from the schema.
-  raw_ptr<const base::Value::List> property_values;
+  raw_ptr<const base::ListValue> property_values;
 
   CreateCustomType create_custom_type;
 };
 
 APIBinding::APIBinding(const std::string& api_name,
-                       const base::Value::List* function_definitions,
-                       const base::Value::List* type_definitions,
-                       const base::Value::List* event_definitions,
-                       const base::Value::Dict* property_definitions,
+                       const base::ListValue* function_definitions,
+                       const base::ListValue* type_definitions,
+                       const base::ListValue* event_definitions,
+                       const base::DictValue* property_definitions,
                        CreateCustomType create_custom_type,
                        OnSilentRequest on_silent_request,
                        std::unique_ptr<APIBindingHooks> binding_hooks,
@@ -214,7 +214,7 @@ APIBinding::APIBinding(const std::string& api_name,
 
   if (function_definitions) {
     for (const auto& func : *function_definitions) {
-      const base::Value::Dict* func_dict = func.GetIfDict();
+      const base::DictValue* func_dict = func.GetIfDict();
       CHECK(func_dict);
       const std::string* name = func_dict->FindString("name");
       CHECK(name);
@@ -231,7 +231,7 @@ APIBinding::APIBinding(const std::string& api_name,
 
   if (type_definitions) {
     for (const auto& type : *type_definitions) {
-      const base::Value::Dict& type_dict = type.GetDict();
+      const base::DictValue& type_dict = type.GetDict();
       const std::string* id = type_dict.FindString("id");
       CHECK(id);
       auto argument_spec = std::make_unique<ArgumentSpec>(type_dict);
@@ -253,10 +253,10 @@ APIBinding::APIBinding(const std::string& api_name,
       type_refs->AddSpec(*id, std::move(argument_spec));
       // Some types, like storage.StorageArea, have functions associated with
       // them. Cache the function signatures in the type map.
-      const base::Value::List* type_functions = type_dict.FindList("functions");
+      const base::ListValue* type_functions = type_dict.FindList("functions");
       if (type_functions) {
         for (const auto& func : *type_functions) {
-          const base::Value::Dict* func_dict = func.GetIfDict();
+          const base::DictValue* func_dict = func.GetIfDict();
           CHECK(func_dict);
           const std::string* function_name = func_dict->FindString("name");
           CHECK(function_name);
@@ -274,18 +274,18 @@ APIBinding::APIBinding(const std::string& api_name,
   if (event_definitions) {
     events_.reserve(event_definitions->size());
     for (const auto& event : *event_definitions) {
-      const base::Value::Dict* event_dict = event.GetIfDict();
+      const base::DictValue* event_dict = event.GetIfDict();
       CHECK(event_dict);
       const std::string* name = event_dict->FindString("name");
       CHECK(name);
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name->c_str());
-      const base::Value::List* filters = event_dict->FindList("filters");
+      const base::ListValue* filters = event_dict->FindList("filters");
       bool supports_filters = filters && !filters->empty();
 
       std::vector<std::string> rule_actions;
       std::vector<std::string> rule_conditions;
-      const base::Value::Dict* options = event_dict->FindDict("options");
+      const base::DictValue* options = event_dict->FindDict("options");
       bool supports_rules = false;
       bool notify_on_change = true;
       bool supports_lazy_listeners = true;
@@ -305,7 +305,7 @@ APIBinding::APIBinding(const std::string& api_name,
               << "Events cannot support rules and listeners.";
           auto get_values = [options](std::string_view name,
                                       std::vector<std::string>* out_value) {
-            const base::Value::List* list = options->FindList(name);
+            const base::ListValue* list = options->FindList(name);
             CHECK(list);
             for (const auto& entry : *list) {
               DCHECK(entry.is_string());
@@ -459,11 +459,11 @@ void APIBinding::InitializeTemplate(v8::Isolate* isolate) {
 void APIBinding::DecorateTemplateWithProperties(
     v8::Isolate* isolate,
     v8::Local<v8::ObjectTemplate> object_template,
-    const base::Value::Dict& properties,
+    const base::DictValue& properties,
     bool is_root) {
   static const char kValueKey[] = "value";
   for (auto item : properties) {
-    const base::Value::Dict* dict = item.second.GetIfDict();
+    const base::DictValue* dict = item.second.GetIfDict();
     CHECK(dict);
     if (dict->FindBool("optional")) {
       // TODO(devlin): What does optional even mean here? It's only used, it
@@ -472,7 +472,7 @@ void APIBinding::DecorateTemplateWithProperties(
       continue;
     }
 
-    const base::Value::List* platforms = dict->FindList("platforms");
+    const base::ListValue* platforms = dict->FindList("platforms");
     // TODO(devlin): Availability should be specified in the features files,
     // not the API schema files.
     if (platforms) {
@@ -488,7 +488,7 @@ void APIBinding::DecorateTemplateWithProperties(
     v8::Local<v8::String> v8_key = gin::StringToSymbol(isolate, item.first);
     const std::string* ref = dict->FindString("$ref");
     if (ref) {
-      const base::Value::List* property_values = dict->FindList("value");
+      const base::ListValue* property_values = dict->FindList("value");
       CHECK(property_values);
       auto property_data = std::make_unique<CustomPropertyData>(
           *ref, item.first, property_values, create_custom_type_);
@@ -525,7 +525,7 @@ void APIBinding::DecorateTemplateWithProperties(
     } else if (*type == "object" || !ref->empty()) {
       v8::Local<v8::ObjectTemplate> property_template =
           v8::ObjectTemplate::New(isolate);
-      const base::Value::Dict* property_dict = dict->FindDict("properties");
+      const base::DictValue* property_dict = dict->FindDict("properties");
       CHECK(property_dict);
       DecorateTemplateWithProperties(isolate, property_template, *property_dict,
                                      /*is_root=*/false);

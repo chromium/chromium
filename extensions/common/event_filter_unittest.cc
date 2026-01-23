@@ -26,20 +26,20 @@ class EventFilterUnittest : public testing::Test {
   }
 
  protected:
-  base::Value::Dict HostSuffixDict(const std::string& host_suffix) {
-    base::Value::Dict dict;
+  base::DictValue HostSuffixDict(const std::string& host_suffix) {
+    base::DictValue dict;
     dict.Set("hostSuffix", host_suffix);
     return dict;
   }
 
-  base::Value::List ValueAsList(base::Value value) {
-    base::Value::List result;
+  base::ListValue ValueAsList(base::Value value) {
+    base::ListValue result;
     result.Append(std::move(value));
     return result;
   }
 
   std::unique_ptr<EventMatcher> AllURLs() {
-    return std::make_unique<EventMatcher>(std::make_unique<base::Value::Dict>(),
+    return std::make_unique<EventMatcher>(std::make_unique<base::DictValue>(),
                                           IPC::mojom::kRoutingIdNone);
   }
 
@@ -50,8 +50,8 @@ class EventFilterUnittest : public testing::Test {
   }
 
   std::unique_ptr<EventMatcher> MatcherFromURLFilterList(
-      base::Value::List url_filter_list) {
-    auto filter_dict = std::make_unique<base::Value::Dict>();
+      base::ListValue url_filter_list) {
+    auto filter_dict = std::make_unique<base::DictValue>();
     filter_dict->Set("url", base::Value(std::move(url_filter_list)));
     return std::make_unique<EventMatcher>(std::move(filter_dict),
                                           IPC::mojom::kRoutingIdNone);
@@ -130,7 +130,7 @@ TEST_F(EventFilterUnittest, TestURLMatching) {
 }
 
 TEST_F(EventFilterUnittest, TestMultipleURLFiltersMatchOnAny) {
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(HostSuffixDict("google.com"));
   filters.Append(HostSuffixDict("yahoo.com"));
 
@@ -205,8 +205,8 @@ TEST_F(EventFilterUnittest, RemoveEventMatcherReturnsEventName) {
 }
 
 TEST_F(EventFilterUnittest, InvalidURLFilterCantBeAdded) {
-  base::Value::List filter_list;
-  filter_list.Append(base::Value::List());  // Should be a dict.
+  base::ListValue filter_list;
+  filter_list.Append(base::ListValue());  // Should be a dict.
   std::unique_ptr<EventMatcher> matcher(
       MatcherFromURLFilterList(std::move(filter_list)));
   int id1 = event_filter_.AddEventMatcher("event1", std::move(matcher));
@@ -216,7 +216,7 @@ TEST_F(EventFilterUnittest, InvalidURLFilterCantBeAdded) {
 
 TEST_F(EventFilterUnittest, EmptyListOfURLFiltersMatchesAllURLs) {
   std::unique_ptr<EventMatcher> matcher(
-      MatcherFromURLFilterList(base::Value::List()));
+      MatcherFromURLFilterList(base::ListValue()));
   int id = event_filter_.AddEventMatcher("event1", std::move(matcher));
   std::set<int> matches = event_filter_.MatchEvent("event1", google_event_,
                                                    IPC::mojom::kRoutingIdNone);
@@ -245,7 +245,7 @@ TEST_F(EventFilterUnittest, EmptyURLsShouldBeMatchedByEmptyURLFilters) {
 TEST_F(EventFilterUnittest,
     EmptyURLsShouldBeMatchedByEmptyURLFiltersWithAnEmptyItem) {
   std::unique_ptr<EventMatcher> matcher(
-      MatcherFromURLFilterList(ValueAsList(base::Value(base::Value::Dict()))));
+      MatcherFromURLFilterList(ValueAsList(base::Value(base::DictValue()))));
   int id = event_filter_.AddEventMatcher("event1", std::move(matcher));
   std::set<int> matches = event_filter_.MatchEvent("event1", empty_url_event_,
                                                    IPC::mojom::kRoutingIdNone);

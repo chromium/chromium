@@ -35,8 +35,8 @@ namespace {
 
 const char* const kChildKinds[] = {"functions", "events"};
 
-base::Value::Dict LoadSchemaDictionary(const std::string& name,
-                                       std::string_view schema) {
+base::DictValue LoadSchemaDictionary(const std::string& name,
+                                     std::string_view schema) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       schema, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
@@ -53,11 +53,11 @@ base::Value::Dict LoadSchemaDictionary(const std::string& name,
   return std::move(*result).TakeDict();
 }
 
-const base::Value::Dict* FindListItem(const base::Value::List& list,
-                                      const std::string& property_name,
-                                      const std::string& property_value) {
+const base::DictValue* FindListItem(const base::ListValue& list,
+                                    const std::string& property_name,
+                                    const std::string& property_value) {
   for (const base::Value& item_value : list) {
-    const base::Value::Dict* item = item_value.GetIfDict();
+    const base::DictValue* item = item_value.GetIfDict();
     CHECK(item) << property_value << "/" << property_name;
     const std::string* value = item->FindStringByDottedPath(property_name);
     if (value && *value == property_value) {
@@ -68,14 +68,14 @@ const base::Value::Dict* FindListItem(const base::Value::List& list,
   return nullptr;
 }
 
-const base::Value::Dict* GetSchemaChild(const base::Value::Dict& schema_node,
-                                        const std::string& child_name) {
+const base::DictValue* GetSchemaChild(const base::DictValue& schema_node,
+                                      const std::string& child_name) {
   for (const char* kind : kChildKinds) {
-    const base::Value::List* list_node = schema_node.FindList(kind);
+    const base::ListValue* list_node = schema_node.FindList(kind);
     if (!list_node) {
       continue;
     }
-    const base::Value::Dict* child_node =
+    const base::DictValue* child_node =
         FindListItem(*list_node, "name", child_name);
     if (child_node) {
       return child_node;
@@ -136,7 +136,7 @@ ExtensionAPI::OverrideSharedInstanceForTest::~OverrideSharedInstanceForTest() {
 void ExtensionAPI::LoadSchema(const std::string& name,
                               std::string_view schema) {
   lock_.AssertAcquired();
-  base::Value::Dict schema_dict(LoadSchemaDictionary(name, schema));
+  base::DictValue schema_dict(LoadSchemaDictionary(name, schema));
   const std::string* schema_namespace = schema_dict.FindString("namespace");
   CHECK(schema_namespace);
   schemas_[*schema_namespace] = std::move(schema_dict);
@@ -239,12 +239,12 @@ std::string_view ExtensionAPI::GetSchemaStringPiece(
   return GetSchemaStringPieceUnsafe(api_name);
 }
 
-const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
+const base::DictValue* ExtensionAPI::GetSchema(const std::string& full_name) {
   base::AutoLock lock(lock_);
   std::string child_name;
   std::string api_name = GetAPINameFromFullNameUnsafe(full_name, &child_name);
 
-  const base::Value::Dict* result = nullptr;
+  const base::DictValue* result = nullptr;
   auto maybe_schema = schemas_.find(api_name);
   if (maybe_schema != schemas_.end()) {
     result = &maybe_schema->second;

@@ -106,7 +106,7 @@ constexpr char kRemoveEventListenerWithInvalidExtensionID[] =
 void NotifyEventDispatched(content::BrowserContext* browser_context,
                            const ExtensionId& extension_id,
                            const std::string& event_name,
-                           const base::Value::List& args) {
+                           const base::ListValue& args) {
   // Notify the ApiActivityMonitor about the event dispatch.
   activity_monitor::OnApiEventDispatched(browser_context, extension_id,
                                          event_name, args);
@@ -151,7 +151,7 @@ void EventRouter::DispatchExtensionMessage(
     const mojom::HostID& host_id,
     int event_id,
     const std::string& event_name,
-    base::Value::List event_args,
+    base::ListValue event_args,
     UserGestureState user_gesture,
     mojom::EventFilteringInfoPtr info,
     mojom::EventDispatcher::DispatchEventCallback callback) {
@@ -174,7 +174,7 @@ void EventRouter::DispatchExtensionMessage(
 void EventRouter::RouteDispatchEvent(
     content::RenderProcessHost* rph,
     mojom::DispatchEventParamsPtr params,
-    base::Value::List event_args,
+    base::ListValue event_args,
     mojom::EventDispatcher::DispatchEventCallback callback) {
   CHECK(observed_process_set_.contains(rph));
   int worker_thread_id = params->worker_thread_id;
@@ -223,7 +223,7 @@ void EventRouter::DispatchEventToSender(
     const std::string& event_name,
     int worker_thread_id,
     int64_t service_worker_version_id,
-    base::Value::List event_args,
+    base::ListValue event_args,
     mojom::EventFilteringInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int event_id = g_extension_event_id.GetNext();
@@ -433,7 +433,7 @@ void EventRouter::AddLazyListenerForServiceWorker(
 void EventRouter::AddFilteredListenerForMainThread(
     mojom::EventListenerOwnerPtr listener_owner,
     const std::string& event_name,
-    base::Value::Dict filter,
+    base::DictValue filter,
     bool add_lazy_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
@@ -448,7 +448,7 @@ void EventRouter::AddFilteredListenerForServiceWorker(
     const ExtensionId& extension_id,
     const std::string& event_name,
     mojom::ServiceWorkerContextPtr service_worker_context,
-    base::Value::Dict filter,
+    base::DictValue filter,
     bool add_lazy_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
@@ -534,7 +534,7 @@ void EventRouter::RemoveLazyListenerForServiceWorker(
 void EventRouter::RemoveFilteredListenerForMainThread(
     mojom::EventListenerOwnerPtr listener_owner,
     const std::string& event_name,
-    base::Value::Dict filter,
+    base::DictValue filter,
     bool remove_lazy_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
@@ -549,7 +549,7 @@ void EventRouter::RemoveFilteredListenerForServiceWorker(
     const ExtensionId& extension_id,
     const std::string& event_name,
     mojom::ServiceWorkerContextPtr service_worker_context,
-    base::Value::Dict filter,
+    base::DictValue filter,
     bool remove_lazy_listener) {
   auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process) {
@@ -713,7 +713,7 @@ void EventRouter::AddFilteredEventListener(
     RenderProcessHost* process,
     mojom::EventListenerOwnerPtr listener_owner,
     mojom::ServiceWorkerContext* service_worker_context,
-    const base::Value::Dict& filter,
+    const base::DictValue& filter,
     bool add_lazy_listener) {
   const bool is_for_service_worker = !!service_worker_context;
   std::unique_ptr<EventListener> regular_listener;
@@ -771,7 +771,7 @@ void EventRouter::RemoveFilteredEventListener(
     RenderProcessHost* process,
     mojom::EventListenerOwnerPtr listener_owner,
     mojom::ServiceWorkerContext* service_worker_context,
-    const base::Value::Dict& filter,
+    const base::DictValue& filter,
     bool remove_lazy_listener) {
   const bool is_for_service_worker = !!service_worker_context;
   std::unique_ptr<EventListener> listener;
@@ -834,7 +834,7 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents
                              : kRegisteredServiceWorkerEvents;
-  const base::Value::List* events_value =
+  const base::ListValue* events_value =
       extension_prefs_->ReadPrefAsList(extension_id, pref_key);
   if (!events_value) {
     return events;
@@ -880,22 +880,22 @@ bool EventRouter::HasNonLazyEventListenerForTesting(
 void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
                                         const ExtensionId& extension_id,
                                         bool is_for_service_worker,
-                                        const base::Value::Dict& filter) {
+                                        const base::DictValue& filter) {
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension_id,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
   auto filtered_events = update.Create();
-  base::Value::List* filter_list = nullptr;
+  base::ListValue* filter_list = nullptr;
   if (!filtered_events ||
       !filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
     return;
   }
-  const base::Value::Dict& (base::Value::*get_dict)() const =
+  const base::DictValue& (base::Value::*get_dict)() const =
       &base::Value::GetDict;
   filter_list->erase(std::ranges::find(*filter_list, filter, get_dict));
 }
 
-const base::Value::Dict* EventRouter::GetFilteredEvents(
+const base::DictValue* EventRouter::GetFilteredEvents(
     const ExtensionId& extension_id,
     RegisteredEventType type) {
   const char* pref_key = type == RegisteredEventType::kLazy
@@ -1322,7 +1322,7 @@ void EventRouter::DispatchPendingEvent(
 void EventRouter::SetRegisteredEvents(const ExtensionId& extension_id,
                                       const std::set<std::string>& events,
                                       RegisteredEventType type) {
-  base::Value::List events_list;
+  base::ListValue events_list;
   for (const auto& event : events) {
     events_list.Append(event);
   }
@@ -1336,15 +1336,15 @@ void EventRouter::SetRegisteredEvents(const ExtensionId& extension_id,
 void EventRouter::AddFilterToEvent(const std::string& event_name,
                                    const ExtensionId& extension_id,
                                    bool is_for_service_worker,
-                                   const base::Value::Dict& filter) {
+                                   const base::DictValue& filter) {
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension_id,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
   auto filtered_events = update.Create();
 
-  base::Value::List* filter_list = nullptr;
+  base::ListValue* filter_list = nullptr;
   if (!filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
-    filtered_events->SetKey(event_name, base::Value(base::Value::List()));
+    filtered_events->SetKey(event_name, base::Value(base::ListValue()));
     filtered_events->GetListWithoutPathExpansion(event_name, &filter_list);
   }
 
@@ -1370,7 +1370,7 @@ void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
                                          /*is_for_service_worker=*/true,
                                          registered_worker_events);
 
-  const base::Value::Dict* filtered_events =
+  const base::DictValue* filtered_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kLazy);
   if (filtered_events) {
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
@@ -1378,7 +1378,7 @@ void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
                                          *filtered_events);
   }
 
-  const base::Value::Dict* filtered_worker_events =
+  const base::DictValue* filtered_worker_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kServiceWorker);
   if (filtered_worker_events) {
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
@@ -1471,12 +1471,12 @@ void EventRouter::UnbindServiceWorkerEventDispatcher(RenderProcessHost* host,
 
 Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
-             base::Value::List event_args)
+             base::ListValue event_args)
     : Event(histogram_value, event_name, std::move(event_args), nullptr) {}
 
 Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
-             base::Value::List event_args,
+             base::ListValue event_args,
              content::BrowserContext* restrict_to_browser_context,
              std::optional<mojom::ContextType> restrict_to_context_type)
     : Event(histogram_value,
@@ -1490,7 +1490,7 @@ Event::Event(events::HistogramValue histogram_value,
 
 Event::Event(events::HistogramValue histogram_value,
              std::string_view event_name,
-             base::Value::List event_args,
+             base::ListValue event_args,
              content::BrowserContext* restrict_to_browser_context,
              std::optional<mojom::ContextType> restrict_to_context_type,
              const GURL& event_url,
@@ -1521,7 +1521,7 @@ Event::~Event() = default;
 std::unique_ptr<Event> Event::CopySelectively(bool copy_event_args,
                                               bool copy_filter_info) const {
   auto copied_event_args =
-      copy_event_args ? event_args.Clone() : base::Value::List();
+      copy_event_args ? event_args.Clone() : base::ListValue();
   auto copied_filter_info =
       copy_filter_info ? filter_info.Clone() : mojom::EventFilteringInfo::New();
 

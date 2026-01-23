@@ -124,7 +124,7 @@ void ServiceWorkerData::Init() {
 }
 
 void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                      base::Value::List event_args,
+                                      base::ListValue event_args,
                                       DispatchEventCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ScriptContext* script_context = context();

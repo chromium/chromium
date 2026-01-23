@@ -77,7 +77,7 @@ bool CheckFundamentalBounds(T value,
 
 }  // namespace
 
-ArgumentSpec::ArgumentSpec(const base::Value::Dict& dict) {
+ArgumentSpec::ArgumentSpec(const base::DictValue& dict) {
   optional_ = dict.FindBool("optional").value_or(optional_);
   if (const std::string* name = dict.FindString("name"))
     name_ = *name;
@@ -87,14 +87,14 @@ ArgumentSpec::ArgumentSpec(const base::Value::Dict& dict) {
 
 ArgumentSpec::ArgumentSpec(ArgumentType type) : type_(type) {}
 
-void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
+void ArgumentSpec::InitializeType(const base::DictValue& dict) {
   if (const std::string* ref_string = dict.FindString("$ref")) {
     ref_ = *ref_string;
     type_ = ArgumentType::REF;
     return;
   }
 
-  if (const base::Value::List* choices = dict.FindList("choices")) {
+  if (const base::ListValue* choices = dict.FindList("choices")) {
     DCHECK(!choices->empty());
     type_ = ArgumentType::CHOICES;
     choices_.reserve(choices->size());
@@ -150,15 +150,14 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
   }
 
   if (type_ == ArgumentType::OBJECT) {
-    if (const base::Value::Dict* properties_value =
-            dict.FindDict("properties")) {
+    if (const base::DictValue* properties_value = dict.FindDict("properties")) {
       for (const auto item : *properties_value) {
         properties_[item.first] =
             std::make_unique<ArgumentSpec>(item.second.GetDict());
       }
     }
 
-    if (const base::Value::Dict* additional_properties_value =
+    if (const base::DictValue* additional_properties_value =
             dict.FindDict("additionalProperties")) {
       additional_properties_ =
           std::make_unique<ArgumentSpec>(*additional_properties_value);
@@ -170,14 +169,14 @@ void ArgumentSpec::InitializeType(const base::Value::Dict& dict) {
       ignore_additional_properties_ = true;
     }
   } else if (type_ == ArgumentType::LIST) {
-    const base::Value::Dict* item_value = dict.FindDict("items");
+    const base::DictValue* item_value = dict.FindDict("items");
     CHECK(item_value);
     list_element_type_ = std::make_unique<ArgumentSpec>(*item_value);
   } else if (type_ == ArgumentType::STRING) {
     // Technically, there's no reason enums couldn't be other objects (e.g.
     // numbers), but right now they seem to be exclusively strings. We could
     // always update this if need be.
-    if (const base::Value::List* enums = dict.FindList("enum")) {
+    if (const base::ListValue* enums = dict.FindList("enum")) {
       CHECK(!enums->empty());
       for (const base::Value& value : *enums) {
         // Enum entries come in two versions: a list of possible strings, or
@@ -473,7 +472,7 @@ bool ArgumentSpec::ParseArgumentToObject(
     v8::Local<v8::Value>* v8_out_value,
     std::string* error) const {
   DCHECK_EQ(ArgumentType::OBJECT, type_);
-  base::Value::Dict result;
+  base::DictValue result;
 
   // We don't convert to a new object in two cases:
   // - If instanceof is specified, we don't want to create a new data object,
@@ -665,7 +664,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
     return false;
   }
 
-  base::Value::List result;
+  base::ListValue result;
   v8::Local<v8::Array> v8_result;
   if (v8_out_value)
     v8_result = v8::Array::New(v8::Isolate::GetCurrent(), length);

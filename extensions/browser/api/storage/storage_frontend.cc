@@ -92,7 +92,7 @@ void GetBytesInUseWithValueStore(std::optional<std::vector<std::string>> keys,
 }
 
 void SetWithValueStore(
-    const base::Value::Dict& values,
+    const base::DictValue& values,
     base::OnceCallback<void(ValueStore::WriteResult)> callback,
     ValueStore* store) {
   ValueStore::WriteResult result = store->Set(ValueStore::DEFAULTS, values);
@@ -117,8 +117,8 @@ void ClearWithValueStore(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-base::Value::List KeysFromDict(base::Value::Dict dict) {
-  base::Value::List list = base::Value::List::with_capacity(dict.size());
+base::ListValue KeysFromDict(base::DictValue dict) {
+  base::ListValue list = base::ListValue::with_capacity(dict.size());
   for (auto item : dict) {
     list.Append(std::move(item.first));
   }
@@ -276,7 +276,7 @@ void StorageFrontend::GetValues(scoped_refptr<const Extension> extension,
                          : storage_manager->GetAll(extension->id());
 
     GetResult get_result;
-    get_result.data = base::Value::Dict();
+    get_result.data = base::DictValue();
 
     for (auto item : result) {
       get_result.data->Set(std::move(item.first), item.second->Clone());
@@ -314,7 +314,7 @@ void StorageFrontend::GetKeys(
 
     std::vector<std::string> keys = storage_manager->GetKeys(extension->id());
 
-    base::Value::List list = base::Value::List::with_capacity(keys.size());
+    base::ListValue list = base::ListValue::with_capacity(keys.size());
     for (const std::string& key : keys) {
       list.Append(key);
     }
@@ -377,7 +377,7 @@ void StorageFrontend::GetBytesInUse(
 
 void StorageFrontend::Set(scoped_refptr<const Extension> extension,
                           StorageAreaNamespace storage_area,
-                          base::Value::Dict values,
+                          base::DictValue values,
                           base::OnceCallback<void(ResultStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -619,7 +619,7 @@ void StorageFrontend::OnSettingsChanged(
 
   auto make_changed_event = [&namespace_string,
                              restrict_to_context_type](base::Value changes) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(std::move(changes));
     args.Append(namespace_string);
 
@@ -631,7 +631,7 @@ void StorageFrontend::OnSettingsChanged(
   auto make_area_changed_event = [&storage_area, &area_event_name,
                                   restrict_to_context_type](
                                      base::Value changes) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(std::move(changes));
     return std::make_unique<Event>(StorageAreaToEventHistogram(storage_area),
                                    area_event_name, std::move(args), nullptr,

@@ -104,10 +104,10 @@ class WebRequestEventRouter : public KeyedService {
     // Returns false if there was an error initializing. If it is a user error,
     // an error message is provided, otherwise the error is internal (and
     // unexpected).
-    bool InitFromValue(const base::Value::Dict& value, std::string* error);
+    bool InitFromValue(const base::DictValue& value, std::string* error);
 
     // Serializes the filter to a dictionary value suitable for persistence.
-    base::Value::Dict ToValue() const;
+    base::DictValue ToValue() const;
 
     extensions::URLPatternSet urls;
     std::vector<WebRequestResourceType> types;
@@ -423,13 +423,13 @@ class WebRequestEventRouter : public KeyedService {
     // Deserializes a listener from a persisted dictionary value into its
     // inactive (lazy) state. Returns nullptr on failure and sets `error`.
     static std::unique_ptr<EventListener> InitFromInactiveListenerValue(
-        const base::Value::Dict& value,
+        const base::DictValue& value,
         const ExtensionId& extension_id,
         content::BrowserContext* context,
         std::string* error);
 
     // Serializes a listener for persistence.
-    base::Value::Dict ToInactiveListenerValue() const;
+    base::DictValue ToInactiveListenerValue() const;
 
     bool HasExtraHeaders() const {
       using extension_web_request_api_helpers::ExtraInfoSpec;

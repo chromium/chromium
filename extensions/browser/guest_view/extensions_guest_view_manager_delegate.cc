@@ -113,14 +113,14 @@ void ExtensionsGuestViewManagerDelegate::OnGuestAdded(
 
 void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     const std::string& event_name,
-    base::Value::Dict args,
+    base::DictValue args,
     GuestViewBase* guest,
     int instance_id) {
   CHECK(guest);
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
   info->has_instance_id = true;
   info->instance_id = instance_id;
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(std::move(args));
 
   // GetEventHistogramValue maps guest view event names to their histogram

@@ -42,12 +42,12 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -105,13 +105,13 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   void GetPropertiesCallback(const std::string& guid,
                              PropertiesCallback callback,
                              const std::string& service_path,
-                             std::optional<base::Value::Dict> dictionary,
+                             std::optional<base::DictValue> dictionary,
                              std::optional<std::string> error);
 
   // Populate ThirdPartyVPN.ProviderName with the provider name for third-party
   // VPNs. The provider name needs to be looked up from the list of extensions
   // which is not available to the chromeos/ash/components/network module.
-  void AppendThirdPartyProviderName(base::Value::Dict* dictionary);
+  void AppendThirdPartyProviderName(base::DictValue* dictionary);
 
   raw_ptr<content::BrowserContext> browser_context_;
   base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};

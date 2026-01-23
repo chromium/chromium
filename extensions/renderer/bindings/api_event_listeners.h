@@ -31,7 +31,7 @@ class APIEventListeners {
   using ListenersUpdated =
       base::RepeatingCallback<void(const std::string& event_name,
                                    binding::EventListenersChanged,
-                                   const base::Value::Dict* filter,
+                                   const base::DictValue* filter,
                                    bool update_lazy_listeners,
                                    v8::Local<v8::Context> context)>;
 

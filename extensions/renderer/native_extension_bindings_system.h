@@ -69,7 +69,7 @@ class NativeExtensionBindingsSystem {
   // `filtering_info` in the given `context`.
   void DispatchEventInContext(
       const std::string& event_name,
-      const base::Value::List& event_args,
+      const base::ListValue& event_args,
       const mojom::EventFilteringInfoPtr& filtering_info,
       ScriptContext* context);
 
@@ -81,7 +81,7 @@ class NativeExtensionBindingsSystem {
   // Handles the response associated with the given `request_id`.
   void HandleResponse(int request_id,
                       bool success,
-                      const base::Value::List& response,
+                      const base::ListValue& response,
                       const std::string& error,
                       mojom::ExtraResponseDataPtr extra_data = nullptr);
 
@@ -119,7 +119,7 @@ class NativeExtensionBindingsSystem {
   // to `send_event_listener_ipc_`.
   void OnEventListenerChanged(const std::string& event_name,
                               binding::EventListenersChanged change,
-                              const base::Value::Dict* filter,
+                              const base::DictValue* filter,
                               bool was_manual,
                               v8::Local<v8::Context> context);
 

@@ -193,21 +193,21 @@ void ExtensionsBrowserClient::AddAPIActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {}
 
 void ExtensionsBrowserClient::AddEventToActivityLog(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {}
 
 void ExtensionsBrowserClient::AddDOMActionToActivityLog(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const GURL& url,
     const std::u16string& url_title,
     int call_type) {}

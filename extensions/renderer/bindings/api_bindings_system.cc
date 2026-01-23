@@ -66,13 +66,13 @@ v8::Local<v8::Object> APIBindingsSystem::CreateAPIInstance(
 
 std::unique_ptr<APIBinding> APIBindingsSystem::CreateNewAPIBinding(
     const std::string& api_name) {
-  const base::Value::Dict& api_schema = get_api_schema_.Run(api_name);
+  const base::DictValue& api_schema = get_api_schema_.Run(api_name);
 
-  const base::Value::List* function_definitions =
+  const base::ListValue* function_definitions =
       api_schema.FindList("functions");
-  const base::Value::List* type_definitions = api_schema.FindList("types");
-  const base::Value::List* event_definitions = api_schema.FindList("events");
-  const base::Value::Dict* property_definitions =
+  const base::ListValue* type_definitions = api_schema.FindList("types");
+  const base::ListValue* event_definitions = api_schema.FindList("events");
+  const base::DictValue* property_definitions =
       api_schema.FindDict("properties");
 
   // Find the hooks for the API. If none exist, an empty set will be created so
@@ -118,7 +118,7 @@ void APIBindingsSystem::InitializeType(const std::string& type_name) {
 
 void APIBindingsSystem::CompleteRequest(
     int request_id,
-    const base::Value::List& response,
+    const base::ListValue& response,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
   request_handler_.CompleteRequest(request_id, response, error,
@@ -128,7 +128,7 @@ void APIBindingsSystem::CompleteRequest(
 void APIBindingsSystem::FireEventInContext(
     const std::string& event_name,
     v8::Local<v8::Context> context,
-    const base::Value::List& response,
+    const base::ListValue& response,
     mojom::EventFilteringInfoPtr filter) {
   event_handler_.FireEventInContext(event_name, context, response,
                                     std::move(filter));
@@ -167,7 +167,7 @@ v8::Local<v8::Object> APIBindingsSystem::CreateCustomType(
     v8::Isolate* isolate,
     const std::string& type_name,
     const std::string& property_name,
-    const base::Value::List* property_values) {
+    const base::ListValue* property_values) {
   auto iter = custom_types_.find(type_name);
   CHECK(iter != custom_types_.end()) << "Custom type not found: " << type_name;
   return iter->second.Run(isolate, property_name, property_values,

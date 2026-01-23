@@ -41,7 +41,7 @@ class InstallIndexHelper
   // provided any, and persists the indexed rulesets. Returns the ruleset
   // install prefs on success and an error on failure.
   // Must be called on a sequence where file IO is allowed.
-  static base::expected<base::Value::Dict, std::string>
+  static base::expected<base::DictValue, std::string>
   IndexAndPersistRulesOnInstall(Extension& extension);
 
  private:

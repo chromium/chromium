@@ -184,7 +184,7 @@ ExtensionFunction::ResponseAction AlarmsGetAllFunction::Run() {
 }
 
 void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
-  base::Value::List alarms_value;
+  base::ListValue alarms_value;
   if (alarms) {
     for (const auto& alarm : *alarms)
       alarms_value.Append(alarm.js_alarm->ToValue());

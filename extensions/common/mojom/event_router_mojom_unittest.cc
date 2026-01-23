@@ -38,13 +38,13 @@ class TestEventRouterImpl : public mojom::EventRouter {
   void AddFilteredListenerForMainThread(
       mojom::EventListenerOwnerPtr listener_owner,
       const std::string& name,
-      base::Value::Dict filter,
+      base::DictValue filter,
       bool add_lazy_listener) override {}
   void AddFilteredListenerForServiceWorker(
       const ExtensionId& extension_id,
       const std::string& name,
       mojom::ServiceWorkerContextPtr service_worker_context,
-      base::Value::Dict filter,
+      base::DictValue filter,
       bool add_lazy_listener) override {}
   void RemoveListenerForMainThread(
       mojom::EventListenerPtr event_listener) override {}
@@ -58,13 +58,13 @@ class TestEventRouterImpl : public mojom::EventRouter {
   void RemoveFilteredListenerForMainThread(
       mojom::EventListenerOwnerPtr listener_owner,
       const std::string& name,
-      base::Value::Dict filter,
+      base::DictValue filter,
       bool remove_lazy_listener) override {}
   void RemoveFilteredListenerForServiceWorker(
       const ExtensionId& extension_id,
       const std::string& name,
       mojom::ServiceWorkerContextPtr service_worker_context,
-      base::Value::Dict filter,
+      base::DictValue filter,
       bool remove_lazy_listener) override {}
 
  private:
@@ -107,7 +107,7 @@ class EventRouterMojomExtensionIdTest : public testing::Test {
     auto event_listener = CreateEventListener(extension_id);
     event_router_remote_->AddFilteredListenerForMainThread(
         std::move(event_listener->listener_owner), "test_event_name",
-        /*filter=*/base::Value::Dict(), /*add_lazy_listener=*/true);
+        /*filter=*/base::DictValue(), /*add_lazy_listener=*/true);
     event_router_remote_.FlushForTesting();
   }
 
@@ -141,7 +141,7 @@ class EventRouterMojomExtensionIdTest : public testing::Test {
     auto event_listener = CreateEventListener(extension_id);
     event_router_remote_->RemoveFilteredListenerForMainThread(
         std::move(event_listener->listener_owner), "test_event_name",
-        /*filter=*/base::Value::Dict(), /*remove_lazy_listener=*/true);
+        /*filter=*/base::DictValue(), /*remove_lazy_listener=*/true);
     event_router_remote_.FlushForTesting();
   }
 

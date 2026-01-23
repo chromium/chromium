@@ -21,7 +21,7 @@ namespace extensions {
 class MessageBundle {
  public:
   using SubstitutionMap = std::map<std::string, std::string>;
-  using CatalogVector = std::vector<base::Value::Dict>;
+  using CatalogVector = std::vector<base::DictValue>;
 
   // JSON keys of interest for messages file.
   static const char kContentKey[];
@@ -130,7 +130,7 @@ class MessageBundle {
                        std::string* error) const;
 
   // Get all placeholders for a given message from JSON subtree.
-  bool GetPlaceholders(const base::Value::Dict& name_tree,
+  bool GetPlaceholders(const base::DictValue& name_tree,
                        const std::string& name_key,
                        SubstitutionMap* placeholders,
                        std::string* error) const;

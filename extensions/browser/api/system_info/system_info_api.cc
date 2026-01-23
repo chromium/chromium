@@ -84,7 +84,7 @@ class SystemInfoEventRouter : public storage_monitor::RemovableStorageObserver {
   // processes cross multiple profiles. Currently only used for storage events.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List args) const;
+                     base::ListValue args) const;
 
   // When true, the DisplayInfoProvider is observing for changes to the display
   // and, subsequently, dispatching on-display-changed events.
@@ -203,7 +203,7 @@ void SystemInfoEventRouter::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
   StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(info, &unit);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(unit.ToValue());
 
   DispatchEvent(events::SYSTEM_STORAGE_ON_ATTACHED,
@@ -212,7 +212,7 @@ void SystemInfoEventRouter::OnRemovableStorageAttached(
 
 void SystemInfoEventRouter::OnRemovableStorageDetached(
     const storage_monitor::StorageInfo& info) {
-  base::Value::List args;
+  base::ListValue args;
   std::string transient_id =
       StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           info.device_id());
@@ -225,7 +225,7 @@ void SystemInfoEventRouter::OnRemovableStorageDetached(
 void SystemInfoEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List args) const {
+    base::ListValue args) const {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
       histogram_value, event_name, std::move(args), false);
 }

@@ -136,13 +136,13 @@ PermissionsManagerUnittest::AddExtensionWithActiveTab(
 }
 
 const base::Value* PermissionsManagerUnittest::GetRestrictedSitesFromPrefs() {
-  const base::Value::Dict& permissions =
+  const base::DictValue& permissions =
       extension_prefs_->GetPrefAsDictionary(kUserPermissions);
   return permissions.Find("restricted_sites");
 }
 
 const base::Value* PermissionsManagerUnittest::GetPermittedSitesFromPrefs() {
-  const base::Value::Dict& permissions =
+  const base::DictValue& permissions =
       extension_prefs_->GetPrefAsDictionary(kUserPermissions);
   return permissions.Find("permitted_sites");
 }
@@ -186,7 +186,7 @@ TEST_F(PermissionsManagerUnittest, AddAndRemoveRestrictedSite) {
   const std::string expected_url_pattern = "http://a.example.com/*";
   std::set<url::Origin> set_with_url;
   set_with_url.insert(url);
-  base::Value::List value_with_url;
+  base::ListValue value_with_url;
   value_with_url.Append(url.Serialize());
 
   // Verify the restricted sites list is empty.
@@ -580,7 +580,7 @@ TEST_F(PermissionsManagerWithPermittedSitesUnitTest,
   const std::string expected_url_pattern = "http://a.example.com/*";
   std::set<url::Origin> set_with_url;
   set_with_url.insert(url);
-  base::Value::List value_with_url;
+  base::ListValue value_with_url;
   value_with_url.Append(url.Serialize());
 
   // Verify the permitted sites list is empty.

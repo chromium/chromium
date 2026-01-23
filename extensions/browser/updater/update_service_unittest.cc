@@ -310,7 +310,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
 
   void PerformActionBasedOnOmahaAttributes(
       const ExtensionId& extension_id,
-      const base::Value::Dict& attributes) override {
+      const base::DictValue& attributes) override {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();

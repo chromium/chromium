@@ -621,7 +621,7 @@ BrowserContext* RendererStartupHelper::GetRendererBrowserContext() {
 void RendererStartupHelper::AddAPIActionToActivityLog(
     const std::optional<ExtensionId>& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   auto* browser_context = GetRendererBrowserContext();
   if (!browser_context) {
@@ -636,7 +636,7 @@ void RendererStartupHelper::AddAPIActionToActivityLog(
 void RendererStartupHelper::AddEventToActivityLog(
     const std::optional<ExtensionId>& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   auto* browser_context = GetRendererBrowserContext();
   if (!browser_context) {
@@ -651,7 +651,7 @@ void RendererStartupHelper::AddEventToActivityLog(
 void RendererStartupHelper::AddDOMActionToActivityLog(
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const GURL& url,
     const std::u16string& url_title,
     int32_t call_type) {

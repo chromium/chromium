@@ -41,7 +41,7 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
   Mapper& operator=(const Mapper&) = delete;
 
   ~Mapper() override = default;
-  void GetBucketsForArgs(const base::Value::List& args,
+  void GetBucketsForArgs(const base::ListValue& args,
                          BucketList* buckets) override {
     for (const auto& val : args) {
       std::optional<int> id = val.GetIfInt();
@@ -60,7 +60,7 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
 
 class MockMapper : public QuotaLimitHeuristic::BucketMapper {
  public:
-  void GetBucketsForArgs(const base::Value::List& args,
+  void GetBucketsForArgs(const base::ListValue& args,
                          BucketList* buckets) override {}
 };
 
@@ -168,20 +168,20 @@ TEST_F(QuotaLimitHeuristicTest, Timed) {
 
 TEST_F(QuotaServiceTest, NoHeuristic) {
   scoped_refptr<MockFunction> f(new MockFunction("foo"));
-  base::Value::List args;
+  base::ListValue args;
   EXPECT_EQ("", service_->Assess(extension_a_, f.get(), args, kStartTime));
 }
 
 TEST_F(QuotaServiceTest, FrozenHeuristic) {
   scoped_refptr<MockFunction> f(new FrozenMockFunction("foo"));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(1);
   EXPECT_NE("", service_->Assess(extension_a_, f.get(), args, kStartTime));
 }
 
 TEST_F(QuotaServiceTest, SingleHeuristic) {
   scoped_refptr<MockFunction> f(new TimedLimitMockFunction("foo"));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(1);
   EXPECT_EQ("", service_->Assess(extension_a_, f.get(), args, kStartTime));
   EXPECT_EQ("", service_->Assess(extension_a_, f.get(), args,
@@ -189,7 +189,7 @@ TEST_F(QuotaServiceTest, SingleHeuristic) {
   EXPECT_NE("", service_->Assess(extension_a_, f.get(), args,
                                  kStartTime + base::Seconds(15)));
 
-  base::Value::List args2;
+  base::ListValue args2;
   args2.Append(1);
   args2.Append(2);
   EXPECT_EQ("", service_->Assess(extension_b_, f.get(), args2, kStartTime));
@@ -205,7 +205,7 @@ TEST_F(QuotaServiceTest, SingleHeuristic) {
                                  kStartTime + peace + base::Seconds(15)));
 
   // Test that items are independent.
-  base::Value::List args3;
+  base::ListValue args3;
   args3.Append(3);
   EXPECT_EQ("", service_->Assess(extension_c_, f.get(), args, kStartTime));
   EXPECT_EQ("", service_->Assess(extension_c_, f.get(), args3,
@@ -224,8 +224,8 @@ TEST_F(QuotaServiceTest, MultipleFunctionsDontInterfere) {
   scoped_refptr<MockFunction> f(new TimedLimitMockFunction("foo"));
   scoped_refptr<MockFunction> g(new TimedLimitMockFunction("bar"));
 
-  base::Value::List args_f;
-  base::Value::List args_g;
+  base::ListValue args_f;
+  base::ListValue args_g;
   args_f.Append(1);
   args_g.Append(2);
 
@@ -243,7 +243,7 @@ TEST_F(QuotaServiceTest, MultipleFunctionsDontInterfere) {
 
 TEST_F(QuotaServiceTest, ViolatorsWillBeForgiven) {
   scoped_refptr<MockFunction> f(new TimedLimitMockFunction("foo"));
-  base::Value::List arg;
+  base::ListValue arg;
   arg.Append(1);
   EXPECT_EQ("", service_->Assess(extension_a_, f.get(), arg, kStartTime));
   EXPECT_EQ("", service_->Assess(extension_a_, f.get(), arg,

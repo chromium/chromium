@@ -27,7 +27,7 @@ ExtensionIconVariants::ExtensionIconVariants(
     const ExtensionIconVariants& other) = default;
 
 void ExtensionIconVariants::Parse(const Extension& extension,
-                                  const base::Value::List* list) {
+                                  const base::ListValue* list) {
   // Parse each icon variant in `icon_variants`.
   for (auto& entry : *list) {
     std::string issue;

@@ -56,8 +56,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
 
   auto info = std::make_unique<InputComponents>();
   for (size_t i = 0; i < list_value->GetList().size(); ++i) {
-    const base::Value::Dict* module_value =
-        list_value->GetList()[i].GetIfDict();
+    const base::DictValue* module_value = list_value->GetList()[i].GetIfDict();
     if (!module_value) {
       *error = errors::kInvalidInputComponents16;
       return false;
@@ -96,7 +95,7 @@ bool InputComponentsHandler::Parse(Extension* extension,
     }
 
     std::set<std::string> layouts;
-    const base::Value::List* layouts_value =
+    const base::ListValue* layouts_value =
         module_value->FindList(keys::kLayouts);
     if (layouts_value) {
       for (size_t j = 0; j < layouts_value->size(); ++j) {

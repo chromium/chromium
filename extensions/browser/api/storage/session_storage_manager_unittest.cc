@@ -60,7 +60,7 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   base::Value value_int_;
   base::Value value_string_;
   base::Value value_list_;
-  base::Value::Dict value_dict_;
+  base::DictValue value_dict_;
 
   // Session storage manager being tested.
   raw_ptr<SessionStorageManager> manager_;

@@ -358,7 +358,7 @@ void LoadScriptsOnFileTaskRunner(
 // failure.
 // TODO(crbug.com/40286091): Remove this when migration is complete.
 std::optional<api::scripts_internal::SerializedUserScript>
-ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
+ContentScriptDictToSerializedUserScript(const base::DictValue& dict) {
   auto content_script = api::content_scripts::ContentScript::FromValue(dict);
   if (!content_script.has_value()) {
     return std::nullopt;  // Bad entry.
@@ -438,7 +438,7 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
 // Converts the list of values in `list` to a UserScriptList.
 UserScriptList ConvertValueToScripts(const Extension& extension,
                                      bool allowed_in_incognito,
-                                     const base::Value::List& list) {
+                                     const base::ListValue& list) {
   UserScriptList scripts;
   for (const base::Value& value : list) {
     if (!value.is_dict()) {
@@ -830,14 +830,14 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     return;
   }
 
-  base::Value::List scripts_value;
+  base::ListValue scripts_value;
   URLPatternSet persistent_patterns;
   for (const std::unique_ptr<UserScript>& script : scripts) {
     if (!persistent_dynamic_script_ids.contains(script->id())) {
       continue;
     }
 
-    base::Value::Dict value =
+    base::DictValue value =
         script_serialization::SerializeUserScript(*script).ToValue();
     value.Set(kId, script->id());
 

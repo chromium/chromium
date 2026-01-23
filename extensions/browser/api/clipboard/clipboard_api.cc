@@ -44,7 +44,7 @@ void ClipboardAPI::OnClipboardDataChanged() {
       router->HasEventListener(clipboard::OnClipboardDataChanged::kEventName)) {
     auto event = std::make_unique<Event>(
         events::CLIPBOARD_ON_CLIPBOARD_DATA_CHANGED,
-        clipboard::OnClipboardDataChanged::kEventName, base::Value::List());
+        clipboard::OnClipboardDataChanged::kEventName, base::ListValue());
     router->BroadcastEvent(std::move(event));
   }
 }

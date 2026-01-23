@@ -101,23 +101,23 @@ class WebRequestEventDetails {
   // this event will be dispatched to doesn't have permission for the initiator
   // then the initiator will not be populated.
   // This can be called from any thread.
-  base::Value::Dict GetFilteredDict(int extra_info_spec,
-                                    PermissionHelper* permission_helper,
-                                    const ExtensionId& extension_id,
-                                    bool crosses_incognito) const;
+  base::DictValue GetFilteredDict(int extra_info_spec,
+                                  PermissionHelper* permission_helper,
+                                  const ExtensionId& extension_id,
+                                  bool crosses_incognito) const;
 
   // Get the internal dictionary, unfiltered. After this call, the internal
   // dictionary is empty.
-  base::Value::Dict GetAndClearDict();
+  base::DictValue GetAndClearDict();
 
  private:
   // The details that are always included in a webRequest event object.
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 
   // Extra event details: Only included when `extra_info_spec_` matches.
-  std::optional<base::Value::Dict> request_body_;
-  std::optional<base::Value::List> request_headers_;
-  std::optional<base::Value::List> response_headers_;
+  std::optional<base::DictValue> request_body_;
+  std::optional<base::ListValue> request_headers_;
+  std::optional<base::ListValue> response_headers_;
   std::optional<url::Origin> initiator_;
 
   int extra_info_spec_;

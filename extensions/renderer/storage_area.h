@@ -40,7 +40,7 @@ class StorageArea {
   static v8::Local<v8::Object> CreateStorageArea(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::Value::List* property_values,
+      const base::ListValue* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,

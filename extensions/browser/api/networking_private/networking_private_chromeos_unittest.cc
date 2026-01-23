@@ -159,11 +159,11 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         ash::NetworkHandler::Get()->managed_network_configuration_handler();
 
     const std::string user_policy_ssid = kManagedUserWifiSsid;
-    base::Value::List user_policy_onc = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue user_policy_onc = base::ListValue().Append(
+        base::DictValue()
             .Set("GUID", kManagedUserWifiGuid)
             .Set("Type", "WiFi")
-            .Set("WiFi", base::Value::Dict()
+            .Set("WiFi", base::DictValue()
                              .Set("Passphrase", "fake")
                              .Set("SSID", user_policy_ssid)
                              .Set("HexSSID", base::HexEncode(user_policy_ssid))
@@ -171,21 +171,21 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
                               user_policy_onc,
-                              /*global_network_config=*/base::Value::Dict());
+                              /*global_network_config=*/base::DictValue());
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
-    base::Value::List device_policy_onc = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue device_policy_onc = base::ListValue().Append(
+        base::DictValue()
             .Set("GUID", kManagedDeviceWifiGuid)
             .Set("Type", "WiFi")
             .Set("WiFi",
-                 base::Value::Dict()
+                 base::DictValue()
                      .Set("SSID", device_policy_ssid)
                      .Set("HexSSID", base::HexEncode(device_policy_ssid))
                      .Set("Security", "None")));
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
                               device_policy_onc,
-                              /*global_network_config=*/base::Value::Dict());
+                              /*global_network_config=*/base::DictValue());
   }
 
   void SetDeviceProperty(const std::string& device_path,
@@ -200,7 +200,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                              "stub_cellular_device1");
 
-    base::Value::Dict home_provider;
+    base::DictValue home_provider;
     home_provider.Set("name", "Cellular1_Provider");
     home_provider.Set("code", "000000");
     home_provider.Set("country", "us");
@@ -224,7 +224,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                       base::Value("test_min"));
     SetDeviceProperty(kCellularDevicePath, shill::kModelIdProperty,
                       base::Value("test_model_id"));
-    base::Value apn(base::Value::Dict()
+    base::Value apn(base::DictValue()
                         .Set(shill::kApnProperty, "test-apn")
                         .Set(shill::kApnUsernameProperty, "test-user")
                         .Set(shill::kApnPasswordProperty, "test-password")
@@ -271,7 +271,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   int GetNetworkPriority(const ash::NetworkState* network) {
-    base::Value::Dict properties;
+    base::DictValue properties;
     network->GetStateProperties(&properties);
     return properties.FindInt(shill::kPriorityProperty).value_or(-1);
   }
@@ -281,10 +281,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return profile_test()->GetService(service_path, profile_path).has_value();
   }
 
-  std::optional<base::Value::Dict> GetNetworkProperties(
+  std::optional<base::DictValue> GetNetworkProperties(
       const std::string& service_path) {
     base::RunLoop run_loop;
-    std::optional<base::Value::Dict> properties;
+    std::optional<base::DictValue> properties;
     ash::NetworkHandler::Get()
         ->network_configuration_handler()
         ->GetShillProperties(
@@ -301,10 +301,10 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void OnNetworkProperties(const std::string& expected_path,
-                           std::optional<base::Value::Dict>* result,
+                           std::optional<base::DictValue>* result,
                            base::OnceClosure callback,
                            const std::string& service_path,
-                           std::optional<base::Value::Dict> properties) {
+                           std::optional<base::DictValue> properties) {
     if (!properties) {
       ADD_FAILURE() << "Error calling shill client.";
       std::move(callback).Run();
@@ -315,8 +315,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     std::move(callback).Run();
   }
 
-  std::optional<base::Value::Dict> GetNetworkUiData(
-      std::optional<base::Value::Dict>& properties) {
+  std::optional<base::DictValue> GetNetworkUiData(
+      std::optional<base::DictValue>& properties) {
     const std::string* ui_data_json = properties->FindString("UIData");
     if (!ui_data_json) {
       return std::nullopt;
@@ -332,13 +332,13 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
                                            ->network_state_handler()
                                            ->GetNetworkStateFromGuid(guid);
 
-    std::optional<base::Value::Dict> properties =
+    std::optional<base::DictValue> properties =
         GetNetworkProperties(network->path());
     if (!properties.has_value()) {
       return false;
     }
 
-    std::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
+    std::optional<base::DictValue> ui_data = GetNetworkUiData(properties);
     if (!ui_data) {
       return false;
     }
@@ -912,11 +912,11 @@ TEST_F(NetworkingPrivateApiTest,
                                          ->network_state_handler()
                                          ->GetNetworkStateFromGuid(guid);
 
-  std::optional<base::Value::Dict> properties =
+  std::optional<base::DictValue> properties =
       GetNetworkProperties(network->path());
   ASSERT_TRUE(properties.has_value());
 
-  std::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
+  std::optional<base::DictValue> ui_data = GetNetworkUiData(properties);
   ASSERT_TRUE(ui_data.has_value());
 
   EXPECT_TRUE(ui_data->FindByDottedPath("user_settings.ProxySettings"));
@@ -1092,14 +1092,14 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
 
   ASSERT_TRUE(result);
 
-  base::Value::Dict expected_result =
-      base::Value::Dict()
+  base::DictValue expected_result =
+      base::DictValue()
           .Set("Cellular",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
                    .Set("Family", "GSM")
-                   .Set("HomeProvider", base::Value::Dict()
+                   .Set("HomeProvider", base::DictValue()
                                             .Set("Code", "000000")
                                             .Set("Country", "us")
                                             .Set("Name", "Cellular1_Provider"))
@@ -1133,21 +1133,21 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
 
   ASSERT_TRUE(result);
 
-  base::Value::Dict expected_apn = base::Value::Dict()
-                                       .Set("AccessPointName", "test-apn")
-                                       .Set("Username", "test-user")
-                                       .Set("Password", "test-password")
-                                       .Set("ApnTypes", base::Value::List())
-                                       .Set("Authentication", "CHAP");
-  base::Value::Dict expected_result =
-      base::Value::Dict()
+  base::DictValue expected_apn = base::DictValue()
+                                     .Set("AccessPointName", "test-apn")
+                                     .Set("Username", "test-user")
+                                     .Set("Password", "test-password")
+                                     .Set("ApnTypes", base::ListValue())
+                                     .Set("Authentication", "CHAP");
+  base::DictValue expected_result =
+      base::DictValue()
           .Set("Cellular",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("AllowRoaming", false)
                    .Set("AutoConnect", true)
                    .Set("ESN", "test_esn")
                    .Set("Family", "GSM")
-                   .Set("HomeProvider", base::Value::Dict()
+                   .Set("HomeProvider", base::DictValue()
                                             .Set("Code", "000000")
                                             .Set("Country", "us")
                                             .Set("Name", "Cellular1_Provider"))
@@ -1162,7 +1162,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                    .Set("RoamingState", "Home")
                    .Set("Scanning", false)
                    .Set("APNList",
-                        base::Value::List().Append(expected_apn.Clone()))
+                        base::ListValue().Append(expected_apn.Clone()))
                    .Set("APN", expected_apn.Clone())
                    .Set("LastGoodAPN", expected_apn.Clone()))
           .Set("ConnectionState", "Connected")

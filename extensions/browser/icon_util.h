@@ -24,7 +24,7 @@ enum class IconParseResult {
 
 // Tries to parse `*icon` from a dictionary {"19": imageData19, "38":
 // imageData38}, and returns the result of the parsing attempt.
-IconParseResult ParseIconFromCanvasDictionary(const base::Value::Dict& dict,
+IconParseResult ParseIconFromCanvasDictionary(const base::DictValue& dict,
                                               gfx::ImageSkia* icon);
 
 // Creates a placeholder icon image based on the extension's `name` and returns

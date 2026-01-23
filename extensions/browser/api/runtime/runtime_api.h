@@ -211,7 +211,7 @@ class RuntimeEventRouter {
   // Dispatches the onUpdateAvailable event to the given extension.
   static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,
                                              const ExtensionId& extension_id,
-                                             const base::Value::Dict* manifest);
+                                             const base::DictValue* manifest);
 
   // Dispatches the onBrowserUpdateAvailable event to all extensions.
   static void DispatchOnBrowserUpdateAvailableEvent(

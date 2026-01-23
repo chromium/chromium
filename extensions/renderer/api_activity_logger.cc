@@ -84,7 +84,7 @@ void APIActivityLogger::LogAPICall(
   converter->SetFunctionAllowed(true);
   converter->SetStrategy(&strategy);
 
-  base::Value::List value_args;
+  base::ListValue value_args;
   value_args.reserve(arguments.size());
   // TODO(devlin): This doesn't protect against custom properties, so it might
   // not perfectly reflect the passed arguments.
@@ -107,7 +107,7 @@ void APIActivityLogger::LogAPICall(
 void APIActivityLogger::LogEvent(IPCMessageSender* ipc_sender,
                                  ScriptContext* script_context,
                                  const std::string& event_name,
-                                 base::Value::List arguments) {
+                                 base::ListValue arguments) {
   if (!IsLoggingEnabled())
     return;
 
@@ -151,7 +151,7 @@ void APIActivityLogger::LogForJS(
   }
 
   // Get the array of call arguments.
-  base::Value::List arguments;
+  base::ListValue arguments;
   v8::Local<v8::Array> arg_array = v8::Local<v8::Array>::Cast(args[2]);
   if (arg_array->Length() > 0) {
     arguments.reserve(arg_array->Length());

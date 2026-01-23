@@ -61,7 +61,7 @@ class QuotaService {
   // `args` must be a list.
   std::string Assess(const ExtensionId& extension_id,
                      ExtensionFunction* function,
-                     const base::Value::List& args,
+                     const base::ListValue& args,
                      const base::TimeTicks& event_time);
 
   // An active ScopedDisablePurgeForTesting prevents QuotaService's constructor
@@ -163,7 +163,7 @@ class QuotaLimitHeuristic {
     // empty). The expectation is that invalid args and associated errors are
     // handled by the ExtensionFunction itself so we don't concern ourselves.
     // `args` must be a list.
-    virtual void GetBucketsForArgs(const base::Value::List& args,
+    virtual void GetBucketsForArgs(const base::ListValue& args,
                                    BucketList* buckets) = 0;
   };
 
@@ -177,7 +177,7 @@ class QuotaLimitHeuristic {
     SingletonBucketMapper& operator=(const SingletonBucketMapper&) = delete;
 
     ~SingletonBucketMapper() override = default;
-    void GetBucketsForArgs(const base::Value::List& args,
+    void GetBucketsForArgs(const base::ListValue& args,
                            BucketList* buckets) override;
 
    private:
@@ -198,7 +198,7 @@ class QuotaLimitHeuristic {
   // based on the history of similar operations with similar arguments (which
   // is retrieved using the BucketMapper).
   // `args` must be a list.
-  bool ApplyToArgs(const base::Value::List& args,
+  bool ApplyToArgs(const base::ListValue& args,
                    const base::TimeTicks& event_time);
 
   // Returns an error formatted according to this heuristic.

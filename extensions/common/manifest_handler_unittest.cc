@@ -187,14 +187,14 @@ TEST_F(ManifestHandlerTest, DependentHandlers) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "no name")
                   .Set("version", "0")
                   .Set("manifest_version", 2)
                   .Set("a", 1)
                   .Set("b", 2)
                   .Set("c",
-                       base::Value::Dict().Set("d", 3).Set("e", 4).Set("f", 5))
+                       base::DictValue().Set("d", 3).Set("e", 4).Set("f", 5))
                   .Set("g", 6))
           .Build();
 
@@ -210,11 +210,11 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
   // Can't use ExtensionBuilder, because this extension will fail to
   // be parsed.
-  base::Value::Dict manifest_a(base::Value::Dict()
-                                   .Set("name", "no name")
-                                   .Set("version", "0")
-                                   .Set("manifest_version", 2)
-                                   .Set("a", 1));
+  base::DictValue manifest_a(base::DictValue()
+                                 .Set("name", "no name")
+                                 .Set("version", "0")
+                                 .Set("manifest_version", 2)
+                                 .Set("a", 1));
 
   // Succeeds when "a" is not recognized.
   std::u16string error;
@@ -240,7 +240,7 @@ TEST_F(ManifestHandlerTest, Validate) {
   ScopedTestingManifestHandlerRegistry scoped_registry;
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "no name")
                            .Set("version", "0")
                            .Set("manifest_version", 2)

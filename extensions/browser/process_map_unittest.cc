@@ -19,7 +19,7 @@ enum class TypeToCreate { kExtension, kHostedApp, kPlatformApp };
 
 scoped_refptr<const Extension> CreateExtensionWithFlags(TypeToCreate type,
                                                         const std::string& id) {
-  auto manifest_builder = base::Value::Dict()
+  auto manifest_builder = base::DictValue()
                               .Set("name", "Test extension")
                               .Set("version", "1.0")
                               .Set("manifest_version", 2);
@@ -28,22 +28,21 @@ scoped_refptr<const Extension> CreateExtensionWithFlags(TypeToCreate type,
     case TypeToCreate::kExtension:
       manifest_builder.Set(
           "background",
-          base::Value::Dict().Set("scripts",
-                                  base::Value::List().Append("background.js")));
+          base::DictValue().Set("scripts",
+                                base::ListValue().Append("background.js")));
       break;
     case TypeToCreate::kHostedApp:
       manifest_builder.Set(
-          "app", base::Value::Dict().Set(
-                     "launch", base::Value::Dict().Set("web_url",
-                                                       "https://www.foo.bar")));
+          "app", base::DictValue().Set(
+                     "launch",
+                     base::DictValue().Set("web_url", "https://www.foo.bar")));
       break;
     case TypeToCreate::kPlatformApp:
       manifest_builder.Set(
-          "app",
-          base::Value::Dict().Set(
-              "background",
-              base::Value::Dict().Set(
-                  "scripts", base::Value::List().Append("background.js"))));
+          "app", base::DictValue().Set(
+                     "background",
+                     base::DictValue().Set("scripts", base::ListValue().Append(
+                                                          "background.js"))));
       break;
   }
 

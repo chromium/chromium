@@ -454,9 +454,9 @@ void RulesMonitorService::GetDisabledRuleIds(
       std::move(callback));
 }
 
-const base::Value::List& RulesMonitorService::GetSessionRulesValue(
+const base::ListValue& RulesMonitorService::GetSessionRulesValue(
     const ExtensionId& extension_id) const {
-  static const base::NoDestructor<base::Value::List> empty_rules;
+  static const base::NoDestructor<base::ListValue> empty_rules;
   auto it = session_rules_.find(extension_id);
   return it == session_rules_.end() ? *empty_rules : it->second;
 }
@@ -814,7 +814,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     }
   }
 
-  base::Value::List new_rules_value =
+  base::ListValue new_rules_value =
       json_schema_compiler::util::CreateValueFromArray(new_rules);
 
   std::string error;

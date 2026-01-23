@@ -362,7 +362,7 @@ TEST_F(SimpleFeatureTest, Context) {
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
 
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "test")
                       .Set("version", "1")
                       .Set("manifest_version", 21);
@@ -468,7 +468,7 @@ TEST_F(SimpleFeatureTest, Context) {
 }
 
 TEST_F(SimpleFeatureTest, SessionType) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "test")
                       .Set("version", "1")
                       .Set("manifest_version", 2);

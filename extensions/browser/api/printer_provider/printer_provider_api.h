@@ -28,12 +28,12 @@ namespace extensions {
 class PrinterProviderAPI : public KeyedService {
  public:
   using GetPrintersCallback =
-      base::RepeatingCallback<void(base::Value::List printers, bool done)>;
+      base::RepeatingCallback<void(base::ListValue printers, bool done)>;
   using GetCapabilityCallback =
-      base::OnceCallback<void(const base::Value::Dict capability)>;
+      base::OnceCallback<void(const base::DictValue capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
   using GetPrinterInfoCallback =
-      base::OnceCallback<void(const base::Value::Dict printer_info)>;
+      base::OnceCallback<void(const base::DictValue printer_info)>;
 
   static std::unique_ptr<PrinterProviderAPI> Create(
       content::BrowserContext* context);

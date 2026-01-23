@@ -116,7 +116,7 @@ class ExtensionFrameHelper
   void MessageInvoke(const ExtensionId& extension_id,
                      const std::string& module_name,
                      const std::string& function_name,
-                     base::Value::List args) override;
+                     base::ListValue args) override;
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override;
   void ExecuteDeclarativeScript(int32_t tab_id,

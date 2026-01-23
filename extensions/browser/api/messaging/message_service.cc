@@ -161,7 +161,7 @@ constexpr const char* kDefaultSWExtendedLifetimeList[] = {
 std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
     content::BrowserContext* browser_context) {
   std::vector<url::Origin> origins;
-  const base::Value::List& extended_lifetime_urls =
+  const base::ListValue& extended_lifetime_urls =
       ExtensionPrefs::Get(browser_context)
           ->pref_service()
           ->GetList(
@@ -224,7 +224,7 @@ struct MessageService::MessageChannel {
 
 struct MessageService::OpenChannelParams {
   ChannelEndpoint source;
-  std::optional<base::Value::Dict> source_tab;
+  std::optional<base::DictValue> source_tab;
   ExtensionApiFrameIdMap::FrameData source_frame;
   std::unique_ptr<MessagePort> receiver;
   PortId receiver_port_id;
@@ -240,7 +240,7 @@ struct MessageService::OpenChannelParams {
 
   // Takes ownership of receiver.
   OpenChannelParams(const ChannelEndpoint& source,
-                    std::optional<base::Value::Dict> source_tab,
+                    std::optional<base::DictValue> source_tab,
                     const ExtensionApiFrameIdMap::FrameData& source_frame,
                     MessagePort* receiver,
                     const PortId& receiver_port_id,
@@ -267,7 +267,7 @@ struct MessageService::OpenChannelParams {
                           include_guest_process_info,
                           /*open_channel_tracking_ids=*/{}) {}
   OpenChannelParams(const ChannelEndpoint& source,
-                    std::optional<base::Value::Dict> source_tab,
+                    std::optional<base::DictValue> source_tab,
                     const ExtensionApiFrameIdMap::FrameData& source_frame,
                     MessagePort* receiver,
                     const PortId& receiver_port_id,
@@ -569,7 +569,7 @@ void MessageService::OpenChannelToExtension(
   bool include_guest_process_info = false;
 
   // Get information about the opener's tab, if applicable.
-  std::optional<base::Value::Dict> source_tab =
+  std::optional<base::DictValue> source_tab =
       messaging_delegate_->MaybeGetTabInfo(source_contents);
 
   std::optional<url::Origin> source_origin;

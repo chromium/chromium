@@ -103,7 +103,7 @@ bool ParseChildPermissions(const std::string& base_name,
       return true;
     }
 
-    const base::Value::List& list = permission_value->GetList();
+    const base::ListValue& list = permission_value->GetList();
     for (size_t i = 0; i < list.size(); ++i) {
       std::string permission_str;
       if (!list[i].is_string()) {
@@ -145,7 +145,7 @@ void APIPermissionSet::insert(std::unique_ptr<APIPermission> permission) {
 
 // static
 bool APIPermissionSet::ParseFromJSON(
-    const base::Value::List& permissions,
+    const base::ListValue& permissions,
     APIPermissionSet::ParseSource source,
     APIPermissionSet* api_permissions,
     std::u16string* error,

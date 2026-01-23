@@ -40,7 +40,7 @@ std::unique_ptr<InstallApproval> InstallApproval::CreateForSharedModule(
 std::unique_ptr<InstallApproval> InstallApproval::CreateWithNoInstallPrompt(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
-    base::Value::Dict parsed_manifest,
+    base::DictValue parsed_manifest,
     bool strict_manifest_check) {
   // Use `new` due to private constructor.
   std::unique_ptr<InstallApproval> result(new InstallApproval());

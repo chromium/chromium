@@ -18,7 +18,7 @@ MessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-std::optional<base::Value::Dict> MessagingDelegate::MaybeGetTabInfo(
+std::optional<base::DictValue> MessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   NOTIMPLEMENTED();
   return std::nullopt;

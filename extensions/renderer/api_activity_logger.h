@@ -46,7 +46,7 @@ class APIActivityLogger : public ObjectBackedNativeHandler {
   static void LogEvent(IPCMessageSender* ipc_sender,
                        ScriptContext* script_context,
                        const std::string& event_name,
-                       base::Value::List arguments);
+                       base::ListValue arguments);
 
   static void set_log_for_testing(bool log);
 

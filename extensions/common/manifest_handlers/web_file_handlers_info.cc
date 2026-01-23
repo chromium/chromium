@@ -88,7 +88,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
     }
 
     // Mime type keyed by string or array of strings of file extensions.
-    base::Value::Dict accept;
+    base::DictValue accept;
     for (const auto [mime_type, file_extensions] :
          manifest_file_handler.accept.additional_properties) {
       // Verify that mime type only has one slash.
@@ -104,7 +104,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
       }
 
       // Verify that file extension has a leading dot.
-      base::Value::List file_extension_list;
+      base::ListValue file_extension_list;
       if (file_extensions.is_string()) {
         file_extension_list.Append(file_extensions.GetString());
       } else if (file_extensions.is_list()) {

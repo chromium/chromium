@@ -318,28 +318,28 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
   if (!render_frame_host())
     return;
 
-  base::Value::Dict result = CreateResult();
+  base::DictValue result = CreateResult();
   for (const auto& path : paths)
     AddEntryToResult(path, std::string(), result);
   Respond(WithArguments(std::move(result)));
 }
 
-base::Value::Dict FileSystemEntryFunction::CreateResult() {
-  base::Value::Dict result;
-  result.Set("entries", base::Value::List());
+base::DictValue FileSystemEntryFunction::CreateResult() {
+  base::DictValue result;
+  result.Set("entries", base::ListValue());
   result.Set("multiple", multiple_);
   return result;
 }
 
 void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
                                                const std::string& id_override,
-                                               base::Value::Dict& result) {
+                                               base::DictValue& result) {
   GrantedFileEntry file_entry = app_file_handler_util::CreateFileEntry(
       browser_context(), extension(), source_process_id(), path, is_directory_);
-  base::Value::List* entries = result.FindList("entries");
+  base::ListValue* entries = result.FindList("entries");
   DCHECK(entries);
 
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("fileSystemId", file_entry.filesystem_id);
   entry.Set("baseName", file_entry.registered_name);
   if (id_override.empty()) {
@@ -977,7 +977,7 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   // |entry_id|.
   if (needs_new_entry) {
     is_directory_ = file->is_directory;
-    base::Value::Dict result = CreateResult();
+    base::DictValue result = CreateResult();
     AddEntryToResult(file->path, file->id, result);
     return RespondNow(WithArguments(std::move(result)));
   }
@@ -1023,7 +1023,7 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
 void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("file_system_id", id);
   dict.Set("file_system_path", path);
   Respond(WithArguments(std::move(dict)));

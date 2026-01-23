@@ -29,13 +29,13 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 namespace {
 
-std::string GetNameFromManifest(const base::Value::Dict& manifest) {
+std::string GetNameFromManifest(const base::DictValue& manifest) {
   const std::string* name = manifest.FindString(manifest_keys::kName);
   return name ? *name : std::string();
 }
 
 // |manifest_path| is an absolute path to a manifest file.
-std::optional<base::Value::Dict> LoadManifestFile(
+std::optional<base::DictValue> LoadManifestFile(
     const base::FilePath& manifest_path,
     std::string* error) {
   base::FilePath extension_path = manifest_path.DirName();
@@ -76,17 +76,17 @@ ManifestTest::~ManifestTest() = default;
 // to a manifest or the manifest itself.
 ManifestTest::ManifestData::ManifestData(std::string_view name) : name_(name) {}
 
-ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest,
+ManifestTest::ManifestData::ManifestData(base::DictValue manifest,
                                          std::string_view name)
     : name_(name), manifest_(std::move(manifest)) {}
 
-ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest)
+ManifestTest::ManifestData::ManifestData(base::DictValue manifest)
     : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {}
 
 ManifestTest::ManifestData::ManifestData(ManifestData&& other) = default;
 ManifestTest::ManifestData::~ManifestData() = default;
 
-const std::optional<base::Value::Dict>& ManifestTest::ManifestData::GetManifest(
+const std::optional<base::DictValue>& ManifestTest::ManifestData::GetManifest(
     const base::FilePath& test_data_dir,
     std::string* error) const {
   if (!manifest_) {
@@ -100,7 +100,7 @@ const std::optional<base::Value::Dict>& ManifestTest::ManifestData::GetManifest(
 ManifestTest::ManifestData ManifestTest::ManifestData::FromJSON(
     std::string_view json) {
   // ParseJsonDict() will ADD_FAILURE() if `json` is not a valid dict.
-  base::Value::Dict manifest_dict = base::test::ParseJsonDict(json);
+  base::DictValue manifest_dict = base::test::ParseJsonDict(json);
   return ManifestData(std::move(manifest_dict));
 }
 
@@ -114,7 +114,7 @@ base::FilePath ManifestTest::GetTestDataDir() {
   return path.AppendASCII("manifest_tests");
 }
 
-std::optional<base::Value::Dict> ManifestTest::LoadManifest(
+std::optional<base::DictValue> ManifestTest::LoadManifest(
     char const* manifest_name,
     std::string* error) {
   base::FilePath manifest_path = GetTestDataDir().AppendASCII(manifest_name);
@@ -129,7 +129,7 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
     ManifestLocation location,
     int flags) {
   base::FilePath test_data_dir = GetTestDataDir();
-  const std::optional<base::Value::Dict>& dict =
+  const std::optional<base::DictValue>& dict =
       manifest.GetManifest(test_data_dir, error);
   if (!dict) {
     return nullptr;

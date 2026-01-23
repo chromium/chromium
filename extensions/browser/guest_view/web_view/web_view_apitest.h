@@ -53,7 +53,7 @@ class WebViewAPITest : public AppShellTest {
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       embedder_web_contents_;
   guest_view::TestGuestViewManagerFactory factory_;
-  base::Value::Dict test_config_;
+  base::DictValue test_config_;
 
  private:
   content::WebContents* GetFirstAppWindowWebContents();

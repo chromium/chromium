@@ -211,7 +211,7 @@ VirtualKeyboardPrivateGetKeyboardConfigFunction::Run() {
 }
 
 void VirtualKeyboardPrivateGetKeyboardConfigFunction::OnKeyboardConfig(
-    std::optional<base::Value::Dict> results) {
+    std::optional<base::DictValue> results) {
   Respond(results ? WithArguments(std::move(*results)) : Error(kUnknownError));
 }
 
@@ -380,7 +380,7 @@ void VirtualKeyboardPrivateGetClipboardHistoryFunction::OnGetClipboardHistory(
 
 void VirtualKeyboardPrivateGetClipboardHistoryFunction::
     OnClipboardHistoryItemsConverted(std::unique_ptr<ClipboardItems> items) {
-  base::Value::List results;
+  base::ListValue results;
   for (const auto& item : *items) {
     results.Append(item.ToValue());
   }

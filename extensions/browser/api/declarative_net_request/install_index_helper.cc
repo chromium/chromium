@@ -32,9 +32,9 @@ constexpr char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
 constexpr char kDNRChecksumKey[] = "checksum";
 
 // Converts a single ruleset result into a Dict.
-base::Value::Dict ConvertRulesetToDict(bool ignored,
-                                       std::optional<int> checksum) {
-  base::Value::Dict result;
+base::DictValue ConvertRulesetToDict(bool ignored,
+                                     std::optional<int> checksum) {
+  base::DictValue result;
   result.Set(kDNRIgnoreRulesetKey, ignored);
   if (checksum) {
     result.Set(kDNRChecksumKey, *checksum);
@@ -43,9 +43,9 @@ base::Value::Dict ConvertRulesetToDict(bool ignored,
   return result;
 }
 
-void SetRulesetDict(base::Value::Dict& dict,
+void SetRulesetDict(base::DictValue& dict,
                     RulesetID id,
-                    base::Value::Dict ruleset) {
+                    base::DictValue ruleset) {
   std::string key = base::NumberToString(id.value());
   DCHECK(!dict.Find(key));
   dict.Set(key, std::move(ruleset));
@@ -160,7 +160,7 @@ void InstallIndexHelper::IndexStaticRulesets(
 }
 
 // static
-base::expected<base::Value::Dict, std::string>
+base::expected<base::DictValue, std::string>
 InstallIndexHelper::IndexAndPersistRulesOnInstall(Extension& extension) {
   // Index all static rulesets and therefore parse all static rules at
   // installation time for unpacked extensions. Throw an error for invalid rules

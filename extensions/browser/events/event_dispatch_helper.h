@@ -130,7 +130,7 @@ class EventDispatchHelper {
   // is active.
   void TryQueueEventForLazyListener(Event& event,
                                     const LazyContextId& dispatch_context,
-                                    const base::Value::Dict* listener_filter);
+                                    const base::DictValue* listener_filter);
 
   // Possibly loads given extension's background page or extension Service
   // Worker in preparation to dispatch an event. Returns true if the event was
@@ -139,7 +139,7 @@ class EventDispatchHelper {
   bool TryQueueEventDispatch(Event& event,
                              const LazyContextId& dispatch_context,
                              const Extension* extension,
-                             const base::Value::Dict* listener_filter);
+                             const base::DictValue* listener_filter);
 
   // Creates a copy of `event` for dispatching to a specific listener context.
   // If `event` has a `will_dispatch_callback`, it is run before copying. If the
@@ -147,7 +147,7 @@ class EventDispatchHelper {
   // the event with any modifications applied by the callback.
   std::unique_ptr<Event> CreateEventForDispatch(
       const Event& event,
-      const base::Value::Dict* listener_filter,
+      const base::DictValue* listener_filter,
       const Extension* extension,
       content::BrowserContext& listener_context,
       mojom::ContextType target_context_type,

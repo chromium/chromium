@@ -329,7 +329,7 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::u16string* error) {
   DCHECK(extension());
 
-  base::expected<base::Value::Dict, std::string> index_result =
+  base::expected<base::DictValue, std::string> index_result =
       declarative_net_request::InstallIndexHelper::
           IndexAndPersistRulesOnInstall(*extension_);
 

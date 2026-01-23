@@ -42,7 +42,7 @@ class APIRequestHandler {
     std::string method_name;
     bool has_async_response_handler = false;
     bool has_user_gesture = false;
-    base::Value::List arguments_list;
+    base::ListValue arguments_list;
   };
 
   // Details about a newly-added request to provide as a return to callers.
@@ -76,7 +76,7 @@ class APIRequestHandler {
   v8::Local<v8::Promise> StartRequest(
       v8::Local<v8::Context> context,
       const std::string& method,
-      base::Value::List arguments_list,
+      base::ListValue arguments_list,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
       v8::Local<v8::Function> custom_callback,
@@ -100,7 +100,7 @@ class APIRequestHandler {
   // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   void CompleteRequest(int request_id,
-                       const base::Value::List& response_list,
+                       const base::ListValue& response_list,
                        const std::string& error,
                        mojom::ExtraResponseDataPtr extra_data = nullptr);
   void CompleteRequest(int request_id,

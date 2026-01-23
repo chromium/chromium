@@ -111,7 +111,7 @@ void ShellNetworkController::SetCellularAllowRoaming(bool allow_roaming) {
   ash::NetworkHandler* handler = ash::NetworkHandler::Get();
   ash::NetworkStateHandler::NetworkStateList network_list;
 
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(shill::kCellularAllowRoamingProperty, allow_roaming);
 
   handler->network_state_handler()->GetVisibleNetworkListByType(

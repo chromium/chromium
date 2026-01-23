@@ -244,10 +244,10 @@ class DeclarativeNetRequestTestMatchOutcomeFunction : public ExtensionFunction {
       std::optional<TestResponseHeaders>& test_headers,
       std::string& error) const;
 
-  // Creates a base::Value::List which wraps a list of dnr_api::MatchedRule from
-  // the provided `actions`. The base::Value::List will be returned as part of
+  // Creates a base::ListValue which wraps a list of dnr_api::MatchedRule from
+  // the provided `actions`. The base::ListValue will be returned as part of
   // this API function's response.
-  base::Value::List CreateMatchedRulesFromActions(
+  base::ListValue CreateMatchedRulesFromActions(
       const std::vector<declarative_net_request::RequestAction>& actions) const;
 
   // Returns a list of matching actions for the given request `params` against

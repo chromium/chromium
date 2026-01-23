@@ -224,34 +224,34 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id_input) {
-    base::Value::Dict manifest = base::Value::Dict()
-                                     .Set("name", "extension")
-                                     .Set("description", "an extension")
-                                     .Set("manifest_version", 2)
-                                     .Set("version", "0.1");
+    base::DictValue manifest = base::DictValue()
+                                   .Set("name", "extension")
+                                   .Set("description", "an extension")
+                                   .Set("manifest_version", 2)
+                                   .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreateTheme(const ExtensionId& id_input) {
-    base::Value::Dict manifest = base::Value::Dict()
-                                     .Set("name", "theme")
-                                     .Set("description", "a theme")
-                                     .Set("theme", base::Value::Dict())
-                                     .Set("manifest_version", 2)
-                                     .Set("version", "0.1");
+    base::DictValue manifest = base::DictValue()
+                                   .Set("name", "theme")
+                                   .Set("description", "a theme")
+                                   .Set("theme", base::DictValue())
+                                   .Set("manifest_version", 2)
+                                   .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
   }
 
   scoped_refptr<const Extension> CreatePlatformApp(
       const ExtensionId& id_input) {
-    base::Value::Dict background = base::Value::Dict().Set(
-        "scripts", base::Value::List().Append("background.js"));
-    base::Value::Dict manifest =
-        base::Value::Dict()
+    base::DictValue background = base::DictValue().Set(
+        "scripts", base::ListValue().Append("background.js"));
+    base::DictValue manifest =
+        base::DictValue()
             .Set("name", "platform_app")
             .Set("description", "a platform app")
             .Set("app",
-                 base::Value::Dict().Set("background", std::move(background)))
+                 base::DictValue().Set("background", std::move(background)))
             .Set("manifest_version", 2)
             .Set("version", "0.1");
     return CreateExtension(id_input, std::move(manifest));
@@ -294,7 +294,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
 
  private:
   scoped_refptr<const Extension> CreateExtension(const ExtensionId& id_input,
-                                                 base::Value::Dict manifest) {
+                                                 base::DictValue manifest) {
     return ExtensionBuilder()
         .SetManifest(std::move(manifest))
         .SetID(crx_file::id_util::GenerateId(id_input))

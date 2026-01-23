@@ -359,7 +359,7 @@ TEST(URLPatternSetTest, ToValueAndPopulate) {
 
   std::string error;
   bool allow_file_access = false;
-  base::Value::List value = set1.ToValue();
+  base::ListValue value = set1.ToValue();
   set2.Populate(value, URLPattern::SCHEME_ALL, allow_file_access, &error);
   EXPECT_EQ(set1, set2);
 

@@ -130,7 +130,7 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
+  tab_connection_info.tab = base::DictValue().Set("tabId", tab_id);
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
       MessagingEndpoint::ForExtension(extension()->id());
@@ -174,10 +174,10 @@ TEST_F(NativeRendererMessagingServiceTest, OpenMessagePort) {
 
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
                                                 "eventFired"));
-  base::Value::Dict expected_sender =
-      base::Value::Dict()
+  base::DictValue expected_sender =
+      base::DictValue()
           .Set("frameId", 0)
-          .Set("tab", base::Value::Dict().Set("tabId", tab_id))
+          .Set("tab", base::DictValue().Set("tabId", tab_id))
           .Set("url", source_url.spec())
           .Set("id", extension()->id());
   EXPECT_EQ(ValueToString(base::Value(std::move(expected_sender))),
@@ -596,7 +596,7 @@ TEST_F(NativeRendererMessagingServiceTest, ReceiveOneTimeMessage) {
   tab_connection_info.frame_id = 0;
   const int tab_id = 10;
   GURL source_url("http://example.com");
-  tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
+  tab_connection_info.tab = base::DictValue().Set("tabId", tab_id);
   external_connection_info.target_id = extension()->id();
   external_connection_info.source_endpoint =
       MessagingEndpoint::ForExtension(extension()->id());
@@ -694,7 +694,7 @@ TEST_F(NativeRendererMessagingServiceTest, TestExternalOneTimeMessages) {
         tab_connection_info.frame_id = 0;
         const int tab_id = 10;
         GURL source_url("http://example.com");
-        tab_connection_info.tab = base::Value::Dict().Set("tabId", tab_id);
+        tab_connection_info.tab = base::DictValue().Set("tabId", tab_id);
 
         external_connection_info.target_id = extension()->id();
         external_connection_info.source_endpoint =

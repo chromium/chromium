@@ -23,8 +23,8 @@
 #include "url/gurl.h"
 
 namespace base {
+class DictValue;
 class Time;
-class Value;
 }
 
 namespace extension_web_request_api_helpers {
@@ -131,7 +131,7 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   static scoped_refptr<const WebRequestAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict& json_action,
+      const base::DictValue& json_action,
       std::string* error,
       bool* bad_message);
 

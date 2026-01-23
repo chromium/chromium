@@ -53,7 +53,7 @@ struct InstallApproval : public base::SupportsUserData::Data {
   static std::unique_ptr<InstallApproval> CreateWithNoInstallPrompt(
       content::BrowserContext* browser_context,
       const ExtensionId& extension_id,
-      base::Value::Dict parsed_manifest,
+      base::DictValue parsed_manifest,
       bool strict_manifest_check);
 
   ~InstallApproval() override;

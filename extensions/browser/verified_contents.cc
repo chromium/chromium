@@ -47,9 +47,9 @@ const char kWebstoreKId[] = "webstore";
 
 // Helper function to iterate over a list of dictionaries, returning the
 // dictionary that has |key| -> |value| in it, if any, or null.
-const base::Value::Dict* FindDictionaryWithValue(const base::Value::List& list,
-                                                 const std::string& key,
-                                                 const std::string& value) {
+const base::DictValue* FindDictionaryWithValue(const base::ListValue& list,
+                                               const std::string& key,
+                                               const std::string& value) {
   for (const base::Value& item : list) {
     if (!item.is_dict()) {
       continue;
@@ -119,7 +119,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     return nullptr;
   }
 
-  base::Value::Dict& dictionary = dictionary_value->GetDict();
+  base::DictValue& dictionary = dictionary_value->GetDict();
   const std::string* item_id = dictionary.FindString(kItemIdKey);
   if (!item_id || !crx_file::id_util::IdIsValid(*item_id))
     return nullptr;
@@ -134,12 +134,12 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->version_.IsValid())
     return nullptr;
 
-  const base::Value::List* hashes_list = dictionary.FindList(kContentHashesKey);
+  const base::ListValue* hashes_list = dictionary.FindList(kContentHashesKey);
   if (!hashes_list)
     return nullptr;
 
   for (const base::Value& hashes : *hashes_list) {
-    const base::Value::Dict* hashes_dict = hashes.GetIfDict();
+    const base::DictValue* hashes_dict = hashes.GetIfDict();
     if (!hashes_dict) {
       return nullptr;
     }
@@ -161,12 +161,12 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (verified_contents->block_size_ != *hash_block_size)
       return nullptr;
 
-    const base::Value::List* files = hashes_dict->FindList(kFilesKey);
+    const base::ListValue* files = hashes_dict->FindList(kFilesKey);
     if (!files)
       return nullptr;
 
     for (const base::Value& data : *files) {
-      const base::Value::Dict* data_dict = data.GetIfDict();
+      const base::DictValue* data_dict = data.GetIfDict();
       if (!data_dict) {
         return nullptr;
       }
@@ -267,22 +267,21 @@ bool VerifiedContents::GetPayload(std::string_view contents,
   //     }
   //   }
   // ]
-  const base::Value::Dict* dictionary = FindDictionaryWithValue(
+  const base::DictValue* dictionary = FindDictionaryWithValue(
       top_list->GetList(), kDescriptionKey, kTreeHashPerFile);
   if (!dictionary)
     return false;
 
-  const base::Value::Dict* signed_content =
+  const base::DictValue* signed_content =
       dictionary->FindDict(kSignedContentKey);
   if (!signed_content)
     return false;
 
-  const base::Value::List* signatures =
-      signed_content->FindList(kSignaturesKey);
+  const base::ListValue* signatures = signed_content->FindList(kSignaturesKey);
   if (!signatures)
     return false;
 
-  const base::Value::Dict* signature_dict =
+  const base::DictValue* signature_dict =
       FindDictionaryWithValue(*signatures, kHeaderKidKey, kWebstoreKId);
   if (!signature_dict)
     return false;

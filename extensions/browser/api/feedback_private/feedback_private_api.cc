@@ -231,8 +231,8 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     bool show_questionnaire,
     bool from_chrome_labs_or_kaleidoscope,
     bool from_autofill,
-    const base::Value::Dict& autofill_metadata,
-    const base::Value::Dict& ai_metadata) {
+    const base::DictValue& autofill_metadata,
+    const base::DictValue& ai_metadata) {
   auto info = std::make_unique<FeedbackInfo>();
 
   info->description = description_template;

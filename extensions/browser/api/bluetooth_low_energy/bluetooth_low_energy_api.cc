@@ -631,7 +631,7 @@ void BluetoothLowEnergyGetCharacteristicsFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetCharacteristics::Result::Create as it doesn't convert lists of
   // enums correctly.
-  base::Value::List result;
+  base::ListValue result;
   for (apibtle::Characteristic& characteristic : characteristic_list) {
     result.Append(apibtle::CharacteristicToValue(characteristic));
   }
@@ -733,7 +733,7 @@ void BluetoothLowEnergyGetDescriptorsFunction::DoWork() {
   // Manually construct the result instead of using
   // apibtle::GetDescriptors::Result::Create as it doesn't convert lists of
   // enums correctly.
-  base::Value::List result;
+  base::ListValue result;
   for (apibtle::Descriptor& descriptor : descriptor_list) {
     result.Append(apibtle::DescriptorToValue(descriptor));
   }

@@ -65,7 +65,7 @@ class ListenerTracker {
   std::pair<bool, int> AddFilteredListener(
       const std::string& context_owner_id,
       const std::string& event_name,
-      std::unique_ptr<base::Value::Dict> filter,
+      std::unique_ptr<base::DictValue> filter,
       int routing_id);
 
   // Removes a record of a filtered listener for the given `event_name`,
@@ -74,7 +74,7 @@ class ListenerTracker {
   // Returns a pair, with the bool indicating if this was the last listener
   // added for this event and `context_owner_id` with this specific filter, and
   // a copy of the filter value.
-  std::pair<bool, std::unique_ptr<base::Value::Dict>> RemoveFilteredListener(
+  std::pair<bool, std::unique_ptr<base::DictValue>> RemoveFilteredListener(
       const std::string& context_owner_id,
       const std::string& event_name,
       int filter_id);

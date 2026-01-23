@@ -105,7 +105,7 @@ class DNRManifestTest : public testing::Test {
     }
   }
 
-  void WriteManifestAndRuleset(const base::Value::Dict& manifest,
+  void WriteManifestAndRuleset(const base::DictValue& manifest,
                                const std::vector<TestRulesetInfo>& info) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -126,7 +126,7 @@ class DNRManifestTest : public testing::Test {
   }
 
   TestRulesetInfo CreateDefaultRuleset() {
-    return TestRulesetInfo("id", "rules_file.json", base::Value::List());
+    return TestRulesetInfo("id", "rules_file.json", base::ListValue());
   }
 
  private:
@@ -141,7 +141,7 @@ TEST_F(DNRManifestTest, EmptyRuleset) {
 
 TEST_F(DNRManifestTest, InvalidManifestKey) {
   std::vector<TestRulesetInfo> rulesets({CreateDefaultRuleset()});
-  base::Value::Dict manifest = CreateManifest(rulesets);
+  base::DictValue manifest = CreateManifest(rulesets);
   manifest.Set(dnr_api::ManifestKeys::kDeclarativeNetRequest, 3);
 
   WriteManifestAndRuleset(manifest, rulesets);
@@ -152,7 +152,7 @@ TEST_F(DNRManifestTest, InvalidManifestKey) {
 
 TEST_F(DNRManifestTest, InvalidRulesFileKey) {
   std::vector<TestRulesetInfo> rulesets({CreateDefaultRuleset()});
-  base::Value::Dict manifest = CreateManifest(rulesets);
+  base::DictValue manifest = CreateManifest(rulesets);
   manifest.SetByDottedPath(GetRuleResourcesPath(), 3);
 
   WriteManifestAndRuleset(manifest, rulesets);
@@ -164,10 +164,10 @@ TEST_F(DNRManifestTest, InvalidRulesFileKey) {
 
 TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
   const char kRulesetFile[] = "file1.json";
-  base::Value::Dict manifest = CreateManifest({}).Set(
+  base::DictValue manifest = CreateManifest({}).Set(
       dnr_api::ManifestKeys::kDeclarativeNetRequest,
-      base::Value::Dict().Set(dnr_api::DNRInfo::kRuleResources,
-                              base::Value::List().Append(kRulesetFile)));
+      base::DictValue().Set(dnr_api::DNRInfo::kRuleResources,
+                            base::ListValue().Append(kRulesetFile)));
 
   WriteManifestAndRuleset(manifest, {});
 
@@ -177,7 +177,7 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
 }
 
 TEST_F(DNRManifestTest, InvalidRulesetPath) {
-  TestRulesetInfo ruleset("rules", "sub/../rules.json", base::Value::List());
+  TestRulesetInfo ruleset("rules", "sub/../rules.json", base::ListValue());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
   LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
@@ -186,7 +186,7 @@ TEST_F(DNRManifestTest, InvalidRulesetPath) {
 }
 
 TEST_F(DNRManifestTest, InvalidRulesetPath2) {
-  TestRulesetInfo ruleset("rules", "rules.json?param=1", base::Value::List());
+  TestRulesetInfo ruleset("rules", "rules.json?param=1", base::ListValue());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
   LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
@@ -201,11 +201,11 @@ TEST_F(DNRManifestTest, ZeroRulesets) {
 }
 
 TEST_F(DNRManifestTest, MultipleRulesFileSuccess) {
-  TestRulesetInfo ruleset_1("1", "file1.json", base::Value::List(),
+  TestRulesetInfo ruleset_1("1", "file1.json", base::ListValue(),
                             true /* enabled */);
-  TestRulesetInfo ruleset_2("2", "file2.json", base::Value::List(),
+  TestRulesetInfo ruleset_2("2", "file2.json", base::ListValue(),
                             false /* enabled */);
-  TestRulesetInfo ruleset_3("3", "file3.json", base::Value::List(),
+  TestRulesetInfo ruleset_3("3", "file3.json", base::ListValue(),
                             true /* enabled */);
 
   std::vector<TestRulesetInfo> rulesets = {ruleset_1, ruleset_2, ruleset_3};
@@ -214,8 +214,8 @@ TEST_F(DNRManifestTest, MultipleRulesFileSuccess) {
 }
 
 TEST_F(DNRManifestTest, MultipleRulesFileInvalidPath) {
-  TestRulesetInfo ruleset_1("1", "file1.json", base::Value::List());
-  TestRulesetInfo ruleset_2("2", "file2.json", base::Value::List());
+  TestRulesetInfo ruleset_1("1", "file1.json", base::ListValue());
+  TestRulesetInfo ruleset_2("2", "file2.json", base::ListValue());
 
   // Only persist |ruleset_1| on disk but include both in the manifest.
   WriteManifestAndRuleset(CreateManifest({ruleset_1, ruleset_2}), {ruleset_1});
@@ -229,7 +229,7 @@ TEST_F(DNRManifestTest, MultipleRulesFileInvalidPath) {
 TEST_F(DNRManifestTest, RulesetCountExceeded) {
   std::vector<TestRulesetInfo> rulesets;
   for (int i = 0; i <= dnr_api::MAX_NUMBER_OF_STATIC_RULESETS; ++i) {
-    rulesets.emplace_back(base::NumberToString(i), base::Value::List(),
+    rulesets.emplace_back(base::NumberToString(i), base::ListValue(),
                           false /* enabled */);
   }
 
@@ -245,7 +245,7 @@ TEST_F(DNRManifestTest, RulesetCountExceeded) {
 TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
   std::vector<TestRulesetInfo> rulesets;
   for (int i = 0; i <= dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS; ++i) {
-    rulesets.emplace_back(base::NumberToString(i), base::Value::List(),
+    rulesets.emplace_back(base::NumberToString(i), base::ListValue(),
                           true /* enabled */);
   }
 
@@ -259,9 +259,9 @@ TEST_F(DNRManifestTest, EnabledRulesetCountExceeded) {
 }
 
 TEST_F(DNRManifestTest, NonExistentRulesFile) {
-  TestRulesetInfo ruleset("id", "invalid_file.json", base::Value::List());
+  TestRulesetInfo ruleset("id", "invalid_file.json", base::ListValue());
 
-  base::Value::Dict manifest = CreateManifest({ruleset});
+  base::DictValue manifest = CreateManifest({ruleset});
 
   WriteManifestAndRuleset(manifest, {});
 
@@ -273,7 +273,7 @@ TEST_F(DNRManifestTest, NonExistentRulesFile) {
 
 TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
   std::vector<TestRulesetInfo> rulesets({CreateDefaultRuleset()});
-  base::Value::Dict manifest = CreateManifest(rulesets);
+  base::DictValue manifest = CreateManifest(rulesets);
   // Remove "declarativeNetRequest" permission.
   manifest.Remove(manifest_keys::kPermissions);
 
@@ -285,19 +285,19 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
 }
 
 TEST_F(DNRManifestTest, RulesFileInNestedDirectory) {
-  TestRulesetInfo ruleset("id", "dir/rules_file.json", base::Value::List());
+  TestRulesetInfo ruleset("id", "dir/rules_file.json", base::ListValue());
 
   std::vector<TestRulesetInfo> rulesets({ruleset});
-  base::Value::Dict manifest = CreateManifest(rulesets);
+  base::DictValue manifest = CreateManifest(rulesets);
 
   WriteManifestAndRuleset(manifest, rulesets);
   LoadAndExpectSuccess(rulesets);
 }
 
 TEST_F(DNRManifestTest, EmptyRulesetID) {
-  TestRulesetInfo ruleset_1("1", "1.json", base::Value::List());
-  TestRulesetInfo ruleset_2("", "2.json", base::Value::List());
-  TestRulesetInfo ruleset_3("3", "3.json", base::Value::List());
+  TestRulesetInfo ruleset_1("1", "1.json", base::ListValue());
+  TestRulesetInfo ruleset_2("", "2.json", base::ListValue());
+  TestRulesetInfo ruleset_3("3", "3.json", base::ListValue());
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
@@ -307,10 +307,10 @@ TEST_F(DNRManifestTest, EmptyRulesetID) {
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetID) {
-  TestRulesetInfo ruleset_1("1", "1.json", base::Value::List());
-  TestRulesetInfo ruleset_2("2", "2.json", base::Value::List());
-  TestRulesetInfo ruleset_3("3", "3.json", base::Value::List());
-  TestRulesetInfo ruleset_4("1", "3.json", base::Value::List());
+  TestRulesetInfo ruleset_1("1", "1.json", base::ListValue());
+  TestRulesetInfo ruleset_2("2", "2.json", base::ListValue());
+  TestRulesetInfo ruleset_3("3", "3.json", base::ListValue());
+  TestRulesetInfo ruleset_4("1", "3.json", base::ListValue());
   std::vector<TestRulesetInfo> rulesets(
       {ruleset_1, ruleset_2, ruleset_3, ruleset_4});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
@@ -321,9 +321,9 @@ TEST_F(DNRManifestTest, DuplicateRulesetID) {
 }
 
 TEST_F(DNRManifestTest, ReservedRulesetID) {
-  TestRulesetInfo ruleset_1("foo", "1.json", base::Value::List());
-  TestRulesetInfo ruleset_2("_bar", "2.json", base::Value::List());
-  TestRulesetInfo ruleset_3("baz", "3.json", base::Value::List());
+  TestRulesetInfo ruleset_1("foo", "1.json", base::ListValue());
+  TestRulesetInfo ruleset_2("_bar", "2.json", base::ListValue());
+  TestRulesetInfo ruleset_3("baz", "3.json", base::ListValue());
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2, ruleset_3});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
 
@@ -336,7 +336,7 @@ TEST_F(DNRManifestTest, ReservedRulesetID) {
 // empty extension root path. Ensure the manifest handler for declarative net
 // request handles it correctly. Regression test for crbug.com/1087348.
 TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
-  TestRulesetInfo ruleset("foo", "1.json", base::Value::List());
+  TestRulesetInfo ruleset("foo", "1.json", base::ListValue());
 
   std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
@@ -348,7 +348,7 @@ TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
 }
 
 TEST_F(DNRManifestTest, EmptyRulesetPath1) {
-  TestRulesetInfo ruleset("foo", "", base::Value::List());
+  TestRulesetInfo ruleset("foo", "", base::ListValue());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
   LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
@@ -357,7 +357,7 @@ TEST_F(DNRManifestTest, EmptyRulesetPath1) {
 }
 
 TEST_F(DNRManifestTest, EmptyRulesetPath2) {
-  TestRulesetInfo ruleset("foo", ".", base::Value::List());
+  TestRulesetInfo ruleset("foo", ".", base::ListValue());
   WriteManifestAndRuleset(CreateManifest({ruleset}), {});
   LoadAndExpectError(ErrorUtils::FormatErrorMessageUTF16(
       errors::kRulesFileIsInvalid,
@@ -366,8 +366,8 @@ TEST_F(DNRManifestTest, EmptyRulesetPath2) {
 }
 
 TEST_F(DNRManifestTest, DuplicateRulesetPath) {
-  TestRulesetInfo ruleset_1("foo", "rules.json", base::Value::List());
-  TestRulesetInfo ruleset_2("bar", "rules.json", base::Value::List());
+  TestRulesetInfo ruleset_1("foo", "rules.json", base::ListValue());
+  TestRulesetInfo ruleset_2("bar", "rules.json", base::ListValue());
   std::vector<TestRulesetInfo> rulesets({ruleset_1, ruleset_2});
   WriteManifestAndRuleset(CreateManifest(rulesets), rulesets);
   LoadAndExpectWarning(

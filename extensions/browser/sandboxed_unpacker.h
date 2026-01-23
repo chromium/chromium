@@ -90,10 +90,10 @@ class SandboxedUnpackerClient
   virtual void OnUnpackSuccess(
       const base::FilePath& temp_dir,
       const base::FilePath& extension_root,
-      std::unique_ptr<base::Value::Dict> original_manifest,
+      std::unique_ptr<base::DictValue> original_manifest,
       const Extension* extension,
       const SkBitmap& install_icon,
-      base::Value::Dict ruleset_install_prefs) = 0;
+      base::DictValue ruleset_install_prefs) = 0;
   virtual void OnUnpackFailure(const CrxInstallError& error) = 0;
 
   // Called after stage of installation is changed.
@@ -200,7 +200,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
   void ReadManifestDone(base::expected<base::Value, std::u16string> result);
-  void UnpackExtensionSucceeded(base::Value::Dict manifest);
+  void UnpackExtensionSucceeded(base::DictValue manifest);
 
   // Helper which calls ReportFailure.
   void ReportUnpackExtensionFailed(const std::u16string& error);
@@ -229,8 +229,8 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
 
   // Overwrites original manifest with safe result from utility process.
   // Returns nullopt on error.
-  std::optional<base::Value::Dict> RewriteManifestFile(
-      const base::Value::Dict& manifest);
+  std::optional<base::DictValue> RewriteManifestFile(
+      const base::DictValue& manifest);
 
   // Cleans up temp directory artifacts.
   void Cleanup();
@@ -274,10 +274,10 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // Parsed original manifest of the extension. Set after unpacking the
   // extension and working with its manifest, so after UnpackExtensionSucceeded
   // is called.
-  std::optional<base::Value::Dict> manifest_;
+  std::optional<base::DictValue> manifest_;
 
   // Install prefs needed for the Declarative Net Request API.
-  base::Value::Dict ruleset_install_prefs_;
+  base::DictValue ruleset_install_prefs_;
 
   // Represents the extension we're unpacking.
   scoped_refptr<Extension> extension_;

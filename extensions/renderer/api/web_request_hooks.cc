@@ -75,11 +75,10 @@ bool WebRequestHooks::CreateCustomEvent(v8::Local<v8::Context> context,
   // The JS validates that the extra parameters passed to the web request event
   // match the expected schema. We need to initialize the event with that
   // schema.
-  const base::Value::Dict* event_spec =
+  const base::DictValue* event_spec =
       ExtensionAPI::GetSharedInstance()->GetSchema(event_name);
   DCHECK(event_spec);
-  const base::Value::List* extra_params =
-      event_spec->FindList("extraParameters");
+  const base::ListValue* extra_params = event_spec->FindList("extraParameters");
   CHECK(extra_params);
   v8::Local<v8::Value> extra_parameters_spec =
       content::V8ValueConverter::Create()->ToV8Value(*extra_params, context);

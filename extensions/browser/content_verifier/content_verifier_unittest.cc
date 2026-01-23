@@ -253,14 +253,14 @@ class ContentVerifierTest : public ExtensionsTest {
   // Create a test extension with a content script and possibly a background
   // page or background script.
   scoped_refptr<Extension> CreateTestExtension() {
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", "Dummy Extension")
                         .Set("version", "1")
                         .Set("manifest_version", 2);
 
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
-      base::Value::List background_scripts;
+      base::ListValue background_scripts;
       background_scripts.Append(kBackgroundScriptPath.AsUTF8Unsafe());
       manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
                                std::move(background_scripts));
@@ -270,10 +270,10 @@ class ContentVerifierTest : public ExtensionsTest {
                                kBackgroundPagePath.AsUTF8Unsafe());
     }
 
-    base::Value::List content_scripts;
-    base::Value::Dict content_script;
-    base::Value::List js_files;
-    base::Value::List matches;
+    base::ListValue content_scripts;
+    base::DictValue content_script;
+    base::ListValue js_files;
+    base::ListValue matches;
     js_files.Append("foo/content.txt");
     content_script.Set("js", std::move(js_files));
     matches.Append("http://*/*");
@@ -561,7 +561,7 @@ TEST_P(ContentVerifierExtensionRootHashTest,
   base::FilePath root_b = root_a.ReplaceExtension(FILE_PATH_LITERAL("_1"));
   scoped_refptr<const Extension> extension_b =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Dummy Extension")
                            .Set("version", "1")
                            .Set("manifest_version", 3))
@@ -646,7 +646,7 @@ TEST_P(ContentVerifierExtensionRootHashTest, StaleJobOnUpdatedExtension) {
   base::FilePath root_b = root_a.ReplaceExtension(FILE_PATH_LITERAL("_1"));
   scoped_refptr<const Extension> extension_b =
       ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "Extension Root B")
                            .Set("version", "1")
                            .Set("manifest_version", 3))

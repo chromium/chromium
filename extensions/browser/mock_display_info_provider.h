@@ -51,7 +51,7 @@ class MockDisplayInfoProvider : public DisplayInfoProviderBase {
                      ErrorCallback callback) override;
 
   // Helpers, accessors.
-  std::optional<base::Value::Dict> GetSetInfoValue() {
+  std::optional<base::DictValue> GetSetInfoValue() {
     return std::move(set_info_value_);
   }
 
@@ -79,7 +79,7 @@ class MockDisplayInfoProvider : public DisplayInfoProviderBase {
       const std::vector<display::Display>& displays,
       DisplayUnitInfoList& units) const override;
 
-  std::optional<base::Value::Dict> set_info_value_;
+  std::optional<base::DictValue> set_info_value_;
   std::string set_info_display_id_;
   bool unified_desktop_enabled_ = false;
   std::set<std::string> overscan_started_;

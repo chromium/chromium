@@ -117,7 +117,7 @@ TEST_F(RuntimeHooksDelegateTest, RuntimeId) {
     scoped_refptr<const Extension> connectable_extension =
         ExtensionBuilder("connectable")
             .SetManifestPath("externally_connectable.matches",
-                             base::Value::List().Append("*://example.com/*"))
+                             base::ListValue().Append("*://example.com/*"))
             .Build();
     RegisterExtension(connectable_extension);
   }

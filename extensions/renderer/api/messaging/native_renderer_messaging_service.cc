@@ -677,7 +677,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   if (binding::IsContextValid(v8_context) &&
       APIActivityLogger::IsLoggingEnabled()) {
-    base::Value::List list;
+    base::ListValue list;
     list.reserve(2u);
     if (info.source_endpoint.extension_id)
       list.Append(*info.source_endpoint.extension_id);

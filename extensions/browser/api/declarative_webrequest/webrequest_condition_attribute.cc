@@ -135,7 +135,7 @@ WebRequestConditionAttributeResourceType::Create(
                                             keys::kResourceTypeKey);
     return nullptr;
   }
-  const base::Value::List& list = value->GetList();
+  const base::ListValue& list = value->GetList();
 
   std::vector<WebRequestResourceType> passed_types;
   passed_types.reserve(list.size());
@@ -289,7 +289,7 @@ class HeaderMatcher {
   // dictionaries of the type declarativeWebRequest.HeaderFilter (see
   // declarative_web_request.json).
   static std::unique_ptr<const HeaderMatcher> Create(
-      const base::Value::List& tests);
+      const base::ListValue& tests);
 
   // Does |this| match the header "|name|: |value|"?
   bool TestNameValue(const std::string& name, const std::string& value) const;
@@ -336,7 +336,7 @@ class HeaderMatcher {
     // Gets the test group description in |tests| and creates the corresponding
     // HeaderMatchTest. On failure returns null.
     static std::unique_ptr<const HeaderMatchTest> Create(
-        const base::Value::Dict& tests);
+        const base::DictValue& tests);
 
     // Does the header "|name|: |value|" match all tests in |this|?
     bool Matches(const std::string& name, const std::string& value) const;
@@ -365,10 +365,10 @@ HeaderMatcher::~HeaderMatcher() = default;
 
 // static
 std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
-    const base::Value::List& tests) {
+    const base::ListValue& tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
   for (const auto& entry : tests) {
-    const base::Value::Dict* tests_dict = entry.GetIfDict();
+    const base::DictValue* tests_dict = entry.GetIfDict();
     if (!tests_dict)
       return nullptr;
 
@@ -452,7 +452,7 @@ HeaderMatcher::HeaderMatchTest::~HeaderMatchTest() = default;
 
 // static
 std::unique_ptr<const HeaderMatcher::HeaderMatchTest>
-HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
+HeaderMatcher::HeaderMatchTest::Create(const base::DictValue& tests) {
   std::vector<std::unique_ptr<const StringMatchTest>> name_match;
   std::vector<std::unique_ptr<const StringMatchTest>> value_match;
 

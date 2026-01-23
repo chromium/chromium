@@ -32,7 +32,7 @@ class ExtensionIconVariants {
   ExtensionIconVariants& operator=(const ExtensionIconVariants& other) = delete;
 
   // Parse the provided list from manifest.json and set `list_` with the result.
-  void Parse(const Extension& extension, const base::Value::List* list);
+  void Parse(const Extension& extension, const base::ListValue* list);
 
   // Determine whether `list_` has at least one icon variant after parsing.
   bool IsEmpty() const;

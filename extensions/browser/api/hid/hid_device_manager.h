@@ -36,7 +36,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
                          public device::mojom::HidManagerClient,
                          public EventRouter::Observer {
  public:
-  using GetApiDevicesCallback = base::OnceCallback<void(base::Value::List)>;
+  using GetApiDevicesCallback = base::OnceCallback<void(base::ListValue)>;
 
   using ConnectCallback = device::mojom::HidManager::ConnectCallback;
 
@@ -109,7 +109,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   // Builds a list of device info objects representing the currently enumerated
   // devices, taking into account the permissions held by the given extension
   // and the filters provided.
-  base::Value::List CreateApiDeviceList(
+  base::ListValue CreateApiDeviceList(
       const Extension* extension,
       const std::vector<device::HidDeviceFilter>& filters);
   void OnEnumerationComplete(
@@ -117,7 +117,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List event_args,
+                     base::ListValue event_args,
                      const device::mojom::HidDeviceInfo& device_info);
 
   base::ThreadChecker thread_checker_;

@@ -31,7 +31,7 @@ namespace {
 void AppendV8Value(v8::Isolate* isolate,
                    const std::string& api_name,
                    const v8::Local<v8::Value>& v8_value,
-                   base::Value::List& list) {
+                   base::ListValue& list) {
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
   ActivityLogConverterStrategy strategy;
@@ -75,7 +75,7 @@ void DOMActivityLogger::LogGetter(v8::Isolate* isolate,
     return;
   }
   renderer_host->AddDOMActionToActivityLog(
-      extension_id_, api_name.Utf8(), base::Value::List(), url, title.Utf16(),
+      extension_id_, api_name.Utf8(), base::ListValue(), url, title.Utf16(),
       DomActionType::GETTER);
 }
 
@@ -89,7 +89,7 @@ void DOMActivityLogger::LogSetter(v8::Isolate* isolate,
   if (!renderer_host) {
     return;
   }
-  base::Value::List args;
+  base::ListValue args;
   std::string api_name_utf8 = api_name.Utf8();
   AppendV8Value(isolate, api_name_utf8, new_value, args);
   renderer_host->AddDOMActionToActivityLog(extension_id_, api_name_utf8,
@@ -107,7 +107,7 @@ void DOMActivityLogger::LogMethod(v8::Isolate* isolate,
   if (!renderer_host) {
     return;
   }
-  base::Value::List args;
+  base::ListValue args;
   std::string api_name_utf8 = api_name.Utf8();
   for (const auto& arg : argv) {
     AppendV8Value(isolate, api_name_utf8, arg, args);
@@ -122,7 +122,7 @@ void DOMActivityLogger::LogEvent(blink::WebLocalFrame& frame,
                                  base::span<const WebString> argv,
                                  const WebURL& url,
                                  const WebString& title) {
-  base::Value::List args;
+  base::ListValue args;
   std::string event_name_utf8 = event_name.Utf8();
   for (const auto& arg : argv) {
     args.Append(arg.Utf8());

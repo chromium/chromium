@@ -825,7 +825,7 @@ WebViewInternalFindFunction::WebViewInternalFindFunction() {
 WebViewInternalFindFunction::~WebViewInternalFindFunction() {
 }
 
-void WebViewInternalFindFunction::ForwardResponse(base::Value::Dict results) {
+void WebViewInternalFindFunction::ForwardResponse(base::DictValue results) {
   Respond(WithArguments(std::move(results)));
 }
 

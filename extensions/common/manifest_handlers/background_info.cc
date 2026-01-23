@@ -159,7 +159,7 @@ bool BackgroundInfo::LoadBackgroundScripts(Extension* extension,
     return false;
   }
 
-  const base::Value::List& background_scripts =
+  const base::ListValue& background_scripts =
       background_scripts_value->GetList();
   for (size_t i = 0; i < background_scripts.size(); ++i) {
     if (!background_scripts[i].is_string()) {

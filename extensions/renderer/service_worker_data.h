@@ -87,8 +87,9 @@ class ServiceWorkerData
 
   // mojom::EventDispatcher overrides:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args,
+                     base::ListValue event_args,
                      DispatchEventCallback callback) override;
+
  private:
   void OnServiceWorkerRequest(
       mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver);

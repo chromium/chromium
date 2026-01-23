@@ -37,7 +37,7 @@ struct PrinterProviderPrintJob {
   std::u16string job_title;
 
   // The print job ticket.
-  base::Value::Dict ticket;
+  base::DictValue ticket;
 
   // Content type of the document that should be printed.
   std::string content_type;

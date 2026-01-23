@@ -202,8 +202,8 @@ void AddConsoleError(v8::Local<v8::Context> context, const std::string& error) {
 }
 
 // Returns the API schema indicated by |api_name|.
-const base::Value::Dict& GetAPISchema(const std::string& api_name) {
-  const base::Value::Dict* schema =
+const base::DictValue& GetAPISchema(const std::string& api_name) {
+  const base::DictValue* schema =
       ExtensionAPI::GetSharedInstance()->GetSchema(api_name);
   // Don't use CHECK() here so we capture the `api_name` in the logs.
   LOG_IF(FATAL, !schema) << "Unknown API " << api_name;
@@ -759,7 +759,7 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
 
 void NativeExtensionBindingsSystem::DispatchEventInContext(
     const std::string& event_name,
-    const base::Value::List& event_args,
+    const base::ListValue& event_args,
     const mojom::EventFilteringInfoPtr& filtering_info,
     ScriptContext* context) {
   v8::HandleScope handle_scope(context->isolate());
@@ -779,7 +779,7 @@ bool NativeExtensionBindingsSystem::HasEventListenerInContext(
 void NativeExtensionBindingsSystem::HandleResponse(
     int request_id,
     bool success,
-    const base::Value::List& response,
+    const base::ListValue& response,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
   // Some API calls result in failure, but don't set an error. Use a generic and
@@ -1030,7 +1030,7 @@ void NativeExtensionBindingsSystem::SendRequest(
 void NativeExtensionBindingsSystem::OnEventListenerChanged(
     const std::string& event_name,
     binding::EventListenersChanged change,
-    const base::Value::Dict* filter,
+    const base::DictValue* filter,
     bool update_lazy_listeners,
     v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);

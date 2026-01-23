@@ -140,8 +140,8 @@ class URLPatternSet {
   bool OverlapsWith(const URLPatternSet& other) const;
 
   // Converts to and from Value for serialization to preferences.
-  base::Value::List ToValue() const;
-  bool Populate(const base::Value::List& value,
+  base::ListValue ToValue() const;
+  bool Populate(const base::ListValue& value,
                 int valid_schemes,
                 bool allow_file_access,
                 std::string* error);

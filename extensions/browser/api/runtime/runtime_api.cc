@@ -149,7 +149,7 @@ void DispatchOnStartupEventImpl(
 
   auto event = std::make_unique<Event>(events::RUNTIME_ON_STARTUP,
                                        runtime::OnStartup::kEventName,
-                                       base::Value::List());
+                                       base::ListValue());
   EventRouter::Get(browser_context)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -510,8 +510,8 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     return;
   }
 
-  base::Value::List event_args;
-  base::Value::Dict info;
+  base::ListValue event_args;
+  base::DictValue info;
   if (old_version.IsValid()) {
     info.Set(kInstallReason, kInstallReasonUpdate);
     info.Set(kInstallPreviousVersion, old_version.GetString());
@@ -537,8 +537,8 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
           system->GetDependentExtensions(extension);
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end(); i++) {
-        base::Value::List sm_event_args;
-        base::Value::Dict sm_info;
+        base::ListValue sm_event_args;
+        base::DictValue sm_info;
         sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
         sm_info.Set(kInstallPreviousVersion, old_version.GetString());
         sm_info.Set(kInstallId, extension_id);
@@ -557,13 +557,13 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
 void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
-    const base::Value::Dict* manifest) {
+    const base::DictValue* manifest) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(manifest->Clone());
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
@@ -585,7 +585,7 @@ void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
   DCHECK(event_router);
   auto event = std::make_unique<Event>(
       events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
-      runtime::OnBrowserUpdateAvailable::kEventName, base::Value::List());
+      runtime::OnBrowserUpdateAvailable::kEventName, base::ListValue());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -799,7 +799,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   policy->GrantReadFileSystem(source_process_id(), filesystem.id());
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("fileSystemId", filesystem.id());
   dict.Set("baseName", relative_path);
   return RespondNow(WithArguments(std::move(dict)));

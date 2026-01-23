@@ -91,14 +91,14 @@ void SaveDevicePermissionEntry(BrowserContext* context,
                                scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::Value::List* devices = update.Ensure();
+  base::ListValue* devices = update.Ensure();
 
-  base::Value::Dict device_entry(entry->ToValue());
+  base::DictValue device_entry(entry->ToValue());
   DCHECK(!devices->contains(device_entry));
   devices->Append(std::move(device_entry));
 }
 
-bool MatchesDevicePermissionEntry(const base::Value::Dict& value,
+bool MatchesDevicePermissionEntry(const base::DictValue& value,
                                   scoped_refptr<DevicePermissionEntry> entry) {
   const std::string* type = value.FindString(kDeviceType);
   if (!type || *type != TypeToString(entry->type())) {
@@ -127,7 +127,7 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::Value::List* devices = update.Ensure();
+  base::ListValue* devices = update.Ensure();
 
   for (auto& value : *devices) {
     if (!value.is_dict())
@@ -147,7 +147,7 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::Value::List* devices = update.Get();
+  base::ListValue* devices = update.Get();
   if (!devices) {
     return;
   }
@@ -170,7 +170,7 @@ void ClearDevicePermissionEntries(ExtensionPrefs* prefs,
 }
 
 scoped_refptr<DevicePermissionEntry> ReadDevicePermissionEntry(
-    const base::Value::Dict& entry) {
+    const base::DictValue& entry) {
   std::optional<int> vendor_id = entry.FindInt(kDeviceVendorId);
   if (!vendor_id || vendor_id.value() < 0 ||
       vendor_id.value() > static_cast<int>(UINT16_MAX)) {
@@ -232,7 +232,7 @@ std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     ExtensionPrefs* prefs,
     const ExtensionId& extension_id) {
   std::set<scoped_refptr<DevicePermissionEntry>> result;
-  const base::Value::List* devices =
+  const base::ListValue* devices =
       prefs->ReadPrefAsList(extension_id, kDevices);
   if (!devices) {
     return result;
@@ -298,13 +298,13 @@ bool DevicePermissionEntry::IsPersistent() const {
   return !serial_number_.empty();
 }
 
-base::Value::Dict DevicePermissionEntry::ToValue() const {
+base::DictValue DevicePermissionEntry::ToValue() const {
   if (!IsPersistent()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   DCHECK(!serial_number_.empty());
-  base::Value::Dict entry_dict;
+  base::DictValue entry_dict;
   entry_dict.Set(kDeviceType, TypeToString(type_));
   entry_dict.Set(kDeviceVendorId, vendor_id_);
   entry_dict.Set(kDeviceProductId, product_id_);

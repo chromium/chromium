@@ -40,7 +40,7 @@ QuotaService::~QuotaService() {
 
 std::string QuotaService::Assess(const ExtensionId& extension_id,
                                  ExtensionFunction* function,
-                                 const base::Value::List& args,
+                                 const base::ListValue& args,
                                  const base::TimeTicks& event_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -104,7 +104,7 @@ void QuotaLimitHeuristic::Bucket::Reset(const Config& config,
 }
 
 void QuotaLimitHeuristic::SingletonBucketMapper::GetBucketsForArgs(
-    const base::Value::List& args,
+    const base::ListValue& args,
     BucketList* buckets) {
   buckets->push_back(&bucket_);
 }
@@ -116,7 +116,7 @@ QuotaLimitHeuristic::QuotaLimitHeuristic(const Config& config,
 
 QuotaLimitHeuristic::~QuotaLimitHeuristic() = default;
 
-bool QuotaLimitHeuristic::ApplyToArgs(const base::Value::List& args,
+bool QuotaLimitHeuristic::ApplyToArgs(const base::ListValue& args,
                                       const base::TimeTicks& event_time) {
   BucketList buckets;
   bucket_mapper_->GetBucketsForArgs(args, &buckets);

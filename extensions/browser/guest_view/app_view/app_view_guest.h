@@ -59,9 +59,9 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   // GuestViewBase implementation.
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
                        scoped_refptr<content::SiteInstance> site_instance,
-                       const base::Value::Dict& create_params,
+                       const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) final;
-  void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidInitialize(const base::DictValue& create_params) final;
   void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
@@ -106,7 +106,7 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
 
   void LaunchAppAndFireEvent(
       std::unique_ptr<GuestViewBase> owned_this,
-      base::Value::Dict data,
+      base::DictValue data,
       GuestPageCreatedCallback callback,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
 

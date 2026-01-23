@@ -34,7 +34,7 @@ std::optional<int> LoadValidSizeFromString(const std::string& string_size);
 // Returns success. If load fails, `error` will be set. Files which can't be
 // used as icons will be ignored and a warning will be added to `warnings`.
 bool LoadIconsFromDictionary(const Extension& extension,
-                             const base::Value::Dict& icons_value,
+                             const base::DictValue& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error,
                              std::vector<std::string>* warnings);

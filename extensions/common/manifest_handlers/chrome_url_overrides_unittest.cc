@@ -58,12 +58,12 @@ TEST_F(URLOverridesManifestTest, Override) {
 }
 
 TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "ntp override")
                       .Set("version", "1.0")
                       .Set("manifest_version", 3)
                       .Set("chrome_url_overrides",
-                           base::Value::Dict().Set("newtab", "newtab.html"));
+                           base::DictValue().Set("newtab", "newtab.html"));
   std::u16string error;
   std::vector<InstallWarning> warnings;
   base::ScopedTempDir dir;

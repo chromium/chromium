@@ -62,24 +62,24 @@ void SetPreferredLocale(const std::string& locale);
 
 // Returns default locale in form "en-US" or "sr" or empty string if
 // "default_locale" section was not defined in the manifest.json file.
-std::string GetDefaultLocaleFromManifest(const base::Value::Dict& manifest,
+std::string GetDefaultLocaleFromManifest(const base::DictValue& manifest,
                                          std::string* error);
 
 // Returns true iff the extension was localized, and the current locale
 // doesn't match the locale written into info.extension_manifest.
-bool ShouldRelocalizeManifest(const base::Value::Dict& manifest);
+bool ShouldRelocalizeManifest(const base::DictValue& manifest);
 
 // Localize extension name, description, browser_action and other fields
 // in the manifest.
 bool LocalizeManifest(const extensions::MessageBundle& messages,
-                      base::Value::Dict* manifest,
+                      base::DictValue* manifest,
                       std::string* error);
 
 // Load message catalogs, localize manifest and attach message bundle to the
 // extension. `gzip_permission` will be passed to LoadMessageCatalogs
 // (see below for details).
 bool LocalizeExtension(const base::FilePath& extension_path,
-                       base::Value::Dict* manifest,
+                       base::DictValue* manifest,
                        GzippedMessagesPermission gzip_permission,
                        std::string* error);
 
@@ -132,7 +132,7 @@ extensions::MessageBundle* LoadMessageCatalogs(
 // Loads message catalogs for all locales to check for validity. Used for
 // validating unpacked extensions.
 bool ValidateExtensionLocales(const base::FilePath& extension_path,
-                              const base::Value::Dict& manifest,
+                              const base::DictValue& manifest,
                               std::u16string* error);
 
 // Returns true if directory has "." in the name (for .svn) or if it doesn't

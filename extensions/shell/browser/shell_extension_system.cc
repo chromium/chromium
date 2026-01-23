@@ -147,7 +147,7 @@ void ShellExtensionSystem::InstallUpdate(
 
 void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const ExtensionId& extension_id,
-    const base::Value::Dict& attributes) {
+    const base::DictValue& attributes) {
   NOTREACHED();
 }
 

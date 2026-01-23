@@ -122,7 +122,7 @@ bool ValidateExpireDateFormat(const std::string& input) {
 }
 
 [[nodiscard]] std::optional<ExtensionIdSet> ExtensionIdSetFromList(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   ExtensionIdSet ids;
   for (const base::Value& value : list) {
     if (!value.is_string())
@@ -140,8 +140,8 @@ InstallSignature::InstallSignature() = default;
 InstallSignature::InstallSignature(const InstallSignature& other) = default;
 InstallSignature::~InstallSignature() = default;
 
-base::Value::Dict InstallSignature::ToDict() const {
-  base::Value::Dict dict;
+base::DictValue InstallSignature::ToDict() const {
+  base::DictValue dict;
   dict.Set(kSignatureFormatVersionKey, kSignatureFormatVersion);
   dict.Set(kIdsKey, base::ToValueList(ids));
   dict.Set(kInvalidIdsKey, base::ToValueList(invalid_ids));
@@ -154,7 +154,7 @@ base::Value::Dict InstallSignature::ToDict() const {
 
 // static
 std::unique_ptr<InstallSignature> InstallSignature::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::unique_ptr<InstallSignature> result =
       std::make_unique<InstallSignature>();
 
@@ -178,8 +178,8 @@ std::unique_ptr<InstallSignature> InstallSignature::FromDict(
   result->timestamp =
       base::ValueToTime(dict.Find(kTimestampKey)).value_or(base::Time());
 
-  raw_ptr<const base::Value::List> ids_list = dict.FindList(kIdsKey);
-  raw_ptr<const base::Value::List> invalid_ids_list =
+  raw_ptr<const base::ListValue> ids_list = dict.FindList(kIdsKey);
+  raw_ptr<const base::ListValue> invalid_ids_list =
       dict.FindList(kInvalidIdsKey);
   if (!ids_list || !invalid_ids_list)
     return nullptr;
@@ -323,10 +323,10 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
   //   "hash": "<base64-encoded hash value here>",
   //   "ids": [ "<id1>", "<id2>" ]
   // }
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kProtocolVersionKey, 1);
   dictionary.Set(kHashKey, *hash);
-  base::Value::List id_list;
+  base::ListValue id_list;
   for (const ExtensionId& extension_id : ids_) {
     id_list.Append(extension_id);
   }
@@ -386,7 +386,7 @@ void InstallSigner::ParseFetchResponse(
     ReportErrorViaCallback();
     return;
   }
-  base::Value::Dict& dictionary = parsed->GetDict();
+  base::DictValue& dictionary = parsed->GetDict();
 
   int protocol_version = dictionary.FindInt(kProtocolVersionKey).value_or(0);
   std::string signature_base64;
@@ -411,8 +411,7 @@ void InstallSigner::ParseFetchResponse(
   }
 
   ExtensionIdSet invalid_ids;
-  const base::Value::List* invalid_ids_list =
-      dictionary.FindList(kInvalidIdsKey);
+  const base::ListValue* invalid_ids_list = dictionary.FindList(kInvalidIdsKey);
   if (invalid_ids_list) {
     for (const base::Value& invalid_id : *invalid_ids_list) {
       const std::string* id = invalid_id.GetIfString();

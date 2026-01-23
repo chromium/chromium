@@ -94,7 +94,7 @@ class ExtensionMessagePort : public MessagePort {
   void RevalidatePort() override;
   void DispatchOnConnect(mojom::ChannelType channel_type,
                          const std::string& channel_name,
-                         std::optional<base::Value::Dict> source_tab,
+                         std::optional<base::DictValue> source_tab,
                          const ExtensionApiFrameIdMap::FrameData& source_frame,
                          int guest_process_id,
                          int guest_render_frame_routing_id,

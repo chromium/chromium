@@ -979,7 +979,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::ParseHeaders(
   return builder.Build();
 }
 
-base::Value::List
+base::ListValue
 DeclarativeNetRequestTestMatchOutcomeFunction::CreateMatchedRulesFromActions(
     const std::vector<declarative_net_request::RequestAction>& actions) const {
   dnr_api::TestMatchOutcomeResult result;

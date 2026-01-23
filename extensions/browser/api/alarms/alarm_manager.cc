@@ -52,7 +52,7 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   ~DefaultAlarmDelegate() override {}
 
   void OnAlarm(const ExtensionId& extension_id, const Alarm& alarm) override {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(alarm.js_alarm->ToValue());
     auto event = std::make_unique<Event>(events::ALARMS_ON_ALARM,
                                          alarms::OnAlarm::kEventName,
@@ -144,7 +144,7 @@ AlarmNameLength AlarmNameLengthToBucket(size_t length) {
 
 AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
                                         base::TimeDelta min_delay,
-                                        const base::Value::List& list) {
+                                        const base::ListValue& list) {
   AlarmManager::AlarmList alarms;
   const int max_to_create = std::min(base::saturated_cast<int>(list.size()),
                                      AlarmManager::kMaxAlarmsPerExtension);
@@ -178,10 +178,10 @@ AlarmManager::AlarmList AlarmsFromValue(const ExtensionId extension_id,
   return alarms;
 }
 
-base::Value::List AlarmsToValue(const AlarmManager::AlarmList& alarms) {
-  base::Value::List list;
+base::ListValue AlarmsToValue(const AlarmManager::AlarmList& alarms) {
+  base::ListValue list;
   for (const auto& item : alarms) {
-    base::Value::Dict alarm = item.js_alarm->ToValue();
+    base::DictValue alarm = item.js_alarm->ToValue();
     alarm.Set(kAlarmGranularity, base::TimeDeltaToValue(item.granularity));
     list.Append(std::move(alarm));
   }

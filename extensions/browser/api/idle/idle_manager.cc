@@ -52,7 +52,7 @@ DefaultEventDelegate::~DefaultEventDelegate() {
 
 void DefaultEventDelegate::OnStateChanged(const ExtensionId& extension_id,
                                           ui::IdleState new_state) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(IdleManager::CreateIdleValue(new_state));
   auto event = std::make_unique<Event>(events::IDLE_ON_STATE_CHANGED,
                                        idle::OnStateChanged::kEventName,

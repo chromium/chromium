@@ -740,15 +740,15 @@ bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
   return a.extension_install_time > b.extension_install_time;
 }
 
-base::Value::List StringToCharList(const std::string& s) {
-  base::Value::List result;
+base::ListValue StringToCharList(const std::string& s) {
+  base::ListValue result;
   for (const auto& c : s) {
     result.Append(*reinterpret_cast<const unsigned char*>(&c));
   }
   return result;
 }
 
-bool CharListToString(const base::Value::List& list, std::string* out) {
+bool CharListToString(const base::ListValue& list, std::string* out) {
   const size_t list_length = list.size();
   out->resize(list_length);
   int value = 0;
@@ -1802,9 +1802,9 @@ void ClearCacheOnNavigation() {
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders
 // dictionary.
-base::Value::Dict CreateHeaderDictionary(const std::string& name,
-                                         const std::string& value) {
-  base::Value::Dict header;
+base::DictValue CreateHeaderDictionary(const std::string& name,
+                                       const std::string& value) {
+  base::DictValue header;
   header.Set(keys::kHeaderNameKey, name);
   if (base::IsStringUTF8(value)) {
     header.Set(keys::kHeaderValueKey, value);

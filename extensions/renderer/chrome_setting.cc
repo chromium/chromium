@@ -25,7 +25,7 @@ namespace extensions {
 v8::Local<v8::Object> ChromeSetting::Create(
     v8::Isolate* isolate,
     const std::string& property_name,
-    const base::Value::List* property_values,
+    const base::ListValue* property_values,
     APIRequestHandler* request_handler,
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,
@@ -33,7 +33,7 @@ v8::Local<v8::Object> ChromeSetting::Create(
   CHECK_GE(property_values->size(), 2u);
   CHECK((*property_values)[1u].is_dict());
   const std::string& pref_name = (*property_values)[0u].GetString();
-  const base::Value::Dict& value_spec = (*property_values)[1u].GetDict();
+  const base::DictValue& value_spec = (*property_values)[1u].GetDict();
 
   auto* setting = cppgc::MakeGarbageCollected<ChromeSetting>(
       isolate->GetCppHeap()->GetAllocationHandle(), request_handler,
@@ -46,7 +46,7 @@ ChromeSetting::ChromeSetting(APIRequestHandler* request_handler,
                              const APITypeReferenceMap* type_refs,
                              const BindingAccessChecker* access_checker,
                              const std::string& pref_name,
-                             const base::Value::Dict& set_value_spec)
+                             const base::DictValue& set_value_spec)
     : request_handler_(request_handler),
       event_handler_(event_handler),
       type_refs_(type_refs),

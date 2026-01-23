@@ -46,7 +46,7 @@ class SendResponseHelper {
  private:
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
-                  base::Value::List results,
+                  base::ListValue results,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr);
 
@@ -63,20 +63,20 @@ enum class FunctionMode {
 // Get `key` from `val` as the specified type. If `key` does not exist, or is
 // not of the specified type, adds a failure to the current test and returns
 // false, 0, empty string, etc.
-bool GetBoolean(const base::Value::Dict& val, const std::string& key);
-int GetInteger(const base::Value::Dict& val, const std::string& key);
-std::string GetString(const base::Value::Dict& val, const std::string& key);
-base::Value::List GetList(const base::Value::Dict& val, const std::string& key);
-base::Value::Dict GetDict(const base::Value::Dict& val, const std::string& key);
+bool GetBoolean(const base::DictValue& val, const std::string& key);
+int GetInteger(const base::DictValue& val, const std::string& key);
+std::string GetString(const base::DictValue& val, const std::string& key);
+base::ListValue GetList(const base::DictValue& val, const std::string& key);
+base::DictValue GetDict(const base::DictValue& val, const std::string& key);
 
 // If `val` is a dictionary, return it as one, otherwise create an empty one.
-base::Value::Dict ToDict(std::optional<base::ValueView> val);
+base::DictValue ToDict(std::optional<base::ValueView> val);
 // If `val` is a list, return it as one, otherwise create an empty one.
-base::Value::List ToList(std::optional<base::ValueView> val);
+base::ListValue ToList(std::optional<base::ValueView> val);
 
 // Currently, we allow either a string for the args, which is parsed to a list,
 // or an already-constructed list.
-using ArgsType = std::variant<std::string, base::Value::List>;
+using ArgsType = std::variant<std::string, base::ListValue>;
 
 // Run `function` with `args` and return the result. Adds an error to the
 // current test if `function` returns an error. Takes ownership of
@@ -104,7 +104,7 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
                                       FunctionMode mode = FunctionMode::kNone);
 
 // Run `function` with `args` and return the error if set, otherwise the result.
-base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
+base::expected<base::ListValue, std::string> RunFunctionAndReturnExpected(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     content::BrowserContext* context,

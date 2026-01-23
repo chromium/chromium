@@ -24,7 +24,7 @@ class ExtensionsGuestViewManagerDelegate
   // GuestViewManagerDelegate implementation.
   void OnGuestAdded(content::WebContents* guest_web_contents) const override;
   void DispatchEvent(const std::string& event_name,
-                     base::Value::Dict args,
+                     base::DictValue args,
                      guest_view::GuestViewBase* guest,
                      int instance_id) override;
   bool IsGuestAvailableToContext(

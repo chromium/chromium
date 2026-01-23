@@ -93,9 +93,9 @@ void SetAccessLevelForArea(const ExtensionId& extension_id,
 
 base::Value ValueChangeToValue(
     std::vector<SessionStorageManager::ValueChange> changes) {
-  base::Value::Dict changes_value;
+  base::DictValue changes_value;
   for (auto& change : changes) {
-    base::Value::Dict change_value;
+    base::DictValue change_value;
     if (change.old_value.has_value()) {
       change_value.Set("oldValue", std::move(change.old_value.value()));
     }

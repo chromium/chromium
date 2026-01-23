@@ -42,8 +42,8 @@ class FeedbackPrivateDelegate {
   // extension.
   // Set `from_crash` to customize strings when the feedback UI was initiated
   // from a "sad tab" crash.
-  virtual base::Value::Dict GetStrings(content::BrowserContext* browser_context,
-                                       bool from_crash) const = 0;
+  virtual base::DictValue GetStrings(content::BrowserContext* browser_context,
+                                     bool from_crash) const = 0;
 
   virtual void FetchSystemInformation(
       content::BrowserContext* context,

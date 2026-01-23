@@ -152,7 +152,7 @@ bool IsManifestSupported(int manifest_version,
 
 // Computes the |extension_id| from the given parameters. On success, returns
 // true. On failure, populates |error| and returns false.
-bool ComputeExtensionID(const base::Value::Dict& manifest,
+bool ComputeExtensionID(const base::DictValue& manifest,
                         const base::FilePath& path,
                         int creation_flags,
                         std::u16string* error,
@@ -234,7 +234,7 @@ void Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
 // static
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
-                                           const base::Value::Dict& value,
+                                           const base::DictValue& value,
                                            int flags,
                                            std::u16string* error) {
   return Extension::Create(path, location, value, flags,
@@ -244,7 +244,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            ManifestLocation location,
-                                           const base::Value::Dict& value,
+                                           const base::DictValue& value,
                                            int flags,
                                            const ExtensionId& explicit_id,
                                            std::u16string* error) {
@@ -727,7 +727,7 @@ bool Extension::LoadExtent(const char* key,
     *error = base::ASCIIToUTF16(list_error);
     return false;
   }
-  const base::Value::List& pattern_list = temp_pattern_value->GetList();
+  const base::ListValue& pattern_list = temp_pattern_value->GetList();
   for (size_t i = 0; i < pattern_list.size(); ++i) {
     std::string pattern_string;
     if (pattern_list[i].is_string()) {
@@ -854,13 +854,13 @@ bool Extension::LoadShortName(std::u16string* error) {
   return true;
 }
 
-ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
+ExtensionInfo::ExtensionInfo(const base::DictValue* manifest,
                              const ExtensionId& id,
                              const base::FilePath& path,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {
   if (manifest) {
-    extension_manifest = std::make_unique<base::Value::Dict>(manifest->Clone());
+    extension_manifest = std::make_unique<base::DictValue>(manifest->Clone());
   }
 }
 

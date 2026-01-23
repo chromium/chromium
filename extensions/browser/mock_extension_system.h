@@ -59,7 +59,7 @@ class MockExtensionSystem : public ExtensionSystem {
                      InstallUpdateCallback install_update_callback) override;
   void PerformActionBasedOnOmahaAttributes(
       const ExtensionId& extension_id,
-      const base::Value::Dict& attributes) override;
+      const base::DictValue& attributes) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;

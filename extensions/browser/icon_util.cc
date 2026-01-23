@@ -27,7 +27,7 @@ constexpr int kActionIconSize = extension_misc::EXTENSION_ICON_BITTY;
 #endif
 // LINT.ThenChange(/extensions/browser/extension_action.cc:ActionIconSize)
 
-IconParseResult ParseIconFromCanvasDictionary(const base::Value::Dict& dict,
+IconParseResult ParseIconFromCanvasDictionary(const base::DictValue& dict,
                                               gfx::ImageSkia* icon) {
   for (const auto item : dict) {
     std::string byte_string;
