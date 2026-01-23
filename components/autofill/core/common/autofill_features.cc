@@ -12,7 +12,6 @@ namespace {
 constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
                                          BUILDFLAG(IS_LINUX) ||
                                          BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
-constexpr bool IS_WALLET_PASSES_SUPPORTED_PLATFORM = !BUILDFLAG(IS_IOS);
 }  // namespace
 
 // If enabled, we start forwarding submissions with source
@@ -482,9 +481,7 @@ BASE_FEATURE_PARAM(int,
 // suggestions.
 // TODO(crbug.com/416664590): Remove once launched.
 BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
-             IS_WALLET_PASSES_SUPPORTED_PLATFORM
-                 ? base::FEATURE_ENABLED_BY_DEFAULT
-                 : base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
@@ -544,9 +541,7 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
 // When enabled, Autofill will help users fill in loyalty card details.
 // TODO(crbug.com/395831853): Remove once launched.
 BASE_FEATURE(kAutofillEnableLoyaltyCardsFilling,
-             IS_WALLET_PASSES_SUPPORTED_PLATFORM
-                 ? base::FEATURE_ENABLED_BY_DEFAULT
-                 : base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will help users fill in non-affiliated loyalty cards
 // on loyalty card only fields.
