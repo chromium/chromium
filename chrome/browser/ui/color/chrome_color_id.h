@@ -597,6 +597,7 @@
   E_CPONLY(kColorReadAnythingLineFocusYellow) \
   E_CPONLY(kColorReadAnythingLineFocusHighContrast) \
   E_CPONLY(kColorReadAnythingLineFocusLowContrast) \
+  E_CPONLY(kColorReadAnythingLineFocusScrim) \
   E_CPONLY(kColorReadAnythingLineFocusSepiaLight) \
   E_CPONLY(kColorReadAnythingLineFocusSepiaDark) \
   E_CPONLY(kColorReadAnythingSeparator) \

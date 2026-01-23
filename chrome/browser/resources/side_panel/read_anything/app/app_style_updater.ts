@@ -46,7 +46,7 @@ const AUDIO_PLAYER_ICON = 'var(--color-read-anything-audio-player-icon';
 const LINE_FOCUS_LINE_HEIGHT_SCALE = 2;
 const LINE_FOCUS_BOX_SHADOW_LINE = 'none';
 const LINE_FOCUS_BOX_SHADOW_WINDOW =
-    '0 0 0 9999px var(--color-sys-state-scrim)';
+    '0 0 0 9999px var(--color-read-anything-line-focus-scrim)';
 const LINE_FOCUS_BG_LINE_DEFAULT = 'var(--color-sys-state-focus-ring)';
 const LINE_FOCUS_BG_LINE_CUSTOM = 'var(--color-read-anything-line-focus';
 const LINE_FOCUS_BG_WINDOW = 'none';

@@ -901,6 +901,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(143, 143, 143)};
   mixer[kColorReadAnythingForegroundSepiaLight] = {SkColorSetRGB(98, 78, 65)};
   mixer[kColorReadAnythingForegroundSepiaDark] = {SkColorSetRGB(155, 149, 141)};
+  mixer[kColorReadAnythingLineFocusScrim] =
+      ui::SetAlpha(ui::kColorSysShadow, 0xCC);
   mixer[kColorReadAnythingLineFocus] = {dark_mode
                                             ? kColorReadAnythingLineFocusDark
                                             : kColorReadAnythingLineFocusLight};
