@@ -160,6 +160,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/477995172
     public void testCloseTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
