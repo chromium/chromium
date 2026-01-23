@@ -4059,6 +4059,51 @@ TEST_F(SearchProviderTest, CopyAnswerToVerbatim) {
   EXPECT_TRUE(provider_->matches()[0].answer_template);
 }
 
+TEST_F(SearchProviderTest, VerbatimAimSuggestion) {
+  // With an AIM tool mode, the verbatim match should have the sparkle icon.
+  {
+    AutocompleteInput input(u"query",
+                            metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                            ChromeAutocompleteSchemeClassifier(profile_.get()));
+    input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+    QueryForInput(input);
+
+    AutocompleteMatch verbatim_match;
+    EXPECT_TRUE(FindMatchWithContents(u"query", &verbatim_match));
+    ASSERT_TRUE(verbatim_match.suggest_template.has_value());
+    EXPECT_EQ(verbatim_match.suggest_template->type_icon(),
+              omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+  }
+
+  ClearAllResults();
+  {
+    AutocompleteInput input(u"query",
+                            metrics::OmniboxEventProto::NTP_COMPOSEBOX,
+                            ChromeAutocompleteSchemeClassifier(profile_.get()));
+    input.set_aim_tool_mode(omnibox::ToolMode::TOOL_MODE_CANVAS);
+    QueryForInput(input);
+
+    AutocompleteMatch verbatim_match;
+    EXPECT_TRUE(FindMatchWithContents(u"query", &verbatim_match));
+    ASSERT_TRUE(verbatim_match.suggest_template.has_value());
+    EXPECT_EQ(verbatim_match.suggest_template->type_icon(),
+              omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+  }
+
+  // Without an AIM tool mode, the verbatim match should not have the sparkle
+  // icon.
+  ClearAllResults();
+  {
+    AutocompleteInput input(u"query", metrics::OmniboxEventProto::OTHER,
+                            ChromeAutocompleteSchemeClassifier(profile_.get()));
+    QueryForInput(input);
+
+    AutocompleteMatch verbatim_match;
+    EXPECT_TRUE(FindMatchWithContents(u"query", &verbatim_match));
+    EXPECT_FALSE(verbatim_match.suggest_template.has_value());
+  }
+}
+
 TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
