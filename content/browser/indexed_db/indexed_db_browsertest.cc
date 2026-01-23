@@ -776,6 +776,34 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
   }));
 }
 
+// Verifies behavior for when the IndexedDB metadata changes during in-session
+// tombstone sweeping.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
+                       UpdateMetadataDuringTombstoneSweep) {
+  base::HistogramTester histograms;
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
+
+  int num_entries = content::indexed_db::level_db::LevelDBCleanupScheduler::
+                        kTombstoneThreshold +
+                    1;
+  ASSERT_TRUE(ExecJs(
+      shell(),
+      base::StringPrintf(
+          "deleteIndexBetweenRounds(%d, %d)", num_entries,
+          content::indexed_db::level_db::LevelDBCleanupScheduler::kDeferTime
+              .InMilliseconds())));
+
+  // Cleanup will be completed after a short delay.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+               level_db::BackingStore::InSessionCleanupVerificationEvent::
+                   kMatchedSnapshot) > 0;
+  }));
+}
+
 // Regression test for crbug.com/413540372.
 // More details in `index_deletion_regression_tests.js`.
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,

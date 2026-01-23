@@ -142,3 +142,46 @@ async function runInterleavedTest(
     }
   });
 }
+
+async function deleteIndexBetweenRounds(numEntries, deferTimeMs) {
+  // Add margin to ensure just one round completes.
+  const sweeperDelay = deferTimeMs + 100;
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Create two indexes.
+      await promiseDeleteThenOpenDb(dbName, newDb => {
+        db = newDb;
+        const store = db.createObjectStore(storeName, {keyPath: 'id'});
+        store.createIndex(indexName, indexName, {unique: false});
+        store.createIndex(indexName + '2', indexName, {unique: false});
+      });
+
+      // Create tombstones.
+      let currentVersion = 0;
+      await putItems(currentVersion, numEntries);
+      await putItems(++currentVersion, numEntries);
+
+      // Trigger cleanup and wait for one round to complete.
+      await getIndexCount();
+      await delay(sweeperDelay);
+
+      // Delete one of the indexes.
+      db.close();
+      await promiseOpenDb(dbName, (db, txn) => {
+        txn.objectStore(storeName).deleteIndex(indexName + '2');
+      }, 2);
+
+      // Allow the cleanup to complete and verify that entries are intact.
+      await delay(2 * sweeperDelay);
+      let count = await getIndexCount(currentVersion);
+      if (count !== numEntries) {
+        reject(new Error(`Expected ${numEntries} entries, got ${count}`));
+      }
+      resolve();
+    } catch (error) {
+      console.error('Error during test:', error);
+      reject(error);
+    }
+  });
+}

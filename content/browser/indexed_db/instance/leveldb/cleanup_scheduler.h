@@ -62,8 +62,11 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
   // Implemented by the backing store.
   class Delegate {
    public:
+    // Invoked when a scheduled cleanup run starts.
     virtual void OnCleanupStarted() = 0;
-    virtual void OnCleanupDone() = 0;
+    // Invoked every time cleanup stops, either because it completed (at most
+    // once per run) or because it was paused due to active transactions.
+    virtual void OnCleanupStopped(bool completed) = 0;
     virtual Status GetCompleteMetadata(
         std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
             output) = 0;

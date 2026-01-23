@@ -2952,7 +2952,7 @@ void BackingStore::OnCleanupStarted() {
   }
 }
 
-void BackingStore::OnCleanupDone() {
+void BackingStore::OnCleanupStopped(bool completed) {
   if (dbs_snapshot_.has_value()) {
     base::ListValue dbs_snapshot_before = *std::move(dbs_snapshot_);
     dbs_snapshot_.reset();
@@ -2969,9 +2969,11 @@ void BackingStore::OnCleanupDone() {
     }
   }
 
-  // Update the timers for traditional sweeper.
-  UpdateEarliestSweepTime();
-  UpdateEarliestCompactionTime();
+  if (completed) {
+    // Update the timers for traditional sweeper.
+    UpdateEarliestSweepTime();
+    UpdateEarliestCompactionTime();
+  }
 }
 
 StatusOr<base::ListValue> BackingStore::SnapshotAllDatabases(

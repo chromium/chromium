@@ -44,7 +44,7 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
   void TearDown() override { scheduler_.reset(); }
 
   void OnCleanupStarted() override {}
-  void OnCleanupDone() override {}
+  void OnCleanupStopped(bool completed) override {}
 
   Status GetCompleteMetadata(
       std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* out)

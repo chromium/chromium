@@ -488,7 +488,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   // LevelDBCleanupScheduler::Delegate:
   void OnCleanupStarted() override;
-  void OnCleanupDone() override;
+  void OnCleanupStopped(bool completed) override;
   Status GetCompleteMetadata(
       std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
       override;
