@@ -196,6 +196,7 @@ found in the LICENSE file.
     <item type="id" name="menu_item_content_filter_divider_line_id" />
     <item type="id" name="menu_item_content_filter_help_center_id" />
     <item type="id" name="duplicate_tab_menu_id" />
+    <item type="id" name="glic_menu_id" />
 
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />

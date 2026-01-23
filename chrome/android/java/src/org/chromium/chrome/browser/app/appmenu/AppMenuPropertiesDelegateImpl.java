@@ -728,6 +728,17 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         return downloadButton;
     }
 
+    protected PropertyModel buildGlicActionModel(@Nullable Tab currentTab) {
+        PropertyModel glicButton =
+                buildModelForIcon(
+                        R.id.glic_menu_id,
+                        R.string.glic_button_entrypoint_ask_gemini_label,
+                        R.string.glic_button_entrypoint_label,
+                        R.drawable.ic_spark_24dp);
+        glicButton.set(AppMenuItemProperties.ENABLED, true);
+        return glicButton;
+    }
+
     /** Build the PropertyModel for the page info action. */
     protected PropertyModel buildPageInfoModel(@Nullable Tab currentTab) {
         PropertyModel pageInfoButton =
