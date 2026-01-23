@@ -42,10 +42,9 @@ ProtectionLevel AddFlags(ProtectionLevel protection_level,
   // Check protection_level fits into 8-bits.
   CHECK_EQ(protection_level, protection_level & 0xFF);
 
+  // Flag value addition goes here. Currently no flags are supported.
   uint32_t flag_value = 0;
-  if (flags.use_latest_key) {
-    flag_value |= elevation_service::internal::kFlagUseLatestKey;
-  }
+
   // Double check flags fits into 24-bits. This is checked elsewhere too by
   // static_asserts.
   CHECK_EQ(flag_value, flag_value & 0xFFFFFF);

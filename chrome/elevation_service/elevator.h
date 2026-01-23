@@ -21,8 +21,7 @@ namespace elevation_service {
 // `protection_level` argument. Access these via the `EncryptAppBoundString` API
 // in chrome.
 struct EncryptFlags {
-  // Specify that the Encrypt operation should always use the latest key.
-  bool use_latest_key = false;
+  // Currently no flags are supported.
 };
 
 inline constexpr IID kTestElevatorClsid = {
@@ -41,10 +40,11 @@ inline constexpr char kFakeReencryptForTestingSwitch[] =
 
 namespace internal {
 
-inline constexpr uint32_t kFlagUseLatestKey = 1 << 23;
+// Deprecated flag. Do not reuse value.
+inline constexpr uint32_t kFlagUseLatestKeyDeprecated = 1 << 23;
 
 // Update this each time a new flag is added.
-inline constexpr uint32_t kMaxFlag = kFlagUseLatestKey;
+inline constexpr uint32_t kMaxFlag = kFlagUseLatestKeyDeprecated;
 
 // A static assert verifies the flags can always fit into 24 bits.
 static_assert((kMaxFlag & 0xFFFFFF) == kMaxFlag);
