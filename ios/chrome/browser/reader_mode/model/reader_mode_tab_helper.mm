@@ -264,6 +264,11 @@ void ReaderModeTabHelper::ReaderModeContentDidLoadData(
   // remove the precautionary timeout.
   reader_mode_blur_timer_.Stop();
 
+  if (!active_) {
+    return;
+  }
+  metrics_helper_.RecordDataLoadCompleted();
+
   reader_mode_web_state_content_loaded_ = true;
   for (auto& observer : observers_) {
     observer.ReaderModeWebStateDidLoadContent(this,
@@ -391,6 +396,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
       // Load the Reader mode content in the Reader mode content WebState.
       NSData* content_data = [NSData dataWithBytes:html.data()
                                             length:html.length()];
+      metrics_helper_.RecordDataLoadTriggered();
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(page_url, content_data);
     } else {

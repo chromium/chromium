@@ -46,14 +46,21 @@ void ReaderModeContentTabHelper::LoadContent(GURL content_url,
   web::NavigationManager* const navigation_manager =
       web_state()->GetNavigationManager();
 
-  // Create a committed navigation item for `LoadData` and load it in the
-  // navigation manager. This is done unconditionally to account for fragment
-  // navigations which require an explicit restore crbug.com/454302739.
-  std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
-  navigation_items.push_back(web::NavigationItem::Create());
-  navigation_manager->Restore(0, std::move(navigation_items));
+  if (!navigation_manager->GetLastCommittedItem()) {
+    // `LoadData` requires an already committed navigation item.
+    std::vector<std::unique_ptr<web::NavigationItem>> navigation_items;
+    navigation_items.push_back(web::NavigationItem::Create());
+    navigation_manager->Restore(0, std::move(navigation_items));
+  }
+  GURL url = content_url;
 
-  web_state()->LoadData(content_data, @"text/html", std::move(content_url));
+  // WKWebView does not correctly load the page when a fragment URL is loaded
+  // multiple times, see crbug.com/454302739. As a workaround remove any
+  // fragment reference in the content URL.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  url = url.ReplaceComponents(replacements);
+  web_state()->LoadData(content_data, @"text/html", std::move(url));
 }
 
 void ReaderModeContentTabHelper::AttachSupportedTabHelpers(

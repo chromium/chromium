@@ -181,6 +181,9 @@ extern const char kReaderModeDistillerLatencyHistogram[];
 // Histogram name for Reader Mode distillation result.
 extern const char kReaderModeDistillerResultHistogram[];
 
+// Histogram name for Reader Mode data load latency.
+extern const char kReaderModeDataLoadLatencyHistogram[];
+
 // Histogram name for Reader Mode theme customization.
 extern const char kReaderModeThemeCustomizationHistogram[];
 

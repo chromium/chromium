@@ -163,6 +163,18 @@ void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
                                 GetDistillerOutcome(access_point, result));
 }
 
+void ReaderModeMetricsHelper::RecordDataLoadTriggered() {
+  data_load_timer_ = std::make_unique<base::ElapsedTimer>();
+}
+
+void ReaderModeMetricsHelper::RecordDataLoadCompleted() {
+  if (data_load_timer_) {
+    base::TimeDelta elapsed = data_load_timer_->Elapsed();
+    base::UmaHistogramTimes(kReaderModeDataLoadLatencyHistogram, elapsed);
+    data_load_timer_.reset();
+  }
+}
+
 void ReaderModeMetricsHelper::RecordReaderShown() {
   last_reader_mode_state_.reset();
   base::UmaHistogramEnumeration(kReaderModeStateHistogram,
