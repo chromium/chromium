@@ -947,10 +947,13 @@ bool IsLocationBarBadgeMigrationEnabled() {
 BASE_FEATURE(kComposeboxIOS, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComposeboxIOSEnabled() {
+  if (!base::FeatureList::IsEnabled(kComposeboxIOS)) {
+    return false;
+  }
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return IsComposeboxIpadEnabled();
   }
-  return base::FeatureList::IsEnabled(kComposeboxIOS);
+  return true;
 }
 
 BASE_FEATURE(kTabGroupColorOnSurface, base::FEATURE_DISABLED_BY_DEFAULT);
