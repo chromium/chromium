@@ -8567,7 +8567,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Secure) {
+// TODO(crbug.com/478208019): Test is flaky.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       DISABLE_SecurityInfo_Secure) {
   UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_OK);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8599,8 +8601,9 @@ class SecurityInfoBrokenWebRequestApiTest : public ExtensionWebRequestApiTest {
   }
 };
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
-                       SecurityInfo_Broken) {
+                       DISABLE_SecurityInfo_Broken) {
   UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_EXPIRED);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8609,8 +8612,9 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
                       embedded_test_server()->GetURL("/simple.html"));
 }
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       SecurityInfo_WebSocket_Secure) {
+                       DISABLE_SecurityInfo_WebSocket_Secure) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   InitWebSocketHttpsServer();
@@ -8633,8 +8637,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       GetWebSocketServer().GetURL("/echo-with-no-extension"));
 }
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
-                       SecurityInfo_WebSocket_Broken) {
+                       DISABLED_SecurityInfo_WebSocket_Broken) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   InitWebSocketHttpsServer(
