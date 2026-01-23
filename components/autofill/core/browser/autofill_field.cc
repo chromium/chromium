@@ -204,15 +204,6 @@ bool PreferHeuristicOverServer(FieldType heuristic_type,
     return true;
   }
 
-  // AutofillAI predictions overrule local heuristics unless
-  // kAutofillAiPreferModelResponseOverHeuristics is disabled.
-  if (heuristic_type != UNKNOWN_TYPE &&
-      GroupTypeOfFieldType(server_type) == FieldTypeGroup::kAutofillAi &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillAiPreferModelResponseOverHeuristics)) {
-    return true;
-  }
-
   // Sometimes the server and heuristics disagree on whether a name field
   // should be associated with an address or a credit card. There was a
   // decision to prefer the heuristics in these cases, but it looks like

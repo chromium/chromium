@@ -205,12 +205,6 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, this makes the autofill classification logic prefer the
-// AutofillAi predictions sent via the server response over local heuristic
-// predictions.
-BASE_FEATURE(kAutofillAiPreferModelResponseOverHeuristics,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, AutofillAi requires re-auth when filling/viewing sensitive
 // fields. As part of this feature sensitive fields are also obfuscated during
 // suggestion generation time.
