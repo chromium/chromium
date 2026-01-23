@@ -375,38 +375,52 @@ impl FileInfo {
     }
 
     fn byte_range(&mut self, span: Span) -> Range<usize> {
-        let lo_char = (span.lo - self.span.lo) as usize;
+        self.byte(span.lo)..self.byte(span.hi)
+    }
+
+    fn byte(&mut self, ch: u32) -> usize {
+        let char_index = (ch - self.span.lo) as usize;
 
         // Look up offset of the largest already-computed char index that is
-        // less than or equal to the current requested one. We resume counting
-        // chars from that point.
-        let (&last_char_index, &last_byte_offset) = self
+        // less than or equal to the current requested one.
+        let (&previous_char_index, &previous_byte_offset) = self
             .char_index_to_byte_offset
-            .range(..=lo_char)
+            .range(..=char_index)
             .next_back()
             .unwrap_or((&0, &0));
 
-        let lo_byte = if last_char_index == lo_char {
-            last_byte_offset
-        } else {
-            let total_byte_offset = match self.source_text[last_byte_offset..]
-                .char_indices()
-                .nth(lo_char - last_char_index)
+        if previous_char_index == char_index {
+            return previous_byte_offset;
+        }
+
+        // Look up next char index that is greater than the requested one. We
+        // resume counting chars from whichever point is closer.
+        let byte_offset = match self.char_index_to_byte_offset.range(char_index..).next() {
+            Some((&next_char_index, &next_byte_offset))
+                if next_char_index - char_index < char_index - previous_char_index =>
             {
-                Some((additional_offset, _ch)) => last_byte_offset + additional_offset,
-                None => self.source_text.len(),
-            };
-            self.char_index_to_byte_offset
-                .insert(lo_char, total_byte_offset);
-            total_byte_offset
+                self.source_text[..next_byte_offset]
+                    .char_indices()
+                    .nth_back(next_char_index - char_index - 1)
+                    .unwrap()
+                    .0
+            }
+            _ => {
+                match self.source_text[previous_byte_offset..]
+                    .char_indices()
+                    .nth(char_index - previous_char_index)
+                {
+                    Some((byte_offset_from_previous, _ch)) => {
+                        previous_byte_offset + byte_offset_from_previous
+                    }
+                    None => self.source_text.len(),
+                }
+            }
         };
 
-        let trunc_lo = &self.source_text[lo_byte..];
-        let char_len = (span.hi - span.lo) as usize;
-        lo_byte..match trunc_lo.char_indices().nth(char_len) {
-            Some((offset, _ch)) => lo_byte + offset,
-            None => self.source_text.len(),
-        }
+        self.char_index_to_byte_offset
+            .insert(char_index, byte_offset);
+        byte_offset
     }
 
     fn source_text(&mut self, span: Span) -> String {
