@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
@@ -418,7 +419,8 @@ class MainThreadSchedulerImplTest : public testing::Test {
                 .Build())));
 
 #if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
+    if (base::IsEligibleForBigCoreAffinityChange() &&
+        base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
       // Checking early, as the forced update below will reset it.
       EXPECT_TRUE(scheduler_->main_thread_only_for_testing().affinity_boost);
     }
@@ -4520,6 +4522,9 @@ class MainThreadSchedulerImplAffinityBoostTest
  protected:
   void SetUp() override {
     MainThreadSchedulerImplTest::SetUp();
+    // Need at least 3 different core types to become eligible.
+    base::SetMaxFrequencyPerProcessorOverrideForTesting(
+        &fake_cpu_max_frequencies);
     ThreadAffinityBoost::SetTaskRunnerForTesting(task_runner_.get());
     ThreadAffinityBoost::SetCanRunOnBigCoreOverrideForTesting(&override_);
     calls_count_ = 0;
@@ -4527,8 +4532,11 @@ class MainThreadSchedulerImplAffinityBoostTest
   }
 
   void TearDown() override {
+    base::SetMaxFrequencyPerProcessorOverrideForTesting(
+        &fake_cpu_max_frequencies);
     ThreadAffinityBoost::SetCanRunOnBigCoreOverrideForTesting(nullptr);
     ThreadAffinityBoost::SetTaskRunnerForTesting(nullptr);
+    base::SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
     MainThreadSchedulerImplTest::TearDown();
   }
 
@@ -4548,6 +4556,8 @@ class MainThreadSchedulerImplAffinityBoostTest
             calls_count_++;
             can_run_ = allowed;
           });
+  std::vector<uint64_t> fake_cpu_max_frequencies = {1000000000, 2000000000,
+                                                    3000000000ull};
 };
 
 TEST_F(MainThreadSchedulerImplAffinityBoostTest, Simple) {

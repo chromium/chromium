@@ -222,8 +222,9 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     return Allow();
   }
   if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
-    // Only allow when the experiment is active.
-    if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
+    // Only allow when the experiment is active and not a no-op.
+    if (base::IsEligibleForBigCoreAffinityChange() &&
+        base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
       // Note: we don't restrict the target to ourselves intentionally, as we
       // want to be able to change another of our thread's affinity. This is
       // much more limiting than it seems: on Android, each unprivileged proces

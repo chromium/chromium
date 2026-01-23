@@ -95,6 +95,17 @@ BASE_FEATURE(kLowerPriorityForCompositorGestures,
 // main thread to run on the bigggest one.
 BASE_FEATURE(kRestrictMainThreadBigCoreAffinity,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+bool ShouldRestrictMainThreadBigCoreAffinity() {
+  // Make sure to not query the feature before checking eligibility, so that the
+  // control group only contains eligible devices, as experiments become active
+  // when features are queried.
+  return base::IsEligibleForBigCoreAffinityChange() &&
+         base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity);
+}
+}  // namespace
+
 #endif
 
 using base::sequence_manager::TaskQueue;
@@ -413,7 +424,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       ComputePriority(memory_purge_task_queue_.get()));
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
     // Start with a "boost", that is initially allow the renderer to run
     // everywhere. This is meant to help with initialization. In the worst case,
     // the current use case never changes, and the renderer is always allowed to
@@ -1674,7 +1685,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
     switch (main_thread_only().current_use_case) {
       case UseCase::kNone:
         if (main_thread_only().affinity_boost) {
@@ -2199,7 +2210,7 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity)) {
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
     // A new frame has been committed, let the main thread run on the biggest
     // core for the next 500ms. We do it even if we are currently boosting,
     // because we want to make sure that the boost doesn't expire before the

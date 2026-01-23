@@ -710,9 +710,7 @@ int NumberOfAllowedProcessors() {
 }  // namespace
 
 TEST(PlatformThreadCpuAffinity, DefaultToAllCores) {
-  // Need at least three distinct classes to test affinity, skip if there are
-  // fewer CPUs than that.
-  if (SysInfo::NumberOfProcessors() < 3) {
+  if (!IsEligibleForBigCoreAffinityChange()) {
     GTEST_SKIP();
   }
 
@@ -737,6 +735,7 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinity) {
     fake_frequencies[i] = static_cast<uint64_t>(1000000000) + (i * 100000000);
   }
   SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+  ASSERT_TRUE(IsEligibleForBigCoreAffinityChange());
 
   {
     test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
@@ -775,12 +774,33 @@ TEST(PlatformThreadCpuAffinity, RestrictAffinityNoopWithTwoCoreTypes) {
     fake_frequencies[i] = i % 2 ? 1000000000 : 1500000000;
   }
   SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+  EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
 
   test::ScopedFeatureList feature_list{kRestrictBigCoreThreadAffinity};
 
   EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
   PlatformThread::SetCurrentThreadType(ThreadType::kBackground);
   EXPECT_EQ(SysInfo::NumberOfProcessors(), NumberOfAllowedProcessors());
+
+  SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
+}
+
+TEST(PlatformThreadCpuAffinity, IsEligibleForBigCoreAffinityChange) {
+  std::vector<uint64_t> fake_frequencies;
+  SetMaxFrequencyPerProcessorOverrideForTesting(&fake_frequencies);
+  EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
+
+  fake_frequencies = {1000, 2000};
+  EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
+
+  fake_frequencies = {1000, 2000, 3000};
+  EXPECT_TRUE(IsEligibleForBigCoreAffinityChange());
+
+  fake_frequencies = {1000, 2000, 2000, 3000};
+  EXPECT_TRUE(IsEligibleForBigCoreAffinityChange());
+
+  fake_frequencies = {1000, 1000, 1000};
+  EXPECT_FALSE(IsEligibleForBigCoreAffinityChange());
 
   SetMaxFrequencyPerProcessorOverrideForTesting(nullptr);
 }
