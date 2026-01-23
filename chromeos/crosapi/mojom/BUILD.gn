@@ -23,7 +23,6 @@ mojom("mojom") {
     "nullable_primitives.mojom",
     "print_preview_cros.mojom",
     "probe_service.mojom",
-    "remoting.mojom",
     "telemetry_diagnostic_routine_service.mojom",
     "telemetry_event_service.mojom",
     "telemetry_extension_exception.mojom",
