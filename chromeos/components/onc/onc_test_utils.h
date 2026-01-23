@@ -44,23 +44,23 @@ class TestToplevelApnData {
 // Read the file at |filename| as a string. CHECKs if any error occurs.
 std::string ReadTestData(const std::string& filename);
 
-// Read a JSON dictionary from |filename| and return it as a base::Value::Dict.
+// Read a JSON dictionary from |filename| and return it as a base::DictValue.
 // CHECKs if any error occurs.
-base::Value::Dict ReadTestDictionary(const std::string& filename);
+base::DictValue ReadTestDictionary(const std::string& filename);
 
-// Read a JSON dictionary from |filename| and return it as a base::Value::List.
+// Read a JSON dictionary from |filename| and return it as a base::ListValue.
 // CHECKs if any error occurs.
-base::Value::List ReadTestList(const std::string& filename);
+base::ListValue ReadTestList(const std::string& filename);
 
 // Checks that the pointer |actual| is not NULL but points to a value that
 // equals |expected|. The intended use case is:
 // EXPECT_TRUE(test_utils::Equals(expected, actual));
-::testing::AssertionResult Equals(const base::Value::Dict* expected,
-                                  const base::Value::Dict* actual);
+::testing::AssertionResult Equals(const base::DictValue* expected,
+                                  const base::DictValue* actual);
 
-base::Value::Dict BuildApnDict(TestToplevelApnData apn_data);
+base::DictValue BuildApnDict(TestToplevelApnData apn_data);
 
-base::Value::List BuildAdminApnList(
+base::ListValue BuildAdminApnList(
     const std::vector<std::string>& admin_apn_list_ids);
 
 // Generates a JSON string representing a top-level Open Network

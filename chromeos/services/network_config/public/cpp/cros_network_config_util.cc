@@ -22,14 +22,13 @@ const char kMojoKeyTypeConfig[] = "typeConfig";
 
 namespace {
 
-std::optional<std::string> GetString(const base::Value::Dict& onc_apn,
+std::optional<std::string> GetString(const base::DictValue& onc_apn,
                                      const char* key) {
   const std::string* v = onc_apn.FindString(key);
   return v ? std::make_optional<std::string>(*v) : std::nullopt;
 }
 
-std::string GetRequiredString(const base::Value::Dict& onc_apn,
-                              const char* key) {
+std::string GetRequiredString(const base::DictValue& onc_apn, const char* key) {
   const std::string* v = onc_apn.FindString(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
@@ -37,9 +36,9 @@ std::string GetRequiredString(const base::Value::Dict& onc_apn,
   return *v;
 }
 
-std::vector<std::string> GetRequiredStringList(const base::Value::Dict& dict,
+std::vector<std::string> GetRequiredStringList(const base::DictValue& dict,
                                                const char* key) {
-  const base::Value::List* v = dict.FindList(key);
+  const base::ListValue* v = dict.FindList(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
   }
@@ -109,7 +108,7 @@ mojom::ApnSource OncApnSourceToMojo(const std::optional<std::string>& source) {
 
 }  // namespace
 
-bool GetBoolean(const base::Value::Dict* dict,
+bool GetBoolean(const base::DictValue* dict,
                 const char* key,
                 bool value_if_key_missing_from_dict) {
   const base::Value* v = dict->Find(key);
@@ -120,7 +119,7 @@ bool GetBoolean(const base::Value::Dict* dict,
   return v ? v->GetBool() : value_if_key_missing_from_dict;
 }
 
-std::optional<std::string> GetString(const base::Value::Dict* dict,
+std::optional<std::string> GetString(const base::DictValue* dict,
                                      const char* key) {
   const base::Value* v = dict->Find(key);
   if (v && !v->is_string()) {
@@ -130,8 +129,8 @@ std::optional<std::string> GetString(const base::Value::Dict* dict,
   return v ? std::make_optional(v->GetString()) : std::nullopt;
 }
 
-const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
-                                       const char* key) {
+const base::DictValue* GetDictionary(const base::DictValue* dict,
+                                     const char* key) {
   const base::Value* v = dict->Find(key);
   if (!v) {
     return nullptr;
@@ -143,7 +142,7 @@ const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
   return &v->GetDict();
 }
 
-ManagedDictionary GetManagedDictionary(const base::Value::Dict* onc_dict) {
+ManagedDictionary GetManagedDictionary(const base::DictValue* onc_dict) {
   ManagedDictionary result;
 
   // When available, the active value (i.e. the value from Shill) is used.
@@ -219,7 +218,7 @@ ManagedDictionary GetManagedDictionary(const base::Value::Dict* onc_dict) {
   return result;
 }
 
-mojom::ManagedStringPtr GetManagedString(const base::Value::Dict* dict,
+mojom::ManagedStringPtr GetManagedString(const base::DictValue* dict,
                                          const char* key) {
   const base::Value* v = dict->Find(key);
   if (!v) {
@@ -248,7 +247,7 @@ mojom::ManagedStringPtr GetManagedString(const base::Value::Dict* dict,
   return nullptr;
 }
 
-mojom::ManagedStringPtr GetRequiredManagedString(const base::Value::Dict* dict,
+mojom::ManagedStringPtr GetRequiredManagedString(const base::DictValue* dict,
                                                  const char* key) {
   mojom::ManagedStringPtr result = GetManagedString(dict, key);
   if (!result) {
@@ -259,9 +258,9 @@ mojom::ManagedStringPtr GetRequiredManagedString(const base::Value::Dict* dict,
 }
 
 mojom::ManagedApnPropertiesPtr GetManagedApnProperties(
-    const base::Value::Dict* cellular_dict,
+    const base::DictValue* cellular_dict,
     const char* key) {
-  const base::Value::Dict* apn_dict = cellular_dict->FindDict(key);
+  const base::DictValue* apn_dict = cellular_dict->FindDict(key);
   if (!apn_dict) {
     return nullptr;
   }
@@ -346,13 +345,13 @@ bool IsInhibited(const mojom::DeviceStateProperties* device) {
   return device->inhibit_reason != mojom::InhibitReason::kNotInhibited;
 }
 
-base::Value::Dict CustomApnListToOnc(const std::string& network_guid,
-                                     const base::Value::List* custom_apn_list) {
+base::DictValue CustomApnListToOnc(const std::string& network_guid,
+                                   const base::ListValue* custom_apn_list) {
   CHECK(custom_apn_list);
-  base::Value::Dict onc;
+  base::DictValue onc;
   onc.Set(::onc::network_config::kGUID, network_guid);
   onc.Set(::onc::network_config::kType, ::onc::network_type::kCellular);
-  base::Value::Dict type_dict;
+  base::DictValue type_dict;
   type_dict.Set(::onc::cellular::kCustomAPNList, custom_apn_list->Clone());
   onc.Set(::onc::network_type::kCellular, std::move(type_dict));
   return onc;
@@ -387,7 +386,7 @@ std::vector<mojom::ApnType> OncApnTypesToMojo(
   return apn_types_result;
 }
 
-mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
+mojom::ApnPropertiesPtr GetApnProperties(const base::DictValue& onc_apn,
                                          bool is_apn_revamp_enabled) {
   auto apn = mojom::ApnProperties::New();
   apn->access_point_name =
@@ -452,10 +451,10 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value,
   return nullptr;
 }
 
-base::Value::Dict WiFiConfigPropertiesToMojoJsValue(
+base::DictValue WiFiConfigPropertiesToMojoJsValue(
     const mojo::StructPtr<
         chromeos::network_config::mojom::WiFiConfigProperties>& wifi_config) {
-  base::Value::Dict prefilled_wifi_config;
+  base::DictValue prefilled_wifi_config;
   prefilled_wifi_config.Set(kMojoKeySecurity,
                             static_cast<int>(wifi_config->security));
   if (wifi_config->ssid.has_value()) {
@@ -466,7 +465,7 @@ base::Value::Dict WiFiConfigPropertiesToMojoJsValue(
   }
   if (!wifi_config->eap.is_null()) {
     auto& eap_config = wifi_config->eap;
-    base::Value::Dict prefilled_eap_config;
+    base::DictValue prefilled_eap_config;
     if (eap_config->inner.has_value()) {
       prefilled_eap_config.Set(kMojoKeyEapInner, *(eap_config->inner));
     }
@@ -485,9 +484,9 @@ base::Value::Dict WiFiConfigPropertiesToMojoJsValue(
     }
     prefilled_wifi_config.Set(kMojoKeyEap, prefilled_eap_config.Clone());
   }
-  base::Value::Dict type_config;
+  base::DictValue type_config;
   type_config.Set(kMojoKeyWifi, prefilled_wifi_config.Clone());
-  base::Value::Dict config;
+  base::DictValue config;
   config.Set(kMojoKeyTypeConfig, type_config.Clone());
   return config;
 }

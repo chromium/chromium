@@ -119,7 +119,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 
   Status status = Status::kSuccess;
   std::vector<uint8_t> public_key;  // Only set if status == kSuccess
-  base::Value::Dict algorithm;      // Only set if status == kSuccess
+  base::DictValue algorithm;        // Only set if status == kSuccess
 };
 
 // This is a convenient wrapper around GetPublicKey which also builds a
@@ -165,7 +165,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
 // Returns std::nullopt if the key is of an unsupported type (so not RSA or
 // EC).
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
-std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
+std::optional<base::DictValue> BuildWebCryptoAlgorithmDictionary(
     const PublicKeyInfo& key_info);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in
@@ -174,7 +174,7 @@ std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
 // enforced the public exponent 65537.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                          base::Value::Dict* algorithm);
+                                          base::DictValue* algorithm);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in
 // |key_info|, which must be the info of an EC key. For more information about
@@ -182,7 +182,7 @@ void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
 // https://www.w3.org/TR/WebCryptoAPI/#EcKeyAlgorithm-dictionary
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS)
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                            base::Value::Dict* algorithm);
+                                            base::DictValue* algorithm);
 
 // Obtains information about the public key in |certificate|.
 // If |certificate| contains an RSA key, sets |key_size_bits| to the modulus

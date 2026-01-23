@@ -29,12 +29,12 @@ namespace {
 // }
 std::string GeopositionToApiResponseFormat(const Geoposition& position) {
   // 1. Build the nested "location" dictionary
-  base::Value::Dict location_dict;
+  base::DictValue location_dict;
   location_dict.Set("lat", position.latitude);
   location_dict.Set("lng", position.longitude);
 
   // 2. Build the root dictionary
-  base::Value::Dict root_dict;
+  base::DictValue root_dict;
   root_dict.Set("location", std::move(location_dict));
   root_dict.Set("accuracy", position.accuracy);
 

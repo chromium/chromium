@@ -33,7 +33,7 @@ class HotspotAllowedFlagHandlerTest : public ::testing::Test {
 
   void OnGetManagerCallback(const std::string& property_name,
                             bool expected_value,
-                            std::optional<base::Value::Dict> result) {
+                            std::optional<base::DictValue> result) {
     if (!result) {
       ADD_FAILURE() << "Error getting Shill manager properties";
       return;

@@ -47,7 +47,7 @@ const char kAuthSessionObjectPath[] = "/AuthSession";
 FakeBiodClient* g_instance = nullptr;
 
 FakeBiodClient::FakeRecord ParseFakeRecordDict(
-    const base::Value::Dict& fake_record_dict) {
+    const base::DictValue& fake_record_dict) {
   FakeBiodClient::FakeRecord res;
   for (const auto [key, value] : fake_record_dict) {
     if (key == "fingerprints") {
@@ -65,16 +65,16 @@ FakeBiodClient::FakeRecord ParseFakeRecordDict(
   return res;
 }
 
-base::Value::Dict FakeRecordsToValue(const FakeBiodClient::RecordMap& records) {
-  base::Value::Dict res;
+base::DictValue FakeRecordsToValue(const FakeBiodClient::RecordMap& records) {
+  base::DictValue res;
   for (const auto& entry : records) {
     const std::string& entry_key = entry.first.value();
     const FakeBiodClient::FakeRecord& entry_fake_record = entry.second;
-    base::Value::List fake_images;
+    base::ListValue fake_images;
     for (const std::string& fake_image : entry_fake_record.fake_fingerprint) {
       fake_images.Append(fake_image);
     }
-    base::Value::Dict cur_record;
+    base::DictValue cur_record;
     cur_record.Set("fingerprints", std::move(fake_images));
     cur_record.Set("user_id", entry_fake_record.user_id);
     cur_record.Set("label", entry_fake_record.label);
@@ -85,9 +85,9 @@ base::Value::Dict FakeRecordsToValue(const FakeBiodClient::RecordMap& records) {
 
 FakeBiodClient::RecordMap ValueToFakeRecords(const base::Value& records_val) {
   FakeBiodClient::RecordMap records;
-  const base::Value::Dict& fake_biod_db_dict = records_val.GetDict();
+  const base::DictValue& fake_biod_db_dict = records_val.GetDict();
   for (const auto fake_biod_db_entry : fake_biod_db_dict) {
-    const base::Value::Dict& fake_record_dict =
+    const base::DictValue& fake_record_dict =
         fake_biod_db_entry.second.GetDict();
     records.try_emplace(dbus::ObjectPath(fake_biod_db_entry.first),
                         ParseFakeRecordDict(fake_record_dict));
@@ -371,7 +371,7 @@ void FakeBiodClient::SaveRecords() const {
     base::DeleteFile(fake_biod_db_filepath_);
     return;
   }
-  const base::Value::Dict& record_dict = FakeRecordsToValue(records_);
+  const base::DictValue& record_dict = FakeRecordsToValue(records_);
   if (auto json_string = base::WriteJson(record_dict)) {
     if (base::WriteFile(fake_biod_db_filepath_, json_string.value())) {
       return;

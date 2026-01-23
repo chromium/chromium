@@ -121,7 +121,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     if (also_add_to_prefs) {
-      base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
+      base::ListValue euicc_paths_from_prefs = GetEuiccListFromPrefs();
       euicc_paths_from_prefs.Append(euicc_path);
       device_prefs_.Set(prefs::kESimRefreshedEuiccs,
                         base::Value(std::move(euicc_paths_from_prefs)));
@@ -233,16 +233,16 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     return helper_.hermes_euicc_test()->GetLastRefreshProfilesRestoreSlotArg();
   }
 
-  base::Value::List GetEuiccListFromPrefs() {
+  base::ListValue GetEuiccListFromPrefs() {
     return device_prefs_.GetList(prefs::kESimRefreshedEuiccs).Clone();
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {
-    auto sim_slot_infos = base::Value::List().Append(
-        base::Value::Dict()
-            .Set(shill::kSIMSlotInfoEID, std::string())
-            .Set(shill::kSIMSlotInfoICCID, iccid)
-            .Set(shill::kSIMSlotInfoPrimary, true));
+    auto sim_slot_infos =
+        base::ListValue().Append(base::DictValue()
+                                     .Set(shill::kSIMSlotInfoEID, std::string())
+                                     .Set(shill::kSIMSlotInfoICCID, iccid)
+                                     .Set(shill::kSIMSlotInfoPrimary, true));
 
     helper_.device_test()->SetDeviceProperty(
         kDefaultCellularDevicePath, shill::kSIMSlotInfoProperty,
@@ -556,7 +556,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
 
   Init();
-  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  base::ListValue euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.empty());
 
   // Set device prefs; a new auto-refresh should have started but not yet
@@ -615,7 +615,7 @@ TEST_F(CellularESimProfileHandlerImplTest,
   SetDevicePrefs();
 
   // Verify that no EUICCs exist in pref.
-  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  base::ListValue euicc_paths_from_prefs = GetEuiccListFromPrefs();
   EXPECT_TRUE(euicc_paths_from_prefs.empty());
 
   // Verify that EUICCs are refreshed after the cellular device is added.

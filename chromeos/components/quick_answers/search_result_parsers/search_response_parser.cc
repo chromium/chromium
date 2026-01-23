@@ -77,7 +77,7 @@ void SearchResponseParser::OnJsonParsed(
 
 std::unique_ptr<QuickAnswersSession> SearchResponseParser::ProcessResult(
     const Value* result) {
-  const base::Value::Dict& dict = result->GetDict();
+  const base::DictValue& dict = result->GetDict();
   auto one_namespace_type = dict.FindInt("oneNamespaceType");
   if (!one_namespace_type.has_value()) {
     // Can't find valid one namespace type from the response.

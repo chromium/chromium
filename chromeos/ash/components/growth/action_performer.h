@@ -63,7 +63,7 @@ class ActionPerformer {
 
   virtual void Run(int campaign_id,
                    std::optional<int> group_id,
-                   const base::Value::Dict* action_params,
+                   const base::DictValue* action_params,
                    Callback callback) = 0;
 
   // Returns what type of action the subclass can run.

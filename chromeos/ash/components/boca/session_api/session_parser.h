@@ -28,33 +28,32 @@ namespace ash::boca {
 ::boca::ViewScreenConfig::ViewScreenState ViewScreenStateJsonToProto(
     const std::string& type);
 // Proto to Json
-void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
+void ParseTeacherProtoFromJson(base::DictValue* session_dict,
                                ::boca::Session* session);
-void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+void ParseJoinCodeProtoFromJson(base::DictValue* session_dict,
                                 ::boca::Session* session);
-void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
+void ParseRosterProtoFromJson(base::DictValue* session_dict,
                               ::boca::Session* session);
-void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
+void ParseSessionConfigProtoFromJson(base::DictValue* session_dict,
                                      ::boca::Session* session,
                                      bool is_producer);
-void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
+void ParseStudentStatusProtoFromJson(base::DictValue* session_dict,
                                      ::boca::Session* session,
                                      bool is_producer);
-void ParseIndividualStudentStatusFromJson(
-    ::boca::StudentStatus* student_status,
-    base::Value::Dict* student_status_dict);
+void ParseIndividualStudentStatusFromJson(::boca::StudentStatus* student_status,
+                                          base::DictValue* student_status_dict);
 // This helper returns unique_ptr for easier lifecycle management.
 std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
                                                          bool is_producer);
 // Json to Proto
 void ParseRosterJsonFromProto(::boca::Roster* roster,
-                              base::Value::Dict* roster_dict);
+                              base::DictValue* roster_dict);
 
 void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
-                                    base::Value::Dict* on_task_config_dict);
+                                    base::DictValue* on_task_config_dict);
 
 void ParseCaptionConfigJsonFromProto(::boca::CaptionsConfig* captions_config,
-                                     base::Value::Dict* caption_config_dict);
+                                     base::DictValue* caption_config_dict);
 
 }  // namespace ash::boca
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_SESSION_API_SESSION_PARSER_H_

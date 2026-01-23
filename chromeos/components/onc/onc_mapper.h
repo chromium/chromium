@@ -49,9 +49,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // into each field of |onc_object|, and drops unknown fields. Result of the
   // mapping is returned. Only on error sets |error| to true. In this
   // implementation only unknown fields are errors.
-  virtual base::Value::Dict MapObject(const OncValueSignature& signature,
-                                      const base::Value::Dict& onc_object,
-                                      bool* error);
+  virtual base::DictValue MapObject(const OncValueSignature& signature,
+                                    const base::DictValue& onc_object,
+                                    bool* error);
 
   // Maps primitive values like BinaryValue, StringValue, IntegerValue... (all
   // but dictionaries and lists). By default copies |onc_primitive|. Result of
@@ -66,10 +66,10 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // dictionary contains any unknown fields. Set |nested_error| to true only if
   // nested errors occurred.
   virtual void MapFields(const OncValueSignature& object_signature,
-                         const base::Value::Dict& onc_object,
+                         const base::DictValue& onc_object,
                          bool* found_unknown_field,
                          bool* nested_error,
-                         base::Value::Dict* result);
+                         base::DictValue* result);
 
   // Maps the value |onc_value| of field |field_name| according to its field
   // signature in |object_signature| using |MapValue|. Sets
@@ -87,9 +87,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // the nested mappings failed, the flag |nested_error| is set to true and the
   // entry is dropped from the result. Otherwise |nested_error| isn't
   // modified. The resulting array is returned.
-  virtual base::Value::List MapArray(const OncValueSignature& array_signature,
-                                     const base::Value::List& onc_array,
-                                     bool* nested_error);
+  virtual base::ListValue MapArray(const OncValueSignature& array_signature,
+                                   const base::ListValue& onc_array,
+                                   bool* nested_error);
 
   // Calls |MapValue| and returns its result. Called by |MapArray| for each
   // entry and its index in the enclosing array.

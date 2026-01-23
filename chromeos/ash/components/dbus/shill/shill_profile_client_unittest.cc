@@ -72,7 +72,7 @@ TEST_F(ShillProfileClientTest, PropertyChanged) {
                                 std::vector<std::string>(1, kExampleEntryPath));
 
   // Set expectations.
-  base::Value::List value;
+  base::ListValue value;
   value.Append(kExampleEntryPath);
   MockPropertyChangeObserver observer;
   EXPECT_CALL(observer,
@@ -112,21 +112,21 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value::List entries;
+  base::ListValue entries;
   entries.Append(kExampleEntryPath);
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set(shill::kEntriesProperty, std::move(entries));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::test::TestFuture<base::Value::Dict> get_properties_result;
+  base::test::TestFuture<base::DictValue> get_properties_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->GetProperties(
       dbus::ObjectPath(kDefaultProfilePath),
       get_properties_result.GetCallback(),
       error_result.GetCallback<const std::string&, const std::string&>());
-  const base::Value::Dict& result_value = get_properties_result.Get();
+  const base::DictValue& result_value = get_properties_result.Get();
   EXPECT_EQ(expected_value, result_value);
   // The GetProperties() error callback should not be invoked after properties
   // result has been received successfully.
@@ -147,7 +147,7 @@ TEST_F(ShillProfileClientTest, GetEntry) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   // Set expectations.
   PrepareForMethodCall(
@@ -155,13 +155,13 @@ TEST_F(ShillProfileClientTest, GetEntry) {
       base::BindRepeating(&ExpectStringArgument, kExampleEntryPath),
       response.get());
   // Call method.
-  base::test::TestFuture<base::Value::Dict> get_entry_result;
+  base::test::TestFuture<base::DictValue> get_entry_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->GetEntry(
       dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
       get_entry_result.GetCallback(),
       error_result.GetCallback<const std::string&, const std::string&>());
-  const base::Value::Dict& result_value = get_entry_result.Get();
+  const base::DictValue& result_value = get_entry_result.Get();
   EXPECT_EQ(expected_value, result_value);
   // The GetEntry() error callback should not be invoked after the entry result
   // has been received successfully.

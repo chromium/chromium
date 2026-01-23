@@ -15,13 +15,13 @@ namespace ash {
 
 namespace {
 
-// Convert the base::Value::List type of |allowed_security_modes_in_shill| to
+// Convert the base::ListValue type of |allowed_security_modes_in_shill| to
 // the corresponding mojom enum and update the value to the
 // |allowed_security_modes|.
 void UpdateAllowedSecurityList(
     std::vector<hotspot_config::mojom::WiFiSecurityMode>&
         allowed_security_modes,
-    const base::Value::List& allowed_security_modes_in_shill) {
+    const base::ListValue& allowed_security_modes_in_shill) {
   allowed_security_modes.clear();
   for (const base::Value& allowed_security : allowed_security_modes_in_shill) {
     allowed_security_modes.push_back(
@@ -171,14 +171,14 @@ void HotspotCapabilitiesProvider::ResetNetworkStateHandler() {
 }
 
 void HotspotCapabilitiesProvider::OnManagerProperties(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR)
         << "HotspotCapabilitiesProvider: Failed to get manager properties.";
     return;
   }
 
-  const base::Value::Dict* capabilities =
+  const base::DictValue* capabilities =
       properties->FindDict(shill::kTetheringCapabilitiesProperty);
   if (!capabilities) {
     NET_LOG(EVENT) << "HotspotCapabilitiesProvider: No dict value for: "
@@ -189,10 +189,10 @@ void HotspotCapabilitiesProvider::OnManagerProperties(
 }
 
 void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
-    const base::Value::Dict& capabilities) {
+    const base::DictValue& capabilities) {
   using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
 
-  const base::Value::List* upstream_technologies =
+  const base::ListValue* upstream_technologies =
       capabilities.FindList(shill::kTetheringCapUpstreamProperty);
   if (!upstream_technologies) {
     NET_LOG(ERROR) << "No list value for: "
@@ -207,7 +207,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
     return;
   }
 
-  const base::Value::List* downstream_technologies =
+  const base::ListValue* downstream_technologies =
       capabilities.FindList(shill::kTetheringCapDownstreamProperty);
   if (!downstream_technologies) {
     NET_LOG(ERROR) << "No list value for: "
@@ -223,7 +223,7 @@ void HotspotCapabilitiesProvider::UpdateHotspotCapabilities(
   }
 
   // Update allowed security modes for WiFi downstream
-  const base::Value::List* allowed_security_modes_in_shill =
+  const base::ListValue* allowed_security_modes_in_shill =
       capabilities.FindList(shill::kTetheringCapSecurityProperty);
   if (!allowed_security_modes_in_shill) {
     NET_LOG(ERROR) << "No list value for: "

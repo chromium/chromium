@@ -84,18 +84,18 @@ class CrosHotspotConfigTest : public testing::Test {
   }
 
   void SetValidHotspotCapabilities() {
-    base::Value::Dict capabilities_dict;
-    base::Value::List upstream_list;
+    base::DictValue capabilities_dict;
+    base::ListValue upstream_list;
     upstream_list.Append(shill::kTypeCellular);
     capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
                           std::move(upstream_list));
     // Add WiFi to the downstream technology list in Shill
-    base::Value::List downstream_list;
+    base::ListValue downstream_list;
     downstream_list.Append(shill::kTypeWifi);
     capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
                           std::move(downstream_list));
     // Add allowed WiFi security mode in Shill
-    base::Value::List security_list;
+    base::ListValue security_list;
     security_list.Append(shill::kSecurityWpa2);
     security_list.Append(shill::kSecurityWpa3);
     capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
@@ -115,7 +115,7 @@ class CrosHotspotConfigTest : public testing::Test {
 
   void SetHotspotStateInShill(const std::string& state) {
     // Update tethering status to active in Shill.
-    base::Value::Dict status_dict;
+    base::DictValue status_dict;
     status_dict.Set(shill::kTetheringStatusStateProperty, state);
     network_handler_test_helper_->manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));

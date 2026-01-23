@@ -70,7 +70,7 @@ EarlyLoginAuthPolicyConnector::AllowedLocalAuthFactors(
     return std::nullopt;
   }
 
-  const base::Value::List* allowed_auth_factors =
+  const base::ListValue* allowed_auth_factors =
       &early_prefs_->GetValue(prefs::kAllowedLocalAuthFactors)->GetList();
   return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
 }

@@ -45,9 +45,8 @@ namespace mojom = ::chromeos::network_config::mojom;
 constexpr char kPaymentPortalMethodPost[] = "POST";
 
 // |dict| may be an empty value, in which case return an empty string.
-std::string GetStringFromDictionary(
-    const std::optional<base::Value::Dict>& dict,
-    const char* key) {
+std::string GetStringFromDictionary(const std::optional<base::DictValue>& dict,
+                                    const char* key) {
   const std::string* stringp =
       dict.has_value() ? dict->FindString(key) : nullptr;
   return stringp ? *stringp : std::string();
@@ -131,7 +130,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
   } else if (key == shill::kCellularAllowRoamingProperty) {
     return GetBooleanValue(key, value, &allow_roaming_);
   } else if (key == shill::kPaymentPortalProperty) {
-    const base::Value::Dict* value_dict = value.GetIfDict();
+    const base::DictValue* value_dict = value.GetIfDict();
     if (!value_dict) {
       return false;
     }
@@ -201,7 +200,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_.reset();
       return true;
     }
-    std::optional<base::Value::Dict> proxy_config =
+    std::optional<base::DictValue> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config.has_value()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
@@ -278,7 +277,7 @@ bool NetworkState::PropertyChanged(const std::string& key,
 }
 
 bool NetworkState::InitialPropertiesReceived(
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   NET_LOG(EVENT) << "InitialPropertiesReceived: " << NetworkId(this)
                  << " State: " << connection_state_ << " Visible: " << visible_;
   if (!properties.contains(shill::kTypeProperty)) {
@@ -299,7 +298,7 @@ bool NetworkState::InitialPropertiesReceived(
   return UpdateName(properties);
 }
 
-void NetworkState::GetStateProperties(base::Value::Dict* dictionary) const {
+void NetworkState::GetStateProperties(base::DictValue* dictionary) const {
   ManagedState::GetStateProperties(dictionary);
 
   // Properties shared by all types.
@@ -321,7 +320,7 @@ void NetworkState::GetStateProperties(base::Value::Dict* dictionary) const {
     // must replicate that nested structure.
     std::string provider_type = vpn_provider()->type;
     auto provider_property =
-        base::Value::Dict().Set(shill::kTypeProperty, provider_type);
+        base::DictValue().Set(shill::kTypeProperty, provider_type);
     if (provider_type == shill::kProviderThirdPartyVpn ||
         provider_type == shill::kProviderArcVpn) {
       provider_property.Set(shill::kHostProperty, vpn_provider()->id);
@@ -383,7 +382,7 @@ bool NetworkState::IsActive() const {
 }
 
 void NetworkState::IPConfigPropertiesChanged(
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   if (properties.empty()) {
     ipv4_config_.reset();
     return;
@@ -539,7 +538,7 @@ std::string NetworkState::GetHexSsid() const {
 }
 
 std::string NetworkState::GetDnsServersAsString() const {
-  const base::Value::List* list =
+  const base::ListValue* list =
       ipv4_config_.has_value()
           ? ipv4_config_->FindList(shill::kNameServersProperty)
           : nullptr;
@@ -700,7 +699,7 @@ std::unique_ptr<NetworkState> NetworkState::CreateNonShillCellularNetwork(
 
 // Private methods.
 
-bool NetworkState::UpdateName(const base::Value::Dict& properties) {
+bool NetworkState::UpdateName(const base::DictValue& properties) {
   std::string updated_name =
       shill_property_util::GetNameFromProperties(path(), properties);
   if (updated_name != name()) {
@@ -710,8 +709,7 @@ bool NetworkState::UpdateName(const base::Value::Dict& properties) {
   return false;
 }
 
-void NetworkState::UpdateCaptivePortalState(
-    const base::Value::Dict& properties) {
+void NetworkState::UpdateCaptivePortalState(const base::DictValue& properties) {
   if (!IsConnectedState()) {
     // Unconnected networks are in an unknown portal state and should not
     // update histograms.

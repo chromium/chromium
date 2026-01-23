@@ -26,7 +26,7 @@ TestNetworkConfigurationObserver::~TestNetworkConfigurationObserver() = default;
 void TestNetworkConfigurationObserver::OnConfigurationModified(
     const std::string& service_path,
     const std::string& network_guid,
-    const base::Value::Dict* set_properties) {
+    const base::DictValue* set_properties) {
   if (!set_properties)
     return;
 
@@ -40,12 +40,12 @@ void TestNetworkConfigurationObserver::OnConfigurationModified(
   if (!ui_data_str) {
     return;
   }
-  std::optional<base::Value::Dict> ui_data_dict =
+  std::optional<base::DictValue> ui_data_dict =
       chromeos::onc::ReadDictionaryFromJson(*ui_data_str);
   if (!ui_data_dict.has_value()) {
     return;
   }
-  const base::Value::Dict* user_settings =
+  const base::DictValue* user_settings =
       ui_data_dict->FindDict(kUIDataKeyUserSettings);
   if (!user_settings) {
     return;
@@ -53,7 +53,7 @@ void TestNetworkConfigurationObserver::OnConfigurationModified(
   user_settings_.insert_or_assign(network_guid, user_settings->Clone());
 }
 
-const base::Value::Dict* TestNetworkConfigurationObserver::GetUserSettings(
+const base::DictValue* TestNetworkConfigurationObserver::GetUserSettings(
     const std::string& network_guid) const {
   auto it = user_settings_.find(network_guid);
   if (it == user_settings_.end())

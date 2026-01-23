@@ -36,13 +36,13 @@ constexpr std::string_view kPresenterKey = "presenter";
 constexpr std::string_view kInitiatorKey = "initiator";
 constexpr std::string_view kConnectionDetailsKey = "connectionDetails";
 
-void ConvertUserDeviceInfo(const base::Value::Dict* dict,
+void ConvertUserDeviceInfo(const base::DictValue* dict,
                            ::boca::UserDeviceInfo* user_device_info) {
   if (!dict) {
     return;
   }
 
-  if (const base::Value::Dict* user_identity_dict =
+  if (const base::DictValue* user_identity_dict =
           dict->FindDict(kUserIdentityKey)) {
     *user_device_info->mutable_user_identity() =
         boca::ConvertUserIdentityJsonToProto(user_identity_dict);
@@ -55,7 +55,7 @@ void ConvertUserDeviceInfo(const base::Value::Dict* dict,
   }
 }
 
-void ConvertConnectionDetails(const base::Value::Dict* dict,
+void ConvertConnectionDetails(const base::DictValue* dict,
                               ::boca::ConnectionDetails* connection_details) {
   if (!dict) {
     return;
@@ -76,7 +76,7 @@ void ConvertConnectionDetails(const base::Value::Dict* dict,
 ::boca::KioskReceiverConnection ConvertKioskReceiverConnection(
     const base::Value& value) {
   ::boca::KioskReceiverConnection connection;
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict || !dict->FindString(kConnectionIdKey) ||
       !dict->FindString(kReceiverConnectionStateKey)) {
     return connection;

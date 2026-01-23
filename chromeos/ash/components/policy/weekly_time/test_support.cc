@@ -21,9 +21,9 @@ const char* DayToString(WeeklyTimeChecked::Day day_of_week) {
   return WeeklyTimeChecked::kWeekDays[day_of_week_index];
 }
 
-base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
-                                             int milliseconds_since_midnight) {
-  base::Value::Dict dict;
+base::DictValue BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
+                                           int milliseconds_since_midnight) {
+  base::DictValue dict;
   const char* day_of_week_str = DayToString(day_of_week);
   EXPECT_TRUE(dict.Set(WeeklyTimeChecked::kDayOfWeek, day_of_week_str));
   EXPECT_TRUE(dict.Set(WeeklyTimeChecked::kMillisecondsSinceMidnight,
@@ -31,27 +31,27 @@ base::Value::Dict BuildWeeklyTimeCheckedDict(WeeklyTimeChecked::Day day_of_week,
   return dict;
 }
 
-base::Value::Dict BuildWeeklyTimeCheckedDict(base::TimeDelta time_delta) {
+base::DictValue BuildWeeklyTimeCheckedDict(base::TimeDelta time_delta) {
   auto w = WeeklyTimeChecked::FromTimeDelta(time_delta);
   return BuildWeeklyTimeCheckedDict(w.day_of_week(),
                                     w.milliseconds_since_midnight());
 }
 
-base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(base::Value::Dict start,
-                                                     base::Value::Dict end) {
-  base::Value::Dict dict;
+base::DictValue BuildWeeklyTimeIntervalCheckedDict(base::DictValue start,
+                                                   base::DictValue end) {
+  base::DictValue dict;
   EXPECT_TRUE(dict.Set(WeeklyTimeIntervalChecked::kStart, std::move(start)));
   EXPECT_TRUE(dict.Set(WeeklyTimeIntervalChecked::kEnd, std::move(end)));
   return dict;
 }
 
-base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(base::TimeDelta start,
-                                                     base::TimeDelta end) {
+base::DictValue BuildWeeklyTimeIntervalCheckedDict(base::TimeDelta start,
+                                                   base::TimeDelta end) {
   return BuildWeeklyTimeIntervalCheckedDict(BuildWeeklyTimeCheckedDict(start),
                                             BuildWeeklyTimeCheckedDict(end));
 }
 
-base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(
+base::DictValue BuildWeeklyTimeIntervalCheckedDict(
     WeeklyTimeChecked::Day start_day,
     int start_milliseconds,
     WeeklyTimeChecked::Day end_day,
@@ -61,7 +61,7 @@ base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(
       BuildWeeklyTimeCheckedDict(end_day, end_milliseconds));
 }
 
-base::Value::List BuildList(std::string_view json_str) {
+base::ListValue BuildList(std::string_view json_str) {
   std::optional<base::Value> value =
       base::JSONReader::Read(json_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
@@ -75,9 +75,9 @@ base::Value::List BuildList(std::string_view json_str) {
   return std::move(value.value()).TakeList();
 }
 
-base::Value::List BuildList(base::Time now,
-                            base::TimeDelta from_now,
-                            base::TimeDelta duration) {
+base::ListValue BuildList(base::Time now,
+                          base::TimeDelta from_now,
+                          base::TimeDelta duration) {
   // TODO(isandrk): Can probably simplify function to only pass in start_time
   // (which would be equal to now + from_now).
   WeeklyTimeChecked current_weekly_time_checked =
@@ -86,13 +86,13 @@ base::Value::List BuildList(base::Time now,
       current_weekly_time_checked.ToTimeDelta();
   base::TimeDelta start = current_time_of_week + from_now;
   base::TimeDelta end = start + duration;
-  return base::Value::List().Append(
+  return base::ListValue().Append(
       BuildWeeklyTimeIntervalCheckedDict(start, end));
 }
 
 std::vector<WeeklyTimeIntervalChecked> BuildIntervals(
     std::string_view json_str) {
-  base::Value::List list = BuildList(json_str);
+  base::ListValue list = BuildList(json_str);
   auto result = ExtractIntervalsFromList(list);
   if (!result.has_value()) {
     ADD_FAILURE() << "Couldn't parse intervals from list: "

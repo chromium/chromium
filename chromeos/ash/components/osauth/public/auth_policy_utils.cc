@@ -22,7 +22,7 @@ constexpr auto kAuthFactorPolicyMap =
 // LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Signin/AllowedLocalAuthFactors.yaml:LocalAuthFactorsPolicySchema)
 
 std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
-    const base::Value::List* policy_allowed_auth_factors) {
+    const base::ListValue* policy_allowed_auth_factors) {
   AuthFactorsSet result;
   if (policy_allowed_auth_factors == nullptr) {
     return std::nullopt;

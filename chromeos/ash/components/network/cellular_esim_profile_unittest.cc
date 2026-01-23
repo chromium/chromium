@@ -19,7 +19,7 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
                               "iccid", u"name", u"nickname", u"serviceProvider",
                               "activationCode");
 
-  base::Value::Dict dictionary = profile.ToDictionaryValue();
+  base::DictValue dictionary = profile.ToDictionaryValue();
   std::optional<CellularESimProfile> from_dictionary =
       CellularESimProfile::FromDictionaryValue(dictionary);
   EXPECT_TRUE(from_dictionary);
@@ -36,7 +36,7 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
 
 TEST(CellularESimProfileTest, InvalidDictionary) {
   // Try to convert a dictionary without the required keys.
-  auto dictionary = base::Value::Dict().Set("sampleKey", "sampleValue");
+  auto dictionary = base::DictValue().Set("sampleKey", "sampleValue");
   std::optional<CellularESimProfile> from_dictionary =
       CellularESimProfile::FromDictionaryValue(dictionary);
   EXPECT_FALSE(from_dictionary);

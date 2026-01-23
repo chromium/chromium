@@ -31,7 +31,7 @@ const char kFeatureStatesDictKey[] = "feature_states";
 
 std::optional<
     std::map<multidevice::SoftwareFeature, multidevice::SoftwareFeatureState>>
-FeatureStatesFromDictionary(const base::Value::Dict* dict) {
+FeatureStatesFromDictionary(const base::DictValue* dict) {
   if (!dict) {
     return std::nullopt;
   }
@@ -53,10 +53,10 @@ FeatureStatesFromDictionary(const base::Value::Dict* dict) {
   return feature_states;
 }
 
-base::Value::Dict FeatureStatesToDictionary(
+base::DictValue FeatureStatesToDictionary(
     const std::map<multidevice::SoftwareFeature,
                    multidevice::SoftwareFeatureState>& feature_states) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& feature_state_pair : feature_states) {
     dict.Set(base::NumberToString(static_cast<int>(feature_state_pair.first)),
              static_cast<int>(feature_state_pair.second));
@@ -65,10 +65,10 @@ base::Value::Dict FeatureStatesToDictionary(
   return dict;
 }
 
-base::Value::Dict FeatureStatesToReadableDictionary(
+base::DictValue FeatureStatesToReadableDictionary(
     const std::map<multidevice::SoftwareFeature,
                    multidevice::SoftwareFeatureState>& feature_states) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& feature_state_pair : feature_states) {
     std::stringstream feature_ss;
     feature_ss << feature_state_pair.first;
@@ -84,7 +84,7 @@ base::Value::Dict FeatureStatesToReadableDictionary(
 
 // static
 std::optional<CryptAuthDevice> CryptAuthDevice::FromDictionary(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::optional<std::string> instance_id =
       util::DecodeFromValueString(dict.Find(kInstanceIdDictKey));
   if (!instance_id || instance_id->empty())
@@ -158,8 +158,8 @@ CryptAuthDevice::CryptAuthDevice(const CryptAuthDevice&) = default;
 
 CryptAuthDevice::~CryptAuthDevice() = default;
 
-base::Value::Dict CryptAuthDevice::AsDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthDevice::AsDictionary() const {
+  base::DictValue dict;
   dict.Set(kInstanceIdDictKey, util::EncodeAsValueString(instance_id_));
   dict.Set(kDeviceNameDictKey, util::EncodeAsValueString(device_name));
   dict.Set(kDeviceBetterTogetherPublicKeyDictKey,
@@ -175,8 +175,8 @@ base::Value::Dict CryptAuthDevice::AsDictionary() const {
   return dict;
 }
 
-base::Value::Dict CryptAuthDevice::AsReadableDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthDevice::AsReadableDictionary() const {
+  base::DictValue dict;
   dict.Set("Instance ID", instance_id_);
   dict.Set("Device name", device_name);
   dict.Set("DeviceSync:BetterTogether device public key",

@@ -289,14 +289,14 @@ class FwupdClientImpl : public FwupdClient {
 
  private:
   // Pops a string-to-variant-string dictionary from the reader.
-  base::Value::Dict PopStringToStringDictionary(dbus::MessageReader* reader) {
+  base::DictValue PopStringToStringDictionary(dbus::MessageReader* reader) {
     dbus::MessageReader array_reader(nullptr);
 
     if (!reader->PopArray(&array_reader)) {
       FIRMWARE_LOG(ERROR) << "Failed to pop array into the array reader.";
-      return base::Value::Dict();
+      return base::DictValue();
     }
-    base::Value::Dict result;
+    base::DictValue result;
 
     while (array_reader.HasMoreData()) {
       dbus::MessageReader entry_reader(nullptr);
@@ -311,7 +311,7 @@ class FwupdClientImpl : public FwupdClient {
 
       if (!success) {
         FIRMWARE_LOG(ERROR) << "Failed to get a dictionary entry. ";
-        return base::Value::Dict();
+        return base::DictValue();
       }
 
       // Values in the response can have different types. The fields we are
@@ -353,7 +353,7 @@ class FwupdClientImpl : public FwupdClient {
         std::vector<std::string> strings;
         variant_reader.PopArrayOfStrings(&strings);
 
-        base::Value::List list;
+        base::ListValue list;
         for (const auto& s : strings) {
           list.Append(s);
         }
@@ -395,7 +395,7 @@ class FwupdClientImpl : public FwupdClient {
     FwupdUpdateList updates;
     while (can_parse && array_reader.HasMoreData()) {
       // Parse update description.
-      base::Value::Dict dict = PopStringToStringDictionary(&array_reader);
+      base::DictValue dict = PopStringToStringDictionary(&array_reader);
       if (dict.empty()) {
         FIRMWARE_LOG(ERROR) << "Failed to parse the update description.";
         // Ran into an error, exit early.
@@ -499,7 +499,7 @@ class FwupdClientImpl : public FwupdClient {
     FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {
       // Parse device description.
-      base::Value::Dict dict = PopStringToStringDictionary(&array_reader);
+      base::DictValue dict = PopStringToStringDictionary(&array_reader);
       if (dict.empty()) {
         FIRMWARE_LOG(ERROR) << "Failed to parse the device description.";
         return;
@@ -669,9 +669,9 @@ class FwupdClientImpl : public FwupdClient {
 
 }  // namespace
 
-base::FilePath GetUpdatePathFromDict(const base::Value::Dict& dict) {
+base::FilePath GetUpdatePathFromDict(const base::DictValue& dict) {
   // Get the locations field.
-  const base::Value::List* locations = dict.FindList(kLocationsKey);
+  const base::ListValue* locations = dict.FindList(kLocationsKey);
   if (!locations || locations->empty()) {
     FIRMWARE_LOG(ERROR) << "Missing or empty locations";
     return base::FilePath();

@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTime {
   // }.
   // Return nullptr if WeeklyTime structure isn't correct.
   static std::unique_ptr<WeeklyTime> ExtractFromDict(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       std::optional<int> timezone_offset);
 
   // Return the |time| in GMT in WeeklyTime structure.

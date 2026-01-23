@@ -78,7 +78,7 @@ void ManagedCellularPrefHandler::AddESimMetadata(
   }
 
   auto esim_metadata =
-      base::Value::Dict()
+      base::DictValue()
           .Set(::onc::network_config::kName, name)
           .Set(activation_code.type() ==
                        policy_util::SmdxActivationCode::Type::SMDP
@@ -87,7 +87,7 @@ void ManagedCellularPrefHandler::AddESimMetadata(
                activation_code.value())
           .Set(kESimMetadataPolicyMissingKey, false);
 
-  const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
+  const base::DictValue* existing_esim_metadata = GetESimMetadata(iccid);
   if (existing_esim_metadata && *existing_esim_metadata == esim_metadata) {
     return;
   }
@@ -105,13 +105,13 @@ void ManagedCellularPrefHandler::AddESimMetadata(
   NotifyManagedCellularPrefChanged();
 }
 
-const base::Value::Dict* ManagedCellularPrefHandler::GetESimMetadata(
+const base::DictValue* ManagedCellularPrefHandler::GetESimMetadata(
     const std::string& iccid) {
   if (!device_prefs_) {
     NET_LOG(ERROR) << "Device pref not available yet";
     return nullptr;
   }
-  const base::Value::Dict& esim_metadata =
+  const base::DictValue& esim_metadata =
       device_prefs_->GetDict(prefs::kManagedCellularESimMetadata);
   return esim_metadata.FindDict(iccid);
 }
@@ -122,7 +122,7 @@ void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
     return;
   }
 
-  const base::Value::Dict& esim_metadata =
+  const base::DictValue& esim_metadata =
       device_prefs_->GetDict(prefs::kManagedCellularESimMetadata);
   if (!esim_metadata.contains(iccid)) {
     return;
@@ -138,7 +138,7 @@ void ManagedCellularPrefHandler::RemoveESimMetadata(const std::string& iccid) {
 }
 
 bool ManagedCellularPrefHandler::IsESimManaged(const std::string& iccid) {
-  const base::Value::Dict* esim_metadata = GetESimMetadata(iccid);
+  const base::DictValue* esim_metadata = GetESimMetadata(iccid);
   if (!esim_metadata) {
     return false;
   }
@@ -155,12 +155,12 @@ bool ManagedCellularPrefHandler::IsESimManaged(const std::string& iccid) {
 }
 
 void ManagedCellularPrefHandler::SetPolicyMissing(const std::string& iccid) {
-  const base::Value::Dict* existing_esim_metadata = GetESimMetadata(iccid);
+  const base::DictValue* existing_esim_metadata = GetESimMetadata(iccid);
   if (!existing_esim_metadata) {
     return;
   }
 
-  base::Value::Dict esim_metadata = existing_esim_metadata->Clone();
+  base::DictValue esim_metadata = existing_esim_metadata->Clone();
   esim_metadata.Set(kESimMetadataPolicyMissingKey, true);
 
   NET_LOG(EVENT) << "Setting the policy missing flag for eSIM metadata in "
@@ -198,7 +198,7 @@ bool ManagedCellularPrefHandler::ContainsApnMigratedIccid(
     NET_LOG(ERROR) << "Device pref not available yet.";
     return false;
   }
-  const base::Value::Dict& apn_migrated_iccids =
+  const base::DictValue& apn_migrated_iccids =
       device_prefs_->GetDict(prefs::kApnMigratedIccids);
   return apn_migrated_iccids.FindBool(iccid).value_or(false);
 }
@@ -208,7 +208,7 @@ void ManagedCellularPrefHandler::MigrateExistingPrefs() {
 
   NET_LOG(EVENT) << "Starting migration of existing ICCID and SM-DP+ pairs";
 
-  const base::Value::Dict& existing_prefs =
+  const base::DictValue& existing_prefs =
       device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
 
   for (const auto [iccid, value] : existing_prefs) {
@@ -221,8 +221,8 @@ void ManagedCellularPrefHandler::MigrateExistingPrefs() {
 
     ScopedDictPrefUpdate update(device_prefs_,
                                 prefs::kManagedCellularESimMetadata);
-    update->Set(iccid, base::Value::Dict().Set(::onc::cellular::kSMDPAddress,
-                                               smdp_activation_code));
+    update->Set(iccid, base::DictValue().Set(::onc::cellular::kSMDPAddress,
+                                             smdp_activation_code));
 
     NET_LOG(EVENT) << "Successfully migrated ICCID and SM-DP+ pair";
   }

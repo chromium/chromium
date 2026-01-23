@@ -65,7 +65,7 @@ void ProhibitedTechnologiesHandler::PoliciesApplied(
 }
 
 void ProhibitedTechnologiesHandler::SetProhibitedTechnologies(
-    const base::Value::List& prohibited_list) {
+    const base::ListValue& prohibited_list) {
   // Build up prohibited network type list and save it for further use when
   // enforced
   session_prohibited_technologies_.clear();

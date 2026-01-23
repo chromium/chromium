@@ -54,18 +54,18 @@ bool JoinSessionRequest::GetContentData(std::string* upload_content_type,
                                         std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
 
   root.Set(kSessionJoinCode, join_code_);
 
-  base::Value::Dict identity;
+  base::DictValue identity;
   identity.Set(kGaiaId, user_.gaia_id());
   identity.Set(kFullName, user_.full_name());
   identity.Set(kEmail, user_.email());
   identity.Set(kPhotoUrl, user_.photo_url());
   root.Set(kStudent, std::move(identity));
 
-  base::Value::Dict device;
+  base::DictValue device;
   device.Set(kDeviceId, device_id_);
   root.Set(kDeviceInfo, std::move(device));
 

@@ -45,8 +45,8 @@ class KillCounts {
   KillCounts(const std::string& pref_prefix, const std::string& hist_prefix);
   ~KillCounts() = default;
 
-  void Load(const base::Value::Dict& pref);
-  void Save(base::Value::Dict& out_pref);
+  void Load(const base::DictValue& pref);
+  void Save(base::DictValue& out_pref);
   void Increment(int oom, int foreground, int perceptible, int cached);
   void UpdateUmaDaily();
 
@@ -63,14 +63,14 @@ KillCounts::KillCounts(const std::string& pref_prefix,
                        const std::string& hist_prefix)
     : pref_prefix_(pref_prefix), hist_prefix_(hist_prefix) {}
 
-void KillCounts::Load(const base::Value::Dict& pref) {
+void KillCounts::Load(const base::DictValue& pref) {
   oom_ = pref.FindInt(pref_prefix_ + "oom").value_or(0);
   foreground_ = pref.FindInt(pref_prefix_ + "foreground").value_or(0);
   perceptible_ = pref.FindInt(pref_prefix_ + "perceptible").value_or(0);
   cached_ = pref.FindInt(pref_prefix_ + "cached").value_or(0);
 }
 
-void KillCounts::Save(base::Value::Dict& out_pref) {
+void KillCounts::Save(base::DictValue& out_pref) {
   // Only save counter values that are non-zero, to reduce the size of prefs.
   if (oom_ > 0) {
     out_pref.Set(pref_prefix_ + "oom", oom_);
@@ -221,7 +221,7 @@ void ArcDailyMetrics::OnLowMemoryKillCounts(
 
   // Updating prefs is not free, so skip it if we didn't have any kill counts.
   if (oom != 0 || foreground != 0 || perceptible != 0 || cached != 0) {
-    base::Value::Dict pref;
+    base::DictValue pref;
     for (auto& kill_counts : kills_) {
       kill_counts->Save(pref);
     }
@@ -237,7 +237,7 @@ void ArcDailyMetrics::OnDailyEvent(metrics::DailyEvent::IntervalType type) {
   }
 
   // Reset counters.
-  prefs_->SetDict(prefs::kArcDailyMetricsKills, base::Value::Dict());
+  prefs_->SetDict(prefs::kArcDailyMetricsKills, base::DictValue());
 }
 
 void ArcDailyMetrics::SetDailyEventForTesting(

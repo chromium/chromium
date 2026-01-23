@@ -139,12 +139,12 @@ class ShillClientUnittestBase : public testing::Test {
 
   // Expects the reader to have a string-to-variant dictionary.
   static void ExpectValueDictionaryArgument(
-      const base::Value::Dict* expected_dictionary,
+      const base::DictValue* expected_dictionary,
       bool string_valued,
       dbus::MessageReader* reader);
 
   // Creates a dictionary with example Service properties.
-  static base::Value::Dict CreateExampleServiceProperties();
+  static base::DictValue CreateExampleServiceProperties();
 
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;

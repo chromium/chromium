@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   //   "end": WeeklyTimeChecked
   // }
   static std::optional<WeeklyTimeIntervalChecked> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   // Duration of the current interval [start_, end_). NB: Duration of interval
   // where `start_` == `end_` is defined as 1 week and not 0.

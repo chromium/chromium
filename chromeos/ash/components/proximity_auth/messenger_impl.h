@@ -49,7 +49,7 @@ class MessengerImpl : public Messenger,
   // been sent yet or is waiting for a response from the remote device.
   struct PendingMessage {
     PendingMessage();
-    explicit PendingMessage(const base::Value::Dict& message);
+    explicit PendingMessage(const base::DictValue& message);
     explicit PendingMessage(const std::string& message);
     ~PendingMessage();
 
@@ -69,11 +69,11 @@ class MessengerImpl : public Messenger,
 
   // Handles an incoming "status_update" |message|, parsing and notifying
   // observers of the content.
-  void HandleRemoteStatusUpdateMessage(const base::Value::Dict& message);
+  void HandleRemoteStatusUpdateMessage(const base::DictValue& message);
 
   // Handles an incoming "unlock_response" message, notifying observers of the
   // response.
-  void HandleUnlockResponseMessage(const base::Value::Dict& message);
+  void HandleUnlockResponseMessage(const base::DictValue& message);
 
   // ash::secure_channel::ClientChannel::Observer:
   void OnDisconnected() override;

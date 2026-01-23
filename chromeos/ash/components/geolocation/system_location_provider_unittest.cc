@@ -285,7 +285,7 @@ class SystemLocationProviderWirelessTest
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddAccessPoint(int idx) {
-    base::Value::Dict properties;
+    base::DictValue properties;
     std::string mac_address =
         base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X", idx, 0, 0, 0, 0, 0);
     std::string channel = base::NumberToString(idx);
@@ -300,7 +300,7 @@ class SystemLocationProviderWirelessTest
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddCellTower(int idx) {
-    base::Value::Dict properties;
+    base::DictValue properties;
     std::string ci = base::NumberToString(idx);
     std::string lac = base::NumberToString(idx * 3);
     std::string mcc = base::NumberToString(idx * 100);

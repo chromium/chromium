@@ -104,13 +104,13 @@ void OnSetCustomApnFailure(const std::string& error_name) {
   NET_LOG(ERROR) << "Failed to set custom APNs, error name: " << error_name;
 }
 
-std::string GetStringFromDictionary(const base::Value::Dict& dict,
+std::string GetStringFromDictionary(const base::DictValue& dict,
                                     const char* key) {
   const std::string* v = dict.FindString(key);
   return v ? *v : std::string();
 }
 
-bool MatchesExistingNetworkState(const base::Value::Dict& properties,
+bool MatchesExistingNetworkState(const base::DictValue& properties,
                                  const NetworkState* network_state) {
   std::string type =
       GetStringFromDictionary(properties, ::onc::network_config::kType);
@@ -123,7 +123,7 @@ bool MatchesExistingNetworkState(const base::Value::Dict& properties,
   if (type != ::onc::network_type::kWiFi)
     return true;
 
-  const base::Value::Dict* wifi =
+  const base::DictValue* wifi =
       properties.FindDict(::onc::network_config::kWiFi);
   if (!wifi) {
     NET_LOG(ERROR) << "WiFi network configuration missing is WiFi properties: "
@@ -150,7 +150,7 @@ bool MatchesExistingNetworkState(const base::Value::Dict& properties,
 }
 
 // Checks if |onc| is an unmanaged wifi network that has AutoConnect=true.
-bool EnablesUnmanagedWifiAutoconnect(const base::Value::Dict& onc_dict) {
+bool EnablesUnmanagedWifiAutoconnect(const base::DictValue& onc_dict) {
   const std::string* type = onc_dict.FindString(::onc::network_config::kType);
   if (!type || *type != ::onc::network_type::kWiFi) {
     return false;
@@ -163,7 +163,7 @@ bool EnablesUnmanagedWifiAutoconnect(const base::Value::Dict& onc_dict) {
     return false;
   }
 
-  const base::Value::Dict* wifi_config =
+  const base::DictValue* wifi_config =
       onc_dict.FindDict(::onc::network_config::kWiFi);
   if (!wifi_config) {
     return false;
@@ -251,7 +251,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::SetProperties(
     const std::string& service_path,
-    const base::Value::Dict& user_settings,
+    const base::DictValue& user_settings,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   const NetworkState* state =
@@ -291,7 +291,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // We need to ensure that required configuration properties (e.g. Type) are
   // included for ONC validation and translation to Shill properties.
-  base::Value::Dict user_settings_copy = user_settings.Clone();
+  base::DictValue user_settings_copy = user_settings.Clone();
   if (!user_settings_copy.contains(::onc::network_config::kType)) {
     user_settings_copy.Set(
         ::onc::network_config::kType,
@@ -308,7 +308,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
       /*log_warnings=*/true);
 
   chromeos::onc::Validator::Result validation_result;
-  std::optional<base::Value::Dict> validated_user_settings =
+  std::optional<base::DictValue> validated_user_settings =
       validator.ValidateAndRepairObject(
           &chromeos::onc::kNetworkConfigurationSignature, user_settings_copy,
           &validation_result);
@@ -335,12 +335,12 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
       chromeos::onc::kNetworkConfigurationSignature,
       validated_user_settings.value());
 
-  const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
+  const base::DictValue* network_policy = policies->GetPolicyByGuid(guid);
   if (network_policy) {
     NET_LOG(DEBUG) << "Configuration is managed: " << NetworkId(state);
   }
 
-  base::Value::Dict shill_dictionary = policy_util::CreateShillConfiguration(
+  base::DictValue shill_dictionary = policy_util::CreateShillConfiguration(
       *profile, guid, policies->GetGlobalNetworkConfig(), network_policy,
       &validated_user_settings.value());
 
@@ -359,12 +359,11 @@ void ManagedNetworkConfigurationHandlerImpl::ClearShillProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
     const std::string& guid,
-    base::Value::Dict* dictionary) {
+    base::DictValue* dictionary) {
   DCHECK(ui_proxy_config_service_);
   const std::string proxy_settings_key = ::onc::network_config::kProxySettings;
 
-  base::Value::Dict* proxy_settings =
-      dictionary->EnsureDict(proxy_settings_key);
+  base::DictValue* proxy_settings = dictionary->EnsureDict(proxy_settings_key);
   ui_proxy_config_service_->MergeEnforcedProxyConfig(guid, proxy_settings);
 
   if (proxy_settings->empty()) {
@@ -374,7 +373,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
 
 void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
     const std::string& service_path,
-    base::Value::Dict shill_dictionary,
+    base::DictValue shill_dictionary,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   network_configuration_handler_->SetShillProperties(
@@ -384,7 +383,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     const std::string& userhash,
-    const base::Value::Dict& properties,
+    const base::DictValue& properties,
     network_handler::ServiceResultCallback callback,
     network_handler::ErrorCallback error_callback) const {
   std::string guid =
@@ -401,7 +400,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     NET_LOG(USER) << "Create new network configuration, Type: " << type;
 
     if (type == ::onc::network_type::kWiFi) {
-      const base::Value::Dict* type_dict =
+      const base::DictValue* type_dict =
           properties.FindDict(::onc::network_config::kWiFi);
       const std::optional<bool> is_hidden =
           type_dict ? type_dict->FindBool(::onc::wifi::kHiddenSSID)
@@ -422,7 +421,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       false);  // Don't log warnings.
 
   chromeos::onc::Validator::Result validation_result;
-  std::optional<base::Value::Dict> validated_properties =
+  std::optional<base::DictValue> validated_properties =
       validator.ValidateAndRepairObject(
           &chromeos::onc::kNetworkConfigurationSignature, properties,
           &validation_result);
@@ -503,7 +502,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   }
 
-  base::Value::Dict shill_dictionary =
+  base::DictValue shill_dictionary =
       policy_util::CreateShillConfiguration(*profile, guid,
                                             nullptr,  // no global policy
                                             nullptr,  // no network policy
@@ -523,7 +522,7 @@ ManagedNetworkConfigurationHandlerImpl::GetNetworkMetadataStore() {
 }
 
 void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
-    const base::Value::Dict& shill_properties,
+    const base::DictValue& shill_properties,
     base::OnceClosure callback) const {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
@@ -559,8 +558,8 @@ void ManagedNetworkConfigurationHandlerImpl::
 void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
     ::onc::ONCSource onc_source,
     const std::string& userhash,
-    const base::Value::List& network_configs_onc,
-    const base::Value::Dict& global_network_config) {
+    const base::ListValue& network_configs_onc,
+    const base::DictValue& global_network_config) {
   VLOG(1) << "Setting policies from: " << ToDebugString(onc_source, userhash);
 
   // |userhash| must be empty for device policies.
@@ -571,7 +570,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
   // Update prohibited technologies if this is a device policy.
   if (onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY &&
       prohibited_technologies_handler_) {
-    const base::Value::List* prohibited_list =
+    const base::ListValue* prohibited_list =
         policies->GetGlobalNetworkConfig()->FindList(
             ::onc::global_network_config::kDisableNetworkTypes);
     if (prohibited_list) {
@@ -582,7 +581,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
       // explicitly allowed if the policy being applied is a device policy that
       // does not specifically prohibit any technologies.
       prohibited_technologies_handler_->SetProhibitedTechnologies(
-          base::Value::List());
+          base::ListValue());
     }
   }
 
@@ -777,17 +776,17 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
 }
 
 void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
-    const base::Value::Dict& shill_properties,
+    const base::DictValue& shill_properties,
     base::OnceClosure callback) {
   ConfigurePolicyNetwork(shill_properties, std::move(callback));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::
     UpdateExistingConfigurationWithPropertiesFromPolicy(
-        const base::Value::Dict& existing_properties,
-        const base::Value::Dict& new_properties,
+        const base::DictValue& existing_properties,
+        const base::DictValue& new_properties,
         base::OnceClosure callback) {
-  base::Value::Dict shill_properties;
+  base::DictValue shill_properties;
 
   const std::string* profile =
       existing_properties.FindString(shill::kProfileProperty);
@@ -834,7 +833,7 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
   }
 
   for (const std::string& guid : new_cellular_policy_guids) {
-    const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
+    const base::DictValue* network_policy = policies->GetPolicyByGuid(guid);
     DCHECK(network_policy);
 
     cellular_policy_handler_->InstallESim(*network_policy);
@@ -936,16 +935,16 @@ void ManagedNetworkConfigurationHandlerImpl::ModifyCustomAPNs() {
     if (network->IsManagedByPolicy()) {
       continue;
     }
-    const base::Value::List* existing_custom_apn_list =
+    const base::ListValue* existing_custom_apn_list =
         GetNetworkMetadataStore()->GetCustomApnList(network->guid());
     if (existing_custom_apn_list) {
-      base::Value::Dict onc;
+      base::DictValue onc;
       onc.Set(::onc::network_config::kGUID, network->guid());
       onc.Set(::onc::network_config::kType, ::onc::network_type::kCellular);
-      base::Value::Dict type_dict;
+      base::DictValue type_dict;
       type_dict.Set(::onc::cellular::kCustomAPNList,
                     AllowApnModification() ? existing_custom_apn_list->Clone()
-                                           : base::Value::List());
+                                           : base::ListValue());
       onc.Set(::onc::network_type::kCellular, std::move(type_dict));
       SetProperties(network->path(), onc, base::DoNothing(),
                     base::BindOnce(&OnSetCustomApnFailure));
@@ -953,8 +952,7 @@ void ManagedNetworkConfigurationHandlerImpl::ModifyCustomAPNs() {
   }
 }
 
-const base::Value::Dict*
-ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
+const base::DictValue* ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
     const std::string userhash,
     const std::string& guid,
     ::onc::ONCSource* onc_source) const {
@@ -963,7 +961,7 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
   if (!userhash.empty()) {
     const ProfilePolicies* user_policies = GetPoliciesForUser(userhash);
     if (user_policies) {
-      const base::Value::Dict* policy = user_policies->GetPolicyByGuid(guid);
+      const base::DictValue* policy = user_policies->GetPolicyByGuid(guid);
       if (policy) {
         *onc_source = ::onc::ONC_SOURCE_USER_POLICY;
         return policy;
@@ -974,7 +972,7 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
   const ProfilePolicies* device_policies =
       GetPoliciesForUser(/*userhash=*/std::string());
   if (device_policies) {
-    const base::Value::Dict* policy = device_policies->GetPolicyByGuid(guid);
+    const base::DictValue* policy = device_policies->GetPolicyByGuid(guid);
     if (policy) {
       *onc_source = ::onc::ONC_SOURCE_DEVICE_POLICY;
       return policy;
@@ -986,14 +984,14 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGUID(
 
 void ManagedNetworkConfigurationHandlerImpl::ResetDNSPropertiesCallback(
     const std::string& service_path,
-    std::optional<base::Value::Dict> network_properties,
+    std::optional<base::DictValue> network_properties,
     std::optional<std::string> error) {
   if (!network_properties) {
     return;
   }
 
   // Create a dictionary of the relevant properties to set.
-  base::Value::Dict reset_dns_properties;
+  base::DictValue reset_dns_properties;
 
   // NameServersConfigType - to be deterined by DHCP.
   reset_dns_properties.Set(::onc::network_config::kNameServersConfigType,
@@ -1044,7 +1042,7 @@ bool ManagedNetworkConfigurationHandlerImpl::HasAnyPolicyNetwork(
   return !policies->GetAllPolicyGuids().empty();
 }
 
-const base::Value::Dict*
+const base::DictValue*
 ManagedNetworkConfigurationHandlerImpl::GetGlobalConfigFromPolicy(
     const std::string& userhash) const {
   const ProfilePolicies* policies = GetPoliciesForUser(userhash);
@@ -1054,7 +1052,7 @@ ManagedNetworkConfigurationHandlerImpl::GetGlobalConfigFromPolicy(
   return policies->GetGlobalNetworkConfig();
 }
 
-const base::Value::Dict*
+const base::DictValue*
 ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
     const std::string& guid,
     const std::string& profile_path,
@@ -1076,7 +1074,7 @@ ManagedNetworkConfigurationHandlerImpl::FindPolicyByGuidAndProfile(
   if (!policies)
     return nullptr;
 
-  const base::Value::Dict* policy = nullptr;
+  const base::DictValue* policy = nullptr;
   switch (policy_type) {
     case PolicyType::kOriginal:
       policy = policies->GetOriginalPolicyByGuid(guid);
@@ -1211,7 +1209,7 @@ bool ManagedNetworkConfigurationHandlerImpl::IsProhibitedFromConfiguringVpn()
 
 std::vector<std::string>
 ManagedNetworkConfigurationHandlerImpl::GetBlockedHexSSIDs() const {
-  const base::Value::List* blocked_value =
+  const base::ListValue* blocked_value =
       FindGlobalPolicyList(::onc::global_network_config::kBlockedHexSSIDs);
   if (!blocked_value) {
     return std::vector<std::string>();
@@ -1308,7 +1306,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork(
 
 void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     const std::string& service_path,
-    base::Value::Dict* properties) {
+    base::DictValue* properties) {
   const NetworkState* network =
       network_state_handler_->GetNetworkState(service_path);
   if (!network) {
@@ -1333,7 +1331,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
   // (plural) in the properties dictionary. (Note: Shill only provides a single
   // "IPConfig" property for a network service, but a consumer of this API may
   // want information about all ipv4 and ipv6 IPConfig properties.
-  base::Value::List ip_configs;
+  base::ListValue ip_configs;
 
   if (!device_state || device_state->ip_configs().empty()) {
     // Shill may not provide IPConfigs for external Cellular devices/dongles
@@ -1361,7 +1359,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetPropertiesCallback(
     const std::string& userhash,
     network_handler::PropertiesCallback callback,
     const std::string& service_path,
-    std::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::DictValue> shill_properties) {
   if (!shill_properties) {
     SendProperties(properties_type, userhash, service_path, std::move(callback),
                    std::nullopt);
@@ -1414,9 +1412,9 @@ void ManagedNetworkConfigurationHandlerImpl::OnGetDeviceProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    std::optional<base::Value::Dict> network_properties,
+    std::optional<base::DictValue> network_properties,
     const std::string& device_path,
-    std::optional<base::Value::Dict> device_properties) {
+    std::optional<base::DictValue> device_properties) {
   DCHECK(network_properties);
   if (!device_properties) {
     NET_LOG(ERROR) << "Error getting device properties: "
@@ -1435,7 +1433,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     const std::string& userhash,
     const std::string& service_path,
     network_handler::PropertiesCallback callback,
-    std::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::DictValue> shill_properties) {
   auto get_name = [](PropertiesType properties_type) {
     switch (properties_type) {
       case PropertiesType::kUnmanaged:
@@ -1463,7 +1461,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       network_state_handler_->GetNetworkState(service_path);
   ::onc::ONCSource onc_source;
   FindPolicyByGUID(userhash, *guid, &onc_source);
-  base::Value::Dict onc_network = onc::TranslateShillServiceToONCPart(
+  base::DictValue onc_network = onc::TranslateShillServiceToONCPart(
       shill_properties.value(), onc_source,
       &chromeos::onc::kNetworkWithStateSignature, network_state);
 
@@ -1488,7 +1486,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   std::unique_ptr<NetworkUIData> ui_data =
       shill_property_util::GetUIDataFromProperties(shill_properties.value());
 
-  const base::Value::Dict* user_settings = nullptr;
+  const base::DictValue* user_settings = nullptr;
 
   if (ui_data && profile) {
     user_settings = ui_data->GetUserSettingsDictionary();
@@ -1500,8 +1498,8 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     // properties _might_ be user configured.
   }
 
-  const base::Value::Dict* network_policy = nullptr;
-  const base::Value::Dict* global_policy = nullptr;
+  const base::DictValue* network_policy = nullptr;
+  const base::DictValue* global_policy = nullptr;
   if (profile) {
     const ProfilePolicies* policies = GetPoliciesForProfile(*profile);
     if (!policies) {
@@ -1517,7 +1515,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     global_policy = policies->GetGlobalNetworkConfig();
   }
 
-  base::Value::Dict augmented_properties = policy_util::CreateManagedONC(
+  base::DictValue augmented_properties = policy_util::CreateManagedONC(
       global_policy, network_policy, user_settings, &onc_network, profile);
   SetManagedActiveProxyValues(*guid, &augmented_properties);
   std::move(callback).Run(service_path,
@@ -1536,7 +1534,7 @@ void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(
 std::optional<bool>
 ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyBool(
     std::string_view key) const {
-  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+  const base::DictValue* global_network_config = GetGlobalConfigFromPolicy(
       std::string() /* no username hash, device policy */);
 
   if (!global_network_config) {
@@ -1546,10 +1544,10 @@ ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyBool(
   return global_network_config->FindBool(key);
 }
 
-const base::Value::List*
+const base::ListValue*
 ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyList(
     std::string_view key) const {
-  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+  const base::DictValue* global_network_config = GetGlobalConfigFromPolicy(
       std::string() /* no username hash, device policy */);
 
   if (!global_network_config) {
@@ -1562,7 +1560,7 @@ ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyList(
 const std::string*
 ManagedNetworkConfigurationHandlerImpl::FindGlobalPolicyString(
     std::string_view key) const {
-  const base::Value::Dict* global_network_config = GetGlobalConfigFromPolicy(
+  const base::DictValue* global_network_config = GetGlobalConfigFromPolicy(
       std::string() /* no username hash, device policy */);
 
   if (!global_network_config) {

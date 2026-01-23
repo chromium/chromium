@@ -52,7 +52,7 @@ std::optional<base::Time> LocalToUTC(base::Time local) {
 }  // namespace
 
 std::optional<std::vector<WeeklyTimeIntervalChecked>> ExtractIntervalsFromList(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   std::vector<WeeklyTimeIntervalChecked> intervals;
 
   for (const auto& interval_value : list) {

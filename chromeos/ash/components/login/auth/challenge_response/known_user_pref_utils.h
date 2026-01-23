@@ -23,12 +23,12 @@ namespace ash {
 // * "extension_id" - contains the base64-encoded id of the extension that is
 //   used to sign the key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
-base::Value::List SerializeChallengeResponseKeysForKnownUser(
+base::ListValue SerializeChallengeResponseKeysForKnownUser(
     const std::vector<ChallengeResponseKey>& challenge_response_keys);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 bool DeserializeChallengeResponseKeyFromKnownUser(
-    const base::Value::List& pref_value,
+    const base::ListValue& pref_value,
     std::vector<DeserializedChallengeResponseKey>*
         deserialized_challenge_response_keys);
 

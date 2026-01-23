@@ -47,21 +47,21 @@ using Day = WeeklyTimeChecked::Day;
 }  // namespace
 
 TEST(CheckedUtil, ExtractIntervalsFromList) {
-  base::Value::List list = BuildList(kIntervalsJson);
+  base::ListValue list = BuildList(kIntervalsJson);
   auto result = ExtractIntervalsFromList(list);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->size(), 2u);
 }
 
 TEST(CheckedUtil, ExtractIntervalsFromList_NotADict) {
-  base::Value::List list = BuildList(R"([123])");
+  base::ListValue list = BuildList(R"([123])");
 
   auto result = ExtractIntervalsFromList(list);
   EXPECT_FALSE(result.has_value());
 }
 
 TEST(CheckedUtil, ExtractIntervalsFromList_InvalidInterval) {
-  base::Value::List list = BuildList(R"([
+  base::ListValue list = BuildList(R"([
     {
       "foobarbaz": {
           "day_of_week": "WEDNESDAY",

@@ -160,7 +160,7 @@ void RecentAppsInteractionHandlerImpl::
     LoadRecentAppMetadataListFromPrefIfNeed() {
   if (!has_loaded_prefs_) {
     PA_LOG(INFO) << "LoadRecentAppMetadataListFromPref";
-    const base::Value::List& recent_apps_history_pref =
+    const base::ListValue& recent_apps_history_pref =
         pref_service_->GetList(prefs::kRecentAppsHistory);
     for (const auto& value : recent_apps_history_pref) {
       DCHECK(value.is_dict());
@@ -176,7 +176,7 @@ void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
   PA_LOG(INFO) << "SaveRecentAppMetadataListToPref";
   size_t num_recent_apps_to_save =
       std::min(recent_app_metadata_list_.size(), kMaxSavedRecentApps);
-  base::Value::List app_metadata_value_list;
+  base::ListValue app_metadata_value_list;
   for (size_t i = 0; i < num_recent_apps_to_save; ++i) {
     app_metadata_value_list.Append(
         recent_app_metadata_list_[i].first.ToValue());

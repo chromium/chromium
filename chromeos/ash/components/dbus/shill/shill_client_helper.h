@@ -33,9 +33,9 @@ class ShillClientHelper {
  public:
   class RefHolder;
 
-  // A callback to handle responses of methods returning a `base::Value::List`.
+  // A callback to handle responses of methods returning a `base::ListValue`.
   using ListValueCallback =
-      base::OnceCallback<void(const base::Value::List& result)>;
+      base::OnceCallback<void(const base::ListValue& result)>;
 
   // A callback to handle errors for method call.
   using ErrorCallback =
@@ -90,7 +90,7 @@ class ShillClientHelper {
   // Calls a method with a value dictionary result.
   void CallDictValueMethod(
       dbus::MethodCall* method_call,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback);
+      chromeos::DBusMethodCallback<base::DictValue> callback);
 
   // Calls a method without results with error callback.
   void CallVoidMethodWithErrorCallback(dbus::MethodCall* method_call,
@@ -110,7 +110,7 @@ class ShillClientHelper {
   // Calls a method with a dictionary value result with error callback.
   void CallDictValueMethodWithErrorCallback(
       dbus::MethodCall* method_call,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback);
 
   // Calls a method with a boolean array result with error callback.
@@ -132,7 +132,7 @@ class ShillClientHelper {
   // Appends a string-to-variant dictionary to the writer as an '{sv}' array.
   // Each value is written using AppendValueDataAsVariant.
   static void AppendServiceProperties(dbus::MessageWriter* writer,
-                                      const base::Value::Dict& dictionary);
+                                      const base::DictValue& dictionary);
 
  protected:
   // Reference / Ownership management. If the number of active refs (observers

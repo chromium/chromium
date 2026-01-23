@@ -105,9 +105,9 @@ constexpr base::FilePath::CharType kUpdatedHwClassFilePath[] =
 // string with all list values joined by ','. Returns nullopt if `key` is not
 // found.
 std::optional<std::string> JoinListValuesToString(
-    const base::Value::Dict& dictionary,
+    const base::DictValue& dictionary,
     std::string_view key) {
-  const base::Value::List* list_value = dictionary.FindList(key);
+  const base::ListValue* list_value = dictionary.FindList(key);
   if (list_value == nullptr) {
     return std::nullopt;
   }
@@ -135,9 +135,9 @@ std::optional<std::string> JoinListValuesToString(
 // Gets the list from the given `dictionary` by given `key`, and returns the
 // first value of the list as string. Returns nullopt if `key` is not found.
 std::optional<std::string> GetFirstListValueAsString(
-    const base::Value::Dict& dictionary,
+    const base::DictValue& dictionary,
     std::string_view key) {
-  const base::Value::List* list_value = dictionary.FindList(key);
+  const base::ListValue* list_value = dictionary.FindList(key);
   if (list_value == nullptr || list_value->empty()) {
     return std::nullopt;
   }
@@ -151,12 +151,12 @@ std::optional<std::string> GetFirstListValueAsString(
 }
 
 std::optional<std::string> GetKeyboardLayoutFromRegionalData(
-    const base::Value::Dict& region_dict) {
+    const base::DictValue& region_dict) {
   return JoinListValuesToString(region_dict, kKeyboardsPath);
 }
 
 std::optional<std::string> GetKeyboardMechanicalLayoutFromRegionalData(
-    const base::Value::Dict& region_dict) {
+    const base::DictValue& region_dict) {
   const std::string* value =
       region_dict.FindString(kKeyboardMechanicalLayoutPath);
   if (value == nullptr) {
@@ -167,18 +167,18 @@ std::optional<std::string> GetKeyboardMechanicalLayoutFromRegionalData(
 }
 
 std::optional<std::string> GetInitialTimezoneFromRegionalData(
-    const base::Value::Dict& region_dict) {
+    const base::DictValue& region_dict) {
   return GetFirstListValueAsString(region_dict, kTimeZonesPath);
 }
 
 std::optional<std::string> GetInitialLocaleFromRegionalData(
-    const base::Value::Dict& region_dict) {
+    const base::DictValue& region_dict) {
   return JoinListValuesToString(region_dict, kLocalesPath);
 }
 
 // Array mapping region keys to their extracting functions.
 constexpr std::pair<const char*,
-                    std::optional<std::string> (*)(const base::Value::Dict&)>
+                    std::optional<std::string> (*)(const base::DictValue&)>
     kRegionKeysToExtractors[] = {
         {kInitialLocaleKey, &GetInitialLocaleFromRegionalData},
         {kKeyboardLayoutKey, &GetKeyboardLayoutFromRegionalData},
@@ -848,7 +848,7 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
     return;
   }
 
-  base::Value::Dict* region_dict = json_value->GetDict().FindDict(region);
+  base::DictValue* region_dict = json_value->GetDict().FindDict(region);
   if (region_dict == nullptr) {
     LOG(ERROR) << "Bad regional data: '" << region << "' << not found.";
     return;

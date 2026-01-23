@@ -33,14 +33,14 @@ const char kMessageTypeUnlockResponse[] = "unlock_response";
 const char kUnlockEventName[] = "easy_unlock";
 
 // Serializes the |value| to a JSON string and returns the result.
-std::string SerializeValueToJson(const base::Value::Dict& value) {
+std::string SerializeValueToJson(const base::DictValue& value) {
   return base::WriteJson(value).value_or("");
 }
 
 // Returns the message type represented by the |message|. This is a convenience
 // wrapper that should only be called when the |message| is known to specify its
 // message type, i.e. this should not be called for untrusted input.
-std::string GetMessageType(const base::Value::Dict& message) {
+std::string GetMessageType(const base::DictValue& message) {
   const std::string* type = message.FindString(kTypeKey);
   return type ? *type : std::string();
 }
@@ -67,7 +67,7 @@ void MessengerImpl::RemoveObserver(MessengerObserver* observer) {
 }
 
 void MessengerImpl::DispatchUnlockEvent() {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kTypeKey, kMessageTypeLocalEvent);
   message.Set(kNameKey, kUnlockEventName);
   queued_messages_.push_back(PendingMessage(message));
@@ -75,7 +75,7 @@ void MessengerImpl::DispatchUnlockEvent() {
 }
 
 void MessengerImpl::RequestUnlock() {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kTypeKey, kMessageTypeUnlockRequest);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
@@ -92,7 +92,7 @@ MessengerImpl::PendingMessage::PendingMessage() = default;
 
 MessengerImpl::PendingMessage::~PendingMessage() = default;
 
-MessengerImpl::PendingMessage::PendingMessage(const base::Value::Dict& message)
+MessengerImpl::PendingMessage::PendingMessage(const base::DictValue& message)
     : json_message(SerializeValueToJson(message)),
       type(GetMessageType(message)) {}
 
@@ -116,7 +116,7 @@ void MessengerImpl::ProcessMessageQueue() {
 }
 
 void MessengerImpl::HandleRemoteStatusUpdateMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   std::unique_ptr<RemoteStatusUpdate> status_update =
       RemoteStatusUpdate::Deserialize(message);
   if (!status_update) {
@@ -129,7 +129,7 @@ void MessengerImpl::HandleRemoteStatusUpdateMessage(
 }
 
 void MessengerImpl::HandleUnlockResponseMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   for (auto& observer : observers_)
     observer.OnUnlockResponse(true);
 }
@@ -145,7 +145,7 @@ void MessengerImpl::OnMessageReceived(const std::string& payload) {
 
 void MessengerImpl::HandleMessage(const std::string& message) {
   // The decoded message should be a JSON string.
-  std::optional<base::Value::Dict> message_value =
+  std::optional<base::DictValue> message_value =
       base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_value) {
     PA_LOG(ERROR) << "Unable to parse message as JSON:\n" << message;

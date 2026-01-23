@@ -90,9 +90,9 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
     return devices->at(index);
   }
 
-  base::Value::Dict AsDictionary(
+  base::DictValue AsDictionary(
       const CryptAuthDeviceRegistry::InstanceIdToDeviceMap& devices) const {
-    base::Value::Dict dict;
+    base::DictValue dict;
     for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
          devices) {
       dict.Set(util::EncodeAsString(id_device_pair.first),

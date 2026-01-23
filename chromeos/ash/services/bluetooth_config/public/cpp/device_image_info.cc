@@ -38,7 +38,7 @@ DeviceImageInfo::~DeviceImageInfo() = default;
 
 // static
 std::optional<DeviceImageInfo> DeviceImageInfo::FromDictionaryValue(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   const std::string* default_image = value.FindString(kDefaultImageKey);
   if (!default_image) {
     return std::nullopt;
@@ -63,8 +63,8 @@ std::optional<DeviceImageInfo> DeviceImageInfo::FromDictionaryValue(
                          *case_image);
 }
 
-base::Value::Dict DeviceImageInfo::ToDictionaryValue() const {
-  base::Value::Dict dictionary;
+base::DictValue DeviceImageInfo::ToDictionaryValue() const {
+  base::DictValue dictionary;
   dictionary.Set(kDefaultImageKey, default_image_);
   dictionary.Set(kLeftBudImageKey, left_bud_image_);
   dictionary.Set(kRightBudImageKey, right_bud_image_);

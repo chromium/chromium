@@ -327,12 +327,12 @@ std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
                         << value.error().ToString();
     return "";
   }
-  base::Value::Dict* dict = value->GetIfDict();
+  base::DictValue* dict = value->GetIfDict();
   if (!dict) {
     FIRMWARE_LOG(ERROR) << "Parsed JSON is not a dictionary";
     return "";
   }
-  base::Value::List* items = dict->FindList("Items");
+  base::ListValue* items = dict->FindList("Items");
   if (items == nullptr || items->empty()) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Items' key in checksum json file";
     return "";

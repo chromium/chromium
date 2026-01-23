@@ -31,7 +31,7 @@ CertificateScope CertificateScope::Default() {
 
 // static
 std::optional<CertificateScope> CertificateScope::ParseFromOncValue(
-    const base::Value::Dict& scope_dict) {
+    const base::DictValue& scope_dict) {
   const std::string* scope_type_str =
       scope_dict.FindString(::onc::scope::kType);
   const std::string* scope_id_str = scope_dict.FindString(::onc::scope::kId);

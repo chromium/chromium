@@ -18,7 +18,8 @@
 #include "components/onc/onc_constants.h"
 
 namespace base {
-class Value;
+class DictValue;
+class ListValue;
 }  // namespace base
 
 namespace ash {
@@ -99,7 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // will be merged with the existing settings, and it won't clear any existing
   // properties.
   virtual void SetProperties(const std::string& service_path,
-                             const base::Value::Dict& user_settings,
+                             const base::DictValue& user_settings,
                              base::OnceClosure callback,
                              network_handler::ErrorCallback error_callback) = 0;
 
@@ -117,7 +118,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // |userhash| is empty, the new configuration will be shared.
   virtual void CreateConfiguration(
       const std::string& userhash,
-      const base::Value::Dict& properties,
+      const base::DictValue& properties,
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const = 0;
 
@@ -126,7 +127,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // before calling this method. |callback| will be called after the
   // configuration update has been reflected in NetworkStateHandler, or on
   // error. This fires OnPolicyApplied notification on success.
-  virtual void ConfigurePolicyNetwork(const base::Value::Dict& shill_properties,
+  virtual void ConfigurePolicyNetwork(const base::DictValue& shill_properties,
                                       base::OnceClosure callback) const = 0;
 
   // Removes the user's configuration from the network with |service_path|. The
@@ -154,8 +155,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // again with this function. For device policies, |userhash| must be empty.
   virtual void SetPolicy(::onc::ONCSource onc_source,
                          const std::string& userhash,
-                         const base::Value::List& network_configs_onc,
-                         const base::Value::Dict& global_network_config) = 0;
+                         const base::ListValue& network_configs_onc,
+                         const base::DictValue& global_network_config) = 0;
 
   // Returns true if any policy application is currently running or pending.
   // NetworkPolicyObservers are notified about applications finishing.
@@ -181,7 +182,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Returns the user policy for user |userhash| or device policy, which has
   // |guid|. If |userhash| is empty, only looks for a device policy. If such
   // doesn't exist, returns NULL. Sets |onc_source| accordingly.
-  virtual const base::Value::Dict* FindPolicyByGUID(
+  virtual const base::DictValue* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const = 0;
@@ -198,13 +199,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
 
   // Returns the global configuration of the policy of user |userhash| or device
   // policy if |userhash| is empty.
-  virtual const base::Value::Dict* GetGlobalConfigFromPolicy(
+  virtual const base::DictValue* GetGlobalConfigFromPolicy(
       const std::string& userhash) const = 0;
 
   // Returns the policy with |guid| for profile |profile_path|. If such
   // doesn't exist, returns nullptr. Sets |onc_source| and |userhash|
   // accordingly if it is not nullptr.
-  virtual const base::Value::Dict* FindPolicyByGuidAndProfile(
+  virtual const base::DictValue* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       PolicyType policy_type,

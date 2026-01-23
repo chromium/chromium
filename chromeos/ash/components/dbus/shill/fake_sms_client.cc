@@ -40,7 +40,7 @@ void FakeSMSClient::GetAll(const std::string& service_name,
 void FakeSMSClient::CompleteGetAll() {
   DCHECK(pending_get_all_callback_) << "No pending call to GetAll()";
 
-  base::Value::Dict sms;
+  base::DictValue sms;
   sms.Set("Number", kNumber);
   sms.Set("Text", "FakeSMSClient: Test Message: " +
                       pending_get_all_object_path_.value());

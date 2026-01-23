@@ -76,7 +76,7 @@ TEST_P(SingleWeeklyTimeIntervalTest, ToValue) {
   WeeklyTime end = WeeklyTime(end_day_of_week(), end_time(), 0);
   WeeklyTimeInterval interval = WeeklyTimeInterval(start, end);
   base::Value expected_interval_value(base::Value::Type::DICT);
-  base::Value::Dict& dict = expected_interval_value.GetDict();
+  base::DictValue& dict = expected_interval_value.GetDict();
   dict.Set(WeeklyTimeInterval::kStart, start.ToValue());
   dict.Set(WeeklyTimeInterval::kEnd, end.ToValue());
 
@@ -161,14 +161,14 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Valid) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_Empty) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   auto result = WeeklyTimeInterval::ExtractFromDict(dict, 0);
   ASSERT_FALSE(result);
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_NoEnd) {
-  base::Value::Dict dict;
-  base::Value::Dict start;
+  base::DictValue dict;
+  base::DictValue start;
   EXPECT_TRUE(start.Set(WeeklyTime::kDayOfWeek,
                         WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.Set(WeeklyTime::kTime, start_time()));
@@ -179,8 +179,8 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_NoEnd) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_NoStart) {
-  base::Value::Dict dict;
-  base::Value::Dict end;
+  base::DictValue dict;
+  base::DictValue end;
   EXPECT_TRUE(end.Set(WeeklyTime::kDayOfWeek,
                       WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.Set(WeeklyTime::kTime, end_time()));
@@ -191,12 +191,12 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_NoStart) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidStart) {
-  base::Value::Dict dict;
-  base::Value::Dict start;
+  base::DictValue dict;
+  base::DictValue start;
   EXPECT_TRUE(start.Set(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(start.Set(WeeklyTime::kTime, start_time()));
   dict.Set(WeeklyTimeInterval::kStart, std::move(start));
-  base::Value::Dict end;
+  base::DictValue end;
   EXPECT_TRUE(end.Set(WeeklyTime::kDayOfWeek,
                       WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.Set(WeeklyTime::kTime, end_time()));
@@ -207,13 +207,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidStart) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidEnd) {
-  base::Value::Dict dict;
-  base::Value::Dict start;
+  base::DictValue dict;
+  base::DictValue start;
   EXPECT_TRUE(start.Set(WeeklyTime::kDayOfWeek,
                         WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.Set(WeeklyTime::kTime, start_time()));
   dict.Set(WeeklyTimeInterval::kStart, std::move(start));
-  base::Value::Dict end;
+  base::DictValue end;
   EXPECT_TRUE(end.Set(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(end.Set(WeeklyTime::kTime, end_time()));
   dict.Set(WeeklyTimeInterval::kEnd, std::move(end));
@@ -223,13 +223,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidEnd) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidStartEqualsEnd) {
-  base::Value::Dict start = base::Value::Dict()
-                                .Set(WeeklyTime::kDayOfWeek,
-                                     WeeklyTime::kWeekDays[start_day_of_week()])
-                                .Set(WeeklyTime::kTime, start_time());
-  base::Value::Dict end = start.Clone();
-  base::Value::Dict test_dict =
-      base::Value::Dict()
+  base::DictValue start = base::DictValue()
+                              .Set(WeeklyTime::kDayOfWeek,
+                                   WeeklyTime::kWeekDays[start_day_of_week()])
+                              .Set(WeeklyTime::kTime, start_time());
+  base::DictValue end = start.Clone();
+  base::DictValue test_dict =
+      base::DictValue()
           .Set(WeeklyTimeInterval::kStart, std::move(start))
           .Set(WeeklyTimeInterval::kEnd, std::move(end));
 
@@ -237,13 +237,13 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidStartEqualsEnd) {
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_Valid) {
-  base::Value::Dict dict;
-  base::Value::Dict start;
+  base::DictValue dict;
+  base::DictValue start;
   EXPECT_TRUE(start.Set(WeeklyTime::kDayOfWeek,
                         WeeklyTime::kWeekDays[start_day_of_week()]));
   EXPECT_TRUE(start.Set(WeeklyTime::kTime, start_time()));
   dict.Set(WeeklyTimeInterval::kStart, std::move(start));
-  base::Value::Dict end;
+  base::DictValue end;
   EXPECT_TRUE(end.Set(WeeklyTime::kDayOfWeek,
                       WeeklyTime::kWeekDays[end_day_of_week()]));
   EXPECT_TRUE(end.Set(WeeklyTime::kTime, end_time()));

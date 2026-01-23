@@ -82,8 +82,8 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
       std::optional<WifiHotspotConnectionError> error);
   void CreateWifiConfiguration();
   void RequestWifiScan();
-  base::Value::Dict CreateWifiPropertyDictionary(const std::string& ssid,
-                                                 const std::string& password);
+  base::DictValue CreateWifiPropertyDictionary(const std::string& ssid,
+                                               const std::string& password);
   void OnConnectionTimeout();
 
   void OnWifiConnectionSucceeded();

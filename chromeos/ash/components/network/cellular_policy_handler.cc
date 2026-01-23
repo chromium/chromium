@@ -94,7 +94,7 @@ std::optional<std::string> GetFirstActivationCode(
 
 CellularPolicyHandler::InstallPolicyESimRequest::InstallPolicyESimRequest(
     policy_util::SmdxActivationCode activation_code,
-    const base::Value::Dict& onc_config)
+    const base::DictValue& onc_config)
     : activation_code(std::move(activation_code)),
       onc_config(onc_config.Clone()),
       retry_backoff(&kRetryBackoffPolicy) {}
@@ -131,7 +131,7 @@ void CellularPolicyHandler::Init(
   network_state_handler_observer_.Observe(network_state_handler_.get());
 }
 
-void CellularPolicyHandler::InstallESim(const base::Value::Dict& onc_config) {
+void CellularPolicyHandler::InstallESim(const base::DictValue& onc_config) {
   std::optional<policy_util::SmdxActivationCode> activation_code =
       policy_util::GetSmdxActivationCodeFromONC(onc_config);
 
@@ -284,7 +284,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
     return;
   }
 
-  base::Value::Dict new_shill_properties = GetNewShillProperties();
+  base::DictValue new_shill_properties = GetNewShillProperties();
   // If iccid is found in policy onc, the installation will be skipped because
   // it indicates that the eSIM profile has already been installed before using
   // the same SM-DP+ or SM-DS.
@@ -340,7 +340,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
 
 void CellularPolicyHandler::PerformInstallESim(
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties) {
+    base::DictValue new_shill_properties) {
   NET_LOG(EVENT) << "Installing policy eSIM profile ("
                  << GetCurrentActivationCode().ToString() << ") and inhibiting "
                  << "cellular device to request available profiles for SM-DX "
@@ -356,7 +356,7 @@ void CellularPolicyHandler::PerformInstallESim(
 
 void CellularPolicyHandler::OnRefreshProfileList(
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Failed to refresh the profile list due to an inhibit "
@@ -402,7 +402,7 @@ void CellularPolicyHandler::OnConfigureESimService(
 
 void CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles(
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   // The cellular device must be inhibited before refreshing SM-DX profiles. If
   // we fail to receive a lock consider this installation attempt a failure.
@@ -434,7 +434,7 @@ void CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles(
 
 void CellularPolicyHandler::OnRefreshSmdxProfiles(
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     base::TimeTicks start_time,
     HermesResponseStatus status,
@@ -489,7 +489,7 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
 
 void CellularPolicyHandler::CompleteRefreshSmdxProfiles(
     const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
+    base::DictValue new_shill_properties,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status,
     const std::vector<dbus::ObjectPath>& profile_paths) {
@@ -629,7 +629,7 @@ void CellularPolicyHandler::OnWaitTimeout() {
                                   InstallRetryReason::kInternalError);
 }
 
-base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
+base::DictValue CellularPolicyHandler::GetNewShillProperties() {
   const NetworkProfile* profile =
       cellular_utils::GetCellularProfile(network_profile_handler_);
   DCHECK(profile);

@@ -46,7 +46,7 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
 
 // static
 std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::optional<int> timezone_offset) {
   const base::Value* start_value = dict.Find(kStart);
   if (!start_value) {

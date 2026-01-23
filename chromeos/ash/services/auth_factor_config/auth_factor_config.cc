@@ -416,7 +416,7 @@ void AuthFactorConfig::IsEditableWithContext(
         CHECK(prefs);
 
         // Lists of factors that are allowed for some purpose.
-        const base::Value::List* pref_lists[] = {
+        const base::ListValue* pref_lists[] = {
             &prefs->GetList(prefs::kQuickUnlockModeAllowlist),
             &prefs->GetList(prefs::kWebAuthnFactors),
         };

@@ -133,7 +133,7 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromProto(
 
 // static
 std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::optional<int> timezone_offset) {
   auto* day_of_week = dict.FindString(kDayOfWeek);
   if (!day_of_week) {

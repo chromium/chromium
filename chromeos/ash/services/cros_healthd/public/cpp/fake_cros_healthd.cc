@@ -172,7 +172,7 @@ void FakeCrosHealthd::SetProbeMultipleProcessInfoResponseForTesting(
 }
 
 void FakeCrosHealthd::SetExpectedLastPassedDiagnosticsParametersForTesting(
-    base::Value::Dict expected_parameters) {
+    base::DictValue expected_parameters) {
   expected_passed_parameters_ = std::move(expected_parameters);
 }
 

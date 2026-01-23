@@ -85,18 +85,18 @@ google_apis::HttpRequestMethod ViewScreenRequest::GetRequestType() const {
 bool ViewScreenRequest::GetContentData(std::string* upload_content_type,
                                        std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
-  base::Value::Dict root;
-  base::Value::Dict teacher_info;
-  base::Value::Dict teacher;
+  base::DictValue root;
+  base::DictValue teacher_info;
+  base::DictValue teacher;
   teacher.Set(kGaiaId, view_screen_param_.teacher_gaia_id);
   teacher_info.Set(kUser, std::move(teacher));
 
-  base::Value::Dict teacher_device;
+  base::DictValue teacher_device;
   teacher_device.Set(kDeviceId, view_screen_param_.teacher_device_id);
   teacher_info.Set(kDeviceInfo, std::move(teacher_device));
 
   if (view_screen_param_.teacher_device_robot_id.has_value()) {
-    base::Value::Dict teacher_service_account;
+    base::DictValue teacher_service_account;
     teacher_service_account.Set(
         kEmail, view_screen_param_.teacher_device_robot_id.value());
     teacher_info.Set(kServiceAccount, std::move(teacher_service_account));
@@ -104,12 +104,12 @@ bool ViewScreenRequest::GetContentData(std::string* upload_content_type,
 
   root.Set(kTeacherClientDevice, std::move(teacher_info));
 
-  base::Value::Dict host_device_info;
-  base::Value::Dict host;
+  base::DictValue host_device_info;
+  base::DictValue host;
   host.Set(kGaiaId, view_screen_param_.student_gaia_id);
   host_device_info.Set(kUser, std::move(host));
 
-  base::Value::Dict host_device;
+  base::DictValue host_device;
   host_device.Set(kDeviceId, view_screen_param_.student_device_id);
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));

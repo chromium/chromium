@@ -220,7 +220,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::GetCurrentStats() {
 std::string LoginEventRecorder::Stats::SerializeToString() const {
   if (uptime_.empty() && disk_.empty())
     return std::string();
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kUptime, uptime_);
   dictionary.Set(kDisk, disk_);
 
@@ -239,7 +239,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::optional<base::Value::Dict> maybe_value =
+  std::optional<base::DictValue> maybe_value =
       base::JSONReader::ReadDict(source, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_value) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "

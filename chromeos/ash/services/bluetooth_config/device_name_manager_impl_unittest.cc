@@ -402,7 +402,7 @@ TEST_F(DeviceNameManagerImplTest, Migration_DisablingClearsPrefs) {
   // Set the pref to some arbitrary value since we just want to confirm it will
   // be cleared when the feature flag is disabled.
   local_state()->Set(DeviceNameManager::kDeviceIdToNicknameMapPrefName,
-                     base::Value(base::Value::Dict()));
+                     base::Value(base::DictValue()));
   EXPECT_TRUE(local_state()->HasPrefPath(
       DeviceNameManager::kDeviceIdToNicknameMapPrefName));
   CreateDeviceNameManager();
@@ -416,14 +416,14 @@ TEST_F(DeviceNameManagerImplTest, Migration_MigrationHappensOnce) {
   EXPECT_TRUE(floss::features::IsFlossEnabled());
 
   // The value that we will set the existing/pre-migration prefs to.
-  auto existing_prefs = base::Value::Dict().Set(kTestIdBluez, kTestNickname);
+  auto existing_prefs = base::DictValue().Set(kTestIdBluez, kTestNickname);
   local_state()->Set(DeviceNameManager::kDeviceIdToNicknameMapPrefNameLegacy,
                      base::Value(existing_prefs.Clone()));
 
   // Set the pref to some arbitrary value since we just want to confirm that if
   // the pref has a value we will assume that we have already performed the
   // migration and will not attempt another migration.
-  base::Value::Dict new_prefs;
+  base::DictValue new_prefs;
   local_state()->Set(DeviceNameManager::kDeviceIdToNicknameMapPrefName,
                      base::Value(new_prefs.Clone()));
 
@@ -432,7 +432,7 @@ TEST_F(DeviceNameManagerImplTest, Migration_MigrationHappensOnce) {
 
   CreateDeviceNameManager();
 
-  const base::Value::Dict& migrated_prefs =
+  const base::DictValue& migrated_prefs =
       local_state()->GetDict(DeviceNameManager::kDeviceIdToNicknameMapPrefName);
   EXPECT_EQ(new_prefs, migrated_prefs);
 }
@@ -443,7 +443,7 @@ TEST_F(DeviceNameManagerImplTest, Migration) {
   EXPECT_TRUE(floss::features::IsFlossEnabled());
 
   // The value that we expect to be migrated.
-  auto existing_prefs = base::Value::Dict()
+  auto existing_prefs = base::DictValue()
                             .Set(kTestIdBluez, kTestNickname)
                             .Set(kTestIdFloss1, kTestNickname);
 
@@ -455,7 +455,7 @@ TEST_F(DeviceNameManagerImplTest, Migration) {
 
   CreateDeviceNameManager();
 
-  auto migrated_prefs = base::Value::Dict()
+  auto migrated_prefs = base::DictValue()
                             .Set(kTestIdFloss0, kTestNickname)
                             .Set(kTestIdFloss1, kTestNickname);
   EXPECT_EQ(migrated_prefs,

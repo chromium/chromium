@@ -119,20 +119,19 @@ TEST_F(ShillManagerClientTest, GetProperties) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set(shill::kArpGatewayProperty, true);
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Prepare result callback to get the properties.
-  base::test::TestFuture<std::optional<base::Value::Dict>>
-      get_properties_result;
+  base::test::TestFuture<std::optional<base::DictValue>> get_properties_result;
   // Call method.
   client_->GetProperties(get_properties_result.GetCallback());
-  std::optional<base::Value::Dict> result = get_properties_result.Take();
+  std::optional<base::DictValue> result = get_properties_result.Take();
   EXPECT_TRUE(result.has_value());
-  const base::Value::Dict& result_value = result.value();
+  const base::DictValue& result_value = result.value();
   EXPECT_EQ(expected_value, result_value);
 }
 
@@ -164,11 +163,11 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   writer.CloseContainer(&type_dict_writer);
 
   // Create the expected value.
-  base::Value::Dict property_dict;
+  base::DictValue property_dict;
   property_dict.Set(shill::kGeoMacAddressProperty, "01:23:45:67:89:AB");
-  base::Value::List type_entry_list;
+  base::ListValue type_entry_list;
   type_entry_list.Append(std::move(property_dict));
-  base::Value::Dict type_dict;
+  base::DictValue type_dict;
   type_dict.Set("wifi", std::move(type_entry_list));
 
   // Set expectations.
@@ -176,13 +175,13 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
                        base::BindRepeating(&ExpectNoArgument), response.get());
 
   // Prepare result callback to get the networks dictionary.
-  base::test::TestFuture<std::optional<base::Value::Dict>> get_networks_result;
+  base::test::TestFuture<std::optional<base::DictValue>> get_networks_result;
   // Call method.
   client_->GetNetworksForGeolocation(get_networks_result.GetCallback());
   // Check if result is as expected.
-  std::optional<base::Value::Dict> result = get_networks_result.Take();
+  std::optional<base::DictValue> result = get_networks_result.Take();
   EXPECT_TRUE(result.has_value());
-  const base::Value::Dict& result_value = result.value();
+  const base::DictValue& result_value = result.value();
   EXPECT_EQ(type_dict, result_value);
 }
 
@@ -305,7 +304,7 @@ TEST_F(ShillManagerClientTest, ConfigureService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  base::Value::Dict arg = CreateExampleServiceProperties();
+  base::DictValue arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
@@ -333,7 +332,7 @@ TEST_F(ShillManagerClientTest, GetService) {
   dbus::MessageWriter writer(response.get());
   writer.AppendObjectPath(object_path);
   // Create the argument dictionary.
-  base::Value::Dict arg = CreateExampleServiceProperties();
+  base::DictValue arg = CreateExampleServiceProperties();
   // Use a variant valued dictionary rather than a string valued one.
   const bool string_valued = false;
   // Set expectations.
@@ -467,7 +466,7 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
       shill::WiFiInterfacePriority::FOREGROUND_WITHOUT_FALLBACK;
 
   // Create response.
-  base::Value::Dict result_dictionary;
+  base::DictValue result_dictionary;
   result_dictionary.Set("shill_id", kShillId);
   result_dictionary.Set("result", kCreateGroupResult);
 
@@ -476,7 +475,7 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
   AppendValueDataAsVariant(&writer, result_dictionary);
 
   // Create input dictionary
-  base::Value::Dict input_dictionary;
+  base::DictValue input_dictionary;
   input_dictionary.Set(shill::kP2PDeviceSSID, kSSID);
   input_dictionary.Set(shill::kP2PDevicePassphrase, kPassphrase);
   input_dictionary.Set(shill::kP2PDeviceFrequency, kFrequency);
@@ -489,12 +488,12 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
                                            &input_dictionary, string_valued),
                        response.get());
 
-  base::test::TestFuture<base::Value::Dict> create_p2p_group_result;
+  base::test::TestFuture<base::DictValue> create_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->CreateP2PGroup(
       ShillManagerClient::CreateP2PGroupParameter(kSSID, kPassphrase,
                                                   kFrequency, kPriority),
-      create_p2p_group_result.GetCallback<base::Value::Dict>(),
+      create_p2p_group_result.GetCallback<base::DictValue>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(create_p2p_group_result.Get(), result_dictionary);
 }
@@ -508,7 +507,7 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
   const int kFrequency = 3;
 
   // Create response.
-  base::Value::Dict result_dictionary;
+  base::DictValue result_dictionary;
   result_dictionary.Set("shill_id", kShillId);
   result_dictionary.Set("result", kConnectToGroupResult);
 
@@ -517,7 +516,7 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
   AppendValueDataAsVariant(&writer, result_dictionary);
 
   // Create input dictionary
-  base::Value::Dict input_dictionary;
+  base::DictValue input_dictionary;
   input_dictionary.Set(shill::kP2PDeviceSSID, kSSID);
   input_dictionary.Set(shill::kP2PDevicePassphrase, kPassphrase);
   input_dictionary.Set(shill::kP2PDeviceFrequency, kFrequency);
@@ -530,12 +529,12 @@ TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
                                            &input_dictionary, string_valued),
                        response.get());
 
-  base::test::TestFuture<base::Value::Dict> connect_to_p2p_group_result;
+  base::test::TestFuture<base::DictValue> connect_to_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->ConnectToP2PGroup(
       ShillManagerClient::ConnectP2PGroupParameter(kSSID, kPassphrase,
                                                    kFrequency, std::nullopt),
-      connect_to_p2p_group_result.GetCallback<base::Value::Dict>(),
+      connect_to_p2p_group_result.GetCallback<base::DictValue>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(connect_to_p2p_group_result.Get(), result_dictionary);
 }
@@ -545,7 +544,7 @@ TEST_F(ShillManagerClientTest, DestroyP2PGroup) {
   const char kDestroyGroupResult[] = "success";
 
   // Create response.
-  base::Value::Dict result_dictionary;
+  base::DictValue result_dictionary;
   result_dictionary.Set("shill_id", kShillId);
   result_dictionary.Set("result", kDestroyGroupResult);
 
@@ -558,10 +557,10 @@ TEST_F(ShillManagerClientTest, DestroyP2PGroup) {
                        base::BindRepeating(&ExpectIntArgument, kShillId),
                        response.get());
 
-  base::test::TestFuture<base::Value::Dict> destroy_p2p_group_result;
+  base::test::TestFuture<base::DictValue> destroy_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->DestroyP2PGroup(
-      kShillId, destroy_p2p_group_result.GetCallback<base::Value::Dict>(),
+      kShillId, destroy_p2p_group_result.GetCallback<base::DictValue>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(destroy_p2p_group_result.Get(), result_dictionary);
 }
@@ -571,7 +570,7 @@ TEST_F(ShillManagerClientTest, DisconnectFromP2PGroup) {
   const char kDisconnectFromGroupResult[] = "success";
 
   // Create response.
-  base::Value::Dict result_dictionary;
+  base::DictValue result_dictionary;
   result_dictionary.Set("shill_id", kShillId);
   result_dictionary.Set("result", kDisconnectFromGroupResult);
 
@@ -584,11 +583,10 @@ TEST_F(ShillManagerClientTest, DisconnectFromP2PGroup) {
                        base::BindRepeating(&ExpectIntArgument, kShillId),
                        response.get());
 
-  base::test::TestFuture<base::Value::Dict> disconnect_from_p2p_group_result;
+  base::test::TestFuture<base::DictValue> disconnect_from_p2p_group_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->DisconnectFromP2PGroup(
-      kShillId,
-      disconnect_from_p2p_group_result.GetCallback<base::Value::Dict>(),
+      kShillId, disconnect_from_p2p_group_result.GetCallback<base::DictValue>(),
       error_result.GetCallback<const std::string&, const std::string&>());
   EXPECT_EQ(disconnect_from_p2p_group_result.Get(), result_dictionary);
 }

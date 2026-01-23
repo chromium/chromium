@@ -25,7 +25,7 @@ class DeviceImageInfo {
   // properties. Should be provided a dictionary created via
   // ToDictionaryValue().
   static std::optional<DeviceImageInfo> FromDictionaryValue(
-      const base::Value::Dict& value);
+      const base::DictValue& value);
 
   DeviceImageInfo(const std::string& default_image,
                   const std::string& left_bud_image,
@@ -36,7 +36,7 @@ class DeviceImageInfo {
   DeviceImageInfo& operator=(const DeviceImageInfo&);
   ~DeviceImageInfo();
 
-  base::Value::Dict ToDictionaryValue() const;
+  base::DictValue ToDictionaryValue() const;
 
   const std::string& default_image() const { return default_image_; }
   const std::string& left_bud_image() const { return left_bud_image_; }

@@ -362,7 +362,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
   void SetupUserPolicy(const std::string& network_configs_json) {
-    base::Value::List network_configs;
+    base::ListValue network_configs;
     if (!network_configs_json.empty()) {
       auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
           network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -372,13 +372,13 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     }
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
-        /*global_network_config=*/base::Value::Dict());
+        /*global_network_config=*/base::DictValue());
     task_environment_.RunUntilIdle();
   }
 
   void SetupDevicePolicy(const std::string& network_configs_json,
-                         const base::Value::Dict& global_config) {
-    base::Value::List network_configs;
+                         const base::DictValue& global_config) {
+    base::ListValue network_configs;
     if (!network_configs_json.empty()) {
       auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
           network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -451,17 +451,17 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void SetCellularSimLocked() {
     // Simulate a locked SIM.
-    auto sim_lock_status = base::Value::Dict().Set(shill::kSIMLockTypeProperty,
-                                                   shill::kSIMLockPin);
+    auto sim_lock_status =
+        base::DictValue().Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMLockStatusProperty,
         base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    auto sim_slot_infos = base::Value::List().Append(
-        base::Value::Dict()
-            .Set(shill::kSIMSlotInfoICCID, kTestIccid)
-            .Set(shill::kSIMSlotInfoPrimary, true));
+    auto sim_slot_infos =
+        base::ListValue().Append(base::DictValue()
+                                     .Set(shill::kSIMSlotInfoICCID, kTestIccid)
+                                     .Set(shill::kSIMSlotInfoPrimary, true));
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
         base::Value(std::move(sim_slot_infos)), /*notify_changed=*/true);
@@ -471,15 +471,15 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
   void SetCellularSimCarrierLocked() {
     // Simulate a locked SIM.
-    base::Value::Dict sim_lock_status;
+    base::DictValue sim_lock_status;
     sim_lock_status.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMLockStatusProperty,
         base::Value(std::move(sim_lock_status)), /*notify_changed=*/true);
 
     // Set the cellular service to be the active profile.
-    base::Value::List sim_slot_infos;
-    base::Value::Dict slot_info_item;
+    base::ListValue sim_slot_infos;
+    base::DictValue slot_info_item;
     slot_info_item.Set(shill::kSIMSlotInfoICCID, kTestIccid);
     slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
     sim_slot_infos.Append(std::move(slot_info_item));
@@ -692,7 +692,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
   ASSERT_FALSE(wifi0_service_path.empty());
-  auto global_config = base::Value::Dict().Set(
+  auto global_config = base::DictValue().Set(
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect, true);
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");
@@ -763,8 +763,8 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   // Set a device policy which blocks wifi0.
   auto blocked =
-      base::Value::List().Append("7769666930");  // hex(wifi0) = 7769666930
-  auto global_config = base::Value::Dict().Set(
+      base::ListValue().Append("7769666930");  // hex(wifi0) = 7769666930
+  auto global_config = base::DictValue().Set(
       ::onc::global_network_config::kBlockedHexSSIDs, std::move(blocked));
   SetupDevicePolicy("[]", global_config);
   SetupUserPolicy("[]");

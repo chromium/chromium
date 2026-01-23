@@ -47,10 +47,10 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
     const NetworkState& network,
     const NetworkProfileHandler* network_profile_handler,
     ::onc::ONCSource* onc_source) {
-  const base::Value::Dict* network_policy = onc::GetPolicyForNetwork(
+  const base::DictValue* network_policy = onc::GetPolicyForNetwork(
       profile_prefs, local_state_prefs, network, onc_source);
   if (network_policy) {
-    const base::Value::Dict* proxy_policy =
+    const base::DictValue* proxy_policy =
         network_policy->FindDict(::onc::network_config::kProxySettings);
     if (!proxy_policy) {
       // This policy doesn't set a proxy for this network. Nonetheless, this
@@ -60,7 +60,7 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
 
     return std::make_unique<ProxyConfigDictionary>(
         onc::ConvertOncProxySettingsToProxyConfig(*proxy_policy)
-            .value_or(base::Value::Dict()));
+            .value_or(base::DictValue()));
   }
 
   if (network.profile_path().empty())
@@ -86,7 +86,7 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
   // unshared) configuration.
   // The user's proxy setting is not stored in the Chrome preference yet. We
   // still rely on Shill storing it.
-  const std::optional<base::Value::Dict>& value = network.proxy_config();
+  const std::optional<base::DictValue>& value = network.proxy_config();
   if (!value) {
     return nullptr;
   }

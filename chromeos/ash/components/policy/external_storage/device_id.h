@@ -48,7 +48,7 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) DeviceId {
   static std::optional<DeviceId> FromDisk(const ash::disks::Disk* disk);
 
   // Creates a Value::Dict from the current DeviceId. Opposite of `FromDict`.
-  base::Value::Dict ToDict() const;
+  base::DictValue ToDict() const;
 
   friend bool operator==(const DeviceId&, const DeviceId&) = default;
 

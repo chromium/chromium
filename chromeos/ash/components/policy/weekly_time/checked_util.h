@@ -23,7 +23,7 @@ namespace policy::weekly_time {
 // `chromeos::prefs::kDeviceRestrictionSchedule`. Returns std::nullopt on error.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 std::optional<std::vector<WeeklyTimeIntervalChecked>> ExtractIntervalsFromList(
-    const base::Value::List& list);
+    const base::ListValue& list);
 
 // Returns whether any of the intervals contain the given time.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)

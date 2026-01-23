@@ -75,7 +75,7 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
 
 // static
 std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* name_string = dict.FindString(kBundleNameDictKey);
   if (!name_string)
     return std::nullopt;
@@ -87,7 +87,7 @@ std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
 
   CryptAuthKeyBundle bundle(*name);
 
-  const base::Value::List* keys = dict.FindList(kKeyListDictKey);
+  const base::ListValue* keys = dict.FindList(kKeyListDictKey);
   if (!keys)
     return std::nullopt;
 
@@ -174,12 +174,12 @@ void CryptAuthKeyBundle::DeactivateKeys() {
     handle_key_pair.second.set_status(CryptAuthKey::Status::kInactive);
 }
 
-base::Value::Dict CryptAuthKeyBundle::AsDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthKeyBundle::AsDictionary() const {
+  base::DictValue dict;
 
   dict.Set(kBundleNameDictKey, KeyBundleNameEnumToString(name_));
 
-  base::Value::List keys;
+  base::ListValue keys;
   for (const auto& handle_key_pair : handle_to_key_map_) {
     if (handle_key_pair.second.IsSymmetricKey()) {
       keys.Append(handle_key_pair.second.AsSymmetricKeyDictionary());

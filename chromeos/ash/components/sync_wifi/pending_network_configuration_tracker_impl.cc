@@ -30,7 +30,7 @@ std::string GeneratePath(const NetworkIdentifier& id,
 }
 
 PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
-    base::Value::Dict* dict,
+    base::DictValue* dict,
     const NetworkIdentifier& id) {
   std::string* change_guid = dict->FindString(kChangeGuidKey);
   std::optional<sync_pb::WifiConfigurationSpecifics> specifics;

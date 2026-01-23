@@ -181,7 +181,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestVerifyParameters) {
   std::optional<base::Value> request_value = base::JSONReader::Read(
       network::GetUploadData(request), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_value.has_value());
-  base::Value::Dict* request_body = request_value->GetIfDict();
+  base::DictValue* request_body = request_value->GetIfDict();
   ASSERT_NE(nullptr, request_body);
 
   // Verify gcm registration id
@@ -190,7 +190,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestVerifyParameters) {
   EXPECT_EQ(kFcmToken, *value);
 
   // Verify all device parameters
-  base::Value::Dict* device_id = request_body->FindDict("deviceIdentifier");
+  base::DictValue* device_id = request_body->FindDict("deviceIdentifier");
   ASSERT_NE(nullptr, device_id);
 
   value = device_id->FindString("serialNumber");
@@ -231,11 +231,11 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestEmptyAttestedId) {
   std::optional<base::Value> request_value = base::JSONReader::Read(
       network::GetUploadData(request), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_value.has_value());
-  base::Value::Dict* request_body = request_value->GetIfDict();
+  base::DictValue* request_body = request_value->GetIfDict();
   ASSERT_NE(nullptr, request_body);
 
   // Verify all device parameters
-  base::Value::Dict* device_id = request_body->FindDict("deviceIdentifier");
+  base::DictValue* device_id = request_body->FindDict("deviceIdentifier");
   ASSERT_NE(nullptr, device_id);
 
   value = device_id->FindString("serialNumber");

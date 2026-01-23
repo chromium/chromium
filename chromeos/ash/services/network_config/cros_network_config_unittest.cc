@@ -164,7 +164,7 @@ struct ApnHistogramCounts {
 
 void CompareTrafficCounters(
     const std::vector<mojom::TrafficCounterPtr>& actual_traffic_counters,
-    const base::Value::List& expected_traffic_counters,
+    const base::ListValue& expected_traffic_counters,
     enum ComparisonType comparison_type) {
   EXPECT_EQ(actual_traffic_counters.size(), expected_traffic_counters.size());
   for (size_t i = 0; i < actual_traffic_counters.size(); i++) {
@@ -185,11 +185,11 @@ void CompareTrafficCounters(
   }
 }
 
-void AddSimSlotInfoToList(base::Value::List& ordered_sim_slot_info_list,
+void AddSimSlotInfoToList(base::ListValue& ordered_sim_slot_info_list,
                           const std::string& eid,
                           const std::string& iccid,
                           bool primary = false) {
-  base::Value::Dict item;
+  base::DictValue item;
   item.Set(shill::kSIMSlotInfoEID, eid);
   item.Set(shill::kSIMSlotInfoICCID, iccid);
   item.Set(shill::kSIMSlotInfoPrimary, primary);
@@ -236,7 +236,7 @@ mojom::ConfigPropertiesPtr CreateFakeVpnConfig(std::string name,
   return config;
 }
 
-bool OncApnHasId(const base::Value::Dict& apn) {
+bool OncApnHasId(const base::DictValue& apn) {
   if (const std::string* id = apn.FindString(::onc::cellular_apn::kId)) {
     return re2::RE2::FullMatch(*id, kApnIdRegex);
   }
@@ -244,7 +244,7 @@ bool OncApnHasId(const base::Value::Dict& apn) {
 }
 
 bool ApnListsMatch(const std::vector<TestApnData*>& expected_apns,
-                   const base::Value::List& actual_apns,
+                   const base::ListValue& actual_apns,
                    bool has_state_field,
                    bool is_password_masked) {
   if (expected_apns.size() != actual_apns.size()) {
@@ -253,7 +253,7 @@ bool ApnListsMatch(const std::vector<TestApnData*>& expected_apns,
 
   for (size_t i = 0; i < expected_apns.size(); i++) {
     DCHECK(actual_apns[i].is_dict());
-    const base::Value::Dict& actual_apn = actual_apns[i].GetDict();
+    const base::DictValue& actual_apn = actual_apns[i].GetDict();
     if (!OncApnHasId(actual_apn)) {
       return false;
     }
@@ -358,11 +358,11 @@ class CrosNetworkConfigTest : public testing::Test {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value::List(),
-        /*global_network_config=*/base::Value::Dict());
+        /*network_configs_onc=*/base::ListValue(),
+        /*global_network_config=*/base::DictValue());
 
     const std::string user_policy_ssid = "wifi2";
-    std::optional<base::Value::Dict> wifi2_onc =
+    std::optional<base::DictValue> wifi2_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({"GUID": "wifi2_guid", "Type": "WiFi",
                 "Name": "wifi2", "Priority": 0,
@@ -372,7 +372,7 @@ class CrosNetworkConfigTest : public testing::Test {
             base::HexEncode(user_policy_ssid).c_str()));
     ASSERT_TRUE(wifi2_onc.has_value());
 
-    std::optional<base::Value::Dict> wifi_eap_onc =
+    std::optional<base::DictValue> wifi_eap_onc =
         chromeos::onc::ReadDictionaryFromJson(
             R"({ "GUID": "wifi_eap",
              "Name": "wifi_eap",
@@ -396,7 +396,7 @@ class CrosNetworkConfigTest : public testing::Test {
            })");
     ASSERT_TRUE(wifi_eap_onc.has_value());
 
-    std::optional<base::Value::Dict> openvpn_onc =
+    std::optional<base::DictValue> openvpn_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({ "GUID": "openvpn_guid", "Name": "openvpn", "Type": "VPN", "VPN": {
           "Host": "my.vpn.example.com", "Type": "OpenVPN", "OpenVPN": {
@@ -406,13 +406,13 @@ class CrosNetworkConfigTest : public testing::Test {
             kOpenVPNTLSAuthContents));
     ASSERT_TRUE(openvpn_onc.has_value());
 
-    base::Value::List user_policy_onc;
+    base::ListValue user_policy_onc;
     user_policy_onc.Append(std::move(*wifi2_onc));
     user_policy_onc.Append(std::move(*wifi_eap_onc));
     user_policy_onc.Append(std::move(*openvpn_onc));
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
-        /*global_network_config=*/base::Value::Dict());
+        /*global_network_config=*/base::DictValue());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -424,7 +424,7 @@ class CrosNetworkConfigTest : public testing::Test {
                                             true /* enabled */);
     helper()->device_test()->AddDevice(
         kCellularDevicePath, shill::kTypeCellular, "stub_cellular_device");
-    base::Value::Dict sim_value;
+    base::DictValue sim_value;
     sim_value.Set(shill::kSIMLockEnabledProperty, true);
     sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
     sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
@@ -445,7 +445,7 @@ class CrosNetworkConfigTest : public testing::Test {
         /*notify_changed=*/false);
 
     // Setup SimSlotInfo
-    base::Value::List ordered_sim_slot_info_list;
+    base::ListValue ordered_sim_slot_info_list;
     AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"",
                          kCellularTestIccid,
                          /*primary=*/true);
@@ -511,7 +511,7 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   void SetupAPNList() {
-    base::Value::List apn_entries;
+    base::ListValue apn_entries;
     TestApnData apn_entry1;
     apn_entry1.access_point_name = kCellularTestApn1;
     apn_entry1.name = kCellularTestApnName1;
@@ -871,13 +871,13 @@ class CrosNetworkConfigTest : public testing::Test {
 
   void RequestTrafficCountersAndCompareTrafficCounters(
       const std::string& guid,
-      const base::Value::List& traffic_counters,
+      const base::ListValue& traffic_counters,
       ComparisonType comparison_type) {
     base::RunLoop run_loop;
     cros_network_config()->RequestTrafficCounters(
         guid,
         base::BindOnce(
-            [](const base::Value::List* expected_traffic_counters,
+            [](const base::ListValue* expected_traffic_counters,
                ComparisonType type, base::OnceClosure quit_closure,
                std::vector<mojom::TrafficCounterPtr> actual_traffic_counters) {
               CompareTrafficCounters(actual_traffic_counters,
@@ -959,19 +959,19 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   void SetAllowApnModification(bool allow_apn_modification) {
-    base::Value::Dict global_config;
+    base::DictValue global_config;
     global_config.Set(::onc::global_network_config::kAllowAPNModification,
                       allow_apn_modification);
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value::List(), global_config);
+        /*network_configs_onc=*/base::ListValue(), global_config);
     base::RunLoop().RunUntilIdle();
   }
 
   bool CustomApnsInNetworkMetadataStoreMatch(
       const std::string& guid,
       const std::vector<TestApnData*>& expected_apns) {
-    if (const base::Value::List* custom_apns =
+    if (const base::ListValue* custom_apns =
             network_metadata_store()->GetCustomApnList(guid)) {
       return ApnListsMatch(expected_apns, *custom_apns,
                            /*has_state_field=*/true,
@@ -984,18 +984,18 @@ class CrosNetworkConfigTest : public testing::Test {
       const std::string& guid,
       const std::vector<TestApnData*>& expected_apns,
       const TestNetworkConfigurationObserver& observer) {
-    const base::Value::Dict* user_settings = observer.GetUserSettings(guid);
+    const base::DictValue* user_settings = observer.GetUserSettings(guid);
     if (!user_settings) {
       return expected_apns.empty();
     }
 
-    const base::Value::Dict* cellular_settings =
+    const base::DictValue* cellular_settings =
         user_settings->FindDict(::onc::network_type::kCellular);
     if (!cellular_settings) {
       return false;
     }
 
-    const base::Value::List* custom_apns =
+    const base::ListValue* custom_apns =
         cellular_settings->FindList(::onc::cellular::kCustomAPNList);
     if (!custom_apns) {
       return false;
@@ -1508,7 +1508,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   base::RunLoop().RunUntilIdle();
 
   // Add pSIM and eSIM slot info to Shill.
-  base::Value::List ordered_sim_slot_info_list;
+  base::ListValue ordered_sim_slot_info_list;
   // Add pSIM first to correspond to |psim_physical_slot| index. Note that
   // pSIMs do not have EIDs.
   AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"", kTestPSimIccid,
@@ -1709,7 +1709,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListFlashing) {
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
   auto set_home_provider = [this](std::string_view name, std::string_view code,
                                   std::string_view country) {
-    base::Value::Dict home_provider;
+    base::DictValue home_provider;
     home_provider.Set("name", name);
     home_provider.Set("code", code);
     home_provider.Set("country", country);
@@ -1753,7 +1753,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLocked) {
   /* Lock the SIM using network-pin */
-  base::Value::Dict sim_value;
+  base::DictValue sim_value;
   sim_value.Set(shill::kSIMLockEnabledProperty, true);
   sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
   sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
@@ -1779,7 +1779,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLocked) {
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLockedDisabled) {
   /* Lock the SIM using network-pin */
-  base::Value::Dict sim_value;
+  base::DictValue sim_value;
   sim_value.Set(shill::kSIMLockEnabledProperty, true);
   sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockPin);
   sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
@@ -1805,7 +1805,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCarrierLockedDisabled) {
 
 TEST_F(CrosNetworkConfigTest, SimStateCarrierLocked) {
   /* Lock the SIM using network-pin */
-  base::Value::Dict sim_value;
+  base::DictValue sim_value;
   sim_value.Set(shill::kSIMLockEnabledProperty, true);
   sim_value.Set(shill::kSIMLockTypeProperty, shill::kSIMLockNetworkPin);
   sim_value.Set(shill::kSIMLockRetriesLeftProperty, kSimRetriesLeft);
@@ -2167,7 +2167,7 @@ TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
   test_apn1.onc_state = ::onc::cellular_apn::kStateEnabled;
   test_apn1.id = "apn_id_1";
 
-  auto populated_apn_list = base::Value::List().Append(test_apn1.AsOncApn());
+  auto populated_apn_list = base::ListValue().Append(test_apn1.AsOncApn());
 
   NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
       kCellularGuid, populated_apn_list.Clone());
@@ -2177,7 +2177,7 @@ TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
       kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
       CreateApnShillDict().c_str()));
 
-  std::optional<base::Value::List> shill_custom_apns =
+  std::optional<base::ListValue> shill_custom_apns =
       helper()->GetServiceListProperty(service_path,
                                        shill::kCellularCustomApnListProperty);
   ASSERT_FALSE(shill_custom_apns.has_value());
@@ -2222,7 +2222,7 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
       std::move(cellular_config));
   SetProperties(kCellularGuid, std::move(config));
-  const base::Value::List* apn_list =
+  const base::ListValue* apn_list =
       NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
           kCellularGuid);
   ASSERT_FALSE(apn_list);
@@ -2308,7 +2308,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -2431,7 +2431,7 @@ TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -2563,7 +2563,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -2776,7 +2776,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -2817,7 +2817,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -2998,8 +2998,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  network_metadata_store()->SetCustomApnList(kCellularGuid,
-                                             base::Value::List());
+  network_metadata_store()->SetCustomApnList(kCellularGuid, base::ListValue());
 
   EXPECT_TRUE(CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, {}));
   EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -3088,7 +3087,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
       network_configuration_handler());
 
   const std::string guid = "invalid";
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(guid);
   ASSERT_FALSE(custom_apns);
 
@@ -3167,7 +3166,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
   }
 
   // Verify that RemoveCustomApn deletes the second custom APN
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_TRUE(custom_apns);
   ASSERT_EQ(2u, custom_apns->size());
@@ -3256,7 +3255,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -3324,8 +3323,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   AssertApnHistogramCounts(counts);
   // Try to replace an APN when the custom APN list is empty, it should do
   // nothing
-  network_metadata_store()->SetCustomApnList(kCellularGuid,
-                                             base::Value::List());
+  network_metadata_store()->SetCustomApnList(kCellularGuid, base::ListValue());
   ModifyCustomApn(kCellularGuid, test_apn1.AsMojoApn());
   EXPECT_EQ(expected_network_config_calls,
             network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -3357,7 +3355,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
   }
 
   // Verify that ModifyCustomApn replaces the first custom APN
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_TRUE(custom_apns);
   ASSERT_EQ(2u, custom_apns->size());
@@ -3514,7 +3512,7 @@ TEST_F(CrosNetworkConfigTest,
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -3559,7 +3557,7 @@ TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
   TestNetworkConfigurationObserver network_config_observer(
       network_configuration_handler());
 
-  const base::Value::List* custom_apns =
+  const base::ListValue* custom_apns =
       network_metadata_store()->GetCustomApnList(kCellularGuid);
   ASSERT_FALSE(custom_apns);
 
@@ -3855,7 +3853,7 @@ TEST_F(CrosNetworkConfigTest,
 
 TEST_F(CrosNetworkConfigTest,
        AllowTextMessagesPolicyValueWithSuppressTextMessagesFlagEnabled) {
-  base::Value::Dict global_config;
+  base::DictValue global_config;
 
   // When the policy is explicitly Suppress, the managed boolean policy value
   // should return false and the policy source should be device enforced.
@@ -3864,7 +3862,7 @@ TEST_F(CrosNetworkConfigTest,
 
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
 
   AssertCellularAllowTextMessages(kCellularGuid,
@@ -3878,7 +3876,7 @@ TEST_F(CrosNetworkConfigTest,
                     ::onc::cellular::kTextMessagesAllow);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
 
   AssertCellularAllowTextMessages(kCellularGuid,
@@ -3891,7 +3889,7 @@ TEST_F(CrosNetworkConfigTest,
                     ::onc::cellular::kTextMessagesUnset);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
 
   AssertCellularAllowTextMessages(kCellularGuid,
@@ -3902,8 +3900,8 @@ TEST_F(CrosNetworkConfigTest,
   // When global network configuration is not set, we treat it as unset.
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(),
-      /*global_network_config=*/base::Value::Dict());
+      /*network_configs_onc=*/base::ListValue(),
+      /*global_network_config=*/base::DictValue());
   base::RunLoop().RunUntilIdle();
 
   AssertCellularAllowTextMessages(kCellularGuid,
@@ -4235,20 +4233,20 @@ TEST_F(CrosNetworkConfigTest, RequestNetworkScan) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetGlobalPolicy) {
-  base::Value::Dict global_config;
+  base::DictValue global_config;
   global_config.Set(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       true);
   global_config.Set(::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
                     false);
-  base::Value::List blocked;
+  base::ListValue blocked;
   blocked.Append("blocked_ssid1");
   blocked.Append("blocked_ssid2");
   global_config.Set(::onc::global_network_config::kBlockedHexSSIDs,
                     std::move(blocked));
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -4272,7 +4270,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
   SetupObserver();
   EXPECT_EQ(0, observer()->GetPolicyAppliedCount(/*userhash=*/std::string()));
 
-  base::Value::Dict global_config;
+  base::DictValue global_config;
   global_config.Set(::onc::global_network_config::kAllowAPNModification, false);
   global_config.Set(::onc::global_network_config::kAllowCellularSimLock, false);
   global_config.Set(::onc::global_network_config::kAllowCellularHotspot, false);
@@ -4282,7 +4280,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
                     false);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -4307,7 +4305,7 @@ TEST_F(CrosNetworkConfigTest, GlobalPolicyApplied) {
 
 TEST_F(CrosNetworkConfigTest,
        GetGlobalPolicy_EphemeralNetworkPolicies_Disabled) {
-  base::Value::Dict global_config;
+  base::DictValue global_config;
   global_config.Set(
       ::onc::global_network_config::kRecommendedValuesAreEphemeral, true);
   global_config.Set(::onc::global_network_config::
@@ -4315,7 +4313,7 @@ TEST_F(CrosNetworkConfigTest,
                     true);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
   mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
   ASSERT_TRUE(policy);
@@ -4327,12 +4325,12 @@ TEST_F(CrosNetworkConfigTest,
        GetGlobalPolicy_EphemeralNetworkPolicies_Enabled) {
   policy_util::SetEphemeralNetworkPoliciesEnabled();
 
-  base::Value::Dict global_config;
+  base::DictValue global_config;
   global_config.Set(
       ::onc::global_network_config::kRecommendedValuesAreEphemeral, true);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
   {
     mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
@@ -4346,7 +4344,7 @@ TEST_F(CrosNetworkConfigTest,
                     true);
   managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(), global_config);
+      /*network_configs_onc=*/base::ListValue(), global_config);
   base::RunLoop().RunUntilIdle();
   {
     mojom::GlobalPolicyPtr policy = GetGlobalPolicy();
@@ -4676,15 +4674,15 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
                             features::kTrafficCountersForWiFiTesting},
       /*disabled_features=*/{});
   traffic_counters::TrafficCountersHandler::InitializeForTesting();
-  base::Value::List traffic_counters;
+  base::ListValue traffic_counters;
 
-  base::Value::Dict chrome_dict;
+  base::DictValue chrome_dict;
   chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
   chrome_dict.Set("rx_bytes", 12);
   chrome_dict.Set("tx_bytes", 32);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value::Dict user_dict;
+  base::DictValue user_dict;
   user_dict.Set("source", shill::kTrafficCounterSourceUser);
   user_dict.Set("rx_bytes", 90);
   user_dict.Set("tx_bytes", 87);
@@ -4704,15 +4702,15 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
                             features::kTrafficCountersForWiFiTesting},
       /*disabled_features=*/{});
   traffic_counters::TrafficCountersHandler::InitializeForTesting();
-  base::Value::List traffic_counters;
+  base::ListValue traffic_counters;
 
-  base::Value::Dict chrome_dict;
+  base::DictValue chrome_dict;
   chrome_dict.Set("source", shill::kTrafficCounterSourceChrome);
   chrome_dict.Set("rx_bytes", 123456789987.0);
   chrome_dict.Set("tx_bytes", 3211234567898.0);
   traffic_counters.Append(std::move(chrome_dict));
 
-  base::Value::Dict user_dict;
+  base::DictValue user_dict;
   user_dict.Set("source", shill::kTrafficCounterSourceUser);
   user_dict.Set("rx_bytes", 9000000000000000.0);
   user_dict.Set("tx_bytes", 8765432112345.0);

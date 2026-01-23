@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) OncParsedCertificates {
   OncParsedCertificates();
 
   // Parses |onc_certificates|.
-  explicit OncParsedCertificates(const base::Value::List& onc_certificates);
+  explicit OncParsedCertificates(const base::ListValue& onc_certificates);
 
   OncParsedCertificates(const OncParsedCertificates&) = delete;
   OncParsedCertificates& operator=(const OncParsedCertificates&) = delete;
@@ -120,12 +120,12 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) OncParsedCertificates {
   bool has_error() const { return has_error_; }
 
  private:
-  bool ParseCertificate(const base::Value::Dict& onc_certificate);
+  bool ParseCertificate(const base::DictValue& onc_certificate);
   bool ParseServerOrCaCertificate(ServerOrAuthorityCertificate::Type type,
                                   const std::string& guid,
-                                  const base::Value::Dict& onc_certificate);
+                                  const base::DictValue& onc_certificate);
   bool ParseClientCertificate(const std::string& guid,
-                              const base::Value::Dict& onc_certificate);
+                              const base::DictValue& onc_certificate);
 
   std::vector<ServerOrAuthorityCertificate> server_or_authority_certificates_;
   std::vector<ClientCertificate> client_certificates_;

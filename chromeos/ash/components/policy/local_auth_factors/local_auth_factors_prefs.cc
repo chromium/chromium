@@ -14,8 +14,7 @@ namespace policy::local_auth_factors {
 constexpr char kFactorsOptionAll[] = "ALL";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  auto local_auth_factors_default =
-      base::Value::List().Append(kFactorsOptionAll);
+  auto local_auth_factors_default = base::ListValue().Append(kFactorsOptionAll);
 
   registry->RegisterIntegerPref(
       ash::prefs::kLocalAuthFactorsComplexity,

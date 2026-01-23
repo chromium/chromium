@@ -60,7 +60,7 @@ bool UploadTokenRequest::GetContentData(std::string* upload_content_type,
                                         std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("token", token_);
 
   *upload_content = base::WriteJson(root).value_or("");

@@ -105,7 +105,7 @@ class ArcNetHostImpl : public KeyedService,
   void RemovePasspointCredentials(
       mojom::PasspointRemovalPropertiesPtr properties) override;
   void SetAlwaysOnVpn(const std::string& vpnPackage, bool lockdown) override;
-  base::Value::Dict TranslateVpnConfigurationToOnc(
+  base::DictValue TranslateVpnConfigurationToOnc(
       const mojom::AndroidVpnConfiguration& cfg);
   void DisconnectHostVpn() override;
   void StartLohs(mojom::LohsConfigPtr config,
@@ -167,18 +167,18 @@ class ArcNetHostImpl : public KeyedService,
   // ARC VPN connection.
   std::string LookupArcVpnServicePath();
 
-  // Convert a vector of strings, |string_list|, to a base::Value::List that can
+  // Convert a vector of strings, |string_list|, to a base::ListValue that can
   // be added to an ONC dictionary.  This is used for fields like NameServers,
   // SearchDomains, etc.
-  base::Value::List TranslateStringListToValue(
+  base::ListValue TranslateStringListToValue(
       const std::vector<std::string>& string_list);
 
-  // Convert a vector of uint64_t, |long_list|, to a base::Value::List that can
+  // Convert a vector of uint64_t, |long_list|, to a base::ListValue that can
   // be passed to shill. This is because 64-bit integer values are not supported
   // for base::Value.
   // The translated values will be a list of decimal string and not a single
   // string.
-  base::Value::List TranslateLongListToStringValue(
+  base::ListValue TranslateLongListToStringValue(
       const std::vector<uint64_t>& long_list);
 
   // Ask Shill to connect to the Android VPN with name |service_path|.
@@ -191,12 +191,12 @@ class ArcNetHostImpl : public KeyedService,
   // Ask Android to disconnect any VPN app that is currently connected.
   void DisconnectArcVpn();
 
-  // Translate EAP credentials to base::Value::Dict and run |callback|.
+  // Translate EAP credentials to base::DictValue and run |callback|.
   // If it is necessary to import certificates this method will asynchronously
   // import them and run |callback| afterwards.
   void TranslateEapCredentialsToDict(
       mojom::EapCredentialsPtr cred,
-      base::OnceCallback<void(base::Value::Dict)> callback);
+      base::OnceCallback<void(base::DictValue)> callback);
 
   // Synchronously translate EAP credentials to shill constants mapped
   // base::Value dictionary with with empty or imported certificate and slot
@@ -204,7 +204,7 @@ class ArcNetHostImpl : public KeyedService,
   // translate passpoint EAP credentials.
   void TranslateEapCredentialsToShillDictWithCertID(
       mojom::EapCredentialsPtr cred,
-      base::OnceCallback<void(base::Value::Dict)> callback,
+      base::OnceCallback<void(base::DictValue)> callback,
       const std::optional<std::string>& cert_id,
       const std::optional<int>& slot_id);
 
@@ -214,7 +214,7 @@ class ArcNetHostImpl : public KeyedService,
   // credentials.
   void TranslateEapCredentialsToOncDictWithCertID(
       const mojom::EapCredentialsPtr& eap,
-      base::OnceCallback<void(base::Value::Dict)> callback,
+      base::OnceCallback<void(base::DictValue)> callback,
       const std::optional<std::string>& cert_id,
       const std::optional<int>& slot_id);
 
@@ -226,29 +226,29 @@ class ArcNetHostImpl : public KeyedService,
   void TranslateEapCredentialsToDict(
       mojom::EapCredentialsPtr cred,
       bool is_onc,
-      base::OnceCallback<void(base::Value::Dict)> callback);
+      base::OnceCallback<void(base::DictValue)> callback);
 
-  // Translate passpoint credentials to base::Value::Dict and run
+  // Translate passpoint credentials to base::DictValue and run
   // |callback|. If it is necessary to import certificates this method will
   // asynchronously import them and run |callback| afterwards.
   void TranslatePasspointCredentialsToDict(
       mojom::PasspointCredentialsPtr cred,
-      base::OnceCallback<void(base::Value::Dict)> callback);
+      base::OnceCallback<void(base::DictValue)> callback);
 
-  // Synchronously translate passpoint credentials to base::Value::Dict
+  // Synchronously translate passpoint credentials to base::DictValue
   // with EAP fields translated inside |dict|. |callback| is then run with
   // the translated values.
   void TranslatePasspointCredentialsToDictWithEapTranslated(
       mojom::PasspointCredentialsPtr cred,
-      base::OnceCallback<void(base::Value::Dict)> callback,
-      base::Value::Dict dict);
+      base::OnceCallback<void(base::DictValue)> callback,
+      base::DictValue dict);
 
-  base::Value::Dict TranslateProxyConfiguration(
+  base::DictValue TranslateProxyConfiguration(
       const mojom::ArcProxyInfoPtr& http_proxy);
 
   // Synchronously calls Chrome OS to add passpoint credentials from ARC with
   // the properties values translated taken from mojo.
-  void AddPasspointCredentialsWithProperties(base::Value::Dict properties);
+  void AddPasspointCredentialsWithProperties(base::DictValue properties);
 
   // Get the app window with |package_name|. This is necessary to start the
   // user approval Passpoint dialog above the app. The app window is fetched by
@@ -271,9 +271,8 @@ class ArcNetHostImpl : public KeyedService,
       const std::string& error_name);
 
   // Callback for ash::NetworkHandler::GetShillProperties
-  void ReceiveShillProperties(
-      const std::string& service_path,
-      std::optional<base::Value::Dict> shill_properties);
+  void ReceiveShillProperties(const std::string& service_path,
+                              std::optional<base::DictValue> shill_properties);
 
   // PatchPanelClient::Observer implementation:
   void NetworkConfigurationChanged() override;
@@ -282,7 +281,7 @@ class ArcNetHostImpl : public KeyedService,
   // and create network in shill.
   void CreateNetworkWithEapTranslated(mojom::WifiConfigurationPtr cfg,
                                       CreateNetworkCallback callback,
-                                      base::Value::Dict eap_dict);
+                                      base::DictValue eap_dict);
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
@@ -291,7 +290,7 @@ class ArcNetHostImpl : public KeyedService,
   // state changes.
   bool observing_network_state_ = false;
   // Cached shill properties for all active networks, keyed by Service path.
-  std::map<std::string, base::Value::Dict> shill_network_properties_;
+  std::map<std::string, base::DictValue> shill_network_properties_;
 
   std::string cached_service_path_;
   std::string cached_guid_;

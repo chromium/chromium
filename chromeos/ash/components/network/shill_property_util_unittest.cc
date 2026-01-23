@@ -25,7 +25,7 @@ class ShillPropertyUtilTest : public testing::Test {
 std::string ShillPropertyUtilTest::GetPolicyFromSource(
     const ::onc::ONCSource& onc_source) {
   auto dictionary =
-      base::Value::Dict().Set(shill::kTypeProperty, shill::kTypeWifi);
+      base::DictValue().Set(shill::kTypeProperty, shill::kTypeWifi);
   shill_property_util::SetRandomMACPolicy(onc_source, &dictionary);
 
   return *dictionary.FindString(shill::kWifiRandomMACPolicy);

@@ -28,8 +28,8 @@ enum class CertificateType { kServer, kAuthority, kClient };
 // If a Scope element is not present, returns CertificateScope::Default().
 // If a Scope element is present but malformed, returns an empty std::optional.
 std::optional<CertificateScope> ParseCertScope(
-    const base::Value::Dict& onc_certificate) {
-  const base::Value::Dict* scope_dict =
+    const base::DictValue& onc_certificate) {
+  const base::DictValue* scope_dict =
       onc_certificate.FindDict(::onc::certificate::kScope);
   if (!scope_dict)
     return CertificateScope::Default();
@@ -39,9 +39,9 @@ std::optional<CertificateScope> ParseCertScope(
 
 // Returns true if the certificate described by |onc_certificate| requests web
 // trust.
-bool HasWebTrustFlag(const base::Value::Dict& onc_certificate) {
+bool HasWebTrustFlag(const base::DictValue& onc_certificate) {
   bool web_trust_flag = false;
-  const base::Value::List* trust_list =
+  const base::ListValue* trust_list =
       onc_certificate.FindList(::onc::certificate::kTrustBits);
   if (!trust_list)
     return false;
@@ -171,10 +171,10 @@ bool OncParsedCertificates::ClientCertificate::operator!=(
 }
 
 OncParsedCertificates::OncParsedCertificates()
-    : OncParsedCertificates(base::Value::List()) {}
+    : OncParsedCertificates(base::ListValue()) {}
 
 OncParsedCertificates::OncParsedCertificates(
-    const base::Value::List& onc_certificates) {
+    const base::ListValue& onc_certificates) {
   for (size_t i = 0; i < onc_certificates.size(); ++i) {
     const base::Value& onc_certificate = onc_certificates[i];
     DCHECK(onc_certificate.is_dict());
@@ -193,7 +193,7 @@ OncParsedCertificates::OncParsedCertificates(
 OncParsedCertificates::~OncParsedCertificates() = default;
 
 bool OncParsedCertificates::ParseCertificate(
-    const base::Value::Dict& onc_certificate) {
+    const base::DictValue& onc_certificate) {
   const std::string* guid =
       onc_certificate.FindString(::onc::certificate::kGUID);
   DCHECK(guid);
@@ -223,7 +223,7 @@ bool OncParsedCertificates::ParseCertificate(
 bool OncParsedCertificates::ParseServerOrCaCertificate(
     ServerOrAuthorityCertificate::Type type,
     const std::string& guid,
-    const base::Value::Dict& onc_certificate) {
+    const base::DictValue& onc_certificate) {
   std::optional<CertificateScope> scope = ParseCertScope(onc_certificate);
   if (!scope) {
     LOG(ERROR) << "Certificate has malformed 'Scope'";
@@ -260,7 +260,7 @@ bool OncParsedCertificates::ParseServerOrCaCertificate(
 
 bool OncParsedCertificates::ParseClientCertificate(
     const std::string& guid,
-    const base::Value::Dict& onc_certificate) {
+    const base::DictValue& onc_certificate) {
   const std::string* base64_pkcs12_data_key =
       onc_certificate.FindString(::onc::certificate::kPKCS12);
   if (!base64_pkcs12_data_key || base64_pkcs12_data_key->empty()) {

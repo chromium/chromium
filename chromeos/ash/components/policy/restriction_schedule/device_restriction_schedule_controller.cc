@@ -105,7 +105,7 @@ class DeviceRestrictionScheduleControllerImpl
 
   std::optional<base::Time> GetNextRunTime(base::Time current_time) const;
   State GetCurrentState(base::Time current_time) const;
-  bool UpdateIntervalsIfChanged(const base::Value::List& policy_value);
+  bool UpdateIntervalsIfChanged(const base::ListValue& policy_value);
 
   void StartNotificationTimer(base::Time current_time, base::Time logout_time);
   void StartRunTimer(base::Time next_run_time);
@@ -216,7 +216,7 @@ void DeviceRestrictionScheduleControllerImpl::LoggedInStateChanged() {
 }
 
 void DeviceRestrictionScheduleControllerImpl::OnPolicyUpdated() {
-  const base::Value::List& policy_value =
+  const base::ListValue& policy_value =
       registrar_.prefs()->GetList(chromeos::prefs::kDeviceRestrictionSchedule);
 
   if (!UpdateIntervalsIfChanged(policy_value)) {
@@ -321,7 +321,7 @@ State DeviceRestrictionScheduleControllerImpl::GetCurrentState(
 }
 
 bool DeviceRestrictionScheduleControllerImpl::UpdateIntervalsIfChanged(
-    const base::Value::List& policy_value) {
+    const base::ListValue& policy_value) {
   std::vector<WeeklyTimeIntervalChecked> new_intervals;
   auto intervals_opt = ExtractIntervalsFromList(policy_value);
   if (intervals_opt.has_value()) {

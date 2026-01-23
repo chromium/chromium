@@ -30,8 +30,8 @@ const std::string& GetCommonUrlPrefix() {
 }
 
 // Returns a URL filter that covers all URL navigations.
-base::Value::List GetAllTrafficFilter() {
-  base::Value::List all_traffic;
+base::ListValue GetAllTrafficFilter() {
+  base::ListValue all_traffic;
   all_traffic.Append(kAllTrafficWildcard);
   return all_traffic;
 }
@@ -45,8 +45,8 @@ void RemovePrefix(std::string& url_str, const std::string& prefix) {
   }
 }
 
-base::Value::List GetDomainLevelTrafficFilter(const GURL& url) {
-  base::Value::List allowed_traffic;
+base::ListValue GetDomainLevelTrafficFilter(const GURL& url) {
+  base::ListValue allowed_traffic;
 
   std::string domain_traffic_filter = url.GetWithEmptyPath().GetContent();
 
@@ -55,8 +55,8 @@ base::Value::List GetDomainLevelTrafficFilter(const GURL& url) {
   return allowed_traffic;
 }
 
-base::Value::List GetLimitedTrafficFilter(const GURL& url) {
-  base::Value::List allowed_traffic;
+base::ListValue GetLimitedTrafficFilter(const GURL& url) {
+  base::ListValue allowed_traffic;
   allowed_traffic.Append("." + url.spec());
   return allowed_traffic;
 }
@@ -72,7 +72,7 @@ OnTaskBlocklist::~OnTaskBlocklist() {
 
 // static
 bool OnTaskBlocklist::IsURLInDomain(const GURL& url, const GURL& domain_url) {
-  base::Value::List domain_level_traffic_filter =
+  base::ListValue domain_level_traffic_filter =
       GetDomainLevelTrafficFilter(domain_url);
   url_matcher::URLMatcher url_matcher;
   url_matcher::util::AddAllowFiltersWithLimit(&url_matcher,
@@ -343,12 +343,12 @@ OnTaskBlocklist::OnTaskBlocklistSource::OnTaskBlocklistSource(
   }
 }
 
-const base::Value::List*
+const base::ListValue*
 OnTaskBlocklist::OnTaskBlocklistSource::GetBlocklistSpec() const {
   return &blocklist_;
 }
 
-const base::Value::List*
+const base::ListValue*
 OnTaskBlocklist::OnTaskBlocklistSource::GetAllowlistSpec() const {
   return &allowlist_;
 }

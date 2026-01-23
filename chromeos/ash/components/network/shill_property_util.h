@@ -20,27 +20,27 @@ namespace shill_property_util {
 
 // Sets the |ssid| in |properties|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void SetSSID(const std::string& ssid, base::Value::Dict* properties);
+void SetSSID(const std::string& ssid, base::DictValue* properties);
 
 // Returns the SSID from |properties| in UTF-8 encoding. If |verbose_logging| is
 // true, detailed DEBUG log events will be added to the device event log. If
 // |unknown_encoding| != nullptr, it is set to whether the SSID is of unknown
 // encoding.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::string GetSSIDFromProperties(const base::Value::Dict& properties,
+std::string GetSSIDFromProperties(const base::DictValue& properties,
                                   bool verbose_logging,
                                   bool* unknown_encoding);
 
 // Returns the GUID (if available), SSID, or Name from |properties|. Only used
 // for logging and debugging.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::string GetNetworkIdFromProperties(const base::Value::Dict& properties);
+std::string GetNetworkIdFromProperties(const base::DictValue& properties);
 
 // Returns the name for the network represented by the Shill |properties|. For
 // WiFi it refers to the HexSSID.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string GetNameFromProperties(const std::string& service_path,
-                                  const base::Value::Dict& properties);
+                                  const base::DictValue& properties);
 
 // Returns the UIData specified by |value|. Returns NULL if the value cannot be
 // parsed.
@@ -50,19 +50,19 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(const base::Value& value);
 // |shill_dictionary|. If parsing fails or the field doesn't exist, returns
 // NULL.
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::Value::Dict& shill_dictionary);
+    const base::DictValue& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
 // |ui_data|. Sets the ONCSource property in |shill_dictionary|,
 // derived from |ui_data|.
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::Value::Dict* shill_dictionary);
+                        base::DictValue* shill_dictionary);
 
 // Sets the RandomMACPolicy property in |shill_dictionary|.
 // This is only a temporary logic, until UI is present.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetRandomMACPolicy(::onc::ONCSource onc_source,
-                        base::Value::Dict* shill_dictionary);
+                        base::DictValue* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.
@@ -72,17 +72,17 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
 // |service_properties| has the format that Shill exposes on reads, as opposed
 // to property dictionaries which are sent to Shill. Returns true only if all
 // required properties could be copied.
-bool CopyIdentifyingProperties(const base::Value::Dict& service_properties,
+bool CopyIdentifyingProperties(const base::DictValue& service_properties,
                                const bool properties_read_from_shill,
-                               base::Value::Dict* dest);
+                               base::DictValue* dest);
 
 // Compares the identifying configuration properties of |new_properties| and
 // |old_properties|, returns true if they are identical. |new_properties| must
 // have the form that Shill expects on writes. |old_properties| must have the
 // form that Shill exposes on reads. See also CopyIdentifyingProperties. Only
 // WiFi, VPN, Ethernet and EthernetEAP are supported. Cellular is not supported.
-bool DoIdentifyingPropertiesMatch(const base::Value::Dict& new_properties,
-                                  const base::Value::Dict& old_properties);
+bool DoIdentifyingPropertiesMatch(const base::DictValue& new_properties,
+                                  const base::DictValue& old_properties);
 
 // Returns false if |key| is something that should not be logged either
 // because it is sensitive or noisy. Note: this is not necessarily

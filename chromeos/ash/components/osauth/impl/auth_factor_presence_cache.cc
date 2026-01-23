@@ -22,10 +22,10 @@ std::string GetAuthPurposeKey(AuthPurpose purpose) {
   return base::NumberToString(static_cast<int>(purpose));
 }
 
-std::optional<AuthFactorsSet> GetForPurpose(const base::Value::Dict& cache,
+std::optional<AuthFactorsSet> GetForPurpose(const base::DictValue& cache,
                                             AuthPurpose purpose) {
   std::string purpose_key = GetAuthPurposeKey(purpose);
-  const base::Value::List* factor_list = cache.FindList(purpose_key);
+  const base::ListValue* factor_list = cache.FindList(purpose_key);
   if (!factor_list) {
     return std::nullopt;
   }
@@ -39,7 +39,7 @@ std::optional<AuthFactorsSet> GetForPurpose(const base::Value::Dict& cache,
   return result;
 }
 
-AuthFactorsSet GetWithFallback(const base::Value::Dict& cache,
+AuthFactorsSet GetWithFallback(const base::DictValue& cache,
                                AuthPurpose purpose) {
   {
     std::optional<AuthFactorsSet> result = GetForPurpose(cache, purpose);
@@ -88,8 +88,8 @@ void AuthFactorPresenceCache::StoreFactorPresenceCache(AuthAttemptVector vector,
       return;
     }
   }
-  base::Value::Dict cache = known_user_->GetAuthFactorCache(vector.account);
-  base::Value::List factor_list;
+  base::DictValue cache = known_user_->GetAuthFactorCache(vector.account);
+  base::ListValue factor_list;
   for (AshAuthFactor f : factors) {
     factor_list.Append(static_cast<int>(f));
   }
@@ -103,7 +103,7 @@ AuthFactorsSet AuthFactorPresenceCache::GetExpectedFactorsPresence(
     // Assume that ephemeral users do not have any auth factors associated:
     return AuthFactorsSet();
   }
-  base::Value::Dict cache = known_user_->GetAuthFactorCache(vector.account);
+  base::DictValue cache = known_user_->GetAuthFactorCache(vector.account);
   return GetWithFallback(cache, vector.purpose);
 }
 

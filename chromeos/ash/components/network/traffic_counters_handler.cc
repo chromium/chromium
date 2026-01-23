@@ -107,7 +107,7 @@ std::string GetNetworkTechnologyString(
 // Since rx_bytes and tx_bytes may be larger than the maximum value
 // representable by uint32_t, we must check whether it was implicitly converted
 // to a double during D-Bus deserialization.
-uint64_t GetBytes(const base::Value::Dict& tc_dict, const std::string& key) {
+uint64_t GetBytes(const base::DictValue& tc_dict, const std::string& key) {
   uint64_t bytes = 0;
   if (const base::Value* const value = tc_dict.Find(key)) {
     if (value->is_int()) {
@@ -298,7 +298,7 @@ void TrafficCountersHandler::
   for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
 
-    const base::Value::Dict& tc_dict = tc.GetDict();
+    const base::DictValue& tc_dict = tc.GetDict();
     total_data_usage += GetBytes(tc_dict, "rx_bytes");
     total_data_usage += GetBytes(tc_dict, "tx_bytes");
   }
@@ -316,7 +316,7 @@ void TrafficCountersHandler::
 void TrafficCountersHandler::OnGetManagedPropertiesForLastResetTime(
     double total_data_usage,
     const std::string& service_path,
-    std::optional<base::Value::Dict> properties,
+    std::optional<base::DictValue> properties,
     std::optional<std::string> error) {
   // Since last reset time has already been retrieved (via
   // GetManagedProperties), the network's traffic counters can be reset and the
@@ -443,7 +443,7 @@ void TrafficCountersHandler::RunAutoResetTrafficCountersForActiveNetworks() {
 void TrafficCountersHandler::OnGetManagedPropertiesForAutoReset(
     std::string guid,
     const std::string& service_path,
-    std::optional<base::Value::Dict> properties,
+    std::optional<base::DictValue> properties,
     std::optional<std::string> error) {
   if (!properties) {
     NET_LOG(ERROR) << "GetManagedProperties failed for: " << NetworkGuidId(guid)

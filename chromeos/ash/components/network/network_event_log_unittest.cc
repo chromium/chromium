@@ -84,8 +84,8 @@ class NetworkEventLogTest : public testing::Test {
     // VPN
     service_test->AddService("/service/5", "vpn5_guid", "vpn5", shill::kTypeVPN,
                              shill::kStateIdle, add_to_visible);
-    auto provider_properties = base::Value::Dict().Set(
-        shill::kTypeProperty, shill::kProviderL2tpIpsec);
+    auto provider_properties =
+        base::DictValue().Set(shill::kTypeProperty, shill::kProviderL2tpIpsec);
     service_test->SetServiceProperty(
         "/service/5", shill::kProviderProperty,
         base::Value(std::move(provider_properties)));
@@ -93,7 +93,7 @@ class NetworkEventLogTest : public testing::Test {
     service_test->AddService("/service/6", "vpn6_guid", "vpn6", shill::kTypeVPN,
                              shill::kStateIdle, add_to_visible);
     auto provider_properties2 =
-        base::Value::Dict().Set(shill::kTypeProperty, shill::kProviderOpenVpn);
+        base::DictValue().Set(shill::kTypeProperty, shill::kProviderOpenVpn);
     service_test->SetServiceProperty(
         "/service/6", shill::kProviderProperty,
         base::Value(std::move(provider_properties2)));

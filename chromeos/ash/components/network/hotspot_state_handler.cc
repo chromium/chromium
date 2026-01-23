@@ -15,8 +15,8 @@ namespace ash {
 
 namespace {
 
-size_t GetActiveClientCount(const base::Value::Dict& status) {
-  const base::Value::List* active_clients =
+size_t GetActiveClientCount(const base::DictValue& status) {
+  const base::ListValue* active_clients =
       status.FindList(shill::kTetheringStatusClientsProperty);
   if (!active_clients) {
     NET_LOG(ERROR) << shill::kTetheringStatusClientsProperty << " not found in "
@@ -115,13 +115,13 @@ void HotspotStateHandler::OnPropertyChanged(const std::string& key,
 }
 
 void HotspotStateHandler::OnManagerProperties(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "HotspotStateHandler: Failed to get manager properties.";
     return;
   }
 
-  const base::Value::Dict* status =
+  const base::DictValue* status =
       properties->FindDict(shill::kTetheringStatusProperty);
   if (!status) {
     NET_LOG(EVENT) << "HotspotStateHandler: No dict value for: "
@@ -131,7 +131,7 @@ void HotspotStateHandler::OnManagerProperties(
   }
 }
 
-void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
+void HotspotStateHandler::UpdateHotspotStatus(const base::DictValue& status) {
   const std::string* state =
       status.FindString(shill::kTetheringStatusStateProperty);
   if (!state) {
@@ -163,7 +163,7 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
   NotifyHotspotStatusChanged();
 }
 
-void HotspotStateHandler::UpdateDisableReason(const base::Value::Dict& status) {
+void HotspotStateHandler::UpdateDisableReason(const base::DictValue& status) {
   const std::string* idle_reason =
       status.FindString(shill::kTetheringStatusIdleReasonProperty);
   if (!idle_reason) {

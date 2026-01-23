@@ -41,7 +41,7 @@ const char kGuid[] = "guid";
 
 // Populates the |printer| object with corresponding fields from |value|.
 // Returns false if |value| is missing a required field.
-bool DictionaryToPrinter(const base::Value::Dict& value, Printer* printer) {
+bool DictionaryToPrinter(const base::DictValue& value, Printer* printer) {
   // Mandatory fields
   const std::string* display_name = value.FindString(kDisplayName);
   if (!display_name) {
@@ -91,8 +91,8 @@ bool DictionaryToPrinter(const base::Value::Dict& value, Printer* printer) {
 // Create an empty CupsPrinterInfo dictionary value. It should be consistent
 // with the fields in js side. See cups_printers_browser_proxy.js for the
 // definition of CupsPrintersInfo.
-base::Value::Dict CreateEmptyPrinterInfo() {
-  base::Value::Dict printer_info;
+base::DictValue CreateEmptyPrinterInfo() {
+  base::DictValue printer_info;
   printer_info.Set("isManaged", false);
   printer_info.Set("ppdManufacturer", "");
   printer_info.Set("ppdModel", "");
@@ -134,7 +134,7 @@ std::string PrinterQueue(const Uri& uri) {
 const char kPrinterId[] = "id";
 
 std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::Value::Dict& pref) {
+    const base::DictValue& pref) {
   std::string id;
   // Printer id comes from the id or guid field depending on the source.
   const std::string* printer_id = pref.FindString(kPrinterId);
@@ -156,7 +156,7 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
 
   printer->set_source(Printer::SRC_POLICY);
 
-  const base::Value::Dict* ppd = pref.FindDict(kPpdResource);
+  const base::DictValue* ppd = pref.FindDict(kPpdResource);
   if (ppd) {
     Printer::PpdReference* ppd_reference = printer->mutable_ppd_reference();
     const std::string* make_and_model = ppd->FindString(kEffectiveModel);
@@ -186,8 +186,8 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
   return printer;
 }
 
-base::Value::Dict GetCupsPrinterInfo(const Printer& printer) {
-  base::Value::Dict printer_info = CreateEmptyPrinterInfo();
+base::DictValue GetCupsPrinterInfo(const Printer& printer) {
+  base::DictValue printer_info = CreateEmptyPrinterInfo();
 
   printer_info.Set("isManaged",
                    printer.source() == Printer::Source::SRC_POLICY);

@@ -75,25 +75,25 @@ bool UpdateSessionConfigRequest::GetContentData(
     std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
+  base::DictValue root;
 
   if (on_task_config_.has_value() || captions_config_.has_value()) {
-    base::Value::Dict student_config;
+    base::DictValue student_config;
 
     if (on_task_config_.has_value()) {
-      base::Value::Dict on_task_config;
+      base::DictValue on_task_config;
       ParseOnTaskConfigJsonFromProto(&on_task_config_.value(), &on_task_config);
       student_config.Set(kOnTaskConfig, std::move(on_task_config));
     }
 
     if (captions_config_.has_value()) {
-      base::Value::Dict caption_config;
+      base::DictValue caption_config;
       ParseCaptionConfigJsonFromProto(&captions_config_.value(),
                                       &caption_config);
       student_config.Set(kCaptionsConfig, std::move(caption_config));
     }
 
-    base::Value::List group_ids;
+    base::ListValue group_ids;
     for (auto id : group_ids_) {
       group_ids.Append(id);
     }

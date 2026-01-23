@@ -64,8 +64,8 @@ bool CryptAuthDeviceRegistry::SetRegistry(
   return true;
 }
 
-base::Value::Dict CryptAuthDeviceRegistry::AsReadableDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthDeviceRegistry::AsReadableDictionary() const {
+  base::DictValue dict;
   for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
        instance_id_to_device_map_) {
     std::string key = id_device_pair.second.device_name +

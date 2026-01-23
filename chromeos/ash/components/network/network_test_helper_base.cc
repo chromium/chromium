@@ -70,7 +70,7 @@ void NetworkTestHelperBase::ResetDevicesAndServices() {
 
   // Set initial IPConfigs for the wifi device. The IPConfigs are set up in
   // FakeShillManagerClient::SetupDefaultEnvironment() and do not get cleared.
-  base::Value::List ip_configs;
+  base::ListValue ip_configs;
   ip_configs.Append("ipconfig_v4_path");
   ip_configs.Append("ipconfig_v6_path");
   device_test_->SetDeviceProperty(kDevicePath, shill::kIPConfigsProperty,
@@ -100,7 +100,7 @@ std::string NetworkTestHelperBase::ConfigureService(
     const std::string& shill_json_string) {
   last_created_service_path_.clear();
 
-  std::optional<base::Value::Dict> shill_json_dict =
+  std::optional<base::DictValue> shill_json_dict =
       chromeos::onc::ReadDictionaryFromJson(shill_json_string);
   if (!shill_json_dict.has_value()) {
     LOG(ERROR) << "Error parsing json: " << shill_json_string;
@@ -143,7 +143,7 @@ void NetworkTestHelperBase::ConfigureCallback(const dbus::ObjectPath& result) {
 std::optional<double> NetworkTestHelperBase::GetServiceDoubleProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       service_test_->GetServiceProperties(service_path);
   if (properties) {
     return properties->FindDouble(key);
@@ -154,7 +154,7 @@ std::optional<double> NetworkTestHelperBase::GetServiceDoubleProperty(
 std::string NetworkTestHelperBase::GetServiceStringProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       service_test_->GetServiceProperties(service_path);
   if (properties) {
     const std::string* result = properties->FindString(key);
@@ -164,13 +164,13 @@ std::string NetworkTestHelperBase::GetServiceStringProperty(
   return std::string();
 }
 
-std::optional<base::Value::List> NetworkTestHelperBase::GetServiceListProperty(
+std::optional<base::ListValue> NetworkTestHelperBase::GetServiceListProperty(
     const std::string& service_path,
     const std::string& key) {
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       service_test_->GetServiceProperties(service_path);
   if (properties) {
-    const base::Value::List* result = properties->FindList(key);
+    const base::ListValue* result = properties->FindList(key);
     if (result) {
       return result->Clone();
     }
@@ -188,7 +188,7 @@ void NetworkTestHelperBase::SetServiceProperty(const std::string& service_path,
 std::string NetworkTestHelperBase::GetProfileStringProperty(
     const std::string& profile_path,
     const std::string& key) {
-  base::Value::Dict properties =
+  base::DictValue properties =
       profile_test_->GetProfileProperties(profile_path);
   std::string* result = properties.FindString(key);
   if (result) {

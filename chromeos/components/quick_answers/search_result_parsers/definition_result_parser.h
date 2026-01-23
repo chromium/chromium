@@ -17,21 +17,20 @@ namespace quick_answers {
 class DefinitionResultParser : public ResultParser {
  public:
   // ResultParser:
-  bool Parse(const base::Value::Dict& result,
-             QuickAnswer* quick_answer) override;
+  bool Parse(const base::DictValue& result, QuickAnswer* quick_answer) override;
   std::unique_ptr<StructuredResult> ParseInStructuredResult(
-      const base::Value::Dict& result) override;
+      const base::DictValue& result) override;
   bool PopulateQuickAnswer(const StructuredResult& structured_result,
                            QuickAnswer* quick_answer) override;
   bool SupportsNewInterface() const override;
 
  private:
-  const base::Value::Dict* ExtractFirstSenseFamily(
-      const base::Value::Dict& definition_entry);
-  const base::Value::Dict* ExtractFirstPhonetics(
-      const base::Value::Dict& definition_entry);
+  const base::DictValue* ExtractFirstSenseFamily(
+      const base::DictValue& definition_entry);
+  const base::DictValue* ExtractFirstPhonetics(
+      const base::DictValue& definition_entry);
   std::unique_ptr<PhoneticsInfo> ParsePhoneticsInfo(
-      const base::Value::Dict& entry_result);
+      const base::DictValue& entry_result);
 };
 
 }  // namespace quick_answers

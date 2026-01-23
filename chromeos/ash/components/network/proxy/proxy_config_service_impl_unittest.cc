@@ -126,7 +126,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
   }
 
   void SetProxyPref() {
-    base::Value::Dict fixed_config;
+    base::DictValue fixed_config;
     fixed_config.Set("mode", "pac_script");
     fixed_config.Set("pac_url", kFixedPacUrl);
     profile_prefs_.SetUserPref(::proxy_config::prefs::kProxy,
@@ -553,7 +553,7 @@ class ProxyConfigServiceImplWithDescriptionTest : public testing::Test {
     proxy_config_service_.reset();
   }
 
-  base::Value::Dict InitConfigWithTestInput(const Input& input) {
+  base::DictValue InitConfigWithTestInput(const Input& input) {
     switch (input.mode) {
       case Mode::kDirect:
         return ProxyConfigDictionary::CreateDirect();
@@ -569,7 +569,7 @@ class ProxyConfigServiceImplWithDescriptionTest : public testing::Test {
     NOTREACHED();
   }
 
-  void SetUserConfigInShill(const base::Value::Dict* pref_proxy_config_dict) {
+  void SetUserConfigInShill(const base::DictValue* pref_proxy_config_dict) {
     std::string proxy_config;
     if (pref_proxy_config_dict) {
       proxy_config = base::WriteJson(*pref_proxy_config_dict).value_or("");
@@ -614,7 +614,7 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, NetworkProxy) {
         base::StringPrintf("Test[%" PRIuS "] %s", i,
                            UNSAFE_BUFFERS(tests[i]).description.c_str()));
 
-    base::Value::Dict test_config =
+    base::DictValue test_config =
         InitConfigWithTestInput(UNSAFE_BUFFERS(tests[i]).input);
     SetUserConfigInShill(&test_config);
 
@@ -699,7 +699,7 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     EXPECT_TRUE(recommended_params.proxy_rules.Matches(
         actual_config.value().proxy_rules()));
 
-    base::Value::Dict network_config =
+    base::DictValue network_config =
         InitConfigWithTestInput(network_params.input);
     // Network proxy should take take effect over recommended proxy pref.
     SetUserConfigInShill(&network_config);
@@ -744,11 +744,11 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, SharedEthernetAndUserPolicy) {
   SetUpSharedEthernet();
   SetUpProxyConfigService(&profile_prefs_);
 
-  std::optional<base::Value::Dict> ethernet_policy =
+  std::optional<base::DictValue> ethernet_policy =
       chromeos::onc::ReadDictionaryFromJson(kEthernetPolicy);
   ASSERT_TRUE(ethernet_policy.has_value());
 
-  base::Value::List network_configs;
+  base::ListValue network_configs;
   network_configs.Append(std::move(*ethernet_policy));
 
   profile_prefs_.SetUserPref(::proxy_config::prefs::kUseSharedProxies,

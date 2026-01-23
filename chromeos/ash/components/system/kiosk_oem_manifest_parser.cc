@@ -38,7 +38,7 @@ bool KioskOemManifestParser::Load(const base::FilePath& kiosk_oem_file,
     return false;
   }
 
-  base::Value::Dict& value_dict = value->GetDict();
+  base::DictValue& value_dict = value->GetDict();
 
   if (auto* v = value_dict.FindString(kDeviceRequisition)) {
     manifest->device_requisition = *v;

@@ -220,8 +220,8 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
           NetworkTypePattern::WiFi()));
 
   // Simulate that there's an active hotspot
-  auto status_dict = base::Value::Dict().Set(
-      shill::kTetheringStatusStateProperty, shill::kTetheringStateActive);
+  auto status_dict = base::DictValue().Set(shill::kTetheringStatusStateProperty,
+                                           shill::kTetheringStateActive);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
   base::RunLoop().RunUntilIdle();

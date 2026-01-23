@@ -26,7 +26,7 @@ std::optional<DeviceId> DeviceId::FromDict(const base::Value& value) {
     LOG(ERROR) << "Value not a dict: " << value.DebugString();
     return std::nullopt;
   }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
 
   std::optional<int> vid = dict.FindInt(kVendorId);
   std::optional<int> pid = dict.FindInt(kProductId);
@@ -86,8 +86,8 @@ std::optional<DeviceId> DeviceId::FromDisk(const ash::disks::Disk* disk) {
   return DeviceId::FromVidPid(disk->vendor_id(), disk->product_id());
 }
 
-base::Value::Dict DeviceId::ToDict() const {
-  return base::Value::Dict().Set(kVendorId, vid).Set(kProductId, pid);
+base::DictValue DeviceId::ToDict() const {
+  return base::DictValue().Set(kVendorId, vid).Set(kProductId, pid);
 }
 
 }  // namespace policy

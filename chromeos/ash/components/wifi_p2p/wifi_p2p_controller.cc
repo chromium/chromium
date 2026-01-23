@@ -94,7 +94,7 @@ WifiP2PController::OperationResult ShillResultToEnum(
 }
 
 WifiP2PController::OperationResult GetOperationResult(
-    const base::Value::Dict& result_dict) {
+    const base::DictValue& result_dict) {
   const std::string* result_code =
       result_dict.FindString(shill::kP2PResultCode);
   if (!result_code) {
@@ -211,7 +211,7 @@ void WifiP2PController::CreateWifiP2PGroup(
 void WifiP2PController::OnCreateOrConnectP2PGroupSuccess(
     const OperationType& type,
     WifiP2PGroupCallback callback,
-    base::Value::Dict result_dict) {
+    base::DictValue result_dict) {
   CHECK(type == OperationType::kCreateGroup ||
         type == OperationType::kConnectGroup);
   NET_LOG(EVENT) << type << " operation completed with result: " << result_dict;
@@ -242,7 +242,7 @@ void WifiP2PController::GetP2PGroupMetadata(
     int shill_id,
     const OperationType& type,
     WifiP2PGroupCallback callback,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Error getting Shill manager properties.";
     CompleteWifiP2PGroupCallback(type, OperationResult::kInvalidGroupProperties,
@@ -251,7 +251,7 @@ void WifiP2PController::GetP2PGroupMetadata(
     return;
   }
   const bool is_owner = type == OperationType::kCreateGroup;
-  base::Value::List* entry_list =
+  base::ListValue* entry_list =
       properties->FindList(is_owner ? shill::kP2PGroupInfosProperty
                                     : shill::kP2PClientInfosProperty);
   if (!entry_list || entry_list->size() == 0) {
@@ -393,7 +393,7 @@ void WifiP2PController::DestroyWifiP2PGroup(
 void WifiP2PController::OnDestroyOrDisconnectP2PGroupSuccess(
     const OperationType& type,
     base::OnceCallback<void(OperationResult result)> callback,
-    base::Value::Dict result_dict) {
+    base::DictValue result_dict) {
   CHECK(type == OperationType::kDestroyGroup ||
         type == OperationType::kDisconnectGroup);
   NET_LOG(EVENT) << type << " operation completed with result: " << result_dict;
@@ -512,7 +512,7 @@ void WifiP2PController::CheckAndNotifyDisconnection(
     const std::string& shill_id_property,
     const std::string& idle_state_property) {
   for (const base::Value& group_info : property_list.GetList()) {
-    const base::Value::Dict& properties = group_info.GetDict();
+    const base::DictValue& properties = group_info.GetDict();
     const std::string* interface_state =
         properties.FindString(interface_state_property);
     std::optional<int> shill_id = properties.FindInt(shill_id_property);
@@ -526,13 +526,13 @@ void WifiP2PController::CheckAndNotifyDisconnection(
 }
 
 void WifiP2PController::OnGetManagerProperties(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR)
         << "WifiP2PController: Failed to get shill manager properties.";
     return;
   }
-  const base::Value::Dict* value =
+  const base::DictValue* value =
       properties->FindDict(shill::kP2PCapabilitiesProperty);
   if (!value) {
     NET_LOG(ERROR) << "WifiP2PController: No dictionary value for: "
@@ -544,7 +544,7 @@ void WifiP2PController::OnGetManagerProperties(
 }
 
 void WifiP2PController::UpdateP2PCapabilities(
-    const base::Value::Dict& capabilities) {
+    const base::DictValue& capabilities) {
   const std::string* group_readiness =
       capabilities.FindString(shill::kP2PCapabilitiesGroupReadinessProperty);
   const std::string* client_readiness =

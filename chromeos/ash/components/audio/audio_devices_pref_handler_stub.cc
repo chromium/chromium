@@ -218,7 +218,7 @@ AudioDevicesPrefHandlerStub::GetDevicePreferenceSetMap() {
   return device_preference_set_map_;
 }
 
-const base::Value::List&
+const base::ListValue&
 AudioDevicesPrefHandlerStub::GetMostRecentActivatedDeviceIdList(bool is_input) {
   return most_recent_activated_device_id_list;
 }

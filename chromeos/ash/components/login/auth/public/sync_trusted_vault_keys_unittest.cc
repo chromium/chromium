@@ -29,23 +29,23 @@ MATCHER_P2(MatchesRecoveryMethod, public_key, type, "") {
   return arg.public_key == public_key && arg.type_hint == type;
 }
 
-base::Value::Dict MakeKeyValueWithoutVersion(
+base::DictValue MakeKeyValueWithoutVersion(
     const std::vector<uint8_t>& key_material) {
-  base::Value::Dict key_dict;
+  base::DictValue key_dict;
   key_dict.Set("keyMaterial", base::Value(key_material));
   return key_dict;
 }
 
-base::Value::Dict MakeKeyValue(const std::vector<uint8_t>& key_material,
-                               int version) {
-  base::Value::Dict key_dict = MakeKeyValueWithoutVersion(key_material);
+base::DictValue MakeKeyValue(const std::vector<uint8_t>& key_material,
+                             int version) {
+  base::DictValue key_dict = MakeKeyValueWithoutVersion(key_material);
   key_dict.Set("version", version);
   return key_dict;
 }
 
-base::Value::Dict MakePublicKeyAndType(const std::vector<uint8_t>& public_key,
-                                       int type) {
-  base::Value::Dict key_dict;
+base::DictValue MakePublicKeyAndType(const std::vector<uint8_t>& public_key,
+                                     int type) {
+  base::DictValue key_dict;
   key_dict.Set("publicKey", base::Value(public_key));
   key_dict.Set("type", type);
   return key_dict;
@@ -58,19 +58,18 @@ TEST(SyncTrustedVaultKeysTest, DefaultConstructor) {
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithEmptyDictionary) {
-  EXPECT_THAT(SyncTrustedVaultKeys::FromJs(base::Value::Dict()),
-              HasEmptyValue());
+  EXPECT_THAT(SyncTrustedVaultKeys::FromJs(base::DictValue()), HasEmptyValue());
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithInvalidDictionary) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("foo", "bar");
   EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value), HasEmptyValue());
 }
 
 TEST(SyncTrustedVaultKeysTest, FromJsWithGaiaId) {
   const GaiaId kGaiaId("user1");
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("obfuscatedGaiaId", kGaiaId.ToString());
   EXPECT_THAT(SyncTrustedVaultKeys::FromJs(value).gaia_id(), Eq(kGaiaId));
 }
@@ -81,13 +80,13 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeys) {
   const int kEncryptionKeyVersion1 = 17;
   const int kEncryptionKeyVersion2 = 15;
 
-  base::Value::List key_values;
+  base::ListValue key_values;
   key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial1, kEncryptionKeyVersion1));
   key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial2, kEncryptionKeyVersion2));
 
-  base::Value::Dict root_value;
+  base::DictValue root_value;
   root_value.Set("encryptionKeys", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =
@@ -104,12 +103,12 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithEncryptionKeysWithMissingVersion) {
   const std::vector<uint8_t> kEncryptionKeyMaterial2 = {5, 6, 7, 8};
   const int kEncryptionKeyVersion1 = 17;
 
-  base::Value::List key_values;
+  base::ListValue key_values;
   key_values.Append(
       MakeKeyValue(kEncryptionKeyMaterial1, kEncryptionKeyVersion1));
   key_values.Append(MakeKeyValueWithoutVersion(kEncryptionKeyMaterial2));
 
-  base::Value::Dict root_value;
+  base::DictValue root_value;
   root_value.Set("encryptionKeys", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =
@@ -127,11 +126,11 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedRecoveryMethods) {
   const int kMethodType1 = 7;
   const int kMethodType2 = 8;
 
-  base::Value::List key_values;
+  base::ListValue key_values;
   key_values.Append(MakePublicKeyAndType(kPublicKeyMaterial1, kMethodType1));
   key_values.Append(MakePublicKeyAndType(kPublicKeyMaterial2, kMethodType2));
 
-  base::Value::Dict root_value;
+  base::DictValue root_value;
   root_value.Set("trustedRecoveryMethods", std::move(key_values));
 
   const SyncTrustedVaultKeys actual_converted_keys =

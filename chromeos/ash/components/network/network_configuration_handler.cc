@@ -74,7 +74,7 @@ void ManagerSetPropertiesErrorCallback(const std::string& dbus_error_name,
 
 void LogConfigProperties(const std::string& desc,
                          const std::string& path,
-                         const base::Value::Dict& properties) {
+                         const base::DictValue& properties) {
   for (auto iter : properties) {
     std::string v = "******";
     if (shill_property_util::IsLoggableShillProperty(iter.first)) {
@@ -103,7 +103,7 @@ std::string GetErrorName(const std::string& dbus_error_name,
   return default_error_name;
 }
 
-std::string GetString(const base::Value::Dict& dict, const char* key) {
+std::string GetString(const base::DictValue& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
@@ -145,7 +145,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
 
  private:
   void GetProfileEntriesToDeleteCallback(
-      std::optional<base::Value::Dict> profile_entries) {
+      std::optional<base::DictValue> profile_entries) {
     if (!profile_entries) {
       InvokeErrorCallback(service_path_, std::move(error_callback_),
                           "GetLoadableProfileEntriesFailed");
@@ -282,7 +282,7 @@ void NetworkConfigurationHandler::GetShillProperties(
        network_state->IsNonShillCellularNetwork())) {
     // This is a Tether network or a Cellular network with no Service.
     // Provide properties from NetworkState.
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     network_state->GetStateProperties(&dictionary);
     std::move(callback).Run(service_path, std::move(dictionary));
     return;
@@ -296,7 +296,7 @@ void NetworkConfigurationHandler::GetShillProperties(
 
 void NetworkConfigurationHandler::SetShillProperties(
     const std::string& service_path,
-    const base::Value::Dict& shill_properties,
+    const base::DictValue& shill_properties,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   if (shill_properties.empty()) {
@@ -307,7 +307,7 @@ void NetworkConfigurationHandler::SetShillProperties(
   }
   NET_LOG(USER) << "SetShillProperties: " << NetworkPathId(service_path);
 
-  base::Value::Dict properties_to_set = shill_properties.Clone();
+  base::DictValue properties_to_set = shill_properties.Clone();
 
   // Make sure that the GUID is saved to Shill when setting properties.
   std::string guid = GetString(properties_to_set, shill::kGuidProperty);
@@ -324,7 +324,7 @@ void NetworkConfigurationHandler::SetShillProperties(
   // Clear error state when setting Shill properties.
   network_state_handler_->ClearLastErrorForNetwork(service_path);
 
-  base::Value::Dict properties_copy = properties_to_set.Clone();
+  base::DictValue properties_copy = properties_to_set.Clone();
   ShillServiceClient::Get()->SetProperties(
       dbus::ObjectPath(service_path), properties_to_set,
       base::BindOnce(&NetworkConfigurationHandler::SetPropertiesSuccessCallback,
@@ -364,14 +364,14 @@ void NetworkConfigurationHandler::ClearShillProperties(
 }
 
 void NetworkConfigurationHandler::CreateShillConfiguration(
-    const base::Value::Dict& shill_properties,
+    const base::DictValue& shill_properties,
     network_handler::ServiceResultCallback callback,
     network_handler::ErrorCallback error_callback) {
   ShillManagerClient* manager = ShillManagerClient::Get();
   std::string type = GetString(shill_properties, shill::kTypeProperty);
   DCHECK(!type.empty());
 
-  base::Value::Dict properties_to_set = shill_properties.Clone();
+  base::DictValue properties_to_set = shill_properties.Clone();
 
   NET_LOG(USER) << "CreateShillConfiguration: " << type << ": "
                 << shill_property_util::GetNetworkIdFromProperties(
@@ -389,7 +389,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
   }
 
   LogConfigProperties("Configure", type, properties_to_set);
-  base::Value::Dict properties_copy = properties_to_set.Clone();
+  base::DictValue properties_copy = properties_to_set.Clone();
   manager->ConfigureServiceForProfile(
       dbus::ObjectPath(profile_path), properties_to_set,
       base::BindOnce(&NetworkConfigurationHandler::ConfigurationCompleted,
@@ -554,7 +554,7 @@ void NetworkConfigurationHandler::ConfigurationFailed(
 void NetworkConfigurationHandler::ConfigurationCompleted(
     const std::string& profile_path,
     const std::string& guid,
-    base::Value::Dict configure_properties,
+    base::DictValue configure_properties,
     network_handler::ServiceResultCallback callback,
     const dbus::ObjectPath& service_path) {
   // It is possible that the newly-configured network was already being tracked
@@ -621,7 +621,7 @@ void NetworkConfigurationHandler::SetNetworkProfileCompleted(
 void NetworkConfigurationHandler::GetPropertiesCallback(
     network_handler::ResultCallback callback,
     const std::string& service_path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     // Because network services are added and removed frequently, we will see
     // failures regularly, so don't log these.
@@ -652,7 +652,7 @@ void NetworkConfigurationHandler::GetPropertiesCallback(
 
 void NetworkConfigurationHandler::SetPropertiesSuccessCallback(
     const std::string& service_path,
-    base::Value::Dict set_properties,
+    base::DictValue set_properties,
     base::OnceClosure callback) {
   if (!callback.is_null()) {
     std::move(callback).Run();
@@ -689,7 +689,7 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     const std::string& service_path,
     const std::vector<std::string>& names,
     base::OnceClosure callback,
-    const base::Value::List& result) {
+    const base::ListValue& result) {
   const std::string kClearPropertiesFailedError("Error.ClearPropertiesFailed");
   DCHECK(names.size() == result.size())
       << "Incorrect result size from ClearProperties.";

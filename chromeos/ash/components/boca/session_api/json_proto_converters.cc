@@ -11,7 +11,7 @@
 namespace ash::boca {
 
 ::boca::UserIdentity ConvertUserIdentityJsonToProto(
-    const base::Value::Dict* dict) {
+    const base::DictValue* dict) {
   ::boca::UserIdentity user_identity;
   if (auto* email = dict->FindString(kEmail)) {
     user_identity.set_email(*email);

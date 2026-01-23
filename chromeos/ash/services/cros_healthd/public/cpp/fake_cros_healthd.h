@@ -163,7 +163,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Set expectation about the parameter that is passed to a call of
   // a Diagnostics routine (`Run*Routine`) and `GetRoutineUpdate`.
   void SetExpectedLastPassedDiagnosticsParametersForTesting(
-      base::Value::Dict expected_parameters);
+      base::DictValue expected_parameters);
 
   // Verifies that the actual passed parameters to Diagnostic
   // routines match the previously set expectations.
@@ -413,9 +413,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   std::optional<RoutineUpdateParams> routine_update_params_;
 
   // Expectation of the passed parameters.
-  base::Value::Dict expected_passed_parameters_;
+  base::DictValue expected_passed_parameters_;
   // Actually passed parameter.
-  base::Value::Dict actual_passed_parameters_;
+  base::DictValue actual_passed_parameters_;
 
   base::TimeDelta callback_delay_;
 };

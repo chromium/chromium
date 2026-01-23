@@ -112,8 +112,8 @@ class ArcNetUtilsTest : public testing::Test {
     return device;
   }
 
-  base::Value::Dict GetShillDict() {
-    base::Value::Dict shill_dict;
+  base::DictValue GetShillDict() {
+    base::DictValue shill_dict;
     shill_dict.Set(shill::kMeteredProperty, true);
     return shill_dict;
   }
@@ -167,26 +167,26 @@ class ArcNetUtilsTest : public testing::Test {
     network_state_->PropertyChanged(shill::kWifiHiddenSsid, base::Value(true));
 
     // Set up NetworkConfig.
-    base::Value::Dict properties;
+    base::DictValue properties;
     properties.Set(shill::kNetworkConfigIPv4AddressProperty,
                    base::StringPrintf("%s/%d", kIPv4Address, kIPv4PrefixLen));
     properties.Set(shill::kNetworkConfigIPv4GatewayProperty, kIPv4Gateway);
     properties.Set(shill::kNetworkConfigIPv6AddressesProperty,
-                   base::Value::List().Append(base::StringPrintf(
+                   base::ListValue().Append(base::StringPrintf(
                        "%s/%d", kIPv6Address, kIPv6PrefixLen)));
     properties.Set(shill::kNetworkConfigIPv6GatewayProperty, kIPv6Gateway);
     properties.Set(shill::kNetworkConfigNameServersProperty,
-                   base::Value::List()
+                   base::ListValue()
                        .Append(kNameServer1)
                        .Append(kNameServer2)
                        .Append(kNameServerIPv6));
     properties.Set(shill::kNetworkConfigSearchDomainsProperty,
-                   base::Value::List().Append(kDomainName));
+                   base::ListValue().Append(kDomainName));
     properties.Set(shill::kNetworkConfigMTUProperty, kHostMtu);
     properties.Set(shill::kNetworkConfigIncludedRoutesProperty,
-                   base::Value::List().Append(kIncludedRoute));
+                   base::ListValue().Append(kIncludedRoute));
     properties.Set(shill::kNetworkConfigExcludedRoutesProperty,
-                   base::Value::List().Append(kExcludedRoute));
+                   base::ListValue().Append(kExcludedRoute));
 
     network_state_->PropertyChanged(shill::kNetworkConfigProperty,
                                     base::Value(std::move(properties)));
@@ -396,7 +396,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkType) {
 }
 
 TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
-  base::Value::Dict shill_dict = GetShillDict();
+  base::DictValue shill_dict = GetShillDict();
   auto mojo = arc::mojom::NetworkConfiguration::New();
   net_utils::FillConfigurationsFromState(GetNetworkState(), &shill_dict,
                                          mojo.get());
@@ -468,7 +468,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkDevices) {
                                          kTestWiFiDeviceGuestInterface,
                                          patchpanel::NetworkDevice::WIFI));
 
-  std::map<std::string, base::Value::Dict> shill_network_properties;
+  std::map<std::string, base::DictValue> shill_network_properties;
   shill_network_properties[kNetworkStatePath] = GetShillDict();
 
   ash::NetworkStateHandler::NetworkStateList network_states;
@@ -500,7 +500,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkDevices) {
 }
 
 TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
-  std::map<std::string, base::Value::Dict> shill_network_properties;
+  std::map<std::string, base::DictValue> shill_network_properties;
   shill_network_properties[kNetworkStatePath] = GetShillDict();
 
   ash::NetworkStateHandler::NetworkStateList network_states;
@@ -518,7 +518,7 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
 TEST_F(ArcNetUtilsTest, TranslateSubjectNameMatchListToValue) {
   std::vector<std::string> subjectMatch = {
       "DNS:example1.com", "DNS:example2.com", "EMAIL:example@domain.com"};
-  base::Value::List result =
+  base::ListValue result =
       net_utils::TranslateSubjectNameMatchListToValue(subjectMatch);
 
   EXPECT_EQ(*result[0].GetDict().FindString(

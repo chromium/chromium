@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   //
   // Returns whether |proxy_settings| have been changed.
   bool MergeEnforcedProxyConfig(const std::string& network_guid,
-                                base::Value::Dict* proxy_settings);
+                                base::DictValue* proxy_settings);
 
   // Returns the ProxyMode for |network|. The returned result is used to display
   // a privacy warning to the user in the system tray.

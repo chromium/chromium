@@ -31,7 +31,7 @@ std::string HexToDecimal(std::string hex_str) {
   return base::NumberToString(result);
 }
 
-std::string FindStringOrEmpty(const base::Value::Dict& dict,
+std::string FindStringOrEmpty(const base::DictValue& dict,
                               std::string_view key) {
   const std::string* val = dict.FindString(key);
   return val ? *val : std::string();
@@ -114,7 +114,7 @@ void GeolocationHandlerImpl::OnPropertyChanged(const std::string& key,
 // Private methods
 
 void GeolocationHandlerImpl::ManagerPropertiesCallback(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     return;
   }
@@ -164,7 +164,7 @@ void GeolocationHandlerImpl::RequestGeolocationObjects() {
 }
 
 void GeolocationHandlerImpl::GeolocationCallback(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     LOG(ERROR) << "Failed to get Geolocation data";
     return;
@@ -184,7 +184,7 @@ void GeolocationHandlerImpl::GeolocationCallback(
   //   kGeoCellTowersProperty: [ {kGeoCellIdProperty: cell_id_value, ...}, ... ]
   // }
   for (auto* device_type : kDevicePropertyNames) {
-    const base::Value::List* entry_list = properties->FindList(device_type);
+    const base::ListValue* entry_list = properties->FindList(device_type);
     if (!entry_list) {
       if (properties->contains(device_type)) {
         LOG(WARNING) << "Geolocation dictionary value not a List: "
@@ -210,7 +210,7 @@ void GeolocationHandlerImpl::GeolocationCallback(
 }
 
 void GeolocationHandlerImpl::AddAccessPointFromDict(
-    const base::Value::Dict& entry) {
+    const base::DictValue& entry) {
   // Docs: developers.google.com/maps/documentation/business/geolocation
   WifiAccessPoint wap;
 
@@ -245,7 +245,7 @@ void GeolocationHandlerImpl::AddAccessPointFromDict(
 }
 
 void GeolocationHandlerImpl::AddCellTowerFromDict(
-    const base::Value::Dict& entry) {
+    const base::DictValue& entry) {
   // Docs: developers.google.com/maps/documentation/business/geolocation
 
   // Create object.

@@ -41,7 +41,7 @@ namespace {
 // policy.
 bool g_ephemeral_network_policies_enabled_by_policy = false;
 
-std::string GetString(const base::Value::Dict& dict, const char* key) {
+std::string GetString(const base::DictValue& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
@@ -49,7 +49,7 @@ std::string GetString(const base::Value::Dict& dict, const char* key) {
 // Removes all kFakeCredential values from sensitive fields (determined by
 // onc::FieldIsCredential) of |onc_object|.
 void RemoveFakeCredentials(const chromeos::onc::OncValueSignature& signature,
-                           base::Value::Dict* onc_object) {
+                           base::DictValue* onc_object) {
   std::vector<std::string> entries_to_remove;
   for (auto iter : *onc_object) {
     std::string field_name = iter.first;
@@ -87,7 +87,7 @@ void RemoveFakeCredentials(const chromeos::onc::OncValueSignature& signature,
 
 // Returns true if AutoConnect is enabled by |policy| (as mandatory or
 // recommended setting). Otherwise and on error returns false.
-bool IsAutoConnectEnabledInPolicy(const base::Value::Dict& policy) {
+bool IsAutoConnectEnabledInPolicy(const base::DictValue& policy) {
   std::string type = GetString(policy, ::onc::network_config::kType);
 
   std::string autoconnect_key;
@@ -103,7 +103,7 @@ bool IsAutoConnectEnabledInPolicy(const base::Value::Dict& policy) {
     return false;
   }
 
-  const base::Value::Dict* network_dict = policy.FindDict(network_dict_key);
+  const base::DictValue* network_dict = policy.FindDict(network_dict_key);
   if (!network_dict) {
     LOG(ERROR) << "ONC doesn't contain a " << network_dict_key
                << " dictionary.";
@@ -113,15 +113,15 @@ bool IsAutoConnectEnabledInPolicy(const base::Value::Dict& policy) {
   return network_dict->FindBool(autoconnect_key).value_or(false);
 }
 
-base::Value::Dict* GetOrCreateNestedDictionary(const std::string& key1,
-                                               const std::string& key2,
-                                               base::Value::Dict* dict) {
-  base::Value::Dict* outer_dict = dict->EnsureDict(key1);
+base::DictValue* GetOrCreateNestedDictionary(const std::string& key1,
+                                             const std::string& key2,
+                                             base::DictValue* dict) {
+  base::DictValue* outer_dict = dict->EnsureDict(key1);
   return outer_dict->EnsureDict(key2);
 }
 
 void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
-                                  base::Value::Dict* augmented_onc_network) {
+                                  base::DictValue* augmented_onc_network) {
   std::string type =
       GetString(*augmented_onc_network, ::onc::network_config::kType);
   if (type.empty()) {
@@ -131,7 +131,7 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 
   // Managed dictionaries don't contain empty dictionaries (see onc_merger.cc),
   // so add the Autoconnect dictionary in case Shill didn't report a value.
-  base::Value::Dict* auto_connect_dictionary = nullptr;
+  base::DictValue* auto_connect_dictionary = nullptr;
   if (type == ::onc::network_type::kWiFi) {
     auto_connect_dictionary = GetOrCreateNestedDictionary(
         ::onc::network_config::kWiFi, ::onc::wifi::kAutoConnect,
@@ -160,7 +160,7 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
                                policy_source);
 }
 
-bool HasAnyRecommendedField(const base::Value::List& onc_list) {
+bool HasAnyRecommendedField(const base::ListValue& onc_list) {
   for (const auto& entry : onc_list) {
     if (entry.is_dict() &&
         ::ash::policy_util::HasAnyRecommendedField(entry.GetDict())) {
@@ -222,15 +222,15 @@ std::string SmdxActivationCode::GetString(bool for_error_message) const {
   return ss.str();
 }
 
-base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
-                                   const base::Value::Dict* network_policy,
-                                   const base::Value::Dict* user_settings,
-                                   const base::Value::Dict* active_settings,
-                                   const NetworkProfile* profile) {
-  const base::Value::Dict* user_policy = nullptr;
-  const base::Value::Dict* device_policy = nullptr;
-  const base::Value::Dict* nonshared_user_settings = nullptr;
-  const base::Value::Dict* shared_user_settings = nullptr;
+base::DictValue CreateManagedONC(const base::DictValue* global_policy,
+                                 const base::DictValue* network_policy,
+                                 const base::DictValue* user_settings,
+                                 const base::DictValue* active_settings,
+                                 const NetworkProfile* profile) {
+  const base::DictValue* user_policy = nullptr;
+  const base::DictValue* device_policy = nullptr;
+  const base::DictValue* nonshared_user_settings = nullptr;
+  const base::DictValue* shared_user_settings = nullptr;
 
   if (profile) {
     switch (profile->type()) {
@@ -246,7 +246,7 @@ base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
   }
 
   // This call also removes credentials from policies.
-  base::Value::Dict augmented_onc_network =
+  base::DictValue augmented_onc_network =
       onc::MergeSettingsAndPoliciesToAugmented(
           chromeos::onc::kNetworkConfigurationSignature, user_policy,
           device_policy, nonshared_user_settings, shared_user_settings,
@@ -275,9 +275,9 @@ base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
 // a different GUID in policy data and in the service's UIData dictionary.
 // This leads to issues in the UI layer, so fix up the GUID in UIData if it is
 // encountered.
-void FixupEthernetUIDataGUID(const base::Value::Dict& new_policy,
+void FixupEthernetUIDataGUID(const base::DictValue& new_policy,
                              const std::string& guid,
-                             base::Value::Dict* user_settings) {
+                             base::DictValue* user_settings) {
   DCHECK(user_settings);
   const std::string* type = new_policy.FindString(::onc::network_config::kType);
   if (!type || *type != ::onc::network_type::kEthernet) {
@@ -296,9 +296,9 @@ void FixupEthernetUIDataGUID(const base::Value::Dict& new_policy,
 }
 
 void SetShillPropertiesForGlobalPolicy(
-    const base::Value::Dict& shill_dictionary,
-    const base::Value::Dict& global_network_policy,
-    base::Value::Dict& shill_properties_to_update) {
+    const base::DictValue& shill_dictionary,
+    const base::DictValue& global_network_policy,
+    base::DictValue& shill_properties_to_update) {
   // kAllowOnlyPolicyNetworksToAutoconnect is currently the only global config.
 
   std::string type = GetString(shill_dictionary, shill::kTypeProperty);
@@ -326,13 +326,12 @@ void SetShillPropertiesForGlobalPolicy(
   shill_properties_to_update.Set(shill::kAutoConnectProperty, false);
 }
 
-base::Value::Dict CreateShillConfiguration(
-    const NetworkProfile& profile,
-    const std::string& guid,
-    const base::Value::Dict* global_policy,
-    const base::Value::Dict* network_policy,
-    const base::Value::Dict* user_settings) {
-  base::Value::Dict effective;
+base::DictValue CreateShillConfiguration(const NetworkProfile& profile,
+                                         const std::string& guid,
+                                         const base::DictValue* global_policy,
+                                         const base::DictValue* network_policy,
+                                         const base::DictValue* user_settings) {
+  base::DictValue effective;
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   if (network_policy) {
     switch (profile.type()) {
@@ -373,7 +372,7 @@ base::Value::Dict CreateShillConfiguration(
   effective = normalizer.NormalizeObject(
       &chromeos::onc::kNetworkConfigurationSignature, effective);
 
-  base::Value::Dict shill_dictionary = onc::TranslateONCObjectToShill(
+  base::DictValue shill_dictionary = onc::TranslateONCObjectToShill(
       &chromeos::onc::kNetworkConfigurationSignature, effective);
   shill_dictionary.Set(shill::kProfileProperty, profile.path);
 
@@ -418,7 +417,7 @@ base::Value::Dict CreateShillConfiguration(
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
-    base::Value::Dict sanitized_user_settings =
+    base::DictValue sanitized_user_settings =
         chromeos::onc::MaskCredentialsInOncObject(
             chromeos::onc::kNetworkConfigurationSignature, *user_settings,
             credential_mask);
@@ -439,8 +438,8 @@ base::Value::Dict CreateShillConfiguration(
   return shill_dictionary;
 }
 
-bool IsPolicyMatching(const base::Value::Dict& policy,
-                      const base::Value::Dict& actual_network) {
+bool IsPolicyMatching(const base::DictValue& policy,
+                      const base::DictValue& actual_network) {
   std::string policy_type = GetString(policy, ::onc::network_config::kType);
   std::string actual_network_type =
       GetString(actual_network, ::onc::network_config::kType);
@@ -448,9 +447,9 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
     return false;
 
   if (actual_network_type == ::onc::network_type::kEthernet) {
-    const base::Value::Dict* policy_ethernet =
+    const base::DictValue* policy_ethernet =
         policy.FindDict(::onc::network_config::kEthernet);
-    const base::Value::Dict* actual_ethernet =
+    const base::DictValue* actual_ethernet =
         actual_network.FindDict(::onc::network_config::kEthernet);
     if (!policy_ethernet || !actual_ethernet)
       return false;
@@ -463,9 +462,9 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
   }
 
   if (actual_network_type == ::onc::network_type::kWiFi) {
-    const base::Value::Dict* policy_wifi =
+    const base::DictValue* policy_wifi =
         policy.FindDict(::onc::network_config::kWiFi);
-    const base::Value::Dict* actual_wifi =
+    const base::DictValue* actual_wifi =
         actual_network.FindDict(::onc::network_config::kWiFi);
     if (!policy_wifi || !actual_wifi)
       return false;
@@ -476,9 +475,9 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
   }
 
   if (actual_network_type == ::onc::network_type::kCellular) {
-    const base::Value::Dict* policy_cellular =
+    const base::DictValue* policy_cellular =
         policy.FindDict(::onc::network_config::kCellular);
-    const base::Value::Dict* actual_cellular =
+    const base::DictValue* actual_cellular =
         actual_network.FindDict(::onc::network_config::kCellular);
     if (!policy_cellular || !actual_cellular)
       return false;
@@ -493,12 +492,12 @@ bool IsPolicyMatching(const base::Value::Dict& policy,
   return false;
 }
 
-bool IsCellularPolicy(const base::Value::Dict& onc_config) {
+bool IsCellularPolicy(const base::DictValue& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);
   return type && *type == ::onc::network_type::kCellular;
 }
 
-bool HasAnyRecommendedField(const base::Value::Dict& onc_config) {
+bool HasAnyRecommendedField(const base::DictValue& onc_config) {
   for (const auto [field_name, onc_value] : onc_config) {
     if (field_name == ::onc::kRecommended && onc_value.is_list() &&
         !onc_value.GetList().empty()) {
@@ -514,11 +513,11 @@ bool HasAnyRecommendedField(const base::Value::Dict& onc_config) {
   return false;
 }
 
-const std::string* GetIccidFromONC(const base::Value::Dict& onc_config) {
+const std::string* GetIccidFromONC(const base::DictValue& onc_config) {
   if (!IsCellularPolicy(onc_config))
     return nullptr;
 
-  const base::Value::Dict* cellular_dict =
+  const base::DictValue* cellular_dict =
       onc_config.FindDict(::onc::network_config::kCellular);
   if (!cellular_dict) {
     return nullptr;
@@ -527,9 +526,9 @@ const std::string* GetIccidFromONC(const base::Value::Dict& onc_config) {
   return cellular_dict->FindString(::onc::cellular::kICCID);
 }
 
-const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config) {
+const std::string* GetSMDPAddressFromONC(const base::DictValue& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);
-  const base::Value::Dict* cellular_dict =
+  const base::DictValue* cellular_dict =
       onc_config.FindDict(::onc::network_config::kCellular);
   const std::string* smdp_address = nullptr;
 
@@ -541,9 +540,9 @@ const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config) {
 }
 
 std::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
-    const base::Value::Dict& onc_config) {
+    const base::DictValue& onc_config) {
   const std::string* type = onc_config.FindString(::onc::network_config::kType);
-  const base::Value::Dict* cellular_dict =
+  const base::DictValue* cellular_dict =
       onc_config.FindDict(::onc::network_config::kCellular);
 
   if (!type || (*type != ::onc::network_type::kCellular) || !cellular_dict) {

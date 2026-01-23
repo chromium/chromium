@@ -627,7 +627,7 @@ class CampaignsManagerTest : public testing::Test {
     local_state_->registry()->RegisterStringPref(ash::prefs::kDemoModeStoreId,
                                                  std::string());
     pref_->registry()->RegisterListPref(
-        kTestPref1, base::Value::List().Append("v0").Append("v1"));
+        kTestPref1, base::ListValue().Append("v0").Append("v1"));
     pref_->registry()->RegisterStringPref(kTestPref2, "v2");
     pref_->registry()->RegisterBooleanPref(kTestPref3, true);
   }

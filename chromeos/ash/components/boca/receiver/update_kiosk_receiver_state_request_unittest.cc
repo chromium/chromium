@@ -43,7 +43,7 @@ TEST(UpdateKioskReceiverStateRequestTest, GetRequestBody) {
       *request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   const std::string* state = dict.FindString("state");
   ASSERT_TRUE(state);
   EXPECT_EQ(*state, "CONNECTED");
@@ -59,7 +59,7 @@ TEST(UpdateKioskReceiverStateRequestTest, OnSuccess) {
             received_state = state;
           }));
 
-  base::Value::Dict response_dict;
+  base::DictValue response_dict;
   response_dict.Set("state", "CONNECTED");
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
@@ -79,7 +79,7 @@ TEST(UpdateKioskReceiverStateRequestTest, OnSuccessInvalidResponse) {
             callback_called = true;
           }));
 
-  base::Value::Dict response_dict;
+  base::DictValue response_dict;
   response_dict.Set("wrong_key", "CONNECTED");
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 

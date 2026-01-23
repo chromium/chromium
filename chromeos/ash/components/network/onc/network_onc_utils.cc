@@ -67,20 +67,20 @@ constexpr char kSocksScheme[] = "socks";
 constexpr char kSocks4Scheme[] = "socks4";
 constexpr char kSocks5Scheme[] = "socks5";
 
-std::string GetString(const base::Value::Dict& dict, const char* key) {
+std::string GetString(const base::DictValue& dict, const char* key) {
   const std::string* value = dict.FindString(key);
   if (!value)
     return std::string();
   return *value;
 }
 
-int GetInt(const base::Value::Dict& dict, const char* key, int default_value) {
+int GetInt(const base::DictValue& dict, const char* key, int default_value) {
   return dict.FindInt(key).value_or(default_value);
 }
 
 net::ProxyServer ConvertOncProxyLocationToHostPort(
     net::ProxyServer::Scheme default_proxy_scheme,
-    const base::Value::Dict& onc_proxy_location) {
+    const base::DictValue& onc_proxy_location) {
   std::string host = GetString(onc_proxy_location, ::onc::proxy::kHost);
   // Parse |host| according to the format [<scheme>"://"]<server>[":"<port>].
   net::ProxyServer proxy_server =
@@ -94,10 +94,10 @@ net::ProxyServer ConvertOncProxyLocationToHostPort(
                         static_cast<uint16_t>(port)));
 }
 
-void AppendProxyServerForScheme(const base::Value::Dict& onc_manual,
+void AppendProxyServerForScheme(const base::DictValue& onc_manual,
                                 const std::string& onc_scheme,
                                 std::string* spec) {
-  const base::Value::Dict* onc_proxy_location = onc_manual.FindDict(onc_scheme);
+  const base::DictValue* onc_proxy_location = onc_manual.FindDict(onc_scheme);
   if (!onc_proxy_location)
     return;
 
@@ -124,7 +124,7 @@ void AppendProxyServerForScheme(const base::Value::Dict& onc_manual,
 }
 
 net::ProxyHostMatchingRules ConvertOncExcludeDomainsToBypassRules(
-    const base::Value::List& onc_exclude_domains) {
+    const base::ListValue& onc_exclude_domains) {
   net::ProxyHostMatchingRules rules;
   for (const base::Value& value : onc_exclude_domains) {
     if (!value.is_string()) {
@@ -160,7 +160,7 @@ std::string SchemeToString(net::ProxyServer::Scheme scheme) {
 void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
                        const std::string& scheme,
                        const std::string& onc_scheme,
-                       base::Value::Dict& dict) {
+                       base::DictValue& dict) {
   const net::ProxyList* proxy_list = nullptr;
   if (proxy_rules.type == net::ProxyConfig::ProxyRules::Type::PROXY_LIST) {
     proxy_list = &proxy_rules.single_proxies;
@@ -184,7 +184,7 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
   if (server.scheme() != default_scheme) {
     host = SchemeToString(server.scheme()) + "://" + host;
   }
-  auto url_dict = base::Value::Dict()
+  auto url_dict = base::DictValue()
                       .Set(::onc::proxy::kHost, host)
                       .Set(::onc::proxy::kPort, server.host_port_pair().port());
   dict.Set(onc_scheme, std::move(url_dict));
@@ -192,8 +192,8 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
 
 // Returns the NetworkConfiguration with |guid| from |network_configs|, or
 // nullptr if no such NetworkConfiguration is found.
-const base::Value::Dict* GetNetworkConfigByGUID(
-    const base::Value::List& network_configs,
+const base::DictValue* GetNetworkConfigByGUID(
+    const base::ListValue& network_configs,
     const std::string& guid) {
   for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
@@ -208,18 +208,18 @@ const base::Value::Dict* GetNetworkConfigByGUID(
 
 // Returns the first Ethernet NetworkConfiguration from |network_configs| with
 // "Authentication: None", or nullptr if no such NetworkConfiguration is found.
-const base::Value::Dict* GetNetworkConfigForEthernetWithoutEAP(
-    const base::Value::List& network_configs) {
+const base::DictValue* GetNetworkConfigForEthernetWithoutEAP(
+    const base::ListValue& network_configs) {
   VLOG(2) << "Search for ethernet policy without EAP.";
   for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
 
-    const base::Value::Dict& network_dict = network.GetDict();
+    const base::DictValue& network_dict = network.GetDict();
     std::string type = GetString(network_dict, ::onc::network_config::kType);
     if (type != ::onc::network_type::kEthernet)
       continue;
 
-    const base::Value::Dict* ethernet =
+    const base::DictValue* ethernet =
         network_dict.FindDict(::onc::network_config::kEthernet);
     if (!ethernet)
       continue;
@@ -237,8 +237,8 @@ const base::Value::Dict* GetNetworkConfigForEthernetWithoutEAP(
 // is an Ethernet network, tries lookup of the GUID of the shared EthernetEAP
 // service, or otherwise returns the first Ethernet NetworkConfiguration with
 // "Authentication: None".
-const base::Value::Dict* GetNetworkConfigForNetworkFromOnc(
-    const base::Value::List& network_configs,
+const base::DictValue* GetNetworkConfigForNetworkFromOnc(
+    const base::ListValue& network_configs,
     const NetworkState& network) {
   // In all cases except Ethernet, we use the GUID of |network|.
   if (!network.Matches(NetworkTypePattern::Ethernet()))
@@ -271,7 +271,7 @@ const base::Value::Dict* GetNetworkConfigForNetworkFromOnc(
 // Returns the NetworkConfiguration ONC object for |network| from this ONC, or
 // nullptr if no configuration is found. See |GetNetworkConfigForNetworkFromOnc|
 // for the NetworkConfiguration lookup rules.
-const base::Value::Dict* GetPolicyForNetworkFromPref(
+const base::DictValue* GetPolicyForNetworkFromPref(
     const PrefService* pref_service,
     const char* pref_name,
     const NetworkState& network) {
@@ -311,7 +311,7 @@ const base::Value::Dict* GetPolicyForNetworkFromPref(
 // Returns the global network configuration dictionary from the ONC policy of
 // the active user if |for_active_user| is true, or from device policy if it is
 // false.
-const base::Value::Dict* GetGlobalConfigFromPolicy(bool for_active_user) {
+const base::DictValue* GetGlobalConfigFromPolicy(bool for_active_user) {
   std::string username_hash;
   if (for_active_user) {
     const user_manager::User* user =
@@ -332,7 +332,7 @@ const base::Value::Dict* GetGlobalConfigFromPolicy(bool for_active_user) {
 // are implemented, which are replaced by attributes from |user|.
 void ExpandStringPlaceholdersInNetworksForUser(
     const user_manager::User* user,
-    base::Value::List& network_configs) {
+    base::ListValue& network_configs) {
   if (!user) {
     // In tests no user may be logged in. It's not harmful if we just don't
     // expand the strings.
@@ -367,8 +367,8 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
   return NetworkTypePattern::Default();
 }
 
-std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
-    const base::Value::Dict& onc_proxy_settings) {
+std::optional<base::DictValue> ConvertOncProxySettingsToProxyConfig(
+    const base::DictValue& onc_proxy_settings) {
   std::string type = GetString(onc_proxy_settings, ::onc::proxy::kType);
 
   if (type == ::onc::proxy::kDirect) {
@@ -384,7 +384,7 @@ std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
         url.is_valid() ? url.spec() : std::string(), false);
   }
   if (type == ::onc::proxy::kManual) {
-    const base::Value::Dict* manual_dict =
+    const base::DictValue* manual_dict =
         onc_proxy_settings.FindDict(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
@@ -399,7 +399,7 @@ std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
                                &manual_spec);
 
     net::ProxyHostMatchingRules bypass_rules;
-    const base::Value::List* exclude_domains =
+    const base::ListValue* exclude_domains =
         onc_proxy_settings.FindList(::onc::proxy::kExcludeDomains);
     if (exclude_domains)
       bypass_rules = ConvertOncExcludeDomainsToBypassRules(*exclude_domains);
@@ -409,13 +409,13 @@ std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
   NOTREACHED();
 }
 
-std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
-    const base::Value::Dict& proxy_config_dict) {
+std::optional<base::DictValue> ConvertProxyConfigToOncProxySettings(
+    const base::DictValue& proxy_config_dict) {
   // Create a ProxyConfigDictionary from the dictionary.
   ProxyConfigDictionary proxy_config(proxy_config_dict.Clone());
 
   // Create the result Value and populate it.
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config.GetMode(&mode)) {
     return std::nullopt;
@@ -438,7 +438,7 @@ std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
       proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kManual);
-      base::Value::Dict manual;
+      base::DictValue manual;
       std::string proxy_rules_string;
       if (proxy_config.GetProxyServer(&proxy_rules_string)) {
         net::ProxyConfig::ProxyRules proxy_rules;
@@ -459,7 +459,7 @@ std::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
       if (proxy_config.GetBypassList(&bypass_rules_string)) {
         net::ProxyHostMatchingRules bypass_rules;
         bypass_rules.ParseFromString(bypass_rules_string);
-        base::Value::List exclude_domains;
+        base::ListValue exclude_domains;
         for (const auto& rule : bypass_rules.rules())
           exclude_domains.Append(rule->ToString());
         if (!exclude_domains.empty()) {
@@ -487,11 +487,11 @@ base::flat_map<std::string, std::string> GetVariableExpansionsForUser(
 }
 
 int ImportNetworksForUser(const user_manager::User* user,
-                          const base::Value::List& network_configs,
+                          const base::ListValue& network_configs,
                           std::string* error) {
   error->clear();
 
-  base::Value::List expanded_networks(network_configs.Clone());
+  base::ListValue expanded_networks(network_configs.Clone());
   ExpandStringPlaceholdersInNetworksForUser(user, expanded_networks);
 
   const NetworkProfile* profile =
@@ -505,11 +505,11 @@ int ImportNetworksForUser(const user_manager::User* user,
   bool ethernet_not_found = false;
   int networks_created = 0;
   for (const auto& network_value : expanded_networks) {
-    const base::Value::Dict& network = network_value.GetDict();
+    const base::DictValue& network = network_value.GetDict();
 
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
-    base::Value::Dict normalized_network = normalizer.NormalizeObject(
+    base::DictValue normalized_network = normalizer.NormalizeObject(
         &chromeos::onc::kNetworkConfigurationSignature, network);
 
     std::string type =
@@ -547,7 +547,7 @@ int ImportNetworksForUser(const user_manager::User* user,
 }
 
 bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
-  const base::Value::Dict* global_config =
+  const base::DictValue* global_config =
       GetGlobalConfigFromPolicy(for_active_user);
   if (!global_config)
     return false;  // By default, all networks are allowed to autoconnect.
@@ -558,15 +558,14 @@ bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
       .value_or(false);
 }
 
-const base::Value::Dict* GetPolicyForNetwork(
-    const PrefService* profile_prefs,
-    const PrefService* local_state_prefs,
-    const NetworkState& network,
-    ::onc::ONCSource* onc_source) {
+const base::DictValue* GetPolicyForNetwork(const PrefService* profile_prefs,
+                                           const PrefService* local_state_prefs,
+                                           const NetworkState& network,
+                                           ::onc::ONCSource* onc_source) {
   VLOG(2) << "GetPolicyForNetwork: " << network.path();
   *onc_source = ::onc::ONC_SOURCE_NONE;
 
-  const base::Value::Dict* network_policy = GetPolicyForNetworkFromPref(
+  const base::DictValue* network_policy = GetPolicyForNetworkFromPref(
       profile_prefs, ::onc::prefs::kOpenNetworkConfiguration, network);
   if (network_policy) {
     VLOG(1) << "Network " << network.path() << " is managed by user policy.";
@@ -589,14 +588,14 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
                          const PrefService* local_state_prefs,
                          const NetworkState& network) {
   ::onc::ONCSource ignored_onc_source;
-  const base::Value::Dict* policy = onc::GetPolicyForNetwork(
+  const base::DictValue* policy = onc::GetPolicyForNetwork(
       profile_prefs, local_state_prefs, network, &ignored_onc_source);
   return policy != nullptr;
 }
 
 bool HasUserPasswordSubstitutionVariable(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value::Dict& onc_object) {
+    const base::DictValue& onc_object) {
   if (&signature == &chromeos::onc::kEAPSignature) {
     const std::string* password_field =
         onc_object.FindString(::onc::eap::kPassword);
@@ -630,7 +629,7 @@ bool HasUserPasswordSubstitutionVariable(
 }
 
 bool HasUserPasswordSubstitutionVariable(
-    const base::Value::List& network_configs) {
+    const base::ListValue& network_configs) {
   for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
     bool result = HasUserPasswordSubstitutionVariable(

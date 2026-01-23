@@ -59,8 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
   //   "day_of_week": int,
   //   "milliseconds_since_midnight": int
   // }.
-  static std::optional<WeeklyTimeChecked> FromDict(
-      const base::Value::Dict& dict);
+  static std::optional<WeeklyTimeChecked> FromDict(const base::DictValue& dict);
 
   // Constructs from an exploded base::Time.
   static WeeklyTimeChecked FromExploded(const base::Time::Exploded& exploded);

@@ -74,11 +74,11 @@ const DeviceState* ManagedState::AsDeviceState() const {
 }
 
 bool ManagedState::InitialPropertiesReceived(
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   return false;
 }
 
-void ManagedState::GetStateProperties(base::Value::Dict* dictionary) const {
+void ManagedState::GetStateProperties(base::DictValue* dictionary) const {
   dictionary->Set(shill::kNameProperty, name());
   dictionary->Set(shill::kTypeProperty, type());
 }

@@ -102,10 +102,10 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(1u, observer_.hotspot_capabilities_changed_count());
 
   auto capabilities_dict =
-      base::Value::Dict()
-          .Set(shill::kTetheringCapUpstreamProperty, base::Value::List())
-          .Set(shill::kTetheringCapDownstreamProperty, base::Value::List())
-          .Set(shill::kTetheringCapSecurityProperty, base::Value::List());
+      base::DictValue()
+          .Set(shill::kTetheringCapUpstreamProperty, base::ListValue())
+          .Set(shill::kTetheringCapDownstreamProperty, base::ListValue())
+          .Set(shill::kTetheringCapSecurityProperty, base::ListValue());
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringCapabilitiesProperty,
       base::Value(capabilities_dict.Clone()));
@@ -117,7 +117,7 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
   EXPECT_EQ(2u, observer_.hotspot_capabilities_changed_count());
 
   capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
-                        base::Value::List().Append(shill::kTypeCellular));
+                        base::ListValue().Append(shill::kTypeCellular));
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringCapabilitiesProperty,
       base::Value(capabilities_dict.Clone()));
@@ -130,10 +130,10 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
 
   // Add WiFi to the downstream technology list in Shill
   capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
-                        base::Value::List().Append(shill::kTypeWifi));
+                        base::ListValue().Append(shill::kTypeWifi));
   // Add allowed WiFi security mode in Shill
   capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
-                        base::Value::List()
+                        base::ListValue()
                             .Append(shill::kSecurityWpa2)
                             .Append(shill::kSecurityWpa3));
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -266,26 +266,26 @@ TEST_F(HotspotCapabilitiesProviderTest,
 
 TEST_F(HotspotCapabilitiesProviderTest, Tethering_PolicyNotAllowed) {
   auto capabilities_dict =
-      base::Value::Dict()
-          .Set(shill::kTetheringCapUpstreamProperty, base::Value::List())
-          .Set(shill::kTetheringCapDownstreamProperty, base::Value::List())
-          .Set(shill::kTetheringCapSecurityProperty, base::Value::List());
+      base::DictValue()
+          .Set(shill::kTetheringCapUpstreamProperty, base::ListValue())
+          .Set(shill::kTetheringCapDownstreamProperty, base::ListValue())
+          .Set(shill::kTetheringCapSecurityProperty, base::ListValue());
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringCapabilitiesProperty,
       base::Value(capabilities_dict.Clone()));
   base::RunLoop().RunUntilIdle();
 
   capabilities_dict.Set(shill::kTetheringCapUpstreamProperty,
-                        base::Value::List().Append(shill::kTypeCellular));
+                        base::ListValue().Append(shill::kTypeCellular));
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringCapabilitiesProperty,
       base::Value(capabilities_dict.Clone()));
   base::RunLoop().RunUntilIdle();
 
   capabilities_dict.Set(shill::kTetheringCapDownstreamProperty,
-                        base::Value::List().Append(shill::kTypeWifi));
+                        base::ListValue().Append(shill::kTypeWifi));
   capabilities_dict.Set(shill::kTetheringCapSecurityProperty,
-                        base::Value::List()
+                        base::ListValue()
                             .Append(shill::kSecurityWpa2)
                             .Append(shill::kSecurityWpa3));
   network_state_test_helper_.manager_test()->SetManagerProperty(

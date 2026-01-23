@@ -47,8 +47,8 @@ bool AreRequestsEqual(const std::string& json_a, const std::string& json_b) {
       base::JSONReader::Read(json_a, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::optional<base::Value> parsed_b =
       base::JSONReader::Read(json_b, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict& dict_a = parsed_a->GetDict();
-  base::Value::Dict& dict_b = parsed_b->GetDict();
+  base::DictValue& dict_a = parsed_a->GetDict();
+  base::DictValue& dict_b = parsed_b->GetDict();
 
   const std::optional<double> rate_a =
       dict_a.FindDoubleByDottedPath(kSpeechFactorPath);

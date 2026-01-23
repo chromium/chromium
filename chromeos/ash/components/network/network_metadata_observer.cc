@@ -21,6 +21,6 @@ void NetworkMetadataObserver::OnNetworkCreated(const std::string& guid) {}
 
 void NetworkMetadataObserver::OnNetworkUpdate(
     const std::string& guid,
-    const base::Value::Dict* set_properties) {}
+    const base::DictValue* set_properties) {}
 
 }  // namespace ash

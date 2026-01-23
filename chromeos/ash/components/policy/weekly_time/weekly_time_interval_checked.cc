@@ -43,7 +43,7 @@ bool WeeklyTimeIntervalChecked::IntervalsOverlap(
 
 // static
 std::optional<WeeklyTimeIntervalChecked> WeeklyTimeIntervalChecked::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const base::Value* start_value = dict.Find(kStart);
   if (!start_value) {
     LOG(ERROR) << "Missing start.";

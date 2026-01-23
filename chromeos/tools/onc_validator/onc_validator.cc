@@ -85,7 +85,7 @@ void PrintHelp() {
           kStatusArgumentError);
 }
 
-std::optional<base::Value::Dict> ReadDictionary(const std::string& filename) {
+std::optional<base::DictValue> ReadDictionary(const std::string& filename) {
   base::FilePath path(filename);
   JSONFileValueDeserializer deserializer(path,
                                          base::JSON_ALLOW_TRAILING_COMMAS);
@@ -119,7 +119,7 @@ int main(int argc, const char* argv[]) {
     return kStatusArgumentError;
   }
 
-  std::optional<base::Value::Dict> onc_object = ReadDictionary(args[1]);
+  std::optional<base::DictValue> onc_object = ReadDictionary(args[1]);
 
   if (!onc_object) {
     return kStatusJsonError;

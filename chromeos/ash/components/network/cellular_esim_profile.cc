@@ -24,7 +24,7 @@ const char kKeyActivationCode[] = "ActivationCode";
 
 // static
 std::optional<CellularESimProfile> CellularESimProfile::FromDictionaryValue(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   const std::string* path = value.FindString(kKeyPath);
   if (!path) {
     return std::nullopt;
@@ -95,8 +95,8 @@ CellularESimProfile& CellularESimProfile::operator=(
 
 CellularESimProfile::~CellularESimProfile() = default;
 
-base::Value::Dict CellularESimProfile::ToDictionaryValue() const {
-  return base::Value::Dict()
+base::DictValue CellularESimProfile::ToDictionaryValue() const {
+  return base::DictValue()
       .Set(kKeyState, static_cast<int>(state_))
       .Set(kKeyPath, path_.value())
       .Set(kKeyEid, eid_)

@@ -65,7 +65,7 @@ class GeolocationHandlerImplTest : public testing::Test {
 
     manager_test_->AddGeoNetwork(
         shill::kGeoWifiAccessPointsProperty,
-        base::Value::Dict()
+        base::DictValue()
             .Set(shill::kGeoMacAddressProperty, mac_address)
             .Set(shill::kGeoChannelProperty, channel)
             .Set(shill::kGeoSignalStrengthProperty, strength));
@@ -84,7 +84,7 @@ class GeolocationHandlerImplTest : public testing::Test {
 
     manager_test_->AddGeoNetwork(
         shill::kGeoCellTowersProperty,
-        base::Value::Dict()
+        base::DictValue()
             .Set(shill::kGeoCellIdProperty, ci)
             .Set(shill::kGeoLocationAreaCodeProperty, lac)
             .Set(shill::kGeoMobileCountryCodeProperty, mcc)

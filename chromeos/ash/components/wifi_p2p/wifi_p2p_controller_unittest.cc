@@ -139,7 +139,7 @@ TEST_F(WifiP2PControllerTest, FeatureEnabled) {
   Init();
   base::RunLoop run_loop;
   ShillManagerClient::Get()->GetProperties(
-      base::BindLambdaForTesting([&](std::optional<base::Value::Dict> result) {
+      base::BindLambdaForTesting([&](std::optional<base::DictValue> result) {
         if (!result) {
           ADD_FAILURE() << "Error getting Shill manager properties";
           run_loop.Quit();
@@ -369,8 +369,8 @@ TEST_F(WifiP2PControllerTest, DisconnectFromP2PGroupFailure_NotConnected) {
 
 TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
   auto capabilities_dict =
-      base::Value::Dict().Set(shill::kP2PCapabilitiesGroupReadinessProperty,
-                              shill::kP2PCapabilitiesGroupReadinessReady);
+      base::DictValue().Set(shill::kP2PCapabilitiesGroupReadinessProperty,
+                            shill::kP2PCapabilitiesGroupReadinessReady);
   capabilities_dict.Set(shill::kP2PCapabilitiesClientReadinessProperty,
                         shill::kP2PCapabilitiesClientReadinessReady);
   capabilities_dict.Set(shill::kP2PCapabilitiesP2PSupportedProperty,

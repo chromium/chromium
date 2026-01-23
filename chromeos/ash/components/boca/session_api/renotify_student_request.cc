@@ -53,10 +53,10 @@ bool RenotifyStudentRequest::GetContentData(std::string* upload_content_type,
                                             std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
-  base::Value::List students;
+  base::DictValue root;
+  base::ListValue students;
   for (auto id : student_ids_) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set(kGaiaId, id);
     students.Append(std::move(item));
   }

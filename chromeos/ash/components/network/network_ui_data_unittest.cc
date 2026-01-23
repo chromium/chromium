@@ -10,7 +10,7 @@
 namespace ash {
 
 TEST(NetworkUIDataTest, ONCSource) {
-  base::Value::Dict ui_data_dict;
+  base::DictValue ui_data_dict;
 
   ui_data_dict.Set("onc_source", "user_import");
   {

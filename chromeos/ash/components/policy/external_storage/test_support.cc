@@ -25,7 +25,7 @@ void SetReadOnly(PrefService& pref_service, bool read_only) {
 
 void SetAllowlist(PrefService& pref_service,
                   std::initializer_list<DeviceId> allowlist) {
-  base::Value::List list;
+  base::ListValue list;
 
   for (const DeviceId& device_id : allowlist) {
     list.Append(device_id.ToDict());

@@ -101,16 +101,16 @@ void AddDataFromFileToMap(
       base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(json) << "parse failed for " << file_id_in_resources << ":"
               << json_string << "EOF";
-  base::Value::List groups = std::move(*json).TakeList();
+  base::ListValue groups = std::move(*json).TakeList();
   // TODO(b/309343774): Consider using json_value_converter
   for (auto& group : groups) {
     for (const auto& emoji : *group.GetDict().FindList("emoji")) {
-      const base::Value::Dict* base = emoji.GetDict().FindDict("base");
+      const base::DictValue* base = emoji.GetDict().FindDict("base");
       const std::string* emoji_string = base->FindString("string");
       CHECK(emoji_string) << "All emoji should have names";
       // Gather possible search terms for the emoji
       std::vector<std::string_view> search_terms;
-      const base::Value::List* keywords = base->FindList("keywords");
+      const base::ListValue* keywords = base->FindList("keywords");
       if (keywords) {
         search_terms.reserve(keywords->size());
         for (const auto& keyword : *keywords) {

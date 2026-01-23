@@ -250,7 +250,7 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  base::Value::Dict response_object = std::move(*parsed_json).TakeDict();
+  base::DictValue response_object = std::move(*parsed_json).TakeDict();
 
   const std::string* status = response_object.FindString(kStatusString);
 

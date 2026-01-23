@@ -30,7 +30,7 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
     std::string_view input,
     std::string_view key,
     base::Value::Type target_type) {
-  std::optional<base::Value::Dict> parsed =
+  std::optional<base::DictValue> parsed =
       base::JSONReader::ReadDict(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return std::nullopt;
@@ -60,7 +60,7 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
 }
 
 // Returns a Restrictions struct from a dictionary `dict`.
-Restrictions ParseRestrictionsFromDict(const base::Value::Dict& dict) {
+Restrictions ParseRestrictionsFromDict(const base::DictValue& dict) {
   Restrictions restrictions;
   auto min_as_double = dict.FindDouble("minMilestone");
   auto max_as_double = dict.FindDouble("maxMilestone");
@@ -83,8 +83,7 @@ Restrictions ParseRestrictionsFromDict(const base::Value::Dict& dict) {
 }
 
 // Returns a ParsedPrinter from a leaf `dict` from Printers metadata.
-std::optional<ParsedPrinter> ParsePrinterFromDict(
-    const base::Value::Dict& dict) {
+std::optional<ParsedPrinter> ParsePrinterFromDict(const base::DictValue& dict) {
   const std::string* const effective_make_and_model = dict.FindString("emm");
   const std::string* const name = dict.FindString("name");
   if (!effective_make_and_model || effective_make_and_model->empty() || !name ||
@@ -95,8 +94,7 @@ std::optional<ParsedPrinter> ParsePrinterFromDict(
   printer.effective_make_and_model = *effective_make_and_model;
   printer.user_visible_printer_name = *name;
 
-  const base::Value::Dict* const restrictions_dict =
-      dict.FindDict("restriction");
+  const base::DictValue* const restrictions_dict = dict.FindDict("restriction");
   if (restrictions_dict) {
     printer.restrictions = ParseRestrictionsFromDict(*restrictions_dict);
   }
@@ -109,7 +107,7 @@ std::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
     return std::nullopt;
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   ParsedIndexLeaf leaf;
 
   const std::string* const ppd_basename = dict.FindString("name");
@@ -118,8 +116,7 @@ std::optional<ParsedIndexLeaf> ParsedIndexLeafFrom(const base::Value& value) {
   }
   leaf.ppd_basename = *ppd_basename;
 
-  const base::Value::Dict* const restrictions_dict =
-      dict.FindDict("restriction");
+  const base::DictValue* const restrictions_dict = dict.FindDict("restriction");
   if (restrictions_dict) {
     leaf.restrictions = ParseRestrictionsFromDict(*restrictions_dict);
   }
@@ -138,7 +135,7 @@ std::optional<ParsedIndexValues> UnnestPpdMetadata(const base::Value& value) {
   if (!value.is_dict()) {
     return std::nullopt;
   }
-  const base::Value::List* const ppd_metadata_list =
+  const base::ListValue* const ppd_metadata_list =
       value.GetDict().FindList("ppdMetadata");
   if (!ppd_metadata_list || ppd_metadata_list->empty()) {
     return std::nullopt;
@@ -316,7 +313,7 @@ std::optional<ParsedPrinters> ParsePrinters(std::string_view printers_json) {
 
   ParsedPrinters printers;
   for (const auto& printer_value : as_value->GetList()) {
-    const base::Value::Dict* printer_dict = printer_value.GetIfDict();
+    const base::DictValue* printer_dict = printer_value.GetIfDict();
     if (!printer_dict) {
       continue;
     }
@@ -342,7 +339,7 @@ std::optional<ParsedReverseIndex> ParseReverseIndex(
 
   ParsedReverseIndex parsed;
   for (const auto [key, value] : makes_and_models->GetDict()) {
-    const base::Value::Dict* value_dict = value.GetIfDict();
+    const base::DictValue* value_dict = value.GetIfDict();
     if (!value_dict) {
       continue;
     }

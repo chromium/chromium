@@ -24,7 +24,7 @@ namespace arc::net_utils {
 
 // Adds fields from |network_state| into |mojo| NetworkConfiguration.
 void FillConfigurationsFromState(const ash::NetworkState* network_state,
-                                 const base::Value::Dict* shill_dict,
+                                 const base::DictValue* shill_dict,
                                  arc::mojom::NetworkConfiguration* mojo);
 
 // Adds fields from patchpanel's virtual |device| into |mojo|
@@ -68,7 +68,7 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type);
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties);
+    const std::map<std::string, base::DictValue>& shill_network_properties);
 
 // Translates a vector of NetworkStates to a vector of ScanResults.
 // For each state, fill the fields in ScanResult.
@@ -84,12 +84,12 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
     const std::vector<patchpanel::NetworkDevice>& devices,
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& active_network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties);
+    const std::map<std::string, base::DictValue>& shill_network_properties);
 
 // Convert a vector of subject name match list that containing ":" separated
 // string in "Type:Value" format (like DNS:example.com, EMAIL:test@domain.com)
-// to a base::Value::List format that is accepted by ONC.
-base::Value::List TranslateSubjectNameMatchListToValue(
+// to a base::ListValue format that is accepted by ONC.
+base::ListValue TranslateSubjectNameMatchListToValue(
     const std::vector<std::string>& string_list);
 
 // Translate a mojom socket connection event into a patchpanel socket connection

@@ -73,7 +73,7 @@ void EarlyPrefsReader::OnFileRead(ResultCallback callback,
   std::move(callback).Run(true);
 }
 
-bool EarlyPrefsReader::ValidateData(const base::Value::Dict* root) const {
+bool EarlyPrefsReader::ValidateData(const base::DictValue* root) const {
   if (!root) {
     return false;
   }

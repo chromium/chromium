@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void UpdateDevicePreferenceSet(const AudioDeviceList& devices,
                                  const AudioDevice& preferred_device) override;
 
-  const base::Value::List& GetMostRecentActivatedDeviceIdList(
+  const base::ListValue& GetMostRecentActivatedDeviceIdList(
       bool is_input) override;
 
   void UpdateMostRecentActivatedDeviceIdList(
@@ -180,16 +180,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void NotifyAudioPolicyChange();
   void NotifyVoiceIsolationChange();
 
-  base::Value::Dict device_mute_settings_;
-  base::Value::Dict device_volume_settings_;
-  base::Value::Dict device_gain_settings_;
-  base::Value::Dict device_state_settings_;
-  base::Value::Dict input_device_user_priority_settings_;
-  base::Value::Dict output_device_user_priority_settings_;
-  base::Value::Dict input_device_preference_set_settings_;
-  base::Value::Dict output_device_preference_set_settings_;
-  base::Value::List most_recent_activated_input_device_ids_;
-  base::Value::List most_recent_activated_output_device_ids_;
+  base::DictValue device_mute_settings_;
+  base::DictValue device_volume_settings_;
+  base::DictValue device_gain_settings_;
+  base::DictValue device_state_settings_;
+  base::DictValue input_device_user_priority_settings_;
+  base::DictValue output_device_user_priority_settings_;
+  base::DictValue input_device_preference_set_settings_;
+  base::DictValue output_device_preference_set_settings_;
+  base::ListValue most_recent_activated_input_device_ids_;
+  base::ListValue most_recent_activated_output_device_ids_;
 
   raw_ptr<PrefService> local_state_;  // not owned
 

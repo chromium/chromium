@@ -77,7 +77,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
             hotspot_config::mojom::HotspotState::kDisabled);
 
   // Update tethering status to active in Shill.
-  base::Value::Dict status_dict;
+  base::DictValue status_dict;
   status_dict.Set(shill::kTetheringStatusStateProperty,
                   shill::kTetheringStateActive);
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -125,7 +125,7 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
 TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
   EXPECT_EQ(0u, hotspot_state_handler_->GetHotspotActiveClientCount());
 
-  base::Value::Dict status_dict;
+  base::DictValue status_dict;
   status_dict.Set(shill::kTetheringStatusStateProperty,
                   shill::kTetheringStateActive);
   network_state_test_helper_.manager_test()->SetManagerProperty(
@@ -139,8 +139,8 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
   // Update tethering status with one active client.
   status_dict.Set(
       shill::kTetheringStatusClientsProperty,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001")
               .Set(shill::kTetheringStatusClientHostnameProperty, "hostname1")
               .Set(shill::kTetheringStatusClientMACProperty, "persist")));

@@ -46,7 +46,7 @@ std::string ResultParser::RemoveKnownHtmlTags(const std::string& input) {
 }
 
 std::unique_ptr<StructuredResult> ResultParser::ParseInStructuredResult(
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   return nullptr;
 }
 

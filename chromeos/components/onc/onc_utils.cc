@@ -28,13 +28,13 @@
 namespace chromeos::onc {
 namespace {
 
-using IdToAPNMap = std::map<std::string, const base::Value::Dict*>;
+using IdToAPNMap = std::map<std::string, const base::DictValue*>;
 
 // Error messages that can be reported when decrypting encrypted ONC.
 constexpr char kUnableToDecrypt[] = "Unable to decrypt encrypted ONC";
 constexpr char kUnableToDecode[] = "Unable to decode encrypted ONC";
 
-bool GetString(const base::Value::Dict& dict,
+bool GetString(const base::DictValue& dict,
                const char* key,
                std::string* result) {
   const std::string* value = dict.FindString(key);
@@ -45,7 +45,7 @@ bool GetString(const base::Value::Dict& dict,
   return true;
 }
 
-bool GetInt(const base::Value::Dict& dict, const char* key, int* result) {
+bool GetInt(const base::DictValue& dict, const char* key, int* result) {
   const std::optional<int> value = dict.FindInt(key);
   if (!value) {
     return false;
@@ -58,7 +58,7 @@ bool GetInt(const base::Value::Dict& dict, const char* key, int* result) {
 // |onc_object|.
 void ExpandField(const std::string& fieldname,
                  const VariableExpander& variable_expander,
-                 base::Value::Dict* onc_object) {
+                 base::DictValue* onc_object) {
   std::string* field_value = onc_object->FindString(fieldname);
   if (!field_value) {
     return;
@@ -89,12 +89,12 @@ bool IsUserLoginPasswordPlaceholder(const std::string& field_name,
 // passphrases) in ONC.
 class OncMaskValues : public Mapper {
  public:
-  static base::Value::Dict Mask(const OncValueSignature& signature,
-                                const base::Value::Dict& onc_object,
-                                const std::string& mask) {
+  static base::DictValue Mask(const OncValueSignature& signature,
+                              const base::DictValue& onc_object,
+                              const std::string& mask) {
     OncMaskValues masker(mask);
     bool error = false;
-    base::Value::Dict result = masker.MapObject(signature, onc_object, &error);
+    base::DictValue result = masker.MapObject(signature, onc_object, &error);
     return result;
   }
 
@@ -129,10 +129,10 @@ class OncMaskValues : public Mapper {
 // Returns a map GUID->PEM of all server and authority certificates defined in
 // the Certificates section of ONC, which is passed in as |certificates|.
 CertPEMsByGUIDMap GetServerAndCACertsByGUID(
-    const base::Value::List& certificates) {
+    const base::ListValue& certificates) {
   CertPEMsByGUIDMap certs_by_guid;
   for (const auto& cert_value : certificates) {
-    const base::Value::Dict& cert = cert_value.GetDict();
+    const base::DictValue& cert = cert_value.GetDict();
 
     const std::string* guid = cert.FindString(::onc::certificate::kGUID);
     if (!guid || guid->empty()) {
@@ -164,12 +164,12 @@ CertPEMsByGUIDMap GetServerAndCACertsByGUID(
 // Set APN dictionary and associated recommended values to solve the issue
 // of setting the APN for managed eSIM profiles (see http://b/295226668) in
 // old APN UI.
-void SetAPNDictAndRecommendedIfNone(base::Value::Dict& cellular_fields) {
+void SetAPNDictAndRecommendedIfNone(base::DictValue& cellular_fields) {
   if (cellular_fields.Find(::onc::cellular::kAPN)) {
     return;
   }
 
-  auto apn_recommended_list = base::Value::List()
+  auto apn_recommended_list = base::ListValue()
                                   .Append(::onc::cellular_apn::kAccessPointName)
                                   .Append(::onc::cellular_apn::kAttach)
                                   .Append(::onc::cellular_apn::kAuthentication)
@@ -184,7 +184,7 @@ void SetAPNDictAndRecommendedIfNone(base::Value::Dict& cellular_fields) {
 // Modify recommended list to include custom APN list field to solve the issue
 // of setting the APN for managed eSIM profiles (see http://b/295226668) in
 // revamp APN UI.
-void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
+void AddCustomAPNListToRecommended(base::DictValue& cellular_fields) {
   auto* recommended = cellular_fields.Find(::onc::kRecommended);
   if (!recommended) {
     recommended = cellular_fields.Set(::onc::kRecommended,
@@ -199,13 +199,13 @@ void AddCustomAPNListToRecommended(base::Value::Dict& cellular_fields) {
 }
 
 void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
-                                       base::Value::Dict& onc_object,
+                                       base::DictValue& onc_object,
                                        bool allow_apn_modification) {
   if (&signature == &kCellularSignature) {
     if (allow_apn_modification) {
       AddCustomAPNListToRecommended(onc_object);
     } else {
-      onc_object.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+      onc_object.Set(::onc::cellular::kCustomAPNList, base::ListValue());
     }
     SetAPNDictAndRecommendedIfNone(onc_object);
 
@@ -235,7 +235,7 @@ void FillInCellularDefaultsInOncObject(const OncValueSignature& signature,
 // an APN dict in |network_configs| list. If |allow_apn_modification| is true,
 // "CustomAPNList" is added as a recommended field to the cellular config,
 // otherwise, the CustomAPNList field is set to an empty list.
-void FillInCellularDefaultsInNetworks(base::Value::List& network_configs,
+void FillInCellularDefaultsInNetworks(base::ListValue& network_configs,
                                       bool allow_apn_modification) {
   for (auto& network : network_configs) {
     FillInCellularDefaultsInOncObject(kNetworkConfigurationSignature,
@@ -245,7 +245,7 @@ void FillInCellularDefaultsInNetworks(base::Value::List& network_configs,
 }
 
 // Creates a map from APN IDs to their corresponding configuration dictionaries.
-IdToAPNMap BuildIdToAPNMap(const base::Value::List* apn_list) {
+IdToAPNMap BuildIdToAPNMap(const base::ListValue* apn_list) {
   IdToAPNMap apn_map;
 
   if (!apn_list) {
@@ -253,7 +253,7 @@ IdToAPNMap BuildIdToAPNMap(const base::Value::List* apn_list) {
   }
 
   for (const base::Value& apn_value : *apn_list) {
-    const base::Value::Dict& apn_dict = apn_value.GetDict();
+    const base::DictValue& apn_dict = apn_value.GetDict();
     const std::string* apn_id = apn_dict.FindString(::onc::cellular_apn::kId);
 
     if (apn_id) {
@@ -269,10 +269,10 @@ IdToAPNMap BuildIdToAPNMap(const base::Value::List* apn_list) {
 // and |apn_map| is a map of all available APN dictionaries with key being APN
 // ID. Returns a base::List if IDs are successfully extracted and the source is
 // set successfully, and an std::nullopt otherwise.
-std::optional<base::Value::List> ExtractAPNsByIdsAndSetAdminSource(
-    const base::Value::List* apn_id_list,
+std::optional<base::ListValue> ExtractAPNsByIdsAndSetAdminSource(
+    const base::ListValue* apn_id_list,
     const IdToAPNMap& apn_map) {
-  base::Value::List result = base::Value::List();
+  base::ListValue result = base::ListValue();
 
   for (const base::Value& apn_id_value : *apn_id_list) {
     const std::string apn_id = apn_id_value.GetString();
@@ -285,7 +285,7 @@ std::optional<base::Value::List> ExtractAPNsByIdsAndSetAdminSource(
           << apn_id;
       return std::nullopt;
     }
-    base::Value::Dict apn_cpy = it->second->Clone();
+    base::DictValue apn_cpy = it->second->Clone();
     apn_cpy.Set(::onc::cellular_apn::kSource,
                 ::onc::cellular_apn::kSourceAdmin);
 
@@ -304,20 +304,20 @@ std::optional<base::Value::List> ExtractAPNsByIdsAndSetAdminSource(
 // |::onc::cellular_apn::kSource| of
 // |::onc::cellular_apn::kSourceAdmin|. Returns true if |cellular_fields| are
 // successfully updated.
-bool UpdateCellularFieldsWithAdminApns(base::Value::Dict& cellular_fields,
+bool UpdateCellularFieldsWithAdminApns(base::DictValue& cellular_fields,
                                        const IdToAPNMap& admin_apn_by_id) {
-  const base::Value::List* admin_apn_id_list =
+  const base::ListValue* admin_apn_id_list =
       cellular_fields.FindList(::onc::cellular::kAdminAssignedAPNIds);
   if (!admin_apn_id_list) {
     return true;
   }
 
   if (admin_apn_id_list->empty()) {
-    cellular_fields.Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    cellular_fields.Set(::onc::cellular::kCustomAPNList, base::ListValue());
     return true;
   }
 
-  std::optional<base::Value::List> admin_apns =
+  std::optional<base::ListValue> admin_apns =
       ExtractAPNsByIdsAndSetAdminSource(admin_apn_id_list, admin_apn_by_id);
   if (!admin_apns.has_value()) {
     NET_LOG(ERROR) << "Failed to extract admin APNs";
@@ -328,19 +328,19 @@ bool UpdateCellularFieldsWithAdminApns(base::Value::Dict& cellular_fields,
   return true;
 }
 
-bool ConstructAndSetPSIMAdminAPNs(base::Value::Dict& global_network_config,
+bool ConstructAndSetPSIMAdminAPNs(base::DictValue& global_network_config,
                                   const IdToAPNMap& admin_apn_by_id) {
   if (admin_apn_by_id.empty()) {
     return true;
   }
-  const base::Value::List* psim_admin_apn_id_list =
+  const base::ListValue* psim_admin_apn_id_list =
       global_network_config.FindList(
           ::onc::global_network_config::kPSIMAdminAssignedAPNIds);
   if (!psim_admin_apn_id_list) {
     return true;
   }
 
-  std::optional<base::Value::List> psim_admin_apns =
+  std::optional<base::ListValue> psim_admin_apns =
       ExtractAPNsByIdsAndSetAdminSource(psim_admin_apn_id_list,
                                         admin_apn_by_id);
   if (!psim_admin_apns.has_value()) {
@@ -362,7 +362,7 @@ bool ConstructAndSetPSIMAdminAPNs(base::Value::Dict& global_network_config,
 // the ONC object and helps the function determine which fields to traverse.
 // Returns true if admin APNs are successfully applied.
 bool ApplyAdminApnsToOncObject(const OncValueSignature& signature,
-                               base::Value::Dict& onc_object,
+                               base::DictValue& onc_object,
                                const IdToAPNMap& admin_apn_by_id) {
   if (&signature == &kCellularSignature) {
     return UpdateCellularFieldsWithAdminApns(onc_object, admin_apn_by_id);
@@ -402,7 +402,7 @@ bool ApplyAdminApnsToOncObject(const OncValueSignature& signature,
 // Ultimately, this function ensures that the cellular networks in the provided
 // |network_configs| list are populated with the complete APN configurations
 // that they are associated with. Otherwise, it returns false.
-bool ConfigureAdminApnsInCellularNetworks(base::Value::List& network_configs,
+bool ConfigureAdminApnsInCellularNetworks(base::ListValue& network_configs,
                                           const IdToAPNMap& admin_apn_by_id) {
   if (admin_apn_by_id.empty()) {
     return true;
@@ -417,7 +417,7 @@ bool ConfigureAdminApnsInCellularNetworks(base::Value::List& network_configs,
 }
 
 // Fills HexSSID fields in all entries in the |network_configs| list.
-void FillInHexSSIDFieldsInNetworks(base::Value::List& network_configs) {
+void FillInHexSSIDFieldsInNetworks(base::ListValue& network_configs) {
   for (auto& network : network_configs) {
     FillInHexSSIDFieldsInOncObject(kNetworkConfigurationSignature,
                                    network.GetDict());
@@ -425,7 +425,7 @@ void FillInHexSSIDFieldsInNetworks(base::Value::List& network_configs) {
 }
 
 // Sets HiddenSSID fields in all entries in the |network_configs| list.
-void SetHiddenSSIDFieldsInNetworks(base::Value::List& network_configs) {
+void SetHiddenSSIDFieldsInNetworks(base::ListValue& network_configs) {
   for (auto& network : network_configs) {
     SetHiddenSSIDFieldInOncObject(kNetworkConfigurationSignature,
                                   network.GetDict());
@@ -461,7 +461,7 @@ bool GUIDRefToPEMEncoding(const CertPEMsByGUIDMap& certs_by_guid,
 bool ResolveSingleCertRef(const CertPEMsByGUIDMap& certs_by_guid,
                           const std::string& key_guid_ref,
                           const std::string& key_pem,
-                          base::Value::Dict& onc_object) {
+                          base::DictValue& onc_object) {
   std::string* guid_ref = onc_object.FindString(key_guid_ref);
   if (!guid_ref) {
     return true;
@@ -490,14 +490,13 @@ bool ResolveSingleCertRef(const CertPEMsByGUIDMap& certs_by_guid,
 bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
                         const std::string& key_guid_ref_list,
                         const std::string& key_pem_list,
-                        base::Value::Dict& onc_object) {
-  const base::Value::List* guid_ref_list =
-      onc_object.FindList(key_guid_ref_list);
+                        base::DictValue& onc_object) {
+  const base::ListValue* guid_ref_list = onc_object.FindList(key_guid_ref_list);
   if (!guid_ref_list) {
     return true;
   }
 
-  base::Value::List pem_list;
+  base::ListValue pem_list;
   for (const auto& entry : *guid_ref_list) {
     std::string pem_encoded;
     if (!GUIDRefToPEMEncoding(certs_by_guid, entry.GetString(), &pem_encoded)) {
@@ -517,7 +516,7 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
 bool ResolveSingleCertRefToList(const CertPEMsByGUIDMap& certs_by_guid,
                                 const std::string& key_guid_ref,
                                 const std::string& key_pem_list,
-                                base::Value::Dict& onc_object) {
+                                base::DictValue& onc_object) {
   std::string* guid_ref = onc_object.FindString(key_guid_ref);
   if (!guid_ref) {
     return true;
@@ -528,7 +527,7 @@ bool ResolveSingleCertRefToList(const CertPEMsByGUIDMap& certs_by_guid,
     return false;
   }
 
-  base::Value::List pem_list;
+  base::ListValue pem_list;
   pem_list.Append(pem_encoded);
   onc_object.Remove(key_guid_ref);
   onc_object.Set(key_pem_list, std::move(pem_list));
@@ -542,7 +541,7 @@ bool ResolveCertRefsOrRefToList(const CertPEMsByGUIDMap& certs_by_guid,
                                 const std::string& key_guid_refs,
                                 const std::string& key_guid_ref,
                                 const std::string& key_pem_list,
-                                base::Value::Dict& onc_dict) {
+                                base::DictValue& onc_dict) {
   if (onc_dict.contains(key_guid_refs)) {
     if (onc_dict.contains(key_guid_ref)) {
       LOG(ERROR) << "Found both " << key_guid_refs << " and " << key_guid_ref
@@ -562,7 +561,7 @@ bool ResolveCertRefsOrRefToList(const CertPEMsByGUIDMap& certs_by_guid,
 // |onc_object|.
 bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
                                    const OncValueSignature& signature,
-                                   base::Value::Dict& onc_object) {
+                                   base::DictValue& onc_object) {
   if (&signature == &kCertificatePatternSignature) {
     if (!ResolveCertRefList(certs_by_guid, ::onc::client_cert::kIssuerCARef,
                             ::onc::client_cert::kIssuerCAPEMs, onc_object)) {
@@ -615,7 +614,7 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
 
 }  // namespace
 
-std::optional<base::Value::Dict> ReadDictionaryFromJson(std::string_view json) {
+std::optional<base::DictValue> ReadDictionaryFromJson(std::string_view json) {
   if (json.empty()) {
     // Policy may contain empty values, just log a debug message.
     NET_LOG(DEBUG) << "Empty json string";
@@ -646,7 +645,7 @@ struct UnpackedMessage {
 
 // Unpack the passed-in JSON message into either a correctly-formed message to
 // be decrypted, or a std::nullopt.
-std::optional<UnpackedMessage> UnpackMessage(const base::Value::Dict& root) {
+std::optional<UnpackedMessage> UnpackMessage(const base::DictValue& root) {
   const int kMaxIterationCount = 500000;
   std::string onc_type;
   std::string iv;
@@ -713,11 +712,11 @@ crypto::SubtlePassKey MakeCryptoPassKey() {
   return crypto::SubtlePassKey{};
 }
 
-// Given a message (passed in as a base::Value::Dict), unpack and validate it,
+// Given a message (passed in as a base::DictValue), unpack and validate it,
 // check the HMAC on its contained ciphertext, deobfuscate, then unpack the
 // deobfuscated plaintext as a JSON dictionary and return it. If any of these
 // steps fails, returns std::nullopt.
-std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
+std::optional<base::DictValue> Decrypt(const base::DictValue& root) {
   const size_t kKeyBytes = 32;
   std::optional<UnpackedMessage> m = UnpackMessage(root);
   if (!m) {
@@ -740,7 +739,7 @@ std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& root) {
     return std::nullopt;
   }
 
-  std::optional<base::Value::Dict> new_root =
+  std::optional<base::DictValue> new_root =
       ReadDictionaryFromJson(base::as_string_view(*plaintext));
   if (!new_root) {
     NET_LOG(ERROR) << "Property dictionary malformed.";
@@ -766,7 +765,7 @@ std::string GetSourceAsString(::onc::ONCSource source) {
 
 void ExpandStringsInOncObject(const OncValueSignature& signature,
                               const VariableExpander& variable_expander,
-                              base::Value::Dict* onc_object) {
+                              base::DictValue* onc_object) {
   if (&signature == &kEAPSignature) {
     ExpandField(::onc::eap::kAnonymousIdentity, variable_expander, onc_object);
     ExpandField(::onc::eap::kIdentity, variable_expander, onc_object);
@@ -798,16 +797,15 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
 }
 
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
-                             base::Value::List& network_configs) {
+                             base::ListValue& network_configs) {
   for (auto& network : network_configs) {
     ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                              &network.GetDict());
   }
 }
 
-void FillInCellularCustomAPNListField(
-    base::Value::Dict& cellular_fields,
-    const base::Value::List* custom_apn_list) {
+void FillInCellularCustomAPNListField(base::DictValue& cellular_fields,
+                                      const base::ListValue* custom_apn_list) {
   if (cellular_fields.Find(::onc::cellular::kCustomAPNList)) {
     NET_LOG(DEBUG) << "kCustomAPNList found, skipping";
     return;
@@ -821,8 +819,8 @@ void FillInCellularCustomAPNListField(
 
 void FillInCellularCustomAPNListFieldsInOncObject(
     const OncValueSignature& signature,
-    base::Value::Dict& onc_object,
-    const base::Value::List* custom_apn_list) {
+    base::DictValue& onc_object,
+    const base::ListValue* custom_apn_list) {
   if (&signature == &kCellularSignature) {
     FillInCellularCustomAPNListField(onc_object, custom_apn_list);
   }
@@ -845,7 +843,7 @@ void FillInCellularCustomAPNListFieldsInOncObject(
 }
 
 void FillInHexSSIDFieldsInOncObject(const OncValueSignature& signature,
-                                    base::Value::Dict& onc_object) {
+                                    base::DictValue& onc_object) {
   if (&signature == &kWiFiSignature)
     FillInHexSSIDField(onc_object);
 
@@ -864,7 +862,7 @@ void FillInHexSSIDFieldsInOncObject(const OncValueSignature& signature,
   }
 }
 
-void FillInHexSSIDField(base::Value::Dict& wifi_fields) {
+void FillInHexSSIDField(base::DictValue& wifi_fields) {
   if (wifi_fields.Find(::onc::wifi::kHexSSID)) {
     return;
   }
@@ -880,7 +878,7 @@ void FillInHexSSIDField(base::Value::Dict& wifi_fields) {
 }
 
 void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
-                                   base::Value::Dict& onc_object) {
+                                   base::DictValue& onc_object) {
   if (&signature == &kWiFiSignature) {
     SetHiddenSSIDField(onc_object);
   }
@@ -902,17 +900,16 @@ void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
   }
 }
 
-void SetHiddenSSIDField(base::Value::Dict& wifi_fields) {
+void SetHiddenSSIDField(base::DictValue& wifi_fields) {
   if (wifi_fields.Find(::onc::wifi::kHiddenSSID)) {
     return;
   }
   wifi_fields.Set(::onc::wifi::kHiddenSSID, false);
 }
 
-base::Value::Dict MaskCredentialsInOncObject(
-    const OncValueSignature& signature,
-    const base::Value::Dict& onc_object,
-    const std::string& mask) {
+base::DictValue MaskCredentialsInOncObject(const OncValueSignature& signature,
+                                           const base::DictValue& onc_object,
+                                           const std::string& mask) {
   return OncMaskValues::Mask(signature, onc_object, mask);
 }
 
@@ -945,9 +942,9 @@ std::string DecodePEM(const std::string& pem_encoded) {
 
 bool ParseAndValidateOncForImport(const std::string& onc_blob,
                                   ::onc::ONCSource onc_source,
-                                  base::Value::List* network_configs,
-                                  base::Value::Dict* global_network_config,
-                                  base::Value::List* certificates) {
+                                  base::ListValue* network_configs,
+                                  base::DictValue* global_network_config,
+                                  base::ListValue* certificates) {
   if (network_configs) {
     network_configs->clear();
   }
@@ -961,7 +958,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
     return true;
   }
 
-  std::optional<base::Value::Dict> toplevel_onc =
+  std::optional<base::DictValue> toplevel_onc =
       ReadDictionaryFromJson(onc_blob);
   if (!toplevel_onc) {
     NET_LOG(ERROR) << "Not a valid ONC JSON dictionary: "
@@ -995,7 +992,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   validator.SetOncSource(onc_source);
 
   Validator::Result validation_result;
-  std::optional<base::Value::Dict> validated_toplevel_onc =
+  std::optional<base::DictValue> validated_toplevel_onc =
       validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
                                         toplevel_onc.value(),
                                         &validation_result);
@@ -1013,7 +1010,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   }
 
   if (certificates) {
-    base::Value::List* validated_certs =
+    base::ListValue* validated_certs =
         validated_toplevel_onc->FindList(::onc::toplevel_config::kCertificates);
     if (validated_certs)
       *certificates = std::move(*validated_certs);
@@ -1023,10 +1020,10 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   // nullptr, because ResolveServerCertRefsInNetworks could affect the return
   // value of the function (which is supposed to aggregate validation issues in
   // all segments of the ONC blob).
-  base::Value::List* validated_networks_list = validated_toplevel_onc->FindList(
+  base::ListValue* validated_networks_list = validated_toplevel_onc->FindList(
       ::onc::toplevel_config::kNetworkConfigurations);
 
-  base::Value::Dict* validated_global_config = validated_toplevel_onc->FindDict(
+  base::DictValue* validated_global_config = validated_toplevel_onc->FindDict(
       ::onc::toplevel_config::kGlobalNetworkConfiguration);
 
   const IdToAPNMap id_to_apn_map = BuildIdToAPNMap(
@@ -1089,9 +1086,9 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
 }
 
 bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
-                                     base::Value::List& network_configs) {
+                                     base::ListValue& network_configs) {
   bool success = true;
-  base::Value::List filtered_configs;
+  base::ListValue filtered_configs;
   for (base::Value& network : network_configs) {
     if (!ResolveServerCertRefsInNetwork(certs_by_guid, network.GetDict())) {
       std::string* guid =
@@ -1111,7 +1108,7 @@ bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
 }
 
 bool ResolveServerCertRefsInNetwork(const CertPEMsByGUIDMap& certs_by_guid,
-                                    base::Value::Dict& network_config) {
+                                    base::DictValue& network_config) {
   return ResolveServerCertRefsInObject(
       certs_by_guid, kNetworkConfigurationSignature, network_config);
 }

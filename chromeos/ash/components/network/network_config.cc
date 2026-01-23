@@ -61,7 +61,7 @@ std::optional<net::IPAddress> ParseIPAddress(std::string_view key,
 
 std::unique_ptr<NetworkConfig> NetworkConfig::ParseFromServicePropertyValue(
     const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict || dict->empty()) {
     return nullptr;
   }

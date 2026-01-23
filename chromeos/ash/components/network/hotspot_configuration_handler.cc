@@ -79,7 +79,7 @@ void HotspotConfigurationHandler::SetHotspotConfig(
     return;
   }
 
-  base::Value::Dict shill_tethering_config =
+  base::DictValue shill_tethering_config =
       MojomConfigToShillConfig(std::move(mojom_config));
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->SetProperty(
@@ -134,14 +134,14 @@ void HotspotConfigurationHandler::LoggedInStateChanged() {
 
 void HotspotConfigurationHandler::UpdateHotspotConfigAndRunCallback(
     SetHotspotConfigCallback callback,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Error getting Shill manager properties.";
     std::move(callback).Run(
         hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
     return;
   }
-  const base::Value::Dict* shill_tethering_config =
+  const base::DictValue* shill_tethering_config =
       properties->FindDict(shill::kTetheringConfigProperty);
   if (!shill_tethering_config) {
     NET_LOG(ERROR) << "Error getting " << shill::kTetheringConfigProperty

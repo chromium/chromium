@@ -36,10 +36,10 @@ float ClampRateToLimits(float rate) {
 }  // namespace
 
 std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
-  base::Value::Dict request;
+  base::DictValue request;
 
   // utterance is sent as {'text': {'text_parts': [<utterance>]} }
-  base::Value::List text_parts;
+  base::ListValue text_parts;
   text_parts.Append(std::move(tts_request->utterance));
   request.SetByDottedPath(kTextPartsPath, std::move(text_parts));
 
@@ -73,15 +73,15 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
                             base::Value(tts_request->lang.value()));
 
     // Produce 'voice_criteria_and_selections'.
-    base::Value::Dict selection;
+    base::DictValue selection;
     selection.Set(kDefaultVoiceKey,
                   base::Value(std::move(tts_request->voice.value())));
-    base::Value::Dict criteria;
+    base::DictValue criteria;
     criteria.Set(kLanguageKey, base::Value(tts_request->lang.value()));
-    base::Value::Dict voice_selection;
+    base::DictValue voice_selection;
     voice_selection.Set(kSelectionKey, std::move(selection));
     voice_selection.Set(kCriteriaKey, std::move(criteria));
-    base::Value::List voice_criteria_and_selections;
+    base::ListValue voice_criteria_and_selections;
     voice_criteria_and_selections.Append(std::move(voice_selection));
     request.SetByDottedPath(kVoiceCriteriaAndSelectionsPath,
                             std::move(voice_criteria_and_selections));
@@ -184,7 +184,7 @@ mojom::TtsResponsePtr GetResultOnError(
   return mojom::TtsResponse::NewErrorCode(error_code);
 }
 
-mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
+mojom::TtsResponsePtr UnpackJsonResponse(const base::ListValue& list_data,
                                          const int start_index,
                                          const bool is_last_request) {
   // Depending on the size of input text (n), the list size should be 1 + 2n.
@@ -211,8 +211,8 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
   //   ...
   // ]
   std::vector<mojom::TimingInfoPtr> timing_infos;
-  const base::Value::Dict& text_dict = list_data[1].GetDict();
-  const base::Value::List* timing_info_list =
+  const base::DictValue& text_dict = list_data[1].GetDict();
+  const base::ListValue* timing_info_list =
       text_dict.FindListByDottedPath("text.timingInfo");
   if (timing_info_list == nullptr) {
     DVLOG(1) << "HTTP response for Enhance Network TTS has unexpected timing "
@@ -221,7 +221,7 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
   }
 
   for (size_t i = 0; i < timing_info_list->size(); ++i) {
-    const base::Value::Dict& timing_info = (*timing_info_list)[i].GetDict();
+    const base::DictValue& timing_info = (*timing_info_list)[i].GetDict();
     const std::string* timing_info_text_ptr = timing_info.FindString("text");
     const std::string* timing_info_timeoffset_ptr =
         timing_info.FindStringByDottedPath("location.timeLocation.timeOffset");
@@ -248,7 +248,7 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
   }
 
   // Decode audio data.
-  const base::Value::Dict& audio_dict = list_data[2].GetDict();
+  const base::DictValue& audio_dict = list_data[2].GetDict();
   const std::string* audio_bytes_ptr =
       audio_dict.FindStringByDottedPath("audio.bytes");
   if (audio_bytes_ptr == nullptr) {

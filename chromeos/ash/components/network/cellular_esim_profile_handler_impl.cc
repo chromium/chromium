@@ -62,7 +62,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   if (!device_prefs_)
     return std::vector<CellularESimProfile>();
 
-  const base::Value::List& profiles_list =
+  const base::ListValue& profiles_list =
       device_prefs_->GetList(prefs::kESimProfiles);
 
   std::vector<CellularESimProfile> profiles;
@@ -192,7 +192,7 @@ base::flat_set<std::string>
 CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
 
-  const base::Value::List& euicc_paths_from_prefs =
+  const base::ListValue& euicc_paths_from_prefs =
       device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
 
   base::flat_set<std::string> euicc_paths;
@@ -229,7 +229,7 @@ void CellularESimProfileHandlerImpl::AddNewlyRefreshedEuiccPathToPrefs(
       GetAutoRefreshedEuiccPathsFromPrefs();
 
   // Keep all paths which were already in prefs.
-  base::Value::List euicc_paths;
+  base::ListValue euicc_paths;
   for (const auto& path : auto_refreshed_euicc_paths)
     euicc_paths.Append(path);
 
@@ -287,7 +287,7 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   ss << "New set of eSIM profiles have been fetched from Hermes: ";
 
   // Store the updated list of profiles in prefs.
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& profile : profiles_from_hermes) {
     list.Append(profile.ToDictionaryValue());
     ss << "{iccid: " << profile.iccid() << ", eid: " << profile.eid() << "}, ";

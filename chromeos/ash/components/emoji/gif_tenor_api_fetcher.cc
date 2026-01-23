@@ -115,8 +115,8 @@ std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
           .Build());
 }
 
-const base::Value::List* FindList(
-    base::optional_ref<const base::Value::Dict> result,
+const base::ListValue* FindList(
+    base::optional_ref<const base::DictValue> result,
     std::string_view key) {
   if (!result.has_value()) {
     return nullptr;
@@ -126,7 +126,7 @@ const base::Value::List* FindList(
 }
 
 std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
-    const base::Value::List* results) {
+    const base::ListValue* results) {
   std::vector<tenor::mojom::GifResponsePtr> gifs;
   for (const auto& result : *results) {
     const auto* gif = result.GetIfDict();
@@ -154,7 +154,7 @@ std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
       continue;
     }
 
-    const base::Value::List* full_size = full_gif->FindList("dims");
+    const base::ListValue* full_size = full_gif->FindList("dims");
     if (!full_size) {
       continue;
     }
@@ -219,7 +219,7 @@ std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
       continue;
     }
 
-    const base::Value::Dict* tiny_gif_preview =
+    const base::DictValue* tiny_gif_preview =
         media_formats->FindDict("tinygifpreview");
     if (!tiny_gif_preview) {
       continue;
@@ -247,7 +247,7 @@ std::vector<tenor::mojom::GifResponsePtr> ParseGifs(
 }
 
 base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>
-ParseCategoriesResponse(base::optional_ref<const base::Value::Dict> result) {
+ParseCategoriesResponse(base::optional_ref<const base::DictValue> result) {
   const auto* tags = FindList(result, "tags");
   if (!tags) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);
@@ -273,7 +273,7 @@ ParseCategoriesResponse(base::optional_ref<const base::Value::Dict> result) {
 
 base::expected<tenor::mojom::PaginatedGifResponsesPtr,
                GifTenorApiFetcher::Error>
-ParsePaginatedGifsResponse(base::optional_ref<const base::Value::Dict> result) {
+ParsePaginatedGifsResponse(base::optional_ref<const base::DictValue> result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);
@@ -285,7 +285,7 @@ ParsePaginatedGifsResponse(base::optional_ref<const base::Value::Dict> result) {
 
 base::expected<std::vector<tenor::mojom::GifResponsePtr>,
                GifTenorApiFetcher::Error>
-ParseGifsResponse(base::optional_ref<const base::Value::Dict> result) {
+ParseGifsResponse(base::optional_ref<const base::DictValue> result) {
   const auto* gifs = FindList(result, "results");
   if (!gifs) {
     return base::unexpected(GifTenorApiFetcher::Error::kHttpError);

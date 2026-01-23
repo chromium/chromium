@@ -77,7 +77,7 @@ NetworkUIData& NetworkUIData::operator=(const NetworkUIData& other) {
   return *this;
 }
 
-NetworkUIData::NetworkUIData(const base::Value::Dict& dict) {
+NetworkUIData::NetworkUIData(const base::DictValue& dict) {
   const std::string* source_value = dict.FindString(kKeyONCSource);
   if (source_value) {
     onc_source_ =
@@ -86,8 +86,7 @@ NetworkUIData::NetworkUIData(const base::Value::Dict& dict) {
     onc_source_ = ::onc::ONC_SOURCE_NONE;
   }
 
-  const base::Value::Dict* user_settings_value =
-      dict.FindDict(kKeyUserSettings);
+  const base::DictValue* user_settings_value = dict.FindDict(kKeyUserSettings);
   if (user_settings_value) {
     user_settings_ = user_settings_value->Clone();
   }
@@ -105,19 +104,19 @@ std::unique_ptr<NetworkUIData> NetworkUIData::CreateFromONC(
   return ui_data;
 }
 
-const base::Value::Dict* NetworkUIData::GetUserSettingsDictionary() const {
+const base::DictValue* NetworkUIData::GetUserSettingsDictionary() const {
   if (!user_settings_.has_value()) {
     return nullptr;
   }
   return &user_settings_.value();
 }
 
-void NetworkUIData::SetUserSettingsDictionary(base::Value::Dict dict) {
+void NetworkUIData::SetUserSettingsDictionary(base::DictValue dict) {
   user_settings_ = std::move(dict);
 }
 
 std::string NetworkUIData::GetAsJson() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   const std::string source_string = GetONCSourceAsString();
   if (!source_string.empty()) {
     dict.Set(kKeyONCSource, source_string);

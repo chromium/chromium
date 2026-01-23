@@ -110,18 +110,18 @@ TEST_F(CupsPrinterStatusTest, ConvertToValue) {
       CupsPrinterStatusReason::Reason::kPaused,
       CupsPrinterStatusReason::Severity::kWarning);
 
-  base::Value::Dict printer_status_dict = cups_printer_status.ConvertToValue();
+  base::DictValue printer_status_dict = cups_printer_status.ConvertToValue();
   EXPECT_EQ(printer_id, *printer_status_dict.FindString("printerId"));
 
-  base::Value::List* status_reasons =
+  base::ListValue* status_reasons =
       printer_status_dict.FindList("statusReasons");
-  base::Value::Dict& status_reason_dict1 = (*status_reasons)[0].GetDict();
+  base::DictValue& status_reason_dict1 = (*status_reasons)[0].GetDict();
   EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kDeviceError),
             status_reason_dict1.FindInt("reason"));
   EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kReport),
             status_reason_dict1.FindInt("severity"));
 
-  base::Value::Dict& status_reason_dict2 = (*status_reasons)[1].GetDict();
+  base::DictValue& status_reason_dict2 = (*status_reasons)[1].GetDict();
   EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Reason::kPaused),
             status_reason_dict2.FindInt("reason"));
   EXPECT_EQ(static_cast<int>(CupsPrinterStatusReason::Severity::kWarning),

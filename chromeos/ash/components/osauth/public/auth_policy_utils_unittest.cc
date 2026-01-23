@@ -13,7 +13,7 @@
 namespace ash {
 
 TEST(AuthPolicyUtilsTest, EmptyValueReturnsEmptySet) {
-  base::Value::List policy_allowed_auth_factors;
+  base::ListValue policy_allowed_auth_factors;
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet());
 }
@@ -23,7 +23,7 @@ TEST(AuthPolicyUtilsTest, NullPtrReturnsNullOpt) {
 }
 
 TEST(AuthPolicyUtilsTest, AllValueReturnsAllFactors) {
-  auto policy_allowed_auth_factors = base::Value::List().Append("ALL");
+  auto policy_allowed_auth_factors = base::ListValue().Append("ALL");
 
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet({AshAuthFactor::kCryptohomePin,
@@ -31,23 +31,22 @@ TEST(AuthPolicyUtilsTest, AllValueReturnsAllFactors) {
 }
 
 TEST(AuthPolicyUtilsTest, LocalPasswordReturnsLocalPassword) {
-  auto policy_allowed_auth_factors =
-      base::Value::List().Append("LOCAL_PASSWORD");
+  auto policy_allowed_auth_factors = base::ListValue().Append("LOCAL_PASSWORD");
 
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet({AshAuthFactor::kLocalPassword}));
 }
 
 TEST(AuthPolicyUtilsTest, PINReturnsPIN) {
-  auto policy_allowed_auth_factors = base::Value::List().Append("PIN");
+  auto policy_allowed_auth_factors = base::ListValue().Append("PIN");
 
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet({AshAuthFactor::kCryptohomePin}));
 }
 
 TEST(AuthPolicyUtilsTest, MultipleFactorsReturnMultipleFactors) {
-  base::Value::List policy_allowed_auth_factors =
-      base::Value::List().Append("LOCAL_PASSWORD").Append("PIN");
+  base::ListValue policy_allowed_auth_factors =
+      base::ListValue().Append("LOCAL_PASSWORD").Append("PIN");
 
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet({AshAuthFactor::kCryptohomePin,
@@ -55,8 +54,8 @@ TEST(AuthPolicyUtilsTest, MultipleFactorsReturnMultipleFactors) {
 }
 
 TEST(AuthPolicyUtilsTest, MultipleFactorsWithAllReturnAll) {
-  base::Value::List policy_allowed_auth_factors =
-      base::Value::List().Append("LOCAL_PASSWORD").Append("PIN").Append("ALL");
+  base::ListValue policy_allowed_auth_factors =
+      base::ListValue().Append("LOCAL_PASSWORD").Append("PIN").Append("ALL");
 
   EXPECT_EQ(GetAuthFactorsSetFromPolicyList(&policy_allowed_auth_factors),
             AuthFactorsSet({AshAuthFactor::kCryptohomePin,

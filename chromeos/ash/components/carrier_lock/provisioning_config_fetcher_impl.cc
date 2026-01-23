@@ -106,8 +106,8 @@ void ProvisioningConfigFetcherImpl::RequestConfig(
                                       "application/json");
 
   // Prepare request body
-  base::Value::Dict request;
-  base::Value::Dict device;
+  base::DictValue request;
+  base::DictValue device;
   request.Set("android_id", kAndroidId);
   request.Set("gcm_registration_id", fcm_token);
   device.Set("manufacturer", manufacturer);
@@ -184,10 +184,9 @@ void ProvisioningConfigFetcherImpl::OnDownloadToStringComplete(
     ReturnError(Result::kInvalidResponse);
     return;
   }
-  base::Value::Dict response_value =
-      std::move(response_result.value().GetDict());
+  base::DictValue response_value = std::move(response_result.value().GetDict());
 
-  base::Value::Dict* response_record =
+  base::DictValue* response_record =
       response_value.FindDict(kProvisioningRecord);
   if (!response_record) {
     LOG(ERROR) << "Provisioning record not found";

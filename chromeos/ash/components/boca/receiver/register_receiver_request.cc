@@ -36,7 +36,7 @@ std::string RegisterReceiverRequest::GetRelativeUrl() {
 }
 
 std::optional<std::string> RegisterReceiverRequest::GetRequestBody() {
-  base::Value::Dict request;
+  base::DictValue request;
   request.Set(kFcmTokenKey, fcm_token_);
   return base::WriteJson(request).value_or("");
 }

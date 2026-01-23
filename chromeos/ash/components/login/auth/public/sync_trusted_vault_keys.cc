@@ -30,7 +30,7 @@ struct KeyMaterialAndVersion {
 };
 
 std::optional<KeyMaterialAndVersion> ParseSingleEncryptionKey(
-    const base::Value::Dict& js_object) {
+    const base::DictValue& js_object) {
   const base::Value::BlobStorage* key_material =
       js_object.FindBlob(kKeyMaterialDictKey);
   if (key_material == nullptr) {
@@ -42,7 +42,7 @@ std::optional<KeyMaterialAndVersion> ParseSingleEncryptionKey(
 }
 
 std::optional<SyncTrustedVaultKeys::TrustedRecoveryMethod>
-ParseSingleTrustedRecoveryMethod(const base::Value::Dict& js_object) {
+ParseSingleTrustedRecoveryMethod(const base::DictValue& js_object) {
   const base::Value::BlobStorage* public_key =
       js_object.FindBlob(kPublicKeyDictKey);
   if (public_key == nullptr) {
@@ -57,8 +57,8 @@ ParseSingleTrustedRecoveryMethod(const base::Value::Dict& js_object) {
 
 template <typename T>
 std::vector<T> ParseList(
-    const base::Value::List* list,
-    const base::RepeatingCallback<std::optional<T>(const base::Value::Dict&)>&
+    const base::ListValue* list,
+    const base::RepeatingCallback<std::optional<T>(const base::DictValue&)>&
         entry_parser) {
   if (list == nullptr) {
     return {};
@@ -105,7 +105,7 @@ SyncTrustedVaultKeys::~SyncTrustedVaultKeys() = default;
 
 // static
 SyncTrustedVaultKeys SyncTrustedVaultKeys::FromJs(
-    const base::Value::Dict& js_object) {
+    const base::DictValue& js_object) {
   SyncTrustedVaultKeys result;
   const std::string* gaia_id = js_object.FindString(kGaiaIdDictKey);
   if (gaia_id) {

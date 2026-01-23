@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
     // Sets the properties for a service but does not add it to the Manager
     // or Profile. Returns the properties for the service as a dictionary Value.
-    virtual base::Value::Dict* SetServiceProperties(
+    virtual base::DictValue* SetServiceProperties(
         const std::string& service_path,
         const std::string& guid,
         const std::string& name,
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
     // Returns properties for |service_path| as a dictionary Value or null if no
     // Service matches.
-    virtual const base::Value::Dict* GetServiceProperties(
+    virtual const base::DictValue* GetServiceProperties(
         const std::string& service_path) const = 0;
 
     // If the service referenced by |service_path| is not visible (according to
@@ -100,11 +100,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     // security and mode match. Returns the empty string if no similar service
     // is found.
     virtual std::string FindSimilarService(
-        const base::Value::Dict& template_service_properties) = 0;
+        const base::DictValue& template_service_properties) = 0;
 
     // Gets the default Modb APN dict value that will be used to set on each
     // cellular service.
-    virtual base::Value::Dict GetFakeDefaultModbApnDict() = 0;
+    virtual base::DictValue GetFakeDefaultModbApnDict() = 0;
 
     // Clears all Services from the Manager and Service stubs.
     virtual void ClearServices() = 0;
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
     // Sets a fake traffic counters that can be used in tests.
     virtual void SetFakeTrafficCounters(
-        base::Value::List fake_traffic_counters) = 0;
+        base::ListValue fake_traffic_counters) = 0;
 
     // Sets the callback used to get the mocked time in tests.
     virtual void SetTimeGetterForTest(
@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // success or nullopt on failure.
   virtual void GetProperties(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
+      chromeos::DBusMethodCallback<base::DictValue> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.
@@ -190,7 +190,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // Calls the SetProperties DBus method with |properties|. Invokes |callback|
   // on success or |error_callback| on failure.
   virtual void SetProperties(const dbus::ObjectPath& service_path,
-                             const base::Value::Dict& properties,
+                             const base::DictValue& properties,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) = 0;
 
@@ -236,7 +236,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   // |callback| is called after the method call succeeds.
   virtual void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
+      chromeos::DBusMethodCallback<base::DictValue> callback) = 0;
 
   // Retrieves the saved WiFi passphrase for the given network.
   virtual void GetWiFiPassphrase(const dbus::ObjectPath& service_path,

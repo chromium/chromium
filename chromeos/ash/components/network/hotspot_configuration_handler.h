@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
   // from |manager_properties|, and then run the |callback|.
   void UpdateHotspotConfigAndRunCallback(
       SetHotspotConfigCallback callback,
-      std::optional<base::Value::Dict> manager_properties);
+      std::optional<base::DictValue> manager_properties);
 
   // Callback when the SetHotspotConfig operation succeeded.
   void OnSetHotspotConfigSuccess(SetHotspotConfigCallback callback);
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotConfigurationHandler
                                  const std::string& error_name,
                                  const std::string& error_message);
 
-  std::optional<base::Value::Dict> hotspot_config_;
+  std::optional<base::DictValue> hotspot_config_;
 
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<HotspotConfigurationHandler> weak_ptr_factory_{this};

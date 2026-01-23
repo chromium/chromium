@@ -165,7 +165,7 @@ hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
 }
 
 hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
-    const base::Value::Dict& shill_tethering_config) {
+    const base::DictValue& shill_tethering_config) {
   using hotspot_config::mojom::HotspotConfig;
 
   auto result = HotspotConfig::New();
@@ -217,11 +217,11 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   return result;
 }
 
-base::Value::Dict MojomConfigToShillConfig(
+base::DictValue MojomConfigToShillConfig(
     const hotspot_config::mojom::HotspotConfigPtr mojom_config) {
   using hotspot_config::mojom::HotspotConfig;
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(shill::kTetheringConfAutoDisableProperty,
              mojom_config->auto_disable);
   result.Set(shill::kTetheringConfBandProperty,

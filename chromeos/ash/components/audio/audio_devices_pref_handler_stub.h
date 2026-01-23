@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   using AudioDeviceStateMap = std::map<uint64_t, DeviceState>;
   using AudioDeviceUserPriority = std::map<uint64_t, int>;
   using AudioDevicePreferenceSetMap = std::map<std::string, std::string>;
-  using MostRecentActivatedDeviceIdList = base::Value::List;
+  using MostRecentActivatedDeviceIdList = base::ListValue;
 
   AudioDevicesPrefHandlerStub();
 
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void UpdateDevicePreferenceSet(const AudioDeviceList& devices,
                                  const AudioDevice& preferred_device) override;
 
-  const base::Value::List& GetMostRecentActivatedDeviceIdList(
+  const base::ListValue& GetMostRecentActivatedDeviceIdList(
       bool is_input) override;
   void UpdateMostRecentActivatedDeviceIdList(
       const AudioDevice& device) override;

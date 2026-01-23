@@ -756,7 +756,7 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   *out_flags_for_user = iter->second.flags;
 
   // Encode feature flags.
-  base::Value::List feature_flag_list;
+  base::ListValue feature_flag_list;
   for (const auto& feature_flag : iter->second.feature_flags) {
     feature_flag_list.Append(feature_flag);
   }
@@ -767,7 +767,7 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   }
 
   // Encode origin list values.
-  base::Value::Dict origin_list_dict;
+  base::DictValue origin_list_dict;
   for (const auto& entry : iter->second.origin_list_flags) {
     origin_list_dict.Set(entry.first, entry.second);
   }

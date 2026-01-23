@@ -61,14 +61,14 @@ class CampaignsMatcher {
   bool IsCampaignMatched(const Campaign* campaign, bool is_prematch) const;
   bool MatchDemoModeTier(const DemoModeTargeting& targeting) const;
   bool MatchDemoModeAppVersion(const DemoModeTargeting& targeting) const;
-  bool MatchRetailers(const base::Value::List* retailers) const;
+  bool MatchRetailers(const base::ListValue* retailers) const;
   bool MaybeMatchDemoModeTargeting(const DemoModeTargeting& targeting) const;
   bool MatchMilestone(const DeviceTargeting& targeting) const;
   bool MatchMilestoneVersion(const DeviceTargeting& targeting) const;
   bool MatchDeviceTargeting(const DeviceTargeting& targeting) const;
   bool MatchRegisteredTime(const std::unique_ptr<TimeWindowTargeting>&
                                registered_time_targeting) const;
-  bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
+  bool MatchExperimentTagTargeting(const base::ListValue* targeting) const;
   bool MatchOpenedApp(const std::vector<std::unique_ptr<AppTargeting>>&
                           apps_opened_targeting) const;
   bool MatchTriggerTargeting(

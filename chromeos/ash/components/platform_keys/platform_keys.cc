@@ -417,7 +417,7 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
     return output;
   }
 
-  std::optional<base::Value::Dict> algorithm =
+  std::optional<base::DictValue> algorithm =
       BuildWebCryptoAlgorithmDictionary(key_info);
   DCHECK(algorithm.has_value());
   output.algorithm = std::move(algorithm.value());
@@ -466,16 +466,16 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
   return net::X509Certificate::kPublicKeyTypeUnknown;
 }
 
-std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
+std::optional<base::DictValue> BuildWebCryptoAlgorithmDictionary(
     const PublicKeyInfo& key_info) {
   switch (key_info.key_type) {
     case net::X509Certificate::kPublicKeyTypeRSA: {
-      base::Value::Dict result;
+      base::DictValue result;
       BuildWebCryptoRSAAlgorithmDictionary(key_info, &result);
       return result;
     }
     case net::X509Certificate::kPublicKeyTypeECDSA: {
-      base::Value::Dict result;
+      base::DictValue result;
       BuildWebCryptoEcdsaAlgorithmDictionary(key_info, &result);
       return result;
     }
@@ -485,7 +485,7 @@ std::optional<base::Value::Dict> BuildWebCryptoAlgorithmDictionary(
 }
 
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                          base::Value::Dict* algorithm) {
+                                          base::DictValue* algorithm) {
   CHECK_EQ(net::X509Certificate::kPublicKeyTypeRSA, key_info.key_type);
   algorithm->Set("name", kWebCryptoRsassaPkcs1v15);
   algorithm->Set("modulusLength", static_cast<int>(key_info.key_size_bits));
@@ -498,7 +498,7 @@ void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
 }
 
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                            base::Value::Dict* algorithm) {
+                                            base::DictValue* algorithm) {
   CHECK_EQ(net::X509Certificate::kPublicKeyTypeECDSA, key_info.key_type);
   algorithm->Set("name", kWebCryptoEcdsa);
 

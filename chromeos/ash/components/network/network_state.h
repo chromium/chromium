@@ -76,13 +76,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // If you change this method, update GetProperties too.
   bool PropertyChanged(const std::string& key,
                        const base::Value& value) override;
-  bool InitialPropertiesReceived(const base::Value::Dict& properties) override;
-  void GetStateProperties(base::Value::Dict* dictionary) const override;
+  bool InitialPropertiesReceived(const base::DictValue& properties) override;
+  void GetStateProperties(base::DictValue* dictionary) const override;
   bool IsActive() const override;
 
   // Called when the IPConfig properties may have changed. |properties| is
   // expected to be of type DICTIONARY.
-  void IPConfigPropertiesChanged(const base::Value::Dict& properties);
+  void IPConfigPropertiesChanged(const base::DictValue& properties);
 
   // Returns true if the network requires a service activation.
   bool RequiresActivation() const;
@@ -118,11 +118,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   int priority() const { return priority_; }
 
-  const std::optional<base::Value::Dict>& proxy_config() const {
+  const std::optional<base::DictValue>& proxy_config() const {
     return proxy_config_;
   }
   // TODO(b/340974631): Deprecate this getter and use network_config() instead.
-  const std::optional<base::Value::Dict>& ipv4_config() const {
+  const std::optional<base::DictValue>& ipv4_config() const {
     return ipv4_config_;
   }
   // TODO(b/340974631): Deprecate this getter and use network_config() instead.
@@ -317,10 +317,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, if the key
   // exists, and validates |name_|. Returns true if |name_| changes.
-  bool UpdateName(const base::Value::Dict& properties);
+  bool UpdateName(const base::DictValue& properties);
 
   // Uses the Shill connection state to generate |portal_state_|.
-  void UpdateCaptivePortalState(const base::Value::Dict& properties);
+  void UpdateCaptivePortalState(const base::DictValue& properties);
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
@@ -357,7 +357,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Cached copy of the Shill Service IPConfig object. For ipv6 properties use
   // the ip_configs_ property in the corresponding DeviceState.
-  std::optional<base::Value::Dict> ipv4_config_;
+  std::optional<base::DictValue> ipv4_config_;
 
   // Wireless properties, used for icons and Connect logic.
   bool connectable_ = false;
@@ -406,7 +406,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // TODO(pneubeck): Remove this once (Managed)NetworkConfigurationHandler
   // provides proxy configuration. crbug.com/241775
-  std::optional<base::Value::Dict> proxy_config_;
+  std::optional<base::DictValue> proxy_config_;
 
   // Set while a network connect request is queued. Cleared on connect or
   // if the request is aborted.

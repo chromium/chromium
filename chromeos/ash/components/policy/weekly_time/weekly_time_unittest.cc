@@ -76,7 +76,7 @@ TEST_P(SingleWeeklyTimeTest, ToValue) {
   WeeklyTime weekly_time = WeeklyTime(
       day_of_week(), minutes() * kMinute.InMilliseconds(), timezone_offset());
   base::Value expected_weekly_time(base::Value::Type::DICT);
-  base::Value::Dict& dict = expected_weekly_time.GetDict();
+  base::DictValue& dict = expected_weekly_time.GetDict();
   dict.Set(WeeklyTime::kDayOfWeek, day_of_week());
   int milliseconds = minutes() * kMinute.InMilliseconds();
   dict.Set(WeeklyTime::kTime, milliseconds);
@@ -117,7 +117,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromDict_UnspecifiedDay) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_TRUE(dict.Set(WeeklyTime::kTime, milliseconds));
   auto result = WeeklyTime::ExtractFromDict(dict, timezone_offset());
   ASSERT_FALSE(result);
@@ -125,7 +125,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromDict_UnspecifiedDay) {
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromDict_InvalidDay) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_TRUE(dict.Set(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[0]));
   EXPECT_TRUE(dict.Set(WeeklyTime::kTime, milliseconds));
   auto result = WeeklyTime::ExtractFromDict(dict, timezone_offset());
@@ -137,7 +137,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromDict_InvalidDay) {
 }
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromDict_InvalidTime) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_TRUE(
       dict.Set(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[day_of_week()]));
   EXPECT_TRUE(dict.Set(WeeklyTime::kTime, -1));
@@ -147,7 +147,7 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromDict_InvalidTime) {
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromDict_Valid) {
   int milliseconds = minutes() * kMinute.InMilliseconds();
-  base::Value::Dict dict;
+  base::DictValue dict;
   EXPECT_TRUE(
       dict.Set(WeeklyTime::kDayOfWeek, WeeklyTime::kWeekDays[day_of_week()]));
   EXPECT_TRUE(dict.Set(WeeklyTime::kTime, milliseconds));

@@ -60,12 +60,12 @@ bool AddStudentsRequest::GetContentData(std::string* upload_content_type,
                                         std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
 
-  base::Value::Dict root;
-  base::Value::Dict student_group;
+  base::DictValue root;
+  base::DictValue student_group;
   student_group.Set(kStudentGroupId, student_group_id_);
-  base::Value::List students;
+  base::ListValue students;
   for (auto& student : students_) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set(kGaiaId, student.gaia_id());
     item.Set(kEmail, student.email());
     item.Set(kFullName, student.full_name());
@@ -73,7 +73,7 @@ bool AddStudentsRequest::GetContentData(std::string* upload_content_type,
     students.Append(std::move(item));
   }
   student_group.Set(kStudents, std::move(students));
-  base::Value::List student_groups;
+  base::ListValue student_groups;
   student_groups.Append(std::move(student_group));
   root.Set(kStudentGroups, std::move(student_groups));
 

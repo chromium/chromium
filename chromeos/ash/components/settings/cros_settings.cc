@@ -116,7 +116,7 @@ bool CrosSettings::GetString(std::string_view path,
 }
 
 bool CrosSettings::GetList(std::string_view path,
-                           const base::Value::List** out_value) const {
+                           const base::ListValue** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
   if (value && value->is_list()) {
@@ -127,7 +127,7 @@ bool CrosSettings::GetList(std::string_view path,
 }
 
 bool CrosSettings::GetDictionary(std::string_view path,
-                                 const base::Value::Dict** out_value) const {
+                                 const base::DictValue** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Value* value = GetPref(path);
   if (value && value->is_dict()) {
@@ -164,7 +164,7 @@ bool CrosSettings::FindEmailInList(const std::string& path,
                                    bool* wildcard_match) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value::List* list;
+  const base::ListValue* list;
   if (!GetList(path, &list)) {
     if (wildcard_match)
       *wildcard_match = false;
@@ -175,7 +175,7 @@ bool CrosSettings::FindEmailInList(const std::string& path,
 }
 
 // static
-bool CrosSettings::FindEmailInList(const base::Value::List& list,
+bool CrosSettings::FindEmailInList(const base::ListValue& list,
                                    const std::string& email,
                                    bool* wildcard_match) {
   std::string canonicalized_email(

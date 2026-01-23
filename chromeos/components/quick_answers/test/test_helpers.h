@@ -18,11 +18,11 @@ std::string GetQuickAnswerTextForTesting(
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
 
 // Build a dict representing a unit, given the provided fields.
-base::Value::Dict CreateUnit(const std::string& name,
-                             double rate_a = kInvalidRateTermValue,
-                             double rate_b = kInvalidRateTermValue,
-                             const std::string& category = std::string(),
-                             double rate_c = kInvalidRateTermValue);
+base::DictValue CreateUnit(const std::string& name,
+                           double rate_a = kInvalidRateTermValue,
+                           double rate_b = kInvalidRateTermValue,
+                           const std::string& category = std::string(),
+                           double rate_c = kInvalidRateTermValue);
 
 class MockQuickAnswersDelegate : public QuickAnswersDelegate {
  public:

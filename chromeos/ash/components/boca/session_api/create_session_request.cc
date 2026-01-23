@@ -84,50 +84,50 @@ bool CreateSessionRequest::GetContentData(std::string* upload_content_type,
 
   // We have to do manual serialization because Json library only exists in
   // protobuf-full, but chromium only include protobuf-lite.
-  base::Value::Dict root;
+  base::DictValue root;
   // Session metadata.
-  base::Value::Dict teacher;
+  base::DictValue teacher;
   teacher.Set(kGaiaId, teacher_.gaia_id());
   teacher.Set(kFullName, teacher_.full_name());
   teacher.Set(kEmail, teacher_.email());
 
   root.Set(kTeacher, std::move(teacher));
 
-  base::Value::Dict duration;
+  base::DictValue duration;
   duration.Set(kSeconds, static_cast<int>(duration_.InSeconds()));
   root.Set(kDuration, std::move(duration));
 
   root.Set(kSessionState, session_state_);
 
   // Enable access code
-  base::Value::Dict joinCode;
+  base::DictValue joinCode;
   joinCode.Set(kJoinCodeEnabled, true);
   root.Set(kJoinCode, std::move(joinCode));
 
   // Roster info
   if (roster_) {
-    base::Value::Dict roster;
+    base::DictValue roster;
     ParseRosterJsonFromProto(roster_.get(), &roster);
     root.Set(kRoster, std::move(roster));
   }
 
-  base::Value::Dict student_config;
+  base::DictValue student_config;
 
   // Ontask config
   if (on_task_config_) {
-    base::Value::Dict on_task_config;
+    base::DictValue on_task_config;
     ParseOnTaskConfigJsonFromProto(on_task_config_.get(), &on_task_config);
     student_config.Set(kOnTaskConfig, std::move(on_task_config));
   }
 
   // Caption Config
   if (captions_config_) {
-    base::Value::Dict caption_config;
+    base::DictValue caption_config;
     ParseCaptionConfigJsonFromProto(captions_config_.get(), &caption_config);
     student_config.Set(kCaptionsConfig, std::move(caption_config));
   }
 
-  base::Value::Dict group_student_config;
+  base::DictValue group_student_config;
   group_student_config.Set(kMainStudentGroupName, student_config.Clone());
   // TODO(crbug.com/375051415): We duplicate the session config for access code
   // student for now, this should eventually be moved to server.

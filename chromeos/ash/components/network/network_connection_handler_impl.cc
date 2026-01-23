@@ -67,16 +67,16 @@ bool IsAuthenticationError(const std::string& error) {
           error == shill::kErrorEapAuthenticationFailed);
 }
 
-std::string GetStringFromDictionary(const base::Value::Dict& dict,
+std::string GetStringFromDictionary(const base::DictValue& dict,
                                     const std::string& key) {
   const std::string* s = dict.FindString(key);
   return s ? *s : std::string();
 }
 
 bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
-                             const base::Value::Dict& properties) {
+                             const base::DictValue& properties) {
   // VPN certificate properties are read from the Provider dictionary.
-  const base::Value::Dict* provider_properties =
+  const base::DictValue* provider_properties =
       properties.FindDict(shill::kProviderProperty);
   switch (cert_config_type) {
     case client_cert::ConfigType::kNone:
@@ -117,7 +117,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
 
 std::string VPNCheckCredentials(const std::string& service_path,
                                 const std::string& provider_type,
-                                const base::Value::Dict& provider_properties) {
+                                const base::DictValue& provider_properties) {
   if (provider_type == shill::kProviderOpenVpn) {
     bool passphrase_required =
         provider_properties.FindBool(shill::kPassphraseRequiredProperty)
@@ -682,7 +682,7 @@ void NetworkConnectionHandlerImpl::OnConnectTimeout(ConnectRequest* request) {
 void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     bool check_error_state,
     const std::string& service_path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     HandleConfigurationFailure(
         service_path, "GetShillProperties failed",
@@ -722,7 +722,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   // Get VPN provider type and host (required for configuration) and ensure
   // that required VPN non-cert properties are set.
-  const base::Value::Dict* provider_properties =
+  const base::DictValue* provider_properties =
       properties->FindDict(shill::kProviderProperty);
   std::string vpn_provider_type, vpn_provider_host, vpn_client_cert_id;
   if (*type == shill::kTypeVPN) {
@@ -747,7 +747,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   const std::string* guid = properties->FindString(shill::kGuidProperty);
   const std::string* profile = properties->FindString(shill::kProfileProperty);
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
-  const base::Value::Dict* policy = nullptr;
+  const base::DictValue* policy = nullptr;
   if (guid && profile) {
     // Fetch network policy with PolicyType::kOriginal to be able to process a
     // client certificate pattern (which would be replaced with a certificate
@@ -809,7 +809,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       client_cert_type = client_cert::ConfigType::kEap;
   }
 
-  base::Value::Dict config_properties;
+  base::DictValue config_properties;
   if (client_cert_type != client_cert::ConfigType::kNone) {
     // Note: if we get here then a certificate *may* be required, so we want
     // to ensure that certificates have loaded successfully before attempting
@@ -1125,7 +1125,7 @@ void NetworkConnectionHandlerImpl::CheckPendingRequest(
   }
   if (NetworkState::StateIsConnected(connection_state)) {
     if (network->type() == shill::kTypeWifi) {
-      base::Value::Dict config_properties;
+      base::DictValue config_properties;
       config_properties.Set(shill::kGuidProperty, network->guid());
       configuration_handler_->SetShillProperties(
           service_path, config_properties, base::DoNothing(),

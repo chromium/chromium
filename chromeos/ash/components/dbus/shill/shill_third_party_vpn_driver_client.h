@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace dbus {
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
   // Calls the SetParameters DBus method for |object_path_value| with
   // |parameters|. Invokes |callback| on success or |error_callback| on failure.
   virtual void SetParameters(const std::string& object_path_value,
-                             const base::Value::Dict& parameters,
+                             const base::DictValue& parameters,
                              StringCallback callback,
                              ErrorCallback error_callback) = 0;
 

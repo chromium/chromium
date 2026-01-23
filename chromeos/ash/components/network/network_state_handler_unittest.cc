@@ -94,9 +94,9 @@ std::vector<std::string> GetNetworkPaths(
 // |eid|.
 base::Value GenerateSimSlotInfosWithEid(const std::string& eid) {
   auto sim_slot_infos =
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set(shill::kSIMSlotInfoEID, eid)
-                                     .Set(shill::kSIMSlotInfoPrimary, true));
+      base::ListValue().Append(base::DictValue()
+                                   .Set(shill::kSIMSlotInfoEID, eid)
+                                   .Set(shill::kSIMSlotInfoPrimary, true));
   return base::Value(std::move(sim_slot_infos));
 }
 
@@ -447,11 +447,10 @@ class NetworkStateHandlerTest : public testing::Test {
               kShillManagerClientStubDefaultWifi);
   }
 
-  void SetProperties(NetworkState* network,
-                     const base::Value::Dict& properties) {
+  void SetProperties(NetworkState* network, const base::DictValue& properties) {
     // UpdateNetworkStateProperties expects 'Type' and 'WiFi.HexSSID' to always
     // be set.
-    base::Value::Dict properties_to_set = properties.Clone();
+    base::DictValue properties_to_set = properties.Clone();
     properties_to_set.Set(shill::kTypeProperty, network->type());
     properties_to_set.Set(shill::kWifiHexSsid, network->GetHexSsid());
     network_state_handler_->UpdateNetworkStateProperties(network,
@@ -2232,8 +2231,8 @@ TEST_F(NetworkStateHandlerTest, IPConfigChanged) {
   ShillIPConfigClient::TestInterface* ip_config_test =
       ShillIPConfigClient::Get()->GetTestInterface();
   const std::string kIPConfigPath = "test_ip_config";
-  ip_config_test->AddIPConfig(kIPConfigPath, base::Value::Dict());
-  base::Value::List device_ip_configs;
+  ip_config_test->AddIPConfig(kIPConfigPath, base::DictValue());
+  base::ListValue device_ip_configs;
   device_ip_configs.Append(kIPConfigPath);
   device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
                                   shill::kIPConfigsProperty,
@@ -2469,7 +2468,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  auto properties = base::Value::Dict()
+  auto properties = base::DictValue()
                         .Set(shill::kProfileProperty, kProfilePath)
                         .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
@@ -2503,7 +2502,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  auto properties = base::Value::Dict()
+  auto properties = base::DictValue()
                         .Set(shill::kProfileProperty, kProfilePath)
                         .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
@@ -2541,7 +2540,7 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  auto properties = base::Value::Dict()
+  auto properties = base::DictValue()
                         .Set(shill::kProfileProperty, kProfilePath)
                         .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
@@ -2582,7 +2581,7 @@ TEST_F(NetworkStateHandlerTest,
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  auto properties = base::Value::Dict()
+  auto properties = base::DictValue()
                         .Set(shill::kProfileProperty, kProfilePath)
                         .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
@@ -2615,7 +2614,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  auto properties = base::Value::Dict()
+  auto properties = base::DictValue()
                         .Set(shill::kProfileProperty, kProfilePath)
                         .Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
@@ -2759,17 +2758,17 @@ TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
 
 TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   // Set up the traffic counters.
-  auto chrome_dict = base::Value::Dict()
+  auto chrome_dict = base::DictValue()
                          .Set("source", shill::kTrafficCounterSourceChrome)
                          .Set("rx_bytes", 12)
                          .Set("tx_bytes", 32);
 
-  auto user_dict = base::Value::Dict()
+  auto user_dict = base::DictValue()
                        .Set("source", shill::kTrafficCounterSourceUser)
                        .Set("rx_bytes", 90)
                        .Set("tx_bytes", 87);
 
-  auto traffic_counters = base::Value::List()
+  auto traffic_counters = base::ListValue()
                               .Append(std::move(chrome_dict))
                               .Append(std::move(user_dict));
 
@@ -2780,7 +2779,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   network_state_handler_->RequestTrafficCounters(
       kShillManagerClientStubDefaultWifi,
       base::BindOnce(
-          [](base::Value::List* expected_traffic_counters,
+          [](base::ListValue* expected_traffic_counters,
              base::OnceClosure quit_closure,
              std::optional<base::Value> actual_traffic_counters) {
             ASSERT_TRUE(actual_traffic_counters);
@@ -2795,7 +2794,7 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
   network_state_handler_->RequestTrafficCounters(
       kWifiName1,
       base::BindOnce(
-          [](base::Value::List* expected_traffic_counters,
+          [](base::ListValue* expected_traffic_counters,
              base::OnceClosure quit_closure,
              std::optional<base::Value> actual_traffic_counters) {
             ASSERT_FALSE(actual_traffic_counters);

@@ -14,7 +14,7 @@ class UserIdentity;
 namespace ash::boca {
 
 ::boca::UserIdentity ConvertUserIdentityJsonToProto(
-    const base::Value::Dict* dict);
+    const base::DictValue* dict);
 
 }  // namespace ash::boca
 

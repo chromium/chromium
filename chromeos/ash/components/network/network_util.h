@@ -116,21 +116,21 @@ std::string FormattedMacAddress(const std::string& shill_mac_address);
 // CellularScanResult in |scan_results|. Returns false if parsing fails,
 // in which case the contents of |scan_results| will be undefined.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool ParseCellularScanResults(const base::Value::List& list,
+bool ParseCellularScanResults(const base::ListValue& list,
                               std::vector<CellularScanResult>* scan_results);
 
 // Parses |list|, which contains dictionary Values and returns a vector of
 // CellularSIMSlotInfo in |sim_slot_infos|. Returns false if parsing fails,
 // in which case the contents of |sim_slot_infos| will be undefined.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool ParseCellularSIMSlotInfo(const base::Value::List& list,
+bool ParseCellularSIMSlotInfo(const base::ListValue& list,
                               std::vector<CellularSIMSlotInfo>* sim_slot_infos);
 
 // Retrieves the ONC state dictionary for |network| using GetStateProperties.
 // This includes properties from the corresponding NetworkState if it exists.
 // Assumed to be called from the primary user profile.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network);
+base::DictValue TranslateNetworkStateToONC(const NetworkState* network);
 
 // Retrieves the list of network services by passing |pattern|,
 // |configured_only|, and |visible_only| to NetworkStateHandler::
@@ -138,10 +138,10 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network);
 // dictionaries using TranslateShillServiceToONCPart. |limit| is used to limit
 // the number of results.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value::List TranslateNetworkListToONC(NetworkTypePattern pattern,
-                                            bool configured_only,
-                                            bool visible_only,
-                                            int limit);
+base::ListValue TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                          bool configured_only,
+                                          bool visible_only,
+                                          int limit);
 
 // Returns the Shill type corresponding to ONC |type| or an empty string if
 // there is no match. Only valid for ethernet, wifi, cellular, and vpn.

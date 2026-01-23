@@ -529,13 +529,13 @@ class EnterpriseESimFeatureUsageMetrics
       return true;
     }
 
-    const base::Value::Dict* policy =
+    const base::DictValue* policy =
         managed_network_configuration_handler_->GetGlobalConfigFromPolicy(
             /*userhash=*/std::string());
     if (!policy) {
       return false;
     }
-    const base::Value::List* network_configurations =
+    const base::ListValue* network_configurations =
         policy->FindList(::onc::toplevel_config::kNetworkConfigurations);
     if (!network_configurations) {
       return false;

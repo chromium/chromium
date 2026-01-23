@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
 
   void SetAuthenticationInfo(const PrinterAuthenticationInfo& auth_info);
 
-  base::Value::Dict ConvertToValue() const;
+  base::DictValue ConvertToValue() const;
 
  private:
   std::string printer_id_;

@@ -17,7 +17,7 @@ namespace ash {
 // set.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
 std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
-    const base::Value::List* policy_allowed_auth_factors);
+    const base::ListValue* policy_allowed_auth_factors);
 
 }  // namespace ash
 

@@ -58,13 +58,13 @@ NetworkTestHelper::NetworkTestHelper()
   managed_network_configuration_handler_->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
       /*userhash=*/std::string(),
-      /*network_configs_onc=*/base::Value::List(),
-      /*global_network_config=*/base::Value::Dict());
+      /*network_configs_onc=*/base::ListValue(),
+      /*global_network_config=*/base::DictValue());
   managed_network_configuration_handler_->SetPolicy(
       ::onc::ONC_SOURCE_USER_POLICY,
       user_manager::FakeUserManager::GetFakeUsernameHash(primary_account_id),
-      /*network_configs_onc=*/base::Value::List(),
-      /*global_network_config=*/base::Value::Dict());
+      /*network_configs_onc=*/base::ListValue(),
+      /*global_network_config=*/base::DictValue());
 
   user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
   fake_user_manager_.Reset(

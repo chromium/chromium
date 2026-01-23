@@ -32,32 +32,31 @@ using testing::Pointee;
 namespace chromeos::onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
-  base::Value::Dict encrypted_onc =
+  base::DictValue encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  std::optional<base::Value::Dict> decrypted_onc = Decrypt(encrypted_onc);
+  std::optional<base::DictValue> decrypted_onc = Decrypt(encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
-  base::Value::Dict encrypted_onc =
+  base::DictValue encrypted_onc =
       test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  std::optional<base::Value::Dict> decrypted_onc = Decrypt(encrypted_onc);
+  std::optional<base::DictValue> decrypted_onc = Decrypt(encrypted_onc);
 
   EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, LoadEncryptedOnc) {
-  base::Value::Dict encrypted_onc =
+  base::DictValue encrypted_onc =
       test_utils::ReadTestDictionary("encrypted.onc");
-  base::Value::Dict expected_decrypted_onc =
+  base::DictValue expected_decrypted_onc =
       test_utils::ReadTestDictionary("decrypted.onc");
 
   std::string error;
-  std::optional<base::Value::Dict> actual_decrypted_onc =
-      Decrypt(encrypted_onc);
+  std::optional<base::DictValue> actual_decrypted_onc = Decrypt(encrypted_onc);
 
   ASSERT_TRUE(actual_decrypted_onc.has_value());
   EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
@@ -93,8 +92,7 @@ base::flat_map<std::string, std::string> GetTestStringSubstitutions() {
 }  // namespace
 
 TEST(ONCStringExpansion, OpenVPN) {
-  base::Value::Dict vpn_onc =
-      test_utils::ReadTestDictionary("valid_openvpn.onc");
+  base::DictValue vpn_onc = test_utils::ReadTestDictionary("valid_openvpn.onc");
 
   VariableExpander variable_expander(GetTestStringSubstitutions());
   ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
@@ -107,7 +105,7 @@ TEST(ONCStringExpansion, OpenVPN) {
 }
 
 TEST(ONCStringExpansion, WiFiEap) {
-  base::Value::Dict wifi_onc =
+  base::DictValue wifi_onc =
       test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
 
   VariableExpander variable_expander(GetTestStringSubstitutions());
@@ -123,28 +121,28 @@ TEST(ONCStringExpansion, WiFiEap) {
 
 // Test that placeholders are being expanded in the ClientCertPattern fields.
 TEST(ONCStringExpansion, WiFiEapPlaceholdersAreReplaced) {
-  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+  base::DictValue wifi_onc = test_utils::ReadTestDictionary(
       "wifi_clientcert_with_cert_placeholders.onc");
 
   VariableExpander variable_expander(GetTestStringSubstitutions());
   ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                            &wifi_onc);
 
-  base::Value::Dict* expanded_issuer =
+  base::DictValue* expanded_issuer =
       wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
   ASSERT_TRUE(expanded_issuer);
   EXPECT_EQ(*expanded_issuer,
-            base::Value::Dict()
+            base::DictValue()
                 .Set("CommonName", kDeviceSerialNumber)
                 .Set("Locality", kDeviceSerialNumber)
                 .Set("Organization", kDeviceSerialNumber)
                 .Set("OrganizationalUnit", kDeviceSerialNumber));
 
-  base::Value::Dict* expanded_subject =
+  base::DictValue* expanded_subject =
       wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
   ASSERT_TRUE(expanded_subject);
   EXPECT_EQ(*expanded_subject,
-            base::Value::Dict()
+            base::DictValue()
                 .Set("CommonName", kDeviceSerialNumber)
                 .Set("Locality", kDeviceSerialNumber)
                 .Set("Organization", kDeviceSerialNumber)
@@ -154,7 +152,7 @@ TEST(ONCStringExpansion, WiFiEapPlaceholdersAreReplaced) {
 // Test that strings that contain names of placeholders, but don't have the ${}
 // brackets around them are treated like normal strings and are not replaced.
 TEST(ONCStringExpansion, WiFiEapAlmostPlaceholdersAreNotReplaced) {
-  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+  base::DictValue wifi_onc = test_utils::ReadTestDictionary(
       "wifi_clientcert_with_almost_placeholders.onc");
 
   VariableExpander variable_expander(GetTestStringSubstitutions());
@@ -167,19 +165,19 @@ TEST(ONCStringExpansion, WiFiEapAlmostPlaceholdersAreNotReplaced) {
 
   constexpr char kExpectedValue[] = "DEVICE_SERIAL_NUMBER";
 
-  base::Value::Dict* expanded_issuer =
+  base::DictValue* expanded_issuer =
       wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Issuer");
   ASSERT_TRUE(expanded_issuer);
-  EXPECT_EQ(*expanded_issuer, base::Value::Dict()
+  EXPECT_EQ(*expanded_issuer, base::DictValue()
                                   .Set("CommonName", kExpectedValue)
                                   .Set("Locality", kExpectedValue)
                                   .Set("Organization", kExpectedValue)
                                   .Set("OrganizationalUnit", kExpectedValue));
 
-  base::Value::Dict* expanded_subject =
+  base::DictValue* expanded_subject =
       wifi_onc.FindDictByDottedPath("WiFi.EAP.ClientCertPattern.Subject");
   ASSERT_TRUE(expanded_subject);
-  EXPECT_EQ(*expanded_subject, base::Value::Dict()
+  EXPECT_EQ(*expanded_subject, base::DictValue()
                                    .Set("CommonName", kExpectedValue)
                                    .Set("Locality", kExpectedValue)
                                    .Set("Organization", kExpectedValue)
@@ -187,7 +185,7 @@ TEST(ONCStringExpansion, WiFiEapAlmostPlaceholdersAreNotReplaced) {
 }
 
 TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
-  base::Value::Dict test_cases = test_utils::ReadTestDictionary(
+  base::DictValue test_cases = test_utils::ReadTestDictionary(
       "network_configs_with_resolved_certs.json");
 
   CertPEMsByGUIDMap certs;
@@ -197,20 +195,20 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
   for (auto iter : test_cases) {
     SCOPED_TRACE("Test case: " + iter.first);
 
-    const base::Value::Dict* test_case_dict = iter.second.GetIfDict();
+    const base::DictValue* test_case_dict = iter.second.GetIfDict();
     ASSERT_TRUE(test_case_dict);
 
-    const base::Value::List* networks_with_cert_refs =
+    const base::ListValue* networks_with_cert_refs =
         test_case_dict->FindList("WithCertRefs");
     ASSERT_TRUE(networks_with_cert_refs);
-    const base::Value::List* expected_resolved_onc =
+    const base::ListValue* expected_resolved_onc =
         test_case_dict->FindList("WithResolvedRefs");
     ASSERT_TRUE(expected_resolved_onc);
 
     bool expected_success =
         (networks_with_cert_refs->size() == expected_resolved_onc->size());
 
-    base::Value::List actual_resolved_onc(networks_with_cert_refs->Clone());
+    base::ListValue actual_resolved_onc(networks_with_cert_refs->Clone());
     bool success = ResolveServerCertRefsInNetworks(certs, actual_resolved_onc);
     EXPECT_EQ(expected_success, success);
     EXPECT_EQ(*expected_resolved_onc, actual_resolved_onc);
@@ -219,9 +217,9 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
 
 TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
   // WiFi configuration that doesn't have HiddenSSID field set.
-  base::Value::Dict wifi_onc =
+  base::DictValue wifi_onc =
       test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
-  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
+  base::DictValue* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
   ASSERT_FALSE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
@@ -233,9 +231,9 @@ TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
 
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
   // WiFi configuration that have HiddenSSID field set to false.
-  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+  base::DictValue wifi_onc = test_utils::ReadTestDictionary(
       "translation_of_shill_wifi_with_state.onc");
-  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
+  base::DictValue* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
   ASSERT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
@@ -245,9 +243,9 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
 
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   // WiFi configuration that have HiddenSSID field set to true.
-  base::Value::Dict wifi_onc =
+  base::DictValue wifi_onc =
       test_utils::ReadTestDictionary("wifi_with_hidden_ssid.onc");
-  base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
+  base::DictValue* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
   ASSERT_TRUE(wifi_fields->Find(::onc::wifi::kHiddenSSID));
@@ -257,15 +255,15 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
 
 TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
   const auto onc_blob = test_utils::ReadTestData("valid_cellular_with_apn.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
       &global_network_config, &certificates));
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set(::onc::cellular_apn::kAccessPointName, "test-apn");
   expected.Set(::onc::cellular_apn::kAuthentication, "");
   expected.Set(::onc::cellular_apn::kUsername, "test-username");
@@ -279,9 +277,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_ApnProvided) {
 
 TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
   const auto onc_blob = test_utils::ReadTestData("valid_cellular_no_apn.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -292,24 +290,24 @@ TEST(ONCUtils, ParseAndValidateOncForImport_NoApnProvided) {
   ASSERT_NE(nullptr, cellular_apn);
   ASSERT_NE(nullptr, cellular_apn->GetDict().Find(::onc::kRecommended));
 
-  base::Value::List recommended =
-      base::Value::List()
+  base::ListValue recommended =
+      base::ListValue()
           .Append(::onc::cellular_apn::kAccessPointName)
           .Append(::onc::cellular_apn::kAttach)
           .Append(::onc::cellular_apn::kAuthentication)
           .Append(::onc::cellular_apn::kUsername)
           .Append(::onc::cellular_apn::kPassword);
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set(::onc::kRecommended, std::move(recommended));
   EXPECT_THAT(cellular_apn,
               Pointee(base::test::DictionaryHasValues(std::move(expected))));
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   test_utils::TestToplevelApnData apn_data;
 
   // Test APN with only Access Point Name
@@ -336,9 +334,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNAccessPointName) {
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   test_utils::TestToplevelApnData apn_data;
 
   // Test that no APN Types field is fine
@@ -376,9 +374,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNApnType) {
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   test_utils::TestToplevelApnData apn_data;
 
   // Test that no IpType provided is fine
@@ -407,9 +405,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_APNIpType) {
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsExistForAdminAPNIds) {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   test_utils::TestToplevelApnData apn_data;
   apn_data.admin_apn_list_ids = kTestAdminApnListAllIds;
 
@@ -443,9 +441,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsExistForAdminAPNIds) {
 }
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsDoNotExistForAdminAPNIds) {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   test_utils::TestToplevelApnData apn_data;
   apn_data.admin_apn_list_ids = kTestAdminApnListAllIds;
 
@@ -496,9 +494,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminAPNsDoNotExistForAdminAPNIds) {
 TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
   const auto onc_blob =
       test_utils::ReadTestData("valid_cellular_no_recommended.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -508,8 +506,8 @@ TEST(ONCUtils, ParseAndValidateOncForImport_CustomApnListRecommendedByDefault) {
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
   ASSERT_NE(nullptr, recommended);
 
-  base::Value::List expected_recommended =
-      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+  base::ListValue expected_recommended =
+      base::ListValue().Append(::onc::cellular::kCustomAPNList);
 
   EXPECT_EQ(expected_recommended, *recommended);
 }
@@ -520,9 +518,9 @@ TEST(
   const auto onc_blob = test_utils::ReadTestData(
       "managed_cellular_no_recommended_allow_apn_modification_not_provided."
       "onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -532,8 +530,8 @@ TEST(
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
   ASSERT_NE(nullptr, recommended);
 
-  base::Value::List expected_recommended =
-      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+  base::ListValue expected_recommended =
+      base::ListValue().Append(::onc::cellular::kCustomAPNList);
 
   EXPECT_EQ(expected_recommended, *recommended);
 }
@@ -543,9 +541,9 @@ TEST(
     ParseAndValidateOncForImport_CustomApnListRecommendedWhenApnModificationAllowed) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_cellular_no_recommended_allow_apn_modification_true.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -555,8 +553,8 @@ TEST(
       network_configs[0].GetDict().FindByDottedPath("Cellular.Recommended");
   ASSERT_NE(nullptr, recommended);
 
-  base::Value::List expected_recommended =
-      base::Value::List().Append(::onc::cellular::kCustomAPNList);
+  base::ListValue expected_recommended =
+      base::ListValue().Append(::onc::cellular::kCustomAPNList);
 
   EXPECT_EQ(expected_recommended, *recommended);
 }
@@ -566,9 +564,9 @@ TEST(
     ParseAndValidateOncForImport_CustomApnListNotRecommendeWhenApnModificationProhibited) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_cellular_no_recommended_allow_apn_modification_false.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -582,19 +580,19 @@ TEST(
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_toplevel_with_multiple_cellular_and_admin_apns.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
       &global_network_config, &certificates));
 
   // Expected custom APN list for the first network configuration
-  base::Value::List expected_custom_apns;
+  base::ListValue expected_custom_apns;
 
   // First expected custom APN details for the first network configuration
-  base::Value::Dict first_custom_apn_details;
+  base::DictValue first_custom_apn_details;
   first_custom_apn_details.Set(::onc::cellular_apn::kId, "admin-apn-id-y");
   first_custom_apn_details.Set(::onc::cellular_apn::kAccessPointName,
                                "test-apn-admin-y");
@@ -607,7 +605,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
                                ::onc::cellular_apn::kSourceAdmin);
 
   // Second expected custom APN details for the first network configuration
-  base::Value::Dict second_custom_apn_details;
+  base::DictValue second_custom_apn_details;
   second_custom_apn_details.Set(::onc::cellular_apn::kId, "admin-apn-id-x");
   second_custom_apn_details.Set(::onc::cellular_apn::kAccessPointName,
                                 "test-apn-admin-x");
@@ -633,10 +631,10 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   EXPECT_TRUE(actual_custom_apns->GetList() == expected_custom_apns);
 
   // Expected custom APN list for the second network configuration
-  base::Value::List expected_custom_apns_2;
+  base::ListValue expected_custom_apns_2;
 
   // First expected custom APN details for the second network configuration
-  base::Value::Dict first_custom_apn_details_2;
+  base::DictValue first_custom_apn_details_2;
   first_custom_apn_details_2.Set(::onc::cellular_apn::kId, "admin-apn-id-z");
   first_custom_apn_details_2.Set(::onc::cellular_apn::kAccessPointName,
                                  "test-apn-admin-z");
@@ -649,7 +647,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
                                  ::onc::cellular_apn::kSourceAdmin);
 
   // Second expected custom APN details for the second network configuration
-  base::Value::Dict second_custom_apn_details_2;
+  base::DictValue second_custom_apn_details_2;
   second_custom_apn_details_2.Set(::onc::cellular_apn::kId, "admin-apn-id-x");
   second_custom_apn_details_2.Set(::onc::cellular_apn::kAccessPointName,
                                   "test-apn-admin-x");
@@ -676,11 +674,11 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
 
   // Expected custom APN list for the third network configuration, which does
   // not have a admin provided custom APN.
-  base::Value::List expected_custom_apns_3;
+  base::ListValue expected_custom_apns_3;
 
   // The APN should remain unchanged since the admin assigned APN Ids field was
   // not provided.
-  base::Value::Dict only_custom_apn_details_3;
+  base::DictValue only_custom_apn_details_3;
   only_custom_apn_details_3.Set(::onc::cellular_apn::kAccessPointName,
                                 "test-apn-3");
   only_custom_apn_details_3.Set(::onc::cellular_apn::kAuthentication, "");
@@ -707,16 +705,16 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
 
   // Verify that the custom APN list is empty if the admin provides an empty
   // list of APN IDs.
-  EXPECT_TRUE(actual_custom_apns_4->GetList() == base::Value::List());
+  EXPECT_TRUE(actual_custom_apns_4->GetList() == base::ListValue());
 }
 
 TEST(ONCUtils,
      ParseAndValidateOncForImport_InvalidPSIMAdminAssignedApnIdsProvided) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_toplevel_with_invalid_psim_admin_assigned_apn_id_list.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_FALSE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -726,19 +724,19 @@ TEST(ONCUtils,
 TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
   const auto onc_blob = test_utils::ReadTestData(
       "managed_toplevel_with_psim_admin_assigned_apn_id_list.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
       &global_network_config, &certificates));
 
   // Expected PSIM Admin APN list
-  base::Value::List expected_psim_admin_assigned_apns;
+  base::ListValue expected_psim_admin_assigned_apns;
 
   // First expected admin assigned APN details.
-  base::Value::Dict first_psim_admin_assigned_apn;
+  base::DictValue first_psim_admin_assigned_apn;
   first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kId, "admin-apn-id-y");
   first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAccessPointName,
                                     "test-apn-admin-y");
@@ -751,7 +749,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
                                     ::onc::cellular_apn::kSourceAdmin);
 
   // Second expected admin assigned APN details.
-  base::Value::Dict second_psim_admin_assigned_apn;
+  base::DictValue second_psim_admin_assigned_apn;
   second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kId,
                                      "admin-apn-id-x");
   second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAccessPointName,
@@ -783,9 +781,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
 
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvidedWithDuplicateIds) {
   const auto onc_blob = test_utils::ReadTestData("duplicate_admin_apn_ids.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_FALSE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, &network_configs,
@@ -813,9 +811,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
       "09c6d2e52cce2362a05009dc29b6b39a\n"
       "-----END OpenVPN Static key V1-----\n";
   const auto onc_blob = test_utils::ReadTestData("valid_openvpn_full.onc");
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
 
   ASSERT_TRUE(ParseAndValidateOncForImport(
       onc_blob, ::onc::ONCSource::ONC_SOURCE_USER_POLICY, &network_configs,
@@ -824,7 +822,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
   const auto* open_vpn =
       network_configs[0].GetDict().FindByDottedPath("VPN.OpenVPN");
   ASSERT_NE(open_vpn, nullptr);
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set(::onc::openvpn::kAuth, "MD5");
   expected.Set(::onc::openvpn::kCipher, "AES-192-CBC");
   expected.Set(::onc::openvpn::kCompressionAlgorithm,
@@ -856,7 +854,7 @@ TEST_P(ONCUtilsMaskCredentialsTest, Test) {
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;
 
-  base::Value::Dict masked = MaskCredentialsInOncObject(
+  base::DictValue masked = MaskCredentialsInOncObject(
       *(GetParam().onc_signature), onc_value->GetDict(), "******");
 
   EXPECT_EQ(masked, expected_after_masking_value->GetDict());

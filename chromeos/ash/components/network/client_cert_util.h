@@ -15,7 +15,7 @@
 #include "components/onc/onc_constants.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace ash::client_cert {
@@ -142,7 +142,7 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
 // will be set to ConfigType::kNone, |tpm_slot| to -1 and |pkcs11_id| to the
 // empty string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void GetClientCertFromShillProperties(const base::Value::Dict& shill_properties,
+void GetClientCertFromShillProperties(const base::DictValue& shill_properties,
                                       ConfigType* cert_config_type,
                                       int* tpm_slot,
                                       std::string* pkcs11_id);
@@ -153,19 +153,19 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetShillProperties(const ConfigType cert_config_type,
                         const int tpm_slot,
                         const std::string& pkcs11_id,
-                        base::Value::Dict& properties);
+                        base::DictValue& properties);
 
 // Like SetShillProperties but instead sets the properties to empty strings.
 // This should be used to clear previously set client certificate properties.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetEmptyShillProperties(const ConfigType cert_config_type,
-                             base::Value::Dict& properties);
+                             base::DictValue& properties);
 
 // Determines the type of the OncCertificatePattern configuration, i.e. is it a
 // pattern within an EAP, IPsec or OpenVPN configuration.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void OncToClientCertConfig(::onc::ONCSource onc_source,
-                           const base::Value::Dict& network_config,
+                           const base::DictValue& network_config,
                            ClientCertConfig* cert_config);
 
 // Sets the client certificate described by `network_config` as the selected
@@ -176,7 +176,7 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
 // `resolved_cert`.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
-                          base::Value::Dict& network_config);
+                          base::DictValue& network_config);
 
 }  // namespace ash::client_cert
 

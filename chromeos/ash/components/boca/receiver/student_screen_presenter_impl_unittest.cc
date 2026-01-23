@@ -87,7 +87,7 @@ class StudentScreenPresenterImplTest : public testing::Test {
             {std::string(receiver_id), std::string(connection_id)}, nullptr));
   }
 
-  std::optional<base::Value::Dict> GetRequestBodyAndRespond(
+  std::optional<base::DictValue> GetRequestBodyAndRespond(
       GURL url,
       std::string_view response,
       net::HttpStatusCode status = net::HTTP_OK) {
@@ -112,7 +112,7 @@ class StudentScreenPresenterImplTest : public testing::Test {
                                                           status);
   }
 
-  void VerifyUserDeviceInfo(base::Value::Dict* user_device_dict,
+  void VerifyUserDeviceInfo(base::DictValue* user_device_dict,
                             ::boca::UserIdentity user_identity,
                             std::string_view device_id) {
     ASSERT_NE(user_device_dict, nullptr);
@@ -165,7 +165,7 @@ TEST_F(StudentScreenPresenterImplTest, StartSuccess) {
   presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
                   start_future.GetCallback(),
                   /*disconnected_cb=*/base::DoNothing());
-  std::optional<base::Value::Dict> request_dict = GetRequestBodyAndRespond(
+  std::optional<base::DictValue> request_dict = GetRequestBodyAndRespond(
       GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
 
   EXPECT_TRUE(start_future.Get());
@@ -366,7 +366,7 @@ TEST_F(StudentScreenPresenterImplTest, StopSuccess) {
 
   presenter.Stop(stop_future.GetCallback());
   presenter.Stop(overlap_stop_future.GetCallback());
-  std::optional<base::Value::Dict> update_request =
+  std::optional<base::DictValue> update_request =
       GetRequestBodyAndRespond(GetUpdateReceiverUrl(kReceiverId, kConnectionId),
                                UpdateConnectionStateJson(kDisconnectedState));
   ASSERT_TRUE(update_request.has_value());

@@ -299,7 +299,7 @@ void WifiHotspotConnector::CompleteActiveConnectionAttempt(
 }
 
 void WifiHotspotConnector::CreateWifiConfiguration() {
-  base::Value::Dict properties = CreateWifiPropertyDictionary(ssid_, password_);
+  base::DictValue properties = CreateWifiPropertyDictionary(ssid_, password_);
 
   // This newly configured network will eventually be passed as an argument to
   // NetworkPropertiesUpdated().
@@ -307,14 +307,14 @@ void WifiHotspotConnector::CreateWifiConfiguration() {
                                         /* shared */ false);
 }
 
-base::Value::Dict WifiHotspotConnector::CreateWifiPropertyDictionary(
+base::DictValue WifiHotspotConnector::CreateWifiPropertyDictionary(
     const std::string& ssid,
     const std::string& password) {
   PA_LOG(VERBOSE) << "Creating network configuration. " << "SSID: " << ssid
                   << ", " << "Password: " << password << ", "
                   << "Wi-Fi network GUID: " << wifi_network_guid_;
 
-  base::Value::Dict properties;
+  base::DictValue properties;
 
   shill_property_util::SetSSID(ssid, &properties);
   properties.Set(shill::kGuidProperty, wifi_network_guid_);

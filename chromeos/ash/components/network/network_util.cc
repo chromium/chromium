@@ -137,12 +137,12 @@ std::string FormattedMacAddress(const std::string& shill_mac_address) {
   return result;
 }
 
-bool ParseCellularScanResults(const base::Value::List& list,
+bool ParseCellularScanResults(const base::ListValue& list,
                               std::vector<CellularScanResult>* scan_results) {
   scan_results->clear();
   scan_results->reserve(list.size());
   for (const auto& value : list) {
-    const base::Value::Dict* value_dict = value.GetIfDict();
+    const base::DictValue* value_dict = value.GetIfDict();
     if (!value_dict) {
       return false;
     }
@@ -181,12 +181,12 @@ bool ParseCellularScanResults(const base::Value::List& list,
 }
 
 bool ParseCellularSIMSlotInfo(
-    const base::Value::List& list,
+    const base::ListValue& list,
     std::vector<CellularSIMSlotInfo>* sim_slot_infos) {
   sim_slot_infos->clear();
   sim_slot_infos->reserve(list.size());
   for (size_t i = 0; i < list.size(); i++) {
-    const base::Value::Dict* value = list[i].GetIfDict();
+    const base::DictValue* value = list[i].GetIfDict();
     if (!value) {
       return false;
     }
@@ -213,9 +213,9 @@ bool ParseCellularSIMSlotInfo(
   return true;
 }
 
-base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
+base::DictValue TranslateNetworkStateToONC(const NetworkState* network) {
   // Get the properties from the NetworkState.
-  base::Value::Dict shill_dictionary;
+  base::DictValue shill_dictionary;
   network->GetStateProperties(&shill_dictionary);
 
   // Get any Device properties required to translate state.
@@ -226,7 +226,7 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
     if (device) {
       shill_dictionary.Set(
           shill::kDeviceProperty,
-          base::Value::Dict()
+          base::DictValue()
               // We need to set Device.Cellular.ProviderRequiresRoaming so that
               // Cellular.RoamingState can be set correctly for badging network
               // icons.
@@ -248,7 +248,7 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
       ->managed_network_configuration_handler()
       ->FindPolicyByGUID(user_id_hash, network->guid(), &onc_source);
 
-  base::Value::Dict onc_dictionary = onc::TranslateShillServiceToONCPart(
+  base::DictValue onc_dictionary = onc::TranslateShillServiceToONCPart(
       shill_dictionary, onc_source, &chromeos::onc::kNetworkWithStateSignature,
       network);
 
@@ -263,15 +263,15 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
   return onc_dictionary;
 }
 
-base::Value::List TranslateNetworkListToONC(NetworkTypePattern pattern,
-                                            bool configured_only,
-                                            bool visible_only,
-                                            int limit) {
+base::ListValue TranslateNetworkListToONC(NetworkTypePattern pattern,
+                                          bool configured_only,
+                                          bool visible_only,
+                                          int limit) {
   NetworkStateHandler::NetworkStateList network_states;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
       pattern, configured_only, visible_only, limit, &network_states);
 
-  base::Value::List network_properties_list;
+  base::ListValue network_properties_list;
   for (const NetworkState* state : network_states) {
     network_properties_list.Append(TranslateNetworkStateToONC(state));
   }

@@ -232,7 +232,7 @@ bool TwentyEightDayImpl::IsDevicePingRequired() {
 }
 
 void TwentyEightDayImpl::LoadActivesCachePref() {
-  const base::Value::Dict& actives_pref = GetParams()->GetLocalState()->GetDict(
+  const base::DictValue& actives_pref = GetParams()->GetLocalState()->GetDict(
       prefs::kDeviceActive28DayActivePingCache);
   actives_cache_ = actives_pref.Clone();
 }
@@ -246,7 +246,7 @@ void TwentyEightDayImpl::FilterActivesCache() {
   base::Time day_0 = GetParams()->GetActiveTs().UTCMidnight();
   base::Time day_27 = day_0 + base::Days(27);
 
-  base::Value::Dict new_actives_cache;
+  base::DictValue new_actives_cache;
 
   // Remove active cache entries if not between [day_0, day_27] inclusive.
   for (base::Time day = day_0; day <= day_27; day += base::Days(1)) {

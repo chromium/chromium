@@ -32,10 +32,10 @@ class QuickStartMessageTest : public testing::Test {
 };
 
 TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("key", "value");
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kBootstrapConfigurationsPayloadKey, payload.Clone());
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
@@ -47,7 +47,7 @@ TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
   ASSERT_TRUE(result.has_value());
   ASSERT_NE(result.value(), nullptr);
 
-  base::Value::Dict* bootstrap_configurations_ptr =
+  base::DictValue* bootstrap_configurations_ptr =
       result.value()->GetPayload()->FindDict(
           kBootstrapConfigurationsPayloadKey);
   ASSERT_NE(bootstrap_configurations_ptr, nullptr);
@@ -58,10 +58,10 @@ TEST_F(QuickStartMessageTest, ReadMessageSucceedsForNonBase64Message) {
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageFailsForUnexpectedMessageType) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("key", "value");
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kBootstrapConfigurationsPayloadKey, payload.Clone());
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
@@ -77,13 +77,13 @@ TEST_F(QuickStartMessageTest, ReadMessageFailsForUnexpectedMessageType) {
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageFailsIfBase64WhenNotExpected) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("key", "value");
   std::string json_payload;
   ASSERT_TRUE(base::JSONWriter::Write(payload, &json_payload));
   std::string base64_payload = base::Base64Encode(json_payload);
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kBootstrapConfigurationsPayloadKey, base64_payload);
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
@@ -97,13 +97,13 @@ TEST_F(QuickStartMessageTest, ReadMessageFailsIfBase64WhenNotExpected) {
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageDecodesBase64Message) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("key", "value");
   std::string json_payload;
   ASSERT_TRUE(base::JSONWriter::Write(payload, &json_payload));
   std::string base64_payload = base::Base64Encode(json_payload);
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kQuickStartPayloadKey, base64_payload);
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
@@ -119,12 +119,12 @@ TEST_F(QuickStartMessageTest, ReadMessageDecodesBase64Message) {
 
 TEST_F(QuickStartMessageTest,
        ReadMessageFailsIfPayloadIsNotBase64WhenExpected) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("key", "value");
   std::string json_payload;
   ASSERT_TRUE(base::JSONWriter::Write(payload, &json_payload));
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kQuickStartPayloadKey, json_payload);
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
@@ -138,7 +138,7 @@ TEST_F(QuickStartMessageTest,
 }
 
 TEST_F(QuickStartMessageTest, ReadMessageFailsIfPayloadIsNotPresent) {
-  base::Value::Dict message;
+  base::DictValue message;
   std::string json_message;
   ASSERT_TRUE(base::JSONWriter::Write(message, &json_message));
   std::vector<uint8_t> data(json_message.begin(), json_message.end());
@@ -155,7 +155,7 @@ TEST_F(QuickStartMessageTest, EncodeThenDecodeResultsInSameValue) {
       ash::quick_start::QuickStartMessageType::kQuickStartPayload);
   message.GetPayload()->Set("key", "value");
 
-  std::unique_ptr<base::Value::Dict> encoded_message =
+  std::unique_ptr<base::DictValue> encoded_message =
       message.GenerateEncodedMessage();
   std::string json_serialized_payload;
   ASSERT_TRUE(

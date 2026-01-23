@@ -477,7 +477,7 @@ void WifiConfigurationBridge::OnFirstConnectionToNetwork(
 
 void WifiConfigurationBridge::OnNetworkUpdate(
     const std::string& guid,
-    const base::Value::Dict* set_properties) {
+    const base::DictValue* set_properties) {
   if (!set_properties)
     return;
 

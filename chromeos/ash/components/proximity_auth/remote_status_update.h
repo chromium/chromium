@@ -41,7 +41,7 @@ struct RemoteStatusUpdate {
   // Parses a dictionary value into a RemoteStatusUpdate. Returns a null pointer
   // if the serialized dictionary value is not valid.
   static std::unique_ptr<RemoteStatusUpdate> Deserialize(
-      const base::Value::Dict& serialized_value);
+      const base::DictValue& serialized_value);
 
   UserPresence user_presence;
   SecureScreenLockState secure_screen_lock_state;

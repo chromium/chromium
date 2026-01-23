@@ -27,9 +27,9 @@ constexpr char kBatteryPercentageKey[] = "battery_percentage";
 constexpr char kSignalStrengthKey[] = "signal_strength";
 constexpr char kSetupRequiredKey[] = "setup_required";
 
-base::Value::Dict HostScanCacheEntryToDictionary(
+base::DictValue HostScanCacheEntryToDictionary(
     const HostScanCacheEntry& entry) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
 
   dictionary.Set(kTetherNetworkGuidKey, entry.tether_network_guid);
   dictionary.Set(kDeviceNameKey, entry.device_name);
@@ -42,7 +42,7 @@ base::Value::Dict HostScanCacheEntryToDictionary(
 }
 
 std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
-    const base::Value::Dict& dictionary) {
+    const base::DictValue& dictionary) {
   HostScanCacheEntry::Builder builder;
 
   const std::string* tether_network_guid =
@@ -99,7 +99,7 @@ PersistentHostScanCacheImpl::~PersistentHostScanCacheImpl() = default;
 
 std::unordered_map<std::string, HostScanCacheEntry>
 PersistentHostScanCacheImpl::GetStoredCacheEntries() {
-  const base::Value::List& cache_entry_list =
+  const base::ListValue& cache_entry_list =
       pref_service_->GetList(prefs::kHostScanCache);
 
   std::unordered_map<std::string, HostScanCacheEntry> entries;
@@ -188,7 +188,7 @@ bool PersistentHostScanCacheImpl::DoesHostRequireSetup(
 
 void PersistentHostScanCacheImpl::StoreCacheEntriesToPrefs(
     const std::unordered_map<std::string, HostScanCacheEntry>& entries) {
-  base::Value::List entries_list;
+  base::ListValue entries_list;
 
   for (const auto& it : entries) {
     entries_list.Append(base::Value(HostScanCacheEntryToDictionary(it.second)));

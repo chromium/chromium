@@ -137,8 +137,8 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     {
       ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesState);
-      base::Value::Dict& pref = update.Get();
-      base::Value::Dict state;
+      base::DictValue& pref = update.Get();
+      base::DictValue state;
       state.Set("active", kPresetState.active);
       state.Set("activate_by_user", kPresetState.activate_by_user);
       pref.Set(preset_key, std::move(state));
@@ -147,14 +147,14 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     {
       ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesVolumePercent);
-      base::Value::Dict& pref = update.Get();
+      base::DictValue& pref = update.Get();
       pref.Set(preset_key, kPresetState.sound_level);
     }
 
     {
       ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesMute);
-      base::Value::Dict& pref = update.Get();
+      base::DictValue& pref = update.Get();
       pref.Set(preset_key, static_cast<int>(kPresetState.mute));
     }
 

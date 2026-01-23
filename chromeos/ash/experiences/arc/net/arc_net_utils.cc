@@ -195,7 +195,7 @@ patchpanel::SocketConnectionEvent::QosCategory TranslateQosCategory(
 namespace arc::net_utils {
 
 void FillConfigurationsFromState(const ash::NetworkState* network_state,
-                                 const base::Value::Dict* shill_dict,
+                                 const base::DictValue* shill_dict,
                                  arc::mojom::NetworkConfiguration* mojo) {
   // Initialize optional array fields to avoid null guards both here and in ARC.
   mojo->host_ipv6_global_addresses = std::vector<std::string>();
@@ -470,7 +470,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
     const std::vector<patchpanel::NetworkDevice>& devices,
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& active_network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties) {
+    const std::map<std::string, base::DictValue>& shill_network_properties) {
   // Map of interface name to a unique active network state on it, if such state
   // exists. Otherwise, report device without associated network states.
   std::map<std::string, arc::mojom::NetworkConfigurationPtr> ifname_config_map;
@@ -514,7 +514,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
             underlying_state->device_path())) {
       if_name = device->interface();
     }
-    const base::Value::Dict* shill_dict =
+    const base::DictValue* shill_dict =
         base::FindOrNull(shill_network_properties, underlying_state->path());
 
     if (if_name.empty()) {
@@ -544,7 +544,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkDevices(
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value::Dict>& shill_network_properties) {
+    const std::map<std::string, base::DictValue>& shill_network_properties) {
   std::vector<arc::mojom::NetworkConfigurationPtr> networks;
   for (const ash::NetworkState* const state : network_states) {
     // Never tell Android about its own VPN.
@@ -563,7 +563,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     }
 
     const auto it = shill_network_properties.find(underlying_state->path());
-    const base::Value::Dict* shill_dict =
+    const base::DictValue* shill_dict =
         (it != shill_network_properties.end()) ? &it->second : nullptr;
     auto network = arc::mojom::NetworkConfiguration::New();
     FillConfigurationsFromState(underlying_state, shill_dict, network.get());
@@ -586,16 +586,16 @@ std::vector<arc::mojom::WifiScanResultPtr> TranslateScanResults(
   return results;
 }
 
-base::Value::List TranslateSubjectNameMatchListToValue(
+base::ListValue TranslateSubjectNameMatchListToValue(
     const std::vector<std::string>& string_list) {
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& item : string_list) {
     // Type and value is separated by ":" in vector, separate them by splitting
     // at ":".
     int idx = item.find(":");
     std::string type = item.substr(0, idx);
     std::string value = item.substr(idx + 1, item.size());
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set(::onc::eap_subject_alternative_name_match::kType, type);
     entry.Set(::onc::eap_subject_alternative_name_match::kValue, value);
     result.Append(std::move(entry));

@@ -28,7 +28,7 @@ void ExpectEmpty(const SamlPasswordAttributes& attrs) {
 }  // namespace
 
 TEST(SamlPasswordAttributesTest, FromJs) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   SamlPasswordAttributes attrs = SamlPasswordAttributes::FromJs(dict);
   ExpectEmpty(attrs);
 

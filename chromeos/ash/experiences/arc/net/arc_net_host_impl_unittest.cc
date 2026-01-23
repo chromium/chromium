@@ -122,8 +122,8 @@ class ArcNetHostImplTest : public testing::Test {
         ->managed_network_configuration_handler()
         ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                     /*userhash=*/std::string(),
-                    /*network_configs_onc=*/base::Value::List(),
-                    /*global_network_config=*/base::Value::Dict());
+                    /*network_configs_onc=*/base::ListValue(),
+                    /*global_network_config=*/base::DictValue());
     auto cert_manager = std::make_unique<FakeCertManager>();
     service_->SetCertManager(std::move(cert_manager));
     task_environment_.RunUntilIdle();

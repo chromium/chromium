@@ -341,7 +341,7 @@ class TwentyEightDayImplDirectCheckMembership : public TwentyEightDayImplBase {
     return twenty_eight_day_impl_.get();
   }
 
-  base::Value::Dict* GetActivesCache() {
+  base::DictValue* GetActivesCache() {
     return &twenty_eight_day_impl_->actives_cache_;
   }
 

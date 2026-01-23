@@ -89,12 +89,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TrafficCountersHandler
   void OnGetManagedPropertiesForAutoReset(
       std::string guid,
       const std::string& service_path,
-      std::optional<base::Value::Dict> properties,
+      std::optional<base::DictValue> properties,
       std::optional<std::string> error);
   void OnGetManagedPropertiesForLastResetTime(
       double total_data_usage,
       const std::string& service_path,
-      std::optional<base::Value::Dict> properties,
+      std::optional<base::DictValue> properties,
       std::optional<std::string> error);
   void OnTrafficCountersRequestedForTrackingDailyAverageDataUsage(
       const std::string& service_path,
