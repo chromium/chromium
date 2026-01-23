@@ -644,9 +644,8 @@ chromium-metrics-reviews@google.com.
     Records the status when the Web UI Toolbar render process is terminated.
 
     This is recorded every time when `WebUIToolbarWebView` receives
-    `PrimaryMainFrameRenderProcessGone()` signal, and when the status is not a
-    normal termination (i.e. every status except
-    `TERMINATION_STATUS_NORMAL_TERMINATION` and
+    `PrimaryMainFrameRenderProcessGone()` signal including the normal
+    termination (i.e. `TERMINATION_STATUS_NORMAL_TERMINATION` and
     `TERMINATION_STATUS_STILL_RUNNING`).
   </summary>
 </histogram>
