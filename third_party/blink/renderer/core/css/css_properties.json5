@@ -597,7 +597,8 @@
     // certain operations, like updating fonts. (Most high-priority properties
     // are 1; 2 and higher are used only in special circumstances.) This mechanism
     // is primarily useful for properties that influence other properties,
-    // like line-height influencing lh units. Negative values are not used.
+    // like line-height influencing lh units. Negative values can be used to
+    // to define ordered groups within the low-priority properties.
     priority: {
       default: 0,
       valid_type: "int",
@@ -7077,6 +7078,9 @@
       style_builder_template_args: {
         fill_type: "CompositingOperator",
       },
+      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
+      // otherwise {-webkit-}mask-composite has no effect.
+      priority: -1,
     },
     {
       name: "-webkit-mask-composite",
@@ -7090,9 +7094,6 @@
         fill_type: "Image",
         fill_type_getter: "GetImage"
       },
-      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
-      // otherwise {-webkit-}mask-composite has no effect.
-      priority: 2,
       includes_currentcolor: true,
     },
     {
