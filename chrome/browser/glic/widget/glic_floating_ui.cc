@@ -123,6 +123,7 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
   auto glic_view =
       std::make_unique<GlicView>(profile_, initial_bounds.size(),
                                  glic_panel_hotkey_manager_->GetWeakPtr());
+  glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_delegate_ =
       GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
   glic_widget_ = GlicWidget::Create(glic_delegate_.get(), profile_,
@@ -290,7 +291,6 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   instance_metrics_->OnShowInFloaty(options);
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
-  GetGlicView()->SetWebContents(delegate_->host().webui_contents());
   GetGlicView()->UpdateBackgroundColor();
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
