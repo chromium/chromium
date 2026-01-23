@@ -2507,13 +2507,12 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   const ComputedStyle& after_change_style =
       CalculateAfterChangeStyle(state, property);
 
-  const RunningTransition* interrupted_transition = nullptr;
+  const RunningTransition* running_transition = nullptr;
   if (state.active_transitions) {
     TransitionMap::const_iterator active_transition_iter =
         state.active_transitions->find(property);
     if (active_transition_iter != state.active_transitions->end()) {
-      const RunningTransition* running_transition =
-          active_transition_iter->value;
+      running_transition = active_transition_iter->value;
       if (ComputedValuesEqual(property, after_change_style,
                               *running_transition->to)) {
         return;
@@ -2522,12 +2521,6 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
       DCHECK(!state.animating_element.GetElementAnimations() ||
              !state.animating_element.GetElementAnimations()
                   ->IsAnimationStyleChange());
-
-      if (ComputedValuesEqual(
-              property, after_change_style,
-              *running_transition->reversing_adjusted_start_value)) {
-        interrupted_transition = running_transition;
-      }
     }
   }
 
@@ -2651,16 +2644,21 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   const ComputedStyle* reversing_adjusted_start_value =
       state.before_change_style;
   double reversing_shortening_factor = 1;
-  if (interrupted_transition) {
-    AnimationEffect* effect = interrupted_transition->animation->effect();
+
+  if (running_transition &&
+      ComputedValuesEqual(
+          property, after_change_style,
+          *running_transition->reversing_adjusted_start_value)) {
+    // Interrupted transition.
+    AnimationEffect* effect = running_transition->animation->effect();
     const std::optional<double> interrupted_progress =
         effect ? effect->Progress() : std::nullopt;
     if (interrupted_progress) {
-      reversing_adjusted_start_value = interrupted_transition->to;
+      reversing_adjusted_start_value = running_transition->to;
       reversing_shortening_factor =
           ClampTo((interrupted_progress.value() *
-                   interrupted_transition->reversing_shortening_factor) +
-                      (1 - interrupted_transition->reversing_shortening_factor),
+                   running_transition->reversing_shortening_factor) +
+                      (1 - running_transition->reversing_shortening_factor),
                   0.0, 1.0);
       timing.iteration_duration.value() *= reversing_shortening_factor;
       if (timing.start_delay.AsTimeValue() < AnimationTimeDelta()) {
