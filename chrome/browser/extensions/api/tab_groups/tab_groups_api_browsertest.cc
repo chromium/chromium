@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -32,6 +33,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/common/extension_builder.h"
+#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -649,38 +651,40 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveLeft) {
   EXPECT_EQ(group, tab_list->GetTab(2)->GetGroup().value());
 }
 
-// TODO(crbug.com/405219902): Port to desktop Android when moving to windows
-// is supported.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that moving a group to another window works as expected.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
-  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  ASSERT_TRUE(SupportsTabGroups());
 
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
   // Create a group with multiple tabs.
-  TabGroupId group = tab_strip_model->AddToNewGroup({2, 3, 4});
+  TabGroupId group = CreateTabGroup({2, 3, 4});
   int group_id = ExtensionTabUtil::GetGroupId(group);
 
   // Create a new window and add a few tabs.
-  Browser* browser2 = CreateBrowser(profile());
-  BrowserList::SetLastActive(browser2);
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+  ASSERT_TRUE(ExtensionTabUtil::SupportsTabGroups(browser2));
+  browser2->GetWindow()->Activate();
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2);
 
-  TabStripModel* tab_strip_model2 = browser2->tab_strip_model();
-  ASSERT_TRUE(tab_strip_model2->SupportsTabGroups());
+  TabListInterface* tab_list2 = TabListInterface::From(browser2);
+  ASSERT_TRUE(tab_list2);
 
-  // A new browser starts with 1 tab open, so iterate from 1.
+  // CreateBrowserWindowWithType() creates zero tabs on Win/Mac/Linux, but
+  // creates one tab on Android.
+  // TODO(crbug.com/477611601): Reconcile this difference.
+#if BUILDFLAG(IS_ANDROID)
+  constexpr int kInitialTabs = 1;
+#else
+  constexpr int kInitialTabs = 0;
+#endif
+  // The target number of tabs in window 2.
   constexpr int kNumTabs2 = 3;
-  for (int i = 1; i < kNumTabs2; ++i) {
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser2, GURL("about:blank"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_NO_WAIT);
+  for (int i = 0; i < kNumTabs2 - kInitialTabs; ++i) {
+    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
   }
-  ASSERT_EQ(kNumTabs2, tab_strip_model2->count());
+  ASSERT_EQ(kNumTabs2, tab_list2->GetTabCount());
 
   // Use the TabGroupsMoveFunction to move the group to index 1 in the other
   // window.
@@ -693,20 +697,30 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveAcrossWindows) {
   ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
                                           api_test_utils::FunctionMode::kNone));
 
-  ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_strip_model2->count());
-  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(1), web_contents(2));
-  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(2), web_contents(3));
-  EXPECT_EQ(tab_strip_model2->GetWebContentsAt(3), web_contents(4));
+  // On some platforms (e.g. Android) tab move between windows is async, so
+  // allow the operation to complete.
+  base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(1).value());
-  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(2).value());
-  EXPECT_EQ(group, tab_strip_model2->GetTabGroupForTab(3).value());
+  ASSERT_EQ(kNumTabs2 + kNumTabsMovedAcrossWindows, tab_list2->GetTabCount());
+  EXPECT_EQ(tab_list2->GetTab(1)->GetContents(), web_contents(2));
+  EXPECT_EQ(tab_list2->GetTab(2)->GetContents(), web_contents(3));
+  EXPECT_EQ(tab_list2->GetTab(3)->GetContents(), web_contents(4));
 
-  // Clean up.
-  tab_strip_model->CloseAllTabs();
-  tab_strip_model2->CloseAllTabs();
+  EXPECT_EQ(group, tab_list2->GetTab(1)->GetGroup().value());
+  EXPECT_EQ(group, tab_list2->GetTab(2)->GetGroup().value());
+  EXPECT_EQ(group, tab_list2->GetTab(3)->GetGroup().value());
+
+  // Close tabs in the second window, closing the leftmost each time.
+  for (int i = 0; i < tab_list2->GetTabCount(); ++i) {
+    tab_list2->CloseTab(tab_list2->GetTab(0)->GetHandle());
+  }
+
+  // Close tabs in the original window, closing the leftmost each time.
+  TabListInterface* tab_list = GetTabListInterface();
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    tab_list->CloseTab(tab_list->GetTab(0)->GetHandle());
+  }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that a group is cannot be moved into the pinned tabs region.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, TabGroupsMoveToPinnedError) {

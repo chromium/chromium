@@ -16,18 +16,15 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -36,13 +33,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/range/range.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-
-using tabs::TabModel;
-#endif
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -55,10 +49,6 @@ constexpr char kCannotMoveGroupIntoMiddleOfOtherGroupError[] =
     "Cannot move the group to an index that is in the middle of another group.";
 constexpr char kCannotMoveGroupIntoMiddleOfPinnedTabsError[] =
     "Cannot move the group to an index that is in the middle of pinned tabs.";
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-constexpr char kMovingBetweenWindowsNotYetImplementedError[] =
-    "Moving between windows is not yet implemented on this platform.";
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Returns true if a group could be moved into the |target_index| of the given
 // |tab_strip|. Sets the |error| string otherwise.
@@ -290,6 +280,35 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
       ExtensionTabUtil::CreateTabGroupObject(id, new_visual_data))));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+#if BUILDFLAG(IS_ANDROID)
+// Helper class to observe for tab group creation notifications. Used on Android
+// because cross-window tab group moves are asynchronous.
+class TabGroupsMoveFunction::ObserverHelper : public TabModelObserver {
+ public:
+  ObserverHelper(TabGroupsMoveFunction* owner, TabModel* tab_model)
+      : owner_(owner), tab_model_(tab_model) {
+    tab_model_->AddObserver(this);
+  }
+
+  ~ObserverHelper() override { tab_model_->RemoveObserver(this); }
+
+  // TabModelObserver:
+  void OnTabGroupCreated(tab_groups::TabGroupId group_id) override {
+    owner_->OnTabGroupCreated(group_id);
+  }
+
+ private:
+  raw_ptr<TabGroupsMoveFunction> owner_;
+  raw_ptr<TabModel> tab_model_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TabGroupsMoveFunction::TabGroupsMoveFunction() = default;
+
+TabGroupsMoveFunction::~TabGroupsMoveFunction() = default;
+
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
   std::optional<api::tab_groups::Move::Params> params =
       api::tab_groups::Move::Params::Create(args());
@@ -300,24 +319,36 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
   const auto& window_id = params->move_properties.window_id;
 
   tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
+  bool cross_window = false;
   std::string error;
   const bool group_moved =
-      MoveGroup(group_id, new_index, window_id, &group, &error);
+      MoveGroup(group_id, new_index, window_id, &group, &cross_window, &error);
   if (!group_moved) {
     return RespondNow(Error(std::move(error)));
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (cross_window) {
+    // Cross window group moves are asynchronous on Android. OnTabGroupCreated()
+    // will be called later when the group is created in the new window.
+    return RespondLater();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (!has_callback())
     return RespondNow(NoArguments());
 
-  return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      *ExtensionTabUtil::CreateTabGroupObject(group))));
+  auto group_object = ExtensionTabUtil::CreateTabGroupObject(group);
+  CHECK(group_object);
+  return RespondNow(
+      ArgumentList(api::tab_groups::Get::Results::Create(*group_object)));
 }
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       int new_index,
                                       const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
+                                      bool* cross_window,
                                       std::string* error) {
   WindowController* source_window = nullptr;
   tab_groups::TabGroupVisualData visual_data;
@@ -355,19 +386,14 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   if (window_id) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-    // TODO(crbug.com/405219902): Support moving between windows on desktop
-    // Android.
-    *error = kMovingBetweenWindowsNotYetImplementedError;
-    return false;
-#else
     WindowController* target_window = nullptr;
     if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
             &target_window, error)) {
       return false;
     }
-    Browser* target_browser = target_window->GetBrowser();
+    BrowserWindowInterface* target_browser =
+        target_window->GetBrowserWindowInterface();
     if (!target_browser) {
       *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
       return false;
@@ -375,7 +401,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
     // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::kFeatureTabstrip)?
-    if (!target_browser->is_type_normal()) {
+    if (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
       *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
       return false;
     }
@@ -387,10 +413,23 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
     // If windowId is different from the current window, move between windows.
     if (target_browser != source_browser) {
+      *cross_window = true;
+#if BUILDFLAG(IS_ANDROID)
+      // Observe for OnTabGroupCreated() notifications, because cross-window
+      // moves are asynchronous on Android.
+      TabModel* target_tab_model =
+          TabModelList::FindTabModelWithWindowSessionId(
+              target_browser->GetSessionID());
+      if (!target_tab_model) {
+        *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+        return false;
+      }
+      observer_helper_ =
+          std::make_unique<ObserverHelper>(this, target_tab_model);
+#endif  // BUILDFLAG(IS_ANDROID)
       return MoveTabGroupBetweenBrowsers(source_browser, target_browser, *group,
                                          visual_data, tabs, new_index, error);
     }
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS
   }
 
   // Perform a move within the same window.
@@ -433,57 +472,48 @@ bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
     const gfx::Range& tabs,
     int new_index,
     std::string* error) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/405219902): Port to desktop Android.
-  return false;
-#else
-  TabStripModel* target_tab_strip = ExtensionTabUtil::GetEditableTabStripModel(
-      target_browser->GetBrowserForMigrationOnly());
-  if (!target_tab_strip) {
+  TabListInterface* target_tab_list =
+      ExtensionTabUtil::GetEditableTabList(*target_browser);
+  if (!target_tab_list) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
 
-  if (!target_tab_strip->SupportsTabGroups()) {
+  if (!ExtensionTabUtil::SupportsTabGroups(target_browser)) {
     *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
 
-  if (new_index > target_tab_strip->count() || new_index < 0) {
-    new_index = target_tab_strip->count();
-  }
-
-  TabListInterface* target_tab_list = TabListInterface::From(target_browser);
-  if (!target_tab_list) {
-    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
-    return false;
+  if (new_index > target_tab_list->GetTabCount() || new_index < 0) {
+    new_index = target_tab_list->GetTabCount();
   }
 
   if (!IndexSupportsGroupMove(target_tab_list, new_index, error)) {
     return false;
   }
 
-  // When moving a group between windows, Saved Tab Groups must pause
-  // listening since the group is in an invalid state. Since Extensions
-  // implements it's own bulk move action, pausing must be performed here.
-  tab_groups::TabGroupSyncService* tab_group_sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          target_browser->GetProfile());
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
-      tab_groups_sync_movement_observation;
-  if (tab_group_sync_service) {
-    tab_groups_sync_movement_observation =
-        tab_group_sync_service->CreateScopedLocalObserverPauser();
+  TabListInterface* source_tab_list = TabListInterface::From(source_browser);
+  if (!source_tab_list) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
   }
 
-  TabStripModel* source_tab_strip = source_browser->GetTabStripModel();
-  std::unique_ptr<DetachedTabCollection> detached_group =
-      source_tab_strip->DetachTabGroupForInsertion(group);
-  target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
-                                             new_index);
+  // Pausing Saved Tab Groups is handled in TabListBridge on Win/Mac/Linux and
+  // in MultiInstanceManagerApi31 on Android.
+  source_tab_list->MoveTabGroupToWindow(group, target_browser->GetSessionID(),
+                                        new_index);
 
   return true;
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void TabGroupsMoveFunction::OnTabGroupCreated(tab_groups::TabGroupId group_id) {
+  observer_helper_.reset();
+
+  auto group_object = ExtensionTabUtil::CreateTabGroupObject(group_id);
+  CHECK(group_object);
+  Respond(ArgumentList(api::tab_groups::Get::Results::Create(*group_object)));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
