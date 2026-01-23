@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -193,13 +192,18 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
                                     MemoryTypeTracker* tracker,
                                     scoped_refptr<RefCountedLock> drdc_lock)
       : GLTextureImageRepresentation(manager, backing, tracker),
-        RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        texture_(AbstractTextureAndroidValidating::Create(size())) {}
+        RefCountedLockHelperDrDc(std::move(drdc_lock)) {
+    texture_ = gpu::gles2::CreateGLES2TextureWithLightRef(
+        CreateTextureWithLinearFilter(), GL_TEXTURE_EXTERNAL_OES);
+    gfx::Rect cleared_rect;
+    texture_->SetLevelInfo(GL_TEXTURE_EXTERNAL_OES, 0, GL_RGBA, size().width(),
+                           size().height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                           cleared_rect);
+    texture_->SetImmutable(true, false);
+  }
 
   ~GLTextureVideoImageRepresentation() override {
-    if (!has_context()) {
-      texture_->NotifyOnContextLost();
-    }
+    texture_.ExtractAsDangling()->RemoveLightweightRef(has_context());
   }
 
   // Disallow copy and assign.
@@ -210,11 +214,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
 
   gles2::Texture* GetTexture(int plane_index) override {
     DCHECK_EQ(plane_index, 0);
-
-    auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
-    DCHECK(texture);
-
-    return texture;
+    return texture_;
   }
 
   bool BeginAccess(GLenum mode) override {
@@ -246,7 +246,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroidValidating> texture_;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
 };

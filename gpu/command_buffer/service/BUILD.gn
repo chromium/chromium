@@ -328,13 +328,6 @@ target(link_target_type, "gles2_sources") {
     "webgpu_decoder.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "abstract_texture_android.cc",
-      "abstract_texture_android.h",
-    ]
-  }
-
   if (use_dawn) {
     deps += [ "//gpu/webgpu:common" ]
     sources += [
