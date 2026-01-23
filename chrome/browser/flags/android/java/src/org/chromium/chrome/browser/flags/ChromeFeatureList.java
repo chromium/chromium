@@ -676,6 +676,7 @@ public abstract class ChromeFeatureList {
             "TrustedWebActivityContactsDelegation";
     public static final String UMA_SESSION_CORRECTNESS_FIXES = "UmaSessionCorrectnessFixes";
     public static final String UNO_PHASE_2_FOLLOW_UP = "UnoPhase2FollowUp";
+    public static final String UNPARCEL_INTENT_FILE_DESCRIPTORS = "UnparcelIntentFileDescriptors";
     public static final String UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL =
             "UpdateCompositorForSurfaceControl";
     public static final String USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION =
@@ -1089,6 +1090,8 @@ public abstract class ChromeFeatureList {
                     TOUCH_TO_SEARCH_CALLOUT,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sUnparcelIntentFileDescriptors =
+            newCachedFlag(UNPARCEL_INTENT_FILE_DESCRIPTORS, /* defaultValue= */ true);
     public static final CachedFlag sUseActivityManagerForTabActivation =
             newCachedFlag(USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION, true);
     public static final CachedFlag sUseChimeAndroidSdk =
@@ -1250,6 +1253,7 @@ public abstract class ChromeFeatureList {
                     sTopControlsRefactor,
                     sTopControlsRefactorV2,
                     sTouchToSearchCallout,
+                    sUnparcelIntentFileDescriptors,
                     sUseActivityManagerForTabActivation,
                     sUseChimeAndroidSdk,
                     sUseInitialNetworkStateAtStartup,

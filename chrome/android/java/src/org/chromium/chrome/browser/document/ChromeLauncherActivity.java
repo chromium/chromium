@@ -52,7 +52,8 @@ public class ChromeLauncherActivity extends Activity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
-        setIntent(IntentUtils.sanitizeIntent(getIntent()));
+        boolean unparcelFds = ChromeFeatureList.sUnparcelIntentFileDescriptors.isEnabled();
+        setIntent(IntentUtils.sanitizeIntent(getIntent(), unparcelFds));
         // Needs to be called as early as possible, to accurately capture the
         // time at which the intent was received.
         if (BrowserIntentUtils.getLaunchedRealtimeMillis(getIntent()) == -1) {

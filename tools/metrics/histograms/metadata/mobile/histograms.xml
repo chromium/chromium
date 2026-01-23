@@ -1255,6 +1255,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MobileStartup.IntentHasFileDescriptor" enum="Boolean"
+    expires_after="2027-01-20">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Whether the intent received in ChromeLauncherActivity contains a file
+    descriptor. This indicates whether we need to spend time unparceling the
+    intent. See MobileStartup.UnparcelBundleRecursiveDuration.
+
+    Only recorded on Android B+.
+  </summary>
+</histogram>
+
 <histogram name="MobileStartup.IntentToCreationTime2{ActivityType}" units="ms"
     expires_after="2026-11-07">
   <owner>mthiesse@chromium.org</owner>
@@ -1302,6 +1315,17 @@ chromium-metrics-reviews@google.com.
         summary="Activity launched in DOCUMENT mode (Tabs and apps together)
                  on Android"/>
   </token>
+</histogram>
+
+<histogram name="MobileStartup.UnparcelBundleRecursiveDuration" units="ms"
+    expires_after="2027-01-20">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    On Android B+ intents with file descriptors need to be unparceled
+    recursively. Recorded when the ChromeLauncherActivity receives an intent
+    that needs to be unparceled.
+  </summary>
 </histogram>
 
 </histograms>
