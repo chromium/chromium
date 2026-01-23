@@ -1246,22 +1246,6 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderModel;
     }
 
-    /**
-     * @return The {@link View} for this class.
-     */
-    // TODO(crbug.com/352735671): Remove after uno phase 2 follow-up launch.
-    @Deprecated
-    View getSigninPromoView() {
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP);
-        if (mSigninPromoView == null) {
-            LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
-            mSigninPromoView =
-                    inflater.inflate(
-                            R.layout.sync_promo_view_content_suggestions, mRootView, false);
-        }
-        return mSigninPromoView;
-    }
-
     /** Update header views in the Feed. */
     void updateHeaderViews(@Nullable View signinPromoView) {
         if (!mMediator.hasStreams()) return;

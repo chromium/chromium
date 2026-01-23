@@ -87,7 +87,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 @EnableFeatures({
     ChromeFeatureList.WEB_FEED_SORT,
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
     ChromeFeatureList.FEED_HEADER_REMOVAL,
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
