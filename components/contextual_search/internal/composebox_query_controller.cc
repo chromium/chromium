@@ -1246,6 +1246,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     return;
   }
 
+  bool has_lens_usage_intent = contextual_input_data->has_lens_usage_intent;
+
   // If there is a viewport screenshot, create the viewport upload request body.
   // TODO(crbug.com/442685171): Pass the pdf page number to the viewport
   // upload request if available.
@@ -1262,9 +1264,14 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                 AddPageIndexToImageUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
             std::move(contextual_input_data->pdf_current_page),
-            base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
-                           weak_ptr_factory_.GetWeakPtr(), file_token,
-                           file_info->num_outstanding_network_requests_++)));
+            base::BindOnce(
+                &ComposeboxQueryController::
+                    AddLensUsageIntentToUploadRequestAndContinue,
+                weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
+                base::BindOnce(
+                    &ComposeboxQueryController::OnUploadRequestBodyReady,
+                    weak_ptr_factory_.GetWeakPtr(), file_token,
+                    file_info->num_outstanding_network_requests_++))));
   } else if (enable_viewport_images_ &&
              contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
@@ -1275,9 +1282,14 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                 AddPageIndexToImageUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
             std::move(contextual_input_data->pdf_current_page),
-            base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
-                           weak_ptr_factory_.GetWeakPtr(), file_token,
-                           file_info->num_outstanding_network_requests_++)),
+            base::BindOnce(
+                &ComposeboxQueryController::
+                    AddLensUsageIntentToUploadRequestAndContinue,
+                weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
+                base::BindOnce(
+                    &ComposeboxQueryController::OnUploadRequestBodyReady,
+                    weak_ptr_factory_.GetWeakPtr(), file_token,
+                    file_info->num_outstanding_network_requests_++))),
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
@@ -1306,9 +1318,13 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
               file_info->request_id, CreateClientContext(),
 
               base::BindOnce(
-                  &ComposeboxQueryController::OnUploadRequestBodyReady,
-                  weak_ptr_factory_.GetWeakPtr(), file_token,
-                  file_info->num_outstanding_network_requests_++)));
+                  &ComposeboxQueryController::
+                      AddLensUsageIntentToUploadRequestAndContinue,
+                  weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
+                  base::BindOnce(
+                      &ComposeboxQueryController::OnUploadRequestBodyReady,
+                      weak_ptr_factory_.GetWeakPtr(), file_token,
+                      file_info->num_outstanding_network_requests_++))));
       break;
     case lens::MimeType::kImage:
       CHECK(contextual_input_data->context_input.has_value() &&
@@ -1319,9 +1335,14 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
           // Pass ownership of the contextual input data to the callback.
           std::move(contextual_input_data->context_input->front().bytes_),
           std::move(image_options),
-          base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
-                         weak_ptr_factory_.GetWeakPtr(), file_token,
-                         file_info->num_outstanding_network_requests_++));
+          base::BindOnce(
+              &ComposeboxQueryController::
+                  AddLensUsageIntentToUploadRequestAndContinue,
+              weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
+              base::BindOnce(
+                  &ComposeboxQueryController::OnUploadRequestBodyReady,
+                  weak_ptr_factory_.GetWeakPtr(), file_token,
+                  file_info->num_outstanding_network_requests_++)));
       break;
     default:
       UpdateFileUploadStatus(
@@ -1330,6 +1351,18 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
           contextual_search::FileUploadErrorType::kBrowserProcessingError);
       break;
   }
+}
+
+void ComposeboxQueryController::AddLensUsageIntentToUploadRequestAndContinue(
+    bool has_lens_usage_intent,
+    RequestBodyProtoCreatedCallback callback,
+    lens::LensOverlayServerRequest request,
+    std::optional<contextual_search::FileUploadErrorType> error_type) {
+  if (!error_type.has_value()) {
+    request.set_has_lens_intent(has_lens_usage_intent);
+  }
+
+  std::move(callback).Run(std::move(request), error_type);
 }
 
 void ComposeboxQueryController::AddPageIndexToImageUploadRequestAndContinue(

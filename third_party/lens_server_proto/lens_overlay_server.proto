@@ -4,8 +4,6 @@
 
 syntax = 'proto3';
 
-option optimize_for = LITE_RUNTIME;
-
 package lens;
 
 import "lens_overlay_client_context.proto";
@@ -14,6 +12,8 @@ import "lens_overlay_platform.proto";
 import "lens_overlay_routing_info.proto";
 import "lens_overlay_service_deps.proto";
 import "lens_overlay_surface.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 // The cluster info request for a Lens Overlay session.
 message LensOverlayServerClusterInfoRequest {
@@ -72,7 +72,7 @@ message MissingChunksMetadata {
   repeated int64 missing_chunk_ids = 2;
 }
 
-// Next ID: 4
+// Next ID: 7
 message LensOverlayServerRequest {
   // Options for fetching objects.
   LensOverlayObjectsRequest objects_request = 1;
@@ -82,6 +82,10 @@ message LensOverlayServerRequest {
 
   // Client logs for the request.
   LensOverlayClientLogs client_logs = 3;
+
+  // A flag to indicate that the request corresponds to an upload from
+  // a flow where the user has expressed clear user intent to use Lens.
+  bool has_lens_intent = 6;
 }
 
 // Response details for an LensOverlay request.

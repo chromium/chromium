@@ -511,6 +511,12 @@ LensQueryFlowRouter::CreateContextualInputData(
           ->GetCurrentPageContextEligibility();
   contextual_input_data->tab_session_id =
       sessions::SessionTabHelper::IdForTab(web_contents());
+  // LensOverlay full-page uploads specifically do not have Lens user intent.
+  // The context upload needs to occur immediately in order to receive CSB
+  // suggestions, but the user intent is signaled to the server via the
+  // presence of a follow-up interaction request instead of this bit in the
+  // context upload request.
+  contextual_input_data->has_lens_usage_intent = false;
   return contextual_input_data;
 }
 
