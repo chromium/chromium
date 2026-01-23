@@ -236,8 +236,14 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
         if (queryEdit.getText().toString().isEmpty()) return;
 
         queryEdit.setText("");
+        updateClearTextButton(queryEdit.getText());
         clearFragment(R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
         KeyboardUtils.showKeyboard(queryEdit);
+    }
+
+    private void updateClearTextButton(CharSequence query) {
+        int visibility = TextUtils.isEmpty(query.toString()) ? View.INVISIBLE : View.VISIBLE;
+        mActivity.findViewById(R.id.clear_text).setVisibility(visibility);
     }
 
     private void initializeMultiColumnSearchUi() {
@@ -742,6 +748,7 @@ public class SettingsSearchCoordinator implements MultiColumnSettings.Observer {
 
                     @Override
                     public void afterTextChanged(Editable s) {
+                        updateClearTextButton(s);
                         onQueryUpdated(s.toString().trim());
                     }
                 });

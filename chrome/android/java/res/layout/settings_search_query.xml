@@ -44,6 +44,7 @@ found in the LICENSE file.
         android:paddingStart="@dimen/settings_search_icon_padding"
         android:paddingEnd="@dimen/settings_search_icon_padding"
         android:src="@drawable/clear_text"
+        android:visibility="invisible"
         android:contentDescription="@string/search_in_settings_clear_query"
         app:tint="@color/default_icon_color_tint_list"/>
 </LinearLayout>
