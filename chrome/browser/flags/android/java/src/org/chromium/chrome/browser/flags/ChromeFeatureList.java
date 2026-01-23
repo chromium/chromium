@@ -1334,6 +1334,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sOmniboxAutofocusOnIncognitoNtp =
             newMutableFlagWithSafeDefault(OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP, false);
+    public static final MutableFlagWithSafeDefault sRecentlyClosedTabsAndWindows =
+            newMutableFlagWithSafeDefault(RECENTLY_CLOSED_TABS_AND_WINDOWS, false);
     public static final MutableFlagWithSafeDefault sRecordIncognitoNtpTimeToFirstNavigationMetric =
             newMutableFlagWithSafeDefault(
                     RECORD_INCOGNITO_NTP_TIME_TO_FIRST_NAVIGATION_METRIC, true);

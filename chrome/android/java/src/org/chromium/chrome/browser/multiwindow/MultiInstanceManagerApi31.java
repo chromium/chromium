@@ -1374,7 +1374,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         mActivity.startActivity(intent);
 
         // If a new activity was started, it implies that an inactive instance was restored.
-        RecentlyClosedEntriesManagerTrackerFactory.getInstance().onInstanceRestored(instanceId);
+        if (UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
+            RecentlyClosedEntriesManagerTrackerFactory.getInstance().onInstanceRestored(instanceId);
+        }
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.MultiWindowMode.InactiveInstanceRestore.AppSource",
@@ -1442,6 +1444,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
      * @param isPermanentDeletion Whether the instance is permanently deleted.
      */
     private void notifyInstanceClosed(int instanceId, boolean isPermanentDeletion) {
+        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) return;
+
         // Note that instance state (for e.g. taskId) may not be updated if a live activity for the
         // closed instance was finished, because activity destruction is asynchronous.
         // We will create an InstanceInfo synchronously with adequate information about the closed
