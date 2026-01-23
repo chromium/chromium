@@ -492,11 +492,36 @@ void ActorLoginCredentialFiller::BuildAttemptLoginOutcome(
 void ActorLoginCredentialFiller::OnFillingDone() {
   LoginStatusResult result =
       GetEndFillingResult(username_filled_, password_filled_);
-  if (result == LoginStatusResult::kErrorNoFillableFields) {
-    BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kNoFillableFields);
-  } else {
-    BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+  base::TimeDelta time_to_fill =
+      base::TimeTicks::Now() - attempt_login_start_time_;
+
+  switch (result) {
+    case LoginStatusResult::kSuccessUsernameAndPasswordFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled",
+          time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kSuccessUsernameFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToUsernameFilled", time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kSuccessPasswordFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToPasswordFilled", time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kErrorNoFillableFields:
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kNoFillableFields);
+      break;
+    case LoginStatusResult::kErrorInvalidCredential:
+    case LoginStatusResult::kErrorNoSigninForm:
+    case LoginStatusResult::kErrorDeviceReauthRequired:
+    case LoginStatusResult::kErrorDeviceReauthFailed:
+      NOTREACHED();
   }
+
   std::move(callback_).Run(result);
 }
 
