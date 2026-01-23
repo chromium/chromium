@@ -2456,13 +2456,8 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
 }
 
 @supports blink-feature(WebMCP) {
-  /* TODO(masonf): This is just placeholder style. Depending on which properties
-     are applied, we might need to adjust specificity relative to other form
-     control UA rules. */
-  button:tool-form-active,
-  input:tool-form-active,
-  select:tool-form-active,
-  textarea:tool-form-active {
+  /* TODO(crbug.com/475971937): This is just placeholder style. */
+  form:tool-form-active {
     outline: light-dark(blue, cyan) dashed 1px;
     outline-offset: -1px;
   }

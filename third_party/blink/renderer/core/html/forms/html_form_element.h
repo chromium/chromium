@@ -159,6 +159,17 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void UseCountPropertyAccess(v8::Local<v8::Name>&,
                               const v8::PropertyCallbackInfo<v8::Value>&);
 
+  bool MatchesToolFormActivePseudoClass() {
+    // TODO(crbug.com/475992364): Implement correct matching state.
+    //
+    // Additionally:
+    //
+    //   PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
+    //
+    // must be invoked appropriately when the state changes.
+    return false;
+  }
+
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

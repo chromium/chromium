@@ -131,16 +131,12 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
 
-  // Returns true if the pseudo classes :tool-form-active and
-  // :tool-submit-active (given by the for_submit parameter) should match for
-  // this element.
-  bool MatchesToolActive(bool for_submit) {
-    // TODO(masonf): Implement correct matching state.
+  bool MatchesToolSubmitActivePseudoClass() {
+    // TODO(crbug.com/475992364): Implement correct matching state.
     //
     // Additionally:
     //
-    //   PseudoStateChanged(CSSSelector::kPseudoToolFormActive);
-    //   PseudoStateChanged(CSSSelector::kPseudoToolSubmitFormActive);
+    //   PseudoStateChanged(CSSSelector::kPseudoToolSubmitActive);
     //
     // must be invoked appropriately when the state changes.
     return false;

@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -2464,10 +2465,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoAutofillSelected:
       return CheckPseudoAutofill(selector.GetPseudoType(), element);
     case CSSSelector::kPseudoToolFormActive:
+      if (auto* form_element = DynamicTo<HTMLFormElement>(element)) {
+        return form_element->MatchesToolFormActivePseudoClass();
+      }
+      return false;
     case CSSSelector::kPseudoToolSubmitActive:
-      if (auto* form_element = DynamicTo<HTMLFormControlElement>(element)) {
-        return form_element->MatchesToolActive(
-            selector.GetPseudoType() == CSSSelector::kPseudoToolSubmitActive);
+      if (auto* form_control_element =
+              DynamicTo<HTMLFormControlElement>(element)) {
+        return form_control_element->MatchesToolSubmitActivePseudoClass();
       }
       return false;
     case CSSSelector::kPseudoAnyLink:
