@@ -23,13 +23,13 @@ void VersionHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
+void VersionHandler::HandleRequestVariationInfo(const base::ListValue& args) {
   // Respond with the variations info immediately.
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
   const bool return_raw_variations_cmd = args[1].GetBool();
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
   if (return_raw_variations_cmd) {
     response.Set(version_ui::kKeyVariationsCmd,

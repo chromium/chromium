@@ -115,14 +115,14 @@ bool WebTestWithWebState::WaitUntilLoaded() {
 
 std::unique_ptr<base::Value> WebTestWithWebState::CallJavaScriptFunction(
     const std::string& function,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   return web::test::CallJavaScriptFunction(web_state(), function, parameters);
 }
 
 std::unique_ptr<base::Value>
 WebTestWithWebState::CallJavaScriptFunctionForFeature(
     const std::string& function,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptFeature* feature) {
   return web::test::CallJavaScriptFunctionForFeature(web_state(), function,
                                                      parameters, feature);

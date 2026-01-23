@@ -305,7 +305,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     return;
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("renderer_id",
            static_cast<int>([self lastFocusedElementUniqueID].value()));
   data.Set("value", base::SysNSStringToUTF16(string));

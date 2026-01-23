@@ -52,19 +52,19 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   // Declared as virtual for tests.
   virtual void ReportRealtimeEvent(const std::string& name,
                                    const ReportingSettings& settings,
-                                   base::Value::Dict event);
+                                   base::DictValue event);
 
  private:
   // RealtimeReportingClientBase overrides (all overrides below):
   std::string GetProfileIdentifier() override;
   std::string GetBrowserClientId() override;
   std::string GetContentAreaAccountEmail(const GURL& url) override;
-  base::Value::Dict GetContext() override;
+  base::DictValue GetContext() override;
   ::chrome::cros::reporting::proto::UploadEventsRequest
   CreateUploadEventsRequest() override;
   bool ShouldIncludeDeviceInfo(bool per_profile) override;
   void UploadCallbackDeprecated(
-      base::Value::Dict event_wrapper,
+      base::DictValue event_wrapper,
       bool per_profile,
       policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,

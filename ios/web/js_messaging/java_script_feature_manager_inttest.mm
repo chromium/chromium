@@ -55,7 +55,7 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
       feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -95,7 +95,7 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
   ASSERT_TRUE(child_frame);
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(child_frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -143,7 +143,7 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
       feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -183,7 +183,7 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
   ASSERT_TRUE(child_frame);
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(child_frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {

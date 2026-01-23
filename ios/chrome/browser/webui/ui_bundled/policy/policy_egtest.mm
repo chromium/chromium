@@ -88,12 +88,12 @@ void VerifyPolicies(
       policies.GetString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   GREYAssertTrue(value_ptr, @"Expected policies, but there weren't any.");
   GREYAssertTrue(value_ptr->is_list(), @"Value is not a list.");
-  const base::Value::List& actual_policies = value_ptr->GetList();
+  const base::ListValue& actual_policies = value_ptr->GetList();
 
   // Verify that the cells contain the expected strings for all policies.
   for (size_t i = 0; i < expected_policies.size(); ++i) {
     const std::vector<std::string> expected_policy = expected_policies[i];
-    const base::Value::List& actual_policy = actual_policies[i].GetList();
+    const base::ListValue& actual_policy = actual_policies[i].GetList();
     GREYAssertEqual(expected_policy.size(), actual_policy.size(),
                     @"Number of fields in the actual and expected policy row "
                     @"did not match.");

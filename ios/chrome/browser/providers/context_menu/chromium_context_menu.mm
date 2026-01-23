@@ -36,7 +36,7 @@ BOOL HandleIntentTypesForOneTap(
 }
 
 std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
-    const base::Value::Dict& metadata,
+    const base::DictValue& metadata,
     const std::string& text,
     NSTextCheckingType handled_types,
     ukm::SourceId source_id,

@@ -95,7 +95,7 @@ void AboutUIHTMLSource::StartDataRequest(
       if (!histogram->histogram_name().contains(path)) {
         continue;
       }
-      base::Value::Dict histogram_dict = histogram->ToGraphDict();
+      base::DictValue histogram_dict = histogram->ToGraphDict();
       std::string* header = histogram_dict.FindString("header");
       std::string* body = histogram_dict.FindString("body");
 

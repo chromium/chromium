@@ -82,11 +82,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadSucceeds) {
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
-  base::Value::Dict event;
+  base::DictValue event;
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         upload_callback_ = std::move(callback);
         run_loop.Quit();
@@ -149,11 +149,11 @@ TEST_P(IOSRealtimeReportingClientTest, TestDeprecatedUmaEventUploadFails) {
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
-  base::Value::Dict event;
+  base::DictValue event;
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         upload_callback_ = std::move(callback);
         run_loop.Quit();

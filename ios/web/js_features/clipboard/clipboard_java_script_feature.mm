@@ -98,7 +98,7 @@ void ClipboardJavaScriptFeature::ScriptMessageReceived(
   //   "requestId": <number>,  // Only for "read" and "write".
   //   "frameId": <string>,
   // }
-  const base::Value::Dict* body = message.body()->GetIfDict();
+  const base::DictValue* body = message.body()->GetIfDict();
   if (!body) {
     return;
   }
@@ -178,7 +178,7 @@ void ClipboardJavaScriptFeature::ResolveClipboardRequest(
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(request_id);
   parameters.Append(allowed);
   CallJavaScriptFunction(web_frame.get(), "clipboard.resolveRequest",

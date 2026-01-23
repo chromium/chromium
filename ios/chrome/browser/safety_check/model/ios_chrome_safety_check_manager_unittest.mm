@@ -625,7 +625,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // incoming insecure password counts change.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        StoppingRunningPasswordCheckIgnoresInsecurePasswordCountsChange) {
-  base::Value::Dict insecure_password_counts;
+  base::DictValue insecure_password_counts;
   insecure_password_counts.Set(kSafetyCheckCompromisedPasswordsCountKey, 1);
   insecure_password_counts.Set(kSafetyCheckDismissedPasswordsCountKey, 2);
   insecure_password_counts.Set(kSafetyCheckReusedPasswordsCountKey, 3);
@@ -1066,7 +1066,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // password counts.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        ConvertsDictionaryToInsecurePasswordCounts) {
-  base::Value::Dict dict_without_duplicate_keys;
+  base::DictValue dict_without_duplicate_keys;
   dict_without_duplicate_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
   dict_without_duplicate_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
   dict_without_duplicate_keys.Set(kSafetyCheckReusedPasswordsCountKey, 5);
@@ -1079,7 +1079,7 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
   EXPECT_EQ(expected_counts_without_duplicate_keys,
             DictToInsecurePasswordCounts(dict_without_duplicate_keys));
 
-  base::Value::Dict dict_with_missing_keys;
+  base::DictValue dict_with_missing_keys;
   dict_with_missing_keys.Set(kSafetyCheckCompromisedPasswordsCountKey, 3);
   dict_with_missing_keys.Set(kSafetyCheckDismissedPasswordsCountKey, 4);
   dict_with_missing_keys.Set(kSafetyCheckWeakPasswordsCountKey, 6);

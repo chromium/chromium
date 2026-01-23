@@ -812,7 +812,7 @@ const char kTestPageText[] = "pony";
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Set restrictions.
-  base::Value::List restrictions;
+  base::ListValue restrictions;
   restrictions.Append("restricted");
   SetPolicy(base::Value(std::move(restrictions)),
             policy::key::kRestrictAccountsToPatterns);

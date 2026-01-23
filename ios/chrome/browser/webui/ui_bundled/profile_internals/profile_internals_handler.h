@@ -22,7 +22,7 @@ class ProfileInternalsHandler : public web::WebUIIOSMessageHandler {
  private:
   // Handler for "getProfilesList" message from JS. Builds the list of profiles
   // and their attributes and sends it back to JS.
-  void HandleGetProfilesList(const base::Value::List& args);
+  void HandleGetProfilesList(const base::ListValue& args);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_PROFILE_INTERNALS_PROFILE_INTERNALS_HANDLER_H_

@@ -92,7 +92,7 @@
 - (NSDictionary<NSString*, NSNumber*>*)deliveredNotifications {
   if (!_deliveredNotifications) {
     // Load from local state prefs.
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         self.localState->GetDict(prefs::kHandledDeliveredNotificationIds);
     NSMutableDictionary<NSString*, NSNumber*>* newDict =
         [NSMutableDictionary dictionary];
@@ -110,7 +110,7 @@
 - (void)setDeliveredNotifications:
     (NSDictionary<NSString*, NSNumber*>*)notifications {
   // Persist to local state prefs.
-  base::Value::Dict newDict;
+  base::DictValue newDict;
   for (NSString* identifier in notifications) {
     newDict.Set(base::SysNSStringToUTF8(identifier),
                 notifications[identifier].intValue);

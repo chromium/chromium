@@ -275,7 +275,7 @@ std::optional<promos_manager::Promo> PromosManagerImpl::NextPromoForDisplay() {
 }
 
 std::set<promos_manager::Promo> PromosManagerImpl::ActivePromos(
-    const base::Value::List& stored_active_promos) const {
+    const base::ListValue& stored_active_promos) const {
   std::set<promos_manager::Promo> active_promos;
 
   for (size_t i = 0; i < stored_active_promos.size(); ++i) {
@@ -299,7 +299,7 @@ void PromosManagerImpl::InitializePendingPromos() {
 
   single_display_pending_promos_.clear();
 
-  const base::Value::Dict& stored_pending_promos = pref_service_->GetDict(
+  const base::DictValue& stored_pending_promos = pref_service_->GetDict(
       prefs::kIosPromosManagerSingleDisplayPendingPromos);
 
   for (const auto [name, value] : stored_pending_promos) {

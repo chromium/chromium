@@ -55,7 +55,7 @@ class WebViewMessageHandlerJavaScriptFeature
       web::BrowserState* browser_state);
 
   using WebViewMessageHandlerCallback =
-      base::RepeatingCallback<void(const base::Value::Dict& payload)>;
+      base::RepeatingCallback<void(const base::DictValue& payload)>;
   void RegisterHandler(std::string& command,
                        WebViewMessageHandlerCallback handler);
   void UnregisterHandler(std::string& command);
@@ -71,7 +71,7 @@ class WebViewMessageHandlerJavaScriptFeature
 
   // Notifies any handler registered in `handlers_` for the command specified in
   // `message_body`.
-  void NotifyHandlers(const base::Value::Dict& message_body);
+  void NotifyHandlers(const base::DictValue& message_body);
 
   std::map<std::string, WebViewMessageHandlerCallback> handlers_;
 };

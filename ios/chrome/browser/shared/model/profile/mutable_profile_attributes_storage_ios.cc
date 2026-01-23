@@ -42,7 +42,7 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
   {
     ScopedDictPrefUpdate update(&prefs_.get(), prefs::kProfileForScene);
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     for (auto [key, value] : update.Get()) {
       if (value.GetString() != profile_name) {
         dict.Set(key, std::move(value));

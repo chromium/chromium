@@ -293,7 +293,7 @@ bool WebStateImpl::HasWebUI() const {
 
 void WebStateImpl::HandleWebUIMessage(const GURL& source_url,
                                       std::string_view message,
-                                      const base::Value::List& args) {
+                                      const base::ListValue& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->HandleWebUIMessage(source_url, message, args);
 }

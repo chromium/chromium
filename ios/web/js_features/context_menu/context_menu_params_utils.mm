@@ -14,7 +14,7 @@
 namespace web {
 
 ContextMenuParams ContextMenuParamsFromElementDictionary(
-    const base::Value::Dict& element) {
+    const base::DictValue& element) {
   ContextMenuParams params;
 
   const std::string* tag_name = element.FindString(kContextMenuElementTagName);

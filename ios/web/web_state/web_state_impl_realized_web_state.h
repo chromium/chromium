@@ -126,7 +126,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool HasWebUI() const;
   void HandleWebUIMessage(const GURL& source_url,
                           std::string_view message,
-                          const base::Value::List& args);
+                          const base::ListValue& args);
   void SetContentsMimeType(const std::string& mime_type);
   void ShouldAllowRequest(
       NSURLRequest* request,

@@ -439,9 +439,9 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  base::Value::List oldMostVisitedSites =
+  base::ListValue oldMostVisitedSites =
       _prefService->GetList(prefs::kIosLatestMostVisitedSites).Clone();
-  base::Value::List freshMostVisitedSites;
+  base::ListValue freshMostVisitedSites;
   for (MostVisitedItem* item in _freshMostVisitedItems) {
     freshMostVisitedSites.Append(item.URL.spec());
   }
@@ -518,9 +518,8 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 // Logs a User Action if `freshMostVisitedSites` has at least one site that
 // isn't in `oldMostVisitedSites`.
-- (void)
-    lookForNewMostVisitedSite:(const base::Value::List&)freshMostVisitedSites
-          oldMostVisitedSites:(const base::Value::List&)oldMostVisitedSites {
+- (void)lookForNewMostVisitedSite:(const base::ListValue&)freshMostVisitedSites
+              oldMostVisitedSites:(const base::ListValue&)oldMostVisitedSites {
   for (const auto& freshSiteURLValue : freshMostVisitedSites) {
     BOOL freshSiteInOldList = NO;
     for (const auto& oldSiteURLValue : oldMostVisitedSites) {

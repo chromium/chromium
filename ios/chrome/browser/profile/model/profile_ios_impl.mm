@@ -283,7 +283,7 @@ ProfileIOSImpl::ProfileIOSImpl(
   // the creation of PrefService.
   scoped_refptr<SupervisedUserPrefStore> supervised_user_prefs =
       base::MakeRefCounted<SupervisedUserPrefStore>();
-  supervised_user_prefs->OnNewSettingsAvailable(base::Value::Dict());
+  supervised_user_prefs->OnNewSettingsAvailable(base::DictValue());
   DCHECK(supervised_user_prefs->IsInitializationComplete());
 
   prefs_ = CreateProfilePrefs(

@@ -81,7 +81,7 @@ PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
 }
 
 password_manager::InsecurePasswordCounts DictToInsecurePasswordCounts(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   password_manager::InsecurePasswordCounts insecure_password_counts = {
       /* compromised */
       dict.FindInt(kSafetyCheckCompromisedPasswordsCountKey).value_or(0),

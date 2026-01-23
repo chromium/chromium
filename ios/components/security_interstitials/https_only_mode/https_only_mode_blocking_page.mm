@@ -55,7 +55,7 @@ bool HttpsOnlyModeBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   // Set a value if backwards navigation is not available, used
   // to change the button text to 'Close page' when there is no
   // suggested URL.

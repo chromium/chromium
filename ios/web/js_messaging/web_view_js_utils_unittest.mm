@@ -136,13 +136,13 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWKResult) {
 
   std::unique_ptr<base::Value> value(
       web::ValueResultFromWKResult(test_dictionary));
-  base::Value::Dict* dictionary = value->GetIfDict();
+  base::DictValue* dictionary = value->GetIfDict();
   EXPECT_NE(nullptr, dictionary);
 
   std::string* value1 = dictionary->FindString("Key1");
   EXPECT_EQ("Value1", *value1);
 
-  base::Value::Dict const* inner_dictionary = dictionary->FindDict("Key2");
+  base::DictValue const* inner_dictionary = dictionary->FindDict("Key2");
   EXPECT_NE(nullptr, inner_dictionary);
 
   EXPECT_EQ(42, *inner_dictionary->FindDouble("Key3"));
@@ -155,7 +155,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
   ASSERT_TRUE(value->is_list());
-  const base::Value::List& list = value->GetList();
+  const base::ListValue& list = value->GetList();
 
   size_t list_size = 3;
   ASSERT_EQ(list_size, list.size());
@@ -193,8 +193,8 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWithDepthCheckWKResult) {
   // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value =
       web::ValueResultFromWKResult(test_dictionary);
-  base::Value::Dict* current_dictionary = value->GetIfDict();
-  base::Value::Dict* inner_dictionary = nullptr;
+  base::DictValue* current_dictionary = value->GetIfDict();
+  base::DictValue* inner_dictionary = nullptr;
 
   EXPECT_NE(nullptr, current_dictionary);
 
@@ -223,8 +223,8 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   // Check that parsing the array stopped at a depth of
   // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(test_array);
-  base::Value::List* current_list = nullptr;
-  base::Value::List* inner_list = nullptr;
+  base::ListValue* current_list = nullptr;
+  base::ListValue* inner_list = nullptr;
 
   ASSERT_TRUE(value->is_list());
   current_list = &value->GetList();
@@ -301,10 +301,10 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromNoneValueResult) {
 // Tests that NSObjectFromValueResult converts Value::Type::DICT to
 // NSDictionary.
 TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set("Key1", "Value1");
 
-  base::Value::Dict inner_test_dict;
+  base::DictValue inner_test_dict;
   inner_test_dict.Set("Key3", 42);
   test_dict.Set("Key2", std::move(inner_test_dict));
 
@@ -324,10 +324,10 @@ TEST_F(WebViewJsUtilsTest, NSObjectFromDictValueResult) {
 
 // Tests that NSObjectFromValueResult converts Value::Type::LIST to NSArray.
 TEST_F(WebViewJsUtilsTest, NSObjectFromListValueResult) {
-  base::Value::List test_list;
+  base::ListValue test_list;
   test_list.Append("Value1");
 
-  base::Value::List inner_test_list;
+  base::ListValue inner_test_list;
   inner_test_list.Append(true);
   test_list.Append(std::move(inner_test_list));
 

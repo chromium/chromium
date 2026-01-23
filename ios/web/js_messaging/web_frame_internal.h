@@ -25,7 +25,7 @@ class WebFrameInternal {
   // world.
   virtual bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world) = 0;
 
   // Calls the JavaScript function in the same condition as
@@ -38,7 +38,7 @@ class WebFrameInternal {
   // `CanCallJavaScriptFunction` is false.
   virtual bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) = 0;

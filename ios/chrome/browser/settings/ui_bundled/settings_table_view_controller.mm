@@ -1834,7 +1834,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
-  const base::Value::Dict& dict = _profile->GetPrefs()->GetDict(
+  const base::DictValue& dict = _profile->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
   if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy) ||
@@ -1846,7 +1846,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Returns the text to be displayed by the managed Search Engine item.
 - (NSString*)managedSearchEngineDetailText {
-  const base::Value::Dict& dict = _profile->GetPrefs()->GetDict(
+  const base::DictValue& dict = _profile->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy)) {
     // Default search engine is disabled by policy.

@@ -51,7 +51,7 @@ class UserCloudPolicyStatusProvider
   ~UserCloudPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  base::Value::Dict GetStatus() override;
+  base::DictValue GetStatus() override;
 
   // policy::CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;

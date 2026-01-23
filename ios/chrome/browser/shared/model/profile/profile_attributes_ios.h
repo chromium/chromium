@@ -35,7 +35,7 @@ class ProfileAttributesIOS {
   // Creates a ProfileAttributesIOS for an existing profile name `profile_name`
   // with attributes from `storage`.
   static ProfileAttributesIOS WithAttrs(std::string_view profile_name,
-                                        const base::Value::Dict& storage);
+                                        const base::DictValue& storage);
 
   // Creates a ProfileAttributesIOS for a deleted profile named `profile_name`.
   static ProfileAttributesIOS DeletedProfile(std::string_view profile_name);
@@ -68,7 +68,7 @@ class ProfileAttributesIOS {
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
   SessionIds GetDiscardedSessions() const;
-  const base::Value::Dict* GetNotificationPermissions() const;
+  const base::DictValue* GetNotificationPermissions() const;
 
   // Sets information related to the profile.
   void ClearIsNewProfile();
@@ -78,18 +78,17 @@ class ProfileAttributesIOS {
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
   void SetDiscardedSessions(const SessionIds& session_ids);
-  void SetNotificationPermissions(base::Value::Dict permissions);
+  void SetNotificationPermissions(base::DictValue permissions);
 
   // Returns the storage.
-  base::Value::Dict GetStorage() &&;
+  base::DictValue GetStorage() &&;
 
  private:
   // Private constructor, use the static factory methods instead.
-  ProfileAttributesIOS(std::string_view profile_name,
-                       base::Value::Dict storage);
+  ProfileAttributesIOS(std::string_view profile_name, base::DictValue storage);
 
   std::string profile_name_;
-  base::Value::Dict storage_;
+  base::DictValue storage_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_ATTRIBUTES_IOS_H_

@@ -39,7 +39,7 @@ CGRect ConvertToBrowserRect(CGRect web_view_rect, web::WebState* web_state) {
 
 @implementation WebSelectionResponse
 
-+ (instancetype)selectionResponseWithDict:(const base::Value::Dict&)dict
++ (instancetype)selectionResponseWithDict:(const base::DictValue&)dict
                                  webState:(web::WebState*)webState {
   DCHECK(webState);
 

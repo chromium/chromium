@@ -402,7 +402,7 @@ bool WebStateImpl::RealizedWebState::HasWebUI() const {
 void WebStateImpl::RealizedWebState::HandleWebUIMessage(
     const GURL& source_url,
     std::string_view message,
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!HasWebUI()) {
     return;
   }

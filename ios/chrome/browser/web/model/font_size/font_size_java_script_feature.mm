@@ -30,7 +30,7 @@ void FontSizeJavaScriptFeature::AdjustFontSize(web::WebState* web_state,
 
 void FontSizeJavaScriptFeature::AdjustFontSize(web::WebFrame* web_frame,
                                                int size) {
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(size);
   CallJavaScriptFunction(web_frame, "font_size.adjustFontSize", parameters);
 }

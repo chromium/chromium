@@ -63,19 +63,19 @@ class NetExportMessageHandler
   void RegisterMessages() override;
 
   // Messages.
-  void OnEnableNotifyUIWithState(const base::Value::List& list);
-  void OnStartNetLog(const base::Value::List& list);
-  void OnStopNetLog(const base::Value::List& list);
-  void OnSendNetLog(const base::Value::List& list);
+  void OnEnableNotifyUIWithState(const base::ListValue& list);
+  void OnStartNetLog(const base::ListValue& list);
+  void OnStopNetLog(const base::ListValue& list);
+  void OnSendNetLog(const base::ListValue& list);
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::Value::Dict& state) override;
+  void OnNewState(const base::DictValue& state) override;
 
  private:
   // Send NetLog data via email.
   void SendEmail(const base::FilePath& file_to_send);
 
-  void NotifyUIWithState(const base::Value::Dict& file_writer_state);
+  void NotifyUIWithState(const base::DictValue& file_writer_state);
 
   // Cache of GetApplicationContext()->GetNetExportFileWriter().
   // This is owned by the ApplicationContext.
@@ -119,7 +119,7 @@ void NetExportMessageHandler::RegisterMessages() {
 }
 
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (!state_observation_manager_.IsObserving()) {
     state_observation_manager_.Observe(file_writer_.get());
@@ -127,7 +127,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
   NotifyUIWithState(file_writer_->GetState());
 }
 
-void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
+void NetExportMessageHandler::OnStartNetLog(const base::ListValue& params) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Determine the capture mode.
@@ -153,18 +153,18 @@ void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
       GetChannelString(), GetApplicationContext()->GetSystemNetworkContext());
 }
 
-void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
+void NetExportMessageHandler::OnStopNetLog(const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   file_writer_->StopNetLog();
 }
 
-void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
+void NetExportMessageHandler::OnSendNetLog(const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   file_writer_->GetFilePathToCompletedLog(base::BindOnce(
       &NetExportMessageHandler::SendEmail, weak_factory_.GetWeakPtr()));
 }
 
-void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
+void NetExportMessageHandler::OnNewState(const base::DictValue& state) {
   NotifyUIWithState(state);
 }
 
@@ -194,7 +194,7 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
 }
 
 void NetExportMessageHandler::NotifyUIWithState(
-    const base::Value::Dict& file_writer_state) {
+    const base::DictValue& file_writer_state) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(web_ui());
 

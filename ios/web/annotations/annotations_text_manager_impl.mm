@@ -110,7 +110,7 @@ void AnnotationsTextManagerImpl::OnTextExtracted(
     WebState* web_state,
     const std::string& text,
     int seq_id,
-    const base::Value::Dict& metadata) {
+    const base::DictValue& metadata) {
   if (!web_state_ || (!is_viewport_extraction_ && seq_id != seq_id_)) {
     return;
   }
@@ -120,12 +120,11 @@ void AnnotationsTextManagerImpl::OnTextExtracted(
   }
 }
 
-void AnnotationsTextManagerImpl::OnDecorated(
-    WebState* web_state,
-    int annotations,
-    int successes,
-    int failures,
-    const base::Value::List& cancelled) {
+void AnnotationsTextManagerImpl::OnDecorated(WebState* web_state,
+                                             int annotations,
+                                             int successes,
+                                             int failures,
+                                             const base::ListValue& cancelled) {
   if (!web_state_) {
     return;
   }

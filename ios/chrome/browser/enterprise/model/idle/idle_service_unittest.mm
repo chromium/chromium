@@ -58,7 +58,7 @@ class IdleTimeoutServiceTest : public PlatformTest {
   IdleTimeoutServiceTest() = default;
 
   void SetIdleTimeoutPolicy(base::TimeDelta timeout) {
-    base::Value::List actions;
+    base::ListValue actions;
     actions.Append(
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
     profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
@@ -377,7 +377,7 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunWhenNotNeeded_SignoutCase) {
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
   profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
                                 std::move(actions));
@@ -392,7 +392,7 @@ TEST_F(IdleTimeoutServiceTest, NoActionsRunWhenNotNeeded_UnknownActionsCase) {
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
-  base::Value::List actions;
+  base::ListValue actions;
   // This can be the case if a string value supported on desktop is the only
   // action that was set for the policy.
   profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
@@ -410,7 +410,7 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlySignoutSet) {
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
   SignIn();
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));
   profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
                                 std::move(actions));
@@ -426,7 +426,7 @@ TEST_F(IdleTimeoutServiceTest, ActionsRunWhenNeeded_OnlyActionSetIsNotSignOut) {
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(
       static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
   profile_->GetPrefs()->SetList(enterprise_idle::prefs::kIdleTimeoutActions,
@@ -444,7 +444,7 @@ TEST_F(IdleTimeoutServiceTest,
   SetLastActiveTime(base::Time::Now() - base::Seconds(90));
   SetIdleTimeoutPolicy(base::Minutes(1));
   InitIdleService();
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(
       static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
   actions.Append(static_cast<int>(enterprise_idle::ActionType::kSignOut));

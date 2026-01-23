@@ -63,7 +63,7 @@ void SupervisedUserInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = script_message.body()->GetDict();
+  const base::DictValue& dict = script_message.body()->GetDict();
   // Expected valid message body struct is:
   // `{"command": "requestUrlAccessRemote"}`, `{"command": "back"}`, or
   // `{"command": "requestUrlAccessLocal"}`

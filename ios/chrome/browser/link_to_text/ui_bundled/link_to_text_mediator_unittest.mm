@@ -152,13 +152,13 @@ class LinkToTextMediatorTest : public PlatformTest {
   std::unique_ptr<base::Value> CreateSuccessResponse(
       const std::string& selected_text,
       CGRect selection_rect) {
-    base::Value::Dict rect_value;
+    base::DictValue rect_value;
     rect_value.Set("x", selection_rect.origin.x);
     rect_value.Set("y", selection_rect.origin.y);
     rect_value.Set("width", selection_rect.size.width);
     rect_value.Set("height", selection_rect.size.height);
 
-    base::Value::Dict response_value;
+    base::DictValue response_value;
     response_value.Set("status",
                        static_cast<double>(LinkGenerationOutcome::kSuccess));
     response_value.Set("fragment", TextFragment(kTestTextFragment).ToValue());
@@ -173,7 +173,7 @@ class LinkToTextMediatorTest : public PlatformTest {
 
   std::unique_ptr<base::Value> CreateErrorResponse(
       LinkGenerationOutcome outcome) {
-    base::Value::Dict response_value;
+    base::DictValue response_value;
     response_value.Set("status", static_cast<double>(outcome));
     return std::make_unique<base::Value>(std::move(response_value));
   }

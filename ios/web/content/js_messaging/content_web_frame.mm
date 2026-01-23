@@ -29,7 +29,7 @@ void WebWithErrorToContentJavaScriptCallbackAdapter(
 
 std::u16string CreateFunctionCallWithParameters(
     const std::string& name,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   std::vector<std::string> parameter_strings(parameters.size());
   for (size_t i = 0; i < parameters.size(); ++i) {
     parameter_strings[i] = base::WriteJson(parameters[i]).value_or("");
@@ -86,13 +86,13 @@ base::WeakPtr<WebFrame> ContentWebFrame::AsWeakPtr() {
 
 bool ContentWebFrame::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   return ExecuteJavaScript(CreateFunctionCallWithParameters(name, parameters));
 }
 
 bool ContentWebFrame::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   // TODO(crbug.com/40260088): Handle timeouts.
@@ -102,7 +102,7 @@ bool ContentWebFrame::CallJavaScriptFunction(
 
 bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world) {
   // TODO(crbug.com/40260088): Handle injecting into an isolated world.
   return ExecuteJavaScript(CreateFunctionCallWithParameters(name, parameters));
@@ -110,7 +110,7 @@ bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
 
 bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {

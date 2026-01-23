@@ -69,7 +69,7 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::Value::Dict& body_dict = message.body()->GetDict();
+  base::DictValue& body_dict = message.body()->GetDict();
 
   std::string* metric = body_dict.FindString("metric");
   if (!metric || metric->empty()) {

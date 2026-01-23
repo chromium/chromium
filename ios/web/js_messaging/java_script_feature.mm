@@ -265,7 +265,7 @@ void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,
     const std::string& function_name,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   DCHECK(web_frame);
 
 #if BUILDFLAG(USE_BLINK)
@@ -295,7 +295,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,
     const std::string& function_name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   DCHECK(web_frame);

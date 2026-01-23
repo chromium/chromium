@@ -55,7 +55,7 @@ void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
     return;
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(call_id);
   parameters.Append(url.spec());
   CallJavaScriptFunction(main_frame, "imageFetch.getImageData", parameters);
@@ -80,7 +80,7 @@ void ImageFetchJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& message_dict = message->GetDict();
+  const base::DictValue& message_dict = message->GetDict();
   const std::optional<double> id_key = message_dict.FindDouble("id");
   if (!id_key) {
     return;

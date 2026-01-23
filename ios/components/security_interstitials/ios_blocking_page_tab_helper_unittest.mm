@@ -34,7 +34,7 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
   void HandleCommand(SecurityInterstitialCommand command) override {}
   bool ShouldCreateNewNavigation() const override { return false; }
   void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) const override {}
+      base::DictValue& load_time_data) const override {}
 
   raw_ptr<bool> destroyed_tracker_ = nullptr;
 };

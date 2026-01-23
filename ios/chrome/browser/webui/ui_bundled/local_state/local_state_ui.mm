@@ -36,7 +36,7 @@ class LocalStateUIHandler : public web::WebUIIOSMessageHandler {
  private:
   // Called from JS when the page has loaded. Serializes local state prefs and
   // sends them to the page.
-  void HandleRequestJson(const base::Value::List& args);
+  void HandleRequestJson(const base::ListValue& args);
 };
 
 void LocalStateUIHandler::RegisterMessages() {
@@ -46,7 +46,7 @@ void LocalStateUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
+void LocalStateUIHandler::HandleRequestJson(const base::ListValue& args) {
   std::optional<std::string> json = local_state_utils::GetPrefsAsJson(
       GetApplicationContext()->GetLocalState());
   if (!json) {

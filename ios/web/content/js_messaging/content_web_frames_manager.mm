@@ -224,7 +224,7 @@ void ContentWebFramesManager::ScriptMessageReceived(
   // `script_message`, a new ScriptMessage is constructed with only the actual
   // message intended for the handler.
 
-  base::Value::Dict* dict = script_message.body()->GetIfDict();
+  base::DictValue* dict = script_message.body()->GetIfDict();
   if (!dict) {
     return;
   }

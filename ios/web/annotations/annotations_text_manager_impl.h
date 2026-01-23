@@ -43,12 +43,12 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   void OnTextExtracted(WebState* web_state,
                        const std::string& text,
                        int seq_id,
-                       const base::Value::Dict& metadata);
+                       const base::DictValue& metadata);
   void OnDecorated(WebState* web_state,
                    int annotations,
                    int successes,
                    int failures,
-                   const base::Value::List& cancelled);
+                   const base::ListValue& cancelled);
   void OnClick(WebState* web_state,
                const std::string& text,
                CGRect rect,

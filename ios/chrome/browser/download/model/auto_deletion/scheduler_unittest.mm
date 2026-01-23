@@ -31,7 +31,7 @@ class SchedulerTest : public PlatformTest {
   }
 
   PrefService* local_state() { return local_state_.get(); }
-  const base::Value::List& scheduled_files() {
+  const base::ListValue& scheduled_files() {
     return local_state_->GetList(prefs::kDownloadAutoDeletionScheduledFiles);
   }
 

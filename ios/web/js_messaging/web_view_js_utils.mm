@@ -45,7 +45,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     result = std::make_unique<base::Value>();
     DCHECK(result->is_none());
   } else if (result_type == CFDictionaryGetTypeID()) {
-    base::Value::Dict dictionary;
+    base::DictValue dictionary;
     for (id key in wk_result) {
       NSString* obj_c_string = base::apple::ObjCCast<NSString>(key);
       const std::string path = base::SysNSStringToUTF8(obj_c_string);
@@ -59,7 +59,7 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
     }
     result = std::make_unique<base::Value>(std::move(dictionary));
   } else if (result_type == CFArrayGetTypeID()) {
-    base::Value::List list;
+    base::ListValue list;
     for (id list_item in wk_result) {
       std::unique_ptr<base::Value> value =
           ValueResultFromWKResult(list_item, max_depth - 1);

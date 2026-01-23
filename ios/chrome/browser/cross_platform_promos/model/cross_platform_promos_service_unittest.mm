@@ -133,7 +133,7 @@ class CrossPlatformPromosServiceTest : public PlatformTest {
 // Tests that foregrounding the app records a new active day.
 TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddNewDay) {
   SimulateAppForegrounded();
-  const base::Value::List& active_days =
+  const base::ListValue& active_days =
       prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
   EXPECT_EQ(1u, active_days.size());
 }
@@ -148,7 +148,7 @@ TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_AddDuplicateDay) {
   SimulateAppForegrounded();
   task_environment_.FastForwardBy(base::Seconds(1));
   SimulateAppForegrounded();
-  const base::Value::List& active_days =
+  const base::ListValue& active_days =
       prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
   EXPECT_EQ(1u, active_days.size());
 }
@@ -158,7 +158,7 @@ TEST_F(CrossPlatformPromosServiceTest, RecordActiveDay_PruneOldDays) {
   SimulateAppForegrounded();
   task_environment_.FastForwardBy(base::Days(30));
   SimulateAppForegrounded();
-  const base::Value::List& active_days =
+  const base::ListValue& active_days =
       prefs_->GetList(prefs::kCrossPlatformPromosActiveDays);
   EXPECT_EQ(1u, active_days.size());
   std::optional<base::Time> stored_time = base::ValueToTime(active_days[0]);
@@ -190,7 +190,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_Lens) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
   OCMExpect([mock_handler showLensPromo]);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(prefs::kIOSPromoReminderPromoType,
            static_cast<int>(desktop_to_mobile_promos::PromoType::kLens));
   dict.Set(prefs::kIOSPromoReminderDeviceGUID, local_device_guid_);
@@ -210,7 +210,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_ESB) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
   OCMExpect([mock_handler showEnhancedSafeBrowsingPromo]);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(
       prefs::kIOSPromoReminderPromoType,
       static_cast<int>(desktop_to_mobile_promos::PromoType::kEnhancedBrowsing));
@@ -233,7 +233,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_Password) {
       [mock_handler showCredentialProviderPromoWithTrigger:
                         CredentialProviderPromoTrigger::TipsNotification]);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(prefs::kIOSPromoReminderPromoType,
            static_cast<int>(desktop_to_mobile_promos::PromoType::kPassword));
   dict.Set(prefs::kIOSPromoReminderDeviceGUID, local_device_guid_);
@@ -253,7 +253,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_ClearsPref) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
   OCMStub([mock_handler showLensPromo]);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(prefs::kIOSPromoReminderPromoType,
            static_cast<int>(desktop_to_mobile_promos::PromoType::kLens));
   dict.Set(prefs::kIOSPromoReminderDeviceGUID, local_device_guid_);
@@ -263,7 +263,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_ClearsPref) {
   service_->MaybeShowPromo();
 
   // Verify the pref is cleared.
-  const base::Value::Dict& promo_reminder =
+  const base::DictValue& promo_reminder =
       prefs_->GetDict(prefs::kIOSPromoReminder);
   EXPECT_FALSE(promo_reminder.FindInt(prefs::kIOSPromoReminderPromoType));
 }
@@ -273,7 +273,7 @@ TEST_F(CrossPlatformPromosServiceTest, MaybeShowPromo_WrongGUID) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
   OCMReject([mock_handler showLensPromo]);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(prefs::kIOSPromoReminderPromoType,
            static_cast<int>(desktop_to_mobile_promos::PromoType::kLens));
   dict.Set(prefs::kIOSPromoReminderDeviceGUID, "wrong_guid");

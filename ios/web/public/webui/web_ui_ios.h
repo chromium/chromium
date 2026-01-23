@@ -45,8 +45,7 @@ class WebUIIOS {
 
   // Used by WebUIMessageHandlers. If the given message is already registered,
   // the call has no effect.
-  using MessageCallback =
-      base::RepeatingCallback<void(const base::Value::List&)>;
+  using MessageCallback = base::RepeatingCallback<void(const base::ListValue&)>;
   virtual void RegisterMessageCallback(std::string_view message,
                                        MessageCallback callback) = 0;
 
@@ -55,7 +54,7 @@ class WebUIIOS {
   // object.
   virtual void ProcessWebUIIOSMessage(const GURL& source_url,
                                       std::string_view message,
-                                      const base::Value::List& args) = 0;
+                                      const base::ListValue& args) = 0;
 
   // Call a Javascript function.  This is asynchronous; there's no way to get
   // the result of the call, and should be thought of more like sending a

@@ -86,7 +86,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_message());
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -114,7 +114,7 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_message());
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -241,7 +241,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, MessageHandlerInIsolatedWorld) {
   ASSERT_FALSE(feature()->last_received_message());
 
   auto parameters =
-      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
+      base::ListValue().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {

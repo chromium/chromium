@@ -984,7 +984,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
   [self.jsNavigationHandler handleNavigationWillChangeState];
 }
 
-- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict {
+- (void)handleNavigationDidPushStateMessage:(base::DictValue*)dict {
   [self.jsNavigationHandler
       handleNavigationDidPushStateMessage:dict
                                  webState:_webStateImpl
@@ -994,7 +994,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
   [self updateSSLStatusForCurrentNavigationItem];
 }
 
-- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict {
+- (void)handleNavigationDidReplaceStateMessage:(base::DictValue*)dict {
   [self.jsNavigationHandler
       handleNavigationDidReplaceStateMessage:dict
                                     webState:_webStateImpl

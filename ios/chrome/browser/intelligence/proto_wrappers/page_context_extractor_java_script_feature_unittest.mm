@@ -120,8 +120,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   run_loop.Run();
 
   // We expect the child to have a remoteToken.
-  const base::Value::List* children =
-      result_value.GetDict().FindList("children");
+  const base::ListValue* children = result_value.GetDict().FindList("children");
   ASSERT_TRUE(children);
   ASSERT_EQ(1u, children->size());
   const base::Value& child = (*children)[0];
@@ -156,19 +155,19 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, DISABLED_ExtractPageContext) {
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("currentNodeInnerText", "Main frame text\n\n")
           .Set("title", "Main")
           .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
           .Set(
               "children",
-              base::Value::List()
-                  .Append(base::Value::Dict()
+              base::ListValue()
+                  .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 1 text")
                               .Set("title", "Child 1")
                               .Set("sourceURL",
                                    test_server_.GetURL(kIframe1Path).spec()))
-                  .Append(base::Value::Dict()
+                  .Append(base::DictValue()
                               .Set("currentNodeInnerText", "Child frame 2 text")
                               .Set("title", "Child 2")
                               .Set("sourceURL",
@@ -203,14 +202,14 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("currentNodeInnerText", "foo")
           .Set("title", "Main")
           .Set("sourceURL", test_server_.GetURL(kMainPagePath).spec())
           .Set("links",
-               base::Value::List().Append(base::Value::Dict()
-                                              .Set("href", "http://foo.com/")
-                                              .Set("linkText", "foo"))));
+               base::ListValue().Append(base::DictValue()
+                                            .Set("href", "http://foo.com/")
+                                            .Set("linkText", "foo"))));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }
@@ -247,7 +246,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   run_loop.Run();
 
   base::Value expected_value(
-      base::Value::Dict().Set("shouldDetachPageContext", true));
+      base::DictValue().Set("shouldDetachPageContext", true));
 
   EXPECT_THAT(result_value, base::test::IsSupersetOfValue(expected_value));
 }

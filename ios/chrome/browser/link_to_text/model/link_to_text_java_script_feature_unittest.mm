@@ -24,11 +24,11 @@
 namespace {
 base::Value GetSuccessValue() {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("status", static_cast<int>(LinkGenerationOutcome::kSuccess))
-          .Set("fragment", base::Value::Dict().Set("textStart", "text"))
+          .Set("fragment", base::DictValue().Set("textStart", "text"))
           .Set("selectedText", "text")
-          .Set("selectionRect", base::Value::Dict()
+          .Set("selectionRect", base::DictValue()
                                     .Set("x", 0.0)
                                     .Set("y", 0.0)
                                     .Set("width", 50.0)
@@ -38,13 +38,13 @@ base::Value GetSuccessValue() {
 }
 
 base::Value GetNoSelectionValue() {
-  auto dict = base::Value::Dict().Set(
+  auto dict = base::DictValue().Set(
       "status", static_cast<int>(LinkGenerationOutcome::kInvalidSelection));
   return base::Value(std::move(dict));
 }
 
 base::Value GetFailureValue() {
-  auto dict = base::Value::Dict().Set(
+  auto dict = base::DictValue().Set(
       "status", static_cast<int>(LinkGenerationOutcome::kExecutionFailed));
   return base::Value(std::move(dict));
 }

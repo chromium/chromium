@@ -38,7 +38,7 @@ class HttpsOnlyModeBlockingPage
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) const override;
+      base::DictValue& load_time_data) const override;
   bool ShouldDisplayURL() const override;
 
  private:

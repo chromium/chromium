@@ -147,7 +147,7 @@ const char kCapabilitiesPageLoadStrategy[] = "normal";
 
 base::Value CreateErrorValue(const std::string& error,
                              const std::string& message) {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set(kWebDriverErrorCodeValueField, error)
                          .Set(kWebDriverErrorMessageValueField, message)
                          .Set(kWebDriverStackTraceValueField,
@@ -207,7 +207,7 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    std::optional<base::Value::Dict> content_dict = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> content_dict = base::JSONReader::ReadDict(
         request_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!content_dict) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -305,7 +305,7 @@ CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
   }
 
   auto response_content =
-      base::Value::Dict().Set(kWebDriverValueResponseField, std::move(*result));
+      base::DictValue().Set(kWebDriverValueResponseField, std::move(*result));
   response->set_content(base::WriteJson(response_content).value_or(""));
 
   return std::move(response);
@@ -321,11 +321,11 @@ base::Value CWTRequestHandler::InitializeSession() {
   target_tab_id_ =
       base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
 
-  base::Value::Dict result;
+  base::DictValue result;
   session_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
   result.Set(kWebDriverSessionIdValueField, session_id_);
 
-  base::Value::Dict capabilities;
+  base::DictValue capabilities;
   capabilities.Set(kCapabilitiesBrowserNameField, kCapabilitiesBrowserName);
   capabilities.Set(kCapabilitiesBrowserVersionField,
                    version_info::GetVersionNumber());
@@ -377,7 +377,7 @@ base::Value CWTRequestHandler::NavigateToUrl(const std::string* url) {
 
 base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
     const base::Value& input) {
-  const base::Value::Dict& input_dict = input.GetDict();
+  const base::DictValue& input_dict = input.GetDict();
   const std::string* url_str = input_dict.FindString(kWebDriverURLRequestField);
   if (!url_str) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -449,7 +449,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   base::ReadFileToString(log_file, &stderr_contents);
 
   return base::Value(
-      base::Value::Dict().Set(kChromeStderrValueField, stderr_contents));
+      base::DictValue().Set(kChromeStderrValueField, stderr_contents));
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
@@ -484,7 +484,7 @@ base::Value CWTRequestHandler::GetTargetTabId() {
 }
 
 base::Value CWTRequestHandler::GetAllTabIds() {
-  base::Value::List id_list;
+  base::ListValue id_list;
   NSArray* tab_ids = [CWTWebDriverAppInterface tabIDs];
   for (NSString* tab_id in tab_ids) {
     id_list.Append(base::Value(base::SysNSStringToUTF8(tab_id)));
@@ -525,7 +525,7 @@ base::Value CWTRequestHandler::CloseTargetTab() {
 
 base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
                                              bool is_async_function,
-                                             const base::Value::List* args) {
+                                             const base::ListValue* args) {
   if (!script) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingScriptMessage);
@@ -592,8 +592,8 @@ base::Value CWTRequestHandler::SetWindowRect(const base::Value& rect) {
 }
 
 base::Value CWTRequestHandler::GetVersionInfo() {
-  auto result = base::Value::Dict().Set(kCapabilitiesBrowserVersionField,
-                                        version_info::GetVersionNumber());
+  auto result = base::DictValue().Set(kCapabilitiesBrowserVersionField,
+                                      version_info::GetVersionNumber());
 
   // The full revision starts with a git hash and ends with the revision
   // number in the following format: @{#123456}

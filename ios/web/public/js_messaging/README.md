@@ -310,7 +310,7 @@ void MyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = message.body()->GetDict();
+  const base::DictValue& dict = message.body()->GetDict();
 
   const std::string* event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {

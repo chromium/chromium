@@ -53,7 +53,7 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict* script_dict =
+  const base::DictValue* script_dict =
       script_message.body() ? script_message.body()->GetIfDict() : nullptr;
   if (!script_dict) {
     return;

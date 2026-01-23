@@ -91,7 +91,7 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     return;
   }
 
-  const base::Value::Dict& promo_reminder =
+  const base::DictValue& promo_reminder =
       profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
   std::optional<int> promo_type =
       promo_reminder.FindInt(prefs::kIOSPromoReminderPromoType);
@@ -165,7 +165,7 @@ bool CrossPlatformPromosService::RecordActiveDay(base::Time day) {
   day = day.LocalMidnight();
   ScopedListPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCrossPlatformPromosActiveDays);
-  base::Value::List& active_days = update.Get();
+  base::ListValue& active_days = update.Get();
 
   // Return early if the given day is the most recent day in the list.
   int size = active_days.size();
@@ -193,7 +193,7 @@ base::Time CrossPlatformPromosService::FindActiveDay(size_t count) {
     return base::Time();
   }
 
-  const base::Value::List& active_days =
+  const base::ListValue& active_days =
       profile_->GetPrefs()->GetList(prefs::kCrossPlatformPromosActiveDays);
 
   if (active_days.size() < count) {

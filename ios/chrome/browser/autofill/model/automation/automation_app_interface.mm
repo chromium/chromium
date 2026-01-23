@@ -71,7 +71,7 @@ autofill::FieldType FieldTypeFromString(std::string_view str, NSError** error) {
 //   { "type": "NAME_LAST", "value": "Yumizuka" },
 //  ],
 NSError* PrepareAutofillProfileWithValues(
-    const base::Value::List* autofill_profile) {
+    const base::ListValue* autofill_profile) {
   if (!autofill_profile) {
     return testing::NSErrorWithLocalizedDescription(
         @"Unable to find autofill profile in parsed JSON value.");
@@ -86,7 +86,7 @@ NSError* PrepareAutofillProfileWithValues(
   // For each type-value dictionary in the autofill profile list, validate it,
   // then add it to the appropriate profile.
   for (const auto& profile_list_item : *autofill_profile) {
-    const base::Value::Dict* entry = profile_list_item.GetIfDict();
+    const base::DictValue* entry = profile_list_item.GetIfDict();
     if (!entry) {
       return testing::NSErrorWithLocalizedDescription(
           @"Failed to extract an entry!");
@@ -160,7 +160,7 @@ NSError* PrepareAutofillProfileWithValues(
 
   base::Value recipeRoot = std::move(readResult).value();
 
-  const base::Value::List* autofillProfile =
+  const base::ListValue* autofillProfile =
       recipeRoot.GetDict().FindList("autofillProfile");
   return PrepareAutofillProfileWithValues(autofillProfile);
 }

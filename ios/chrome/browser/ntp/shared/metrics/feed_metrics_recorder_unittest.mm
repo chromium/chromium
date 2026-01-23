@@ -355,7 +355,7 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kLowActivity) {
   test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
                              last_activity_bucket);
   // Make sure LastReportedDateArray is in range 1 to 7.
-  base::Value::List listOfDates;
+  base::ListValue listOfDates;
   for (size_t i = 0; i < 5; ++i) {
     listOfDates.Append(TimeToValue(base::Time::Now()));
   }
@@ -375,7 +375,7 @@ TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kMediumActivity) {
   test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
                              last_activity_bucket);
   // Make sure LastReportedDateArray is in range 8 to 15.
-  base::Value::List listOfDates;
+  base::ListValue listOfDates;
   for (size_t i = 0; i < 9; ++i) {
     listOfDates.Append(TimeToValue(base::Time::Now()));
   }

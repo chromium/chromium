@@ -648,7 +648,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     profile_->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     std::string());
     profile_->GetPrefs()->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                                  base::Value::Dict());
+                                  base::DictValue());
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_DOWNLOADS)) {

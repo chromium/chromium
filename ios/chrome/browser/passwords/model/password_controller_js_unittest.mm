@@ -69,42 +69,42 @@ namespace {
 constexpr int kTextInputFieldMaxLength = 524288;
 
 // Serializes a dictionary value in a NSString.
-NSString* SerializeDictValueToNSString(const base::Value::Dict& value) {
+NSString* SerializeDictValueToNSString(const base::DictValue& value) {
   std::optional<std::string> output = base::WriteJson(value);
   EXPECT_TRUE(output);
   return base::SysUTF8ToNSString(*output);
 }
 
-base::Value::Dict ParsedField(std::string renderer_id,
-                              std::string control_type,
-                              std::string identifier,
-                              std::string value,
-                              std::string label,
-                              std::string name) {
-  base::Value::Dict field = base::Value::Dict()
-                                .Set("identifier", identifier)
-                                .Set("name", name)
-                                .Set("name_attribute", name)
-                                .Set("id_attribute", "")
-                                .Set("renderer_id", renderer_id)
-                                .Set("form_control_type", control_type)
-                                .Set("aria_label", "")
-                                .Set("aria_description", "")
-                                .Set("should_autocomplete", true)
-                                .Set("is_focusable", true)
-                                .Set("is_user_edited", true)
-                                .Set("max_length", kTextInputFieldMaxLength)
-                                .Set("is_checkable", false)
-                                .Set("value", value)
-                                .Set("label", label)
-                                .Set("pattern_attribute", "")
-                                .Set("placeholder_attribute", "");
+base::DictValue ParsedField(std::string renderer_id,
+                            std::string control_type,
+                            std::string identifier,
+                            std::string value,
+                            std::string label,
+                            std::string name) {
+  base::DictValue field = base::DictValue()
+                              .Set("identifier", identifier)
+                              .Set("name", name)
+                              .Set("name_attribute", name)
+                              .Set("id_attribute", "")
+                              .Set("renderer_id", renderer_id)
+                              .Set("form_control_type", control_type)
+                              .Set("aria_label", "")
+                              .Set("aria_description", "")
+                              .Set("should_autocomplete", true)
+                              .Set("is_focusable", true)
+                              .Set("is_user_edited", true)
+                              .Set("max_length", kTextInputFieldMaxLength)
+                              .Set("is_checkable", false)
+                              .Set("value", value)
+                              .Set("label", label)
+                              .Set("pattern_attribute", "")
+                              .Set("placeholder_attribute", "");
   return field;
 }
 
 // Returns the fill result payload when filling failed.
 base::Value FillResultForFailure() {
-  return base::Value(base::Value::Dict()
+  return base::Value(base::DictValue()
                          .Set("didAttemptFill", base::Value(false))
                          .Set("didFillUsername", base::Value(false))
                          .Set("didFillPassword", base::Value(false)));
@@ -114,14 +114,14 @@ base::Value FillResultForFailure() {
 base::Value FillResultForSuccess(bool did_fill_username,
                                  bool did_fill_password) {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("didAttemptFill", base::Value(true))
           .Set("didFillUsername", base::Value(did_fill_username))
           .Set("didFillPassword", base::Value(did_fill_password)));
 }
 
 std::unique_ptr<base::Value> ParseFormFillResult(id wk_result) {
-  base::Value::Dict parsed_result;
+  base::DictValue parsed_result;
   if (wk_result[@"didAttemptFill"]) {
     parsed_result.Set(
         "didAttemptFill",
@@ -233,35 +233,35 @@ class PasswordControllerJsTest : public PlatformTest {
   // Returns fill data for a form with prefilled values. Will leave the fill
   // data empty for the field if its renderer id is 0. Make sure that the names
   // used here correspond to the ones in the HTML content.
-  base::Value::Dict FormFillData(int username_renderer_id,
-                                 int password_renderer_id) {
-    auto fill_data = base::Value::Dict()
+  base::DictValue FormFillData(int username_renderer_id,
+                               int password_renderer_id) {
+    auto fill_data = base::DictValue()
                          .Set("action", base::SysNSStringToUTF8(PageOrigin()))
                          .Set("origin", base::SysNSStringToUTF8(FormOrigin()))
                          .Set("name", "login_form")
                          .Set("renderer_id", 1);
 
-    auto fields = base::Value::List();
+    auto fields = base::ListValue();
 
     if (username_renderer_id) {
-      fields.Append(base::Value::Dict()
+      fields.Append(base::DictValue()
                         .Set("name", "username")
                         .Set("value", "username")
                         .Set("renderer_id", username_renderer_id));
     } else {
-      fields.Append(base::Value::Dict()
+      fields.Append(base::DictValue()
                         .Set("name", "")
                         .Set("value", "")
                         .Set("renderer_id", 0));
     }
 
     if (password_renderer_id) {
-      fields.Append(base::Value::Dict()
+      fields.Append(base::DictValue()
                         .Set("name", "password")
                         .Set("value", "password")
                         .Set("renderer_id", password_renderer_id));
     } else {
-      fields.Append(base::Value::Dict()
+      fields.Append(base::DictValue()
                         .Set("name", "")
                         .Set("value", "")
                         .Set("renderer_id", 0));
@@ -355,7 +355,7 @@ TEST_F(PasswordControllerJsTest,
   // Expect the attempt to succeeds where the username is skipped and the
   // password filled.
   auto expected_result =
-      base::Value(base::Value::Dict()
+      base::Value(base::DictValue()
                       .Set("didAttemptFill", base::Value(true))
                       .Set("didFillUsername", base::Value(false))
                       .Set("didFillPassword", base::Value(true)));
@@ -476,7 +476,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "login_form")
           .Set("origin", base::StrCat({kLoginDomain, kLoginFormPath}))
           .Set("action", base::StrCat({kLoginDomain, kActionPath}))
@@ -484,20 +484,20 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndSingleForm) {
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
           .Set("host_frame", GetMainWebFrame()->GetFrameId());
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"",
       /*label=*/"Password:", /*name=*/"password");
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
-  base::Value::List expected_results =
-      base::Value::List().Append(std::move(expected_form));
+  base::ListValue expected_results =
+      base::ListValue().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
       autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
@@ -536,7 +536,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFormInIframe) {
   web::WebFrame* iframe = *it;
 
   auto expected_form =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "login_form")
           // The iframe has no own URL and no access to the path of the parent
           // frame.
@@ -546,20 +546,20 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFormInIframe) {
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
           .Set("host_frame", iframe->GetFrameId());
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"",
       /*label=*/"Password:", /*name=*/"password");
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
-  base::Value::List expected_results =
-      base::Value::List().Append(std::move(expected_form));
+  base::ListValue expected_results =
+      base::ListValue().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
       autofill::ParseJson(FindPasswordFormsInFrame(iframe));
@@ -587,11 +587,11 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
   ASSERT_TRUE(SetUpUniqueIDs());
 
   // Build expected parsed forms results.
-  base::Value::List expected_results = base::Value::List();
+  base::ListValue expected_results = base::ListValue();
   // Set expected form 1.
   {
     auto expected_form =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "login_form1")
             .Set("origin", BaseUrl())
             .Set("action", base::StrCat({BaseUrl(), "generic_submit1"}))
@@ -600,15 +600,15 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("renderer_id", "1")
             .Set("host_frame", GetMainWebFrame()->GetFrameId());
 
-    base::Value::Dict expected_username_field =
+    base::DictValue expected_username_field =
         ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                     /*identifier=*/"username", /*value=*/"",
                     /*label=*/"Name:", /*name=*/"username");
-    base::Value::Dict expected_password_field = ParsedField(
+    base::DictValue expected_password_field = ParsedField(
         /*renderer_id=*/"3", /*contole_type=*/"password",
         /*identifier=*/"password", /*value=*/"",
         /*label=*/"Password:", /*name=*/"password");
-    auto expected_fields = base::Value::List()
+    auto expected_fields = base::ListValue()
                                .Append(std::move(expected_username_field))
                                .Append(std::move(expected_password_field));
     expected_form.Set("fields", std::move(expected_fields));
@@ -618,7 +618,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
   // Set expected form 2.
   {
     auto expected_form =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "login_form2")
             .Set("origin", BaseUrl())
             .Set("action", base::StrCat({BaseUrl(), "generic_submit2"}))
@@ -626,15 +626,15 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_SingleFrameAndMultipleForms) {
             .Set("id_attribute", "")
             .Set("renderer_id", "4")
             .Set("host_frame", GetMainWebFrame()->GetFrameId());
-    base::Value::Dict expected_username_field =
+    base::DictValue expected_username_field =
         ParsedField(/*renderer_id=*/"5", /*contole_type=*/"text",
                     /*identifier=*/"username2", /*value=*/"",
                     /*label=*/"Name:", /*name=*/"username2");
-    base::Value::Dict expected_password_field = ParsedField(
+    base::DictValue expected_password_field = ParsedField(
         /*renderer_id=*/"6", /*contole_type=*/"password",
         /*identifier=*/"password2", /*value=*/"",
         /*label=*/"Password:", /*name=*/"password2");
-    auto expected_fields = base::Value::List()
+    auto expected_fields = base::ListValue()
                                .Append(std::move(expected_username_field))
                                .Append(std::move(expected_password_field));
     expected_form.Set("fields", std::move(expected_fields));
@@ -662,7 +662,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "login_form")
           .Set("origin", BaseUrl())
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
@@ -670,17 +670,17 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_DirectJsCall) {
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
           .Set("host_frame", GetMainWebFrame()->GetFrameId())
-          .Set("fields", base::Value::List());
+          .Set("fields", base::ListValue());
 
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"",
       /*label=*/"Password:", /*name=*/"password");
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
@@ -712,7 +712,7 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
                       web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  auto expected_form = base::Value::Dict()
+  auto expected_form = base::DictValue()
                            .Set("name", "login_form")
                            .Set("origin", BaseUrl())
                            .Set("action", BaseUrl())
@@ -720,20 +720,20 @@ TEST_F(PasswordControllerJsTest, GetPasswordForms_FormActionIsNotSet) {
                            .Set("id_attribute", "")
                            .Set("renderer_id", "1")
                            .Set("host_frame", GetMainWebFrame()->GetFrameId());
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"",
       /*label=*/"Password:", /*name=*/"password");
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
-  base::Value::List expected_results =
-      base::Value::List().Append(std::move(expected_form));
+  base::ListValue expected_results =
+      base::ListValue().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
       autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
@@ -756,7 +756,7 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "login_form")
           .Set("origin", BaseUrl())
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
@@ -764,7 +764,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
           .Set("host_frame", GetMainWebFrame()->GetFrameId());
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
@@ -772,10 +772,10 @@ TEST_F(PasswordControllerJsTest,
   // autocomplete attribute in the input field.
   expected_username_field.Set("autocomplete_attribute", "username");
   auto expected_fields =
-      base::Value::List().Append(std::move(expected_username_field));
+      base::ListValue().Append(std::move(expected_username_field));
   expected_form.Set("fields", std::move(expected_fields));
-  base::Value::List expected_results =
-      base::Value::List().Append(std::move(expected_form));
+  base::ListValue expected_results =
+      base::ListValue().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
       autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
@@ -798,7 +798,7 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   auto expected_form =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "login_form")
           .Set("origin", BaseUrl())
           .Set("action", base::StrCat({BaseUrl(), "generic_submit"}))
@@ -806,7 +806,7 @@ TEST_F(PasswordControllerJsTest,
           .Set("id_attribute", "")
           .Set("renderer_id", "1")
           .Set("host_frame", GetMainWebFrame()->GetFrameId());
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"2", /*contole_type=*/"text",
                   /*identifier=*/"username", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
@@ -814,10 +814,10 @@ TEST_F(PasswordControllerJsTest,
   // an autocomplete attribute in the field.
   expected_username_field.Set("autocomplete_attribute", "webauthn");
   auto expected_fields =
-      base::Value::List().Append(std::move(expected_username_field));
+      base::ListValue().Append(std::move(expected_username_field));
   expected_form.Set("fields", std::move(expected_fields));
-  base::Value::List expected_results =
-      base::Value::List().Append(std::move(expected_form));
+  base::ListValue expected_results =
+      base::ListValue().Append(std::move(expected_form));
 
   std::unique_ptr<base::Value> results =
       autofill::ParseJson(FindPasswordFormsInFrame(GetMainWebFrame()));
@@ -886,7 +886,7 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
   // Check that there was only 1 call for sendWebKitMessage.
   ASSERT_EQ(1, delegate.submittedFormMessageCalls);
 
-  auto expected_form = base::Value::Dict()
+  auto expected_form = base::DictValue()
                            .Set("name", "login_form")
                            .Set("origin", BaseUrl())
                            .Set("action", BaseUrl())
@@ -894,18 +894,18 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
                            .Set("id_attribute", "login_form")
                            .Set("renderer_id", "1")
                            .Set("host_frame", GetMainWebFrame()->GetFrameId());
-  base::Value::Dict expected_username_field = ParsedField(
+  base::DictValue expected_username_field = ParsedField(
       /*renderer_id=*/"2", /*contole_type=*/"text",
       /*identifier=*/"username", /*value=*/"user1",
       /*label=*/"Name:", /*name=*/"username");
   expected_username_field.Set("max_length", (double)kTextInputFieldMaxLength);
 
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"3", /*contole_type=*/"password",
       /*identifier=*/"password", /*value=*/"password1",
       /*label=*/"Password:", /*name=*/"password");
   expected_password_field.Set("max_length", (double)kTextInputFieldMaxLength);
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
@@ -1480,19 +1480,19 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
                       GURL(kLoginUrl), web_state());
   ASSERT_TRUE(SetUpUniqueIDs());
 
-  auto expected_form = base::Value::Dict()
+  auto expected_form = base::DictValue()
                            .Set("name", "")
                            .Set("origin", kLoginUrl)
                            .Set("action", "");
-  base::Value::Dict expected_username_field =
+  base::DictValue expected_username_field =
       ParsedField(/*renderer_id=*/"1", /*contole_type=*/"text",
                   /*identifier=*/"gChrome~field~~INPUT~0", /*value=*/"",
                   /*label=*/"Name:", /*name=*/"username");
-  base::Value::Dict expected_password_field = ParsedField(
+  base::DictValue expected_password_field = ParsedField(
       /*renderer_id=*/"2", /*contole_type=*/"password",
       /*identifier=*/"gChrome~field~~INPUT~1", /*value=*/"",
       /*label=*/"Password:", /*name=*/"password");
-  auto expected_fields = base::Value::List()
+  auto expected_fields = base::ListValue()
                              .Append(std::move(expected_username_field))
                              .Append(std::move(expected_password_field));
   expected_form.Set("fields", std::move(expected_fields));
@@ -1505,7 +1505,7 @@ TEST_F(PasswordControllerJsTest, ExtractFormOutsideTheFormTag) {
   // key/value pairs.
   ASSERT_TRUE(results->is_dict());
 
-  base::Value::Dict& results_content = results->GetDict();
+  base::DictValue& results_content = results->GetDict();
 
   // Verify that there is the "host_frame" key in the returned `results`.
   const std::string* results_host_frame =

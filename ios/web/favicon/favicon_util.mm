@@ -16,7 +16,7 @@
 
 namespace web {
 
-bool ExtractFaviconURL(const base::Value::List& favicons,
+bool ExtractFaviconURL(const base::ListValue& favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
   BOOL has_favicon = NO;
@@ -25,7 +25,7 @@ bool ExtractFaviconURL(const base::Value::List& favicons,
       return false;
     }
 
-    const base::Value::Dict& favicon_dict = favicon.GetDict();
+    const base::DictValue& favicon_dict = favicon.GetDict();
     const std::string* href_value = favicon_dict.FindString("href");
     if (!href_value) {
       DLOG(WARNING) << "JS message parameter not found: href";

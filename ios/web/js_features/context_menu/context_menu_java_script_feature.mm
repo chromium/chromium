@@ -62,7 +62,7 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   callbacks_[requestID] = std::move(callback);
 
   WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(requestID);
   parameters.Append(point.x);
   parameters.Append(point.y);

@@ -113,7 +113,7 @@ ChooseFileAccept BucketForChooseFileEvent(int accept_type,
 // an empty vector.
 using ParseFunction = std::vector<std::string> (*)(std::string_view);
 std::vector<std::string> ParseAttributeFromValue(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view attribute_name,
     ParseFunction parse_function) {
   if (const std::string* attribute_value = dict.FindString(attribute_name)) {
@@ -152,7 +152,7 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   if (!message.body()->is_dict()) {
     return;
   }
-  base::Value::Dict& body_dict = message.body()->GetDict();
+  base::DictValue& body_dict = message.body()->GetDict();
 
   std::optional<double> accept_type = body_dict.FindDouble("acceptType");
   std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");
@@ -189,7 +189,7 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
         "IOS.Web.FileInput.EventDropped",
         ChooseFileEventHolder::GetInstance()->HasLastChooseFileEvent());
     CGPoint screen_location = CGPointZero;
-    if (const base::Value::Dict* screen_location_dict =
+    if (const base::DictValue* screen_location_dict =
             body_dict.FindDict("screenLocation")) {
       screen_location.x = screen_location_dict->FindDouble("x").value_or(0);
       screen_location.y = screen_location_dict->FindDouble("y").value_or(0);

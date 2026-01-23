@@ -65,7 +65,7 @@ class ReminderNotificationClient : public PushNotificationClient {
   // Schedules a single reminder notification for `reminder_url` using
   // `reminder_details`.
   void ScheduleNotification(const GURL& reminder_url,
-                            const base::Value::Dict& reminder_details,
+                            const base::DictValue& reminder_details,
                             std::string_view profile_name);
 
   // Called upon completion of scheduling a single notification. Removes the

@@ -161,7 +161,7 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
   // the Readability Javascript.
   std::u16string readability_script =
       base::UTF8ToUTF16(dom_distiller::GetReadabilityDistillerScript());
-  base::Value::Dict readability_result;
+  base::DictValue readability_result;
   readability_result.Set("content", distilled_content);
   readability_result.Set("title", "fake title");
   distiller_result_values_.push_back(

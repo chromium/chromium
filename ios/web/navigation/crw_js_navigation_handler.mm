@@ -38,7 +38,7 @@ GURL URLEscapedForHistory(const GURL& url) {
   self.changingHistoryState = YES;
 }
 
-- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict
+- (void)handleNavigationDidPushStateMessage:(base::DictValue*)dict
                                    webState:(web::WebStateImpl*)webStateImpl
                              hasUserGesture:(BOOL)hasUserGesture
                        userInteractionState:
@@ -124,7 +124,7 @@ GURL URLEscapedForHistory(const GURL& url) {
                     webState:webStateImpl];
 }
 
-- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict
+- (void)handleNavigationDidReplaceStateMessage:(base::DictValue*)dict
                                       webState:(web::WebStateImpl*)webStateImpl
                                 hasUserGesture:(BOOL)hasUserGesture
                           userInteractionState:

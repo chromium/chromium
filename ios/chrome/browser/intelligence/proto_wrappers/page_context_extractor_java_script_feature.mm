@@ -71,7 +71,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     base::OnceCallback<void(const base::Value*)> callback) {
   // TODO(crbug.com/464503759): Use one single config to pass all the
   // parameters.
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(include_anchors);
   parameters.Append(nonce);
   parameters.Append(include_cross_origin_frame_content);

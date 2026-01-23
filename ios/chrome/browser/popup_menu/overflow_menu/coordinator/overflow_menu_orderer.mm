@@ -41,11 +41,11 @@ const char kBadgeTypeKey[] = "badge_type";
 // The dictionary key used for storing whether the badge is feature driven.
 const char kIsFeatureDrivenBadgeKey[] = "is_feature_driven_badge";
 
-// Ingests base::Value::List of destination names (strings) (`from` list),
+// Ingests base::ListValue of destination names (strings) (`from` list),
 // converts each string to an overflow_menu::Destination, then appends each
 // destination to a vector (`to` vector). Skips over invalid or malformed list
 // items.
-void AppendDestinationsToVector(const base::Value::List& from,
+void AppendDestinationsToVector(const base::ListValue& from,
                                 std::vector<overflow_menu::Destination>& to) {
   for (const auto& value : from) {
     if (!value.is_string()) {
@@ -61,11 +61,11 @@ void AppendDestinationsToVector(const base::Value::List& from,
   }
 }
 
-// Ingests base::Value::List of destination names (strings) (`from` list),
+// Ingests base::ListValue of destination names (strings) (`from` list),
 // converts each string to an overflow_menu::Destination, then adds each
 // destination to a set (`to` set). Skips over invalid or malformed list
 // items.
-void AddDestinationsToSet(const base::Value::List& from,
+void AddDestinationsToSet(const base::ListValue& from,
                           std::set<overflow_menu::Destination>& to) {
   for (const auto& value : from) {
     if (!value.is_string()) {
@@ -125,7 +125,7 @@ struct BadgeData {
 };
 
 // Creates a `BadgeData` from the provided dict.
-std::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
+std::optional<BadgeData> BadgeDataFromDict(const base::DictValue& dict) {
   BadgeData badgeData;
 
   std::optional<int> impressionsRemaining =
@@ -152,11 +152,11 @@ std::optional<BadgeData> BadgeDataFromDict(const base::Value::Dict& dict) {
   return badgeData;
 }
 
-// Creates a `base::Value::Dict` from the provided `BadgeData`.
-base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
+// Creates a `base::DictValue` from the provided `BadgeData`.
+base::DictValue DictFromBadgeData(const BadgeData badgeData) {
   std::string badgeTypeString = base::SysNSStringToUTF8(
       [OverflowMenuDestination stringFromBadgeType:badgeData.badgeType]);
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kImpressionsRemainingKey, badgeData.impressionsRemaining)
       .Set(kIsFeatureDrivenBadgeKey, badgeData.isFeatureDrivenBadge)
       .Set(kBadgeTypeKey, badgeTypeString);
@@ -518,12 +518,12 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       _localStatePrefs->GetList(prefs::kOverflowMenuNewDestinations),
       _untappedDestinations);
 
-  const base::Value::List& storedHiddenDestinations =
+  const base::ListValue& storedHiddenDestinations =
       _localStatePrefs->GetList(prefs::kOverflowMenuHiddenDestinations);
   AppendDestinationsToVector(storedHiddenDestinations,
                              _destinationOrderData.hiddenDestinations);
 
-  const base::Value::Dict& storedBadgeData =
+  const base::DictValue& storedBadgeData =
       _localStatePrefs->GetDict(prefs::kOverflowMenuDestinationBadgeData);
 
   for (const auto&& [key, value] : storedBadgeData) {
@@ -551,7 +551,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 // Loads and migrates the shown destinations pref from disk.
 - (void)loadShownDestinationsPref {
   // First try to load new pref.
-  const base::Value::List& storedRanking =
+  const base::ListValue& storedRanking =
       _localStatePrefs->GetList(prefs::kOverflowMenuDestinationsOrder);
   if (storedRanking.size() > 0) {
     AppendDestinationsToVector(storedRanking,
@@ -561,12 +561,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   // Fall back to old key.
   ScopedDictPrefUpdate storedUsageHistoryUpdate(
       _localStatePrefs, prefs::kOverflowMenuDestinationUsageHistory);
-  base::Value::List* oldRanking =
-      storedUsageHistoryUpdate->FindList(kRankingKey);
+  base::ListValue* oldRanking = storedUsageHistoryUpdate->FindList(kRankingKey);
   if (!oldRanking) {
     return;
   }
-  base::Value::List& oldRankingRef = *oldRanking;
+  base::ListValue& oldRankingRef = *oldRanking;
   _localStatePrefs->SetList(prefs::kOverflowMenuDestinationsOrder,
                             oldRankingRef.Clone());
 
@@ -577,11 +576,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 // Load the stored actions data from local prefs/disk.
 - (void)loadActionsFromPrefs {
-  const base::Value::Dict& storedActions =
+  const base::DictValue& storedActions =
       _localStatePrefs->GetDict(prefs::kOverflowMenuActionsOrder);
   ActionOrderData actionOrderData;
 
-  const base::Value::List* shownActions =
+  const base::ListValue* shownActions =
       storedActions.FindList(kShownActionsKey);
 
   // Actions should be added only once to `actionOrderData`. If an action is
@@ -612,7 +611,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
     }
   }
 
-  const base::Value::List* hiddenActions =
+  const base::ListValue* hiddenActions =
       storedActions.FindList(kHiddenActionsKey);
   if (hiddenActions) {
     for (const auto& value : *hiddenActions) {
@@ -647,7 +646,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   }
 
   // Flush the new destinations ranking to Prefs.
-  base::Value::List ranking;
+  base::ListValue ranking;
 
   for (overflow_menu::Destination destination :
        _destinationOrderData.shownDestinations) {
@@ -658,7 +657,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
                             std::move(ranking));
 
   // Flush list of hidden destinations to Prefs.
-  base::Value::List hiddenDestinations;
+  base::ListValue hiddenDestinations;
 
   for (overflow_menu::Destination destination :
        _destinationOrderData.hiddenDestinations) {
@@ -670,7 +669,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
                             std::move(hiddenDestinations));
 
   // Flush dict of badge data to Prefs.
-  base::Value::Dict badgeDataPref;
+  base::DictValue badgeDataPref;
   for (const auto& [destination, badgeData] : _destinationBadgeData) {
     std::string destinationKey =
         overflow_menu::StringNameForDestination(destination);
@@ -700,17 +699,17 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   if (!_localStatePrefs) {
     return;
   }
-  base::Value::Dict storedActions;
+  base::DictValue storedActions;
 
   // Only update prefs if a user has a customized action order.
   if (forcePrefUpdate ||
       _localStatePrefs->GetDict(prefs::kOverflowMenuActionsOrder).size() > 0) {
-    base::Value::List shownActions;
+    base::ListValue shownActions;
     for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
       shownActions.Append(overflow_menu::StringNameForActionType(action));
     }
 
-    base::Value::List hiddenActions;
+    base::ListValue hiddenActions;
     for (overflow_menu::ActionType action : _actionOrderData.hiddenActions) {
       hiddenActions.Append(overflow_menu::StringNameForActionType(action));
     }

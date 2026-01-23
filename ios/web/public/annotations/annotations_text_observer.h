@@ -44,7 +44,7 @@ class AnnotationsTextObserver : public base::CheckedObserver {
   virtual void OnTextExtracted(WebState* web_state,
                                const std::string& text,
                                int seq_id,
-                               const base::Value::Dict& metadata) {}
+                               const base::DictValue& metadata) {}
 
   // Called when decorations have been applied. `successes` is the number of
   // annotations that were successfully stylized in the page, reversely
@@ -60,7 +60,7 @@ class AnnotationsTextObserver : public base::CheckedObserver {
                            int annotations,
                            int successes,
                            int failures,
-                           const base::Value::List& cancelled) {}
+                           const base::ListValue& cancelled) {}
 
   // Called when user taps an annotation. `text` is the original annotation
   // text, `rect` is the position in the web page where the annotation is and

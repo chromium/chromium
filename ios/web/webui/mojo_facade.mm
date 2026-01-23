@@ -77,17 +77,17 @@ MojoFacade::MessageNameAndArguments MojoFacade::GetMessageNameAndArguments(
   CHECK(value_with_error.has_value());
   CHECK(value_with_error->is_dict());
 
-  base::Value::Dict& dict = value_with_error->GetDict();
+  base::DictValue& dict = value_with_error->GetDict();
   const std::string* name = dict.FindString("name");
   CHECK(name);
 
-  base::Value::Dict* args = dict.FindDict("args");
+  base::DictValue* args = dict.FindDict("args");
   CHECK(args);
 
   return {*name, std::move(*args)};
 }
 
-void MojoFacade::HandleMojoBindInterface(base::Value::Dict args) {
+void MojoFacade::HandleMojoBindInterface(base::DictValue args) {
   const std::string* interface_name = args.FindString("interfaceName");
   CHECK(interface_name);
 
@@ -100,7 +100,7 @@ void MojoFacade::HandleMojoBindInterface(base::Value::Dict args) {
       mojo::GenericPendingReceiver(*interface_name, std::move(pipe)));
 }
 
-void MojoFacade::HandleMojoHandleClose(base::Value::Dict args) {
+void MojoFacade::HandleMojoHandleClose(base::DictValue args) {
   std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
 
@@ -108,22 +108,22 @@ void MojoFacade::HandleMojoHandleClose(base::Value::Dict args) {
   mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
 }
 
-base::Value MojoFacade::HandleMojoCreateMessagePipe(base::Value::Dict args) {
+base::Value MojoFacade::HandleMojoCreateMessagePipe(base::DictValue args) {
   mojo::MessagePipe pipe;
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("result", static_cast<int>(MOJO_RESULT_OK));
   result.Set("handle0", AllocatePipeId(std::move(pipe.handle0)));
   result.Set("handle1", AllocatePipeId(std::move(pipe.handle1)));
   return base::Value(std::move(result));
 }
 
-base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
+base::Value MojoFacade::HandleMojoHandleWriteMessage(base::DictValue args) {
   std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
   mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
   CHECK(pipe.is_valid());
 
-  const base::Value::List* handles_list = args.FindList("handles");
+  const base::ListValue* handles_list = args.FindList("handles");
   CHECK(handles_list);
 
   const std::string* buffer = args.FindString("buffer");
@@ -151,7 +151,7 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
   return base::Value(static_cast<int>(result));
 }
 
-base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
+base::Value MojoFacade::HandleMojoHandleReadMessage(base::DictValue args) {
   base::Value* id_as_value = args.Find("handle");
   CHECK(id_as_value);
   mojo::MessagePipeHandle pipe;
@@ -166,16 +166,16 @@ base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
   std::vector<mojo::ScopedHandle> handles;
   MojoResult mojo_result = mojo::ReadMessageRaw(pipe, &bytes, &handles, flags);
 
-  base::Value::Dict result;
+  base::DictValue result;
   if (mojo_result == MOJO_RESULT_OK) {
-    base::Value::List handles_list;
+    base::ListValue handles_list;
     for (uint32_t i = 0; i < handles.size(); i++) {
       handles_list.Append(AllocatePipeId(mojo::ScopedMessagePipeHandle(
           mojo::MessagePipeHandle(handles[i].release().value()))));
     }
     result.Set("handles", std::move(handles_list));
 
-    base::Value::List buffer;
+    base::ListValue buffer;
     for (uint32_t i = 0; i < bytes.size(); i++) {
       buffer.Append(bytes[i]);
     }
@@ -223,7 +223,7 @@ void MojoFacade::OnWatcherCallback(int callback_id,
                                 std::move(callback));
 }
 
-base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
+base::Value MojoFacade::HandleMojoHandleWatch(base::DictValue args) {
   std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
   std::optional<int> signals = args.FindInt("signals");
@@ -247,7 +247,7 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
   return base::Value(watch_id);
 }
 
-void MojoFacade::HandleMojoWatcherCancel(base::Value::Dict args) {
+void MojoFacade::HandleMojoWatcherCancel(base::DictValue args) {
   std::optional<int> watch_id = args.FindInt("watchId");
   CHECK(watch_id.has_value());
   watchers_.erase(*watch_id);

@@ -33,10 +33,10 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   GURL GetUrl() const override;
   BrowserState* GetBrowserState() override;
   bool CallJavaScriptFunction(const std::string& name,
-                              const base::Value::List& parameters) override;
+                              const base::ListValue& parameters) override;
   bool CallJavaScriptFunction(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
   bool ExecuteJavaScript(const std::u16string& script) override;
@@ -67,7 +67,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // added to `java_script_calls_`. Always returns true.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world) override;
   // The JavaScript call which would be executed by a real WebFrame will be
   // added to `java_script_calls_`. Always returns true.
@@ -75,7 +75,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // AddJsResultForFunctionCall() or null if no such result has been added.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;

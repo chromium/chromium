@@ -47,14 +47,14 @@ TEST_F(ProfileAttributesIOSTest, FullyInitialized) {
 // Tests the GetName() method of ProfileAttributesIOS.
 TEST_F(ProfileAttributesIOSTest, GetName) {
   ProfileAttributesIOS attributes =
-      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
   EXPECT_EQ(attributes.GetProfileName(), kProfileName);
 }
 
 // Tests that setting and reading the authentication info works.
 TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
   ProfileAttributesIOS attributes =
-      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
   EXPECT_EQ(attributes.GetGaiaId(), GaiaId());
   EXPECT_EQ(attributes.GetUserName(), "");
   EXPECT_FALSE(attributes.HasAuthenticationError());
@@ -73,7 +73,7 @@ TEST_F(ProfileAttributesIOSTest, GetSetAuthenticationInfo) {
 // Tests that setting and reading the attached gaia ids.
 TEST_F(ProfileAttributesIOSTest, GetSetAttachedGaiaIds) {
   ProfileAttributesIOS attributes =
-      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
 
   EXPECT_EQ(attributes.GetAttachedGaiaIds().size(), 0ul);
   ProfileAttributesIOS::GaiaIdSet gaia_ids = {kGaiaId1, kGaiaId2};
@@ -85,7 +85,7 @@ TEST_F(ProfileAttributesIOSTest, GetSetAttachedGaiaIds) {
 // Tests that setting and reading the last activation time works.
 TEST_F(ProfileAttributesIOSTest, GetSetLastActiveTime) {
   ProfileAttributesIOS attributes =
-      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
 
   const base::Time now = base::Time::Now();
   EXPECT_NE(attributes.GetLastActiveTime(), now);
@@ -98,13 +98,13 @@ TEST_F(ProfileAttributesIOSTest, GetSetLastActiveTime) {
 TEST_F(ProfileAttributesIOSTest, GetStorage) {
   {
     ProfileAttributesIOS attributes =
-        ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
-    EXPECT_EQ(std::move(attributes).GetStorage(), base::Value::Dict());
+        ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
+    EXPECT_EQ(std::move(attributes).GetStorage(), base::DictValue());
   }
 
   {
     ProfileAttributesIOS attributes =
-        ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+        ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
     attributes.SetAuthenticationInfo(kGaiaId1, kUserName);
     attributes.SetLastActiveTime(base::Time::Now());
     attributes.SetHasAuthenticationError(true);
@@ -115,10 +115,10 @@ TEST_F(ProfileAttributesIOSTest, GetStorage) {
 // Tests setting and reading the notification permissions.
 TEST_F(ProfileAttributesIOSTest, GetNotificationPermissions) {
   ProfileAttributesIOS attributes =
-      ProfileAttributesIOS::WithAttrs(kProfileName, base::Value::Dict());
+      ProfileAttributesIOS::WithAttrs(kProfileName, base::DictValue());
   EXPECT_EQ(attributes.GetNotificationPermissions(), nullptr);
 
-  base::Value::Dict permissions;
+  base::DictValue permissions;
   permissions.Set(kFakeNotificationClient1, true);
   permissions.Set(kFakeNotificationClient2, false);
   attributes.SetNotificationPermissions(permissions.Clone());

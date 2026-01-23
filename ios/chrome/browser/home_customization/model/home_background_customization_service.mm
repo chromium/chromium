@@ -80,7 +80,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
 
   LoadCurrentTheme();
 
-  const base::Value::List& recently_used_backgrounds_list =
+  const base::ListValue& recently_used_backgrounds_list =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
   std::set<base::FilePath> image_paths_in_use;
 
@@ -142,7 +142,7 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kIosUserUploadedBackground);
   // Use a simple list as a sentinel value to indicate "new user".
   registry->RegisterListPref(prefs::kIosRecentlyUsedBackgrounds,
-                             base::Value::List().Append(true));
+                             base::ListValue().Append(true));
 }
 
 std::optional<HomeCustomBackground>
@@ -344,7 +344,7 @@ void HomeBackgroundCustomizationService::StoreRecentlyUsedBackgroundsList() {
     return;
   }
 
-  base::Value::List recently_used_backgrounds_list;
+  base::ListValue recently_used_backgrounds_list;
   for (const RecentlyUsedBackgroundInternal& background :
        recently_used_backgrounds_) {
     if (std::holds_alternative<sync_pb::ThemeSpecificsIos>(background)) {
@@ -378,7 +378,7 @@ void HomeBackgroundCustomizationService::LoadCurrentTheme() {
   current_theme_ = DecodeThemeSpecificsIos(
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
 
-  const base::Value::Dict& background_data =
+  const base::DictValue& background_data =
       pref_service_->GetDict(prefs::kIosUserUploadedBackground);
 
   current_user_uploaded_background_ =

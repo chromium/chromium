@@ -21,7 +21,7 @@ namespace enterprise_connectors {
 //
 // TODO(crbug.com/403335734): Deprecated this method once the migration from
 // using dictionary to proto for the reporting event is done.
-base::Value::Dict GetContext(ProfileIOS* profile);
+base::DictValue GetContext(ProfileIOS* profile);
 
 // Fetches the same information as GetContext, but in a protobuf instead of a
 // Value.

@@ -156,7 +156,7 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
     return result;
   }
 
-  const base::Value::Dict& pref =
+  const base::DictValue& pref =
       profile->GetPrefs()->GetDict(prefs::kFeaturePushNotificationPermissions);
   for (const auto&& [key, value] : pref) {
     [result setObject:@(value.GetBool()) forKey:base::SysUTF8ToNSString(key)];
@@ -240,7 +240,7 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
     return;
   }
 
-  const base::Value::Dict& permissions =
+  const base::DictValue& permissions =
       prefs->GetDict(prefs::kFeaturePushNotificationPermissions);
   GetApplicationContext()
       ->GetProfileManager()
@@ -248,7 +248,7 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
       ->UpdateAttributesForProfileWithName(
           profileName,
           base::BindOnce(
-              [](base::Value::Dict permissions, ProfileAttributesIOS& attr) {
+              [](base::DictValue permissions, ProfileAttributesIOS& attr) {
                 attr.SetNotificationPermissions(std::move(permissions));
               },
               permissions.Clone()));

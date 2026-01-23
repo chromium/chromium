@@ -137,7 +137,7 @@ void FakeWebFrameImpl::SetJavaScriptFunctionCallback(
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   auto iter = call_java_script_function_callback_.find(name);
   if (iter != call_java_script_function_callback_.end()) {
     CHECK(iter->second);
@@ -180,7 +180,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   bool success = CallJavaScriptFunction(name, parameters);
@@ -200,14 +200,14 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world) {
   return CallJavaScriptFunction(name, parameters);
 }
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {

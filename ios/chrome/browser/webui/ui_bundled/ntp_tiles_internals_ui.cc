@@ -49,8 +49,7 @@ class IOSNTPTilesInternalsMessageHandlerBridge
   bool SupportsNTPTiles() override;
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
-  using MessageCallback =
-      base::RepeatingCallback<void(const base::Value::List&)>;
+  using MessageCallback = base::RepeatingCallback<void(const base::ListValue&)>;
   void RegisterMessageCallback(std::string_view message,
                                MessageCallback callback) override;
   void CallJavascriptFunctionSpan(

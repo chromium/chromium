@@ -383,7 +383,7 @@ void MigrateBooleanFromUserDefaultsToProfilePrefs(
   [defaults removeObjectForKey:user_defaults_key];
 }
 
-// Helper function migrating the `base::Value::List` preference from LocalState
+// Helper function migrating the `base::ListValue` preference from LocalState
 // prefs to Profile prefs.
 void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,

@@ -525,7 +525,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the account settings is reflecting the SyncTypesListDisabled
 // policy.
 - (void)testAccountSettingsWithSyncTypesListDisabled {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("passwords");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
@@ -547,7 +547,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // SyncTypesListDisabled policy when the policy is lifted.
 - (void)testAccountSettingsWithSyncTypesListDisabledLifted {
   // Apply policy.
-  base::Value::List list;
+  base::ListValue list;
   list.Append("passwords");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
@@ -602,7 +602,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Apply policy dynamically.
-  base::Value::List list;
+  base::ListValue list;
   list.Append("passwords");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
@@ -774,7 +774,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the "History and Tabs" toggle manages both types. When both types
 // are disabled by policy their toggle should be off.
 - (void)testAccountSettingsWithHistoryAndTabsDisabledByPolicy {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("typedUrls");
   list.Append("tabs");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
@@ -798,7 +798,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the "History and Tabs" toggle manages both types. When History
 // is only disabled by policy their toggle should be active.
 - (void)testAccountSettingsWithHistoryDisabledByPolicy {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("typedUrls");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);
@@ -821,7 +821,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests the "History and Tabs" toggle manages both types. When Tabs
 // is only disabled by policy their toggle should be active.
 - (void)testAccountSettingsWithTabsDisabledByPolicy {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("tabs");
   policy_test_utils::SetPolicy(base::Value(std::move(list)),
                                policy::key::kSyncTypesListDisabled);

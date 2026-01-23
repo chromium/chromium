@@ -20,7 +20,7 @@ const char kWebSelectionFunctionName[] = "webSelection.getSelectedText";
 const char kScriptHandlerName[] = "WebSelection";
 
 WebSelectionResponse* ParseResponse(base::WeakPtr<web::WebState> weak_web_state,
-                                    const base::Value::Dict& dict) {
+                                    const base::DictValue& dict) {
   web::WebState* web_state = weak_web_state.get();
   if (!web_state) {
     return [WebSelectionResponse invalidResponse];

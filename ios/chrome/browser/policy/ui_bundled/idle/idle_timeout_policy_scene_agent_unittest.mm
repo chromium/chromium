@@ -73,7 +73,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     // Setyp idle timeout policies.
     PrefService* prefs = profile_->GetPrefs();
     prefs->SetTimeDelta(enterprise_idle::prefs::kIdleTimeout, base::Minutes(1));
-    base::Value::List actions;
+    base::ListValue actions;
     actions.Append(
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
     // Set the `IdleTimeoutActions` policy. This is needed for the snackbar

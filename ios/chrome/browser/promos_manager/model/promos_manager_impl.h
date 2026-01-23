@@ -47,10 +47,10 @@ class PromosManagerImpl : public PromosManager {
       const std::map<promos_manager::Promo, PromoContext>&
           promos_to_sort_with_context) const;
 
-  // Loops over the stored active promos list (base::Value::List) and returns
+  // Loops over the stored active promos list (base::ListValue) and returns
   // a corresponding std::set<promos_manager::Promo>.
   std::set<promos_manager::Promo> ActivePromos(
-      const base::Value::List& stored_active_promos) const;
+      const base::ListValue& stored_active_promos) const;
 
   // Initializes the `single_display_pending_promos_`, constructs it from Pref.
   void InitializePendingPromos();

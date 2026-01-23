@@ -25,8 +25,8 @@ std::string TimeToLocalString(base::Time time) {
 }
 
 // Gathers statistics for `root`, recusively if `root` is a directory.
-base::Value::Dict CollectFileStatistics(base::FilePath root) {
-  base::Value::Dict statistics;
+base::DictValue CollectFileStatistics(base::FilePath root) {
+  base::DictValue statistics;
   std::u16string name = root.BaseName().LossyDisplayName();
   statistics.Set("name", name);
 
@@ -38,14 +38,14 @@ base::Value::Dict CollectFileStatistics(base::FilePath root) {
 
   if (info.is_directory) {
     int64_t total_directory_size = 0;
-    base::Value::List contents;
+    base::ListValue contents;
 
     base::FileEnumerator enumerator(
         root, /*recursive=*/false,
         base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
     for (base::FilePath path = enumerator.Next(); !path.empty();
          path = enumerator.Next()) {
-      base::Value::Dict dir_item_statistics =
+      base::DictValue dir_item_statistics =
           CollectFileStatistics(root.Append(path.BaseName()));
       auto size = dir_item_statistics.FindDouble("size");
       if (size) {
@@ -72,7 +72,7 @@ base::Value::Dict CollectFileStatistics(base::FilePath root) {
 // `statistics_dir`.
 void WriteSandboxStatisticsToFile(base::FilePath root,
                                   base::FilePath statistics_dir) {
-  base::Value::Dict statistics = CollectFileStatistics(root);
+  base::DictValue statistics = CollectFileStatistics(root);
 
   auto json = base::WriteJson(statistics);
   if (json) {

@@ -30,7 +30,7 @@ TEST_F(AnnotationUtilTest, TestPolicyDefaultEnabled) {
 }
 
 TEST_F(AnnotationUtilTest, TestGetPolicyForType) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("default", "enabled");
   dict.Set("calendar", "longpressonly");
   dict.Set("email", "disabled");

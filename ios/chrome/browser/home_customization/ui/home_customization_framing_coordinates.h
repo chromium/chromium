@@ -25,8 +25,8 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Methods for serialization.
-- (base::Value::Dict)toValue;
-+ (instancetype)fromValue:(const base::Value::Dict&)dict;
+- (base::DictValue)toValue;
++ (instancetype)fromValue:(const base::DictValue&)dict;
 
 @end
 

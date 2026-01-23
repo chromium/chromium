@@ -59,12 +59,12 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   if (!frame) {
     return;
   }
-  base::Value::List renderer_id_list =
-      base::Value::List::with_capacity(renderer_ids.size());
+  base::ListValue renderer_id_list =
+      base::ListValue::with_capacity(renderer_ids.size());
   for (auto renderer_id : renderer_ids) {
     renderer_id_list.Append(static_cast<int>(renderer_id.value()));
   }
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(std::move(renderer_id_list));
   parameters.Append(allow_autofocus);
   parameters.Append(base::FeatureList::IsEnabled(kAutofillBottomSheetNewBlur));
@@ -81,12 +81,12 @@ void AutofillBottomSheetJavaScriptFeature::DetachListeners(
   if (!frame) {
     return;
   }
-  base::Value::List renderer_id_list =
-      base::Value::List::with_capacity(renderer_ids.size());
+  base::ListValue renderer_id_list =
+      base::ListValue::with_capacity(renderer_ids.size());
   for (auto renderer_id : renderer_ids) {
     renderer_id_list.Append(static_cast<int>(renderer_id.value()));
   }
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(std::move(renderer_id_list));
   parameters.Append(refocus);
   CallJavaScriptFunction(frame, "bottomSheet.detachListeners", parameters);

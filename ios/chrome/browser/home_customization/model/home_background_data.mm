@@ -22,7 +22,7 @@ FramingCoordinates::FramingCoordinates(double x_val,
     : x(x_val), y(y_val), width(width_val), height(height_val) {}
 
 std::optional<FramingCoordinates> FramingCoordinates::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::optional<double> x_val = dict.FindDouble(kXKey);
   std::optional<double> y_val = dict.FindDouble(kYKey);
   std::optional<double> width_val = dict.FindDouble(kWidthKey);
@@ -35,8 +35,8 @@ std::optional<FramingCoordinates> FramingCoordinates::FromDict(
   return FramingCoordinates(*x_val, *y_val, *width_val, *height_val);
 }
 
-base::Value::Dict FramingCoordinates::ToDict() const {
-  base::Value::Dict dict;
+base::DictValue FramingCoordinates::ToDict() const {
+  base::DictValue dict;
   dict.Set(kXKey, x);
   dict.Set(kYKey, y);
   dict.Set(kWidthKey, width);
@@ -45,9 +45,9 @@ base::Value::Dict FramingCoordinates::ToDict() const {
 }
 
 std::optional<HomeUserUploadedBackground> HomeUserUploadedBackground::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* image_path = dict.FindString(kImagePathKey);
-  const base::Value::Dict* framing_coordinates_dict =
+  const base::DictValue* framing_coordinates_dict =
       dict.FindDict(kFramingCoordinatesKey);
   if (!framing_coordinates_dict) {
     return std::nullopt;
@@ -62,8 +62,8 @@ std::optional<HomeUserUploadedBackground> HomeUserUploadedBackground::FromDict(
   return HomeUserUploadedBackground(*image_path, *framing_coordinates);
 }
 
-base::Value::Dict HomeUserUploadedBackground::ToDict() const {
-  base::Value::Dict dict;
+base::DictValue HomeUserUploadedBackground::ToDict() const {
+  base::DictValue dict;
   dict.Set(kImagePathKey, image_path);
   dict.Set(kFramingCoordinatesKey, framing_coordinates.ToDict());
   return dict;

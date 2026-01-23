@@ -67,9 +67,9 @@ bool IsNewUser() {
 
 // Return a dictionary that stores values that impact user enrollment
 // eligibility.
-const base::Value::Dict& GetUserEnrollmentEligibilityDict(
+const base::DictValue& GetUserEnrollmentEligibilityDict(
     PrefService* pref_service) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service->GetDict(prefs::kContentNotificationsEnrollmentEligibility);
   if (dict.empty()) {
     ScopedDictPrefUpdate update(
@@ -95,8 +95,7 @@ bool IsPromoEligible(bool user_signed_in,
     return false;
   }
 
-  const base::Value::Dict& dict =
-      GetUserEnrollmentEligibilityDict(pref_service);
+  const base::DictValue& dict = GetUserEnrollmentEligibilityDict(pref_service);
   bool isPriceTrackingEnabled =
       dict.FindBool(kPriceTrackingNotificationEnabledKey).value_or(false);
   int activity = dict.FindInt(kFeedActivityKey).value_or(0);
@@ -120,8 +119,7 @@ bool IsProvisionalEligible(bool user_signed_in,
     return false;
   }
 
-  const base::Value::Dict& dict =
-      GetUserEnrollmentEligibilityDict(pref_service);
+  const base::DictValue& dict = GetUserEnrollmentEligibilityDict(pref_service);
   bool isPriceTrackingEnabled =
       dict.FindBool(kPriceTrackingNotificationEnabledKey).value_or(false);
   bool isNewUser = dict.FindBool(kNewUserKey).value_or(false);

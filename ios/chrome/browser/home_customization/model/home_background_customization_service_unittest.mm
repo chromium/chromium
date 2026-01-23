@@ -161,7 +161,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
        TestLoadsRecentlyUsedBackgroundsOnFirstLoad) {
   CreateService();
 
-  const base::Value::List& recently_used_backgrounds =
+  const base::ListValue& recently_used_backgrounds =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   ASSERT_EQ(GetDefaultRecentlyUsedImages().size(),
@@ -196,7 +196,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
   CreateService();
 
-  const base::Value::List& recently_used_backgrounds =
+  const base::ListValue& recently_used_backgrounds =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   ASSERT_EQ(0u, recently_used_backgrounds.size());
@@ -259,7 +259,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetCurrentBackground) {
       pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
 
   // Make sure recent backgrounds disk data has this item first.
-  const base::Value::List& recent_backgrounds_disk =
+  const base::ListValue& recent_backgrounds_disk =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   ASSERT_GE(recent_backgrounds_disk.size(), 1u);
@@ -340,7 +340,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
       pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
 
   // Make sure recent backgrounds disk data has this item first.
-  const base::Value::List& recent_backgrounds_disk =
+  const base::ListValue& recent_backgrounds_disk =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   ASSERT_GE(recent_backgrounds_disk.size(), 1u);
@@ -406,7 +406,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetUserUploadedBackground) {
   EXPECT_EQ("", pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
 
   // Make sure recent backgrounds disk data has this item first.
-  const base::Value::List& recent_backgrounds_disk =
+  const base::ListValue& recent_backgrounds_disk =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   ASSERT_GE(recent_backgrounds_disk.size(), 1u);
@@ -501,7 +501,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetAndClearTemporaryBackground) {
 
   std::string disk_theme =
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
-  const base::Value::List& initial_recent_backgrounds =
+  const base::ListValue& initial_recent_backgrounds =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
 
   // Now, set the background temporarily to a user-uploaded image.
@@ -543,8 +543,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest, LoadRecentBackgrounds) {
   HomeUserUploadedBackground user_background =
       GenerateHomeUserUploadedBackground();
 
-  base::Value::List recent_backgrounds_data =
-      base::Value::List()
+  base::ListValue recent_backgrounds_data =
+      base::ListValue()
           .Append(EncodeThemeSpecificsIos(color_theme_specifics))
           .Append(user_background.ToDict());
 
@@ -846,8 +846,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   background1.image_path = image1_file_path.value();
   background1.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
 
-  base::Value::List recent_backgrounds_data =
-      base::Value::List().Append(background1.ToDict());
+  base::ListValue recent_backgrounds_data =
+      base::ListValue().Append(background1.ToDict());
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds,
                          std::move(recent_backgrounds_data));
 

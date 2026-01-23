@@ -31,7 +31,7 @@ std::optional<std::string> ExtractDomainName(std::string_view username) {
 
 // Sets the domain based on the username if there is a username set and the
 // username is in the correct format.
-void SetDomainExtractedFromUsername(base::Value::Dict* status_dict) {
+void SetDomainExtractedFromUsername(base::DictValue* status_dict) {
   const std::string* username = status_dict->FindString(policy::kUsernameKey);
   if (!username) {
     return;
@@ -60,7 +60,7 @@ UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
   }
 }
 
-base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
+base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
   // Determine if need to show flex org warning.
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
@@ -80,7 +80,7 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   // information).
 
   // Set the status payload.
-  base::Value::Dict dict =
+  base::DictValue dict =
       policy::PolicyStatusProvider::GetStatusFromCore(user_level_policy_core_);
   SetDomainExtractedFromUsername(&dict);
   dict.Set("isAffiliated", IsAffiliated());

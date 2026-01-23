@@ -28,7 +28,7 @@ IOSSecurityInterstitialPage::IOSSecurityInterstitialPage(
 IOSSecurityInterstitialPage::~IOSSecurityInterstitialPage() {}
 
 std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   // Interstitial pages on iOS get reloaded to prevent loading from cache, since
   // loading from cache breaks JavaScript commands. Set as `load_time_data`
   // for safety.

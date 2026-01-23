@@ -156,7 +156,7 @@ TEST_F(BwgBrowserAgentTest, TestBwgBrowserAgentStartGeminiFlow) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
 
   // Add a fake JS result for page context extraction.
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("currentNodeInnerText", "Example Text");
   fake_main_frame_->AddJsResultForFunctionCall(
       std::make_unique<base::Value>(std::move(result)).release(),
@@ -291,7 +291,7 @@ TEST_F(BwgBrowserAgentTest, TestOnGeminiViewStateExpanded) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
 
   // Add a fake JS result for page context extraction.
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("currentNodeInnerText", "Example Text");
   fake_main_frame_->AddJsResultForFunctionCall(
       std::make_unique<base::Value>(std::move(result)).release(),

@@ -11,7 +11,7 @@
 
 namespace web {
 
-using TextAnnotation = std::pair<base::Value::Dict, NSTextCheckingResult*>;
+using TextAnnotation = std::pair<base::DictValue, NSTextCheckingResult*>;
 
 // Checks if the detected entity is an URL and more specifically an email.
 bool IsNSTextCheckingResultEmail(NSTextCheckingResult* result);

@@ -104,7 +104,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
 
   void AllowExampleSiteForSupervisedUser() {
     // This single host is allowed.
-    base::Value::Dict hosts;
+    base::DictValue hosts;
     hosts.Set("example.com", true);
     profile_->GetPrefs()->SetDict(prefs::kSupervisedUserManualHosts,
                                   hosts.Clone());

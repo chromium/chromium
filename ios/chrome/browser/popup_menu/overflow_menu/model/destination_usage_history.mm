@@ -103,7 +103,7 @@ DestinationRanking SortByUsage(
   ScopedDictPrefUpdate historyUpdate(
       _prefService, prefs::kOverflowMenuDestinationUsageHistory);
 
-  const base::Value::Dict& storedUsageHistory = historyUpdate.Get();
+  const base::DictValue& storedUsageHistory = historyUpdate.Get();
 
   // Fetch the stored usage history, then update `_usageHistory` with its data.
   for (const auto&& [key, value] : storedUsageHistory) {
@@ -131,10 +131,10 @@ DestinationRanking SortByUsage(
       continue;
     }
 
-    const base::Value::Dict* dayHistory = value.GetIfDict();
+    const base::DictValue* dayHistory = value.GetIfDict();
 
     // If, for some reason, `dayHistory` cannot be converted to a valid
-    // dictionary (base::Value::Dict), consider the entry malformed, and skip
+    // dictionary (base::DictValue), consider the entry malformed, and skip
     // over it. This effectively erases the entry from the destination usage
     // history.
     if (!dayHistory) {
@@ -304,10 +304,9 @@ DestinationRanking SortByUsage(
   ScopedDictPrefUpdate historyUpdate(
       _prefService, prefs::kOverflowMenuDestinationUsageHistory);
 
-  base::Value::List* possibleStoredRanking =
-      historyUpdate->FindList(kRankingKey);
+  base::ListValue* possibleStoredRanking = historyUpdate->FindList(kRankingKey);
   bool hasStoredRanking = possibleStoredRanking != nullptr;
-  base::Value::List storedRanking;
+  base::ListValue storedRanking;
   if (hasStoredRanking) {
     storedRanking = possibleStoredRanking->Clone();
   }

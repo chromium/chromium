@@ -200,12 +200,12 @@ std::optional<int> ImpressionLimitService::GetImpressionCount(
     NOTREACHED() << pref_name
                  << " must be registered with ImpressionLimitService";
   }
-  const base::Value::Dict& impressions = pref_service_->GetDict(pref_name);
+  const base::DictValue& impressions = pref_service_->GetDict(pref_name);
 
-  const base::Value::List* impressions_data =
+  const base::ListValue* impressions_data =
       impressions.FindList(GetUrlKey(url));
 
-  base::Value::List impressions_data_update;
+  base::ListValue impressions_data_update;
   if (impressions_data) {
     return (*impressions_data)[0].GetInt();
   }
@@ -220,10 +220,10 @@ void ImpressionLimitService::LogCardEngagement(
                  << " must be registered with ImpressionLimitService";
   }
   std::string url_key = GetUrlKey(url);
-  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+  base::DictValue impressions = pref_service_->GetDict(pref_name).Clone();
 
-  const base::Value::List* impressions_data = impressions.FindList(url_key);
-  base::Value::List impressions_data_update;
+  const base::ListValue* impressions_data = impressions.FindList(url_key);
+  base::ListValue impressions_data_update;
   if (impressions_data) {
     // Impression count for card.
     impressions_data_update.Append((*impressions_data)[0].Clone());
@@ -252,9 +252,9 @@ bool ImpressionLimitService::HasBeenEngagedWith(
                  << " must be registered with ImpressionLimitService";
   }
   std::string url_key = GetUrlKey(url);
-  const base::Value::Dict& impressions = pref_service_->GetDict(pref_name);
+  const base::DictValue& impressions = pref_service_->GetDict(pref_name);
 
-  const base::Value::List* impressions_data = impressions.FindList(url_key);
+  const base::ListValue* impressions_data = impressions.FindList(url_key);
   if (impressions_data) {
     return (*impressions_data)[2].GetBool();
   }
@@ -271,11 +271,11 @@ void ImpressionLimitService::LogImpressionForURLAtTime(
     const std::string_view& pref_name,
     base::Time impression_time) {
   std::string url_key = GetUrlKey(url);
-  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+  base::DictValue impressions = pref_service_->GetDict(pref_name).Clone();
 
-  const base::Value::List* impressions_data = impressions.FindList(url_key);
+  const base::ListValue* impressions_data = impressions.FindList(url_key);
 
-  base::Value::List impressions_data_update;
+  base::ListValue impressions_data_update;
   if (impressions_data) {
     // Impression count for card.
     impressions_data_update.Append((*impressions_data)[0].GetInt() + 1);
@@ -299,12 +299,12 @@ void ImpressionLimitService::LogImpressionForURLAtTime(
 void ImpressionLimitService::RemoveEntriesBeforeTime(
     const std::string_view& pref_name,
     base::Time before_cutoff) {
-  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+  base::DictValue impressions = pref_service_->GetDict(pref_name).Clone();
 
   std::set<std::string> urls_to_remove;
   for (const auto impression : impressions) {
     const std::string& url = impression.first;
-    const base::Value::List& impressions_data = impression.second.GetList();
+    const base::ListValue& impressions_data = impression.second.GetList();
     base::Time impression_time = base::ValueToTime(impressions_data[1]).value();
     if (impression_time <= before_cutoff) {
       urls_to_remove.insert(url);
@@ -319,7 +319,7 @@ void ImpressionLimitService::RemoveEntriesBeforeTime(
 void ImpressionLimitService::RemoveEntriesForURls(
     std::set<std::string> urls_to_remove) {
   for (const auto& pref_name : GetAllowListedPrefs()) {
-    base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+    base::DictValue impressions = pref_service_->GetDict(pref_name).Clone();
 
     for (const auto& url : urls_to_remove) {
       impressions.Remove(url);
@@ -333,11 +333,11 @@ void ImpressionLimitService::RemoveOldestEntryIfSizeExceedsMaximum(
   if (pref_service_->GetDict(pref_name).size() <= kMaxEntriesPerPreference) {
     return;
   }
-  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+  base::DictValue impressions = pref_service_->GetDict(pref_name).Clone();
   // Find URL for earliest entry
   std::optional<std::pair<std::string, base::Time>> smallest = std::nullopt;
   for (const auto impression : impressions) {
-    const base::Value::List& impressions_data = impression.second.GetList();
+    const base::ListValue& impressions_data = impression.second.GetList();
     base::Time impression_time = base::ValueToTime(impressions_data[1]).value();
 
     if (!smallest.has_value() || impression_time < smallest.value().second) {

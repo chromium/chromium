@@ -55,7 +55,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
 
   __block bool called = false;
   main_frame->CallJavaScriptFunction(
-      "crweb.getFrameId", base::Value::List(),
+      "crweb.getFrameId", base::ListValue(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), main_frame->GetFrameId());
@@ -84,7 +84,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
 
   __block bool called = false;
   iframe->CallJavaScriptFunction(
-      "crweb.getFrameId", base::Value::List(),
+      "crweb.getFrameId", base::ListValue(),
       base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), iframe->GetFrameId());
@@ -116,7 +116,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
 
   __block bool called = false;
   main_frame->CallJavaScriptFunction(
-      "crweb.testFunctionNeverReturns", base::Value::List(),
+      "crweb.testFunctionNeverReturns", base::ListValue(),
       base::BindOnce(^(const base::Value* value) {
         EXPECT_FALSE(value);
         called = true;
@@ -157,7 +157,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
-      "crweb.fakeFunction", base::Value::List(), &world, base::BindOnce(block),
+      "crweb.fakeFunction", base::ListValue(), &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 
@@ -253,7 +253,7 @@ TEST_P(WebFrameImplContentWorldIntTest,
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
-      "crweb.fakeFunction", base::Value::List(), base::BindOnce(block),
+      "crweb.fakeFunction", base::ListValue(), base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 

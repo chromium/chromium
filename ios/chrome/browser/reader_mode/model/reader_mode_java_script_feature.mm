@@ -110,7 +110,7 @@ void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(
 
 std::optional<std::vector<double>>
 ReaderModeJavaScriptFeature::TransformToDerivedFeatures(
-    const base::Value::Dict& body,
+    const base::DictValue& body,
     const GURL& request_url) {
   std::optional<double> opt_num_elements = body.FindDouble("numElements");
   if (!opt_num_elements.has_value()) {

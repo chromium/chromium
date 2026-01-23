@@ -271,10 +271,10 @@ class WebStateImpl;
 - (void)handleNavigationWillChangeState;
 
 // Handles a navigation did push state message for the current webpage.
-- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict;
+- (void)handleNavigationDidPushStateMessage:(base::DictValue*)dict;
 
 // Handles a navigation did replace state message for the current webpage.
-- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict;
+- (void)handleNavigationDidReplaceStateMessage:(base::DictValue*)dict;
 
 // Retrieves the existing web frames in `contentWorld`.
 - (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld;

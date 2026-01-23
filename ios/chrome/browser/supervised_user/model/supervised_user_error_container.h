@@ -147,7 +147,7 @@ class SupervisedUserInterstitialBlockingPage
       security_interstitials::SecurityInterstitialCommand command) override;
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) const override;
+      base::DictValue& load_time_data) const override;
   std::string_view GetInterstitialType() const override;
 
   // web::WebStateObserver implementation:

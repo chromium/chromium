@@ -64,16 +64,16 @@ namespace {
 
 // Gets the session dictionary for `cliend_id` from `profile`'s prefs, if the
 // session is not expired.
-std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
+std::optional<const base::DictValue*> GetSessionDictFromPrefs(
     std::string client_id,
     ProfileIOS* profile) {
-  const base::Value::Dict& sessions_map =
+  const base::DictValue& sessions_map =
       profile->GetPrefs()->GetDict(prefs::kBwgSessionMap);
   if (sessions_map.empty()) {
     return std::nullopt;
   }
 
-  const base::Value::Dict* current_session_dict =
+  const base::DictValue* current_session_dict =
       sessions_map.FindDict(client_id);
   if (!current_session_dict) {
     return std::nullopt;
@@ -364,7 +364,7 @@ std::optional<std::string> BwgTabHelper::GetServerId() {
       }
     }
   } else {
-    std::optional<const base::Value::Dict*> session_dict =
+    std::optional<const base::DictValue*> session_dict =
         GetSessionDictFromPrefs(
             GetClientId(),
             ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
@@ -617,7 +617,7 @@ void BwgTabHelper::CreateOrUpdateSessionInPrefs(std::string client_id,
                             web_state_->GetVisibleURL().spec());
     pref_service->SetString(prefs::kGeminiConversationId, server_id);
   } else {
-    base::Value::Dict session_info_dict;
+    base::DictValue session_info_dict;
     session_info_dict.Set(kServerIDDictKey, server_id);
     session_info_dict.Set(
         kLastInteractionTimestampDictKey,
@@ -653,10 +653,9 @@ void BwgTabHelper::CleanupSessionFromPrefs(std::string session_id) {
 }
 
 std::optional<std::string> BwgTabHelper::GetURLOnLastInteraction() {
-  std::optional<const base::Value::Dict*> session_dict =
-      GetSessionDictFromPrefs(
-          GetClientId(),
-          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+  std::optional<const base::DictValue*> session_dict = GetSessionDictFromPrefs(
+      GetClientId(),
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   if (!session_dict.has_value()) {
     return std::nullopt;
   }

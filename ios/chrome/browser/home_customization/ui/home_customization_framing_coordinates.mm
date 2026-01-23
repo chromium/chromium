@@ -25,8 +25,8 @@ const char kHeightKey[] = "height";
   return self;
 }
 
-- (base::Value::Dict)toValue {
-  base::Value::Dict dict;
+- (base::DictValue)toValue {
+  base::DictValue dict;
   dict.Set(kXKey, self.visibleRect.origin.x);
   dict.Set(kYKey, self.visibleRect.origin.y);
   dict.Set(kWidthKey, self.visibleRect.size.width);
@@ -34,7 +34,7 @@ const char kHeightKey[] = "height";
   return dict;
 }
 
-+ (instancetype)fromValue:(const base::Value::Dict&)dict {
++ (instancetype)fromValue:(const base::DictValue&)dict {
   std::optional<double> x = dict.FindDouble(kXKey);
   std::optional<double> y = dict.FindDouble(kYKey);
   std::optional<double> width = dict.FindDouble(kWidthKey);

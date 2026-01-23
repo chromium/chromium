@@ -43,7 +43,7 @@ class FakeJavaScriptFeature : public JavaScriptFeature {
   // Executes `kJavaScriptFeatureTestScriptReplyWithPostMessage` with
   // `parameters` in `web_frame`.
   void ReplyWithPostMessage(WebFrame* web_frame,
-                            const base::Value::List& parameters);
+                            const base::ListValue& parameters);
 
   // Returns the number of errors received
   void GetErrorCount(WebFrame* web_frame,

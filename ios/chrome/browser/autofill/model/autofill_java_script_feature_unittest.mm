@@ -392,7 +392,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
   NSString* focus_element_javascript =
       [NSString stringWithFormat:@"%@.focus()", get_element_javascript];
   ExecuteJavaScript(focus_element_javascript);
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("name", "email");
   data.Set("identifier", "email");
   data.Set("renderer_id", 2);
@@ -421,7 +421,7 @@ TEST_F(AutofillJavaScriptFeatureTest, FillSpecificFormField) {
   RunFormsSearch();
 
   NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("name", "email");
   data.Set("identifier", "email");
   data.Set("renderer_id", 2);
@@ -560,18 +560,18 @@ TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
                      "field.focus();"
                      "field.value = 'to_be_erased';");
 
-  base::Value::Dict autofillData;
+  base::DictValue autofillData;
   autofillData.Set("formName", "testform");
   autofillData.Set("formRendererID", 1);
 
-  base::Value::Dict fieldsData;
-  base::Value::Dict firstFieldData;
+  base::DictValue fieldsData;
+  base::DictValue firstFieldData;
   firstFieldData.Set("name", "firstname");
   firstFieldData.Set("identifier", "firstname");
   firstFieldData.Set("value", "Cool User");
   fieldsData.Set("2", std::move(firstFieldData));
 
-  base::Value::Dict secondFieldData;
+  base::DictValue secondFieldData;
   secondFieldData.Set("name", "email");
   secondFieldData.Set("identifier", "email");
   secondFieldData.Set("value", "coolemail@com");
@@ -613,7 +613,7 @@ TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
     NSString* focusScript =
         [NSString stringWithFormat:@"%@.focus()", getFieldScript];
     ExecuteJavaScript(focusScript);
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("renderer_id", field_data.second);
     data.Set("value", "testvalue");
 

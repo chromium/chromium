@@ -97,7 +97,7 @@ void WebUIIOSImpl::RegisterMessageCallback(std::string_view message,
 
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
                                           std::string_view message,
-                                          const base::Value::List& args) {
+                                          const base::ListValue& args) {
   if (controller_->OverrideHandleWebUIIOSMessage(source_url, message)) {
     return;
   }

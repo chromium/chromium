@@ -60,7 +60,7 @@ void SignInInternalsHandlerIOS::RegisterMessages() {
 }
 
 void SignInInternalsHandlerIOS::HandleGetSignInInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_GE(args.size(), 1u);
   // CHECKs if non-string.
   const std::string& callback_id = args[0].GetString();
@@ -84,7 +84,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
   about_signin_internals_observeration_.Observe(about_signin_internals);
-  const base::Value::Dict status = about_signin_internals->GetSigninStatus();
+  const base::DictValue status = about_signin_internals->GetSigninStatus();
   base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
@@ -99,14 +99,14 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
 }
 
 void SignInInternalsHandlerIOS::OnSigninStateChanged(
-    const base::Value::Dict& info) {
+    const base::DictValue& info) {
   base::Value event_name("signin-info-changed");
   base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void SignInInternalsHandlerIOS::OnCookieAccountsFetched(
-    const base::Value::Dict& info) {
+    const base::DictValue& info) {
   base::Value event_name("update-cookie-accounts");
   base::ValueView args[] = {event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);

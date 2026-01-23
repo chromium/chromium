@@ -49,10 +49,10 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::Value::List& args);
+  void RequestAllInfo(const base::ListValue& args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::Value::List& args);
+  void SetRecording(const base::ListValue& args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(
@@ -71,7 +71,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     PrefService* prefs,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) const {
-  base::Value::Dict results =
+  base::DictValue results =
       gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
 
   base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
@@ -79,8 +79,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
-void GcmInternalsUIMessageHandler::RequestAllInfo(
-    const base::Value::List& args) {
+void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
   }
@@ -104,7 +103,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
   }
 }
 
-void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
+void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
   }

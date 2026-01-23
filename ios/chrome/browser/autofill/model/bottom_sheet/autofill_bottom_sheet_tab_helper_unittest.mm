@@ -37,7 +37,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   // generation bottom sheet.
   std::unique_ptr<base::Value> ValidFormMessageBody(std::string frame_id) {
     return std::make_unique<base::Value>(
-        base::Value::Dict()
+        base::DictValue()
             .Set("formName", "test_form")
             .Set("formRendererID", "1234")
             .Set("fieldIdentifier", "new_password")

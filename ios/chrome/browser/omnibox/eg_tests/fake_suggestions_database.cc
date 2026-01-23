@@ -26,12 +26,12 @@ std::map<std::u16string, std::string> DeserializeJSON(const std::string& str) {
   DCHECK(root.has_value()) << root.error().ToString();
 
   // The root should be a list containing the suggestions.
-  const base::Value::List& list = root->GetList();
+  const base::ListValue& list = root->GetList();
   auto fake_suggestions = std::map<std::u16string, std::string>();
   for (size_t i = 0; i < list.size(); ++i) {
     // A suggest response should be in the list format with the search terms in
     // front.
-    const base::Value::List& response = list[i].GetList();
+    const base::ListValue& response = list[i].GetList();
     const std::string& search_terms = response.front().GetString();
     std::string serialized_response = "";
     JSONStringValueSerializer(&serialized_response).Serialize(response);

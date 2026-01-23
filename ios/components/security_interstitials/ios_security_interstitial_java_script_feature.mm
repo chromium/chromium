@@ -49,7 +49,7 @@ void IOSSecurityInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = script_message.body()->GetDict();
+  const base::DictValue& dict = script_message.body()->GetDict();
   const std::string* command = dict.FindString("command");
   if (!command) {
     return;

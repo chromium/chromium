@@ -153,7 +153,7 @@ std::string_view ShortNameForPromo(Promo promo) {
 }
 
 std::optional<promos_manager::Impression> ImpressionFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* stored_promo =
       dict.FindString(promos_manager::kImpressionPromoKey);
   std::optional<int> stored_day =

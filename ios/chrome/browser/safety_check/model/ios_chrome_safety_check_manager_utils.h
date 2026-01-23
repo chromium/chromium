@@ -49,7 +49,7 @@ PasswordSafetyCheckState CalculatePasswordSafetyCheckState(
 //
 // If a key is missing, its corresponding count is assumed to be zero.
 password_manager::InsecurePasswordCounts DictToInsecurePasswordCounts(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 // Returns true if the Safety Check is due for an automatic run. This
 // happens if the check has never been run or if the last run time

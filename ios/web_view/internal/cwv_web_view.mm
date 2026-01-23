@@ -130,8 +130,8 @@ id NSObjectFromValue(const base::Value* value) {
   return nil;
 }
 
-// Converts base::Value::Dict to NSDictionary.
-NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
+// Converts base::DictValue to NSDictionary.
+NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
   std::string json;
   const bool success = base::JSONWriter::Write(value, &json);
   DCHECK(success) << "Failed to convert base::Value to JSON";
@@ -908,7 +908,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   DCHECK(handler);
   std::string command = base::SysNSStringToUTF8(nsCommand);
   WebViewMessageHandlerJavaScriptFeature::GetInstance()->RegisterHandler(
-      command, base::BindRepeating(^(const base::Value::Dict& payload) {
+      command, base::BindRepeating(^(const base::DictValue& payload) {
         handler(NSDictionaryFromDictValue(payload));
       }));
 }

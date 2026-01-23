@@ -89,7 +89,7 @@ void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   if (!script_message.body() || !script_message.body()->is_dict()) {
     return;
   }
-  base::Value::Dict message_body = std::move(script_message.body()->GetDict());
+  base::DictValue message_body = std::move(script_message.body()->GetDict());
 
   // Pass messages from the non-static instances to the static instance during
   // transition.
@@ -104,7 +104,7 @@ void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
 }
 
 void WebViewMessageHandlerJavaScriptFeature::NotifyHandlers(
-    const base::Value::Dict& message_body) {
+    const base::DictValue& message_body) {
   const std::string* command =
       message_body.FindString(kScriptMessageCommandKey);
   if (!command) {
@@ -115,7 +115,7 @@ void WebViewMessageHandlerJavaScriptFeature::NotifyHandlers(
     return;
   }
 
-  const base::Value::Dict* payload =
+  const base::DictValue* payload =
       message_body.FindDict(kScriptMessagePayloadKey);
   if (!payload) {
     return;

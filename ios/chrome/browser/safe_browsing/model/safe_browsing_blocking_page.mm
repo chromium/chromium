@@ -140,7 +140,7 @@ void SafeBrowsingBlockingPage::SetClient(
 }
 
 std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
                                  &load_time_data);
@@ -167,7 +167,7 @@ bool SafeBrowsingBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 void SafeBrowsingBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   load_time_data.Set("url_to_reload", request_url().spec());
   error_ui_->PopulateStringsForHtml(load_time_data);
 }

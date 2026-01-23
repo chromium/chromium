@@ -28,8 +28,8 @@
 
 namespace enterprise_connectors {
 
-base::Value::Dict GetContext(ProfileIOS* profile) {
-  base::Value::Dict context;
+base::DictValue GetContext(ProfileIOS* profile) {
+  base::DictValue context;
   context.SetByDottedPath(
       "browser.userAgent",
       web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));

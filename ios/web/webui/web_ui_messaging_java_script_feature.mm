@@ -53,14 +53,14 @@ void WebUIMessagingJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = script_message.body()->GetDict();
+  const base::DictValue& dict = script_message.body()->GetDict();
 
   const std::string* message_content = dict.FindString("message");
   if (!message_content) {
     return;
   }
 
-  const base::Value::List* arguments = dict.FindList("arguments");
+  const base::ListValue* arguments = dict.FindList("arguments");
   if (!arguments) {
     return;
   }

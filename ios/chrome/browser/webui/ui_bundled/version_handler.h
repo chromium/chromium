@@ -23,7 +23,7 @@ class VersionHandler : public web::WebUIIOSMessageHandler {
 
   // Callback for the "requestVariationInfo" message. This responds immediately
   // with the list of variations.
-  void HandleRequestVariationInfo(const base::Value::List& args);
+  void HandleRequestVariationInfo(const base::ListValue& args);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_VERSION_HANDLER_H_

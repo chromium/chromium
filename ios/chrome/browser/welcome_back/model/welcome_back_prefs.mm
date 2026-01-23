@@ -46,7 +46,7 @@ const char kWelcomeBackEligibleItems[] = "ios.welcomeback.eligible_items";
 void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
   // Register the `kWelcomeBackEligibleItems` with a default list containing all
   // the features in the feature repository.
-  base::Value::List default_welcome_back_items;
+  base::ListValue default_welcome_back_items;
   default_welcome_back_items.Append(
       static_cast<int>(BestFeaturesItemType::kLensSearch));
   default_welcome_back_items.Append(
@@ -70,7 +70,7 @@ void RegisterWelcomeBackLocalStatePrefs(PrefRegistrySimple* registry) {
 
 std::vector<BestFeaturesItemType> GetWelcomeBackEligibleItems() {
   std::vector<BestFeaturesItemType> item_list;
-  const base::Value::List& list_pref =
+  const base::ListValue& list_pref =
       GetApplicationContext()->GetLocalState()->GetList(
           kWelcomeBackEligibleItems);
   for (const base::Value& value : list_pref) {

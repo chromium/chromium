@@ -118,7 +118,7 @@ IOSRealtimeReportingClient::GetReportingSettings() {
 void IOSRealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const ReportingSettings& settings,
-    base::Value::Dict event) {
+    base::DictValue event) {
   ReportEventWithTimestampDeprecated(name, settings, std::move(event),
                                      base::Time::Now(),
                                      /*include_profile_user_name=*/true);
@@ -158,7 +158,7 @@ bool IOSRealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
 }
 
 void IOSRealtimeReportingClient::UploadCallbackDeprecated(
-    base::Value::Dict event_wrapper,
+    base::DictValue event_wrapper,
     bool per_profile,
     policy::CloudPolicyClient* client,
     EnterpriseReportingEventType event_type,
@@ -208,7 +208,7 @@ void IOSRealtimeReportingClient::UploadCallback(
   }
 }
 
-base::Value::Dict IOSRealtimeReportingClient::GetContext() {
+base::DictValue IOSRealtimeReportingClient::GetContext() {
   return ::enterprise_connectors::GetContext(profile_);
 }
 

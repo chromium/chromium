@@ -934,7 +934,7 @@ result.links = linksArray;
   // Recursively populate the ContentNode subtree
   // for any of the main WebFrame's children iframes. Children can be cross
   // or same origin frames.
-  const base::Value::List* childrenFrames =
+  const base::ListValue* childrenFrames =
       valueAsDict.FindList(kChildrenFramesDictKey);
   if (childrenFrames && !childrenFrames->empty()) {
     for (const auto& childFrame : *childrenFrames) {
@@ -1161,7 +1161,7 @@ result.links = linksArray;
   // Recursively populate the ContentNode subtree for any children iframes.
   // Child frame content will either be filled immediately or claimed for
   // later.
-  const base::Value::List* childrenFrames =
+  const base::ListValue* childrenFrames =
       value.FindList(kChildrenFramesDictKey);
   if (childrenFrames && !childrenFrames->empty()) {
     for (const auto& childFrame : *childrenFrames) {
@@ -1187,7 +1187,7 @@ result.links = linksArray;
     return;
   }
 
-  const base::Value::List* links = value.FindList(kFrameLinksDictKey);
+  const base::ListValue* links = value.FindList(kFrameLinksDictKey);
   if (!links || links->empty()) {
     return;
   }

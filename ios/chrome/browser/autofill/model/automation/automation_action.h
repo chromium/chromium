@@ -17,7 +17,7 @@
 @interface AutomationAction : NSObject
 
 // Returns an concrete instance of a subclass of AutomationAction.
-+ (instancetype)actionWithValueDict:(base::Value::Dict)actionDictionary;
++ (instancetype)actionWithValueDict:(base::DictValue)actionDictionary;
 
 // Prevents creating rogue instances, the init methods are private.
 - (instancetype)init NS_UNAVAILABLE;

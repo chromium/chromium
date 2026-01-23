@@ -55,7 +55,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     const ScriptMessage& script_message) {
   ErrorDetails details;
 
-  const base::Value::Dict* script_dict =
+  const base::DictValue* script_dict =
       script_message.body() ? script_message.body()->GetIfDict() : nullptr;
   if (!script_dict) {
     return;

@@ -108,13 +108,12 @@ void ExtractNotificationInformation(ProfileManagerIOS* manager,
 
   // Get the permissions from `attr` but if they are missing, check if they
   // can be found in the profile (if it is loaded).
-  const base::Value::Dict* permissions = attr.GetNotificationPermissions();
+  const base::DictValue* permissions = attr.GetNotificationPermissions();
   if (!permissions) {
     ProfileIOS* profile = manager->GetProfileWithName(attr.GetProfileName());
     if (profile) {
-      const base::Value::Dict& profile_permissions =
-          profile->GetPrefs()->GetDict(
-              prefs::kFeaturePushNotificationPermissions);
+      const base::DictValue& profile_permissions = profile->GetPrefs()->GetDict(
+          prefs::kFeaturePushNotificationPermissions);
       attr.SetNotificationPermissions(profile_permissions.Clone());
       permissions = attr.GetNotificationPermissions();
     }

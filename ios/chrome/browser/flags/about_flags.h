@@ -48,8 +48,8 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
 // to `unsupported_entries`.
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
-                           base::Value::List& supported_entries,
-                           base::Value::List& unsupported_entries);
+                           base::ListValue& supported_entries,
+                           base::ListValue& unsupported_entries);
 
 // Enables or disables the feature with `internal_name` as id.
 void SetFeatureEntryEnabled(flags_ui::FlagsStorage* flags_storage,

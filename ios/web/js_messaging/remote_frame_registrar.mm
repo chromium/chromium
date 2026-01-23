@@ -67,7 +67,7 @@ void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
 }
 
 void ChildFrameRegistrar::ProcessRegistrationMessage(base::Value* message) {
-  base::Value::Dict* dict = message->GetIfDict();
+  base::DictValue* dict = message->GetIfDict();
   if (!dict) {
     return;
   }

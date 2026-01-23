@@ -43,7 +43,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
   virtual void AddLocalizedString(const std::string& name, int ids) = 0;
 
   virtual void AddLocalizedStrings(
-      const base::Value::Dict& localized_strings) = 0;
+      const base::DictValue& localized_strings) = 0;
 
   virtual void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) = 0;

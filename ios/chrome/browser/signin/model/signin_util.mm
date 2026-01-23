@@ -45,7 +45,7 @@ static_assert(
 
 // Returns a non-empty string found in `dict` by `key` or nullptr if a string is
 // not found or `key` contains an empty string.
-const std::string* FindStringIfNonEmpty(const base::Value::Dict& dict,
+const std::string* FindStringIfNonEmpty(const base::DictValue& dict,
                                         std::string_view key) {
   const std::string* value = dict.FindString(key);
   if (!value) {
@@ -55,7 +55,7 @@ const std::string* FindStringIfNonEmpty(const base::Value::Dict& dict,
 }
 
 // Returns an AccountInfo from the values in a dictionary.
-AccountInfo DictToAccountInfo(const base::Value::Dict& dict) {
+AccountInfo DictToAccountInfo(const base::DictValue& dict) {
   const std::string* gaia_id = FindStringIfNonEmpty(dict, kAccountInfoKeyGaia);
   const std::string* email = FindStringIfNonEmpty(dict, kAccountInfoKeyEmail);
   if (!gaia_id || !email) {
@@ -164,7 +164,7 @@ void ClearPreRestoreIdentity(PrefService* profile_pref) {
 }
 
 std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* profile_pref) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       profile_pref->GetDict(prefs::kIosPreRestoreAccountInfo);
   if (dict.empty()) {
     return std::optional<AccountInfo>();
@@ -173,7 +173,7 @@ std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* profile_pref) {
 }
 
 bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       profile_pref->GetDict(prefs::kIosPreRestoreAccountInfo);
   if (dict.empty()) {
     return false;

@@ -205,10 +205,9 @@ void TriggerSyncCycle(syncer::DataType type) {
 }
 
 int GetNumberOfSyncEntities(syncer::DataType type) {
-  base::Value::Dict entities = gSyncFakeServer->GetEntitiesAsDictForTesting();
+  base::DictValue entities = gSyncFakeServer->GetEntitiesAsDictForTesting();
 
-  base::Value::List* entity_list =
-      entities.FindList(DataTypeToDebugString(type));
+  base::ListValue* entity_list = entities.FindList(DataTypeToDebugString(type));
   DCHECK(entity_list);
   return static_cast<int>(entity_list->size());
 }
