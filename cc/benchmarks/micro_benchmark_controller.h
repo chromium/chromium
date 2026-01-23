@@ -14,8 +14,8 @@
 #include "cc/benchmarks/micro_benchmark.h"
 
 namespace base {
+class DictValue;
 class SingleThreadTaskRunner;
-class Value;
 }  // namespace base
 
 namespace cc {
@@ -34,11 +34,11 @@ class CC_EXPORT MicroBenchmarkController {
 
   // Returns the id of the benchmark on success, 0 otherwise.
   int ScheduleRun(const std::string& micro_benchmark_name,
-                  base::Value::Dict settings,
+                  base::DictValue settings,
                   MicroBenchmark::DoneCallback callback);
 
   // Returns true if the message was successfully delivered and handled.
-  bool SendMessage(int id, base::Value::Dict message);
+  bool SendMessage(int id, base::DictValue message);
 
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> CreateImplBenchmarks() const;
 

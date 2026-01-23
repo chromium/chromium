@@ -167,7 +167,7 @@ void RasterizeAndRecordBenchmarkImpl::DidCompleteCommit(
     layer->RunMicroBenchmark(this);
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("rasterize_time_ms",
              rasterize_results_.total_best_time.InMillisecondsF());
   result.Set("pixels_rasterized", rasterize_results_.pixels_rasterized);
@@ -182,7 +182,7 @@ void RasterizeAndRecordBenchmarkImpl::DidCompleteCommit(
   result.Set("total_picture_layers_off_screen",
              rasterize_results_.total_picture_layers_off_screen);
 
-  base::Value::Dict lcd_text_pixels;
+  base::DictValue lcd_text_pixels;
   for (size_t i = 0; i < kLCDTextDisallowedReasonCount; i++) {
     lcd_text_pixels.Set(
         LCDTextDisallowedReasonToString(

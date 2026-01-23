@@ -15,7 +15,7 @@
 
 namespace cc {
 
-UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::Value::Dict settings,
+UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::DictValue settings,
                                              DoneCallback callback)
     : MicroBenchmark(std::move(callback)), create_impl_benchmark_(false) {
   auto run_benchmark_impl = settings.FindBool("run_benchmark_impl");
@@ -28,14 +28,14 @@ UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {
 }
 
 void UnittestOnlyBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {
-  NotifyDone(base::Value::Dict());
+  NotifyDone(base::DictValue());
 }
 
-bool UnittestOnlyBenchmark::ProcessMessage(base::Value::Dict message) {
+bool UnittestOnlyBenchmark::ProcessMessage(base::DictValue message) {
   return message.FindBool("can_handle").value_or(false);
 }
 
-void UnittestOnlyBenchmark::RecordImplResults(base::Value::Dict results) {
+void UnittestOnlyBenchmark::RecordImplResults(base::DictValue results) {
   NotifyDone(std::move(results));
 }
 

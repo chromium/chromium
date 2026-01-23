@@ -35,7 +35,7 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     return image_asset_sizes;
   }
 
-  const base::Value::List* assets = animation_dict->FindList(kAssetsKey);
+  const base::ListValue* assets = animation_dict->FindList(kAssetsKey);
   // An animation may legitimately have no assets in it.
   if (!assets)
     return image_asset_sizes;
@@ -46,7 +46,7 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
                  << base::Value::GetTypeName(asset.type());
       continue;
     }
-    const base::Value::Dict& asset_dict = asset.GetDict();
+    const base::DictValue& asset_dict = asset.GetDict();
 
     const std::string* id = asset_dict.FindString(kIdKey);
     std::optional<int> width = asset_dict.FindInt(kWidthKey);

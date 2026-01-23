@@ -1243,7 +1243,7 @@ void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
 
 int LayerTreeHost::ScheduleMicroBenchmark(
     const std::string& benchmark_name,
-    base::Value::Dict settings,
+    base::DictValue settings,
     MicroBenchmark::DoneCallback callback) {
   DCHECK(IsMainThread());
   return micro_benchmark_controller_.ScheduleRun(
@@ -1251,7 +1251,7 @@ int LayerTreeHost::ScheduleMicroBenchmark(
 }
 
 bool LayerTreeHost::SendMessageToMicroBenchmark(int id,
-                                                base::Value::Dict message) {
+                                                base::DictValue message) {
   DCHECK(IsMainThread());
   return micro_benchmark_controller_.SendMessage(id, std::move(message));
 }

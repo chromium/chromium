@@ -21,7 +21,7 @@ class LayerImpl;
 class PictureLayerImpl;
 class CC_EXPORT MicroBenchmarkImpl {
  public:
-  using DoneCallback = base::OnceCallback<void(base::Value::Dict)>;
+  using DoneCallback = base::OnceCallback<void(base::DictValue)>;
 
   explicit MicroBenchmarkImpl(
       DoneCallback callback,
@@ -35,7 +35,7 @@ class CC_EXPORT MicroBenchmarkImpl {
   virtual void RunOnLayer(PictureLayerImpl* layer);
 
  protected:
-  void NotifyDone(base::Value::Dict result);
+  void NotifyDone(base::DictValue result);
 
  private:
   DoneCallback callback_;

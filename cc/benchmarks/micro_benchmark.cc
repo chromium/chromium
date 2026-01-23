@@ -26,14 +26,14 @@ bool MicroBenchmark::IsDone() const {
 
 void MicroBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {}
 
-void MicroBenchmark::NotifyDone(base::Value::Dict result) {
+void MicroBenchmark::NotifyDone(base::DictValue result) {
   std::move(callback_).Run(std::move(result));
   is_done_ = true;
 }
 
 void MicroBenchmark::RunOnLayer(PictureLayer* layer) {}
 
-bool MicroBenchmark::ProcessMessage(base::Value::Dict message) {
+bool MicroBenchmark::ProcessMessage(base::DictValue message) {
   return false;
 }
 
