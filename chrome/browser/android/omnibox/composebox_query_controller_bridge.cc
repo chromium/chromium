@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -93,14 +94,14 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       OmniboxFieldTrial::kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument
           .Get();
 
-  query_controller_ = std::make_unique<ComposeboxQueryController>(
-      IdentityManagerFactory::GetForProfile(profile),
-      g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
-      g_browser_process->GetApplicationLocale(),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      profile->GetVariationsClient(),
-      std::move(query_controller_config_params));
-  query_controller_->AddObserver(this);
+  contextual_search::ContextualSearchService* service =
+      ContextualSearchServiceFactory::GetForProfile(profile);
+  session_handle_ = service->CreateSession(
+      std::move(query_controller_config_params),
+      contextual_search::ContextualSearchSource::kOmnibox,
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+
+  query_controller()->AddObserver(this);
 }
 
 ComposeboxQueryControllerBridge::~ComposeboxQueryControllerBridge() = default;
