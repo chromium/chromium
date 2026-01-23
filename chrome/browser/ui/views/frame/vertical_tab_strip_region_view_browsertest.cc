@@ -607,10 +607,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   tab_strip_model->AddToNewSplit(
       {index4}, {}, split_tabs::SplitTabCreatedSource::kTabContextMenu);
 
-  auto* pinned_tabs = root_node()->children()[0]->get_view_for_testing();
+  auto* pinned_tabs = root_node()->children()[0]->view();
   EXPECT_TRUE(views::IsViewClass<VerticalPinnedTabContainerView>(pinned_tabs));
   EXPECT_EQ(pinned_tabs->children().size(), 1);
-  auto* unpinned_tabs = root_node()->children()[1]->get_view_for_testing();
+  auto* unpinned_tabs = root_node()->children()[1]->view();
   EXPECT_TRUE(
       views::IsViewClass<VerticalUnpinnedTabContainerView>(unpinned_tabs));
   ASSERT_TRUE(base::test::RunUntil(
