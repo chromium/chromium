@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/main_background_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -44,48 +45,27 @@ constexpr int kLoadingBarOffset =
 // Minimum area next to caption buttons to use as a grab handle.
 constexpr int kVerticalTabsGrabHandleSize = 54;
 
-// Increases the leading or trailing exclusion area of `top_container_params` in
-// order to make room for a grab handle in Vertical Tabstrip mode.
-//
-// The `browser_params` are the unmodified layout parameters with the original
-// visual area and exclusions; `current_params` represents the params after the
-// vertical tabstrip is laid out (if it is to be laid out after the top
-// container).
-void MaybeAddGrabHandleToTopContainer(
-    BrowserLayoutParams& top_container_params,
-    const BrowserLayoutParams& browser_params,
-    const BrowserLayoutParams& current_params) {
-  if (!top_container_params.trailing_exclusion.IsEmpty()) {
-    // When caption buttons are on the trailing edge, the extra grab handle
-    // area is between the toolbar app menu button and the caption buttons.
-    top_container_params.trailing_exclusion.horizontal_padding =
-        std::max(top_container_params.trailing_exclusion.horizontal_padding,
-                 float{kVerticalTabsGrabHandleSize});
-  } else if (!browser_params.leading_exclusion.IsEmpty()) {
-    // When caption buttons are leading, even if the vertical tabstrip provides
-    // some grab handle, additional space may be required to hit the minimum
-    // size; allocate any remaining space to a gap between the tabstrip and
-    // toolbar (or caption buttons and toolbar, if the tabstrip is below the
-    // caption buttons).
-
-    // Calculate the furthest left the trailing edge of the toolbar should be.
-    const int min_left =
-        browser_params.visual_client_area.x() +
-        browser_params.leading_exclusion.content.width() +
-        std::max(base::ClampCeil(
-                     browser_params.leading_exclusion.horizontal_padding),
-                 kVerticalTabsGrabHandleSize);
-
-    // Calculate how much space remains to be allocated after the caption
-    // buttons and vertical tabstrip.
-    const int new_padding =
-        min_left - (current_params.visual_client_area.x() +
-                    current_params.leading_exclusion.content.width());
-
-    // Update the exclusion area to include the required padding.
-    top_container_params.leading_exclusion.horizontal_padding =
-        std::max(0, new_padding);
+// Increases the leading or trailing exclusion padding to `minimum`.
+void IncreasePaddingToMinimum(BrowserLayoutParams& params, int minimum) {
+  if (params.leading_exclusion.content.width() > 0.0) {
+    params.leading_exclusion.horizontal_padding =
+        std::max(params.leading_exclusion.horizontal_padding,
+                 static_cast<float>(minimum));
+  } else {
+    params.trailing_exclusion.horizontal_padding =
+        std::max(params.trailing_exclusion.horizontal_padding,
+                 static_cast<float>(minimum));
   }
+}
+
+// Gets the sum of leading and trailing exclusions in `params` for minimum-size
+// computation.
+int GetExclusionWidth(const BrowserLayoutParams& params) {
+  const float width = params.leading_exclusion.content.width() +
+                      params.trailing_exclusion.content.width();
+  const float padding = params.leading_exclusion.horizontal_padding +
+                        params.trailing_exclusion.horizontal_padding;
+  return base::ClampCeil(width + padding);
 }
 
 }  // namespace
@@ -141,15 +121,22 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
 }
 
 std::pair<gfx::Size, gfx::Size>
-BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
+BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize(
+    const BrowserLayoutParams& params) const {
   switch (GetTabStripType()) {
-    case TabStripType::kHorizontal:
-      return std::make_pair(
-          gfx::Size(),
-          views().horizontal_tab_strip_region_view->GetMinimumSize());
+    case TabStripType::kHorizontal: {
+      auto result = views().horizontal_tab_strip_region_view->GetMinimumSize();
+      result.Enlarge(GetExclusionWidth(params), 0);
+      return std::make_pair(gfx::Size(), result);
+    }
     case TabStripType::kVertical: {
-      const auto result =
-          views().vertical_tab_strip_region_view->GetMinimumSize();
+      auto result = views().vertical_tab_strip_region_view->GetMinimumSize();
+      if (!delegate().IsVerticalTabStripCollapsed()) {
+        result.set_width(std::max(
+            result.width(),
+            base::ClampCeil(
+                params.leading_exclusion.ContentWithPadding().width())));
+      }
       return std::make_pair(result, gfx::Size());
     }
     case TabStripType::kWebUi:
@@ -163,8 +150,12 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
   }
 }
 
-gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize() const {
-  const gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
+gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize(
+    const BrowserLayoutParams& params) const {
+  gfx::Size toolbar_size = views().toolbar->GetMinimumSize();
+  if (GetTabStripType() == TabStripType::kVertical) {
+    toolbar_size.Enlarge(GetExclusionWidth(params), 0);
+  }
   const gfx::Size bookmark_bar_size =
       (views().bookmark_bar && views().bookmark_bar->GetVisible())
           ? views().bookmark_bar->GetMinimumSize()
@@ -237,16 +228,22 @@ int BrowserViewTabbedLayoutImpl::GetCollapsedVerticalTabStripRelativeTop(
 
 gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
     const views::View* host) const {
+  auto params = delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/true);
+
   // This is a simplified version of the same method in
   // `BrowserViewLayoutImplOld` that assumes a standard browser.
   const auto [vertical_tabstrip_size, horizontal_tabstrip_size] =
-      GetMinimumTabStripSize();
+      GetMinimumTabStripSize(params);
+  if (!vertical_tabstrip_size.IsEmpty()) {
+    IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
+  }
+  params.InsetHorizontal(vertical_tabstrip_size.width(), /*leading=*/true);
   const gfx::Size toolbar_height_side_panel_size =
       views().toolbar_height_side_panel &&
               views().toolbar_height_side_panel->GetVisible()
           ? views().toolbar_height_side_panel->GetMinimumSize()
           : gfx::Size();
-  const gfx::Size main_area_size = GetMinimumMainAreaSize();
+  const gfx::Size main_area_size = GetMinimumMainAreaSize(params);
 
   int min_height =
       horizontal_tabstrip_size.height() +
@@ -365,6 +362,11 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           params.visual_client_area.y() + vertical_tab_strip_relative_top,
           vertical_tab_strip_width,
           params.visual_client_area.height() - vertical_tab_strip_relative_top);
+      // In vertical tabs mode, extra space is allocated next to the top element
+      // to serve as a grab handle, on whatever side the caption buttons are.
+      if (delegate().GetBrowserWindowState() != WindowState::kFullscreen) {
+        IncreasePaddingToMinimum(params, kVerticalTabsGrabHandleSize);
+      }
       params.InsetHorizontal(vertical_tab_strip_width, /*leading=*/true);
     }
     layout.AddChild(views().vertical_tab_strip_region_view,
@@ -436,12 +438,6 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     auto top_container_params =
         params.InLocalCoordinates(params.visual_client_area);
 
-    // In vertical tabs mode, extra space is allocated next to the top element
-    // to serve as a grab handle, on whatever side the caption buttons are.
-    if (tab_strip_type == TabStripType::kVertical) {
-      MaybeAddGrabHandleToTopContainer(top_container_params, browser_params,
-                                       params);
-    }
     const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
         top_container_layout, top_container_params, needs_exclusion);
     top_container_layout.bounds =
@@ -495,10 +491,11 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     // Side panel needs to fit next to the other stuff in the browser, but it
     // always gets at least its minimum width.
     int target_width = toolbar_height_side_panel->GetPreferredSize().width();
-    target_width = std::min(
-        target_width,
-        params.visual_client_area.width() -
-            (GetMinimumMainAreaSize().width() + container_inset_padding));
+    target_width =
+        std::min(target_width,
+                 params.visual_client_area.width() -
+                     (GetMinimumMainAreaSize(BrowserLayoutParams()).width() +
+                      container_inset_padding));
     target_width = std::max(
         target_width, toolbar_height_side_panel->GetMinimumSize().width());
 
