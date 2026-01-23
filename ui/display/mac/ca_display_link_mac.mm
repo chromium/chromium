@@ -149,7 +149,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     // There will be no callbacks (CADisplayLinkTarget::step()) at all if
     // MessagePumpType NS_RUNLOOP is not chosen during thread initialization.
     [objc_state->display_link addToRunLoop:NSRunLoop.currentRunLoop
-                                   forMode:NSDefaultRunLoopMode];
+                                   forMode:NSRunLoopCommonModes];
 
     // Set the CADisplayLinkTarget's callback to call back into the C++ code.
     [objc_state->target
