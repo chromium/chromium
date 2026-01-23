@@ -399,38 +399,6 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
          !profile->GetPrefs()->GetBoolean(promo_prefs.promo_opt_out_pref_name);
 }
 
-bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
-                                  const syncer::SyncService* sync_service) {
-  if (!CanShowPromos()) {
-    return false;
-  }
-
-  PrefService* pref_service = profile->GetPrefs();
-
-  // Sync must be active because prefs to track promo display are synced.
-  bool sync_ok = sync_service &&
-                 sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES);
-
-  // This promo can appear 10 times itself.
-  int appearance_count =
-      pref_service
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .size();
-  bool appearance_count_ok =
-      appearance_count < ntp_features::kNtpMobilePromoImpressionLimit.Get();
-
-  bool has_not_dismissed = !profile->GetPrefs()->GetBoolean(
-      promos_prefs::kDesktopToiOSNtpPromoDismissed);
-
-  bool other_promos_ok =
-      VerifyMostRecentPromoTimestamp(profile, /*skip_ntp_promo=*/true) &&
-      VerifyIOSDesktopPromoTotalImpressions(profile, /*skip_ntp_promo=*/true);
-
-  // Show the promo if the user hasn't opted out, is not in the cooldown
-  // period and is within the impression limit for this promo.
-  return sync_ok && appearance_count_ok && has_not_dismissed && other_promos_ok;
-}
-
 bool UserNotClassifiedAsMobileDeviceSwitcher(
     const segmentation_platform::ClassificationResult& result) {
   return result.status == segmentation_platform::PredictionStatus::kSucceeded &&

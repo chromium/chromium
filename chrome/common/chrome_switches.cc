@@ -966,8 +966,6 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";
 
-// Forces the NTP mobile promo to appear without any preconditions.
-const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)

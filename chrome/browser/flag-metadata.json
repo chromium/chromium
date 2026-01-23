@@ -4815,11 +4815,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "force-ntp-mobile-promo",
-    "owners": [ "rkgibson@google.com", "bling-mony-pod@google.com", "pauladedeji@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "force-off-text-autosizing",
     "owners": [ "dgrogan@chromium.org", "pdr@chromium.org", "layout-dev@chromium.org" ],
     "expiry_milestone": 155
@@ -6743,11 +6738,6 @@
     "name": "ntp-middle-slot-promo-dismissal",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 111
-  },
-  {
-    "name": "ntp-mobile-promo",
-    "owners": [ "rkgibson@google.com", "bling-mony-pod@google.com", "pauladedeji@google.com" ],
-    "expiry_milestone": 136
   },
   {
     "name": "ntp-module-sign-in-requirement",

@@ -7810,14 +7810,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpMiddleSlotPromoDismissalVariations,
                                     "DesktopNtpModules")},
 
-    {"ntp-mobile-promo", flag_descriptions::kNtpMobilePromoName,
-     flag_descriptions::kNtpMobilePromoDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpMobilePromo)},
-
-    {"force-ntp-mobile-promo", flag_descriptions::kForceNtpMobilePromoName,
-     flag_descriptions::kForceNtpMobilePromoDescription, kOsDesktop,
-     SINGLE_VALUE_TYPE(switches::kForceNtpMobilePromo)},
-
     {"ntp-module-sign-in-requirement",
      flag_descriptions::kNtpModuleSignInRequirementName,
      flag_descriptions::kNtpModuleSignInRequirementDescription, kOsDesktop,

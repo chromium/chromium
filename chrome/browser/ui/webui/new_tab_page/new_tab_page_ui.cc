@@ -238,8 +238,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "middleSlotPromoDismissalEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromoDismissal));
-  source->AddBoolean("mobilePromoEnabled", base::FeatureList::IsEnabled(
-                                               ntp_features::kNtpMobilePromo));
   source->AddBoolean(
       "modulesDragAndDropEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop));

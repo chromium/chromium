@@ -90,11 +90,6 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
                                desktop_to_mobile_promos::PromoType promo_type);
 
-// Checks if the user should be shown the Desktop NTP promo based on the current
-// criteria.
-bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
-                                  const syncer::SyncService* sync_service);
-
 // Processes the results of the user classification to make sure there were
 // no errors and the user is not classified as a switcher from a mobile
 // device by the segmentation platform (i.e. return true if the promo should

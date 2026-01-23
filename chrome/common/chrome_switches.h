@@ -296,7 +296,6 @@ extern const char kDebugPrint[];
     BUILDFLAG(IS_WIN)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
-extern const char kForceNtpMobilePromo[];
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC) || BUILDFLAG(ENABLE_GLIC_ANDROID)

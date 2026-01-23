@@ -949,69 +949,6 @@ TEST_F(IOSPromoOnDesktopTest, PromoSyncPrefsSyncServiceNull) {
       ShouldShowIOSDesktopPromo(profile(), nullptr, PromoType::kPayment));
 }
 
-// Tests that ShouldShowIOSDesktopNtpPromo returns true when no promo has yet
-// been shown.
-TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopNtpPromo) {
-  EXPECT_TRUE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
-// Tests that ShouldShowIOSDesktopNtpPromo returns false when the promotions are
-// disabled.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopNtpPromoFalsePromotionsDisabled) {
-  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-      prefs::kPromotionsEnabled, false);
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
-// Tests that ShouldShowIOSDesktopNtpPromo returns false when sync service is
-// null.
-TEST_F(IOSPromoOnDesktopTest, ShouldShowIOSDesktopNtpPromoSyncServiceNull) {
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), nullptr));
-}
-
-// Tests that ShouldShowIOSDesktopNtpPromo returns false when the user has
-// already seen 10 promos.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopNtpPromoTestFalseTooManyImpressions) {
-  base::Value::List timestamps;
-  for (int i = 0; i < 10; i++) {
-    timestamps.Append(base::TimeToValue(base::Time::Now() - base::Hours(1) +
-                                        base::Seconds(i)));
-  }
-  prefs()->SetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
-                   std::move(timestamps));
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
-// Tests that ShouldShowIOSDesktopNtpPromo returns false when the user has
-// dismissed the promo.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopNtpPromoTestFalseUserDismissed) {
-  prefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed, true);
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
-// Tests that ShouldShowIOSDesktopNtpPromo returns false when the another promo
-// type has a too recent last impression.
-TEST_F(
-    IOSPromoOnDesktopTest,
-    ShouldShowIOSDesktopNtpPromoTestFalseLastImpressionTooRecentForOtherPromo) {
-  prefs()->SetTime(
-      promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
-      base::Time::Now());
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
-// Tests that ShouldShowIOSDesktopPromo returns false when the user has already
-// seen 3 promos for the given password promo type.
-TEST_F(IOSPromoOnDesktopTest,
-       ShouldShowIOSDesktopNtpPromoTestFalseTooManyImpressionsForOtherPromos) {
-  prefs()->SetInteger(
-      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 12);
-  EXPECT_FALSE(ShouldShowIOSDesktopNtpPromo(profile(), sync_service()));
-}
-
 // Tests that IOSDesktopNtpPromoShown sets the correct prefs.
 TEST_F(IOSPromoOnDesktopTest, IOSDesktopNtpPromoShownTest) {
   // First impression

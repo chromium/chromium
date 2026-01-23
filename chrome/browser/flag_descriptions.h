@@ -6121,15 +6121,6 @@ inline constexpr char kNtpMiddleSlotPromoDismissalDescription[] =
     "Allows middle slot promo to be dismissed from New Tab Page until "
     "new promo message is populated.";
 
-inline constexpr char kNtpMobilePromoName[] = "NTP Mobile Promo";
-inline constexpr char kNtpMobilePromoDescription[] =
-    "Shows a promo for installing on mobile to the New Tab Page.";
-
-inline constexpr char kForceNtpMobilePromoName[] = "Force NTP Mobile Promo";
-inline constexpr char kForceNtpMobilePromoDescription[] =
-    "Forces a promo for installing on mobile to the New Tab Page to show "
-    "without preconditions.";
-
 inline constexpr char kNtpModulesDragAndDropName[] =
     "NTP Modules Drag and Drop";
 inline constexpr char kNtpModulesDragAndDropDescription[] =
