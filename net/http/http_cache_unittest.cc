@@ -15060,13 +15060,7 @@ class TestCacheBackendFactoryWithEncryption
   const base::FilePath path_;
 };
 
-#if BUILDFLAG(IS_FUCHSIA) && defined(LEAK_SANITIZER)
-// TODO(crbug.com/473061179): Re-enable this test once the memory leak is fixed.
-#define MAYBE_EncryptionDelegateInitSuccess DISABLED_EncryptionDelegateInitSuccess
-#else
-#define MAYBE_EncryptionDelegateInitSuccess EncryptionDelegateInitSuccess
-#endif
-TEST_F(HttpCacheTest, MAYBE_EncryptionDelegateInitSuccess) {
+TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
   MockCacheEncryptionDelegate mock_delegate;
   mock_delegate.SetInitResult(net::OK);
 
@@ -15076,30 +15070,14 @@ TEST_F(HttpCacheTest, MAYBE_EncryptionDelegateInitSuccess) {
       std::make_unique<TestCacheBackendFactoryWithEncryption>(
           &mock_delegate, temp_dir.GetPath()));
 
-  // Create a transaction to trigger cache creation.
-  MockHttpRequest request(kSimpleGET_Transaction);
-  TestCompletionCallback callback;
-  std::unique_ptr<HttpTransaction> transaction =
-      cache->http_cache()->CreateTransaction(DEFAULT_PRIORITY);
-  ASSERT_TRUE(transaction);
-
-  int rv =
-      transaction->Start(&request, callback.callback(), NetLogWithSource());
-  // The transaction start should be pending because backend creation is async.
-  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
-
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  // Get the backend to trigger its creation.
+  TestGetBackendCompletionCallback callback;
+  HttpCache::GetBackendResult result =
+      cache->http_cache()->GetBackend(callback.callback());
+  EXPECT_THAT(callback.GetResult(result).first, IsOk());
 
   // The delegate's Init should have been called.
   EXPECT_TRUE(mock_delegate.init_called());
-
-  // The transaction should now continue, resulting in a cache miss.
-  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
-  ASSERT_TRUE(response_info);
-  EXPECT_FALSE(response_info->was_cached);
-
-  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
-  transaction.reset();
 
   // To ensure the cache and its backend are destroyed before the test exits.
   cache.reset();
@@ -15112,37 +15090,26 @@ TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
   auto cache = std::make_unique<MockHttpCache>(
       std::make_unique<TestCacheBackendFactoryWithEncryption>(
           &mock_delegate, temp_dir.GetPath()));
 
-  // Create a transaction to trigger cache creation. The transaction should fail
-  // because the backend creation fails.
-  MockHttpRequest request(kSimpleGET_Transaction);
-  TestCompletionCallback callback;
-  std::unique_ptr<HttpTransaction> transaction =
-      cache->http_cache()->CreateTransaction(DEFAULT_PRIORITY);
-  ASSERT_TRUE(transaction);
+  // Get the backend to trigger its creation.
+  TestGetBackendCompletionCallback callback;
+  HttpCache::GetBackendResult result =
+      cache->http_cache()->GetBackend(callback.callback());
+  // The backend creation should be pending because the delegate's init is
+  // pending.
+  EXPECT_THAT(result.first, IsError(net::ERR_IO_PENDING));
 
-  int rv =
-      transaction->Start(&request, callback.callback(), NetLogWithSource());
-  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
-
-  // Now complete the backend creation with failure.
+  // Now complete the delegate's init with failure.
   mock_delegate.SetInitResult(net::ERR_FAILED);
   mock_delegate.CompleteInit();
 
-  // The backend creation will fail, so the transaction will be served from the
-  // network.
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  // The backend creation should fail.
+  EXPECT_THAT(callback.WaitForResult().first, IsError(net::ERR_FAILED));
   EXPECT_TRUE(mock_delegate.init_called());
-
-  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
-  ASSERT_TRUE(response_info);
-  EXPECT_FALSE(response_info->was_cached);
-
-  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
-  transaction.reset();
 
   // To ensure the cache and its backend are destroyed before the test exits.
   cache.reset();
