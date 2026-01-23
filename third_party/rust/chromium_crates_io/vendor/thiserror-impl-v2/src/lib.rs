@@ -3,6 +3,7 @@
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::enum_glob_use,
+    clippy::expl_impl_clone_on_copy, // https://github.com/rust-lang/rust-clippy/issues/15842
     clippy::manual_find,
     clippy::manual_let_else,
     clippy::manual_map,

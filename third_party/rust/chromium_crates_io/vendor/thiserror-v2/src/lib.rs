@@ -260,7 +260,7 @@
 //! [`Display`]: std::fmt::Display
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/thiserror/2.0.17")]
+#![doc(html_root_url = "https://docs.rs/thiserror/2.0.18")]
 #![allow(
     clippy::elidable_lifetime_names,
     clippy::module_name_repetitions,
