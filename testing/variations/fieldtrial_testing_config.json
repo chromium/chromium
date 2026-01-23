@@ -3566,7 +3566,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DownloadModelForPasswordChange"
+                        "ProactivelyDownloadModelForPasswordChange"
                     ]
                 }
             ]
