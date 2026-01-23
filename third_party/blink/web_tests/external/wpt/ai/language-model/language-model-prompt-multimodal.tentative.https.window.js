@@ -233,6 +233,10 @@ promise_test(async () => {
   video.src = kValidVideoPath;
   video.width = 1224;
   video.height = 768;
+  // Make sure the video plays without requiring a gesture.
+  video.muted = true;
+  video.playsInline = true;
+  video.autoplay = true;
   // Video must have frames fetched. See crbug.com/417249941#comment3
   await video.play();
   const session = await createLanguageModel(kImageOptions);

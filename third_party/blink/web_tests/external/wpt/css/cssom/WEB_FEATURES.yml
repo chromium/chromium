@@ -82,6 +82,9 @@ features:
   - CSSConditionRule-conditionText.html
   # CSSMediaRule:
   - serialize-media-rule.html
+- name: matchmedia
+  files:
+  - mediaquery-sort-dedup.html
 - name: mutationobserver
   files:
   - MutationObserver-style.html
