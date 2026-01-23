@@ -119,6 +119,7 @@
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
@@ -445,6 +446,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+  if (waap::IsInitialWebUIMetricsLoggingEnabled()) {
+    initial_webui_window_metrics_manager_ =
+        std::make_unique<InitialWebUIWindowMetricsManager>(browser);
+  }
+
   desktop_browser_window_capabilities_ =
       GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
           *browser, browser, browser->window(),
@@ -927,6 +933,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   data_protection_ui_controller_.reset();
 
   desktop_browser_window_capabilities_.reset();
+  initial_webui_window_metrics_manager_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();
 
   // Destroy fullscreen control host before exclusive access manager.

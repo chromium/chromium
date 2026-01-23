@@ -110,6 +110,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -781,7 +782,12 @@ Browser* OpenEmptyWindow(Profile* profile,
   Browser::CreateParams params =
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
   params.should_trigger_session_restore = should_trigger_session_restore;
+  base::TimeTicks now = base::TimeTicks::Now();
   Browser* browser = Browser::Create(params);
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
+    manager->SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated, now);
+  }
 
   // Startup tabs could be created during browser creation. Add an empty tab
   // only if no tabs are created.
@@ -1353,6 +1359,7 @@ void MoveTabsToNewWindow(Browser* browser,
   }
 
   Browser* new_browser;
+  base::TimeTicks now = base::TimeTicks::Now();
   if (browser->is_type_app() && browser->app_controller()->has_tab_strip()) {
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
         browser->app_name(), browser->is_trusted_source(), gfx::Rect(),
@@ -1362,6 +1369,10 @@ void MoveTabsToNewWindow(Browser* browser,
   } else {
     new_browser =
         Browser::Create(Browser::CreateParams(browser->profile(), true));
+  }
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
+    manager->SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated, now);
   }
 
   MoveTabsToWindowImpl(browser, new_browser, tab_indices);

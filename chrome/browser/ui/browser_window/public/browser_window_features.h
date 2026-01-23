@@ -65,6 +65,7 @@ class IncognitoClearBrowsingDataDialogCoordinator;
 class ImmersiveModeController;
 class IOSPromoController;
 class InitialWebUIManager;
+class InitialWebUIWindowMetricsManager;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
 class PinnedToolbarActionsController;
@@ -559,6 +560,9 @@ class BrowserWindowFeatures {
   std::unique_ptr<FullscreenControlHost> fullscreen_control_host_;
 
   std::unique_ptr<InitialWebUIManager> initial_web_ui_manager_;
+
+  std::unique_ptr<InitialWebUIWindowMetricsManager>
+      initial_webui_window_metrics_manager_;
 
   std::unique_ptr<IOSPromoController> ios_promo_controller_;
 

@@ -20,8 +20,8 @@
 #include "ui/views/metadata/view_factory.h"
 
 class CommandUpdater;
+class InitialWebUIWindowMetricsManager;
 class Profile;
-class WaapUIMetricsRecorder;
 class WaapUIMetricsRecorder;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   METADATA_HEADER(ReloadButton, ToolbarButton)
 
  public:
-  ReloadButton(Profile* profile, CommandUpdater* command_updater);
+  ReloadButton(Profile* profile,
+               CommandUpdater* command_updater,
+               InitialWebUIWindowMetricsManager* window_metrics_manager);
   ReloadButton(const ReloadButton&) = delete;
   ReloadButton& operator=(const ReloadButton&) = delete;
   ~ReloadButton() override;
@@ -135,6 +137,10 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // Increments when we would tell the browser to "reload", so
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
+
+  // The initial WebUI metrics manager for the window this button is in.
+  // Not owned and might be null.
+  const raw_ptr<InitialWebUIWindowMetricsManager> window_metrics_manager_;
 
   // Must be the last member.
   base::WeakPtrFactory<ReloadButton> weak_ptr_factory_{this};

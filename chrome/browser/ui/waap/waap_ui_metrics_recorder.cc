@@ -120,16 +120,8 @@ void WaapUIMetricsRecorder::OnChangeVisibleMode(ReloadButtonMode current_mode,
 void WaapUIMetricsRecorder::OnPaintFramePresented(ReloadButtonMode visible_mode,
                                                   int button_state,
                                                   base::TimeTicks now) {
-  static bool is_first_paint_recorded = false;
   if (!waap_service_) {
     return;
-  }
-
-  // Log first paint metrics.
-  if (!is_first_paint_recorded) {
-    is_first_paint_recorded = true;
-    waap_service_->OnFirstPaint(now);
-    waap_service_->OnFirstContentfulPaint(now);
   }
 
   // Log MousePressToNextPaint.

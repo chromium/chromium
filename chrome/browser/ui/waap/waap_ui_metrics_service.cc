@@ -20,6 +20,20 @@
 
 namespace {
 
+std::string_view CreationSourceToString(waap::NewWindowCreationSource source) {
+  switch (source) {
+    case waap::NewWindowCreationSource::kSessionRestore:
+      return ".SessionRestore";
+    case waap::NewWindowCreationSource::kDragToNewWindow:
+      return ".DragToNewWindow";
+    case waap::NewWindowCreationSource::kBrowserInitiated:
+      return ".BrowserInitiated";
+    case waap::NewWindowCreationSource::kUnknown:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 std::string_view ReloadButtonModeToString(
     WaapUIMetricsRecorder::ReloadButtonMode mode) {
   switch (mode) {
@@ -132,6 +146,25 @@ void RecordStartupPaintMetric(std::string_view paint_metric_base,
   }
 }
 
+// Records a new window paint metric for the given `paint_metric_base`.
+void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
+                                waap::NewWindowCreationSource source,
+                                base::TimeTicks start_time,
+                                base::TimeTicks paint_time) {
+  // Record aggregated metric.
+  EmitHistogramWithTraceEvent(
+      base::StrCat({"InitialWebUI.NewWindow.AllSources.", paint_metric_base})
+          .c_str(),
+      start_time, paint_time);
+
+  // Record source-sliced metric.
+  std::string_view source_str = CreationSourceToString(source);
+  EmitHistogramWithTraceEvent(base::StrCat({"InitialWebUI.NewWindow",
+                                            source_str, ".", paint_metric_base})
+                                  .c_str(),
+                              start_time, paint_time);
+}
+
 }  // namespace
 
 WaapUIMetricsService::WaapUIMetricsService(
@@ -194,6 +227,46 @@ void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
   // For early experiment, this is ReloadButton only.
   // TODO(crbug.com/448794588): Switch to general name after initial phase.
   RecordStartupPaintMetric("ReloadButton.FirstContentfulPaint", time);
+}
+
+void WaapUIMetricsService::OnNewWindowBrowserWindowFirstPresentation(
+    waap::NewWindowCreationSource source,
+    base::TimeTicks start_time,
+    base::TimeTicks paint_time) {
+  if (start_time.is_null() || paint_time.is_null() ||
+      source == waap::NewWindowCreationSource::kUnknown) {
+    return;
+  }
+
+  RecordNewWindowPaintMetric("BrowserWindow.FirstPaint.FromConstructor", source,
+                             start_time, paint_time);
+}
+
+void WaapUIMetricsService::OnNewWindowReloadButtonFirstPaint(
+    waap::NewWindowCreationSource source,
+    base::TimeTicks start_time,
+    base::TimeTicks paint_time) {
+  if (start_time.is_null() || paint_time.is_null() ||
+      source == waap::NewWindowCreationSource::kUnknown) {
+    return;
+  }
+
+  RecordNewWindowPaintMetric("ReloadButton.FirstPaint.FromConstructor", source,
+                             start_time, paint_time);
+}
+
+void WaapUIMetricsService::OnNewWindowReloadButtonFirstContentfulPaint(
+    waap::NewWindowCreationSource source,
+    base::TimeTicks start_time,
+    base::TimeTicks paint_time) {
+  if (start_time.is_null() || paint_time.is_null() ||
+      source == waap::NewWindowCreationSource::kUnknown) {
+    return;
+  }
+
+  RecordNewWindowPaintMetric(
+      "ReloadButton.FirstContentfulPaint.FromConstructor", source, start_time,
+      paint_time);
 }
 
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(

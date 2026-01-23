@@ -16,6 +16,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -53,7 +54,10 @@ WaapUIMetricsRecorder::ReloadButtonMode ToRecorderButtonMode(
 
 // ReloadButton ---------------------------------------------------------------
 
-ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
+ReloadButton::ReloadButton(
+    Profile* profile,
+    CommandUpdater* command_updater,
+    InitialWebUIWindowMetricsManager* window_metrics_manager)
     : ToolbarButton(base::BindRepeating(&ReloadButton::ButtonPressed,
                                         base::Unretained(this)),
                     CreateMenuModel(),
@@ -65,7 +69,8 @@ ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
       stop_icon_(kNavigateStopChromeRefreshIcon),
       stop_touch_icon_(kNavigateStopTouchIcon),
       double_click_timer_delay_(views::GetDoubleClickInterval()),
-      mode_switch_timer_delay_(base::Milliseconds(1350)) {
+      mode_switch_timer_delay_(base::Milliseconds(1350)),
+      window_metrics_manager_(window_metrics_manager) {
   SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
@@ -321,6 +326,12 @@ void ReloadButton::OnNextPresentation(
     Mode mode,
     Button::ButtonState state,
     const viz::FrameTimingDetails& frame_timing_details) {
+  if (window_metrics_manager_) {
+    window_metrics_manager_->OnReloadButtonFirstPaint(
+        frame_timing_details.presentation_feedback.timestamp);
+    window_metrics_manager_->OnReloadButtonFirstContentfulPaint(
+        frame_timing_details.presentation_feedback.timestamp);
+  }
   metrics_recorder_->OnPaintFramePresented(
       ToRecorderButtonMode(mode), state,
       frame_timing_details.presentation_feedback.timestamp);
