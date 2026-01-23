@@ -2131,6 +2131,11 @@ base::Value::Dict DevToolsUIBindings::GetHostConfigDictionary(
                                        ::features::kDevToolsProtocolMonitor,
                                        enabled_by_flags, disabled_by_flags)));
 
+  response_dict.Set("devToolsGeminiRebranding",
+                    base::Value::Dict().Set(
+                        "enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsGeminiRebranding)));
+
   return response_dict;
 }
 

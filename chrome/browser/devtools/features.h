@@ -130,6 +130,8 @@ BASE_DECLARE_FEATURE(kDevToolsAiAssistanceV2);
 
 BASE_DECLARE_FEATURE(kDevToolsProtocolMonitor);
 
+BASE_DECLARE_FEATURE(kDevToolsGeminiRebranding);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_
