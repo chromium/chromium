@@ -126,10 +126,6 @@ public class NtpThemeCollectionsCoordinator {
                         mImageFetcher);
         mThemeCollectionsBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
         mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
-        // After setting items, apply the current selection from the manager.
-        mNtpThemeCollectionsAdapter.setSelection(
-                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
-                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
 
         // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
         // has a height, allowing it to correctly open to the half-height state.

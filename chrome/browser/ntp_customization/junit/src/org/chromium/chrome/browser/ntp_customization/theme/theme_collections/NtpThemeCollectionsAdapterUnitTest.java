@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -439,5 +441,35 @@ public class NtpThemeCollectionsAdapterUnitTest {
         assertEquals(View.GONE, viewHolder.mSpinner.getVisibility());
         assertEquals(1.0f, viewHolder.mImage.getAlpha(), 0.0f);
         assertTrue(viewHolder.mView.isClickable());
+    }
+
+    @Test
+    public void testSetSelection_NotifiesChanges() {
+        NtpThemeCollectionsAdapter adapter =
+                new NtpThemeCollectionsAdapter(
+                        mCollectionItems, THEME_COLLECTIONS_ITEM, mOnClickListener, mImageFetcher);
+        RecyclerView.AdapterDataObserver observer = mock(RecyclerView.AdapterDataObserver.class);
+        adapter.registerAdapterDataObserver(observer);
+
+        // Select the second item.
+        adapter.setSelection(mCollectionItems.get(1).id, /* imageUrl= */ null);
+
+        // Verify that notifyItemChanged was called for the selected item.
+        verify(observer)
+                .onItemRangeChanged(
+                        /* positionStart= */ 1, /* itemCount= */ 1, /* payload= */ null);
+
+        // Select the first item.
+        clearInvocations(observer);
+        adapter.setSelection(mCollectionItems.get(0).id, /* imageUrl= */ null);
+
+        // Verify that notifyItemChanged was called for the previously selected item (to deselect)
+        // and the newly selected item (to select).
+        verify(observer)
+                .onItemRangeChanged(
+                        /* positionStart= */ 1, /* itemCount= */ 1, /* payload= */ null);
+        verify(observer)
+                .onItemRangeChanged(
+                        /* positionStart= */ 0, /* itemCount= */ 1, /* payload= */ null);
     }
 }

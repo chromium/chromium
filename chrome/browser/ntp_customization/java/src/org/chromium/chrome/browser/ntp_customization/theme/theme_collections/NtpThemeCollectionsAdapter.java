@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +45,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable String mSelectedThemeCollectionId;
     private @Nullable GURL mSelectedThemeCollectionImageUrl;
+    private int mSelectedPosition;
 
     @IntDef({
         ThemeCollectionsItemType.THEME_COLLECTIONS_ITEM,
@@ -76,10 +77,11 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         mThemeCollectionsItemType = themeCollectionsItemType;
         mOnClickListener = onClickListener;
         mImageFetcher = imageFetcher;
+        mSelectedPosition = RecyclerView.NO_POSITION;
     }
 
     @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
     }
@@ -89,9 +91,8 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         return mThemeCollectionsItemType;
     }
 
-    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view =
                 inflater.inflate(
@@ -120,50 +121,16 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ThemeCollectionViewHolder viewHolder = (ThemeCollectionViewHolder) holder;
-
-        switch (holder.getItemViewType()) {
-            case THEME_COLLECTIONS_ITEM:
-                BackgroundCollection collectionItem = (BackgroundCollection) mItems.get(position);
-                viewHolder.itemView.setActivated(
-                        collectionItem.id.equals(mSelectedThemeCollectionId));
-                viewHolder.mTitle.setText(collectionItem.label);
-                fetchImageWithPlaceholder(viewHolder, collectionItem.previewImageUrl);
-                viewHolder.mView.setOnClickListener(mOnClickListener);
-                break;
-
-            case SINGLE_THEME_COLLECTION_ITEM:
-                CollectionImage imageItem = (CollectionImage) mItems.get(position);
-                viewHolder.itemView.setActivated(
-                        imageItem.collectionId.equals(mSelectedThemeCollectionId)
-                                && imageItem.imageUrl.equals(mSelectedThemeCollectionImageUrl));
-                viewHolder.mTitle.setVisibility(View.GONE);
-                fetchImageWithPlaceholder(viewHolder, imageItem.previewImageUrl);
-                View.OnClickListener clickListener =
-                        view -> {
-                            // If the item view is the current selected item, early exits now. It
-                            // is because the click has been handled.
-                            if (viewHolder.itemView.isActivated()) return;
-
-                            viewHolder.mIsHandlingClick = true;
-                            // When the image is selected by the user and waiting for the results
-                            // from native service, shows the spinner and reduces opacity of image
-                            // to highlight the spinner.
-                            viewHolder.mSpinner.setVisibility(View.VISIBLE);
-                            viewHolder.mImage.setAlpha(0.5f);
-                            // Disables the image click so they can't be clicked while loading.
-                            viewHolder.mView.setClickable(false);
-                            if (mOnClickListener != null) {
-                                mOnClickListener.onClick(view);
-                            }
-                        };
-                viewHolder.mView.setOnClickListener(clickListener);
-                break;
-
-            default:
-                assert false : "Theme collections item type not supported!";
-        }
+        Object item = mItems.get(position);
+        viewHolder.bind(
+                item,
+                mThemeCollectionsItemType,
+                mSelectedThemeCollectionId,
+                mSelectedThemeCollectionImageUrl,
+                mImageFetcher,
+                mOnClickListener);
     }
 
     @Override
@@ -182,6 +149,10 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         notifyItemRangeRemoved(0, oldSize);
         mItems.addAll(newItems);
         notifyItemRangeInserted(0, newItems.size());
+
+        // Re-calculate mSelectedPosition based on the new list and the current selection ID/URL
+        mSelectedPosition =
+                findSelectionIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
     }
 
     /** Clears the OnClickListener from all items in the RecyclerView. */
@@ -203,52 +174,56 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
      * @param collectionId The ID of the selected theme collection.
      * @param imageUrl The URL of the selected theme collection image.
      */
-    @SuppressWarnings("notifyDataSetChanged")
     public void setSelection(@Nullable String collectionId, @Nullable GURL imageUrl) {
         mSelectedThemeCollectionId = collectionId;
         mSelectedThemeCollectionImageUrl = imageUrl;
-        // TODO(https://crbug.com/440584354): Make NtpThemeCollectionsAdapter follow the MVC design
-        // patten and try to forbid notifyDataSetChanged.
-        notifyDataSetChanged();
+        int newSelectedPosition =
+                findSelectionIndex(mSelectedThemeCollectionId, mSelectedThemeCollectionImageUrl);
+
+        if (mSelectedPosition == newSelectedPosition) {
+            return;
+        }
+
+        int oldSelectedPosition = mSelectedPosition;
+        mSelectedPosition = newSelectedPosition;
+
+        // Notify the old item to redraw (it's no longer selected)
+        if (oldSelectedPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(oldSelectedPosition);
+        }
+
+        // Notify the new item to redraw (it's now selected)
+        if (newSelectedPosition != RecyclerView.NO_POSITION) {
+            notifyItemChanged(newSelectedPosition);
+        }
     }
 
-    /**
-     * Asynchronously fetches an image from a URL and sets it on an ImageView. Handles view
-     * recycling by tagging the view with the URL and clearing any previous image.
-     *
-     * @param viewHolder The ViewHolder containing the ImageView.
-     * @param imageUrl The URL of the image to fetch.
-     */
-    private void fetchImageWithPlaceholder(ThemeCollectionViewHolder viewHolder, GURL imageUrl) {
-        // Set a tag on the ImageView to the URL of the image we're about to load. This helps us
-        // check if the view has been recycled for another item by the time the image has finished
-        // loading.
-        viewHolder.mImage.setTag(imageUrl);
-        // Clear the previous image to avoid showing stale images in recycled views.
-        viewHolder.mImage.setImageDrawable(null);
+    private int findSelectionIndex(@Nullable String collectionId, @Nullable GURL imageUrl) {
+        if (collectionId == null) {
+            return RecyclerView.NO_POSITION;
+        }
 
-        NtpCustomizationUtils.fetchThemeCollectionImage(
-                mImageFetcher,
-                imageUrl,
-                (bitmap) -> {
-                    // Before setting the bitmap, check if the ImageView is still
-                    // supposed to display this image.
-                    if (imageUrl.equals(viewHolder.mImage.getTag()) && bitmap != null) {
-                        viewHolder.mImage.setImageBitmap(bitmap);
-                        if (viewHolder.mIsHandlingClick) {
-                            viewHolder.mIsHandlingClick = false;
-                            // Restores the image state.
-                            viewHolder.mImage.setAlpha(1.0f);
-                            viewHolder.mView.setClickable(true);
-                            // Hides the spinner.
-                            viewHolder.mSpinner.setVisibility(View.GONE);
-                        }
-                    }
-                });
+        for (int i = 0; i < mItems.size(); i++) {
+            Object item = mItems.get(i);
+            if (mThemeCollectionsItemType == THEME_COLLECTIONS_ITEM) {
+                BackgroundCollection collectionItem = (BackgroundCollection) item;
+                if (collectionItem.id.equals(collectionId)) {
+                    return i;
+                }
+            } else if (mThemeCollectionsItemType == SINGLE_THEME_COLLECTION_ITEM) {
+                CollectionImage imageItem = (CollectionImage) item;
+                if (imageItem.collectionId.equals(collectionId)
+                        && imageItem.imageUrl.equals(imageUrl)) {
+                    return i;
+                }
+            }
+        }
+        return RecyclerView.NO_POSITION;
     }
 
     /** ViewHolder for items that include an image and an optional title. */
-    public static class ThemeCollectionViewHolder extends RecyclerView.ViewHolder {
+    @VisibleForTesting
+    static class ThemeCollectionViewHolder extends RecyclerView.ViewHolder {
         final View mView;
         final TextView mTitle;
         final ProgressBar mSpinner;
@@ -256,12 +231,96 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         // When the click has been handled and is waiting for the reply from the native service.
         boolean mIsHandlingClick;
 
-        public ThemeCollectionViewHolder(@NonNull View itemView) {
+        public ThemeCollectionViewHolder(View itemView) {
             super(itemView);
             mView = itemView;
             mImage = itemView.findViewById(R.id.theme_collection_image);
             mTitle = itemView.findViewById(R.id.theme_collection_title);
             mSpinner = itemView.findViewById(R.id.spinner);
+        }
+
+        public void bind(
+                Object item,
+                @ThemeCollectionsItemType int itemType,
+                @Nullable String selectedCollectionId,
+                @Nullable GURL selectedImageUrl,
+                ImageFetcher imageFetcher,
+                View.@Nullable OnClickListener onClickListener) {
+            switch (itemType) {
+                case THEME_COLLECTIONS_ITEM:
+                    BackgroundCollection collectionItem = (BackgroundCollection) item;
+                    itemView.setActivated(collectionItem.id.equals(selectedCollectionId));
+                    mTitle.setText(collectionItem.label);
+                    fetchImageWithPlaceholder(imageFetcher, collectionItem.previewImageUrl);
+                    mView.setOnClickListener(onClickListener);
+                    break;
+
+                case SINGLE_THEME_COLLECTION_ITEM:
+                    CollectionImage imageItem = (CollectionImage) item;
+                    itemView.setActivated(
+                            imageItem.collectionId.equals(selectedCollectionId)
+                                    && imageItem.imageUrl.equals(selectedImageUrl));
+                    mTitle.setVisibility(View.GONE);
+                    fetchImageWithPlaceholder(imageFetcher, imageItem.previewImageUrl);
+                    View.OnClickListener clickListener =
+                            view -> {
+                                // If the item view is the current selected item, early exits now.
+                                // It is because the click has been handled.
+                                if (itemView.isActivated()) return;
+
+                                mIsHandlingClick = true;
+                                // When the image is selected by the user and waiting for the
+                                // results from native service, shows the spinner and reduces
+                                // opacity of image to highlight the spinner.
+                                mSpinner.setVisibility(View.VISIBLE);
+                                mImage.setAlpha(0.5f);
+                                // Disables the image click so they can't be clicked while loading.
+                                mView.setClickable(false);
+                                if (onClickListener != null) {
+                                    onClickListener.onClick(view);
+                                }
+                            };
+                    mView.setOnClickListener(clickListener);
+                    break;
+
+                default:
+                    assert false : "Theme collections item type not supported!";
+            }
+        }
+
+        /**
+         * Asynchronously fetches an image from a URL and sets it on an ImageView. Handles view
+         * recycling by tagging the view with the URL and clearing any previous image.
+         *
+         * @param imageFetcher The {@link ImageFetcher} used for fetch theme collection cover image.
+         * @param imageUrl The URL of the image to fetch.
+         */
+        private void fetchImageWithPlaceholder(ImageFetcher imageFetcher, GURL imageUrl) {
+            // Set a tag on the ImageView to the URL of the image we're about to load. This helps us
+            // check if the view has been recycled for another item by the time the image has
+            // finished loading.
+            mImage.setTag(imageUrl);
+            // Clear the previous image to avoid showing stale images in recycled views.
+            mImage.setImageDrawable(null);
+
+            NtpCustomizationUtils.fetchThemeCollectionImage(
+                    imageFetcher,
+                    imageUrl,
+                    (bitmap) -> {
+                        // Before setting the bitmap, check if the ImageView is still supposed to
+                        // display this image.
+                        if (imageUrl.equals(mImage.getTag()) && bitmap != null) {
+                            mImage.setImageBitmap(bitmap);
+                            if (mIsHandlingClick) {
+                                mIsHandlingClick = false;
+                                // Restores the image state.
+                                mImage.setAlpha(1.0f);
+                                mView.setClickable(true);
+                                // Hides the spinner.
+                                mSpinner.setVisibility(View.GONE);
+                            }
+                        }
+                    });
         }
     }
 }

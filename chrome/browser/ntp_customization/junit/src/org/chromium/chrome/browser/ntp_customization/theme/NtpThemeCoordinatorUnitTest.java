@@ -64,7 +64,7 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJniMock;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
-    @Mock private Runnable mOnDailyUpdateCancelledCallback;
+    @Mock private Runnable mResetCustomizedThemeRunnable;
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     @Mock private ImageFetcher mImageFetcher;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -139,7 +139,7 @@ public class NtpThemeCoordinatorUnitTest {
         List<BackgroundCollection> collections = new ArrayList<>();
         mCoordinator
                 .getNtpThemeDelegateForTesting()
-                .onThemeCollectionsClicked(mOnDailyUpdateCancelledCallback, collections);
+                .onThemeCollectionsClicked(mResetCustomizedThemeRunnable, collections);
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.THEME_COLLECTIONS));
     }
 

@@ -137,7 +137,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         mCallbackCaptor.getValue().onResult(images);
 
         verify(adapterSpy).setItems(eq(images));
-        verify(adapterSpy).setSelection(any(), any());
     }
 
     @Test

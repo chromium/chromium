@@ -185,9 +185,15 @@ public class NtpThemeCoordinator {
 
             @Override
             public void onThemeCollectionsClicked(
-                    Runnable onDailyRefreshCancelledCallback,
+                    Runnable resetCustomizedThemeRunnable,
                     List<BackgroundCollection> themeCollectionsList) {
                 if (mNtpThemeCollectionsCoordinator == null) {
+                    Runnable onDailyRefreshCancelledCallback =
+                            () -> {
+                                resetCustomizedThemeRunnable.run();
+                                initializeBottomSheetContent(
+                                        BottomSheetType.SINGLE_THEME_COLLECTION);
+                            };
                     mNtpThemeCollectionsCoordinator =
                             new NtpThemeCollectionsCoordinator(
                                     mContext,

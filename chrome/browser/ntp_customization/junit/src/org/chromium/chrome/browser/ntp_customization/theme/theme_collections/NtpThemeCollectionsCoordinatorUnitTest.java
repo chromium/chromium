@@ -114,9 +114,6 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                 mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
         NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
         assertEquals(mThemeCollectionsList.size(), adapter.getItemCount());
-
-        verify(mNtpThemeCollectionManager).getSelectedThemeCollectionId();
-        verify(mNtpThemeCollectionManager).getSelectedThemeCollectionImageUrl();
     }
 
     @Test

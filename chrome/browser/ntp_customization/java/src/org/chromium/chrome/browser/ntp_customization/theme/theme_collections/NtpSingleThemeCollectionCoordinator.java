@@ -302,13 +302,6 @@ public class NtpSingleThemeCollectionCoordinator {
                         // it's either displayed for the first time or if the previous theme
                         // collections bottom sheet was in a half state.
                         mBottomSheetDelegate.getBottomSheetController().expandSheet();
-                    }
-
-                    if (!mHasDisplayedBefore) {
-                        // After setting items, apply the current selection from the manager.
-                        mNtpThemeCollectionsAdapter.setSelection(
-                                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
-                                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
                         mHasDisplayedBefore = true;
                     }
                 });
