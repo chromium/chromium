@@ -83,7 +83,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     return nullptr;
   }
 
-  CanvasResourceProviderSharedImage* resource_provider =
+  CanvasResourceProviderSharedImageNon2D* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
