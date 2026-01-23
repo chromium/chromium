@@ -638,7 +638,7 @@ BASE_FEATURE(kNetworkServiceInProcess,
 );
 
 // Feature which disables caching a previous selection menu object.
-BASE_FEATURE(kNoSelectionMenuCaching, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNoSelectionMenuCaching, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback, base::FEATURE_DISABLED_BY_DEFAULT);
