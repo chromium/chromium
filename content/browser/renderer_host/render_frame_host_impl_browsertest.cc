@@ -1744,7 +1744,7 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
   }
 
   void CloseDialogAndCancel() {
-    dialog_manager_->Run(false /* navigation should proceed */,
+    dialog_manager_->Run(false /* navigation should not proceed */,
                          std::u16string());
   }
 
@@ -2292,6 +2292,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   GURL url2 = embedded_test_server()->GetURL("b.com", "/title1.html");
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // Put a user gesture on the current main frame to allow opening
+  // beforeunload dialog.
+  web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   auto weak_web_contents = web_contents()->GetWeakPtr();
   // This matches the behaviour of TabModalDialogManager in
