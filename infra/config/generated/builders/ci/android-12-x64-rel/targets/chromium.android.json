@@ -3,7 +3,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -53,7 +52,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
           "--gs-results-bucket=chromium-result-details",
@@ -108,7 +106,6 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
           "--gs-results-bucket=chromium-result-details",
@@ -162,7 +159,6 @@
       {
         "args": [
           "--test-launcher-batch-limit=1",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -213,7 +209,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -264,7 +259,6 @@
       {
         "args": [
           "-v",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "description": "Run with android_31_google_apis_x64",
@@ -307,7 +301,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -358,7 +351,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -408,7 +400,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -458,7 +449,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -509,7 +499,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -564,7 +553,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -615,7 +603,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -665,7 +652,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -716,7 +702,6 @@
       {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -766,7 +751,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -816,7 +800,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -867,7 +850,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -919,7 +901,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -970,7 +951,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter",
           "--timeout-scale=2.0",
@@ -1031,7 +1011,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1089,7 +1068,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1139,7 +1117,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-FieldFormatterTest.DifferentLocales",
           "--gs-results-bucket=chromium-result-details",
@@ -1191,7 +1168,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1245,7 +1221,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1298,7 +1273,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1349,7 +1323,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1400,7 +1373,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1450,7 +1422,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1500,7 +1471,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1550,7 +1520,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1601,7 +1570,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1651,7 +1619,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1701,7 +1668,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1751,7 +1717,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1801,7 +1766,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1852,7 +1816,6 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1903,7 +1866,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -1954,7 +1916,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2004,7 +1965,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2054,7 +2014,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2104,7 +2063,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2154,7 +2112,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2204,7 +2161,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2254,7 +2210,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2305,7 +2260,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2355,7 +2309,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2405,7 +2358,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -2456,7 +2408,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2506,7 +2457,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2556,7 +2506,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2606,7 +2555,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2656,7 +2604,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2707,7 +2654,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
@@ -2758,7 +2704,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2808,7 +2753,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*",
           "--gs-results-bucket=chromium-result-details",
@@ -2860,7 +2804,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2910,7 +2853,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2960,7 +2902,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3010,7 +2951,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3060,7 +3000,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3110,7 +3049,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3160,7 +3098,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3210,7 +3147,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3260,7 +3196,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3310,7 +3245,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3361,7 +3295,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3411,7 +3344,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3461,7 +3393,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3512,7 +3443,6 @@
       {
         "args": [
           "--store-tombstones",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3575,7 +3505,6 @@
           "--exclude-annotation",
           "AppModeFull",
           "--test-apk-as-instant",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3636,7 +3565,6 @@
         "args": [
           "--disable-field-trial-config",
           "--store-tombstones",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3696,7 +3624,6 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3747,7 +3674,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3798,7 +3724,6 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3849,7 +3774,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3899,7 +3823,6 @@
       },
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3951,7 +3874,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "description": "Run with android_31_google_apis_x64",

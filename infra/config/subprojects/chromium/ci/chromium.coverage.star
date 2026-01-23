@@ -268,11 +268,6 @@ coverage_builder(
                     "android_10_emulator_gtests",
                     "android_10_isolated_scripts",
                 ],
-                mixins = targets.mixin(
-                    args = [
-                        "--use-persistent-shell",
-                    ],
-                ),
             ),
             "chromium_android_scripts",
             "gtests_once",
@@ -408,18 +403,12 @@ coverage_builder(
             ),
             # Keep this same as android-10-x86-rel
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 swarming = targets.swarming(
                     shards = 18,
                 ),
             ),
             # Keep this same as android-10-x86-rel
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 # Only multiple process tests run in CQ.
                 ci_only = True,
                 swarming = targets.swarming(
@@ -533,9 +522,6 @@ coverage_builder(
                 reason = "TODO(crbug.com/41440830): Fix permission issue when creating tmp files",
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 swarming = targets.swarming(
                     # Shard number is increased for longer test execution time
                     # and added local coverage data merging time.
@@ -543,9 +529,6 @@ coverage_builder(
                 ),
             ),
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 swarming = targets.swarming(
                     # Shard number is increased for longer test execution time
                     # and added local coverage data merging time.

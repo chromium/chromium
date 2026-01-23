@@ -217,11 +217,6 @@ ci.builder(
                 targets = [
                     "android_10_emulator_fyi_gtests",
                 ],
-                mixins = targets.mixin(
-                    args = [
-                        "--use-persistent-shell",
-                    ],
-                ),
             ),
         ],
         additional_compile_targets = [

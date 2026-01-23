@@ -2261,7 +2261,6 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -2300,7 +2299,6 @@
       {
         "args": [
           "--webview-process-mode=single",
-          "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

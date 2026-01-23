@@ -2313,11 +2313,6 @@ ci.builder(
                     "android_10_emulator_gtests",
                     "android_10_isolated_scripts",
                 ],
-                mixins = targets.mixin(
-                    args = [
-                        "--use-persistent-shell",
-                    ],
-                ),
             ),
             "chromium_android_scripts",
         ],
@@ -2455,18 +2450,12 @@ ci.builder(
             ),
             # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 swarming = targets.swarming(
                     shards = 18,
                 ),
             ),
             # If you change this, make similar changes in android-x86-code-coverage
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
                 # Only multiple process tests run in CQ.
                 ci_only = True,
                 swarming = targets.swarming(
@@ -2531,11 +2520,6 @@ ci.builder(
                     "android_10_emulator_gtests",
                     "android_10_isolated_scripts",
                 ],
-                mixins = targets.mixin(
-                    args = [
-                        "--use-persistent-shell",
-                    ],
-                ),
             ),
             "chromium_android_scripts",
         ],
@@ -2669,7 +2653,6 @@ ci.builder(
             ),
             "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
                 args = [
-                    "--use-persistent-shell",
                     "--disable-field-trial-config",
                     "--skia-gold-consider-unsupported",
                 ],
@@ -2679,7 +2662,6 @@ ci.builder(
             ),
             "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
                 args = [
-                    "--use-persistent-shell",
                     "--disable-field-trial-config",
                     "--skia-gold-consider-unsupported",
                 ],
@@ -2878,11 +2860,6 @@ ci.builder(
             "private_code_failure_test",
         ],
         mixins = [
-            targets.mixin(
-                args = [
-                    "--use-persistent-shell",
-                ],
-            ),
             "12-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
