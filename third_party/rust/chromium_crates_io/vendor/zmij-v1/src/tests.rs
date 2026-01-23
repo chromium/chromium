@@ -5,7 +5,7 @@ use num_bigint::BigUint as Uint;
 const _: () = {
     let static_data =
         mem::size_of_val(&crate::POW10_SIGNIFICANDS) + mem::size_of_val(&crate::DIGITS2);
-    assert!(static_data == 10072); // 9.8K
+    assert!(static_data == 10120); // 9.9K
 };
 
 #[cfg(target_endian = "little")]
@@ -24,14 +24,14 @@ fn utilities() {
 }
 
 #[test]
-fn umul_upper_inexact_to_odd() {
+fn umulhi_inexact_to_odd() {
     let pow10 = crate::POW10_SIGNIFICANDS.get(-292);
     assert_eq!(
-        crate::umul_upper_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abcdefu64 << 1),
+        crate::umulhi_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abcdefu64 << 1),
         0x24554a3ce60a45f5,
     );
     assert_eq!(
-        crate::umul_upper_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abce16u64 << 1),
+        crate::umulhi_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abce16u64 << 1),
         0x24554a3ce60a4643,
     );
 }

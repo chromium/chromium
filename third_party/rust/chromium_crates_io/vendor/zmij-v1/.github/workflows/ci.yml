@@ -17,15 +17,19 @@ jobs:
     uses: dtolnay/.github/.github/workflows/pre_ci.yml@master
 
   test:
-    name: Rust ${{matrix.rust}} (${{matrix.arch}})
+    name: ${{matrix.os == 'macos' && 'macOS' || format('Rust {0} ({1})', matrix.rust, matrix.arch)}}
     needs: pre_ci
     if: needs.pre_ci.outputs.continue
-    runs-on: ${{matrix.arch == 'x86_64' && 'ubuntu-latest' || 'ubuntu-24.04-arm'}}
+    runs-on: ${{matrix.os == 'macos' && 'macos-latest' || matrix.arch == 'x86_64' && 'ubuntu-latest' || 'ubuntu-24.04-arm'}}
     strategy:
       fail-fast: false
       matrix:
         rust: [nightly, beta, stable, 1.86.0, 1.68.0]
         arch: [x86_64, aarch64]
+        os: [ubuntu]
+        include:
+          - rust: nightly
+            os: macos
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
@@ -58,7 +62,7 @@ jobs:
         env:
           RUSTFLAGS: ${{env.RUSTFLAGS}} -Ctarget-cpu=native
       - uses: actions/upload-artifact@v6
-        if: matrix.rust == 'nightly' && matrix.arch == 'x86_64' && always()
+        if: matrix.rust == 'nightly' && matrix.arch == 'x86_64' && matrix.os == 'ubuntu' && always()
         with:
           name: Cargo.lock
           path: Cargo.lock

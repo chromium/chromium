@@ -14,6 +14,7 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/zmij-v1/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/zmij-v1/src/hint.rs",
     "//third_party/rust/chromium_crates_io/vendor/zmij-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/zmij-v1/src/stdarch_x86.rs",
     "//third_party/rust/chromium_crates_io/vendor/zmij-v1/src/tests.rs",
@@ -28,7 +29,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A double-to-string conversion algorithm based on Schubfach and yy"
   cargo_pkg_repository = "https://github.com/dtolnay/zmij"
-  cargo_pkg_version = "1.0.13"
+  cargo_pkg_version = "1.0.16"
 
   allow_unsafe = true
 
