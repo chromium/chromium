@@ -229,8 +229,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
-
   // Called when biometric authentication is completed.
   // Triggers the `callback` if `auth_succeeded` is true.
   void OnReauthCompleted(base::OnceClosure callback, bool auth_succeeded);
@@ -241,6 +239,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   void MaybeAuthenticateBeforeFilling(const std::u16string& reauth_message,
                                       std::string histogram,
                                       base::OnceClosure callback);
+
+  // Attempts to fill an Autofill AI `suggestion` into for `query_field_`;
+  void FillAutofillAiForm(const Suggestion& suggestion);
+
+  base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
   // directly to DidAcceptSuggestion(). See ScopedSuggestionSelectionShortcut

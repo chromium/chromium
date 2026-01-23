@@ -126,13 +126,20 @@ ACTION_TEMPLATE(SaveArgElementsTo,
 
 using SuggestionPosition = AutofillSuggestionDelegate::SuggestionMetadata;
 
-constexpr auto kDefaultTriggerSource =
+constexpr auto kDefaultSuggestionTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
+constexpr AutofillTriggerSource DefaultTriggerSource() {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;
+  }
+  return AutofillTriggerSource::kPopup;
+}
+
 template <typename SuggestionsMatcher>
-auto PopupOpenArgsAre(
-    SuggestionsMatcher suggestions_matcher,
-    AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+auto PopupOpenArgsAre(SuggestionsMatcher suggestions_matcher,
+                      AutofillSuggestionTriggerSource trigger_source =
+                          kDefaultSuggestionTriggerSource) {
   using PopupOpenArgs = AutofillClient::PopupOpenArgs;
   return AllOf(Field(&PopupOpenArgs::suggestions, suggestions_matcher),
                Field(&PopupOpenArgs::trigger_source, trigger_source));
@@ -345,11 +352,11 @@ class AutofillExternalDelegateTest : public testing::Test,
   }
 
   // Issue an OnQuery call.
-  void IssueOnQuery(
-      FormData form_data,
-      const gfx::Rect& caret_bounds = gfx::Rect(),
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
-      bool update_datalist = false) {
+  void IssueOnQuery(FormData form_data,
+                    const gfx::Rect& caret_bounds = gfx::Rect(),
+                    AutofillSuggestionTriggerSource trigger_source =
+                        kDefaultSuggestionTriggerSource,
+                    bool update_datalist = false) {
     queried_form_ = std::move(form_data);
     autofill_manager().OnFormsSeen({queried_form()}, {});
     external_delegate().OnQuery(queried_form(), queried_field(), caret_bounds,
@@ -362,15 +369,15 @@ class AutofillExternalDelegateTest : public testing::Test,
                                    test::GetHeuristicTypes(form_description),
                                    test::GetServerTypes(form_description));
     external_delegate().OnQuery(queried_form(), queried_field(), gfx::Rect(),
-                                kDefaultTriggerSource,
+                                kDefaultSuggestionTriggerSource,
                                 /*update_datalist=*/false);
   }
 
-  void IssueOnQuery(
-      const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
-      FieldType trigger_field_type = NAME_FIRST,
-      const std::string& autocomplete_attribute = "given-name") {
+  void IssueOnQuery(const gfx::Rect& caret_bounds,
+                    AutofillSuggestionTriggerSource trigger_source =
+                        kDefaultSuggestionTriggerSource,
+                    FieldType trigger_field_type = NAME_FIRST,
+                    const std::string& autocomplete_attribute = "given-name") {
     FormGlobalId form_id = test::MakeFormGlobalId();
     FieldGlobalId field_id = test::MakeFieldGlobalId();
     IssueOnQuery(
@@ -385,10 +392,10 @@ class AutofillExternalDelegateTest : public testing::Test,
         caret_bounds, trigger_source);
   }
 
-  void IssueOnQuery(
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
-      FieldType trigger_field_type = NAME_FIRST,
-      const std::string& autocomplete_attribute = "given-name") {
+  void IssueOnQuery(AutofillSuggestionTriggerSource trigger_source =
+                        kDefaultSuggestionTriggerSource,
+                    FieldType trigger_field_type = NAME_FIRST,
+                    const std::string& autocomplete_attribute = "given-name") {
     IssueOnQuery(/*caret_bounds=*/gfx::Rect(), trigger_source,
                  trigger_field_type, autocomplete_attribute);
   }
@@ -406,7 +413,7 @@ class AutofillExternalDelegateTest : public testing::Test,
             .host_frame = form_id.frame_token,
             .renderer_id = form_id.renderer_id,
         }),
-        /*caret_bounds=*/gfx::Rect(), kDefaultTriggerSource,
+        /*caret_bounds=*/gfx::Rect(), kDefaultSuggestionTriggerSource,
         /*update_datalist=*/true);
   }
 
@@ -826,7 +833,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillWarnings) {
                   SuggestionType::kInsecureContextPaymentDisabledMessage));
   EXPECT_EQ(open_args.element_bounds, gfx::RectF());
   EXPECT_EQ(open_args.text_direction, base::i18n::UNKNOWN_DIRECTION);
-  EXPECT_EQ(open_args.trigger_source, kDefaultTriggerSource);
+  EXPECT_EQ(open_args.trigger_source, kDefaultSuggestionTriggerSource);
 }
 
 // Test that Autofill warnings are removed if there are also autocomplete
@@ -1348,27 +1355,20 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
       Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
 
   IssueOnQuery(AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  auto expected_source =
-#if BUILDFLAG(IS_ANDROID)
-      AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;
-#else
-      AutofillTriggerSource::kPopup;
-#endif
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, expected_source));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 
   // Expect that `kManualFallbackPlusAddresses` translates to the manual
   // fallback trigger source.
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-  expected_source = AutofillTriggerSource::kManualFallback;
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, expected_source));
+  EXPECT_CALL(autofill_manager(),
+              FillOrPreviewForm(mojom::ActionPersistence::kFill,
+                                HasQueriedFormId(), IsQueriedFieldId(), _,
+                                AutofillTriggerSource::kManualFallback));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 }
@@ -1395,13 +1395,13 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
   external_delegate().DidSelectSuggestion(fill_suggestion);
 
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1437,7 +1437,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
@@ -1543,7 +1543,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
@@ -1570,7 +1570,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
@@ -1601,7 +1601,7 @@ TEST_F(AutofillExternalDelegateTest,
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), _, AutofillTriggerSource::kPopup));
+                        IsQueriedFieldId(), _, DefaultTriggerSource()));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(vehicle.guid());
@@ -1624,19 +1624,11 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
   OtpFillData otp_fill_data;
   otp_fill_data[queried_field().global_id()] = otp_value;
 
-  // Expect that suggestion trigger source translates to source `kPopup` or
-  // `kKeyboardAccessory`, depending on the platform.
-  auto expected_source =
-#if BUILDFLAG(IS_ANDROID)
-      AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet;
-#else
-      AutofillTriggerSource::kPopup;
-#endif
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), OtpPayloadPointeeEq(otp_fill_data),
-                        expected_source));
+                        DefaultTriggerSource()));
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
                                      /*main_text_value=*/otp_value),
@@ -1674,7 +1666,7 @@ class AutofillExternalDelegatePlusAddressTest
 TEST_F(AutofillExternalDelegatePlusAddressTest,
        ExternalDelegateFillsExistingPlusAddress) {
   // Trigger the popup on an email field.
-  IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
+  IssueOnQuery(kDefaultSuggestionTriggerSource, EMAIL_ADDRESS, "email");
 
   base::HistogramTester histogram_tester;
 
@@ -1726,7 +1718,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
 TEST_F(AutofillExternalDelegatePlusAddressTest,
        EmailSuggestionIsFilledWhenPlusAddressIsSuggested) {
   // Trigger the popup on an email field.
-  IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
+  IssueOnQuery(kDefaultSuggestionTriggerSource, EMAIL_ADDRESS, "email");
 
   base::HistogramTester histogram_tester;
 
@@ -2241,7 +2233,8 @@ TEST_F(AutofillExternalDelegateTest, IgnoreAutocompleteOffForAutofill) {
   field.set_should_autocomplete(false);
 
   external_delegate().OnQuery(form, field, /*caret_bounds=*/gfx::Rect(),
-                              kDefaultTriggerSource, /*update_datalist=*/false);
+                              kDefaultSuggestionTriggerSource,
+                              /*update_datalist=*/false);
 
   std::vector<Suggestion> autofill_items;
   autofill_items.emplace_back(SuggestionType::kAutocompleteEntry);

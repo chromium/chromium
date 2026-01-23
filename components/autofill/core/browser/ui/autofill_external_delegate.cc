@@ -619,10 +619,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
             suggestion.GetPayload<Suggestion::AutofillAiPayload>();
         if (base::optional_ref<const EntityInstance> entity =
                 edm->GetEntityInstance(payload.guid)) {
-          manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                      query_form_, query_field_.global_id(),
-                                      entity.as_ptr(),
-                                      AutofillTriggerSource::kPopup);
+          manager_->FillOrPreviewForm(
+              mojom::ActionPersistence::kPreview, query_form_,
+              query_field_.global_id(), entity.as_ptr(),
+              TriggerSourceFromSuggestionTriggerSource(trigger_source_));
         }
       }
       break;
@@ -804,66 +804,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kFillAutofillAi:
-      if (const EntityDataManager* edm =
-              manager_->client().GetEntityDataManager()) {
-        const Suggestion::AutofillAiPayload& payload =
-            suggestion.GetPayload<Suggestion::AutofillAiPayload>();
-        if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(payload.guid)) {
-          const FormStructure* form_structure =
-              manager_->FindCachedFormById(query_form_.global_id());
-          if (!form_structure) {
-            break;
-          }
-          const AutofillField* autofill_field =
-              form_structure->GetFieldById(query_field_.global_id());
-          if (autofill_field &&
-              ShouldReauthBeforeFilling(
-                  *entity,
-                  RationalizeAndDetermineAttributeTypes(
-                      form_structure->fields(), autofill_field->section(),
-                      entity->type()),
-                  manager_->client().GetAppLocale(),
-                  CHECK_DEREF(manager_->client().GetPrefs()))) {
-            std::u16string message;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-            const std::u16string origin =
-                base::UTF8ToUTF16(autofill_field->origin().host());
-            message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH,
-                                                 origin);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-            MaybeAuthenticateBeforeFilling(
-                message, "Autofill.Ai.ReauthToFill",
-                base::BindOnce(
-                    [](base::WeakPtr<BrowserAutofillManager> manager,
-                       mojom::ActionPersistence action_persistence,
-                       const FormData& form, const FieldGlobalId& field_id,
-                       const EntityInstance::EntityId entity_id,
-                       AutofillTriggerSource trigger_source) {
-                      if (manager) {
-                        if (const EntityDataManager* edm =
-                                manager->client().GetEntityDataManager()) {
-                          if (base::optional_ref<const EntityInstance> entity =
-                                  edm->GetEntityInstance(entity_id)) {
-                            manager->FillOrPreviewForm(
-                                action_persistence, form, field_id,
-                                entity.as_ptr(), trigger_source);
-                          }
-                        }
-                      }
-                    },
-                    manager_->GetBrowserAutofillManagerWeakPtr(),
-                    mojom::ActionPersistence::kFill, query_form_,
-                    query_field_.global_id(), payload.guid,
-                    AutofillTriggerSource::kPopup));
-          } else {
-            manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                        query_form_, query_field_.global_id(),
-                                        entity.as_ptr(),
-                                        AutofillTriggerSource::kPopup);
-          }
-        }
-      }
+      FillAutofillAiForm(suggestion);
       break;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
@@ -1466,6 +1407,65 @@ void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
       reauth_message,
       base::BindOnce(&AutofillExternalDelegate::OnReauthCompleted, GetWeakPtr(),
                      std::move(callback)));
+}
+
+void AutofillExternalDelegate::FillAutofillAiForm(
+    const Suggestion& suggestion) {
+  const EntityDataManager* const edm =
+      manager_->client().GetEntityDataManager();
+  if (!edm) {
+    return;
+  }
+  const base::optional_ref<const EntityInstance> entity =
+      edm->GetEntityInstance(
+          suggestion.GetPayload<Suggestion::AutofillAiPayload>().guid);
+  if (!entity) {
+    return;
+  }
+
+  const FormStructure* form_structure =
+      manager_->FindCachedFormById(query_form_.global_id());
+  if (!form_structure) {
+    return;
+  }
+  const AutofillField* autofill_field =
+      form_structure->GetFieldById(query_field_.global_id());
+  const AutofillTriggerSource trigger_source =
+      TriggerSourceFromSuggestionTriggerSource(trigger_source_);
+
+  if (!autofill_field ||
+      !ShouldReauthBeforeFilling(*entity,
+                                 RationalizeAndDetermineAttributeTypes(
+                                     form_structure->fields(),
+                                     autofill_field->section(), entity->type()),
+                                 manager_->client().GetAppLocale(),
+                                 CHECK_DEREF(manager_->client().GetPrefs()))) {
+    manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
+                                query_field_.global_id(), entity.as_ptr(),
+                                trigger_source);
+    return;
+  }
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const std::u16string origin =
+      base::UTF8ToUTF16(autofill_field->origin().host());
+  message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH, origin);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  MaybeAuthenticateBeforeFilling(
+      message, "Autofill.Ai.ReauthToFill",
+      base::BindOnce(
+          [](base::WeakPtr<BrowserAutofillManager> manager,
+             const FormData& form, const FieldGlobalId& field_id,
+             const EntityInstance& entity,
+             AutofillTriggerSource trigger_source) {
+            if (!manager) {
+              return;
+            }
+            manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                       field_id, &entity, trigger_source);
+          },
+          manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
+          query_field_.global_id(), *entity, trigger_source));
 }
 
 void AutofillExternalDelegate::OnReauthCompleted(base::OnceClosure callback,
