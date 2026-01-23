@@ -92,8 +92,6 @@ class FakeBaseTabStripController : public TabStripController {
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
-  bool CanShowModalUI() const override;
-  std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
 
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
   void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;

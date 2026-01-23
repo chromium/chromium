@@ -33,14 +33,6 @@ bool FakeTabSlotController::IsTabSelected(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsTabPinned(const TabSlotView* tab) const {
-  return false;
-}
-
-bool FakeTabSlotController::IsTabFirst(const TabSlotView* tab) const {
-  return false;
-}
-
 bool FakeTabSlotController::IsFocusInTabs() const {
   return false;
 }

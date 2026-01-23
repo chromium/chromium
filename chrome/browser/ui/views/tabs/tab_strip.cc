@@ -41,6 +41,7 @@
 #include "base/types/to_address.h"
 #include "build/build_config.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1861,16 +1862,6 @@ bool TabStrip::IsTabSelected(const TabSlotView* tab) const {
   std::optional<int> model_index = GetModelIndexOf(tab);
   return model_index.has_value() &&
          controller_->IsTabSelected(model_index.value());
-}
-
-bool TabStrip::IsTabPinned(const TabSlotView* tab) const {
-  std::optional<int> model_index = GetModelIndexOf(tab);
-  return model_index.has_value() &&
-         controller_->IsTabPinned(model_index.value());
-}
-
-bool TabStrip::IsTabFirst(const TabSlotView* tab) const {
-  return GetModelIndexOf(tab) == 0;
 }
 
 bool TabStrip::IsFocusInTabs() const {

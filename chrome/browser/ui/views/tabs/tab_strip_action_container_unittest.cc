@@ -74,8 +74,6 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
     return browser_.get();
   }
 
-  bool CanShowModalUI() const override { return true; }
-
  private:
   Profile* GetProfile(bool use_otr_profile) const {
     if (use_otr_profile) {

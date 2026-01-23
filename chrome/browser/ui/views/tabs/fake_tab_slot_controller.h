@@ -55,8 +55,6 @@ class FakeTabSlotController : public TabSlotController {
                              ui::mojom::MenuSourceType source_type) override {}
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
-  bool IsTabPinned(const TabSlotView* tab) const override;
-  bool IsTabFirst(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;
   bool ShouldCompactLeadingEdge() const override;
   void MaybeStartDrag(TabSlotView* source,

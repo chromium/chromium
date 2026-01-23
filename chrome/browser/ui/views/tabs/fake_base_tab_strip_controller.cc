@@ -304,15 +304,6 @@ FakeBaseTabStripController::GetBrowserWindowInterface() {
   return nullptr;
 }
 
-bool FakeBaseTabStripController::CanShowModalUI() const {
-  return false;
-}
-
-std::unique_ptr<ScopedTabStripModalUI>
-FakeBaseTabStripController::ShowModalUI() {
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 bool FakeBaseTabStripController::IsLockedForOnTask() {
   return on_task_locked_;

@@ -121,12 +121,6 @@ class TabSlotController {
   // Returns whether `tab` is selected.
   virtual bool IsTabSelected(const TabSlotView* tab) const = 0;
 
-  // Returns whether `tab` is pinned.
-  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
-
-  // Returns whether `tab` is the first in the model.
-  virtual bool IsTabFirst(const TabSlotView* tab) const = 0;
-
   // Returns true if any tab or one of its children has focus.
   virtual bool IsFocusInTabs() const = 0;
 

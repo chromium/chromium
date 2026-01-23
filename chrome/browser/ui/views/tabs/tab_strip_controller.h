@@ -7,26 +7,24 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/range/range.h"
 
+enum class BrowserFrameActiveState;
 class BrowserWindowInterface;
-class ScopedTabStripModalUI;
+enum class NewTabTypes;
 class Tab;
 class TabGroup;
 class TabStrip;
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace tab_groups {
 enum class TabGroupColorId;
@@ -50,13 +48,6 @@ class TabStripController {
 
   // Returns the number of tabs in the model.
   virtual int GetCount() const = 0;
-
-  // Features that want to show tabstrip-modal UI are mutually exclusive.
-  // Before showing a modal UI first check `CanShowModalUI`. Then call
-  // ShowModalUI() and keep `ScopedTabStripModal` alive to prevent other
-  // features from showing tabstrip-modal UI.
-  virtual bool CanShowModalUI() const = 0;
-  virtual std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() = 0;
 
   // Returns true if `index` is a valid model index.
   virtual bool IsValidIndex(int index) const = 0;

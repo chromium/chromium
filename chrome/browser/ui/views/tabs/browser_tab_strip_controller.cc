@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
@@ -222,15 +223,6 @@ ui::ListSelectionModel BrowserTabStripController::GetSelectionModel() const {
 
 int BrowserTabStripController::GetCount() const {
   return model_->count();
-}
-
-bool BrowserTabStripController::CanShowModalUI() const {
-  return model_->CanShowModalUI();
-}
-
-std::unique_ptr<ScopedTabStripModalUI>
-BrowserTabStripController::ShowModalUI() {
-  return model_->ShowModalUI();
 }
 
 bool BrowserTabStripController::IsValidIndex(int index) const {
