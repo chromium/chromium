@@ -328,7 +328,9 @@ void TestResponseProvider::GetLanguageResponse(
       [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)] ||
       [self isRunningTest:@selector
-            (testTranslateBadgeWithReaderModeBadgeSupport)]) {
+            (testTranslateBadgeWithReaderModeBadgeSupport)] ||
+      [self
+          isRunningTest:@selector(testTranslateInReaderModeAndNavigatesBack)]) {
     config.features_enabled.push_back(kEnableReaderModeInUS);
     config.features_enabled.push_back(kProactiveSuggestionsFramework);
     config.features_enabled.push_back(kPageActionMenu);
@@ -1466,6 +1468,61 @@ void TestResponseProvider::GetLanguageResponse(
   // The "Show Original?" banner should be visible again.
   GREYAssertTrue([self isAfterTranslateBannerVisible],
                  @"Show Original Banner was not found.");
+}
+
+// Tests that translation settings in Reader Mode are not applied when
+// navigating to a different page on the navigation stack.
+- (void)testTranslateInReaderModeAndNavigatesBack {
+  // Set up server with a French page.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+
+  // Load URL.
+  [ChromeEarlGrey loadURL:URL];
+
+  // Open Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+
+  // Verify Reader Mode is active.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // iOS26 introduces latency in the UI detection logic, which results in the
+  // infobar disappearing before the EG test attempts to detect it.
+  // Temporarily disabling synchronization allows the infobar to be detected
+  // within the expected latency.
+  ScopedSynchronizationDisabler disabler;
+  // Select translation in the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+  // Tap banner button to translate.
+  GREYAssertTrue([self selectTranslateButton],
+                 @"Could not tap on Translate banner action button");
+
+  // Verify page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // Close Reader Mode by navigating back.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that autotranslate applies to both the original page and the Reading
