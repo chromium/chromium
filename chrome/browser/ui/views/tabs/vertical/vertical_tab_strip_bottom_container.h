@@ -52,9 +52,6 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
   raw_ptr<views::MenuButtonController> everything_menu_controller_ = nullptr;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
 
-  views::FlexSpecification uncollapsed_flex_specification_;
-  views::FlexSpecification collapsed_flex_specification_;
-
   std::unique_ptr<tab_groups::STGEverythingMenu> everything_menu_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };

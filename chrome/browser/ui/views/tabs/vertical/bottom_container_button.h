@@ -31,12 +31,20 @@ class BottomContainerButton : public views::LabelButton,
   bool GetHitTestMask(SkPath* mask) const override;
 
   void SetFlatEdge(FlatEdge flat_edge);
+  void UpdateIcon(const ui::ImageModel& icon_image);
+  void SetInsets(const gfx::Insets& insets);
 
  private:
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  ui::ColorId GetForegroundColor() const;
   SkRRect GetButtonShape() const;
   gfx::RoundedCornersF GetButtonCornerRadii() const;
 
   FlatEdge flat_edge_ = FlatEdge::kNone;
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_BOTTOM_CONTAINER_BUTTON_H_

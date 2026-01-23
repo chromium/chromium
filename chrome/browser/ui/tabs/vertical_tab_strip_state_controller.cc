@@ -60,7 +60,6 @@ VerticalTabStripStateController::VerticalTabStripStateController(
   }
 
   UpdateCollapseActionItem();
-  UpdateBottomContainerActionItems();
 
   if (session_service_) {
     session_service_->AddObserver(this);
@@ -150,7 +149,6 @@ void VerticalTabStripStateController::NotifyCollapseChanged() {
 }
 
 void VerticalTabStripStateController::NotifyModeChanged() {
-  UpdateBottomContainerActionItems();
   on_mode_changed_callback_list_.Notify(this);
 }
 
@@ -182,29 +180,6 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
         l10n_util::GetStringUTF16(text)));
     collapse_action->SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
         l10n_util::GetStringUTF16(text)));
-  }
-}
-
-void VerticalTabStripStateController::UpdateBottomContainerActionItems() {
-  actions::ActionItem* tab_group_action_item =
-      actions::ActionManager::Get().FindAction(kActionTabGroupsMenu,
-                                               root_action_item_);
-  actions::ActionItem* new_tab_action_item =
-      actions::ActionManager::Get().FindAction(kActionNewTab,
-                                               root_action_item_);
-
-  // If Vertical Tabs is enabled, then the size of the images would be 20;
-  // otherwise, we use the default argument of 0 to avoid any issues with the
-  // horizontal tab strip.
-  const int icon_size = ShouldDisplayVerticalTabs() ? 20 : 0;
-
-  if (tab_group_action_item) {
-    tab_group_action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        kSavedTabGroupBarEverythingIcon, ui::kColorIcon, icon_size));
-  }
-  if (new_tab_action_item) {
-    new_tab_action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(kAddIcon, ui::kColorIcon, icon_size));
   }
 }
 

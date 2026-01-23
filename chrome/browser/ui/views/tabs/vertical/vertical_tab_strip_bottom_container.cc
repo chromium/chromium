@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -27,20 +28,6 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetProperty(views::kElementIdentifierKey,
               kVerticalTabStripBottomContainerElementId);
-
-  // Flex Specification for uncollapsed state
-  uncollapsed_flex_specification_ =
-      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded, false,
-                               views::MinimumFlexSizeRule::kPreferred);
-
-  // Flex Specification for collapsed state
-  collapsed_flex_specification_ =
-      views::FlexSpecification(views::LayoutOrientation::kVertical,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred, false,
-                               views::MinimumFlexSizeRule::kPreferred);
 
   collapsed_state_changed_subscription_ =
       state_controller->RegisterOnCollapseChanged(base::BindRepeating(
@@ -116,37 +103,42 @@ void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
 void VerticalTabStripBottomContainer::UpdateButtonStyles(
     tabs::VerticalTabStripStateController* controller) {
   bool is_collapsed = controller->IsCollapsed();
-  auto flex_specification = is_collapsed ? collapsed_flex_specification_
-                                         : uncollapsed_flex_specification_;
 
-  // Setting Button's layout based on collapsed state
-  SetOrientation(is_collapsed ? views::LayoutOrientation::kVertical
-                              : views::LayoutOrientation::kHorizontal);
+  auto orientation = is_collapsed ? views::LayoutOrientation::kVertical
+                                  : views::LayoutOrientation::kHorizontal;
 
-  if (!tab_group_button_) {
-    // If in incognito mode, the tab groups button will not be visible. In that
-    // case, we don't want to assign any flat edges or different flex behaviors.
-    new_tab_button_->SetProperty(views::kFlexBehaviorKey,
-                                 flex_specification.WithWeight(1));
-    return;
-  }
+  // Setting button's layout based on collapsed state
+  SetOrientation(orientation);
 
   // If collapsed, the tab group button and the new tab button share the same
   // weights. The flat edge is inverse to the position: tab group button is
   // placed on top so the flat edge is on the bottom.
-  // If uncollapsed, the tab group button and the new tab button are set with
-  // weights 1 and 2, respectively. Flat edges should be reset and padding
-  // is moved from top to left.
+  // Flat edges should be reset and padding is moved from top to left.
 
-  tab_group_button_->SetProperty(views::kFlexBehaviorKey,
-                                 flex_specification.WithWeight(1));
-  tab_group_button_->SetFlatEdge(is_collapsed
-                                     ? BottomContainerButton::FlatEdge::kBottom
-                                     : BottomContainerButton::FlatEdge::kNone);
+  // If in incognito mode, the tab groups button will not be visible.
+  if (tab_group_button_) {
+    tab_group_button_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(orientation,
+                                 views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred, false,
+                                 views::MinimumFlexSizeRule::kPreferred));
+    tab_group_button_->SetFlatEdge(
+        is_collapsed ? BottomContainerButton::FlatEdge::kBottom
+                     : BottomContainerButton::FlatEdge::kNone);
+    tab_group_button_->SetInsets(GetLayoutInsets(
+        is_collapsed
+            ? LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_COLLAPSED
+            : LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_UNCOLLAPSED));
+  }
 
   new_tab_button_->SetProperty(
       views::kFlexBehaviorKey,
-      flex_specification.WithWeight(is_collapsed ? 1 : 2));
+      views::FlexSpecification(
+          orientation, views::MinimumFlexSizeRule::kScaleToZero,
+          is_collapsed ? views::MaximumFlexSizeRule::kPreferred
+                       : views::MaximumFlexSizeRule::kUnbounded,
+          false, views::MinimumFlexSizeRule::kPreferred));
   new_tab_button_->SetFlatEdge(is_collapsed
                                    ? BottomContainerButton::FlatEdge::kTop
                                    : BottomContainerButton::FlatEdge::kNone);
@@ -155,6 +147,10 @@ void VerticalTabStripBottomContainer::UpdateButtonStyles(
   new_tab_button_->SetProperty(
       views::kMarginsKey, gfx::Insets::TLBR(is_collapsed ? padding : 0,
                                             is_collapsed ? 0 : padding, 0, 0));
+  new_tab_button_->SetInsets(GetLayoutInsets(
+      is_collapsed
+          ? LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_COLLAPSED
+          : LayoutInset::VERTICAL_TAB_STRIP_BOTTOM_BUTTON_UNCOLLAPSED));
 }
 
 BEGIN_METADATA(VerticalTabStripBottomContainer)

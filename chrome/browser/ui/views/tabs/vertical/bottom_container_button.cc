@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/bottom_container_button.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -15,6 +16,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/actions/action_view_interface.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -34,8 +36,9 @@ class BottomContainerButtonActionViewInterface
     // Calling ButtonActionViewInterface instead of
     // LabelButtonActionViewInterface to avoid the text of the button being set.
     ButtonActionViewInterface::ActionItemChangedImpl(action_item);
-    action_view_->SetImageModel(action_view_->GetState(),
-                                action_item->GetImage());
+    if (action_item->GetImage().IsVectorIcon()) {
+      action_view_->UpdateIcon(action_item->GetImage());
+    }
   }
 
  private:
@@ -52,6 +55,25 @@ BottomContainerButton::BottomContainerButton() {
 std::unique_ptr<views::ActionViewInterface>
 BottomContainerButton::GetActionViewInterface() {
   return std::make_unique<BottomContainerButtonActionViewInterface>(this);
+}
+
+void BottomContainerButton::UpdateIcon(const ui::ImageModel& icon_image) {
+  CHECK(icon_image.IsVectorIcon());
+
+  const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+      *icon_image.GetVectorIcon().vector_icon(), GetForegroundColor(),
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
+
+  SetImageModel(views::Button::STATE_NORMAL, image_model);
+  SetImageModel(views::Button::STATE_HOVERED, image_model);
+  SetImageModel(views::Button::STATE_PRESSED, image_model);
+  SetImageModel(views::Button::STATE_DISABLED, image_model);
+}
+
+void BottomContainerButton::SetInsets(const gfx::Insets& insets) {
+  std::unique_ptr<views::LabelButtonBorder> border = CreateDefaultBorder();
+  border->set_insets(insets);
+  SetBorder(std::move(border));
 }
 
 void BottomContainerButton::OnPaintBackground(gfx::Canvas* canvas) {
@@ -82,6 +104,22 @@ void BottomContainerButton::SetFlatEdge(FlatEdge flat_edge) {
                   GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
 
   SchedulePaint();
+}
+
+void BottomContainerButton::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &View::NotifyViewControllerCallback, base::Unretained(this)));
+}
+
+void BottomContainerButton::RemovedFromWidget() {
+  paint_as_active_subscription_ = {};
+}
+
+ui::ColorId BottomContainerButton::GetForegroundColor() const {
+  return GetWidget() && GetWidget()->ShouldPaintAsActive()
+             ? kColorNewTabButtonCRForegroundFrameActive
+             : kColorNewTabButtonCRForegroundFrameInactive;
 }
 
 gfx::RoundedCornersF BottomContainerButton::GetButtonCornerRadii() const {
