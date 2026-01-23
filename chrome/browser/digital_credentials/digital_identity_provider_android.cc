@@ -102,6 +102,8 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
                                             const url::Origin& origin,
                                             const base::ValueView request,
                                             DigitalIdentityCallback callback) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DigitalIdentityProviderAndroid::Create");
   callback_ = std::move(callback);
   std::optional<std::string> request_str = base::WriteJson(request);
   CHECK(request_str.has_value());

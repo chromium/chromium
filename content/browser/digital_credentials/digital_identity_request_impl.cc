@@ -566,6 +566,9 @@ void DigitalIdentityRequestImpl::Create(
     std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
         digital_credential_requests,
     CreateCallback callback) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DigitalIdentityRequestImpl::Create", "size",
+              static_cast<int>(digital_credential_requests.size()));
   if (!webid::IsDigitalCredentialsCreationEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);

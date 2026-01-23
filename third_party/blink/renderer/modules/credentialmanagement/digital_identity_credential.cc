@@ -283,6 +283,8 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
 void CreateDigitalIdentityCredentialInExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     const CredentialCreationOptions& options) {
+  TRACE_EVENT("content.digitalcredentials",
+              "CreateDigitalIdentityCredentialInExternalSource");
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsCreationEnabled(
       resolver->GetExecutionContext()));
