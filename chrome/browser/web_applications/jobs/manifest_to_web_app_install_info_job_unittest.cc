@@ -1723,6 +1723,187 @@ TEST_F(ManifestToWebAppInstallInfoLocalizationTest, EmptyValueIgnored) {
   EXPECT_FALSE(web_app_info->description.dir().has_value());
 }
 
+TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
+       LocalizedIconsEmptyVectorIgnored) {
+  base::ScopedClosureRunner reset_locale = SaveAndRestoreLocale();
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons_localized.emplace();
+
+  std::vector<blink::Manifest::ImageResource> empty_icons;
+  manifest->icons_localized->insert({icu::Locale("en_US"), empty_icons});
+
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+
+  // Should fall back to default icon from SetupBasicPageState() since the
+  // localized icons vector is empty.
+  ASSERT_EQ(1u, web_app_info->manifest_icons.size());
+  EXPECT_EQ(icon_url_, web_app_info->manifest_icons[0].url);
+
+  ASSERT_EQ(1u, web_app_info->trusted_icons.size());
+  EXPECT_EQ(icon_url_, web_app_info->trusted_icons[0].url);
+}
+
+TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
+       LocalizedIconsExactLocaleMatch) {
+  base::ScopedClosureRunner reset_locale = SaveAndRestoreLocale();
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons_localized.emplace();
+
+  const GURL en_us_icon_url("https://www.foo.bar/en_us_icon.png");
+  std::vector<blink::Manifest::ImageResource> en_us_icons;
+  blink::Manifest::ImageResource en_us_icon;
+  en_us_icon.src = en_us_icon_url;
+  en_us_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
+  en_us_icon.purpose = {Purpose::ANY};
+  en_us_icons.push_back(en_us_icon);
+  manifest->icons_localized->insert({icu::Locale("en_US"), en_us_icons});
+  web_contents_manager().GetOrCreateIconState(en_us_icon_url).bitmaps = {
+      GetBasicIconBitmap()};
+
+  const GURL fr_fr_icon_url("https://www.foo.bar/fr_fr_icon.png");
+  std::vector<blink::Manifest::ImageResource> fr_fr_icons;
+  blink::Manifest::ImageResource fr_fr_icon;
+  fr_fr_icon.src = fr_fr_icon_url;
+  fr_fr_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
+  fr_fr_icon.purpose = {Purpose::ANY};
+  fr_fr_icons.push_back(fr_fr_icon);
+  manifest->icons_localized->insert({icu::Locale("fr_FR"), fr_fr_icons});
+  web_contents_manager().GetOrCreateIconState(fr_fr_icon_url).bitmaps = {
+      GetBasicIconBitmap()};
+
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("fr-FR");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(1u, web_app_info->manifest_icons.size());
+  EXPECT_EQ(fr_fr_icon_url, web_app_info->manifest_icons[0].url);
+
+  ASSERT_EQ(1u, web_app_info->trusted_icons.size());
+  EXPECT_EQ(fr_fr_icon_url, web_app_info->trusted_icons[0].url);
+}
+
+TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
+       LocalizedIconsLanguageOnlyFallback) {
+  base::ScopedClosureRunner reset_locale = SaveAndRestoreLocale();
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons_localized.emplace();
+
+  const GURL en_icon_url("https://www.foo.bar/en_icon.png");
+  std::vector<blink::Manifest::ImageResource> en_icons;
+  blink::Manifest::ImageResource en_icon;
+  en_icon.src = en_icon_url;
+  en_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
+  en_icon.purpose = {Purpose::ANY};
+  en_icons.push_back(en_icon);
+  manifest->icons_localized->insert({icu::Locale("en"), en_icons});
+  web_contents_manager().GetOrCreateIconState(en_icon_url).bitmaps = {
+      GetBasicIconBitmap()};
+
+  // Set application locale to "en-US", localized icon should fall back to "en"
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(1u, web_app_info->manifest_icons.size());
+  EXPECT_EQ(en_icon_url, web_app_info->manifest_icons[0].url);
+
+  ASSERT_EQ(1u, web_app_info->trusted_icons.size());
+  EXPECT_EQ(en_icon_url, web_app_info->trusted_icons[0].url);
+}
+
+TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
+       LocalizedIconsFallbackToDefault) {
+  base::ScopedClosureRunner reset_locale = SaveAndRestoreLocale();
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons_localized.emplace();
+
+  const GURL de_de_icon_url("https://www.foo.bar/de_de_icon.png");
+  std::vector<blink::Manifest::ImageResource> de_de_icons;
+  blink::Manifest::ImageResource de_de_icon;
+  de_de_icon.src = de_de_icon_url;
+  de_de_icon.sizes = {gfx::Size(kIconSize, kIconSize)};
+  de_de_icon.purpose = {Purpose::ANY};
+  de_de_icons.push_back(de_de_icon);
+  manifest->icons_localized->insert({icu::Locale("de_DE"), de_de_icons});
+  web_contents_manager().GetOrCreateIconState(de_de_icon_url).bitmaps = {
+      GetBasicIconBitmap()};
+
+  // Set application locale to "en-US", which has no match in icons_localized
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+
+  // Should fall back to default icon from SetupBasicPageState()
+  ASSERT_EQ(1u, web_app_info->manifest_icons.size());
+  EXPECT_EQ(icon_url_, web_app_info->manifest_icons[0].url);
+
+  ASSERT_EQ(1u, web_app_info->trusted_icons.size());
+  EXPECT_EQ(icon_url_, web_app_info->trusted_icons[0].url);
+}
+
+TEST_F(ManifestToWebAppInstallInfoLocalizationTest,
+       LocalizedIconsMultipleIconsInLocale) {
+  base::ScopedClosureRunner reset_locale = SaveAndRestoreLocale();
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons_localized.emplace();
+
+  SkBitmap icon_64_bitmap = gfx::test::CreateBitmap(64, SK_ColorRED);
+  SkBitmap icon_128_bitmap = gfx::test::CreateBitmap(128, SK_ColorBLUE);
+
+  const GURL en_us_icon_64_url("https://www.foo.bar/en_us_icon_64.png");
+  const GURL en_us_icon_128_url("https://www.foo.bar/en_us_icon_128.png");
+
+  std::vector<blink::Manifest::ImageResource> en_us_icons;
+  blink::Manifest::ImageResource en_us_icon_64;
+  en_us_icon_64.src = en_us_icon_64_url;
+  en_us_icon_64.sizes = {gfx::Size(64, 64)};
+  en_us_icon_64.purpose = {Purpose::ANY};
+  en_us_icons.push_back(en_us_icon_64);
+  web_contents_manager().GetOrCreateIconState(en_us_icon_64_url).bitmaps = {
+      icon_64_bitmap};
+
+  blink::Manifest::ImageResource en_us_icon_128;
+  en_us_icon_128.src = en_us_icon_128_url;
+  en_us_icon_128.sizes = {gfx::Size(128, 128)};
+  en_us_icon_128.purpose = {Purpose::ANY};
+  en_us_icons.push_back(en_us_icon_128);
+  web_contents_manager().GetOrCreateIconState(en_us_icon_128_url).bitmaps = {
+      icon_128_bitmap};
+
+  manifest->icons_localized->insert({icu::Locale("en_US"), en_us_icons});
+
+  g_browser_process->GetFeatures()->application_locale_storage()->Set("en-US");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(2u, web_app_info->manifest_icons.size());
+  EXPECT_EQ(en_us_icon_64_url, web_app_info->manifest_icons[0].url);
+  EXPECT_EQ(en_us_icon_128_url, web_app_info->manifest_icons[1].url);
+
+  ASSERT_EQ(1u, web_app_info->trusted_icons.size());
+  EXPECT_EQ(en_us_icon_128_url, web_app_info->trusted_icons[0].url);
+
+  // Verify expected bitmap chosen of proper size.
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[128],
+              gfx::test::EqualsBitmap(icon_128_bitmap));
+
+  // Verify bitmaps populated properly for `any` icons.
+  for (const auto& icon_data : web_app_info->trusted_icon_bitmaps.any) {
+    const SkBitmap& bitmap = icon_data.second;
+    gfx::test::CheckColors(
+        bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2), SK_ColorBLUE);
+  }
+}
+
 }  // namespace
 
 }  // namespace web_app
