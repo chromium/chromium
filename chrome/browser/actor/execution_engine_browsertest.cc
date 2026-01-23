@@ -134,10 +134,14 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
       : prerender_helper_(
             base::BindRepeating(&ExecutionEngineBrowserTest::web_contents,
                                 base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor,
-                              kGlicExternalProtocolActionResultCode},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlic, {}},
+                              {features::kTabstripComboButton, {}},
+                              {features::kGlicActor, {}},
+                              {kGlicExternalProtocolActionResultCode, {}},
+                              {kGlicCrossOriginNavigationGating,
+                               {{"confirm_navigation_to_new_origins",
+                                 "false"}}}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;
