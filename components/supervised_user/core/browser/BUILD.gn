@@ -96,6 +96,8 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
+    "family_link_settings_data_type_controller.cc",
+    "family_link_settings_data_type_controller.h",
     "family_link_settings_service.cc",
     "family_link_settings_service.h",
     "family_link_user_capabilities.cc",
@@ -126,8 +128,6 @@ static_library("browser") {
     "supervised_user_service.cc",
     "supervised_user_service.h",
     "supervised_user_service_observer.h",
-    "family_link_settings_data_type_controller.cc",
-    "family_link_settings_data_type_controller.h",
     "supervised_user_url_filter.cc",
     "supervised_user_url_filter.h",
     "supervised_user_url_filtering_service.cc",
@@ -204,7 +204,9 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
+    "family_link_settings_data_type_controller_unittest.cc",
     "family_link_settings_service_unittest.cc",
+    "family_link_url_filter_manual_behavior_unittest.cc",
     "family_link_user_capabilities_unittest.cc",
     "fetcher_config_unittest.cc",
     "kids_chrome_management_url_checker_client_unittest.cc",
@@ -221,7 +223,6 @@ source_set("unit_tests") {
     "supervised_user_pref_store_unittest.cc",
     "supervised_user_preferences_unittest.cc",
     "supervised_user_service_unittest.cc",
-    "family_link_settings_data_type_controller_unittest.cc",
     "supervised_user_url_filter_unittest.cc",
     "supervised_user_utils_unittest.cc",
   ]

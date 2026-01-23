@@ -30,7 +30,7 @@
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -59,9 +59,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -308,12 +306,11 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
 
   supervised_user::FilteringBehavior filtering_behavior;
   if (profile.IsChild()) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(&profile);
-    supervised_user::SupervisedUserURLFilter* url_filter =
-        supervised_user_service->GetURLFilter();
     filtering_behavior =
-        url_filter->GetFilteringBehavior(entry.url.GetWithEmptyPath()).behavior;
+        supervised_user::SupervisedUserUrlFilteringServiceFactory::
+            GetForProfile(&profile)
+                ->GetFilteringBehavior(entry.url.GetWithEmptyPath())
+                .behavior;
     is_blocked_visit = entry.blocked_visit;
     result_mojom->host_filtering_behavior =
         FilteringBehaviorToMojom(filtering_behavior);

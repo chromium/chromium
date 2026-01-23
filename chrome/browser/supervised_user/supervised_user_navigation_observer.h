@@ -29,6 +29,7 @@
 
 namespace supervised_user {
 class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
 class SupervisedUserInterstitial;
 }  // namespace supervised_user
 
@@ -147,6 +148,8 @@ class SupervisedUserNavigationObserver
   content::FrameTreeNodeId frame_tree_node_id();
 
   supervised_user::SupervisedUserService* supervised_user_service() const;
+  supervised_user::SupervisedUserUrlFilteringService*
+  supervised_user_url_filtering_service() const;
 
 #if BUILDFLAG(IS_ANDROID)
   // Observes changes to the force google safe search pref and reloads the

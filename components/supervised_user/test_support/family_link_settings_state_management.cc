@@ -143,10 +143,12 @@ bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
   return IsSafeSitesEnabled(services.pref_service.get());
 }
 
-bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
-                     const GURL& url,
-                     FilteringBehavior expected_filtering_behavior) {
-  SupervisedUserURLFilter::Result result = url_filter.GetFilteringBehavior(url);
+bool IsUrlConfigured(
+    const SupervisedUserUrlFilteringService& url_filtering_service,
+    const GURL& url,
+    FilteringBehavior expected_filtering_behavior) {
+  SupervisedUserURLFilter::Result result =
+      url_filtering_service.GetFilteringBehavior(url);
 
   if (!result.IsFromManualList()) {
     // The change that arrived doesn't have the manual mode for requested url
@@ -167,17 +169,13 @@ bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
 bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
                              const std::optional<GURL>& allowed_url,
                              const std::optional<GURL>& blocked_url) {
-  SupervisedUserURLFilter* url_filter =
-      services.supervised_user_service->GetURLFilter();
-  CHECK(url_filter);
-
   if (!AreSafeSitesConfigured(services)) {
     return false;
   }
 
   if (allowed_url.has_value()) {
-    if (!IsUrlConfigured(*url_filter, *allowed_url,
-                         FilteringBehavior::kAllow)) {
+    if (!IsUrlConfigured(*services.supervised_user_url_filtering_service,
+                         *allowed_url, FilteringBehavior::kAllow)) {
       LOG(WARNING) << allowed_url->spec()
                    << " is not configured yet (requested: kAllow).";
       return false;
@@ -185,8 +183,8 @@ bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
   }
 
   if (blocked_url.has_value()) {
-    if (!IsUrlConfigured(*url_filter, *blocked_url,
-                         FilteringBehavior::kBlock)) {
+    if (!IsUrlConfigured(*services.supervised_user_url_filtering_service,
+                         *blocked_url, FilteringBehavior::kBlock)) {
       LOG(WARNING) << blocked_url->spec()
                    << " is not configured yet (requested: kBlock).";
       return false;
@@ -471,9 +469,13 @@ bool FamilyLinkSettingsState::ToggleIntent::Check(
 
 FamilyLinkSettingsState::Services::Services(
     const SupervisedUserService& supervised_user_service,
+    const SupervisedUserUrlFilteringService&
+        supervised_user_url_filtering_service,
     const PrefService& pref_service,
     const HostContentSettingsMap& host_content_settings_map)
     : supervised_user_service(supervised_user_service),
+      supervised_user_url_filtering_service(
+          supervised_user_url_filtering_service),
       pref_service(pref_service),
       host_content_settings_map(host_content_settings_map) {}
 

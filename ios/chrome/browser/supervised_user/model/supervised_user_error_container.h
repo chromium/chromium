@@ -23,6 +23,11 @@
 
 @protocol ParentAccessCommands;
 
+namespace supervised_user {
+class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
+}  // namespace supervised_user
+
 namespace web {
 class WebState;
 }
@@ -112,6 +117,8 @@ class SupervisedUserErrorContainer
   __weak id<ParentAccessCommands> commands_handler_;
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
+  raw_ref<supervised_user::SupervisedUserUrlFilteringService>
+      supervised_user_url_filtering_service_;
   raw_ptr<web::WebState> web_state_;
   std::set<std::string> requested_hosts_;
   base::WeakPtrFactory<SupervisedUserErrorContainer> weak_ptr_factory_{this};

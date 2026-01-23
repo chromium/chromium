@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/test_support/family_link_settings_state_management.h"
 #import "components/sync/service/sync_service.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -39,9 +41,14 @@ supervised_user::FamilyLinkSettingsState::Services
 GetSupervisedUserServicesForProfile(ProfileIOS* profile) {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
+  supervised_user::SupervisedUserUrlFilteringService* url_filtering_service =
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          profile);
   // SupervisedUserService is not available for the incognito profile.
   CHECK(supervised_user_service);
-  return {*supervised_user_service, *profile->GetPrefs(),
+  CHECK(url_filtering_service);
+  return {*supervised_user_service, *url_filtering_service,
+          *profile->GetPrefs(),
           *ios::HostContentSettingsMapFactory::GetForProfile(profile)};
 }
 

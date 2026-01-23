@@ -21,6 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -38,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -142,6 +144,12 @@ class SupervisedUserURLFilterTestBase : public MixinBasedInProcessBrowserTest {
         ->GetURLFilter();
   }
 
+  supervised_user::SupervisedUserUrlFilteringService* GetUrlFilteringService()
+      const {
+    return supervised_user::SupervisedUserUrlFilteringServiceFactory::
+        GetForProfile(browser()->profile());
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   supervised_user::SupervisionMixin supervision_mixin_{
@@ -168,8 +176,9 @@ class TabClosingObserver : public TabStripModelObserver {
   TabClosingObserver& operator=(const TabClosingObserver&) = delete;
 
   void WaitForContentsClosing() {
-    if (!contents_)
+    if (!contents_) {
       return;
+    }
 
     run_loop_.Run();
   }
@@ -178,16 +187,18 @@ class TabClosingObserver : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kRemoved)
+    if (change.type() != TabStripModelChange::kRemoved) {
       return;
+    }
 
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
       if (contents_ == contents.contents &&
           contents.remove_reason ==
               TabStripModelChange::RemoveReason::kDeleted) {
-        if (run_loop_.running())
+        if (run_loop_.running()) {
           run_loop_.Quit();
+        }
         contents_ = nullptr;
         return;
       }
@@ -236,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockNewTabAfterLoading) {
     // Block the current URL.
     supervised_user_test_util::SetWebFilterType(
         browser()->profile(), supervised_user::WebFilterType::kCertainSites);
-    ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
+    ASSERT_TRUE(
+        GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
     content::TestNavigationObserver observer(tab);
     observer.Wait();
@@ -282,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   // Block the current URL.
   supervised_user_test_util::SetWebFilterType(
       browser()->profile(), supervised_user::WebFilterType::kCertainSites);
-  ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
+  ASSERT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
   content::TestNavigationObserver observer(tab);
   observer.Wait();
@@ -314,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
-  ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
+  ASSERT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
   content::TestNavigationObserver block_observer(web_contents);
   block_observer.Wait();
@@ -343,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
-  ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
+  ASSERT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
   // Verify that there is no crash when closing the blocked tab
   // (https://crbug.com/719708).
@@ -364,7 +379,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
-  ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
+  ASSERT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(test_url).IsBlocked());
 
   content::TestNavigationObserver block_observer(web_contents);
   block_observer.Wait();
@@ -373,7 +389,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
 
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
-  ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsAllowed());
+  ASSERT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(test_url).IsAllowed());
 
   content::TestNavigationObserver unblock_observer(web_contents);
   unblock_observer.Wait();
@@ -451,8 +468,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), allowed_url.GetHost(), /*allowlist=*/true);
-  EXPECT_TRUE(GetUrlFilter()->GetFilteringBehavior(allowed_url).IsAllowed());
-  EXPECT_TRUE(GetUrlFilter()
+  EXPECT_TRUE(
+      GetUrlFilteringService()->GetFilteringBehavior(allowed_url).IsAllowed());
+  EXPECT_TRUE(GetUrlFilteringService()
                   ->GetFilteringBehavior(allowed_url.GetWithEmptyPath())
                   .IsAllowed());
 
@@ -478,10 +496,10 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
   GoBackAndWaitForNavigation(tab);
 
   EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
-  EXPECT_TRUE(GetUrlFilter()
+  EXPECT_TRUE(GetUrlFilteringService()
                   ->GetFilteringBehavior(allowed_url.GetWithEmptyPath())
                   .IsAllowed());
-  EXPECT_TRUE(GetUrlFilter()
+  EXPECT_TRUE(GetUrlFilteringService()
                   ->GetFilteringBehavior(blocked_url.GetWithEmptyPath())
                   .IsBlocked());
 
@@ -561,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
       browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
-  EXPECT_TRUE(GetUrlFilter()
+  EXPECT_TRUE(GetUrlFilteringService()
                   ->GetFilteringBehavior(test_url.GetWithEmptyPath())
                   .IsAllowed());
 

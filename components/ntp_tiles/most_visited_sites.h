@@ -47,6 +47,7 @@ class IdentityManager;
 
 namespace supervised_user {
 class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
 }
 
 namespace user_prefs {
@@ -134,6 +135,8 @@ class MostVisitedSites :
       PrefService* prefs,
       signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service,
+      const supervised_user::SupervisedUserUrlFilteringService*
+          supervised_user_url_filtering_service,
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<PopularSites> popular_sites,
       std::unique_ptr<CustomLinksManager> custom_links,
@@ -489,6 +492,8 @@ class MostVisitedSites :
   raw_ptr<PrefService> prefs_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
+  raw_ptr<const supervised_user::SupervisedUserUrlFilteringService>
+      supervised_user_url_filtering_service_;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   base::ScopedObservation<supervised_user::SupervisedUserService,
                           SupervisedUserServiceObserver>

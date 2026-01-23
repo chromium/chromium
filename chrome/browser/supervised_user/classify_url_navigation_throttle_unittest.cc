@@ -16,6 +16,7 @@
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,6 +25,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
@@ -212,7 +214,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
   GURL blocked_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
       profile(), blocked_url.GetHost(), /*allowlist=*/false);
-  ASSERT_TRUE(GetSupervisedUserURLFilter()
+  ASSERT_TRUE(SupervisedUserUrlFilteringServiceFactory::GetForProfile(profile())
                   ->GetFilteringBehavior(blocked_url)
                   .IsBlocked());
 

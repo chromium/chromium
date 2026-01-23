@@ -253,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigation to google.com pages is expected to be always allowed.
   GURL help_center_url = GURL(kDeviceFiltersHelpCenterUrl);
-  ASSERT_TRUE(GetSupervisedUserService()
-                  ->GetURLFilter()
+  ASSERT_TRUE(GetSupervisedUserUrlFilteringService()
                   ->GetFilteringBehavior(help_center_url)
                   .IsAllowed());
 

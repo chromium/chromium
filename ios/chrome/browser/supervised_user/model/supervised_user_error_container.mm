@@ -10,11 +10,11 @@
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/supervised_user/model/ios_web_content_handler_impl.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -52,6 +52,10 @@ SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
     : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
+      supervised_user_url_filtering_service_(
+          *supervised_user::SupervisedUserUrlFilteringServiceFactory::
+              GetForProfile(
+                  ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
   CHECK(SupervisedUserServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
@@ -179,12 +183,10 @@ void SupervisedUserErrorContainer::OnRequestCreated(
 }
 
 void SupervisedUserErrorContainer::MaybeUpdatePendingApprovals() {
-  supervised_user::SupervisedUserURLFilter* url_filter =
-      supervised_user_service_->GetURLFilter();
-
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
     supervised_user::SupervisedUserURLFilter::Result result =
-        url_filter->GetFilteringBehavior(GURL(*iter));
+        supervised_user_url_filtering_service_->GetFilteringBehavior(
+            GURL(*iter));
 
     if (result.IsFromManualList() && result.IsAllowed()) {
       iter = requested_hosts_.erase(iter);

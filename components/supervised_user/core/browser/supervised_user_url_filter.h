@@ -187,16 +187,12 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
-  // Returns the filtering status for a given URL which includes both behavior
-  // and reason, based on the default behavior and whether it is on a site list.
-  virtual Result GetFilteringBehavior(const GURL& url);
-
-  // Like `GetFilteringBehavior`, but also includes asynchronous checks
-  // against a remote service. If the result is already determined by the
-  // synchronous checks, then `callback` will be called synchronously.
-  // Returns true if `callback` was called synchronously. If
-  // `skip_manual_parent_filter` is set to true, it only uses the asynchronous
-  // safe search checks.
+  // Like `SupervisedUserUrlFilteringService::GetFilteringBehavior`, but also
+  // includes asynchronous checks against a remote service. If the result is
+  // already determined by the synchronous checks, then `callback` will be
+  // called synchronously. Returns true if `callback` was called synchronously.
+  // If `skip_manual_parent_filter` is set to true, it only uses the
+  // asynchronous safe search checks.
   //
   // The `url` argument is included in `callback` invocation.
   //
@@ -253,6 +249,9 @@ class SupervisedUserURLFilter {
   // Deprecated. Use SupervisedUserUrlFilteringService::GetWebFilterType
   // instead.
   WebFilterType GetWebFilterType() const;
+  // Deprecated. Use SupervisedUserUrlFilteringService::GetFilteringBehavior
+  // instead.
+  virtual Result GetFilteringBehavior(const GURL& url);
 
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 

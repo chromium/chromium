@@ -9,6 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
@@ -27,6 +28,10 @@ class SupervisedUserUrlFilteringService : public KeyedService {
 
   // Returns the type of web filter that is applied to the current profile.
   WebFilterType GetWebFilterType() const;
+
+  // Returns the filtering status for a given URL without any remote checks.
+  // TODO(crbug.com/465666839): Promote `Result` struct to a standalone entity.
+  SupervisedUserURLFilter::Result GetFilteringBehavior(const GURL& url) const;
 
  private:
   // Provides access to legacy way of resolving URL filtering.

@@ -22,6 +22,7 @@
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/google/core/common/google_util.h"
@@ -33,6 +34,7 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -526,7 +528,7 @@ void SupervisedUserNavigationObserver::RequestCreated(
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
     supervised_user::SupervisedUserURLFilter::Result result =
-        supervised_user_service()->GetURLFilter()->GetFilteringBehavior(
+        supervised_user_url_filtering_service()->GetFilteringBehavior(
             GURL(*iter));
 
     if (result.IsFromManualList() && result.IsAllowed()) {
@@ -546,6 +548,14 @@ supervised_user::SupervisedUserService*
 SupervisedUserNavigationObserver::supervised_user_service() const {
   return SupervisedUserServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+}
+
+supervised_user::SupervisedUserUrlFilteringService*
+SupervisedUserNavigationObserver::supervised_user_url_filtering_service()
+    const {
+  return supervised_user::SupervisedUserUrlFilteringServiceFactory::
+      GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SupervisedUserNavigationObserver);

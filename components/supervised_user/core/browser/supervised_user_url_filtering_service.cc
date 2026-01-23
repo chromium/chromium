@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
 
 namespace supervised_user {
@@ -25,4 +26,10 @@ WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
   }
   return supervised_user_service_->GetURLFilter()->GetWebFilterType();
 }
+
+SupervisedUserURLFilter::Result
+SupervisedUserUrlFilteringService::GetFilteringBehavior(const GURL& url) const {
+  return supervised_user_service_->GetURLFilter()->GetFilteringBehavior(url);
+}
+
 }  // namespace supervised_user

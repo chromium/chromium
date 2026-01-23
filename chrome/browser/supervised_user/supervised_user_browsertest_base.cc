@@ -19,6 +19,7 @@
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -28,6 +29,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -125,6 +127,10 @@ void SupervisedUserBrowserTestBase::SetInitialSupervisedUserState(
 SupervisedUserService* SupervisedUserBrowserTestBase::GetSupervisedUserService()
     const {
   return SupervisedUserServiceFactory::GetForProfile(GetProfile());
+}
+SupervisedUserUrlFilteringService*
+SupervisedUserBrowserTestBase::GetSupervisedUserUrlFilteringService() const {
+  return SupervisedUserUrlFilteringServiceFactory::GetForProfile(GetProfile());
 }
 
 MockUrlCheckerClient& SupervisedUserBrowserTestBase::GetMockUrlCheckerClient() {

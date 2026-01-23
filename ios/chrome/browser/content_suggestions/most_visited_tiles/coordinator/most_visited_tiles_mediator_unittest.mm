@@ -55,6 +55,8 @@ class FakeMostVisitedSites : public ntp_tiles::MostVisitedSites {
       PrefService* prefs,
       signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service,
+      supervised_user::SupervisedUserUrlFilteringService*
+          supervised_user_url_filtering_service,
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<ntp_tiles::PopularSites> popular_sites,
       std::unique_ptr<ntp_tiles::CustomLinksManager> custom_links,
@@ -65,6 +67,7 @@ class FakeMostVisitedSites : public ntp_tiles::MostVisitedSites {
       : MostVisitedSites(prefs,
                          identity_manager,
                          supervised_user_service,
+                         supervised_user_url_filtering_service,
                          top_sites,
                          std::move(popular_sites),
                          std::move(custom_links),
@@ -120,12 +123,14 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     RegisterProfilePrefs(pref_service_.registry());
     std::unique_ptr<FakeMostVisitedSites> most_visited_sites =
         std::make_unique<FakeMostVisitedSites>(
-            &pref_service_, /*identity_manager*/ nullptr,
-            /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
-            /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*enterprise_shortcuts*/ nullptr,
-            /*icon_cacher*/ nullptr,
-            /*is_default_chrome_app_migrated*/ true);
+            &pref_service_, /*identity_manager=*/nullptr,
+            /*supervised_user_service=*/nullptr,
+            /*supervised_user_url_filtering_service=*/nullptr,
+            /*top_sites=*/nullptr,
+            /*popular_sites=*/nullptr,
+            /*custom_links=*/nullptr, /*enterprise_shortcuts*/ nullptr,
+            /*icon_cacher=*/nullptr,
+            /*is_default_chrome_app_migrated=*/true);
     most_visited_sites->SetObserverRegistrationCallback(base::BindRepeating(
         &MostVisitedTilesMediatorTest::set_captured_observer,
         base::Unretained(this)));

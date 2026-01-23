@@ -75,17 +75,9 @@ TEST_F(SupervisedUserServiceTest, ApprovalRequestsEnabled) {
 // Tests that restricting all site navigation is applied to supervised users.
 TEST_F(SupervisedUserServiceTest, UrlIsBlockedForUser) {
   Initialize(InitialSupervisionState::kFamilyLinkCertainSites);
-  EXPECT_TRUE(supervised_user_test_environment_->url_filter()
+  EXPECT_TRUE(supervised_user_test_environment_->url_filtering_service()
                   ->GetFilteringBehavior(GURL("http://google.com"))
                   .IsBlocked());
-}
-
-// Tests that allowing all site navigation is applied to supervised users.
-TEST_F(SupervisedUserServiceTest, UrlIsAllowedForUser) {
-  Initialize(InitialSupervisionState::kFamilyLinkAllowAllSites);
-  EXPECT_TRUE(supervised_user_test_environment_->url_filter()
-                  ->GetFilteringBehavior(GURL("http://google.com"))
-                  .IsAllowed());
 }
 
 // Tests that changes to the allow or blocklist of the parent configuration are

@@ -19,6 +19,7 @@
 
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -88,6 +89,8 @@ class SupervisedUserBrowserTestBase :
       content::BrowserContext* context) override;
 
   SupervisedUserService* GetSupervisedUserService() const;
+  SupervisedUserUrlFilteringService* GetSupervisedUserUrlFilteringService()
+      const;
   // Returns a pointer to the mock url checker client (transitively)owned by the
   // supervised user service.
   MockUrlCheckerClient& GetMockUrlCheckerClient();
