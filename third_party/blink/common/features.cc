@@ -2120,22 +2120,22 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE(kRestrictSpellingAndGrammarHighlights,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kRestrictSpellingAndGrammarHighlightsChangedContents,
                    &kRestrictSpellingAndGrammarHighlights,
                    "RestrictSpellingAndGrammarHighlightsChangedContents",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kRestrictSpellingAndGrammarHighlightsChangedEnablement,
                    &kRestrictSpellingAndGrammarHighlights,
                    "RestrictSpellingAndGrammarHighlightsChangedEnablement",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kRestrictSpellingAndGrammarHighlightsChangedSelection,
                    &kRestrictSpellingAndGrammarHighlights,
                    "RestrictSpellingAndGrammarHighlightsChangedSelection",
-                   false);
+                   true);
 
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BASE_FEATURE(kSafelistPaytoToRegisterProtocolHandler,

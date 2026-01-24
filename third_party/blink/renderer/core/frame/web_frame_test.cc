@@ -64,6 +64,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -337,6 +338,8 @@ class WebFrameTest : public PageTestBase {
     // which is needed for Javascript URL security checks to work properly in
     // tests below.
     url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+    feature_list_.InitAndDisableFeature(
+        blink::features::kRestrictSpellingAndGrammarHighlights);
   }
 
   ~WebFrameTest() override {
@@ -518,6 +521,7 @@ class WebFrameTest : public PageTestBase {
 
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(WebFrameTest, ContentText) {
