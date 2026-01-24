@@ -251,8 +251,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   base::OnceClosure cancel_last_submission_;
 
-  class HTMLFormMcpTool final : public GarbageCollected<HTMLFormMcpTool>,
-                                public DeclarativeWebMCPTool {
+  class CORE_EXPORT HTMLFormMcpTool final
+      : public GarbageCollected<HTMLFormMcpTool>,
+        public DeclarativeWebMCPTool {
    public:
     HTMLFormMcpTool() = delete;
     HTMLFormMcpTool(const HTMLFormMcpTool&) = delete;
@@ -270,6 +271,9 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                      base::OnceCallback<void(
                          base::expected<String, WebDocument::ScriptToolError>)>
                          done_callback) override;
+    // Fill form controls with data as provided by `input_arguments`;
+    // returns true on success.
+    bool FillFormControls(const String& input_arguments);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
     bool IsValidTool() const { return !tool_name_.IsNull(); }
