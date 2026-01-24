@@ -1,0 +1,129 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+#menu {
+  --color-sys-divider: var(--color-composebox-file-carousel-divider);
+  --cr-action-menu-overflow: visible;
+  --cr-menu-background-color: var(--color-composebox-background);
+  --cr-menu-border-radius: 16px;
+  --cr-primary-text-color: var(--color-composebox-file-chip-text);
+  --cr-hover-background-color: var(
+    --color-composebox-context-entrypoint-hover-background
+  );
+}
+
+.suggestion-container {
+  position: relative;
+}
+
+.tab-preview {
+  background-color: var(--color-sys-surface-container-high);
+  border-radius: 12px;
+  border: 1px solid var(--color-sys-outline);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  display: none;
+  height: 125px;
+  inset-inline-start: 100%;
+  margin-inline-start: 8px;
+  object-fit: cover;
+  object-position: top;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+}
+
+.dropdown-item:hover + .tab-preview {
+  display: block;
+}
+
+#tabHeader {
+  color: var(--cr-primary-text-color);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0;
+  padding: 8px 14px 4px 14px;
+}
+
+.dropdown-item {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 400;
+  gap: 8px;
+  height: 32px;
+  justify-content: flex-start;
+  max-width: 320px;
+  padding: 6px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+:host([enable-multi-tab-selection_]) .dropdown-item {
+  width: 320px;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.dropdown-item[disabled] {
+  color: var(--color-composebox-context-entrypoint-text-disabled);
+  cursor: default;
+}
+
+.dropdown-item[disabled]:hover {
+  background-color: transparent;
+}
+
+#menu hr {
+  background: var(--color-sys-divider);
+  border: none;
+  height: 1px;
+  margin: 8px 0;
+}
+
+.tab-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#createImage {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+}
+
+.multi-tab-icon {
+  --iron-icon-height: 10px;
+  --iron-icon-width: 10px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 2px;
+}
+
+#multi-tab-add {
+  border: 1px solid;
+}
+
+#multi-tab-check {
+  --iron-icon-fill-color: white;
+  background-color: var(--color-composebox-tab-selector-button-selected);
+}
