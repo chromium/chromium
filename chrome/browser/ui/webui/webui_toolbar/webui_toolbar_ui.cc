@@ -89,13 +89,14 @@ void WebUIToolbarUI::BindInterface(
         receiver) {
   BrowserWindowInterface* browser_interface =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
-  CHECK(browser_interface);
-  ui::ElementContext element_context =
-      BrowserElements::From(browser_interface)->GetContext();
+  if (browser_interface) {
+    ui::ElementContext element_context =
+        BrowserElements::From(browser_interface)->GetContext();
 
-  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-      web_ui()->GetWebContents(), std::move(receiver), element_context,
-      GetKnownElementIdentifiers());
+    tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
+        web_ui()->GetWebContents(), std::move(receiver), element_context,
+        GetKnownElementIdentifiers());
+  }
 }
 
 void WebUIToolbarUI::OnDevToolsStatusChanged(
