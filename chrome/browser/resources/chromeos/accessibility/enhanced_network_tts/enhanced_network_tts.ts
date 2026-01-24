@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {KeepAlive} from '/common/keep_alive.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {OffscreenCommand, ServiceWorkerCommand} from './commands.js';
@@ -41,6 +42,7 @@ export class EnhancedNetworkTts {
   private offscreenReadyPromise_: Promise<void>|null = null;
 
   constructor() {
+    KeepAlive.init();
     this.processingQueue_ = [];
     this.api_ = null;
 
