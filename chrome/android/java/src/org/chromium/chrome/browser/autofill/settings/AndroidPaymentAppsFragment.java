@@ -120,9 +120,8 @@ public class AndroidPaymentAppsFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. This
-    // also includes checking if there are any subprefs that need to be built on the fly due to no
-    // xml file.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new ChromeBaseSearchIndexProvider(AndroidPaymentAppsFragment.class.getName(), 0);
+            new ChromeBaseSearchIndexProvider(
+                    AndroidPaymentAppsFragment.class.getName(),
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
