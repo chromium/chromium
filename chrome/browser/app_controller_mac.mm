@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -400,17 +401,17 @@ base::FilePath GetStartupProfilePathMac() {
 
 // Open the urls in the last used browser. Loads the profile asynchronously if
 // needed.
-void OpenUrlsInBrowser(const std::vector<GURL>& urls) {
+void OpenUrlsInBrowser(std::vector<GURL> urls) {
   std::vector<GURL> regular_urls;
   std::vector<base::FilePath> shortcuts;
 
-  for (const auto& url : urls) {
+  for (auto& url : urls) {
     base::FilePath path;
     if (net::FileURLToFilePath(url, &path) &&
         path.Extension() == shortcuts::ChromeWeblocFile::kFileExtension) {
       shortcuts.push_back(path);
     } else {
-      regular_urls.push_back(url);
+      regular_urls.push_back(std::move(url));
     }
   }
 
@@ -510,7 +511,7 @@ Profile* GetLastProfileMac() {
 // Opens a tab for each GURL in |urls|. If there is exactly one tab open before
 // this method is called, and that tab is the NTP, then this method closes the
 // NTP after all the |urls| have been opened.
-- (void)openUrlsReplacingNTP:(const std::vector<GURL>&)urls;
+- (void)openUrlsReplacingNTP:(std::vector<GURL>)urls;
 
 // Returns |YES| if |webContents| can be sent to another device via Handoff.
 - (BOOL)isHandoffEligible:(content::WebContents*)webContents;
@@ -1118,11 +1119,11 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)openStartupUrls {
   DCHECK(_startupComplete);
-  [self openUrlsReplacingNTP:_startupUrls];
+  [self openUrlsReplacingNTP:std::move(_startupUrls)];
   _startupUrls.clear();
 }
 
-- (void)openUrlsReplacingNTP:(const std::vector<GURL>&)urls {
+- (void)openUrlsReplacingNTP:(std::vector<GURL>)urls {
   if (urls.empty())
     return;
 
@@ -1140,7 +1141,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     return;
   }
 
-  OpenUrlsInBrowser(urls);
+  OpenUrlsInBrowser(std::move(urls));
 }
 
 - (void)resetKeepAliveWhileHidden {
@@ -1863,11 +1864,26 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)application:(NSApplication*)sender openURLs:(NSArray<NSURL*>*)urls {
   std::vector<GURL> gurlVector;
-  for (NSURL* url in urls)
-    gurlVector.push_back(net::GURLWithNSURL(url));
+  for (NSURL* url in urls) {
+    // Handle the google-chrome:// scheme (and chromium://).
+    // We convert every URL to string here to reuse the shared
+    // StripGoogleChromeScheme logic. While we could check [url scheme] first
+    // for efficiency, this path is user-initiated and low-frequency, so sharing
+    // the stripping logic is preferred.
+    std::string urlString = base::SysNSStringToUTF8([url absoluteString]);
+    base::FilePath::StringViewType urlStringView = urlString;
+    if (startup::StripGoogleChromeScheme(urlStringView)) {
+      GURL gurl(urlStringView);
+      if (startup::ValidateUrl(gurl)) {
+        gurlVector.push_back(gurl);
+      }
+    } else {
+      gurlVector.push_back(net::GURLWithNSURL(url));
+    }
+  }
 
   if (!gurlVector.empty())
-    [self openUrlsReplacingNTP:gurlVector];
+    [self openUrlsReplacingNTP:std::move(gurlVector)];
 }
 
 // Show the preferences window, or bring it to the front if it's already
@@ -2246,7 +2262,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   std::vector<GURL> gurlVector;
   gurlVector.push_back(gurl);
 
-  [self openUrlsReplacingNTP:gurlVector];
+  [self openUrlsReplacingNTP:std::move(gurlVector)];
   return YES;
 }
 

@@ -4431,6 +4431,7 @@ if (!is_android) {
     if (is_mac) {
       sources += [
         "../browser/app_controller_mac_browsertest.mm",
+        "../browser/app_controller_mac_google_chrome_scheme_browsertest.mm",
         "../browser/apps/app_shim/app_shim_listener_browsertest.mm",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
