@@ -106,24 +106,6 @@ export class SourcesMenuElement extends CrLitElement {
       return url;
     }
   }
-
-  // Divider before the images section.
-  // Not shown if no images or images is first section.
-  protected shouldShowDividerBeforeImagesSection_(): boolean {
-    const hasElementsAbove = this.attachedTabs.length > 0;
-    const hasElementsBelow = this.attachedImages.length > 0;
-    return hasElementsAbove && hasElementsBelow;
-  }
-
-  // Divider before the files section.
-  // Shown if files is second section after images/tabs.
-  // Not shown if no files or files is first section
-  protected shouldShowFileDividerBeforeTabsSection_(): boolean {
-    const hasElementsAbove =
-        this.attachedTabs.length > 0 || this.attachedImages.length > 0;
-    const hasElementsBelow = this.attachedFiles.length > 0;
-    return hasElementsAbove && hasElementsBelow;
-  }
 }
 
 declare global {
