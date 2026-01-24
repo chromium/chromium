@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -100,6 +101,34 @@ TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutText) {
   // space is of length 7.
   EXPECT_EQ(7, ax_text->TextOffsetInFormattingContext(0));
   EXPECT_EQ(8, ax_text->TextOffsetInFormattingContext(1));
+}
+
+TEST_F(AccessibilityTest, TextAlternativeFromInterestForAttribute) {
+  ScopedHTMLInterestForAttributeForTest interest_for_attribute_enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+      <div id="target" class="hint">Tooltip text</div>
+      <button id="button" interestfor="target">Button</button>")HTML");
+
+  const AXObject* ax_button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, ax_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, ax_button->RoleValue());
+
+  // Verify the button's computed name doesn't include the tooltip
+  ASSERT_EQ("Button", ax_button->ComputedName());
+}
+
+TEST_F(AccessibilityTest, TextAlternativeFromPopoverTargetAttribute) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="hint" popover="hint">Tooltip text</div>
+      <button id="button" popovertarget="hint">Button</button>")HTML");
+
+  const AXObject* ax_button = GetAXObjectByElementId("button");
+  ASSERT_NE(nullptr, ax_button);
+  ASSERT_EQ(ax::mojom::Role::kButton, ax_button->RoleValue());
+
+  // Verify the button's computed name doesn't include the tooltip
+  ASSERT_EQ("Button", ax_button->ComputedName());
 }
 
 TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutBr) {

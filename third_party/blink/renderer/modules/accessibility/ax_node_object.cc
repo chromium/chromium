@@ -6933,8 +6933,12 @@ String AXNodeObject::TextAlternativeFromTooltip(
   }
 
   if (name_sources) {
-    name_sources->push_back(
-        NameSource(*found_text_alternative, html_names::kPopovertargetAttr));
+    // Map NameFrom enum to corresponding HTML attribute
+    const QualifiedName& attr_name =
+        name_from == ax::mojom::blink::NameFrom::kInterestFor
+            ? html_names::kInterestforAttr
+            : html_names::kPopovertargetAttr;
+    name_sources->push_back(NameSource(*found_text_alternative, attr_name));
     name_sources->back().type = name_from;
   }
 
