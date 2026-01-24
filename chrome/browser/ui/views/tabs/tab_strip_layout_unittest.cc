@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 

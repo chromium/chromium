@@ -336,6 +336,7 @@ include_rules = [
   "+components/skills",
   "+components/soda",
   "+components/spellcheck",
+  "+components/split_tabs",
   "+components/sqlite_proto",
   "+components/startup_metric_utils/browser",
   "+components/startup_metric_utils/common",

@@ -12,7 +12,7 @@
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
-#include "components/tabs/public/split_tab_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 
