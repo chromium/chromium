@@ -46,6 +46,8 @@ export function getHtml(this: SearchboxElement) {
         ?show-dropdown="${this.dropdownIsVisible}"
         ?show-recent-tab-chip="${this.computeShowRecentTabChip_()}"
         ?show-voice-search="${this.shouldShowVoiceSearch_}"
+        ?show-canvas="${this.showCanvas}"
+        ?show-model-picker="${this.showModelPicker}"
         searchbox-layout-mode="${this.searchboxLayoutMode}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState}">
       ${!compactLayout ? dropdown : nothing}

@@ -203,6 +203,8 @@ export class ComposeboxElement extends I18nMixinLit
       disableComposeboxAnimation: {type: Boolean},
       fileUploadsComplete: {type: Boolean},
       canSubmitFilesAndInput_: {type: Boolean},
+      showModelPicker: {type: Boolean},
+      showCanvas: {type: Boolean},
       inputState_: {type: Object},
     };
   }
@@ -223,6 +225,8 @@ export class ComposeboxElement extends I18nMixinLit
   accessor disableVoiceSearchAnimation: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
   accessor lensButtonDisabled: boolean = false;
+  accessor showModelPicker: boolean = false;
+  accessor showCanvas: boolean = false;
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
   // If isCollapsible is set to true, the composebox will be a pill shape until

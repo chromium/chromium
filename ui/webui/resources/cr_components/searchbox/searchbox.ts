@@ -412,6 +412,12 @@ export class SearchboxElement extends SearchboxElementBase implements
         reflect: true,
         type: String,
       },
+      showCanvas: {
+        type: Boolean,
+      },
+      showModelPicker: {
+        type: Boolean,
+      },
     };
   }
 
@@ -436,6 +442,8 @@ export class SearchboxElement extends SearchboxElementBase implements
   accessor contextMenuGlifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor cyclingPlaceholders: boolean = false;
+  accessor showCanvas: boolean = false;
+  accessor showModelPicker: boolean = false;
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;

@@ -1708,6 +1708,19 @@ const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
     {"ShowSubmit", "true"},
     {"EnableEphemeralContextMenuDescription", "true"},
 };
+const FeatureEntry::FeatureParam kComposeboxNextWithCanvasAndModelPicker[] = {
+    {"ShowContextMenu", "true"},
+    {"ShowComposeboxZps", "true"},
+    {"ShowComposeboxTypedSuggest", "true"},
+    {"ShowToolsAndModels", "true"},
+    {"ShowRecentTabChip", "true"},
+    {"ContextMenuEnableMultiTabSelection", "true"},
+    {"ShowSubmit", "true"},
+    {"EnableEphemeralContextMenuDescription", "true"},
+    {"EnableThreadsRail", "true"},
+    {"ShowCanvas", "true"},
+    {"ShowModelPicker", "true"},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and Suggest, 5 File Limit",
@@ -1734,6 +1747,9 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Next Experience Single Context for Realbox Next",
      kComposeboxNextSingleContextForRealboxNext,
      std::size(kComposeboxNextSingleContextForRealboxNext), nullptr},
+    {"- Next Experience with Canvas and Model Picker",
+     kComposeboxNextWithCanvasAndModelPicker,
+     std::size(kComposeboxNextWithCanvasAndModelPicker), nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContext[] = {
