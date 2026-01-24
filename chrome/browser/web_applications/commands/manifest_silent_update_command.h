@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_update_job_result.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
@@ -42,61 +43,6 @@ enum class ManifestSilentUpdateCommandStage {
   kManifestUpdateJob,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(ManifestSilentUpdateCheckResult)
-enum class ManifestSilentUpdateCheckResult {
-  // kAppNotInstalled = 0, DEPRECATED.
-  kAppUpdateFailedDuringInstall = 1,
-  kSystemShutdown = 2,
-  kAppSilentlyUpdated = 3,
-  kAppUpToDate = 4,
-  kIconReadFromDiskFailed = 5,
-  kWebContentsDestroyed = 6,
-  kAppOnlyHasSecurityUpdate = 7,
-  kAppHasNonSecurityAndSecurityChanges = 8,
-  kPendingIconWriteToDiskFailed = 9,
-  kInvalidManifest = 10,
-  kInvalidPendingUpdateInfo = 11,
-  kUserNavigated = 12,
-  kManifestToWebAppInstallInfoError = 13,
-  kAppHasSecurityUpdateDueToThrottle = 14,
-  kAppNotAllowedToUpdate = 15,
-  kMaxValue = kAppNotAllowedToUpdate,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppManifestSilentUpdateCheckResult)
-
-bool IsAppUpdated(ManifestSilentUpdateCheckResult result);
-
-// Declare the logging operator before the command declaration, so the templated
-// completion method can use it to log the result.
-std::ostream& operator<<(std::ostream& os,
-                         ManifestSilentUpdateCheckResult result);
-
-// Returns all the information necessary for a manifest's silent update to have
-// finished running, including the result of a silent update command and the
-// timestamp of a silent icon update if that happened.
-struct ManifestSilentUpdateCompletionInfo {
-  ManifestSilentUpdateCompletionInfo();
-  explicit ManifestSilentUpdateCompletionInfo(
-      ManifestSilentUpdateCheckResult result);
-  ~ManifestSilentUpdateCompletionInfo() = default;
-
-  base::Value::Dict ToDebugValue();
-
-  // String value representation for compatibility with base::ToString.
-  std::string ToString();
-
-  // Move operation only for simplicity.
-  ManifestSilentUpdateCompletionInfo(ManifestSilentUpdateCompletionInfo&&);
-  ManifestSilentUpdateCompletionInfo& operator=(
-      ManifestSilentUpdateCompletionInfo&&);
-
-  ManifestSilentUpdateCheckResult result;
-  std::optional<base::Time> time_for_icon_diff_check;
-};
-
 // Downloads a currently linked manifest in the given web contents. Non-security
 // -sensitive manifest members are updated immediately. Security sensitive
 // changes are saved in the WebApp's PendingUpdateInfo.
@@ -119,8 +65,7 @@ class ManifestSilentUpdateCommand
     : public WebAppCommand<NoopLock, ManifestSilentUpdateCompletionInfo>,
       public content::WebContentsObserver {
  public:
-  using CompletedCallback =
-      base::OnceCallback<void(ManifestSilentUpdateCompletionInfo check_result)>;
+  using CompletedCallback = ManifestSilentUpdateCallback;
 
   ManifestSilentUpdateCommand(
       content::WebContents& web_contents,

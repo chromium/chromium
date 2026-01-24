@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -63,28 +64,6 @@
 
 namespace web_app {
 
-bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
-  switch (result) {
-    case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
-    case ManifestSilentUpdateCheckResult::kSystemShutdown:
-    case ManifestSilentUpdateCheckResult::kAppUpToDate:
-    case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
-    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
-    case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
-    case ManifestSilentUpdateCheckResult::kInvalidManifest:
-    case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
-    case ManifestSilentUpdateCheckResult::kUserNavigated:
-    case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
-    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
-      return false;
-    case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
-    case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
-    case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
-    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
-      return true;
-  }
-}
-
 std::ostream& operator<<(std::ostream& os,
                          ManifestSilentUpdateCommandStage stage) {
   switch (stage) {
@@ -97,67 +76,6 @@ std::ostream& operator<<(std::ostream& os,
     case ManifestSilentUpdateCommandStage::kManifestUpdateJob:
       return os << "kManifestUpdateJob";
   }
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         ManifestSilentUpdateCheckResult result) {
-  switch (result) {
-    case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
-      return os << "kAppUpdateFailedDuringInstall";
-    case ManifestSilentUpdateCheckResult::kSystemShutdown:
-      return os << "kSystemShutdown";
-    case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
-      return os << "kAppSilentlyUpdated";
-    case ManifestSilentUpdateCheckResult::kAppUpToDate:
-      return os << "kAppUpToDate";
-    case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
-      return os << "kIconReadFromDiskFailed";
-    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
-      return os << "kWebContentsDestroyed";
-    case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
-      return os << "kAppOnlyHasSecurityUpdate";
-    case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
-      return os << "kAppHasNonSecurityAndSecurityChanges";
-    case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
-      return os << "kPendingIconWriteToDiskFailed";
-    case ManifestSilentUpdateCheckResult::kInvalidManifest:
-      return os << "kInvalidManifest";
-    case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
-      return os << "kInvalidPendingUpdateInfo";
-    case ManifestSilentUpdateCheckResult::kUserNavigated:
-      return os << "kUserNavigated";
-    case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
-      return os << "kManifestToWebAppInstallInfoError";
-    case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
-      return os << "kAppHasSecurityUpdateDueToThrottle";
-    case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
-      return os << "kAppNotAllowedToUpdate";
-  }
-}
-
-ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo() =
-    default;
-ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo(
-    ManifestSilentUpdateCheckResult result)
-    : result(result) {}
-ManifestSilentUpdateCompletionInfo::ManifestSilentUpdateCompletionInfo(
-    ManifestSilentUpdateCompletionInfo&&) = default;
-ManifestSilentUpdateCompletionInfo&
-ManifestSilentUpdateCompletionInfo::operator=(
-    ManifestSilentUpdateCompletionInfo&&) = default;
-
-base::DictValue ManifestSilentUpdateCompletionInfo::ToDebugValue() {
-  return base::DictValue()
-      .Set("result", base::ToString(result))
-      .Set("time_for_icon_diff_check",
-           time_for_icon_diff_check.has_value()
-               ? base::TimeFormatShortDateAndTime(
-                     time_for_icon_diff_check.value())
-               : base::EmptyString16());
-}
-
-std::string ManifestSilentUpdateCompletionInfo::ToString() {
-  return ToDebugValue().DebugString();
 }
 
 ManifestSilentUpdateCommand::ManifestSilentUpdateCommand(
@@ -209,7 +127,7 @@ void ManifestSilentUpdateCommand::StartWithLock(
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed);
     return;
   }
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
@@ -247,7 +165,7 @@ void ManifestSilentUpdateCommand::OnManifestFetchedAcquireAppLock(
 
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed);
     return;
   }
 
@@ -298,7 +216,7 @@ void ManifestSilentUpdateCommand::OnAppLockAcquired(
     blink::mojom::ManifestPtr manifest) {
   if (IsWebContentsDestroyed()) {
     CompleteCommandAndSelfDestruct(
-        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsDestroyed);
+        FROM_HERE, ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed);
     return;
   }
   SetStage(ManifestSilentUpdateCommandStage::kManifestUpdateJob);
@@ -369,7 +287,7 @@ void ManifestSilentUpdateCommand::OnUpdateJobCompleted(
       check_result = ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate;
       break;
     case ManifestUpdateJobResult::kWebContentsDestroyed:
-      check_result = ManifestSilentUpdateCheckResult::kWebContentsDestroyed;
+      check_result = ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed;
       break;
     case ManifestUpdateJobResult::kUserNavigated:
       check_result = ManifestSilentUpdateCheckResult::kUserNavigated;
@@ -394,7 +312,7 @@ void ManifestSilentUpdateCommand::CompleteCommandAndSelfDestruct(
       break;
     case ManifestSilentUpdateCheckResult::kAppUpToDate:
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
-    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
+    case ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed:
     case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
     case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
     case ManifestSilentUpdateCheckResult::kInvalidManifest:

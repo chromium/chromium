@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -87,7 +88,6 @@ struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess;
 struct SynchronizeOsOptions;
 struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
-struct ManifestSilentUpdateCompletionInfo;
 enum class FetchManifestAndUpdateResult;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -237,8 +237,6 @@ class WebAppCommandScheduler {
       ManifestUpdateCheckCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
-  using ManifestSilentUpdateCompletedCallback = base::OnceCallback<void(
-      ManifestSilentUpdateCompletionInfo completion_info)>;
   // A newer version of `ScheduleManifestUpdateCheck` that uses a more
   // predictable app updating algorithm. This will eventually replace the
   // original.
@@ -246,7 +244,7 @@ class WebAppCommandScheduler {
   void ScheduleManifestSilentUpdate(
       content::WebContents& contents,
       std::optional<base::Time> previous_time_for_silent_icon_update,
-      ManifestSilentUpdateCompletedCallback callback,
+      ManifestSilentUpdateCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Applies any stored pending update metadata to the web app, updating its

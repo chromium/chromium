@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
              it is not installed."/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/web_applications/commands/manifest_silent_update_command.h:ManifestSilentUpdateCheckResult) -->
+<!-- LINT.ThenChange(/chrome/browser/web_applications/scheduler/manifest_silent_update_result.h:ManifestSilentUpdateCheckResult) -->
 
 <enum name="WebAppManifestUpdateResult">
   <int value="0" label="No app in scope"/>
