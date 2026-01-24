@@ -171,8 +171,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   inner_web_contents_creation_observer_ =
       std::make_unique<InnerFrameCreationObvserver>(
           web_ui->GetWebContents(),
-          base::BindOnce(&ContextualTasksUI::OnInnerWebContentsCreated,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(&ContextualTasksUI::OnInnerWebContentsCreated,
+                              weak_ptr_factory_.GetWeakPtr()));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIContextualTasksHost);
@@ -604,11 +604,9 @@ void ContextualTasksUI::PostMessageToWebview(
 
 void ContextualTasksUI::OnInnerWebContentsCreated(
     content::WebContents* inner_contents) {
-  // This should only ever happen once per WebUI.
-  CHECK(!nav_observer_);
+  // This can be called multiple times if the page is reloaded.
   nav_observer_ = std::make_unique<FrameNavObserver>(
       inner_contents, ui_service_, contextual_tasks_service_, this);
-  inner_web_contents_creation_observer_.reset();
   embedded_web_contents_ = inner_contents->GetWeakPtr();
 }
 
@@ -991,7 +989,7 @@ bool ContextualTasksUI::IsZeroState(
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
     content::WebContents* web_contents,
-    base::OnceCallback<void(content::WebContents*)> callback)
+    base::RepeatingCallback<void(content::WebContents*)> callback)
     : content::WebContentsObserver(web_contents),
       callback_(std::move(callback)) {}
 
@@ -1001,7 +999,7 @@ ContextualTasksUI::InnerFrameCreationObvserver::~InnerFrameCreationObvserver() =
 void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
   CHECK(callback_);
-  std::move(callback_).Run(inner_web_contents);
+  callback_.Run(inner_web_contents);
 }
 
 void ContextualTasksUI::BindInterface(
