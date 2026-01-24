@@ -39,12 +39,13 @@ std::set<media_session::mojom::MediaSessionAction> GetDefaultActions() {
 
 class MediaSessionControllersManagerTest
     : public RenderViewHostImplTestHarness,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   // Indices of the tuple parameters.
   static const int kIsInternalMediaSessionEnabled = 0;
   static const int kIsAudioFocusEnabled = 1;
   static const int kIsBrowserInitiatedAutoPipEnabled = 2;
+  static const int kIsBrowserInitiatedAutoPipDryRunEnabled = 3;
 
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -74,6 +75,14 @@ class MediaSessionControllersManagerTest
     } else {
       disabled_features.push_back(
           blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    }
+
+    if (IsBrowserInitiatedAutoPipDryRunEnabled()) {
+      enabled_features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
+    } else {
+      disabled_features.push_back(
+          media::kBrowserInitiatedAutomaticPictureInPictureDryRun);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -107,6 +116,10 @@ class MediaSessionControllersManagerTest
     return std::get<kIsBrowserInitiatedAutoPipEnabled>(GetParam());
   }
 
+  bool IsBrowserInitiatedAutoPipDryRunEnabled() const {
+    return std::get<kIsBrowserInitiatedAutoPipDryRunEnabled>(GetParam());
+  }
+
   void TearDown() override {
     manager_.reset();
     RenderViewHostImplTestHarness::TearDown();
@@ -119,7 +132,8 @@ class MediaSessionControllersManagerTest
     actions.insert(
         {media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
          media_session::mojom::MediaSessionAction::kExitPictureInPicture});
-    if (IsBrowserInitiatedAutoPipEnabled()) {
+    if (IsBrowserInitiatedAutoPipEnabled() ||
+        IsBrowserInitiatedAutoPipDryRunEnabled()) {
       actions.insert(
           media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
     }
@@ -410,9 +424,12 @@ TEST_P(MediaSessionControllersManagerTest,
 // Second bool is to indicate whether AudioFocus is enabled.
 // Third bool is to indicate whether BrowserInitiatedAutomaticPictureInPicture
 // is enabled.
+// Fourth bool is to indicate whether
+// BrowserInitiatedAutomaticPictureInPictureDryRun is enabled.
 INSTANTIATE_TEST_SUITE_P(MediaSessionEnabledTestInstances,
                          MediaSessionControllersManagerTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool(),
                                             ::testing::Bool()));
 }  // namespace content
