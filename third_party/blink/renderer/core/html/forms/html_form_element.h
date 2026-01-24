@@ -171,6 +171,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   }
 
  private:
+  friend class HTMLFormMcpToolTest;
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void FinishParsingChildren() override;

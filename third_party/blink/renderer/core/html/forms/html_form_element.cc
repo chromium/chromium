@@ -237,7 +237,7 @@ void HTMLFormElement::HTMLFormMcpTool::Trace(Visitor* visitor) const {
 }
 
 // This gets called when a <form> is added or removed from the document, or
-// when `tool-name` or `tool-description` attributes are added, removed, or
+// when `toolname` or `tooldescription` attributes are added, removed, or
 // changed.
 // Cases:
 //  - just had last attribute added, already connected
@@ -252,7 +252,7 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   if (!RuntimeEnabledFeatures::WebMCPEnabled()) {
     return;
   }
-  // The `<form>` must have *both* the `tool-name` and `tool-description`
+  // The `<form>` must have *both* the `toolname` and `tooldescription`
   // attributes, and the form must be document-connected, to qualify for
   // declarative WebMCP inclusion.
   String name = FastGetAttribute(html_names::kToolnameAttr);
