@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
@@ -39,7 +40,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final ModelList mModels;
     private final ChromeAndroidTask mTask;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
-    private final ExtensionActionListContainer mContainer;
+    private final ExtensionActionListRecyclerView mContainer;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
@@ -56,7 +57,7 @@ class ExtensionActionListMediator implements Destroyable {
             ModelList models,
             ChromeAndroidTask task,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            ExtensionActionListContainer container,
+            ExtensionActionListRecyclerView container,
             ExtensionsToolbarBridge extensionsToolbarBridge) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -241,7 +242,15 @@ class ExtensionActionListMediator implements Destroyable {
         for (int i = 0; i < mModels.size(); i++) {
             PropertyModel model = mModels.get(i).model;
             if (actionId.equals(model.get(ExtensionActionButtonProperties.ID))) {
-                return mContainer.getChildAt(i);
+                RecyclerView.ViewHolder holder = mContainer.findViewHolderForAdapterPosition(i);
+
+                if (holder == null) {
+                    // TODO(crbug.com/478113313): If the action is unpinned, pop it out to show
+                    // action popup.
+                    return null;
+                }
+
+                return holder.itemView;
             }
         }
         return null;

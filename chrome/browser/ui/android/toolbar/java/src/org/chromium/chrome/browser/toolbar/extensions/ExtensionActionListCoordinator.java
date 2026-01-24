@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -20,7 +23,7 @@ import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ViewGroupAdapter;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
  * Root component for the extension action buttons. Exposes public API for external consumers to
@@ -28,15 +31,15 @@ import org.chromium.ui.modelutil.ViewGroupAdapter;
  */
 @NullMarked
 public class ExtensionActionListCoordinator implements Destroyable {
-    private final ExtensionActionListContainer mContainer;
+    private final ExtensionActionListRecyclerView mContainer;
     private final ModelList mModels;
     private final ExtensionActionListMediator mMediator;
-    private final ViewGroupAdapter mAdapter;
+    private final SimpleRecyclerViewAdapter mAdapter;
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     public ExtensionActionListCoordinator(
             Context context,
-            ExtensionActionListContainer container,
+            ExtensionActionListRecyclerView container,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
             NullableObservableSupplier<Tab> currentTabSupplier,
@@ -53,24 +56,32 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         currentTabSupplier,
                         container,
                         extensionsToolbarBridge);
-        mAdapter =
-                new ViewGroupAdapter.Builder(mContainer, mModels)
-                        .registerType(
-                                ListItemType.EXTENSION_ACTION,
-                                parent ->
-                                        (ListMenuButton)
-                                                LayoutInflater.from(context)
-                                                        .inflate(
-                                                                R.layout.extension_action_button,
-                                                                parent,
-                                                                /* attachToRoot= */ false),
-                                ExtensionActionButtonViewBinder::bind)
-                        .build();
+
+        mAdapter = new SimpleRecyclerViewAdapter(mModels);
+        mAdapter.registerType(
+                ListItemType.EXTENSION_ACTION,
+                parent ->
+                        (ListMenuButton)
+                                LayoutInflater.from(context)
+                                        .inflate(
+                                                R.layout.extension_action_button,
+                                                parent,
+                                                /* attachToRoot= */ false),
+                ExtensionActionButtonViewBinder::bind);
+
+        mContainer.setLayoutManager(
+                new LinearLayoutManager(
+                        context, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false) {
+                    @Override
+                    public boolean canScrollHorizontally() {
+                        return false;
+                    }
+                });
+        mContainer.setAdapter(mAdapter);
     }
 
     @Override
     public void destroy() {
-        mAdapter.destroy();
         mMediator.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
@@ -79,7 +90,14 @@ public class ExtensionActionListCoordinator implements Destroyable {
     public void click(String actionId) {
         for (int i = 0; i < mModels.size(); i++) {
             if (mModels.get(i).model.get(ExtensionActionButtonProperties.ID).equals(actionId)) {
-                mContainer.getChildAt(i).performClick();
+                RecyclerView.ViewHolder holder = mContainer.findViewHolderForAdapterPosition(i);
+                if (holder == null) {
+                    // TODO(crbug.com/478113313): Pop out action in so that the view exists for
+                    // non-pinned actions.
+                    return;
+                }
+
+                holder.itemView.performClick();
                 return;
             }
         }

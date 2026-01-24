@@ -13,10 +13,12 @@ found in the LICENSE file.
     android:layout_marginVertical="?attr/toolbarButtonMarginVertical"
     android:orientation="horizontal">
 
-    <org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListContainer
+    <org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListRecyclerView
         android:id="@+id/extension_action_list"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="end"/>
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/extensions_menu_button"

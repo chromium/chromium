@@ -122,7 +122,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private MenuModelBridge mMenuModelBridge;
-    @Mock private ExtensionActionListContainer mContainer;
+    @Mock private ExtensionActionListRecyclerView mContainer;
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
