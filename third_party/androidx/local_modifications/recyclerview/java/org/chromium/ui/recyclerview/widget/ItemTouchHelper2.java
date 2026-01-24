@@ -62,7 +62,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a utility class to add swipe to dismiss and drag & drop support to RecyclerView.
+ * This is a fork of {@link androidx.recyclerview.widget.ItemTouchHelper}.
+ *
+ * <p>This is a utility class to add swipe to dismiss and drag & drop support to RecyclerView.
  *
  * <p>It works with a RecyclerView and a Callback class, which configures what type of interactions
  * are enabled and also receives events when user performs these actions.
