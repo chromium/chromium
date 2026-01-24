@@ -2522,7 +2522,9 @@ suite('NewTabPageComposeboxTest', () => {
         assertTrue((composeboxElement as any).submitEnabled_);
 
         // Simulate submit button click.
-        composeboxElement.$.submitOverlay.click();
+        composeboxElement.$.submitContainer.dispatchEvent(
+            new FocusEvent('focusin'));
+        composeboxElement.$.submitContainer.click();
         await searchboxHandler.whenCalled('submitQuery');
         await microtasksFinished();
 

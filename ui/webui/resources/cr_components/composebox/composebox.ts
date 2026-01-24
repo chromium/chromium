@@ -984,7 +984,7 @@ export class ComposeboxElement extends I18nMixinLit
     } else if (e.key === 'ArrowUp') {
       this.$.matches.selectPrevious();
     } else if (e.key === 'Escape' || e.key === 'PageUp') {
-      this.$.matches.selectFirst();
+      this.selectFirstMatch();
     } else if (e.key === 'PageDown') {
       this.$.matches.selectLast();
     } else if (e.key === 'Tab') {
@@ -1015,8 +1015,8 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInputFocusIn_() {
     // if there's a last queried input, it's guaranteed that at least
     // the verbatim match will exist.
-    if (this.lastQueriedInput_ && this.result_?.matches.length) {
-      this.$.matches.selectFirst();
+    if (this.lastQueriedInput_) {
+      this.selectFirstMatch();
     }
     if (this.ntpRealboxNextEnabled) {
       this.fire('composebox-input-focus-changed', {value: true});
@@ -1070,7 +1070,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleSubmitFocusIn_() {
     // Matches should always be greater than 0 due to verbatim match.
     if (this.input_ && !this.selectedMatch_) {
-      this.$.matches.selectFirst();
+      this.selectFirstMatch();
     }
   }
 
@@ -1218,7 +1218,7 @@ export class ComposeboxElement extends I18nMixinLit
     // Zero suggest matches are not allowed to be default. Therefore, this
     // makes sure zero suggest results aren't focused when they are returned.
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
-      this.$.matches.selectFirst();
+      this.selectFirstMatch();
     } else if (
         this.input_.trim() && hasMatches && this.selectedMatchIndex_ >= 0 &&
         this.selectedMatchIndex_ < this.result_.matches.length) {
@@ -1368,6 +1368,12 @@ export class ComposeboxElement extends I18nMixinLit
 
   getInputText(): string {
     return this.input_;
+  }
+
+  private selectFirstMatch() {
+    if (this.result_?.matches.length) {
+      this.$.matches.selectFirst();
+    }
   }
 }
 
