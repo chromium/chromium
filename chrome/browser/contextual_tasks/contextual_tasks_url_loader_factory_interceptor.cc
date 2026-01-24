@@ -141,15 +141,15 @@ void MaybeInterceptURLLoaderFactory(
     return;
   }
 
-  // Check if the embedder is the Contextual Tasks WebUI.
-  content::WebContents* embedder_web_contents = guest->embedder_web_contents();
-  if (!embedder_web_contents) {
+  // Check if the owner is the Contextual Tasks WebUI.
+  content::WebContents* owner_web_contents = guest->owner_web_contents();
+  if (!owner_web_contents) {
     return;
   }
 
-  const GURL& embedder_url = embedder_web_contents->GetLastCommittedURL();
-  if (embedder_url.scheme() != content::kChromeUIScheme ||
-      embedder_url.host() != chrome::kChromeUIContextualTasksHost) {
+  const GURL& owner_url = owner_web_contents->GetLastCommittedURL();
+  if (owner_url.scheme() != content::kChromeUIScheme ||
+      owner_url.host() != chrome::kChromeUIContextualTasksHost) {
     return;
   }
 
