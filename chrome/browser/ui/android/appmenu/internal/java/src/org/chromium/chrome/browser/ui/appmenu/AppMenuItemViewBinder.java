@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -226,6 +228,17 @@ class AppMenuItemViewBinder {
 
             view.setEnabled(false);
         }
+    }
+
+    public static @Px int getIconRowItemPixelHeight(Context context) {
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        new int[] {R.attr.minInteractTargetSize, R.attr.appMenuIconRowPadding});
+        int itemRowHeight = a.getDimensionPixelSize(0, 0);
+        int iconRowPadding = a.getDimensionPixelSize(1, 0);
+        a.recycle();
+
+        return itemRowHeight + 2 * iconRowPadding;
     }
 
     public static void bindItemWithSubmenu(PropertyModel model, View view, PropertyKey key) {
