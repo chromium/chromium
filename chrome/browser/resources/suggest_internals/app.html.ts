@@ -36,7 +36,7 @@ export function getHtml(this: AppElement) {
 </cr-drawer>
 <div id="requests">
   ${this.hardcodedRequest_ ? html`
-    <suggest-request request="${this.hardcodedRequest_}"
+    <suggest-request .request="${this.hardcodedRequest_}"
         @show-toast="${this.onShowToast_}"
         @open-hardcode-response-dialog="${this.onOpenHardcodeResponseDialog_}"
         @chip-click="${this.populateSearchInput_}">
