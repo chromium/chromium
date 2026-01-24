@@ -2025,8 +2025,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     // A collection of many categories, and only one of them is chosen for display.
     // Do not index this. The enclosing fragment should decide what to index.
-    // TODO(crbug.com/444470792): Consider having the enclosing fragment manually
-    //     add the title/summary resource of each category it includes.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(SingleCategorySettings.class.getName(), 0);
+            new BaseSearchIndexProvider(
+                    SingleCategorySettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
