@@ -69,6 +69,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -1324,14 +1325,27 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
+    auto scoped_callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
+
     if (!base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
       receiver_.ReportBadMessage(
           "CreateSkill cannot be called without Skills enabled.");
       return;
     }
-    // TODO(crbug.com/471796872): Add the actual implementation.
-    NOTIMPLEMENTED();
-    std::move(callback).Run(true);
+    const auto& ftd = sharing_manager().GetFocusedTabData();
+    tabs::TabInterface* tab = ftd.focus();
+    if (!tab) {
+      return;
+    }
+    if (auto* controller = skills::SkillsUiTabControllerInterface::From(tab)) {
+      // Pass empty strings for id, name, and icon.
+      skills::Skill skill(/*id=*/"",
+                          /*name=*/"",
+                          /*icon=*/"", request->prompt);
+      controller->ShowDialog(skill);
+      std::move(scoped_callback).Run(true);
+    }
 #else
     receiver_.ReportBadMessage("CreateSkill isn't supported on Android.");
 #endif  //  !BUILDFLAG(IS_ANDROID)

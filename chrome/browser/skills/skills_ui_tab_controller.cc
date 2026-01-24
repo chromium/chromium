@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog.h"
+#include "components/skills/public/skill.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -24,7 +25,7 @@ SkillsUiTabController::SkillsUiTabController(tabs::TabInterface& tab)
 
 SkillsUiTabController::~SkillsUiTabController() = default;
 
-void SkillsUiTabController::ShowDialog() {
+void SkillsUiTabController::ShowDialog(const skills::Skill& skill) {
   if (dialog_delegate_) {
     return;
   }
@@ -32,7 +33,7 @@ void SkillsUiTabController::ShowDialog() {
   CHECK(contents);
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
-  // TODO(crbug.com/476145843): Pass in the prompt and a weak pointer to the tab
+  // TODO(crbug.com/476145843): Pass in the skill and a weak pointer to the tab
   // controller in the dialog.
   auto delegate = std::make_unique<SkillsDialog>(profile);
   delegate->RegisterOnDialogClosedCallback(base::BindOnce(

@@ -356,6 +356,7 @@ source_set("impl") {
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/skills",
+      "//chrome/browser/skills:public",
       "//chrome/browser/themes",
       "//chrome/browser/ui/views/tabs/glic",
       "//components/password_manager/core/browser/actor_login:common",

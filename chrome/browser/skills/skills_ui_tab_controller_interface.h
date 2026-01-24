@@ -16,6 +16,8 @@ class TabInterface;
 
 namespace skills {
 
+struct Skill;
+
 class SkillsUiTabControllerInterface {
  public:
   DECLARE_USER_DATA(SkillsUiTabControllerInterface);
@@ -27,7 +29,7 @@ class SkillsUiTabControllerInterface {
   static SkillsUiTabControllerInterface* From(tabs::TabInterface* tab);
 
   // Opens the skills dialog.
-  virtual void ShowDialog() = 0;
+  virtual void ShowDialog(const skills::Skill& skill) = 0;
 
   // Closes the dialog if it is currently open.
   virtual void CloseDialog() = 0;

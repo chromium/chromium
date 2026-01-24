@@ -8,6 +8,7 @@
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/skills/features.h"
+#include "components/skills/public/skill.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
@@ -47,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        ShowDialogOpensWidget) {
   EXPECT_FALSE(IsDialogVisible());
 
-  skills_ui_tab_controller()->ShowDialog();
+  skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
+  skills_ui_tab_controller()->ShowDialog(test_skill);
 
   EXPECT_TRUE(IsDialogVisible());
 }
@@ -55,7 +57,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
 // Verify calling ShowDialog twice doesn't open two dialogs.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   // Open first dialog.
-  skills_ui_tab_controller()->ShowDialog();
+  skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
+  skills_ui_tab_controller()->ShowDialog(test_skill);
   EXPECT_TRUE(IsDialogVisible());
 
   ConstrainedWebDialogDelegate* first_delegate =
@@ -63,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
   ASSERT_TRUE(first_delegate);
 
   // Try to open again immediately.
-  skills_ui_tab_controller()->ShowDialog();
+  skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
+  skills_ui_tab_controller()->ShowDialog(test_skill2);
 
   // Dialog should still be visible.
   EXPECT_TRUE(IsDialogVisible());
@@ -80,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, PreventDoubleOpen) {
 // Verify calling CloseDialog destroys the widget.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CloseDialogDestroysWidget) {
-  skills_ui_tab_controller()->ShowDialog();
+  skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
+  skills_ui_tab_controller()->ShowDialog(test_skill);
   EXPECT_TRUE(IsDialogVisible());
 
   base::test::TestFuture<void> close_future;
@@ -101,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
   ASSERT_TRUE(controller_a);
 
   // Open dialog on Tab A.
-  controller_a->ShowDialog();
+  skills::Skill test_skill("id", "skill_name", "icon", "Test Prompt");
+  controller_a->ShowDialog(test_skill);
   EXPECT_TRUE(IsDialogVisible());
 
   // Open a new Tab B and switch to it.
@@ -115,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
 
   // Controller B shouldn't have a dialog open.
   // Verify this by calling ShowDialog and ensuring it does open one.
-  controller_b->ShowDialog();
+  skills::Skill test_skill2("id2", "skill_name2", "icon", "Test Prompt");
+  controller_b->ShowDialog(test_skill2);
 
   EXPECT_TRUE(IsDialogVisible());
 

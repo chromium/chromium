@@ -76,6 +76,7 @@ source_set("browser_tests") {
     "skills_ui_tab_controller_browsertest.cc",
   ]
   deps = [
+    ":public",
     ":skills",
     ":ui",
     "//chrome/browser/ui",
@@ -83,5 +84,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/test:test_support",
     "//components/skills:features",
+    "//components/skills/public",
   ]
 }

@@ -18,6 +18,8 @@ class ConstrainedWebDialogDelegate;
 
 namespace skills {
 
+struct Skill;
+
 // A controller responsible for managing the skills dialog for the tab.
 class SkillsUiTabController : public SkillsUiTabControllerInterface {
  public:
@@ -26,7 +28,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface {
   DECLARE_USER_DATA(SkillsUiTabController);
 
   // Opens the skills dialog.
-  void ShowDialog() override;
+  void ShowDialog(const skills::Skill& skill) override;
 
   // Closes the dialog if it is currently open.
   void CloseDialog() override;
