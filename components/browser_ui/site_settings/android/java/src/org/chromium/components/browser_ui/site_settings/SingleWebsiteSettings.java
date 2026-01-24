@@ -1915,8 +1915,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
-                    SingleWebsiteSettings.class.getName(), R.xml.single_website_preferences);
+                    SingleWebsiteSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
