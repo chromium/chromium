@@ -32,7 +32,6 @@ namespace {
 constexpr char kOpenid4vpProtocol[] = "openid4vp";
 constexpr char kOpenid4vpSignedProtocol[] = "openid4vp-v1-signed";
 constexpr char kOpenid4vpUnsignedProtocol[] = "openid4vp-v1-unsigned";
-constexpr char kPreviewProtocol[] = "preview";
 
 using base::Value;
 using base::ValueView;
@@ -248,27 +247,7 @@ base::Value GenerateGetPhoneNumberOpenid4VpRequest() {
   return ParseJsonAndCheck(kJson);
 }
 
-base::Value GenerateOnlyAgePreviewRequest() {
-  constexpr char kJson[] = R"({
-    "selector": {
-      "format": [
-        "mdoc"
-      ],
-      "doctype": "org.iso.18013.5.1.mDL",
-      "fields": [
-        {
-          "namespace": "org.iso.18013.5.1",
-          "name": "age_over_21",
-          "intentToRetain": false
-        }
-      ]
-    },
-    "nonce": "vvm3Q1VN1tXybccprmZhbZFIjBGSB4VNMuqQfD4Uiko=",
-    "readerPublicKey": "BMK9ink7wCHIKXxxWQy-S6TLN4jo1ab7NBlC-lSvqqMUmgMSadLa9PYYDocWitOmafZqWmZc5lQvdCZQx5mTNvs="
-  })";
 
-  return ParseJsonAndCheck(kJson);
-}
 
 // Does depth-first traversal of nested dicts rooted at `root`. Returns first
 // matching base::Value with key `find_key`.
@@ -336,17 +315,6 @@ bool SetDCQLPathItem(base::Value& to_modify,
   }
   paths->GetList().resize(1);
   paths->GetList().Append(field_name_value);
-  return true;
-}
-
-// Used to modify a Preview on the fly.
-bool SetFieldNameValue(base::Value& to_modify,
-                       const std::string& field_name_value) {
-  base::Value* fields = FindValueWithKey(to_modify, "fields");
-  if (HasNoListElements(fields)) {
-    return false;
-  }
-  fields->GetList().front().GetDict().Set("name", field_name_value);
   return true;
 }
 
@@ -607,44 +575,7 @@ TEST_F(
             InterstitialType::kLowRisk);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       PreviewProtocol_ComputeInterstitialType_OnlyAgeOver) {
-  EXPECT_EQ(ComputeInterstitialType(kPreviewProtocol,
-                                    GenerateOnlyAgePreviewRequest()),
-            std::nullopt);
-}
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       PreviewProtocol_ComputeInterstitialType_OnlyAgeInYears) {
-  base::Value request = GenerateOnlyAgePreviewRequest();
-  ASSERT_TRUE(SetFieldNameValue(request, "age_in_years"));
-  EXPECT_EQ(ComputeInterstitialType(kPreviewProtocol, std::move(request)),
-            std::nullopt);
-}
-
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       PreviewProtocol_ComputeInterstitialType_OnlyAgeBirthYear) {
-  base::Value request = GenerateOnlyAgePreviewRequest();
-  ASSERT_TRUE(SetFieldNameValue(request, "age_birth_year"));
-  EXPECT_EQ(ComputeInterstitialType(kPreviewProtocol, std::move(request)),
-            std::nullopt);
-}
-
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       PreviewProtocol_ComputeInterstitialType_OnlyBirthDate) {
-  base::Value request = GenerateOnlyAgePreviewRequest();
-  ASSERT_TRUE(SetFieldNameValue(request, "birth_date"));
-  EXPECT_EQ(ComputeInterstitialType(kPreviewProtocol, std::move(request)),
-            std::nullopt);
-}
-
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       PreviewProtocol_ComputeInterstitialType_GivenName) {
-  base::Value request = GenerateOnlyAgePreviewRequest();
-  ASSERT_TRUE(SetFieldNameValue(request, "given_name"));
-  EXPECT_EQ(ComputeInterstitialType(kPreviewProtocol, std::move(request)),
-            InterstitialType::kLowRisk);
-}
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_OnlyAgeOver) {
@@ -720,55 +651,7 @@ TEST_F(DigitalIdentityRequestImplInterstitialTest,
             InterstitialType::kLowRisk);
 }
 
-TEST_F(DigitalIdentityRequestImplInterstitialTest,
-       Openid4VpAndPreviewProtocol_ComputeInterstitialType_AgeOver) {
-  base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
-  base::Value preview_request = GenerateOnlyAgePreviewRequest();
 
-  DigitalCredentialGetRequestPtr request1 = DigitalCredentialGetRequest::New();
-  request1->protocol = kOpenid4vpProtocol;
-  request1->data = std::move(openid4vp_request);
-
-  DigitalCredentialGetRequestPtr request2 = DigitalCredentialGetRequest::New();
-  request2->protocol = kPreviewProtocol;
-  request2->data = std::move(preview_request);
-
-  std::vector<DigitalCredentialGetRequestPtr> requests;
-  requests.emplace_back(std::move(request1));
-  requests.emplace_back(std::move(request2));
-
-  auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
-      /*are_origins_low_risk=*/false);
-  EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
-                *main_rfh(), provider.get(), std::move(requests)),
-            std::nullopt);
-}
-
-TEST_F(
-    DigitalIdentityRequestImplInterstitialTest,
-    Openid4VpAndPreviewProtocol_ComputeInterstitialType_AgeOverAndGivenName) {
-  base::Value openid4vp_request = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
-  base::Value preview_request = GenerateOnlyAgePreviewRequest();
-  ASSERT_TRUE(SetFieldNameValue(preview_request, "given_name"));
-
-  DigitalCredentialGetRequestPtr request1 = DigitalCredentialGetRequest::New();
-  request1->protocol = kOpenid4vpProtocol;
-  request1->data = std::move(openid4vp_request);
-
-  DigitalCredentialGetRequestPtr request2 = DigitalCredentialGetRequest::New();
-  request2->protocol = kPreviewProtocol;
-  request2->data = std::move(preview_request);
-
-  std::vector<DigitalCredentialGetRequestPtr> requests;
-  requests.emplace_back(std::move(request1));
-  requests.emplace_back(std::move(request2));
-
-  auto provider = std::make_unique<TestDigitalIdentityProviderWithCustomRisk>(
-      /*are_origins_low_risk=*/false);
-  EXPECT_EQ(DigitalIdentityRequestImpl::ComputeInterstitialType(
-                *main_rfh(), provider.get(), std::move(requests)),
-            InterstitialType::kLowRisk);
-}
 
 TEST_F(DigitalIdentityRequestImplInterstitialTest,
        Openid4VpProtocolDCQL_ComputeInterstitialType_MalformedRequest) {

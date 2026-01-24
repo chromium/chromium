@@ -47,7 +47,6 @@ namespace {
 using base::Value;
 namespace sdjwt = ::content::sdjwt;
 
-constexpr char kPreviewProtocol[] = "preview";
 constexpr char kOpenid4vpProtocolPrefix[] = "openid4vp";
 
 constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
@@ -269,33 +268,6 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
   return false;
 }
 
-bool CanRequestCredentialBypassInterstitialForPreviewProtocol(
-    const Value& request) {
-  CHECK(request.is_dict());
-  const Value::Dict& request_dict = request.GetDict();
-  const Value::Dict* selector_dict = request_dict.FindDict("selector");
-  if (!selector_dict) {
-    return false;
-  }
-
-  const std::string* doctype = selector_dict->FindString("doctype");
-  if (!doctype || *doctype != kMdlDocumentType) {
-    return false;
-  }
-
-  const Value::List* fields_list = selector_dict->FindList("fields");
-  if (!fields_list || fields_list->size() != 1u) {
-    return false;
-  }
-
-  const Value::Dict* field_dict = fields_list->front().GetIfDict();
-  if (!field_dict) {
-    return false;
-  }
-  const std::string* mdoc_data_element = field_dict->FindString("name");
-  return mdoc_data_element && CanClaimBypassInterstitial(*mdoc_data_element);
-}
-
 // Returns whether an interstitial should be shown based on the assertions being
 // requested.
 bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
@@ -307,8 +279,7 @@ bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
   if (protocol.starts_with(kOpenid4vpProtocolPrefix)) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(request);
   }
-  return protocol == kPreviewProtocol &&
-         CanRequestCredentialBypassInterstitialForPreviewProtocol(request);
+  return false;
 }
 
 blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
