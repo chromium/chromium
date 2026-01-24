@@ -6,6 +6,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 
 // Fixture that sets up 3 browsers.
 class ProfileBrowserCollectionTest
@@ -18,8 +19,17 @@ class ProfileBrowserCollectionTest
     // Browsers are activated in the order they are created, resulting in an
     // activation order the reverse of creation order.
     browsers_.push_back(browser());
+    // Ensure the initial browser is active. We need to explicitly activate the
+    // browsers because some features (e.g. WebUIReloadButton) might affect the
+    // window activation during creation, making the activation order
+    // non-deterministic if not explicitly set.
+    browsers_.back()->GetWindow()->Activate();
+
     browsers_.push_back(CreateBrowser(GetProfile()));
+    browsers_.back()->GetWindow()->Activate();
+
     browsers_.push_back(CreateBrowser(GetProfile()));
+    browsers_.back()->GetWindow()->Activate();
 
     const auto* profile_colection =
         ProfileBrowserCollection::GetForProfile(GetProfile());
