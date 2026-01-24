@@ -162,7 +162,16 @@ TEST_F(InputStateModelCompatibilityTest, SelectImageInput) {
   input_state_model_->setActiveTool(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
   const auto& new_state = input_state_model_->get_state_for_testing();
 
-  // The file input type should be disabled.
+  // With an image, tools that don't support images are disabled.
+  EXPECT_THAT(new_state.disabled_tools,
+              UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                                   omnibox::ToolMode::TOOL_MODE_CANVAS,
+                                   omnibox::ToolMode::TOOL_MODE_IMAGE_GEN));
+
+  // Models are not disabled, since they both support images.
+  EXPECT_TRUE(new_state.disabled_models.empty());
+
+  // No input types are disabled based on other inputs.
   EXPECT_TRUE(new_state.disabled_input_types.empty());
 }
 
