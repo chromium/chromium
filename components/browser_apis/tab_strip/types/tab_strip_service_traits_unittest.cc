@@ -6,8 +6,8 @@
 #include "components/browser_apis/tab_strip/types/image_traits.h"
 #include "components/browser_apis/tab_strip/types/node_id_traits.h"
 #include "components/browser_apis/tab_strip/types/position_traits.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
