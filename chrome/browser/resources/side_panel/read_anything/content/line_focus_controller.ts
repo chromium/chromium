@@ -542,7 +542,7 @@ export class LineFocusController {
   }
 
   private setCenterY_() {
-    this.setY_(this.model_.getMinY() + this.model_.getMaxY() / 2);
+    this.setY_((this.model_.getMinY() + this.model_.getMaxY()) / 2);
   }
 
   static getInstance(): LineFocusController {
