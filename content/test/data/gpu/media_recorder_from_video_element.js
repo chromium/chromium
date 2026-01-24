@@ -57,8 +57,10 @@ function startPlayback() {
   logOutput('Playback started.');
 }
 
-function startRecording() {
+function startRecording(now, metadata) {
   logOutput('crbug.com/476172416: startRecording() called');
+  logOutput('crbug.com/476172416: now: ' + now);
+  logOutput('crbug.com/476172416: metadata: ' + JSON.stringify(metadata));
   stream = srcVideo.captureStream(30);
   logOutput('crbug.com/476172416: Stream captured');
   recorder = new MediaRecorder(stream, { mimeType });
@@ -105,6 +107,7 @@ function main() {
     abort = true;
     sendResult('FAIL');
   };
-  logOutput('crbug.com/476172416: Requesting video frame callback');
+  logOutput('crbug.com/476172416: Requesting video frame callback at ' +
+            performance.now());
   srcVideo.requestVideoFrameCallback(startRecording);
 }
