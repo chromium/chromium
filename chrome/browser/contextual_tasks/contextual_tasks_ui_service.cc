@@ -137,6 +137,11 @@ ContextualTasksUiService::ContextualTasksUiService(
 
 ContextualTasksUiService::~ContextualTasksUiService() = default;
 
+void ContextualTasksUiService::Shutdown() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  identity_manager_ = nullptr;
+}
+
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
     base::WeakPtr<tabs::TabInterface> source_tab,

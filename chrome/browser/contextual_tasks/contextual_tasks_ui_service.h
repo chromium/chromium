@@ -54,6 +54,9 @@ class ContextualTasksUiService : public KeyedService {
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
   ~ContextualTasksUiService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // A notification that the browser attempted to navigate to the AI page. If
   // this method is being called, it means the navigation was blocked and it
   // should be processed by this method.
