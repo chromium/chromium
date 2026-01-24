@@ -470,10 +470,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 new LegacyTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
         mStartupMetricsTracker =
                 new StartupMetricsTracker(
-                        mTabModelSelectorSupplier,
-                        () -> {
-                            return getPersistentInstanceState() != null;
-                        });
+                        mTabModelSelectorSupplier, this::wasPersistentStateRestored);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             mStartupMetricsTracker.registerApplicationStartInfoListener();
         }

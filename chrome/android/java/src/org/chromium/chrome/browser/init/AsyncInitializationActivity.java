@@ -96,6 +96,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private @Nullable ActivityWindowAndroid mWindowAndroid;
     private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private @Nullable Bundle mSavedInstanceState;
+    private boolean mReceivedPersistentState;
     private @Nullable PersistableBundle mPersistentInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
@@ -354,6 +355,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onCreate(
             @Nullable Bundle savedInstanceState, @Nullable PersistableBundle outPersistentState) {
         if (shouldPersistAcrossReboots()) {
+            mReceivedPersistentState = outPersistentState != null;
             mPersistentInstanceState = outPersistentState;
         }
         super.onCreate(savedInstanceState, outPersistentState);
@@ -568,6 +570,14 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             return null;
         }
         return mPersistentInstanceState;
+    }
+
+    /**
+     * @return Whether persistent state was restored during this session, i.e. whether a non-null
+     *     {@link PersistableBundle} was received from the OS in this Activity's #onCreate().
+     */
+    public boolean wasPersistentStateRestored() {
+        return mReceivedPersistentState;
     }
 
     /** Resets the saved state and makes it unavailable for the rest of the activity lifecycle. */
