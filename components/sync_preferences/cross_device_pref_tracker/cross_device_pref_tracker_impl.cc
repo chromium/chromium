@@ -1117,6 +1117,12 @@ void CrossDevicePrefTrackerImpl::UpdateServiceStatus() {
   for (auto& observer : observers_) {
     observer.OnServiceStatusChanged(service_status_);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  Java_CrossDevicePrefTracker_onServiceStatusChanged(
+      base::android::AttachCurrentThread(), java_object_,
+      static_cast<int>(service_status_));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_ANDROID)

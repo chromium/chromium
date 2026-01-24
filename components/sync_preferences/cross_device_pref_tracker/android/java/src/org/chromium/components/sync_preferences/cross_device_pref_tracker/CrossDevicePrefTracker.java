@@ -24,7 +24,6 @@ import org.chromium.components.sync_device_info.OsType;
 public class CrossDevicePrefTracker {
 
     /** Observes cross-device preference changes. */
-    @FunctionalInterface
     public interface CrossDevicePrefTrackerObserver {
         /**
          * Called when a preference value from a remote device has changed.
@@ -40,6 +39,13 @@ public class CrossDevicePrefTracker {
                 TimestampedPrefValue timestampedPrefValue,
                 @OsType int osType,
                 @FormFactor int formFactor);
+
+        /**
+         * Called when the service status changes (e.g., the tracker becomes available to use).
+         *
+         * @param status The new service status.
+         */
+        void onServiceStatusChanged(@ServiceStatus int status);
     }
 
     private long mNativePtr;
@@ -75,6 +81,13 @@ public class CrossDevicePrefTracker {
             @FormFactor int formFactor) {
         for (CrossDevicePrefTrackerObserver observer : mObservers) {
             observer.onRemotePrefChanged(prefName, timestampedPrefValue, osType, formFactor);
+        }
+    }
+
+    @CalledByNative
+    private void onServiceStatusChanged(@ServiceStatus int status) {
+        for (CrossDevicePrefTrackerObserver observer : mObservers) {
+            observer.onServiceStatusChanged(status);
         }
     }
 
