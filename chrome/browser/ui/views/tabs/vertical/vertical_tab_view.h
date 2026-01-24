@@ -118,6 +118,8 @@ class VerticalTabView : public views::View,
 
   void OnDataChanged();
 
+  void UpdateTitle();
+
   void UpdateBorder();
 
   void UpdateAlertIndicatorVisibility();

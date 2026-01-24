@@ -12,22 +12,27 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -52,6 +57,51 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 
  private:
   base::OnceClosure start_loading_callback_;
+};
+
+// This class observes TabStripModel for the first new tab that is added, then
+// observes the changes to that new tab's title.
+class NewTabTitleObserver : public TabStripModelObserver {
+ public:
+  explicit NewTabTitleObserver(
+      TabStripModel* tab_strip_model,
+      RootTabCollectionNode* root_node,
+      base::RepeatingCallback<void(std::u16string_view)> title_changed_callback)
+      : tab_strip_model_(tab_strip_model),
+        root_node_(root_node),
+        title_changed_callback_(title_changed_callback) {
+    tab_strip_model_->AddObserver(this);
+  }
+  ~NewTabTitleObserver() override { tab_strip_model_->RemoveObserver(this); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kInserted) {
+      const auto& insert = *change.GetInsert();
+      const auto& content = insert.contents[0];
+      TabCollectionNode* tab_node =
+          root_node_->children()[1]->children()[content.index].get();
+      VerticalTabView* tab_view =
+          views::AsViewClass<VerticalTabView>(tab_node->get_view_for_testing());
+      views::Label* title = views::AsViewClass<views::Label>(
+          tab_view->GetViewByElementId(kVerticalTabTitleElementId));
+      views::PropertyChangedCallback callback =
+          base::BindRepeating(
+              [](views::Label* title) { return title->GetText(); }, title)
+              .Then(title_changed_callback_);
+      callback.Run();
+      text_changed_subscription_ = title->AddTextChangedCallback(callback);
+      tab_strip_model_->RemoveObserver(this);
+    }
+  }
+
+ private:
+  raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<RootTabCollectionNode> root_node_;
+  base::RepeatingCallback<void(std::u16string_view)> title_changed_callback_;
+  base::CallbackListSubscription text_changed_subscription_;
 };
 
 class VerticalTabViewTest
@@ -159,6 +209,38 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
   GURL changed_url = embedded_test_server()->GetURL("/title3.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), changed_url));
   EXPECT_EQ(u"Title Of More Awesomeness", title->GetText());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleLoading) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url = embedded_test_server()->GetURL("/link_new_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Open a link to a new page. Expect that the title shows a loading
+  // placeholder
+#if BUILDFLAG(IS_MAC)
+  std::u16string expected_title =
+      l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
+#else
+  std::u16string expected_title =
+      l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE);
+#endif
+  base::RunLoop run_loop;
+  NewTabTitleObserver observer(
+      browser()->tab_strip_model(), root_node(),
+      base::BindRepeating(
+          [&](base::RepeatingClosure quit_closure,
+              std::u16string expected_title, std::u16string_view title) {
+            if (title == expected_title) {
+              quit_closure.Run();
+            }
+          },
+          run_loop.QuitClosure(), expected_title));
+  ASSERT_TRUE(
+      ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+             "setTimeout(() => "
+             "document.getElementById('new-page-link').click(), 1000);"));
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
