@@ -220,12 +220,14 @@ if (!is_android) {
     sources = [
       "contextual_tasks_context_service_browsertest.cc",
       "contextual_tasks_ui_browsertest.cc",
+      "contextual_tasks_url_loader_factory_interceptor_browsertest.cc",
     ]
 
     deps = [
       ":contextual_tasks",
       ":impl",
       ":ui",
+      ":ui_impl",
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
