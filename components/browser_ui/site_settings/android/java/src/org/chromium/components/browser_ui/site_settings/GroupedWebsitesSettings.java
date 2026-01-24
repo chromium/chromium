@@ -316,8 +316,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine which prefs need creation in updateDynamicPreferences.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
-                    GroupedWebsitesSettings.class.getName(), R.xml.grouped_websites_preferences);
+                    GroupedWebsitesSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }
