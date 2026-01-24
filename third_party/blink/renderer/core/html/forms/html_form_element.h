@@ -271,8 +271,11 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
                      base::OnceCallback<void(
                          base::expected<String, WebDocument::ScriptToolError>)>
                          done_callback) override;
-    // Fill form controls with data as provided by `input_arguments`;
-    // returns true on success.
+    // Fill form controls with data as provided by `input_arguments`.
+    //
+    // If 'true' is returned, then all specified tool parameters (form controls)
+    // were filled successfully. Otherwise, the state of all form controls
+    // are left unchanged.
     bool FillFormControls(const String& input_arguments);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }

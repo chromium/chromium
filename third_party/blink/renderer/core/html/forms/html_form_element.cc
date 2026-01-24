@@ -188,20 +188,30 @@ bool HTMLFormElement::HTMLFormMcpTool::FillFormControls(
     }
   }
 
-  // Now loop through what we got, and attempt to match it up.
+  // For each entry in `json_obj`, we find the corresponding form control
+  // and queue up a pending action that may lead to a FillWebMCPData() call.
+  //
+  // If any error occurs, all pending actions are dropped, and the form control
+  // states remain unchanged.
+  HeapVector<std::pair<Member<HTMLFormControlElement>, JSONValue*>>
+      controls_to_fill;
+
   for (wtf_size_t i = 0; i < json_obj->size(); ++i) {
     JSONObject::Entry entry = json_obj->at(i);
     const String parameter_name = String(entry.first);
-    blink::JSONValue& contents = *entry.second;
+    blink::JSONValue* contents = entry.second;
     auto it = controls_map.find(parameter_name);
     if (it == controls_map.end()) {
       return false;
     }
-
-    if (!it->value->FillWebMCPData(contents)) {
-      return false;
-    }
+    // TODO(crbug.com/475992364): Maybe validate the data here.
+    controls_to_fill.push_back(std::make_pair(it->value, contents));
   }
+
+  for (const auto& [form_control, json_value] : controls_to_fill) {
+    form_control->FillWebMCPData(*json_value);
+  }
+
   return true;
 }
 

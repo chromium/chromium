@@ -271,4 +271,38 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_UnknownParamFailure) {
   EXPECT_FALSE(FillFormControls(*form_element, json_string));
 }
 
+TEST_F(HTMLFormMcpToolTest, FillFormControls_Transactional) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=text1 name=text1 type=text value="initial1">
+      <input id=text2 name=text2 type=text value="initial2">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  String json_string =
+      R"JSON(
+        {
+          "text1": "foo",
+          "unknown": "bar",
+          "text2": "bar"
+        }
+      )JSON";
+
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+
+  HTMLInputElement* text1 = GetInputElement("text1");
+  HTMLInputElement* text2 = GetInputElement("text2");
+  ASSERT_TRUE(text1);
+  ASSERT_TRUE(text2);
+
+  // A failure means no form control values were changed.
+  EXPECT_EQ("initial1", text1->Value());
+  EXPECT_EQ("initial2", text2->Value());
+}
+
 }  // namespace blink

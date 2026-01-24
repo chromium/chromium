@@ -167,7 +167,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   String GetMCPJSONValue(JSONValue& value) const;
   virtual bool SupportsWebMCP() const { return false; }
   virtual String GetWebMCPParameterName() const;
-  virtual bool FillWebMCPData(JSONValue& data);
+  virtual void FillWebMCPData(JSONValue& data);
 
  protected:
   HTMLFormControlElement(const QualifiedName& tag_name, Document&);

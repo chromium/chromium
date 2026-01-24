@@ -2054,11 +2054,10 @@ bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
          IsA<HTMLHRElement>(element);
 }
 
-bool HTMLSelectElement::FillWebMCPData(JSONValue& data) {
+void HTMLSelectElement::FillWebMCPData(JSONValue& data) {
   CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
   String selected_value = GetMCPJSONValue(data);
   SetValue(selected_value, /*send_events*/ true, WebAutofillState::kNotFilled);
-  return true;
 }
 
 }  // namespace blink

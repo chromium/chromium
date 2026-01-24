@@ -315,11 +315,10 @@ bool HTMLInputElement::IsKeyboardFocusableSlow(
   return input_type_->IsKeyboardFocusableSlow(update_behavior);
 }
 
-bool HTMLInputElement::FillWebMCPData(JSONValue& data) {
+void HTMLInputElement::FillWebMCPData(JSONValue& data) {
   CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
   String selected_value = GetMCPJSONValue(data);
   SetValue(selected_value);
-  return true;
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {

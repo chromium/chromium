@@ -390,7 +390,7 @@ class CORE_EXPORT HTMLInputElement
 
   // Used for the (experimental) declarative WebMCP prototype.
   bool SupportsWebMCP() const override { return true; }
-  bool FillWebMCPData(JSONValue& data) override;
+  void FillWebMCPData(JSONValue& data) override;
 
  protected:
   void DefaultEventHandler(Event&) override;
