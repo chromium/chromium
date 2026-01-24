@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -83,6 +84,12 @@
 namespace policy {
 
 namespace em = enterprise_management;
+
+namespace {
+
+const int kMinimumVersionForExtensionInstallPolicy = 146;
+
+}  // namespace
 
 std::string GetMachineName() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
@@ -275,6 +282,11 @@ void GetBrowserDeviceIdentifierAsync(
 
 bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
   return type == dm_protocol::kChromeMachineLevelUserCloudPolicyType;
+}
+
+bool IsExtensionInstallPolicySupportedOnThisVersion() {
+  return version_info::GetMajorVersionNumberAsInt() >=
+         kMinimumVersionForExtensionInstallPolicy;
 }
 
 }  // namespace policy

@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
@@ -144,14 +145,18 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
   std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store =
       nullptr;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store =
-      MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
-          dm_token, client_id, policy_dir,
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-               // Block shutdown to make sure the policy cache update is
-               // always finished.
-               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  // This is not supported before M146. A feature flag check is not possible
+  // here because finch is not yet initialized.
+  if (IsExtensionInstallPolicySupportedOnThisVersion()) {
+    extension_install_store =
+        MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
+            dm_token, client_id, policy_dir,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                 // Block shutdown to make sure the policy cache update is
+                 // always finished.
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  }
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
   return std::make_unique<MachineLevelUserCloudPolicyManager>(

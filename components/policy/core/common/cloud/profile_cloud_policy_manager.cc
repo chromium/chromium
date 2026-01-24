@@ -13,7 +13,9 @@
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_store.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
@@ -81,9 +83,14 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
   std::unique_ptr<policy::ProfileCloudPolicyStore> extension_install_store =
       nullptr;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_install_store =
-      policy::ProfileCloudPolicyStore::CreateForExtensionInstall(
-          profile_path, background_task_runner, is_dasherless);
+  // This is not supported before M146.
+  if (IsExtensionInstallPolicySupportedOnThisVersion() &&
+      base::FeatureList::IsEnabled(
+          features::kEnableExtensionInstallPolicyFetching)) {
+    extension_install_store =
+        policy::ProfileCloudPolicyStore::CreateForExtensionInstall(
+            profile_path, background_task_runner, is_dasherless);
+  }
 #endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
   if (force_immediate_load) {
     store->LoadImmediately();
