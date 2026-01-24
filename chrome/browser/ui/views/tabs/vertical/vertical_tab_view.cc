@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
@@ -620,7 +623,29 @@ void VerticalTabView::UpdateContrastRatioValues() {
 }
 
 void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
-  // TODO(crbug.com/467735166): Log tab closing UMAs.
+  CHECK(alert_indicator_);
+  if (!alert_indicator_->GetVisible()) {
+    base::RecordAction(base::UserMetricsAction("CloseTab_NoAlertIndicator"));
+  } else {
+    std::optional<tabs::TabAlert> alert_state =
+        tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state);
+    if (alert_state.value() == tabs::TabAlert::kAudioPlaying) {
+      base::RecordAction(base::UserMetricsAction("CloseTab_AudioIndicator"));
+    } else if (alert_state.value() == tabs::TabAlert::kAudioRecording ||
+               alert_state.value() == tabs::TabAlert::kVideoRecording ||
+               alert_state.value() == tabs::TabAlert::kMediaRecording) {
+      base::RecordAction(
+          base::UserMetricsAction("CloseTab_RecordingIndicator"));
+    }
+  }
+
+  if (split_) {
+    auto* split_view = views::AsViewClass<VerticalSplitTabView>(parent());
+    base::RecordAction(base::UserMetricsAction(this == split_view->children()[0]
+                                                   ? "CloseTab_StartTabInSplit"
+                                                   : "CloseTab_EndTabInSplit"));
+  }
+
   if (collection_node_) {
     collection_node_->GetController()->CloseTab(GetTabInterface());
   }

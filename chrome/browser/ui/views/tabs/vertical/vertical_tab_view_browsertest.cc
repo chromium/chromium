@@ -6,7 +6,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -395,4 +398,109 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsRenderBorder) {
       unpinned_collection_node()->children()[0].get()->view());
 
   EXPECT_FALSE(unpinned_tab->GetBorder());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics) {
+  base::UserActionTester user_action_tester;
+
+  AppendTab();
+  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+      tab_strip_model()->GetActiveTab()->GetHandle());
+  TabCloseButton* close_button = static_cast<VerticalTabView*>(tab_node->view())
+                                     ->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  close_button->button_controller()->NotifyClick();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_NoAlertIndicator"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
+                       LogsTabCloseMetrics_AudioIndicator) {
+  base::UserActionTester user_action_tester;
+
+  AppendTab();
+  RecentlyAudibleHelper::FromWebContents(tab_strip_model()->GetWebContentsAt(0))
+      ->SetCurrentlyAudibleForTesting();
+  tab_strip_model()->ActivateTabAt(0);
+
+  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+      tab_strip_model()->GetActiveTab()->GetHandle());
+  TabCloseButton* close_button = static_cast<VerticalTabView*>(tab_node->view())
+                                     ->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  close_button->button_controller()->NotifyClick();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_AudioIndicator"), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
+                       LogsTabCloseMetrics_RecordingIndicator) {
+  base::UserActionTester user_action_tester;
+
+  AppendTab();
+  blink::mojom::StreamDevices devices;
+  blink::MediaStreamDevice video_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "fake_media_device",
+      "fake_media_device");
+  devices.video_device = video_device;
+  MediaCaptureDevicesDispatcher* dispatcher =
+      MediaCaptureDevicesDispatcher::GetInstance();
+
+  std::unique_ptr<content::MediaStreamUI> video_stream_ui =
+      dispatcher->GetMediaStreamCaptureIndicator()->RegisterMediaStream(
+          tab_strip_model()->GetWebContentsAt(0), devices);
+  video_stream_ui->OnStarted(
+      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
+      /*label=*/std::string(),
+      /*screen_capture_ids=*/{}, content::MediaStreamUI::StateChangeCallback());
+  tab_strip_model()->ActivateTabAt(0);
+
+  TabCollectionNode* tab_node = unpinned_collection_node()->GetNodeForHandle(
+      tab_strip_model()->GetActiveTab()->GetHandle());
+  TabCloseButton* close_button = static_cast<VerticalTabView*>(tab_node->view())
+                                     ->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  close_button->button_controller()->NotifyClick();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_RecordingIndicator"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
+  base::UserActionTester user_action_tester;
+
+  AppendSplitTab();
+  TabCollectionNode* tab_node =
+      unpinned_collection_node()
+          ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+          ->GetNodeForHandle(tab_strip_model()->GetActiveTab()->GetHandle());
+  TabCloseButton* close_button = static_cast<VerticalTabView*>(tab_node->view())
+                                     ->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  close_button->button_controller()->NotifyClick();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_NoAlertIndicator"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_StartTabInSplit"), 1);
+
+  user_action_tester.ResetCounts();
+
+  AppendSplitTab();
+  tab_node = unpinned_collection_node()
+                 ->GetChildNodeOfType(RootTabCollectionNode::Type::SPLIT)
+                 ->GetNodeForHandle(
+                     tab_strip_model()
+                         ->GetTabAtIndex(tab_strip_model()->active_index() + 1)
+                         ->GetHandle());
+  close_button = static_cast<VerticalTabView*>(tab_node->view())
+                     ->close_button_for_testing();
+  ASSERT_TRUE(close_button->GetVisible());
+
+  close_button->button_controller()->NotifyClick();
+
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_NoAlertIndicator"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_EndTabInSplit"), 1);
 }
