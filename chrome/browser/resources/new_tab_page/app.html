@@ -36,7 +36,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   </ntp-logo>
   ${this.ntpRealboxNextEnabled_ ? html`
     <div id="scrim"
-        @click="${this.showComposebox_ && this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"
+        @click="${this.onScrimClick_}"
         ?hidden="${!this.showScrim_}"></div>
   ` : ''}
   <div id="searchboxContainer">

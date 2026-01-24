@@ -982,6 +982,7 @@ suite('NewTabPageAppTest', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         searchboxLensSearch: true,
+        ntpRealboxNextEnabled: true,
       });
     });
 
@@ -1010,6 +1011,31 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
+    });
+
+    test('scrim is visible when Lens upload dialog is open', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-lens-search'));
+      await microtasksFinished();
+
+      // Assert.
+      const dialog = app.shadowRoot.querySelector('ntp-lens-upload-dialog');
+      assertTrue(!!dialog);
+      const scrim = getScrim();
+      assertTrue(!!scrim);
+      assertFalse(scrim.hidden);
+
+      // Act.
+      scrim.click();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(scrim.hidden);
+      assertFalse(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
     });
   });
 

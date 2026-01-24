@@ -703,6 +703,7 @@ export class AppElement extends AppElementBase {
 
     if (this.ntpRealboxNextEnabled_ && [
           'showComposebox_',
+          'showLensUploadDialog_',
           'searchboxInputFocused_',
           'composeboxInputFocused_',
         ].some((prop) => changedPrivateProperties.has(prop))) {
@@ -729,8 +730,8 @@ export class AppElement extends AppElementBase {
        *   5. The onclick handler of the scrim runs and sets showComposebox_ to
        *      false, and everything works as desired.
        */
-      this.showScrim_ = this.showComposebox_ || this.searchboxInputFocused_ ||
-          this.composeboxInputFocused_;
+      this.showScrim_ = this.showComposebox_ || this.showLensUploadDialog_ ||
+          this.searchboxInputFocused_ || this.composeboxInputFocused_;
     }
   }
 
@@ -892,6 +893,15 @@ export class AppElement extends AppElementBase {
           'NewTabPage.Composebox.FromNTPLoadToSessionStart',
           WindowProxy.getInstance().now());
       this.wasComposeboxOpened_ = true;
+    }
+  }
+
+  protected onScrimClick_() {
+    if (this.showComposebox_ && this.composeboxCloseByClickOutside_) {
+      this.onComposeboxClickOutside_();
+    }
+    if (this.showLensUploadDialog_) {
+      this.onCloseLensSearch_();
     }
   }
 
