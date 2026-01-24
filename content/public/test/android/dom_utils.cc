@@ -24,9 +24,11 @@ static int32_t JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
 
   // Android obtains the top control size via WebContentsDelegate.
   WebContentsDelegate* delegate = web_contents->GetDelegate();
+  // LINT.IfChange(GetTopControlsShrinkBlinkHeight)
   return delegate && delegate->DoBrowserControlsShrinkRendererSize(web_contents)
              ? delegate->GetTopControlsHeight()
-             : 0;
+             : delegate->GetTopControlsMinHeight();
+  // LINT.ThenChange()
 }
 
 }  // namespace content
