@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 
@@ -230,7 +231,7 @@ class BlockerUpdateTestHelper : public SyncTask {
                           Log* log)
       : name_(name),
         app_id_(app_id),
-        paths_(base::from_range, paths),
+        paths_(std::from_range, paths),
         log_(log) {}
 
   BlockerUpdateTestHelper(const BlockerUpdateTestHelper&) = delete;

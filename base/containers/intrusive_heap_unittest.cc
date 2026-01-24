@@ -5,6 +5,7 @@
 #include "base/containers/intrusive_heap.h"
 
 #include <array>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
@@ -363,7 +364,7 @@ void CopyStressTest() {
 template <typename T>
 void GeneralStressTest() {
   std::vector<int> vector{2, 4, 6, 8};
-  IntrusiveHeap<T> heap(base::from_range, vector);
+  IntrusiveHeap<T> heap(std::from_range, vector);
   EXPECT_EQ(4u, heap.size());
   EXPECT_FALSE(heap.empty());
   ExpectHeap(heap);
@@ -572,7 +573,7 @@ TEST(IntrusiveHeapTest, Constructors) {
   {
     // Constructor from range.
     std::vector<int> ints{CANONICAL_ELEMENTS};
-    IntrusiveHeapInt heap(base::from_range, ints);
+    IntrusiveHeapInt heap(std::from_range, ints);
     ExpectCanonical(heap);
 
     // Move constructor.

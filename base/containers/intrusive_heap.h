@@ -135,6 +135,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -144,7 +145,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/types/cxx23_from_range.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace base {
@@ -255,7 +255,7 @@ class IntrusiveHeap {
   // Constructs a heap containing all elements in the `range`.
   template <class Range>
     requires(std::ranges::input_range<Range>)
-  IntrusiveHeap(base::from_range_t,
+  IntrusiveHeap(std::from_range_t,
                 Range&& range,
                 const value_compare& comp = value_compare(),
                 const heap_handle_accessor& access = heap_handle_accessor())

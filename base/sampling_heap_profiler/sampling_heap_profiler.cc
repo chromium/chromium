@@ -297,7 +297,7 @@ std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
 std::vector<const char*> SamplingHeapProfiler::GetStrings() {
   PoissonAllocationSampler::ScopedMuteThreadSamples no_samples_scope;
   AutoLock lock(mutex_);
-  return std::vector<const char*>(strings_.begin(), strings_.end());
+  return std::vector<const char*>(std::from_range, strings_);
 }
 
 // static

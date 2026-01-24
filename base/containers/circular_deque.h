@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <ranges>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/types/cxx23_from_range.h"
 
 #if DCHECK_IS_ON()
 #include <ostream>
@@ -48,7 +48,7 @@
 //   circular_deque(size_t count);
 //   circular_deque(size_t count, const T& value);
 //   circular_deque(InputIterator first, InputIterator last);
-//   circular_deque(base::from_range_t, Range range);
+//   circular_deque(std::from_range_t, Range range);
 //   circular_deque(const circular_deque&);
 //   circular_deque(circular_deque&&);
 //   circular_deque(std::initializer_list<value_type>);
@@ -518,11 +518,11 @@ class circular_deque {
   // Example:
   // ```
   // int values[] = {1, 3};
-  // circular_deque<int> deq(base::from_range, values);
+  // circular_deque<int> deq(std::from_range, values);
   // ```
   template <typename Range>
     requires(std::ranges::input_range<Range>)
-  circular_deque(base::from_range_t, Range&& value) : circular_deque() {
+  circular_deque(std::from_range_t, Range&& value) : circular_deque() {
     assign_range(std::forward<Range>(value));
   }
 

@@ -1252,13 +1252,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
     ),
     BanRule(
-        pattern=r'std::from_range',
-        explanation=('Use of std::from_range isn`t allowed. If you need it, '
-                     'contact cxx@chromium.org.', ),
-        treat_as_error=True,
-        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
-    ),
-    BanRule(
         pattern=r'/\[\[assume[^[]*\]\]',
         explanation=('Use of [[assume(...)]] isn`t allowed. If you need it, '
                      'contact cxx@chromium.org.', ),

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <queue>
+#include <ranges>
 #include <set>
 #include <utility>
 
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_from_range.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -150,7 +150,7 @@ FrameTree::NodeIterator::NodeIterator(
       should_descend_into_inner_trees_(should_descend_into_inner_trees),
       include_delegate_nodes_for_inner_frame_trees_(
           include_delegate_nodes_for_inner_frame_trees),
-      queue_(base::from_range, starting_nodes) {
+      queue_(std::from_range, starting_nodes) {
   // If `include_delegate_nodes_for_inner_frame_trees_` is true then
   // `should_descend_into_inner_trees_` must be true.
   DCHECK(!include_delegate_nodes_for_inner_frame_trees_ ||

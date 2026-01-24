@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <ranges>
 #include <string_view>
 #include <vector>
 
@@ -85,7 +86,7 @@ bool DependencyGraph::GetDestructionOrder(
 
 bool DependencyGraph::BuildConstructionOrder() {
   // Step 1: Build a set of nodes with no incoming edges.
-  base::circular_deque<DependencyNode*> queue(base::from_range, all_nodes_);
+  base::circular_deque<DependencyNode*> queue(std::from_range, all_nodes_);
   for (const auto& pair : edges_)
     base::Erase(queue, pair.second);
 
@@ -131,7 +132,7 @@ std::string DependencyGraph::DumpAsGraphviz(
   std::string escaped_toplevel_name = Escape(toplevel_name);
 
   // Make a copy of all nodes.
-  base::circular_deque<DependencyNode*> nodes(base::from_range, all_nodes_);
+  base::circular_deque<DependencyNode*> nodes(std::from_range, all_nodes_);
 
   // State all dependencies and remove |second| so we don't generate an
   // implicit dependency on the top level node.

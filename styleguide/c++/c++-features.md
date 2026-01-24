@@ -1864,6 +1864,25 @@ std::ranges::fold_left_first_with_iter
 *** promo
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/wZg3s5m6rOE).
 Migration of base::Contains() tracked [here](https://crbug.com/470391351).
+
+### Constructing containers with std::from_range <sup>[allowed]</sup>
+
+```c++
+std::set<int> a_very_long_container_name = {1, 2, 3};
+std::vector<int> old_way(
+  a_very_long_container_name.begin(), a_very_long_container_name.end());
+std::vector<int> new_way(std::from_range, a_very_long_container_name);
+```
+
+**Description:** More concise conversion from one container type to another.
+
+**Documentation:**
+[std::from_range](https://en.cppreference.com/w/cpp/ranges/from_range.html)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ).
+See also std::ranges::to which offers something similar.
 ***
 
 ### std::to_underlying <sup>[allowed]</sup>
@@ -2013,25 +2032,6 @@ None
 The following C++23 library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### Constructing containers with std::from_range <sup>[tbd]</sup>
-
-```c++
-std::set<int> a_very_long_container_name = {1, 2, 3};
-std::vector<int> old_way(
-  a_very_long_container_name.begin(), a_very_long_container_name.end());
-std::vector<int> new_way(std::from_range, a_very_long_container_name);
-```
-
-**Description:** More concise conversion from one container type to another.
-
-**Documentation:**
-[std::from_range](https://en.cppreference.com/w/cpp/ranges/from_range.html)
-
-**Notes:**
-*** promo
-See also std::ranges::to which offers something similar.
-***
 
 ### Monadic operations for std::optional <sup>[tbd]</sup>
 

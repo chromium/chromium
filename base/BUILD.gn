@@ -932,7 +932,6 @@ component("base") {
     "trace_event/trace_session_observer.h",
     "traits_bag.h",
     "tuple.h",
-    "types/cxx23_from_range.h",
     "types/cxx26_projected_value_t.h",
     "types/expected.h",
     "types/expected_internal.h",

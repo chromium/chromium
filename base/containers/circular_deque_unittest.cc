@@ -4,6 +4,8 @@
 
 #include "base/containers/circular_deque.h"
 
+#include <ranges>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/copy_only_int.h"
@@ -113,7 +115,7 @@ TEST(CircularDeque, IteratorConstructor) {
 
 TEST(CircularDeque, MoveConstructor) {
   int values[] = {1, 2, 3, 4, 5, 6};
-  circular_deque<MoveOnlyInt> first(base::from_range, values);
+  circular_deque<MoveOnlyInt> first(std::from_range, values);
 
   circular_deque<MoveOnlyInt> second(std::move(first));
   EXPECT_TRUE(first.empty());  // NOLINT(bugprone-use-after-move)
@@ -135,7 +137,7 @@ TEST(CircularDeque, InitializerListConstructor) {
 }
 
 TEST(CircularDeque, RangeConstructor) {
-  circular_deque<CopyOnlyInt> deq(base::from_range,
+  circular_deque<CopyOnlyInt> deq(std::from_range,
                                   std::vector({1, 2, 3, 4, 5, 6}));
   EXPECT_EQ(6u, deq.size());
   for (int i = 0; i < 6; i++) {
@@ -903,7 +905,7 @@ TEST(CircularDeque, InsertEraseRange) {
 
 TEST(CircularDeque, EmplaceMoveOnly) {
   int values[] = {1, 3};
-  circular_deque<MoveOnlyInt> q(base::from_range, values);
+  circular_deque<MoveOnlyInt> q(std::from_range, values);
 
   q.emplace(q.begin(), MoveOnlyInt(0));
   q.emplace(q.begin() + 2, MoveOnlyInt(2));
