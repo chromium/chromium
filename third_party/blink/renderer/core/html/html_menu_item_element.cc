@@ -124,9 +124,9 @@ HTMLMenuListElement* HTMLMenuItemElement::GetInvokedSubmenu() const {
   }
   CommandEventType type = GetCommandEventType(
       FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
-  if (type != CommandEventType::kToggleMenu &&
-      type != CommandEventType::kShowMenu &&
-      type != CommandEventType::kHideMenu) {
+  // Only the toggle-menu command creates a submenu relationship (which
+  // involves builtin behaviors that both show and hide the menu).
+  if (type != CommandEventType::kToggleMenu) {
     return nullptr;
   }
   return invoked_element;
