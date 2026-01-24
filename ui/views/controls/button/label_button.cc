@@ -230,7 +230,7 @@ void LabelButton::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
     return;
   }
   horizontal_alignment_ = alignment;
-  OnPropertyChanged(&min_size_, PropertyEffects::kLayout);
+  OnPropertyChanged(&horizontal_alignment_, PropertyEffects::kLayout);
 }
 
 gfx::HorizontalAlignment LabelButton::GetHorizontalAlignment() const {
