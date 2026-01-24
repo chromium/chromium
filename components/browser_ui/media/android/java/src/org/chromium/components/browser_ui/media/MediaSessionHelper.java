@@ -53,7 +53,7 @@ import java.util.Set;
 @NullMarked
 public class MediaSessionHelper implements MediaImageCallback {
     private static final String UNICODE_PLAY_CHARACTER = "\u25B6";
-    @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 2500;
+    @VisibleForTesting public static final int HIDE_NOTIFICATION_DELAY_MILLIS = 500;
 
     private final Delegate mDelegate;
     private @Nullable WebContents mWebContents;
