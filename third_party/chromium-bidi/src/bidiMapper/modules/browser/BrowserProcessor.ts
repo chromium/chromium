@@ -53,7 +53,11 @@ export class BrowserProcessor {
   close(): EmptyResult {
     // Ensure that it is put at the end of the event loop.
     // This way we send back the response before closing the tab.
-    setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
+    // Always catch uncaught exceptions.
+    setTimeout(
+      () => this.#browserCdpClient.sendCommand('Browser.close').catch(() => {}),
+      0,
+    );
 
     return {};
   }
