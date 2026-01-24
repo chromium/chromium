@@ -219,8 +219,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
+// TODO(crbug.com/477318794): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToggleToolbarHeightSidePanel DISABLED_ToggleToolbarHeightSidePanel
+#else
+#define MAYBE_ToggleToolbarHeightSidePanel ToggleToolbarHeightSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksButtonInteractiveTest,
-                       ToggleToolbarHeightSidePanel) {
+                       MAYBE_ToggleToolbarHeightSidePanel) {
   RunTestSequence(
       SignIntoEligibleAccount(),
       EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
