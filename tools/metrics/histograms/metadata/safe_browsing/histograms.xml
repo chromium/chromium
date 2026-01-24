@@ -3104,8 +3104,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
-    enum="SiteFamiliarityHeuristicName" expires_after="2026-02-01">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
     Logged after each non-incognito page navigation. Logs the matching
@@ -3129,8 +3129,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
-    enum="SiteFamiliarityHeuristicName" expires_after="2026-02-01">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
     Logged after each off-the-record page navigation. Logs the matching
@@ -3169,8 +3169,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchStart"
-    enum="BooleanHit" expires_after="2026-02-01">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="BooleanHit" expires_after="2026-08-01">
+  <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
     Logged as a result of a page navigation when SiteProtectionMetricsObserver
