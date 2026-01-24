@@ -210,7 +210,7 @@ public class NtpThemeDailyRefreshManager {
 
     /** Saves the existing daily refresh settings to the SharedPreference and resets. */
     public void maybeSaveDailyRefreshAndReset(Runnable onDailyRefreshThemeCollectionApplied) {
-        if (!mIsDailyUpdateApplied || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (!mIsDailyUpdateApplied || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             return;
         }
 

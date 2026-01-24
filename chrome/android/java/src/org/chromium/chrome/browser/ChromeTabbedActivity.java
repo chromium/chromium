@@ -193,6 +193,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -3614,7 +3615,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             NtpThemeDailyRefreshManager.getInstance()
                     .maybeSaveDailyRefreshAndReset(
                             ((TabbedRootUiCoordinator) mRootUiCoordinator)

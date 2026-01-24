@@ -265,7 +265,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     SemanticColorUtils.getDefaultBgColor(this));
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             mNtpThemeStateObserver = () -> recreate();
             NtpThemeStateProvider.getInstance().addObserver(mNtpThemeStateObserver);
         }

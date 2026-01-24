@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -79,6 +80,20 @@ public class LogoCoordinatorUnitTest {
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
     })
     public void testMaybeInitHomepageStateListener_featuresDisabled() {
+        createLogoCoordinator();
+        verify(mNtpCustomizationConfigManager, never()).addListener(any(), any(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
+    })
+    public void testMaybeInitHomepageStateListener_disabledByPolicy() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager, never()).addListener(any(), any(), anyBoolean());
     }

@@ -87,7 +87,7 @@ public class LogoCoordinator {
 
     private void maybeInitHomepageStateListener(Context context) {
         if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()
-                || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             return;
         }
 

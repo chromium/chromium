@@ -465,7 +465,7 @@ public class FeedSurfaceCoordinator
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mIsNewTabPageCustomizationV2Enabled =
                 mIsNewTabPageCustomizationEnabled
-                        && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+                        && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         mDefaultBackgroundColor =
                 ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
@@ -485,7 +485,7 @@ public class FeedSurfaceCoordinator
         mRecyclerView = setUpView();
         FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
-        mIsNtpCustomizationV2Enabled = ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+        mIsNtpCustomizationV2Enabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         if (mIsNewTabPageCustomizationV2Enabled) {
             mNtpBackgroundImageCoordinator =
                     new NtpBackgroundImageCoordinator(
@@ -1487,6 +1487,10 @@ public class FeedSurfaceCoordinator
     public void setBackgroundImageCoordinatorForTesting(
             NtpBackgroundImageCoordinator backgroundImageCoordinator) {
         mNtpBackgroundImageCoordinator = backgroundImageCoordinator;
+    }
+
+    public @Nullable NtpBackgroundImageCoordinator getNtpBackgroundImageCoordinatorForTesting() {
+        return mNtpBackgroundImageCoordinator;
     }
 
     @Nullable ImageButton getNtpCustomizationButtonForTesting() {

@@ -329,7 +329,7 @@ public class NtpCustomizationUtils {
 
     /** Loads the NtpThemeColorInfo from the SharedPreference, null otherwise. */
     public @Nullable static NtpThemeColorInfo loadColorInfoFromSharedPreference(Context context) {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return null;
 
         @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
         if (imageType != NtpBackgroundImageType.CHROME_COLOR
@@ -411,8 +411,7 @@ public class NtpCustomizationUtils {
      * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
      */
     public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                || !NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled()) {
+        if (!isNtpThemeCustomizationEnabled()) {
             return NtpBackgroundImageType.DEFAULT;
         }
 
@@ -516,7 +515,7 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on fake search box. */
     public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return false;
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return false;
 
         return shouldApplyWhiteBackgroundOnSearchBox(
                 NtpCustomizationConfigManager.getInstance().getBackgroundImageType());
@@ -967,7 +966,7 @@ public class NtpCustomizationUtils {
     public static boolean canEnableEdgeToEdgeForCustomizedTheme(boolean isTablet) {
         return !isTablet
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
     }
 
     /**

@@ -568,7 +568,7 @@ public class NewTabPageLayout extends LinearLayout
 
         ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             // TODO(https://crbug.com/423579377): Moves the layout parameters to
             //  composeplate_view_layout_v2.xml after the feature NewTabPageCustomizationV2 is
             //  launched.

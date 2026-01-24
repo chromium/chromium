@@ -824,6 +824,21 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    public void testShouldApplyWhiteBackgroundOnSearchBox_disabledByPolicy() {
+        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertTrue(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
+
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        assertFalse(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
+
+        configManager.resetForTesting();
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_withType() {
         assertFalse(
@@ -937,6 +952,12 @@ public class NtpCustomizationUtilsUnitTest {
 
         configManager.setBackgroundImageTypeForTesting(NtpBackgroundImageType.THEME_COLLECTION);
         assertTrue(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
+
+        // Verifies that false is returned if the NTP's custom background is disabled by policy.
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        assertFalse(NtpCustomizationUtils.shouldAdjustIconTintForNtp(/* isTablet= */ false));
 
         configManager.resetForTesting();
     }
