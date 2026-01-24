@@ -308,6 +308,10 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
                      }];
 }
 
+- (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index {
+  _mostVisitedSites->ReorderCustomLink(item.URL, index);
+}
+
 - (void)openModalToAddPinnedSite {
   [self.contentSuggestionsHandler showPinnedSiteCreator];
 }

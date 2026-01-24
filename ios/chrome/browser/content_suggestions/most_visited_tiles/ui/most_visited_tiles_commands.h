@@ -38,6 +38,9 @@
 // Removes the most visited `item`.
 - (void)removeMostVisited:(MostVisitedItem*)item;
 
+// Reorders the most visited `item` to `toIndex`.
+- (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index;
+
 // Opens the modal for user to add a new pinned site to the most visited tiles.
 - (void)openModalToAddPinnedSite;
 

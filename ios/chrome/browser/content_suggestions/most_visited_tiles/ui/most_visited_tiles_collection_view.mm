@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_item.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
@@ -120,6 +122,10 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
 
 }  // namespace
 
+@interface MostVisitedTilesCollectionView () <UICollectionViewDragDelegate,
+                                              UICollectionViewDropDelegate>
+@end
+
 @implementation MostVisitedTilesCollectionView {
   /// Current most visited tiles items being displayed.
   NSArray<MostVisitedItem*>* _items;
@@ -147,6 +153,9 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
     self.backgroundColor = UIColor.clearColor;
     self.showsHorizontalScrollIndicator = NO;
     self.scrollEnabled = NO;  /// Disables vertical scrolling.
+    self.dragDelegate = self;
+    self.dropDelegate = self;
+    self.dragInteractionEnabled = YES;
     [self registerClass:[UICollectionViewCell class]
         forCellWithReuseIdentifier:kCellReuseIdentifier];
     [self initializeDataSource];
@@ -167,6 +176,65 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   /// perform the first layout pass.
   return CGSizeMake(UIViewNoIntrinsicMetric,
                     MAX(self.contentSize.height, kIconSize));
+}
+
+#pragma mark - UICollectionViewDragDelegate
+
+- (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
+           itemsForBeginningDragSession:(id<UIDragSession>)session
+                            atIndexPath:(NSIndexPath*)indexPath {
+  NSNumber* identifier =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+  if (identifier.intValue == kPlusButtonIdentifier) {
+    return @[];
+  }
+  MostVisitedItem* item = _items[identifier.unsignedIntValue];
+  if (!item.isPinned) {
+    return @[];
+  }
+  NSItemProvider* itemProvider =
+      [[NSItemProvider alloc] initWithObject:item.title];
+  UIDragItem* dragItem = [[UIDragItem alloc] initWithItemProvider:itemProvider];
+  dragItem.localObject = item;
+  return @[ dragItem ];
+}
+
+#pragma mark - UICollectionViewDropDelegate
+
+- (UICollectionViewDropProposal*)
+              collectionView:(UICollectionView*)collectionView
+        dropSessionDidUpdate:(id<UIDropSession>)session
+    withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  BOOL allowDrop = NO;
+  if (self == collectionView && self.hasActiveDrag) {
+    NSUInteger destinationIndex = destinationIndexPath.item;
+    /// Only allow dropping at the "pinned sites" area.
+    if (destinationIndex < _items.count && _items[destinationIndex].isPinned) {
+      allowDrop = YES;
+    }
+  }
+  return [[UICollectionViewDropProposal alloc]
+      initWithDropOperation:allowDrop ? UIDropOperationMove
+                                      : UIDropOperationForbidden
+                     intent:
+                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    performDropWithCoordinator:
+        (id<UICollectionViewDropCoordinator>)coordinator {
+  NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
+  if (!destinationIndexPath) {
+    return;
+  }
+  id<UICollectionViewDropItem> dragItem = coordinator.items.firstObject;
+  if (!(dragItem && dragItem.sourceIndexPath)) {
+    return;
+  }
+  MostVisitedItem* item = base::apple::ObjCCastStrict<MostVisitedItem>(
+      dragItem.dragItem.localObject);
+  [_mostVisitedTilesHandler moveMostVisitedItem:item
+                                        toIndex:destinationIndexPath.item];
 }
 
 #pragma mark - Private
