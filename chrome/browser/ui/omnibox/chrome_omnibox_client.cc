@@ -160,8 +160,10 @@ ChromeOmniboxClient::ChromeOmniboxClient(LocationBar* location_bar,
 ChromeOmniboxClient::~ChromeOmniboxClient() {
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
-  for (auto request_id : request_ids_) {
-    bitmap_fetcher_service->CancelRequest(request_id);
+  if (bitmap_fetcher_service) {
+    for (auto request_id : request_ids_) {
+      bitmap_fetcher_service->CancelRequest(request_id);
+    }
   }
 }
 
@@ -573,36 +575,46 @@ void ChromeOmniboxClient::OnResultChanged(
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
 
   // Clear out the old requests.
-  for (auto request_id : request_ids_) {
-    bitmap_fetcher_service->CancelRequest(request_id);
+  if (bitmap_fetcher_service) {
+    for (auto request_id : request_ids_) {
+      bitmap_fetcher_service->CancelRequest(request_id);
+    }
   }
   request_ids_.clear();
   // Create new requests.
   int result_index = -1;
   for (const AutocompleteMatch& match : result) {
     ++result_index;
-    if (!match.icon_url.is_empty()) {
-      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.icon_url,
-          base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
-    } else {
-      const TemplateURL* turl = nullptr;
-      if (!match.associated_keyword.empty()) {
-        turl = AutocompleteMatch::GetTemplateURLWithKeyword(
-            GetTemplateURLService(), match.associated_keyword, "");
-      } else if (!match.keyword.empty()) {
-        turl = match.GetTemplateURL(GetTemplateURLService());
-      }
-      // Fetch the favicon if the `TemplateURL` is from the enterprise search
-      // aggregator policy. This covers both cases:
-      // 1. Non-featured matches with an associated keyword hint (e.g.,
-      //    verbatim match when typing 'aggregator').
-      // 2. Matches originating from the aggregator keyword mode itself (e.g.
-      //    shortcut suggestions in default mode).
-      if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
+    if (bitmap_fetcher_service) {
+      if (!match.icon_url.is_empty()) {
         request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-            turl->favicon_url(), base::BindOnce(on_bitmap_fetched, result_index,
-                                                turl->favicon_url())));
+            match.icon_url,
+            base::BindOnce(on_bitmap_fetched, result_index, match.icon_url)));
+      } else {
+        const TemplateURL* turl = nullptr;
+        if (!match.associated_keyword.empty()) {
+          turl = AutocompleteMatch::GetTemplateURLWithKeyword(
+              GetTemplateURLService(), match.associated_keyword, "");
+        } else if (!match.keyword.empty()) {
+          turl = match.GetTemplateURL(GetTemplateURLService());
+        }
+        // Fetch the favicon if the `TemplateURL` is from the enterprise search
+        // aggregator policy. This covers both cases:
+        // 1. Non-featured matches with an associated keyword hint (e.g.,
+        //    verbatim match when typing 'aggregator').
+        // 2. Matches originating from the aggregator keyword mode itself (e.g.
+        //    shortcut suggestions in default mode).
+        if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
+          request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+              turl->favicon_url(),
+              base::BindOnce(on_bitmap_fetched, result_index,
+                             turl->favicon_url())));
+        }
+      }
+      if (!match.ImageUrl().is_empty()) {
+        request_ids_.push_back(bitmap_fetcher_service->RequestImage(
+            match.ImageUrl(),
+            base::BindOnce(on_bitmap_fetched, result_index, GURL())));
       }
     }
     if (match.HasTakeoverAction(OmniboxActionId::CONTEXTUAL_SEARCH_OPEN_LENS) &&
@@ -633,11 +645,6 @@ void ChromeOmniboxClient::OnResultChanged(
                                            GURL()))));
         }
       }
-    }
-    if (!match.ImageUrl().is_empty()) {
-      request_ids_.push_back(bitmap_fetcher_service->RequestImage(
-          match.ImageUrl(),
-          base::BindOnce(on_bitmap_fetched, result_index, GURL())));
     }
   }
 }
