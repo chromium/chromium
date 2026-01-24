@@ -192,7 +192,7 @@
 }
 
 @media (min-width: 1236px) {
-  :host([is-side-panel]) #composebox {
+  :host([is-side-panel]:not([is-zero-state])) #composebox {
     inset-inline-start: 96px;
   }
 }
