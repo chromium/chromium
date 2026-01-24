@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -241,7 +242,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
 
   AddressSuggestionGenerator generator(
       /*plus_address_email_override=*/std::nullopt,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, mojom::AutofillSuggestionTriggerSource::kGlic);
   auto generate_suggestions =
       [&](std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>> data) {

@@ -409,7 +409,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
       const AutofillField& trigger_autofill_field,
-      std::optional<std::string> plus_address_email_override);
+      std::optional<std::string> plus_address_email_override,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list of suggestions from the stored loyalty cards for the given
   // last committed primary main frame URL obtained from `client()` and the

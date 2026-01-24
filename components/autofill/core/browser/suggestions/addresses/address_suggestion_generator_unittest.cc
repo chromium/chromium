@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -137,7 +138,8 @@ class AddressSuggestionGeneratorTest : public testing::Test {
     std::vector<Suggestion> suggestions;
     AddressSuggestionGenerator address_suggestion_generator(
         /*plus_address_email_override=*/std::nullopt,
-        /*log_manager=*/nullptr);
+        /*log_manager=*/nullptr,
+        mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
     auto on_suggestions_generated =
         [&suggestions](
@@ -1390,7 +1392,8 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
 
   AddressSuggestionGenerator generator(
       /*plus_address_email_override=*/std::nullopt,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr,
+      mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
       saved_callback_argument;
@@ -1448,7 +1451,8 @@ TEST_F(AddressSuggestionGeneratorTest,
 
   AddressSuggestionGenerator generator(
       /*plus_address_email_override=*/std::nullopt,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr,
+      mojom::AutofillSuggestionTriggerSource::kFormControlElementClicked);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
       saved_callback_argument;

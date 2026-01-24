@@ -328,6 +328,34 @@ std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
                                   CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
 }
 
+// During filling operations, each field gets assigned a set of
+// `FieldFillingSkipReason` values, and only fields for which that set is empty
+// are considered for filling, and the rest are skipped. This function returns
+// reasons that can be ignored, which means that even if a field qualifies for
+// it, it does not get added to the set.
+DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
+    AutofillTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillTriggerSource::kNone:
+    case AutofillTriggerSource::kPopup:
+    case AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet:
+    case AutofillTriggerSource::kFormsSeen:
+    case AutofillTriggerSource::kSelectOptionsChanged:
+    case AutofillTriggerSource::kJavaScriptChangedAutofilledValue:
+    case AutofillTriggerSource::kManualFallback:
+    case AutofillTriggerSource::kDevtools:
+    case AutofillTriggerSource::kScanCreditCard:
+    case AutofillTriggerSource::kProactivePasswordRecovery:
+    case AutofillTriggerSource::kCreditCardSaveAndFill:
+    case AutofillTriggerSource::kGlic:
+    case AutofillTriggerSource::kProgrammaticRefill:
+      // TODO(crbug.com/469428128): Ignore some skip reasons during
+      // `kGlic`-triggered autofill operations.
+      return {};
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // Like FillingPayload, but may carry additional data needed for filling.
@@ -509,13 +537,16 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     base::flat_map<FieldType, size_t>& type_count,
     const base::flat_set<FieldGlobalId>& blocked_fields,
     FillingProduct filling_product,
+    AutofillTriggerSource trigger_source,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
 
-  auto add_if = [&skip_reasons](bool condition, FieldFillingSkipReason reason) {
-    if (condition) {
+  auto add_if = [&skip_reasons,
+                 ignorable_reasons = GetIgnorableSkipReasons(trigger_source)](
+                    bool condition, FieldFillingSkipReason reason) {
+    if (condition && !ignorable_reasons.contains(reason)) {
       skip_reasons.insert(reason);
     }
   };
@@ -622,6 +653,7 @@ FormFiller::GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
                                        const AutofillField& trigger_field,
                                        const RefillOptions& refill_options,
                                        FillingProduct filling_product,
+                                       AutofillTriggerSource trigger_source,
                                        const AutofillClient& client) {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
@@ -647,7 +679,8 @@ FormFiller::GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
             field, *autofill_field, trigger_field, refill_options, type_count,
-            blocked_fields, filling_product, GetAcUnrecognizedBehavior(client));
+            blocked_fields, filling_product, trigger_source,
+            GetAcUnrecognizedBehavior(client));
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
@@ -864,9 +897,10 @@ void FormFiller::FillOrPreviewForm(
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
-      GetFieldFillingSkipReasons(
-          result_fields, form_structure, autofill_trigger_field, refill_options,
-          augmented_filling_payload.filling_product(), manager_->client());
+      GetFieldFillingSkipReasons(result_fields, form_structure,
+                                 autofill_trigger_field, refill_options,
+                                 augmented_filling_payload.filling_product(),
+                                 trigger_source, manager_->client());
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar

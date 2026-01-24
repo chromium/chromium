@@ -397,6 +397,7 @@ bool ShouldFetchCreditCard(
     const FormStructure& form_structure,
     const AutofillField& autofill_field,
     const CreditCard& credit_card,
+    AutofillTriggerSource trigger_source,
     AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   if (credit_card.is_bnpl_card()) {
     // This is a BNPL VCN, so fetching is not needed because an authentication
@@ -404,7 +405,7 @@ bool ShouldFetchCreditCard(
     return false;
   }
   if (WillFillCreditCardNumberOrCvc(form.fields(), form_structure.fields(),
-                                    autofill_field,
+                                    autofill_field, trigger_source,
                                     /*card_has_cvc=*/!credit_card.cvc().empty(),
                                     ac_unrecognized_behavior)) {
     return true;
@@ -438,6 +439,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
     case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGlic:
       return false;
   }
 }
@@ -539,6 +541,9 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
     case kTextFieldDidReceiveKeyDown:
     case kiOS:
       return DenseSet<FillingProduct>::all();
+    case kGlic:
+      return {FillingProduct::kAddress, FillingProduct::kCreditCard,
+              FillingProduct::kPassword};
   }
 }
 
@@ -2007,7 +2012,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet:
       case AutofillTriggerSource::kGlic:
         return ShouldFetchCreditCard(form, form_structure, autofill_field,
-                                     credit_card,
+                                     credit_card, trigger_source,
                                      GetAcUnrecognizedBehavior(client()));
       case AutofillTriggerSource::kScanCreditCard:
       case AutofillTriggerSource::kDevtools:
@@ -3009,10 +3014,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormStructure& form_structure,
     const FormFieldData& trigger_field,
     const AutofillField& trigger_autofill_field,
-    std::optional<std::string> plus_address_email_override) {
+    std::optional<std::string> plus_address_email_override,
+    AutofillSuggestionTriggerSource trigger_source) {
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
-      plus_address_email_override, log_manager());
+      plus_address_email_override, log_manager(), trigger_source);
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -3256,9 +3262,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   switch (context.filling_product) {
     case FillingProduct::kAddress:
       if (client().IsAutofillProfileEnabled()) {
-        suggestions =
-            GetProfileSuggestions(form, *form_structure, field, *autofill_field,
-                                  std::move(plus_address_email_override));
+        suggestions = GetProfileSuggestions(
+            form, *form_structure, field, *autofill_field,
+            std::move(plus_address_email_override), trigger_source);
       }
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
@@ -3624,8 +3630,8 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   }
   if (relevant_filling_products.contains(FillingProduct::kAddress)) {
     suggestion_generators_.push_back(
-        std::make_unique<AddressSuggestionGenerator>(std::nullopt,
-                                                     log_manager()));
+        std::make_unique<AddressSuggestionGenerator>(
+            std::nullopt, log_manager(), trigger_source));
   }
   if (relevant_filling_products.contains(FillingProduct::kCreditCard)) {
     suggestion_generators_.push_back(

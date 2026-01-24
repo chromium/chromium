@@ -211,6 +211,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Autofill AI"/>
   <int value="19" label="Plus address update in browser process"/>
   <int value="20" label="Proactive password recovery"/>
+  <int value="21" label="Glic"/>
 </enum>
 
 <enum name="AutoSigninFirstRun">

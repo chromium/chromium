@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_SOURCE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_SOURCE_H_
 
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
@@ -62,6 +62,20 @@ enum class AutofillTriggerSource {
   // A refill was triggered by JavaScript.
   kProgrammaticRefill = 16,
 };
+
+// The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
+// to happen. This can happen by selecting a suggestion, but also through a
+// dynamic change (refills) or through a surface that doesn't use suggestions,
+// like TTF. This function is concerned with the first case: A suggestion that
+// was generated through the `suggestion_trigger_source` got selected. This
+// function returns the appropriate `AutofillTriggerSource`.
+// Note that an `AutofillSuggestionTriggerSource` is different from a
+// `AutofillTriggerSource`. The former describes what caused the suggestion
+// itself to appear. For example, depending on the completeness of the form,
+// clicking into a field (the suggestion trigger source) can cause
+// the keyboard accessory or TTF/fast checkout to appear (the trigger source).
+AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
+    AutofillSuggestionTriggerSource suggestion_trigger_source);
 
 }  // namespace autofill
 

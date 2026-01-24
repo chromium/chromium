@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
@@ -51,6 +52,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -59,6 +61,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -891,7 +894,10 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
       /*plus_address_email_override=*/std::nullopt,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr,
+      // AddressOnTyping suggestions do not depend on the trigger source.
+      /*trigger_source=*/
+      mojom::AutofillSuggestionTriggerSource::kUnspecified);
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -971,9 +977,11 @@ bool ContainsProfileSuggestionWithRecordType(
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
     const std::optional<std::string>& plus_address_email_override,
-    LogManager* log_manager)
+    LogManager* log_manager,
+    AutofillSuggestionTriggerSource trigger_source)
     : plus_address_email_override_(plus_address_email_override),
-      log_manager_(log_manager) {}
+      log_manager_(log_manager),
+      trigger_source_(trigger_source) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
 
@@ -1149,7 +1157,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
       skip_reasons = FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *trigger_autofill_field,
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-          client);
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_), client);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {

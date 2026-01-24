@@ -118,6 +118,7 @@ class FormFiller {
       base::flat_map<FieldType, size_t>& type_count,
       const base::flat_set<FieldGlobalId>& blocked_fields,
       FillingProduct filling_product,
+      AutofillTriggerSource trigger_source,
       AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
   // Resets states that FormFiller holds and maintains.
@@ -138,6 +139,7 @@ class FormFiller {
                              const AutofillField& trigger_field,
                              const RefillOptions& refill_options,
                              FillingProduct filling_product,
+                             AutofillTriggerSource trigger_source,
                              const AutofillClient& client);
 
   // Reverts the last autofill operation on `form` that affected
