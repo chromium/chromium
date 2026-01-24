@@ -6,7 +6,9 @@ found in the LICENSE file.
 -->
 
 <org.chromium.ui.listmenu.ListMenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/ToolbarHoverableButton"
+    android:layout_height="match_parent"
     app:menuVerticalOverlapAnchor="false"
     app:menuMaxWidth="@dimen/extension_action_button_list_menu_width" />
