@@ -43,6 +43,9 @@ namespace flat_rule = url_pattern_index::flat;
 namespace dnr_api = api::declarative_net_request;
 using PageAccess = PermissionsData::PageAccess;
 
+constexpr char kAllowWebViewDeclarativeNetRequest[] =
+    "allow-webview-declarative-net-request";
+
 void NotifyRequestWithheld(const ExtensionId& extension_id,
                            const WebRequestInfo& request) {
   DCHECK(ExtensionsAPIClient::Get());
@@ -521,9 +524,11 @@ bool RulesetManager::ShouldEvaluateRequest(
   }
 
   // Declarative Net Request rules should not be matched against requests
-  // originating from WebViews.
+  // originating from WebViews, unless explicitly allowed.
+  // TODO(b/476261948): Replace the flag with a better solution.
   if (request.is_web_view) {
-    return false;
+    return base::CommandLine::ForCurrentProcess()->HasSwitch(
+        kAllowWebViewDeclarativeNetRequest);
   }
 
   return true;
