@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/explicitly_set_attr_elements_map.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
-#include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
@@ -224,13 +223,6 @@ class CORE_EXPORT ElementRareDataVector final
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   ColumnPseudoElement* GetColumnPseudoElement(wtf_size_t idx) const;
   void ClearColumnPseudoElements(wtf_size_t to_keep);
-
-  [[nodiscard]] ElementRareDataVector* AddOverscrollAreaParentPseudoElement(
-      IndexedPseudoElement&);
-  const OverscrollAreaParentPseudoElementsVector*
-  GetOverscrollAreaParentPseudoElements() const;
-  IndexedPseudoElement* GetOverscrollPseudoElement(wtf_size_t idx) const;
-  void ClearOverscrollPseudoElements(wtf_size_t to_keep);
 
   std::pair<std::reference_wrapper<CSSStyleDeclaration>, ElementRareDataVector*>
   EnsureInlineCSSStyleDeclaration(Element* owner_element);

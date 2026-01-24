@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
@@ -4122,16 +4123,23 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   // reparenting in PaintPropertyTreeBuilder. Without this, we can end up with
   // cycles if only *some* of the related objects are dirtied.
   if (IsOverscrollContainer()) {
-    auto* container = IsPseudo(kPseudoIdOverscrollAreaParent) ? Parent() : this;
-    CHECK(container);
+    LayoutObject* container =
+        IsPseudo(kPseudoIdOverscrollAreaParent) ? Parent() : this;
+    if (container) {
+      Element* container_element = DynamicTo<Element>(container->GetNode());
+      CHECK(container_element);
 
-    if (auto* container_element = DynamicTo<Element>(container->GetNode())) {
-      if (auto* overscroll_area_parent_vector =
-              container_element->GetOverscrollAreaParentPseudoElements()) {
-        for (const auto& overscroll_area_parent :
-             *overscroll_area_parent_vector) {
-          if (auto* object = overscroll_area_parent->GetLayoutObject()) {
-            object->bitfields_.SetNeedsPaintPropertyUpdate(true);
+      if (OverscrollAreaTracker* overscroll_area_tracker =
+              container_element->GetOverscrollAreaTracker()) {
+        for (Element* overscroll_area :
+             overscroll_area_tracker->DOMSortedElements()) {
+          if (PseudoElement* overscroll_area_parent =
+                  overscroll_area->GetPseudoElement(
+                      kPseudoIdOverscrollAreaParent)) {
+            if (auto* object = overscroll_area_parent->GetLayoutObject()) {
+              object->bitfields_.SetNeedsPaintPropertyUpdate(true);
+              object->SetDescendantNeedsPaintPropertyUpdate();
+            }
           }
         }
 

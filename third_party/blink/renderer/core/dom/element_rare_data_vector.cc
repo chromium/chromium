@@ -221,39 +221,6 @@ void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
-ElementRareDataVector*
-ElementRareDataVector::AddOverscrollAreaParentPseudoElement(
-    IndexedPseudoElement& element) {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  ElementRareDataVector* vec = this;
-  if (!data) {
-    data = MakeGarbageCollected<PseudoElementData>();
-    vec = SetField(FieldId::kPseudoElementData, data);
-  }
-  data->AddOverscrollAreaParentPseudoElement(element);
-  return vec;
-}
-
-const OverscrollAreaParentPseudoElementsVector*
-ElementRareDataVector::GetOverscrollAreaParentPseudoElements() const {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    return nullptr;
-  }
-  return data->GetOverscrollAreaParentPseudoElements();
-}
-
-void ElementRareDataVector::ClearOverscrollPseudoElements(wtf_size_t to_keep) {
-  PseudoElementData* data =
-      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
-  if (!data) {
-    return;
-  }
-  data->ClearOverscrollAreas(to_keep);
-}
-
 std::pair<std::reference_wrapper<CSSStyleDeclaration>, ElementRareDataVector*>
 ElementRareDataVector::EnsureInlineCSSStyleDeclaration(Element* owner_element) {
   return EnsureField<InlineCSSStyleDeclaration>(FieldId::kCssomWrapper,

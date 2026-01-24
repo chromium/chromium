@@ -134,7 +134,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
-#include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -4545,23 +4544,16 @@ void Element::AttachLayoutTree(AttachContext& context) {
   //   - ::-internal-overscroll-area-parent
   //     - #menu
   //   - #button
-  if (Element* container = GetOverscrollContainer()) {
-    if (!context.parent->IsPseudo(kPseudoIdOverscrollAreaParent)) {
+  if (PseudoElement* pseudo_element =
+          GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
+    if (context.parent != pseudo_element->GetLayoutObject()) {
       AttachContext overscroll_area_context(context);
-      wtf_size_t index =
-          container->GetOverscrollAreaTracker()->DOMSortedElements().Find(this);
-      PseudoElement* pseudo_element =
-          container->GetOverscrollAreaParentPseudoElements()->at(index);
-      CHECK(pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent);
       overscroll_area_context.parent = pseudo_element->GetLayoutObject();
       overscroll_area_context.previous_in_flow = nullptr;
       overscroll_area_context.next_sibling = nullptr;
       overscroll_area_context.next_sibling_valid = true;
       AttachLayoutTree(overscroll_area_context);
       return;
-    } else {
-      CHECK(To<PseudoElement>(context.parent->GetNode())
-                ->UltimateOriginatingElement() == container);
     }
   }
 
@@ -5249,7 +5241,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                                      child_recalc_context);
     }
 
-    UpdateOverscrollPseudoElements(child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
+                        child_recalc_context);
     UpdateTransitionPseudoElements(child_change, child_recalc_context);
   }
 
@@ -5487,6 +5480,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // `this`.
     CHECK(tracker);
     tracker->RemoveOverscroll(this);
+    // We may need to remove this element's ::-internal-overscroll-area-parent.
+    child_change =
+        child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
   }
   // If we no longer an overscroll container, but need one, add this element to
   // the context overscroll container.
@@ -5497,6 +5493,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (style_recalc_context.overscroll_container) {
       style_recalc_context.overscroll_container->EnsureOverscrollAreaTracker()
           .AddOverscroll(this);
+      // We need to add a ::-internal-overscroll-area-parent for this element.
+      child_change =
+          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
     }
   }
 
@@ -5975,15 +5974,31 @@ void Element::RebuildTransitionLayoutTree(
 }
 
 void Element::AttachOverscrollPseudoElements(AttachContext& context) {
-  const OverscrollAreaParentPseudoElementsVector* overscroll_area_parents =
-      GetOverscrollAreaParentPseudoElements();
-  if (!overscroll_area_parents) {
+  OverscrollAreaTracker* overscroll_area_tracker = GetOverscrollAreaTracker();
+  if (!overscroll_area_tracker) {
     return;
   }
 
-  for (IndexedPseudoElement* pseudo_element : *overscroll_area_parents) {
+  for (Element* overscroll_area :
+       overscroll_area_tracker->DOMSortedElements()) {
+    PseudoElement* pseudo_element =
+        overscroll_area->GetPseudoElement(kPseudoIdOverscrollAreaParent);
     pseudo_element->AttachLayoutTree(context);
     CHECK(pseudo_element->GetLayoutObject());
+  }
+}
+
+void Element::DetachOverscrollPseudoElements(bool performing_reattach) {
+  OverscrollAreaTracker* overscroll_area_tracker = GetOverscrollAreaTracker();
+  if (!overscroll_area_tracker) {
+    return;
+  }
+
+  for (Element* overscroll_area :
+       overscroll_area_tracker->DOMSortedElements()) {
+    PseudoElement* pseudo_element =
+        overscroll_area->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    pseudo_element->DetachLayoutTree(performing_reattach);
   }
 }
 
@@ -8832,15 +8847,6 @@ void Element::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
-const OverscrollAreaParentPseudoElementsVector*
-Element::GetOverscrollAreaParentPseudoElements() const {
-  ElementRareDataVector* data = RareData();
-  if (!data) {
-    return nullptr;
-  }
-  return data->GetOverscrollAreaParentPseudoElements();
-}
-
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
   EnsureRareData().SetScrollbarPseudoElementStylesDependOnFontMetrics(value);
 }
@@ -10695,6 +10701,11 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
   }
+  if (pseudo_id == kPseudoIdOverscrollAreaParent) {
+    // We set or remove our overscroll container in RecalcOwnStyle. Its presence
+    // indicates if we need an overscroll area parent for this element.
+    return GetOverscrollContainer();
+  }
   if (pseudo_id == kPseudoIdCheckMark) {
     // We want to avoid the performance cost of generating the checkmark for
     // old-style selects.
@@ -12405,46 +12416,6 @@ void Element::InvalidateStyleAttribute(
                           style_change_reason::kInlineCSSStyleMutated));
   GetDocument().GetStyleEngine().AttributeChangedForElement(
       html_names::kStyleAttr, *this);
-}
-
-void Element::UpdateOverscrollPseudoElements(
-    const StyleRecalcChange style_recalc_change,
-    const StyleRecalcContext& style_recalc_context) {
-  OverscrollAreaTracker* tracker = GetOverscrollAreaTracker();
-  ElementRareDataVector* data = RareData();
-
-  if (!tracker) {
-    if (data) {
-      data->ClearOverscrollPseudoElements(/*to_keep=*/0);
-    }
-    return;
-  }
-
-  const VectorOf<Element>& overscroll_elements = tracker->DOMSortedElements();
-
-  // Detect if the declared overscroll areas have changed.
-  const OverscrollAreaParentPseudoElementsVector* current_overscroll_elements =
-      data ? data->GetOverscrollAreaParentPseudoElements() : nullptr;
-  wtf_size_t current_overscroll_area_count =
-      current_overscroll_elements ? current_overscroll_elements->size() : 0;
-
-  // Detect if the declared overscroll areas have changed.
-  if (overscroll_elements.size() == current_overscroll_area_count) {
-    return;
-  }
-
-  if (data) {
-    data->ClearOverscrollPseudoElements(/*to_keep=*/overscroll_elements.size());
-  }
-
-  for (wtf_size_t i = current_overscroll_area_count;
-       i < overscroll_elements.size(); ++i) {
-    IndexedPseudoElement* pseudo_element =
-        MakeGarbageCollected<IndexedPseudoElement>(
-            this, kPseudoIdOverscrollAreaParent, i);
-    CHECK(SetAssociatedPseudoElement(pseudo_element, style_recalc_context));
-    pseudo_element->SetNeedsReattachLayoutTree();
-  }
 }
 
 void Element::UpdateTransitionPseudoElements(

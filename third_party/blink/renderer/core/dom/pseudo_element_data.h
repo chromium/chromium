@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
-#include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/transition_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -66,28 +65,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
       column_pseudo_elements_->clear();
     }
   }
-  void AddOverscrollAreaParentPseudoElement(IndexedPseudoElement& element) {
-    if (!overscroll_data_) {
-      overscroll_data_ = MakeGarbageCollected<OverscrollPseudoElementData>();
-    }
-    overscroll_data_->AddPseudoElement(&element);
-  }
-  const OverscrollAreaParentPseudoElementsVector*
-  GetOverscrollAreaParentPseudoElements() const {
-    if (!overscroll_data_) {
-      return nullptr;
-    }
-    return &overscroll_data_->GetOverscrollParents();
-  }
-  void ClearOverscrollAreas(wtf_size_t to_keep) {
-    if (!overscroll_data_) {
-      return;
-    }
-    overscroll_data_->ClearPseudoElements(to_keep);
-    if (overscroll_data_->size() == 0) {
-      overscroll_data_ = nullptr;
-    }
-  }
 
   bool HasPseudoElements() const;
   void ClearPseudoElements();
@@ -99,6 +76,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_interest_hint_);
     visitor->Trace(generated_marker_);
     visitor->Trace(generated_first_letter_);
+    visitor->Trace(generated_overscroll_area_parent_);
     visitor->Trace(generated_scroll_marker_group_before_);
     visitor->Trace(generated_scroll_marker_group_after_);
     visitor->Trace(generated_scroll_marker_);
@@ -107,7 +85,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_button_inline_end_);
     visitor->Trace(generated_scroll_button_block_end_);
     visitor->Trace(backdrop_);
-    visitor->Trace(overscroll_data_);
     visitor->Trace(transition_data_);
     visitor->Trace(column_pseudo_elements_);
     ElementRareDataField::Trace(visitor);
@@ -121,6 +98,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_interest_hint_;
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
+  Member<PseudoElement> generated_overscroll_area_parent_;
   Member<PseudoElement> generated_scroll_marker_group_before_;
   Member<PseudoElement> generated_scroll_marker_group_after_;
   Member<PseudoElement> generated_scroll_marker_;
@@ -130,7 +108,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_scroll_button_block_end_;
   Member<PseudoElement> backdrop_;
 
-  Member<OverscrollPseudoElementData> overscroll_data_;
   Member<TransitionPseudoElementData> transition_data_;
 
   // Column pseudo-elements are created once per column (fragmentainer)
@@ -144,7 +121,8 @@ inline bool PseudoElementData::HasPseudoElements() const {
   return generated_check_ || generated_before_ || generated_after_ ||
          generated_picker_icon_ || generated_interest_hint_ ||
          generated_marker_ || backdrop_ || generated_first_letter_ ||
-         transition_data_ || generated_scroll_marker_group_before_ ||
+         transition_data_ || generated_overscroll_area_parent_ ||
+         generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_button_block_start_ ||
          generated_scroll_button_inline_start_ ||
@@ -169,6 +147,7 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollButtonInlineStart, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonInlineEnd, nullptr);
   SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
+  SetPseudoElement(kPseudoIdOverscrollAreaParent, nullptr);
   if (column_pseudo_elements_) {
     for (ColumnPseudoElement* column_pseudo_element : *column_pseudo_elements_) {
       column_pseudo_element->Dispose();
@@ -178,10 +157,6 @@ inline void PseudoElementData::ClearPseudoElements() {
   if (transition_data_) {
     transition_data_->ClearPseudoElements();
     transition_data_ = nullptr;
-  }
-  if (overscroll_data_) {
-    overscroll_data_->ClearPseudoElements();
-    overscroll_data_ = nullptr;
   }
 }
 
@@ -214,6 +189,10 @@ inline void PseudoElementData::SetPseudoElement(
     case kPseudoIdMarker:
       previous_element = generated_marker_;
       generated_marker_ = element;
+      break;
+    case kPseudoIdOverscrollAreaParent:
+      previous_element = generated_overscroll_area_parent_;
+      generated_overscroll_area_parent_ = element;
       break;
     case kPseudoIdScrollMarkerGroupBefore:
       previous_element = generated_scroll_marker_group_before_;
@@ -251,15 +230,6 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_first_letter_;
       generated_first_letter_ = element;
       break;
-    case kPseudoIdOverscrollAreaParent: {
-      IndexedPseudoElement* overscroll_area = To<IndexedPseudoElement>(element);
-      if (!overscroll_data_) {
-        overscroll_data_ = MakeGarbageCollected<OverscrollPseudoElementData>();
-      }
-      CHECK_EQ(overscroll_area->Index(), overscroll_data_->size());
-      overscroll_data_->AddPseudoElement(overscroll_area);
-      break;
-    }
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionGroupChildren:
@@ -300,6 +270,9 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   }
   if (kPseudoIdMarker == pseudo_id)
     return generated_marker_.Get();
+  if (kPseudoIdOverscrollAreaParent == pseudo_id) {
+    return generated_overscroll_area_parent_.Get();
+  }
   if (kPseudoIdScrollMarkerGroupBefore == pseudo_id) {
     return generated_scroll_marker_group_before_.Get();
   }

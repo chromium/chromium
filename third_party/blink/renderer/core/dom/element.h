@@ -115,7 +115,6 @@ class GetAnimationsOptions;
 class HTMLElement;
 class HTMLTemplateElement;
 class Image;
-class IndexedPseudoElement;
 class InputDeviceCapabilities;
 class InterestInvokerTargetData;
 class InvokerData;
@@ -177,8 +176,6 @@ using AttributeNamesView =
     bindings::TransformedView<AttributeCollection, AttributeToNameTransform>;
 
 using ColumnPseudoElementsVector = GCedHeapVector<Member<ColumnPseudoElement>>;
-using OverscrollAreaParentPseudoElementsVector =
-    HeapVector<Member<IndexedPseudoElement>>;
 
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
@@ -1783,8 +1780,6 @@ class CORE_EXPORT Element : public ContainerNode {
       wtf_size_t index,
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
-  const OverscrollAreaParentPseudoElementsVector*
-  GetOverscrollAreaParentPseudoElements() const;
 
   // Clear all ::column pseudo-elements, except for the leading `to_keep` ones.
   void ClearColumnPseudoElements(wtf_size_t to_keep = 0);
@@ -1844,10 +1839,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // this rather than GetPseudoElement().
   Element* GetStyledPseudoElement(PseudoId pseudo_id,
                                   const AtomicString& pseudo_argument) const;
-
-  // Performs an update of the overscroll pseudo-elements.
-  void UpdateOverscrollPseudoElements(const StyleRecalcChange,
-                                      const StyleRecalcContext&);
 
   // Performs an update of the view-transition pseudo-elements.
   void UpdateTransitionPseudoElements(const StyleRecalcChange,
@@ -2356,6 +2347,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // These pseudo-elements are added as siblings of the contents of this
   // element's layout children.
   void AttachOverscrollPseudoElements(AttachContext& context);
+  void DetachOverscrollPseudoElements(bool performing_reattach);
 
   void AttachColumnPseudoElements(AttachContext& context);
   void AttachTransitionPseudoElements(AttachContext& context);
@@ -2366,6 +2358,7 @@ class CORE_EXPORT Element : public ContainerNode {
     DetachPseudoElement(kPseudoIdMarker, performing_reattach);
     DetachPseudoElement(kPseudoIdCheckMark, performing_reattach);
     DetachPseudoElement(kPseudoIdBefore, performing_reattach);
+    DetachOverscrollPseudoElements(performing_reattach);
   }
 
   void DetachSucceedingPseudoElements(bool performing_reattach) {
