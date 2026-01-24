@@ -24,6 +24,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "skia/ext/skia_utils_base.h"
@@ -50,6 +52,26 @@ namespace ui {
 class DataTransferEndpoint;
 }
 namespace content {
+
+// Custom ContentBrowserClient for testing clipboard paste permissions.
+class ClipboardPasteAllowedBrowserClient : public TestContentBrowserClient {
+ public:
+  ClipboardPasteAllowedBrowserClient() = default;
+  ~ClipboardPasteAllowedBrowserClient() override = default;
+
+  void set_is_clipboard_paste_allowed(bool allowed) {
+    is_clipboard_paste_allowed_ = allowed;
+  }
+
+  // ContentBrowserClient:
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override {
+    return is_clipboard_paste_allowed_;
+  }
+
+ private:
+  bool is_clipboard_paste_allowed_ = true;
+};
 
 class ClipboardHostImplTest : public RenderViewHostTestHarness {
  protected:
@@ -918,6 +940,104 @@ TEST_F(ClipboardHostImplChangeTest, ClipboardListenerDisconnect) {
 
   // Run message loop again to ensure no pending messages exist
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ClipboardHostImplTest,
+       ReadUnsanitizedCustomFormat_WithoutUserActivation) {
+  // Setup: Custom browser client that denies clipboard paste
+  ClipboardPasteAllowedBrowserClient browser_client;
+  browser_client.set_is_clipboard_paste_allowed(false);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  // Write custom format to clipboard
+  std::string test_data = "confidential_custom_data";
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteData(u"web text/custom",
+                     mojo_base::BigBuffer(base::as_byte_span(test_data)));
+  }
+
+  // Test: Try to read custom format without user activation
+  base::test::TestFuture<mojo_base::BigBuffer> future;
+  mojo_clipboard()->ReadUnsanitizedCustomFormat(u"web text/custom",
+                                                future.GetCallback());
+
+  // Verify: Should return empty buffer due to permission check failure
+  EXPECT_EQ(0u, future.Get().size());
+}
+
+TEST_F(ClipboardHostImplTest,
+       ReadAvailableCustomAndStandardFormats_WithUserActivation) {
+  // Setup: Custom browser client that allows clipboard paste
+  ClipboardPasteAllowedBrowserClient browser_client;
+  browser_client.set_is_clipboard_paste_allowed(true);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  // Write some standard format data that TestClipboard can handle
+  mojo_clipboard()->WriteText(u"test text");
+  mojo_clipboard()->CommitWrite();
+  base::RunLoop().RunUntilIdle();
+
+  // Test: Read available formats with permission allowed
+  base::test::TestFuture<const std::vector<std::u16string>&> future;
+  mojo_clipboard()->ReadAvailableCustomAndStandardFormats(future.GetCallback());
+
+  // Verify: With permission allowed, the call completes successfully.
+  // TestClipboard should return standard formats like "text/plain".
+  const auto& formats = future.Get();
+  EXPECT_TRUE(std::ranges::contains(formats, u"text/plain"));
+}
+
+TEST_F(ClipboardHostImplTest, ReadUnsanitizedCustomFormat_WithUserActivation) {
+  // Setup: Custom browser client that allows clipboard paste
+  ClipboardPasteAllowedBrowserClient browser_client;
+  browser_client.set_is_clipboard_paste_allowed(true);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  // Write custom format data using ScopedClipboardWriter which properly
+  // handles web custom format metadata
+  std::string test_data = "test_custom_data";
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteData(u"text/custom",
+                     mojo_base::BigBuffer(base::as_byte_span(test_data)));
+  }
+
+  // Test: Read custom format with permission allowed
+  // Note: Need to prepend "web " prefix to match how ExtractCustomPlatformNames
+  // works
+  base::test::TestFuture<mojo_base::BigBuffer> future;
+  mojo_clipboard()->ReadUnsanitizedCustomFormat(u"web text/custom",
+                                                future.GetCallback());
+
+  // Verify: With permission allowed, the data should be successfully retrieved
+  const auto& result = future.Get();
+  EXPECT_GT(result.size(), 0u);
+
+  // Verify the content matches what was written
+  std::string retrieved_data(result.begin(), result.end());
+  EXPECT_EQ(retrieved_data, test_data);
+}
+
+TEST_F(ClipboardHostImplTest,
+       ReadAvailableCustomAndStandardFormats_TextWithoutUserActivation) {
+  // Setup: Custom browser client that denies clipboard paste
+  ClipboardPasteAllowedBrowserClient browser_client;
+  browser_client.set_is_clipboard_paste_allowed(false);
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  // Write standard text format to clipboard
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"test text");
+  }
+
+  // Test: Try to read available formats without permission
+  base::test::TestFuture<const std::vector<std::u16string>&> future;
+  mojo_clipboard()->ReadAvailableCustomAndStandardFormats(future.GetCallback());
+
+  // Verify: Should return empty vector due to permission check failure
+  EXPECT_EQ(0u, future.Get().size());
 }
 
 }  // namespace content

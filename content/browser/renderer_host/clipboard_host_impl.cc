@@ -605,6 +605,12 @@ bool ClipboardHostImpl::IsRendererPasteAllowed(
 
 void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
     ReadAvailableCustomAndStandardFormatsCallback callback) {
+  if (!IsRendererPasteAllowed(ui::ClipboardBuffer::kCopyPaste,
+                              render_frame_host())) {
+    std::move(callback).Run(std::vector<std::u16string>());
+    return;
+  }
+
   std::vector<std::u16string> format_types =
       ui::Clipboard::GetForCurrentThread()
           ->ReadAvailableStandardAndCustomFormatNames(
@@ -615,10 +621,18 @@ void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(
 void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
     const std::u16string& format,
     ReadUnsanitizedCustomFormatCallback callback) {
+  if (!IsRendererPasteAllowed(ui::ClipboardBuffer::kCopyPaste,
+                              render_frame_host())) {
+    std::move(callback).Run(mojo_base::BigBuffer());
+    return;
+  }
+
   // `kMaxFormatSize` includes the null terminator as well so we check if
   // the `format` size is strictly less than `kMaxFormatSize` or not.
-  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize)
+  if (format.length() >= blink::mojom::ClipboardHost::kMaxFormatSize) {
+    std::move(callback).Run(mojo_base::BigBuffer());
     return;
+  }
 
   // Extract the custom format names and then query the web custom format
   // corresponding to the MIME type.
@@ -630,15 +644,19 @@ void ClipboardHostImpl::ReadUnsanitizedCustomFormat(
   std::string web_custom_format_string;
   if (custom_format_names.find(format_name) != custom_format_names.end())
     web_custom_format_string = custom_format_names[format_name];
-  if (web_custom_format_string.empty())
+  if (web_custom_format_string.empty()) {
+    std::move(callback).Run(mojo_base::BigBuffer());
     return;
+  }
 
   std::string result;
   ui::Clipboard::GetForCurrentThread()->ReadData(
       ui::ClipboardFormatType::CustomPlatformType(web_custom_format_string),
       data_endpoint.get(), &result);
-  if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize)
+  if (result.size() >= blink::mojom::ClipboardHost::kMaxDataSize) {
+    std::move(callback).Run(mojo_base::BigBuffer());
     return;
+  }
   base::span<const uint8_t> span = base::as_byte_span(result);
   mojo_base::BigBuffer buffer = mojo_base::BigBuffer(span);
   std::move(callback).Run(std::move(buffer));
