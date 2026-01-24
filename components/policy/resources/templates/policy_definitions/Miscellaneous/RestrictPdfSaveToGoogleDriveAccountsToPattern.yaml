@@ -1,0 +1,21 @@
+caption: Restrict eligible Google accounts for saving PDF files to Google Drive from the
+   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> PDF Viewer
+desc: |-
+  Contains a regular expression to determine eligible Google accounts for saving PDF files to Google Drive from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> PDF Viewer.
+
+        An error is displayed if a user tries to upload a PDF file to Google Drive using an account that does not match this pattern.
+
+        If this policy is left not set or blank, then the user can use any Google account to save PDF files to Google Drive.
+example_value: .*@example\.com
+features:
+  dynamic_refresh: false
+  per_profile: false
+owners:
+- file://components/policy/OWNERS
+- faizur@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome.*:145-
+tags: []
+type: string

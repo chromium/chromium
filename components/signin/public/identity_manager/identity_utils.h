@@ -17,6 +17,12 @@ namespace signin {
 class AccountsInCookieJarInfo;
 class IdentityManager;
 
+// Returns true if the username matches the pattern.
+// The pattern is a RE2 pattern. If the pattern is empty, all usernames are
+// allowed. If the pattern is invalid, no usernames are allowed.
+bool IsUsernameAllowedByPattern(std::string_view username,
+                                std::string_view pattern);
+
 // Returns true if the username is allowed based on a pattern registered
 // |prefs::kGoogleServicesUsernamePattern| with the preferences service
 // referenced by |prefs|.

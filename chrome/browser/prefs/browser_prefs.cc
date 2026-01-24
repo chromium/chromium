@@ -1625,6 +1625,11 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
                                 true);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  registry->RegisterStringPref(
+      prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern, "");
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);

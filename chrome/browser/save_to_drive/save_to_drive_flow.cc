@@ -13,7 +13,9 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/drive_uploader.h"
@@ -25,7 +27,9 @@
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_user_data.h"
@@ -123,6 +127,17 @@ void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
   if (!account_info) {
     progress.status = SaveToDriveStatus::kUploadFailed;
     progress.error_type = SaveToDriveErrorType::kAccountChooserCanceled;
+    OnUploadProgress(std::move(progress));
+    return;
+  }
+  if (!signin::IsUsernameAllowedByPattern(
+          account_info->email,
+          g_browser_process->local_state()->GetString(
+              prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern))) {
+    progress.status = SaveToDriveStatus::kUploadFailed;
+    // TODO(crbug.com/476180174): Add a new error type for this case and show
+    // an appropriate error message.
+    progress.error_type = SaveToDriveErrorType::kUnknownError;
     OnUploadProgress(std::move(progress));
     return;
   }

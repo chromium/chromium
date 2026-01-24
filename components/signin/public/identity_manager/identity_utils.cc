@@ -24,8 +24,6 @@
 
 namespace signin {
 
-namespace {
-
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern) {
   if (pattern.empty()) {
@@ -61,8 +59,6 @@ bool IsUsernameAllowedByPattern(std::string_view username,
   DCHECK(U_SUCCESS(status));
   return !!match;  // !! == convert from UBool to bool.
 }
-
-}  // namespace
 
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username) {

@@ -2346,6 +2346,7 @@ chromium-metrics-reviews@google.com.
   <int value="1421" label="GeminiActOnWebBlockedForURLs"/>
   <int value="1422" label="WebAppInstallByUserEnabled"/>
   <int value="1423" label="LocalNetworkAccessIpAddressSpaceOverrides"/>
+  <int value="1424" label="RestrictPdfSaveToDriveAccountsToPattern"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
