@@ -360,6 +360,14 @@ class ComposeboxQueryController
       lens::LensOverlayServerRequest request,
       std::optional<contextual_search::FileUploadErrorType> error_type);
 
+  // Callback that takes the request body proto and adds the
+  // has_lens_usage_intent bool to it.
+  void AddLensUsageIntentToUploadRequestAndContinue(
+      bool has_lens_usage_intent,
+      RequestBodyProtoCreatedCallback callback,
+      lens::LensOverlayServerRequest request,
+      std::optional<contextual_search::FileUploadErrorType> error_type);
+
   // Asynchronous handler for when an upload request body is ready.
   void OnUploadRequestBodyReady(
       const base::UnguessableToken& file_token,

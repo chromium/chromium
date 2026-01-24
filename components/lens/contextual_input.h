@@ -62,6 +62,10 @@ struct ContextualInputData {
   // Followup uploads for an existing document should re-use the same context
   // id.
   std::optional<int64_t> context_id;
+  // Whether or not the contextual input data is for a context upload with
+  // strong user Lens usage intent. This is usually true, but can be false for
+  // the LensOverlay zero-state initial context upload.
+  bool has_lens_usage_intent = true;
 };
 
 }  // namespace lens
