@@ -272,6 +272,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin/e2e_tests:test_support",
