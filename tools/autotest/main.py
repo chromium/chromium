@@ -153,7 +153,7 @@ _TEST_TARGET_ALLOWLIST = [
     '//ui/ozone:ozone_integration_tests',
 ]
 r"""
- You can run this command to find test targets that do not match these regexes,
+ You can run this command to find test targets that do not match _TEST_TARGET_SUFFIXES,
  and use it to update _TEST_TARGET_ALLOWLIST.
 rg '^(instrumentation_test_runner|test)\("([^"]*)' -o -g'BUILD.gn' -r'$2' -N \
   | rg -v '(_browsertests|_perftests|_wpr_tests|_unittests)$' \
@@ -161,12 +161,12 @@ rg '^(instrumentation_test_runner|test)\("([^"]*)' -o -g'BUILD.gn' -r'$2' -N \
   | sort
 
  And you can use a command like this to find source_set targets that do match
- the test target regex (ideally this is minimal).
+ _TEST_TARGET_SUFFIXES (ideally this is minimal).
 rg '^source_set\("([^"]*)' -o -g'BUILD.gn' -r'$1' -N | \
   rg '(_browsertests|_perftests|_wpr_tests|_unittests)$'
 """
-_TEST_TARGET_REGEX = re.compile(
-    r'(_browsertests|_perftests|_wpr_tests|_unittests)$')
+_TEST_TARGET_SUFFIXES = ('_browsertests', '_perftests', '_wpr_tests',
+    '_unittests')
 
 _PREF_MAPPING_FILE_PATTERN = re.escape(
     str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
@@ -568,7 +568,7 @@ def _TestTargetsFromGnRefs(targets):
   standard_targets = [t for t in targets if '__' not in t]
   standard_targets = [
       t for t in standard_targets
-      if _TEST_TARGET_REGEX.search(t) or t in _TEST_TARGET_ALLOWLIST
+      if t.endswith(_TEST_TARGET_SUFFIXES) or t in _TEST_TARGET_ALLOWLIST
   ]
   all_test_targets.update(standard_targets)
 
