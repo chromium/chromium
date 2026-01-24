@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
@@ -30,6 +31,8 @@
 #include "extensions/common/permissions/usb_device_permission_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 
@@ -51,7 +54,8 @@ namespace extensions {
 class PermissionMessagesUnittest : public testing::Test {
  public:
   PermissionMessagesUnittest()
-      : message_provider_(new ChromePermissionMessageProvider()) {}
+      : message_provider_(std::make_unique<ChromePermissionMessageProvider>()) {
+  }
 
   PermissionMessagesUnittest(const PermissionMessagesUnittest&) = delete;
   PermissionMessagesUnittest& operator=(const PermissionMessagesUnittest&) =
