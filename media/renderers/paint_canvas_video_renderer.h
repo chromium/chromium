@@ -116,7 +116,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // |rgb_pixels|.
   static void ConvertVideoFrameToRGBPixels(
       const media::VideoFrame* video_frame,
-      void* rgb_pixels,
+      base::span<uint8_t> rgb_pixels,
       size_t row_bytes,
       SkColorType dst_color_type = kN32_SkColorType,
       bool premultiply_alpha = true,
