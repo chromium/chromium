@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_URL_UTILS_H_
-#define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_URL_UTILS_H_
+#ifndef CHROME_COMMON_WEBUI_URL_UTILS_H_
+#define CHROME_COMMON_WEBUI_URL_UTILS_H_
 
 class GURL;
 
@@ -19,4 +19,4 @@ bool IsTopChromeUntrustedWebUIURL(const GURL& url);
 // Returns true if the Top Chrome WebUI at `url` should not become the key view.
 bool ShouldRefuseBecomingKeyViewForTopChromeWebUI(const GURL& url);
 
-#endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_URL_UTILS_H_
+#endif  // CHROME_COMMON_WEBUI_URL_UTILS_H_

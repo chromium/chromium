@@ -163,6 +163,8 @@ static_library("common_lib") {
     "search/ntp_logging_events.h",
     "secure_origin_allowlist.cc",
     "secure_origin_allowlist.h",
+    "webui_url_utils.cc",
+    "webui_url_utils.h",
     "webui_util.cc",
     "webui_util.h",
   ]
