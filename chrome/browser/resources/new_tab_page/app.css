@@ -337,7 +337,7 @@ ntp-lens-upload-dialog {
 
 #dialogAnchor {
   anchor-name: --dialog-anchor;
-  left: 0;
+  inset-inline-start: 0;
   position: absolute;
   top: 0;
 }
@@ -345,7 +345,7 @@ ntp-lens-upload-dialog {
 #composeboxDialog {
   background: transparent;
   border: none;
-  left: anchor(left);
+  inset-inline-start: anchor(start);
   margin: 0;
   overflow: visible;
   position: absolute;
