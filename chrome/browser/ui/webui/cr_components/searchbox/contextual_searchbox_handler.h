@@ -203,21 +203,10 @@ class ContextualSearchboxHandler
   // can be overridden for specific implementations.
   virtual int GetContextMenuMaxTabSuggestions();
 
-  void OnAddTabContextTokenCreated(int32_t tab_id,
-                                   bool delay_upload,
-                                   AddTabContextCallback callback,
-                                   const base::UnguessableToken& context_token);
-
   void OnGetTabPageContext(
       bool delay_upload,
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
-
-  void OnUploadTabContextWithDataTokenCreated(
-      std::optional<int64_t> context_id,
-      std::unique_ptr<lens::ContextualInputData> data,
-      RecontextualizeTabCallback callback,
-      const base::UnguessableToken& context_token);
 
   // Helper function that handles the caching of the tab context. Once it's
   // successfully cached, we notify the page that the file is uploaded.

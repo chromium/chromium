@@ -447,17 +447,7 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(GURL url) {
 void LensQueryFlowRouter::UploadContextualInputData(
     std::unique_ptr<lens::ContextualInputData> contextual_input_data) {
   auto* session_handle = GetContextualSearchSessionHandle();
-  GetContextualSearchSessionHandle()->AddTabContext(
-      sessions::SessionTabHelper::IdForTab(web_contents()).id(),
-      base::BindOnce(&LensQueryFlowRouter::OnFinishedAddingTabContext,
-                     weak_factory_.GetWeakPtr(), session_handle,
-                     std::move(contextual_input_data)));
-}
-
-void LensQueryFlowRouter::OnFinishedAddingTabContext(
-    contextual_search::ContextualSearchSessionHandle* session_handle,
-    std::unique_ptr<lens::ContextualInputData> contextual_input_data,
-    const base::UnguessableToken& token) {
+  auto token = GetContextualSearchSessionHandle()->CreateContextToken();
   overlay_tab_context_file_token_ = token;
   // TODO(crbug.com/463400248): Use contextual tasks image upload config params
   // for Lens requests.
