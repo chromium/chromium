@@ -336,6 +336,12 @@ std::optional<FormFiller::ValueAndType> GetRefillValueForExpirationDate(
 DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
     AutofillTriggerSource trigger_source) {
   switch (trigger_source) {
+    case AutofillTriggerSource::kGlic:
+      // Note that `kUnrecognizedAutocompleteAttribute` is also governed by
+      // AutofillField::ShouldSuppressSuggestionsAndFillingByDefault.
+      return {FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute,
+              FieldFillingSkipReason::kUserFilledFields,
+              FieldFillingSkipReason::kValuePrefilled};
     case AutofillTriggerSource::kNone:
     case AutofillTriggerSource::kPopup:
     case AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet:
@@ -347,10 +353,7 @@ DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
     case AutofillTriggerSource::kScanCreditCard:
     case AutofillTriggerSource::kProactivePasswordRecovery:
     case AutofillTriggerSource::kCreditCardSaveAndFill:
-    case AutofillTriggerSource::kGlic:
     case AutofillTriggerSource::kProgrammaticRefill:
-      // TODO(crbug.com/469428128): Ignore some skip reasons during
-      // `kGlic`-triggered autofill operations.
       return {};
   }
   NOTREACHED();

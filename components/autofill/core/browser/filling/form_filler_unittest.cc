@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -2422,7 +2423,7 @@ TEST_F(FormFillerTest, MultipleUndoOperations) {
   EXPECT_FALSE(form.fields()[1].is_autofilled());
 }
 
-// Tests that Undoing a filling operation on a field discards other fields that
+// Tests that undoing a filling operation on a field discards other fields that
 // changed filling product (i.e. were autofilled afterwards using some other
 // filling product).
 TEST_F(FormFillerTest, UndoDiscardsFieldsThatChangedFillingProduct) {
@@ -2451,6 +2452,56 @@ TEST_F(FormFillerTest, UndoDiscardsFieldsThatChangedFillingProduct) {
   EXPECT_TRUE(form.fields()[0].value().empty());
   EXPECT_FALSE(form.fields()[0].is_autofilled());
   EXPECT_THAT(form.fields()[1], AutofilledWith(u"Other"));
+}
+
+// Tests that when Glic triggers a filling operation, some fields that are
+// usually skipped by regular operations are not skipped.
+TEST_F(FormFillerTest, GlicFillingDoeNotSkipSomeUsuallySkippableFields) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = ADDRESS_HOME_COUNTRY, .autocomplete_attribute = "country"},
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_MIDDLE, .autocomplete_attribute = "additional-name"},
+           // Simulate that field [3] has an invalid autocomplete attribute.
+           {.role = NAME_LAST, .autocomplete_attribute = "nope"}}});
+  // Simulate that field [2] is prefilled on page load.
+  test_api(form).field(2).set_value(u"G");
+
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->fields().size(), 4u);
+
+  // Simulate that the user typed into field [1].
+  test_api(form).field(1).set_value(u"Ji");
+  form_structure->field(1)->set_value(u"Ji");
+  test_api(form).field(1).set_properties_mask(kUserTyped);
+  form_structure->field(1)->set_properties_mask(kUserTyped);
+
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
+      FormFiller::GetFieldFillingSkipReasons(
+          form.fields(), *form_structure, *form_structure->field(0),
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+          AutofillTriggerSource::kPopup, autofill_client());
+
+  ASSERT_EQ(skip_reasons[form.fields()[1].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kUserFilledFields});
+  ASSERT_EQ(skip_reasons[form.fields()[2].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kValuePrefilled});
+  ASSERT_EQ(skip_reasons[form.fields()[3].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute});
+
+  skip_reasons = FormFiller::GetFieldFillingSkipReasons(
+      form.fields(), *form_structure, *form_structure->field(0),
+      FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+      AutofillTriggerSource::kGlic, autofill_client());
+
+  EXPECT_TRUE(skip_reasons[form.fields()[1].global_id()].empty());
+  EXPECT_TRUE(skip_reasons[form.fields()[2].global_id()].empty());
+  EXPECT_TRUE(skip_reasons[form.fields()[3].global_id()].empty());
 }
 
 }  // namespace autofill

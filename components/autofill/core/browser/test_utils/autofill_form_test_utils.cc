@@ -52,6 +52,10 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"First Name");
       field.set_name(u"firstName");
       break;
+    case FieldType::NAME_MIDDLE:
+      field.set_label(u"Middle Name");
+      field.set_name(u"middleName");
+      break;
     case FieldType::NAME_LAST:
       field.set_label(u"Last Name");
       field.set_name(u"lastName");
