@@ -4960,7 +4960,6 @@
     {
       // crbug.com/403617975
       name: "SkipSetNeedsCollectInlines",
-      status: "stable",
     },
     {
       // Skips the browser touch event filter, ensuring that events that reach
