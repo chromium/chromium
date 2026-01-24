@@ -209,7 +209,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
+      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
+          base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("ntpNextShowSimplificationUIEnabled",
                      ntp_features::kNtpNextShowSimplificationUIParam.Get());
   source->AddBoolean("ntpNextShowDismissalUIEnabled",
@@ -693,17 +694,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   // Action Chips LoadTimeData
   bool action_chips_eligible =
-      ntp_features::kNtpNextShowSimplificationUIParam.Get()
-          ? aim_eligibility_service &&
-                (aim_eligibility_service->IsDeepSearchEligible() ||
-                 aim_eligibility_service->IsCreateImagesEligible())
-          : aim_eligibility_service &&
-                aim_eligibility_service->IsDeepSearchEligible() &&
-                aim_eligibility_service->IsCreateImagesEligible();
-  bool show_action_chips =
-      action_chips_eligible &&
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile->GetPrefs()) &&
+      (ntp_features::kNtpNextShowSimplificationUIParam.Get()
+           ? (aim_eligibility_service->IsDeepSearchEligible() ||
+              aim_eligibility_service->IsCreateImagesEligible())
+           : (aim_eligibility_service->IsDeepSearchEligible() &&
+              aim_eligibility_service->IsCreateImagesEligible()));
+  bool show_action_chips =
+      action_chips_eligible &&
       profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
   source->AddBoolean("addTabUploadDelayOnActionChipClick",
