@@ -34,9 +34,9 @@ fn test_basic_message_write_and_send() {
     //   MojoResult result = MojoCreateMessage(nullptr, &message);
     //   result = MojoWriteMessage(endpoint, message, nullptr);
     // We simplify all this logic into the `write` function on the endpoint.
-    let hello = b"hello";
-    let write_result = endpoint_b.write(hello, Vec::new());
-    expect_eq!(write_result, system::mojo_types::MojoResult::Okay);
+    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    let write_result = endpoint_b.write(hello);
+    expect_true!(write_result.is_ok());
 
     // Attempt to read the result.
     let (hello_data, _) = endpoint_a.read().expect("failed to read from endpoint_a");
@@ -171,8 +171,8 @@ fn test_raw_trap_signal_on_readable() {
         }
     }
 
-    let hello = b"hello";
-    expect_eq!(endpoint_b.write(hello, Vec::new()), system::mojo_types::MojoResult::Okay);
+    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    expect_true!(endpoint_b.write(hello).is_ok());
     {
         let list = wait_for_asynchronously_delivered_trap_events(&TEST_TRAP_EVENT_LIST, 1);
         expect_eq!(list.len(), 1);
@@ -283,8 +283,9 @@ fn test_raw_trap_signal_on_readable() {
     trap.arm(system::trap::ArmingPolicyForBlockingEvents::RearmUntilNoBlockingEvents)
         .expect("Failed to arm trap");
 
-    let write_result = endpoint_b.write(b"hello", Vec::new());
-    expect_eq!(write_result, system::mojo_types::MojoResult::Okay);
+    let hello = system::message_pipe::RawMojoMessage::new_with_bytes(b"hello").unwrap();
+    let write_result = endpoint_b.write(hello);
+    expect_true!(write_result.is_ok());
 
     let count = hit_count.lock().unwrap();
     let final_count =
@@ -382,8 +383,9 @@ fn test_trap_multiple_blocking_events() {
 
         // 2. Trigger the READABLE signal on ep_a by writing to ep_b.
         // This creates a blocking event for each trigger.
-        let write_result = ep_b.write(b"x", Vec::new());
-        expect_eq!(write_result, system::mojo_types::MojoResult::Okay);
+        let write_result =
+            ep_b.write(system::message_pipe::RawMojoMessage::new_with_bytes(b"x").unwrap());
+        expect_true!(write_result.is_ok());
         endpoints_a.push(ep_a_arc); // Keep ep_a alive
         endpoints_b.push(ep_b); // Keep ep_a alive
     }

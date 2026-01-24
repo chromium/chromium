@@ -185,7 +185,7 @@ use std::marker::PhantomData;
 // it's stabilized, if any uses remain.
 use std::sync::{Arc, Mutex, Weak};
 
-use mojo_rust_system_api::message_pipe::MessageEndpoint;
+use mojo_rust_system_api::message_pipe::{MessageEndpoint, RawMojoMessage};
 use mojo_rust_system_api::mojo_types::{MojoResult, UntypedHandle};
 use sequences::SequencedTaskRunnerHandle;
 
@@ -474,7 +474,8 @@ pub mod remote {
                 if self.next_request_id == u64::MAX { 1 } else { self.next_request_id + 1 };
 
             // FOR_RELEASE: This returns a MojoResult, figure out what to do with it
-            self.endpoint_watcher.send_message(&message.into_bytes(), Vec::new());
+            self.endpoint_watcher
+                .send_message(RawMojoMessage::new_with_bytes(&message.into_bytes()).unwrap());
         }
 
         /// This is the function which is called by the endpoint watcher
@@ -509,6 +510,8 @@ pub mod remote {
 
 // FOR_RELEASE: Put in a different file
 pub mod receiver {
+    use mojo_rust_system_api_61c68895::message_pipe::RawMojoMessage;
+
     use super::*;
 
     /// This type represents one end of a Mojo pipe corresponding to a
@@ -684,7 +687,9 @@ pub mod receiver {
                     message,
                     |mut response: MojomMessage| {
                         response.header.request_id = request_id;
-                        sender.try_send_response(&response.into_bytes());
+                        sender.try_send_response(
+                            RawMojoMessage::new_with_bytes(&response.into_bytes()).unwrap(),
+                        );
                     },
                 );
             } else {

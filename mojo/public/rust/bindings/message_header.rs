@@ -66,7 +66,6 @@ pub struct MessageHeaderV3 {
 }
 
 impl MessageHeaderV3 {
-    #[allow(unused, unreachable_code)] // Silence complaints about the todo!()s
     pub fn new(interface_id: u32, name: u32, flags: MessageHeaderFlags, request_id: u64) -> Self {
         MessageHeaderV3 {
             interface_id,

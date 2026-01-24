@@ -114,6 +114,12 @@ impl MojoResult {
     }
 }
 
+impl From<mojo_ffi::MojoResultCode> for MojoResult {
+    fn from(code: mojo_ffi::MojoResultCode) -> Self {
+        MojoResult::from_code(code)
+    }
+}
+
 impl fmt::Display for MojoResult {
     /// Allow a MojoResult to be displayed in a sane manner.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

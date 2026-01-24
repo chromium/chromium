@@ -22,6 +22,9 @@ use mojom_parser::ParsingResult;
 /// In practice, this means ensuring that the payload represents an encoded
 /// mojom value (obtained from mojom_parser::serialize), and that the header
 /// matches the value. See message_header.rs for more information on headers.
+///
+/// FOR_RELEASE: Integrate/replace this with the new RawMojoMessage type in the
+/// system bindings
 pub struct MojomMessage {
     pub header: MessageHeaderV3,
     pub payload: Vec<u8>,

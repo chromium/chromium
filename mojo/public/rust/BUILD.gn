@@ -27,6 +27,7 @@ rust_static_library("mojo_ffi") {
   crate_root = "system/ffi.rs"
   sources = [ "system/ffi.rs" ]
   deps = [ ":mojo_c_system_bindings" ]
+  allow_unsafe = true
 }
 
 rust_static_library("mojo_rust_system_api") {

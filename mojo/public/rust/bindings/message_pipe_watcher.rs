@@ -11,7 +11,7 @@ chromium::import! {
     "//mojo/public/rust/sequences:sequences";
 }
 
-use mojo_rust_system_api::message_pipe::MessageEndpoint;
+use mojo_rust_system_api::message_pipe::{MessageEndpoint, RawMojoMessage};
 use mojo_rust_system_api::mojo_types::{HandleSignals, MojoResult, UntypedHandle};
 use mojo_rust_system_api::raw_trap::TriggerCondition;
 use mojo_rust_system_api::trap::{ArmingPolicyForBlockingEvents, Trap, TrapError, TrapEvent};
@@ -70,11 +70,10 @@ pub struct ResponseSender {
 impl ResponseSender {
     /// Send a message through the underlying pipe, if possible. Return true iff
     /// the message was successfully sent.
-    pub fn try_send_response(&self, msg: &[u8]) -> bool {
+    pub fn try_send_response(&self, msg: RawMojoMessage) -> bool {
         if let Some(state) = self.state_weak.upgrade() {
             // FOR_RELEASE: Handle the returned MojoResult
-            let _ = state.endpoint.write(msg, Vec::new());
-            return true;
+            return state.endpoint.write(msg).is_ok();
         }
         return false;
     }
@@ -198,8 +197,8 @@ impl MessagePipeWatcher {
 
     /// Send a message through the underlying pipe. This function just forwards
     /// MessageEndpoint::write from the underlying endpoint.
-    pub fn send_message(&self, msg: &[u8], handles: Vec<UntypedHandle>) -> MojoResult {
-        self.shared_state.endpoint.write(msg, handles)
+    pub fn send_message(&self, msg: RawMojoMessage) -> Result<(), MojoResult> {
+        self.shared_state.endpoint.write(msg)
     }
 
     /// Designate a function to run if the underlying pipe becomes disconnected.
