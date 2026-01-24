@@ -339,4 +339,34 @@ std::map<omnibox::InputType, int> InputStateModel::GetInputTypeLimits() {
   return limits;
 }
 
+std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
+  std::map<std::string, std::string> additional_params;
+  switch (state_.active_tool) {
+    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+      additional_params["dr"] = "1";
+      break;
+    case omnibox::ToolMode::TOOL_MODE_CANVAS:
+      additional_params["rc"] = "1";
+      break;
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
+      additional_params["imgn"] = "1";
+      break;
+    default:
+      break;
+  }
+
+  switch (state_.active_model) {
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
+      additional_params["m"] = "1";
+      break;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
+      additional_params["m"] = "2";
+      break;
+    default:
+      break;
+  }
+  return additional_params;
+}
+
 }  // namespace contextual_search
