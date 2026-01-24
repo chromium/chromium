@@ -3475,10 +3475,8 @@ TEST_F(AdTrackerSimTest,
   EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
-// Tests a known limitation where the heuristic does not apply to calls within
-// a Promise callback (e.g., .then()). This is because AdTracker does not
-// currently track synchronous task scopes for promise resolutions, so the call
-// is flagged as an ad based on the top-of-stack script.
+// Tests that the monkeypatch heuristic applies to promise callbacks (but is not
+// limited in number).
 TEST_F(AdTrackerSimTest,
        IgnoreMonkeyPatchHeuristic_PromiseCallbackDoesNotApply_IsAd) {
   String ad_script_url = "https://example.com/script.js?ad=true";
@@ -3509,10 +3507,57 @@ TEST_F(AdTrackerSimTest,
 
   base::RunLoop().RunUntilIdle();
 
-  // AdTracker does not currently track synchronous task scopes for promise
-  // resolutions. The check therefore falls back to identifying the ad script at
-  // the top of the stack and returns true.
-  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the monkeypatch heuristic correctly identifies when a non-ad
+// script calls a monkeypatched version of appendChild to load a script. The
+// resulting script load should not be tagged as an ad.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_MonkeypatchedAppendChild) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String vanilla_script_url = "https://example.com/vanilla_script.js";
+  String target_script_url = "https://example.com/target_script.js";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest target_script(target_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js?ad=true"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+
+  // 1. The ad script monkeypatches Node.prototype.appendChild.
+  // This puts the ad script at the top of the V8 stack whenever
+  // appendChild is called.
+  ad_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(...args) {
+      return originalAppendChild.apply(this, args);
+    };
+  )SCRIPT");
+
+  // 2. The vanilla (1p) script calls the now-monkeypatched appendChild
+  // to add a new script element to the DOM.
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(target_script_url);
+  target_script.Complete("");
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // The target script should not be tagged as an ad.
+  // Even though the ad script was at the top of the stack during the call,
+  // the AdTracker's heuristic should detect the monkeypatch pattern and
+  // attribute the load to the 1p vanilla script caller.
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(target_script_url));
 }
 
 class AdTrackerDisabledSimTest : public SimTest,

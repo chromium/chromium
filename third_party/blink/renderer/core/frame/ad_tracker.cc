@@ -42,6 +42,8 @@ std::vector<const char*> GetApiPropertyPath(AdTracker::MonkeyPatchableApi api) {
   switch (api) {
     case AdTracker::MonkeyPatchableApi::kHistoryPushState:
       return {"history", "pushState"};
+    case AdTracker::MonkeyPatchableApi::kNodeAppendChild:
+      return {"Node", "prototype", "appendChild"};
     case AdTracker::MonkeyPatchableApi::kNone:
       NOTREACHED();
   }
@@ -323,11 +325,11 @@ bool AdTracker::CalculateIfAdSubresource(
   // Check if any executing script is an ad.
   std::optional<AdScriptIdentifier> ancestor_ad_script;
   if (scan_stack_for_ads) {
-    known_ad =
-        known_ad || IsAdScriptInStackHelper(
-                        StackType::kTopOnly,
-                        /*ignore_monkey_patch=*/MonkeyPatchableApi::kNone,
-                        &ancestor_ad_script);
+    known_ad = known_ad ||
+               IsAdScriptInStackHelper(
+                   StackType::kTopOnly,
+                   /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild,
+                   &ancestor_ad_script);
   }
 
   // If it is a script marked as an ad and it's not in an ad context, append it
@@ -496,17 +498,12 @@ bool AdTracker::IsAdScriptInStackHelper(
 
 bool AdTracker::IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
                                                 MonkeyPatchableApi api) {
-  // This heuristic is only applied when `running_sync_tasks_ > 0`. This is
-  // because its state (`ad_monkey_patch_calls_in_scope_`) is scoped to a
-  // synchronous task, relying on the `Will`/`Did` probe pairs for setup and
-  // teardown. Promise callbacks do not trigger these probes, so applying the
-  // heuristic there would lead to incorrect state.
-  if (running_sync_tasks_ <= 0) {
-    return false;
-  }
-
   // The heuristic only applies on the first call to an API within a task.
-  if (ad_monkey_patch_calls_in_scope_.Contains(api)) {
+  // Note, running_sync_tasks_ will be 0 when in a promise callback microtask,
+  // since we're not monitoring promises we don't apply the allow-once heuristic
+  // in that scenario.
+  if (running_sync_tasks_ > 0 &&
+      ad_monkey_patch_calls_in_scope_.Contains(api)) {
     return false;
   }
 
@@ -577,8 +574,8 @@ bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
       v8::Local<v8::String> api_func_name =
           api_func_name_value.As<v8::String>();
 
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
-      if (barrier_func_name->Equals(context, api_func_name).FromMaybe(false)) {
+      if (ToCoreString(isolate, barrier_func_name) ==
+          ToCoreString(isolate, api_func_name)) {
         return true;
       }
     }

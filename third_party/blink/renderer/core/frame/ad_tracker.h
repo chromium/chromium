@@ -50,6 +50,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
     // history.pushState
     kHistoryPushState,
+    // Node.prototype.appendChild
+    kNodeAppendChild
   };
 
   struct NoProvenance {};
