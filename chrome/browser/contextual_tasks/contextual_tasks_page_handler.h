@@ -54,6 +54,7 @@ class ContextualTasksPageHandler
   void OpenOnboardingHelpUi() override;
   void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
+  void OnFileClickedFromSourcesMenu(const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetCommonSearchParams(bool is_dark_mode,
                              bool is_side_panel,

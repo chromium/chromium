@@ -37,14 +37,14 @@ cr-action-menu > .header:first-child {
 
 .icon-container {
   align-items: center;
-  background-color: var(--color-list-item-url-favicon-background);
+  background-color: var(--cr-fallback-color-disabled-background);
   border-radius: 8px;
   display: flex;
   height: 40px;
+  width: 40px;
   justify-content: center;
   overflow: hidden;
   margin-inline-end: 16px;
-  width: 40px;
 }
 
 .tab-favicon {
@@ -70,4 +70,21 @@ cr-action-menu > .header:first-child {
   color: var(--cr-secondary-text-color);
   font-size: var(--mwb-secondary-text-font-size);
   font-weight: 400;
+}
+
+.file-icon {
+  height: 20px;
+  width: 20px;
+}
+
+.file-name {
+  color: var(--cr-primary-text-color);
+  font-size: var(--mwb-primary-text-font-size);
+  font-weight: 500;
+}
+
+.divider {
+  height: 1.6px;
+  background-color: var(--cr-fallback-color-primary-container);
+  margin: 8px 0;
 }

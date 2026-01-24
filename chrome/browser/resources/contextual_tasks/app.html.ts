@@ -15,7 +15,6 @@ export function getHtml(this: ContextualTasksAppElement) {
     <div id="toolbarOverlay">
       <top-toolbar id="toolbar"
           .title="${this.threadTitle_}"
-          .attachedTabs="${this.contextTabs_}"
           .darkMode="${this.darkMode_}"
           .isAiPage="${this.isAiPage_}"
           @new-thread-click="${this.onNewThreadClick_}">
