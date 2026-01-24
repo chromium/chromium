@@ -790,7 +790,6 @@ static_library("test_support") {
       "//chrome/browser/ui/profiles:test_support",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/translate",
-      "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/web_applications",
       "//components/crx_file",

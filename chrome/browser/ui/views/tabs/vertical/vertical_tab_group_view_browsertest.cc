@@ -79,6 +79,17 @@ class VerticalTabGroupViewTest
   const tabs::TabInterface* GetTabInterfaceForNode(TabCollectionNode* node) {
     return std::get<const tabs::TabInterface*>(node->GetNodeData());
   }
+
+ protected:
+  // Appends a new tab to the end of the tab strip.
+  content::WebContents* AppendTab() {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->profile()));
+    content::WebContents* raw_contents = contents.get();
+    tab_strip_model()->AppendWebContents(std::move(contents), true);
+    return raw_contents;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
@@ -89,11 +100,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // second child of the unpinned collection which is the second child of the
   // root node.
   TabCollectionNode* tab_node =
-      unpinned_collection_node()
-          ->GetChildNodeOfType(RootTabCollectionNode::Type::GROUP)
-          ->children()[0]
-          .get();
-  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+      root_node()->children()[1]->children()[1]->children()[0].get();
+  VerticalTabView* tab =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
   // Verify the tab in the group is visible.
   EXPECT_TRUE(tab->GetVisible());
 
@@ -111,12 +120,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                        HeaderCollapseIconUpdatesWithCollapseState) {
   CreateInactiveTabGroup();
 
-  // Verify the collapse icon is correct.
+  // The group is the second child of the unpinned collection which is the
+  // second child of the root node. Verify the collapse icon is correct.
   TabCollectionNode* group_node =
-      unpinned_collection_node()->GetChildNodeOfType(
-          RootTabCollectionNode::Type::GROUP);
+      root_node()->children()[1]->children()[1].get();
   VerticalTabGroupHeaderView* group_header =
-      static_cast<VerticalTabGroupView*>(group_node->view())->group_header();
+      static_cast<VerticalTabGroupView*>(group_node->get_view_for_testing())
+          ->group_header();
   EXPECT_EQ(group_header->collapse_icon_for_testing()
                 ->GetImageModel()
                 .GetVectorIcon()
@@ -139,12 +149,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                        CollapsingGroupWithActiveTabActivatesNextTab) {
   CreateActiveTabGroup();
 
+  // The grouped tab is the first child of the group collection, which is the
+  // second child of the unpinned collection which is the second child of the
+  // root node.
   TabCollectionNode* tab_node =
-      unpinned_collection_node()
-          ->GetChildNodeOfType(RootTabCollectionNode::Type::GROUP)
-          ->children()[0]
-          .get();
-  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+      root_node()->children()[1]->children()[1]->children()[0].get();
+  VerticalTabView* tab =
+      static_cast<VerticalTabView*>(tab_node->get_view_for_testing());
   const tabs::TabInterface* tab_interface = GetTabInterfaceForNode(tab_node);
   // Verify the tab in the group is visible and active.
   EXPECT_TRUE(tab->GetVisible());
@@ -155,9 +166,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
   EXPECT_FALSE(tab_interface->IsActivated());
 
-  // The tab after the group will be the third child of the unpinned collection.
+  // The tab after the group will be the third child of the unpinned collection
+  // which is the second child of the root node.
   TabCollectionNode* next_tab_node =
-      unpinned_collection_node()->children()[2].get();
+      root_node()->children()[1]->children()[2].get();
   EXPECT_TRUE(GetTabInterfaceForNode(next_tab_node)->IsActivated());
 }
 
@@ -165,18 +177,21 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                        CollapsingGroupWithOnlyTabInStripAddsNewTab) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
-  // The unpinned collection should only have one child, the tab group.
-  EXPECT_EQ(unpinned_collection_node()->children().size(), 1u);
+  // The unpinned collection is the second child of the
+  // root node, it should only have one child, the tab group.
+  TabCollectionNode* unpinned_collection_node =
+      root_node()->children()[1].get();
+  EXPECT_EQ(unpinned_collection_node->children().size(), 1u);
 
   // Collapse the tab group and verify there are now two children and the
   // ungrouped tab is active.
   ClickTabGroupHeaderToToggleCollapse();
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return unpinned_collection_node()->children().size() == 2u; }));
-  // The tab after the group will be the second child of the unpinned
-  // collection.
+      [&]() { return unpinned_collection_node->children().size() == 2u; }));
+  // The tab after the group will be the second child of the unpinned collection
+  // which is the second child of the root node.
   TabCollectionNode* next_tab_node =
-      unpinned_collection_node()->children()[1].get();
+      root_node()->children()[1]->children()[1].get();
   EXPECT_TRUE(GetTabInterfaceForNode(next_tab_node)->IsActivated());
 }
 
