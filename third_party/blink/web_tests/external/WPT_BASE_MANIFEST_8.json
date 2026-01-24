@@ -275235,7 +275235,7 @@
        ]
       ],
       "nested-scope.html": [
-       "93091bc2bbef32a46b618187289577fa46c61499",
+       "24ff3adda17fa4de9dfdf1570ca9fd2c3aa858bb",
        [
         null,
         [
@@ -341469,6 +341469,10 @@
    },
    "ai": {
     "language-model": {
+     "language-model-prompt-multimodal.tentative.https.window-expected.txt": [
+      "81c2d99318157aceb3ca91a9c7230f2ae02c8f1c",
+      []
+     ],
      "resources": {
       "iframe-helper.html": [
        "5e8cb90d0068ab88e31d1cb984bff8ce487e1d89",
@@ -461464,14 +461468,6 @@
        "51e62e2c98405e89671f23dd36dba550cb0789a3",
        []
       ],
-      "audiocontext-suspend-resume-expected.txt": [
-       "7208127c694bf4f7b97163cf2460209150d31c83",
-       []
-      ],
-      "constructor-allowed-to-start-expected.txt": [
-       "015e6ca98a96f098387d2bcf2a70a995dcd3fb58",
-       []
-      ],
       "resources": {
        "not-fully-active-helper.sub.html": [
         "2654a2a50405b5184453b23da75a58d06c1943b2",
@@ -499481,7 +499477,7 @@
       ]
      ],
      "language-model-prompt-multimodal.tentative.https.window.js": [
-      "2d3a2a72d4b98f9e1777c83325c4fd5a09793cc7",
+      "d0413f70faab682f4ec473483a9d830de73b2c4e",
       [
        "ai/language-model/language-model-prompt-multimodal.tentative.https.window.html",
        {
@@ -499574,7 +499570,7 @@
       ]
      ],
      "language-model-prompt.tentative.https.window.js": [
-      "dafb02e4b058c249786c8f249d998fa20cb79155",
+      "26224663139c858861f34a64038cc254bbfbd485",
       [
        "ai/language-model/language-model-prompt.tentative.https.window.html",
        {
@@ -534734,7 +534730,7 @@
        ]
       ],
       "contain-invalid.html": [
-       "d73e4b4c357c2eea7a23a8628e44e87431e4351d",
+       "9f96bbc2fed11a6db4516442e68393672c7a4356",
        [
         null,
         {}
@@ -534742,13 +534738,6 @@
       ],
       "contain-valid.html": [
        "f7e18411dadcb739a45daf94f1026b5768ed38ad",
-       [
-        null,
-        {}
-       ]
-      ],
-      "contain-valid.tentative.html": [
-       "da358741b7b30d30eb5793c7fec64387170bfe17",
        [
         null,
         {}
@@ -566729,7 +566718,7 @@
        ]
       ],
       "callback-order.tentative.html": [
-       "818852f2c92d9ac9417ecff3e61c930c9ba98f48",
+       "658e72ca44710b952a260a1b1113c09012e15c02",
        [
         null,
         {}
@@ -566737,13 +566726,6 @@
       ],
       "capture.html": [
        "2d6a9d97c4a22b5c3c726569dcd9985fb07b68c1",
-       [
-        null,
-        {}
-       ]
-      ],
-      "contain-view-transition-name-discovery.html": [
-       "10a1a1197b10a76f239f85339286d1245b22e2a0",
        [
         null,
         {}
@@ -566823,6 +566805,13 @@
       ],
       "start-view-transition.html": [
        "a1bc95891956e6678c8ee2ecd51be7d6e94b70ca",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-transtion-scope-name-discovery.html": [
+       "855b3ba46a8afd155888e77e73077ed963592dc2",
        [
         null,
         {}
@@ -574958,7 +574947,7 @@
    },
    "device-memory": {
     "device-memory.https.any.js": [
-     "4fe6f04ebc959e6468af5296ebc677c70a7cf170",
+     "5a0510c8c9ac002cc1eff0d4762ada20d7aee029",
      [
       "device-memory/device-memory.https.any.html",
       {}
@@ -824714,7 +824703,7 @@
       ]
      ],
      "tensor.https.any.js": [
-      "66b79a392eb630cd7c98001e2bf4b0557e29fbe8",
+      "6bae6b6d51317de7664254a652ec53b84af30a83",
       [
        "webnn/conformance_tests/tensor.https.any.html?cpu",
        {
