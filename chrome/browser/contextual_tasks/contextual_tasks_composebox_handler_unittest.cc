@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -1134,6 +1135,68 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
 
   // 2. Delete the context.
   handler_->DeleteContext(token, /*from_automatic_chip=*/true);
+
+  // 3. Verify UploadTabContextWithData is NOT called.
+  EXPECT_CALL(*handler_, UploadTabContextWithData(testing::_, testing::_,
+                                                  testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
+  ASSERT_NE(mock_contextual_tasks_service_ptr_, nullptr)
+      << "Mock controller is NULL!";
+  std::string kQuery = "clear files query";
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  // Setup context.
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+
+  EXPECT_CALL(
+      *mock_contextual_tasks_service_ptr_,
+      GetContextForTask(
+          task_id,
+          testing::Contains(contextual_tasks::ContextualTaskContextSource::
+                                kPendingContextDecorator),
+          testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&
+                  sources,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams> params,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // 1. Add delayed tab context.
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillOnce(testing::SaveArg<0>(&token_opt));
+
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true, callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  base::UnguessableToken token = token_opt.value();
+  ASSERT_FALSE(token.is_empty());
+
+  // 2. Clear files.
+  handler_->ClearFiles();
 
   // 3. Verify UploadTabContextWithData is NOT called.
   EXPECT_CALL(*handler_, UploadTabContextWithData(testing::_, testing::_,

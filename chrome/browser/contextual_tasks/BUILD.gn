@@ -295,6 +295,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",

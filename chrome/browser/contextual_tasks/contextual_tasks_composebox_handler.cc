@@ -782,6 +782,13 @@ void ContextualTasksComposeboxHandler::AddTabContext(
                                             std::move(callback));
 }
 
+void ContextualTasksComposeboxHandler::ClearFiles() {
+  // Clear all files from the UI.
+  ComposeboxHandler::ClearFiles();
+  // Clear any delayed tabs.
+  delayed_tabs_.clear();
+}
+
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
   if (!contextual_tasks::GetEnableLensInContextualTasks()) {
     return;
