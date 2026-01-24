@@ -10,6 +10,7 @@
 :host{
   --cr-hover-background-color:#FFFFFF;
   --cr-button-height: 32px;
+  flex-shrink: 0;
 }
 
 #composeButton {
@@ -146,8 +147,7 @@
   display: flex;
   height: 36px;
   margin-inline-end: 8px;
-  padding-inline-end: 18px;
-  padding-inline-start: 2px;
+  padding-inline: 2px;
   position: relative;
   top: 6px;
   z-index: var(--cr-searchbox-compose-button-z-index, 100);
