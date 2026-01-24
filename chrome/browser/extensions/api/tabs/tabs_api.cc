@@ -366,6 +366,101 @@ bool UpdateWindowBoundsFromParams(const api::windows::Update::Params& params,
   return set_window_bounds;
 }
 
+// Moves the given tab to the `target_browser`. On success, returns the new
+// index of the tab in the target tabstrip. On failure, returns -1. Assumes that
+// the caller has already checked whether the target window is different from
+// the source. `allow_other_window_types` indicates whether moving tabs to
+// windows with types other than BrowserWindowInterface::TYPE_NORMAL is
+// supported; this is allowed in certain cases (like moving a tab to a popup).
+int MoveTabToWindow(ExtensionFunction* function,
+                    int tab_id,
+                    BrowserWindowInterface* target_browser,
+                    int new_index,
+                    bool allow_other_window_types,
+                    std::string* error) {
+  WindowController* source_window = nullptr;
+  int source_index = -1;
+  if (!tabs_internal::GetTabById(tab_id, function->browser_context(),
+                                 function->include_incognito_information(),
+                                 &source_window, nullptr, &source_index,
+                                 error) ||
+      !source_window) {
+    return -1;
+  }
+
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return -1;
+  }
+
+  // TODO(crbug.com/40638654): Rather than calling checking against
+  // TYPE_NORMAL, should this call
+  // SupportsWindowFeature(Browser::kFeatureTabstrip)?
+  if (!allow_other_window_types &&
+      target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+    return -1;
+  }
+
+  if (target_browser->GetProfile() != source_window->profile()) {
+    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
+    return -1;
+  }
+
+  TabListInterface* target_tab_list =
+      ExtensionTabUtil::GetEditableTabList(*target_browser);
+  CHECK(target_tab_list);
+
+  // Clamp move location to the last position.
+  // This is ">" because it can append to a new index position.
+  // -1 means set the move location to the last position.
+  int target_index = new_index;
+  if (target_index > target_tab_list->GetTabCount() || target_index < 0) {
+    target_index = target_tab_list->GetTabCount();
+  }
+
+  TabListInterface* tab_list =
+      ExtensionTabUtil::GetEditableTabList(*target_browser);
+  CHECK(tab_list);
+  if (ExtensionTabUtil::SupportsTabGroups(target_browser)) {
+    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+        GetTabGroupForTab(*tab_list, target_index);
+
+    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+        GetTabGroupForTab(*tab_list, target_index - 1);
+
+    // Group contiguity is not respected in the target tabstrip.
+    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+        next_tab_dst_group == prev_tab_dst_group) {
+      *error = tabs_constants::kInvalidTabIndexBreaksGroupContiguity;
+      return -1;
+    }
+  }
+
+  BrowserWindowInterface* source_browser =
+      source_window->GetBrowserWindowInterface();
+  if (!source_browser) {
+    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+    return -1;
+  }
+
+  TabListInterface* source_tab_list = TabListInterface::From(source_browser);
+  ::tabs::TabInterface* tab = source_tab_list->GetTab(source_index);
+  if (!tab) {
+    *error = ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
+                                            base::NumberToString(tab_id));
+    return -1;
+  }
+
+  source_tab_list->MoveTabToWindow(
+      tab->GetHandle(), target_browser->GetSessionID(), target_index);
+
+  // The new index may differ from `target_index` if the target index was
+  // invalid for any reason, or could be -1 if the move failed.
+  int final_index = target_tab_list->GetIndexOfTab(tab->GetHandle());
+  return final_index;
+}
+
 }  // namespace
 
 namespace tabs_internal {
@@ -493,95 +588,6 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
     intersect_area += display_bounds.size().GetArea();
   }
   return intersect_area >= (bounds.size().GetArea() / 2);
-}
-
-int MoveTabToWindow(ExtensionFunction* function,
-                    int tab_id,
-                    BrowserWindowInterface* target_browser,
-                    int new_index,
-                    bool allow_other_window_types,
-                    std::string* error) {
-  WindowController* source_window = nullptr;
-  int source_index = -1;
-  if (!tabs_internal::GetTabById(tab_id, function->browser_context(),
-                                 function->include_incognito_information(),
-                                 &source_window, nullptr, &source_index,
-                                 error) ||
-      !source_window) {
-    return -1;
-  }
-
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    *error = ExtensionTabUtil::kTabStripNotEditableError;
-    return -1;
-  }
-
-  // TODO(crbug.com/40638654): Rather than calling checking against
-  // TYPE_NORMAL, should this call
-  // SupportsWindowFeature(Browser::kFeatureTabstrip)?
-  if (!allow_other_window_types &&
-      target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
-    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
-    return -1;
-  }
-
-  if (target_browser->GetProfile() != source_window->profile()) {
-    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
-    return -1;
-  }
-
-  TabListInterface* target_tab_list =
-      ExtensionTabUtil::GetEditableTabList(*target_browser);
-  CHECK(target_tab_list);
-
-  // Clamp move location to the last position.
-  // This is ">" because it can append to a new index position.
-  // -1 means set the move location to the last position.
-  int target_index = new_index;
-  if (target_index > target_tab_list->GetTabCount() || target_index < 0) {
-    target_index = target_tab_list->GetTabCount();
-  }
-
-  TabListInterface* tab_list =
-      ExtensionTabUtil::GetEditableTabList(*target_browser);
-  CHECK(tab_list);
-  if (ExtensionTabUtil::SupportsTabGroups(target_browser)) {
-    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
-        GetTabGroupForTab(*tab_list, target_index);
-
-    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
-        GetTabGroupForTab(*tab_list, target_index - 1);
-
-    // Group contiguity is not respected in the target tabstrip.
-    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
-        next_tab_dst_group == prev_tab_dst_group) {
-      *error = tabs_constants::kInvalidTabIndexBreaksGroupContiguity;
-      return -1;
-    }
-  }
-
-  BrowserWindowInterface* source_browser =
-      source_window->GetBrowserWindowInterface();
-  if (!source_browser) {
-    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
-    return -1;
-  }
-
-  TabListInterface* source_tab_list = TabListInterface::From(source_browser);
-  ::tabs::TabInterface* tab = source_tab_list->GetTab(source_index);
-  if (!tab) {
-    *error = ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
-                                            base::NumberToString(tab_id));
-    return -1;
-  }
-
-  source_tab_list->MoveTabToWindow(
-      tab->GetHandle(), target_browser->GetSessionID(), target_index);
-
-  // The new index may differ from `target_index` if the target index was
-  // invalid for any reason, or could be -1 if the move failed.
-  int final_index = target_tab_list->GetIndexOfTab(tab->GetHandle());
-  return final_index;
 }
 
 }  // namespace tabs_internal
@@ -1070,9 +1076,8 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       std::string error;
       // -1 means "move tab to the end", which is what we want.
       int new_index = -1;
-      if (tabs_internal::MoveTabToWindow(
-              this, *create_data_->tab_id, new_window, new_index,
-              /*allow_other_window_types=*/true, &error) < 0) {
+      if (MoveTabToWindow(this, *create_data_->tab_id, new_window, new_index,
+                          /*allow_other_window_types=*/true, &error) < 0) {
         return Error(std::move(error));
       }
 #if !BUILDFLAG(IS_ANDROID)
@@ -2479,9 +2484,9 @@ bool TabsMoveFunction::MoveTab(int tab_id,
 
     BrowserWindowInterface* target_browser =
         target_controller->GetBrowserWindowInterface();
-    int inserted_index = tabs_internal::MoveTabToWindow(
-        this, tab_id, target_browser, *new_index,
-        /*allow_other_window_types=*/false, error);
+    int inserted_index =
+        MoveTabToWindow(this, tab_id, target_browser, *new_index,
+                        /*allow_other_window_types=*/false, error);
     if (inserted_index < 0) {
       return false;
     }
@@ -2770,9 +2775,9 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   // tabs that are not already in the target browser are moved.
   for (size_t i = 0; i < tab_ids.size(); ++i) {
     if (tab_windows[i] != target_window) {
-      if (tabs_internal::MoveTabToWindow(
-              this, tab_ids[i], target_window->GetBrowserWindowInterface(), -1,
-              /*allow_other_window_types=*/false, &error) < 0) {
+      if (MoveTabToWindow(this, tab_ids[i],
+                          target_window->GetBrowserWindowInterface(), -1,
+                          /*allow_other_window_types=*/false, &error) < 0) {
         return RespondNow(Error(std::move(error)));
       }
     }

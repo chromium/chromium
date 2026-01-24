@@ -163,20 +163,6 @@ ui::mojom::WindowShowState ConvertToWindowShowState(
 // displays.
 bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
 
-// Moves the given tab to the `target_browser`. On success, returns the
-// new index of the tab in the target tabstrip. On failure, returns -1.
-// Assumes that the caller has already checked whether the target window is
-// different from the source.
-// `allow_other_window_types` indicates whether moving tabs to windows with
-// types other than BrowserWindowInterface::TYPE_NORMAL is supported; this is
-// allowed in certain cases (like moving a tab to a popup).
-int MoveTabToWindow(ExtensionFunction* function,
-                    int tab_id,
-                    BrowserWindowInterface* target_browser,
-                    int new_index,
-                    bool allow_other_window_types,
-                    std::string* error);
-
 }  // namespace tabs_internal
 
 // Converts a ZoomMode to its ZoomSettings representation.
