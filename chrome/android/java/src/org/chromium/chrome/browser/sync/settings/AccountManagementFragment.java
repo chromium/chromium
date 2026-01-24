@@ -600,9 +600,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return assumeNonNull(IdentityServicesProvider.get().getSigninManager(getProfile()));
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AccountManagementFragment.class.getName(),
-                    R.xml.account_management_preferences);
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }
