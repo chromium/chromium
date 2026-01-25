@@ -22,7 +22,8 @@ namespace viz {
 
 class VIZ_SERVICE_EXPORT FlingSchedulerAndroid
     : public input::FlingSchedulerBase,
-      public BeginFrameObserverBase {
+      public BeginFrameObserverBase,
+      public BeginFrameSource::InputClient {
  public:
   FlingSchedulerAndroid(input::RenderInputRouter* rir,
                         const FrameSinkId& frame_sink_id);
@@ -63,9 +64,14 @@ class VIZ_SERVICE_EXPORT FlingSchedulerAndroid
   void StartObservingBeginFrames();
   void StopObservingBeginFrames();
 
+  bool FlingProgress(const BeginFrameArgs& args);
+
   // BeginFrameObserverBase implementation.
   bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override;
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
+
+  // BeginFrameSource::InputClient implementation.
+  void OnBeginFrameForInput(const BeginFrameArgs& args) override;
 
   const FrameSinkId frame_sink_id_;
 };

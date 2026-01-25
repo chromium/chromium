@@ -42,4 +42,7 @@ const BeginFrameArgs MockBeginFrameObserver::kDefaultBeginFrameArgs =
         -1,
         -1);
 
+MockInputClient::MockInputClient() = default;
+MockInputClient::~MockInputClient() = default;
+
 }  // namespace viz

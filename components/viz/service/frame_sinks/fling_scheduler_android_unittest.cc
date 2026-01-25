@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/input/features.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/mock_gpu_service_impl.h"
@@ -57,7 +58,8 @@ class FlingSchedulerTest : public testing::Test,
     frame_sink_manager_ =
         std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {input::features::kInputOnViz},
+        /* enabled_features */ {input::features::kInputOnViz,
+                                features::kFlingSchedulingImprovements},
         /* disabled_features */ {});
   }
 

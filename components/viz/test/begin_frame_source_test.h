@@ -84,7 +84,6 @@ class MockBeginFrameObserver : public BeginFrameObserver {
   MOCK_CONST_METHOD0(LastUsedBeginFrameArgs, const BeginFrameArgs&());
   MOCK_METHOD1(OnBeginFrameSourcePausedChanged, void(bool));
   MOCK_CONST_METHOD0(WantsAnimateOnlyBeginFrames, bool());
-  MOCK_CONST_METHOD0(IsRoot, bool());
 
   virtual void AsValueInto(base::trace_event::TracedValue* dict) const;
 
@@ -97,6 +96,14 @@ class MockBeginFrameObserver : public BeginFrameObserver {
 
   BeginFrameArgs last_begin_frame_args;
   ::testing::Sequence sequence;
+};
+
+class MockInputClient : public BeginFrameSource::InputClient {
+ public:
+  MOCK_METHOD1(OnBeginFrameForInput, void(const BeginFrameArgs&));
+
+  MockInputClient();
+  ~MockInputClient() override;
 };
 
 }  // namespace viz
