@@ -21,7 +21,7 @@ public:
   size_t CommandCount() const;
 
   // Returns the list of executed draw commands.
-  const base::Value::List& Commands() const;
+  const base::ListValue& Commands() const;
 
   // Return the recorded render time (milliseconds) for a draw command index.
   double GetTime(size_t index);
@@ -73,7 +73,7 @@ private:
 
   class AutoOp;
 
-  base::Value::List op_records_;
+  base::ListValue op_records_;
 };
 
 }

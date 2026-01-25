@@ -61,7 +61,7 @@ base::Value AsValue(SkScalar scalar) {
 }
 
 base::Value AsValue(const SkSize& size) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("width", AsValue(size.width()));
   val.Set("height", AsValue(size.height()));
 
@@ -69,7 +69,7 @@ base::Value AsValue(const SkSize& size) {
 }
 
 base::Value AsValue(const SkPoint& point) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("x", AsValue(point.x()));
   val.Set("y", AsValue(point.y()));
 
@@ -77,7 +77,7 @@ base::Value AsValue(const SkPoint& point) {
 }
 
 base::Value AsValue(const SkRect& rect) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("left", AsValue(rect.fLeft));
   val.Set("top", AsValue(rect.fTop));
   val.Set("right", AsValue(rect.fRight));
@@ -87,7 +87,7 @@ base::Value AsValue(const SkRect& rect) {
 }
 
 base::Value AsValue(const SkRRect& rrect) {
-  base::Value::Dict radii_val;
+  base::DictValue radii_val;
   radii_val.Set("upper-left", AsValue(rrect.radii(SkRRect::kUpperLeft_Corner)));
   radii_val.Set("upper-right",
                 AsValue(rrect.radii(SkRRect::kUpperRight_Corner)));
@@ -95,7 +95,7 @@ base::Value AsValue(const SkRRect& rrect) {
                 AsValue(rrect.radii(SkRRect::kLowerRight_Corner)));
   radii_val.Set("lower-left", AsValue(rrect.radii(SkRRect::kLowerLeft_Corner)));
 
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("rect", AsValue(rrect.rect()));
   val.Set("radii", std::move(radii_val));
 
@@ -103,7 +103,7 @@ base::Value AsValue(const SkRRect& rrect) {
 }
 
 base::Value AsValue(const SkMatrix& matrix) {
-  base::Value::List val;
+  base::ListValue val;
   for (int i = 0; i < 9; ++i)
     val.Append(AsValue(matrix[i]));
 
@@ -111,7 +111,7 @@ base::Value AsValue(const SkMatrix& matrix) {
 }
 
 base::Value AsValue(SkColor color) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("a", static_cast<int>(SkColorGetA(color)));
   val.Set("r", static_cast<int>(SkColorGetR(color)));
   val.Set("g", static_cast<int>(SkColorGetG(color)));
@@ -132,7 +132,7 @@ base::Value AsValue(SkCanvas::PointMode mode) {
 }
 
 base::Value AsValue(const SkColorFilter& filter) {
-  base::Value::Dict val;
+  base::DictValue val;
 
   if (filter.isAlphaUnchanged()) {
     FlagsBuilder builder('|');
@@ -143,7 +143,7 @@ base::Value AsValue(const SkColorFilter& filter) {
 
   SkScalar color_matrix[20];
   if (filter.asAColorMatrix(color_matrix)) {
-    base::Value::List color_matrix_val;
+    base::ListValue color_matrix_val;
     for (unsigned i = 0; i < 20; ++i) {
       color_matrix_val.Append(AsValue(UNSAFE_TODO(color_matrix[i])));
     }
@@ -155,7 +155,7 @@ base::Value AsValue(const SkColorFilter& filter) {
 }
 
 base::Value AsValue(const SkImageFilter& filter) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("inputs", filter.countInputs());
 
   SkColorFilter* color_filter;
@@ -168,7 +168,7 @@ base::Value AsValue(const SkImageFilter& filter) {
 }
 
 base::Value AsValue(const SkPaint& paint) {
-  base::Value::Dict val;
+  base::DictValue val;
   SkPaint default_paint;
 
   if (paint.getColor() != default_paint.getColor())
@@ -220,28 +220,28 @@ base::Value AsValue(SkClipOp op) {
 }
 
 base::Value AsValue(const SkRegion& region) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("bounds", AsValue(SkRect::Make(region.getBounds())));
 
   return base::Value(std::move(val));
 }
 
 base::Value AsValue(const SkImage& image) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("size", AsValue(SkSize::Make(image.width(), image.height())));
 
   return base::Value(std::move(val));
 }
 
 base::Value AsValue(const SkTextBlob& blob) {
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set("bounds", AsValue(blob.bounds()));
 
   return base::Value(std::move(val));
 }
 
 base::Value AsValue(const SkPath& path) {
-  base::Value::Dict val;
+  base::DictValue val;
 
   static const char* gFillStrings[] =
       { "winding", "even-odd", "inverse-winding", "inverse-even-odd" };
@@ -266,7 +266,7 @@ base::Value AsValue(const SkPath& path) {
       std::size(gVerbStrings) == std::size(gPtOffsetPerVerb),
       "gPtOffsetPerVerb size mismatch");
 
-  base::Value::List verbs_val;
+  base::ListValue verbs_val;
   SkPath::RawIter iter(const_cast<SkPath&>(path));
   SkPoint points[4];
 
@@ -274,8 +274,8 @@ base::Value AsValue(const SkPath& path) {
        verb = iter.next(points)) {
     DCHECK_LT(static_cast<size_t>(verb), std::size(gVerbStrings));
 
-    base::Value::Dict verb_val;
-    base::Value::List pts_val;
+    base::DictValue verb_val;
+    base::ListValue pts_val;
 
     for (int i = 0; i < UNSAFE_TODO(gPtsPerVerb[verb]); ++i) {
       pts_val.Append(AsValue(UNSAFE_TODO(points[i + gPtOffsetPerVerb[verb]])));
@@ -295,7 +295,7 @@ base::Value AsValue(const SkPath& path) {
 
 template <typename T>
 base::Value AsListValue(const T array[], size_t count) {
-  base::Value::List val;
+  base::ListValue val;
 
   for (size_t i = 0; i < count; ++i)
     val.Append(AsValue(UNSAFE_TODO(array[i])));
@@ -319,7 +319,7 @@ public:
    DCHECK(op_name);
 
    op_record_.Set("cmd_string", op_name);
-   base::Value* op_params = op_record_.Set("info", base::Value::List());
+   base::Value* op_params = op_record_.Set("info", base::ListValue());
    DCHECK(op_params);
    DCHECK(op_params->is_list());
    op_params_ = &op_params->GetList();
@@ -340,7 +340,7 @@ public:
   }
 
   void addParam(const char name[], base::Value value) {
-    base::Value::Dict param;
+    base::DictValue param;
     param.Set(name, std::move(value));
 
     op_params_->Append(std::move(param));
@@ -350,8 +350,8 @@ public:
 
 private:
  raw_ptr<BenchmarkingCanvas> canvas_;
- base::Value::Dict op_record_;
- raw_ptr<base::Value::List> op_params_;
+ base::DictValue op_record_;
+ raw_ptr<base::ListValue> op_params_;
  base::TimeTicks start_ticks_;
 
  SkPaint filtered_paint_;
@@ -369,7 +369,7 @@ size_t BenchmarkingCanvas::CommandCount() const {
   return op_records_.size();
 }
 
-const base::Value::List& BenchmarkingCanvas::Commands() const {
+const base::ListValue& BenchmarkingCanvas::Commands() const {
   return op_records_;
 }
 
