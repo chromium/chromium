@@ -544,7 +544,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
       web_contents(), /*is_fre=*/false, std::vector<std::string>({"tool"}),
       future.GetCallback());
 
-  const base::Value::List& pref_value =
+  const base::ListValue& pref_value =
       pref_service()->GetList(prefs::kZeroStateSuggestionsSupportedTools);
   EXPECT_EQ(pref_value.size(), 1u);
   EXPECT_EQ(base::Value::Type::STRING, pref_value[0].type());
@@ -567,7 +567,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
       .Times(1);
   InitializeContextualCueingService();
 
-  base::Value::List tools_pref;
+  base::ListValue tools_pref;
   tools_pref.Append("tool");
   pref_service()->SetList(prefs::kZeroStateSuggestionsSupportedTools,
                           std::move(tools_pref));

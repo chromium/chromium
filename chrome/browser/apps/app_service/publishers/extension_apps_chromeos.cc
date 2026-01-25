@@ -833,7 +833,7 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
     return;
   }
 
-  const base::Value::List& disabled_system_features_pref =
+  const base::ListValue& disabled_system_features_pref =
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   const bool is_pref_disabled_mode_hidden =
@@ -1087,7 +1087,7 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
 }
 
 void ExtensionAppsChromeOs::UpdateAppDisabledState(
-    const base::Value::List& disabled_system_features_pref,
+    const base::ListValue& disabled_system_features_pref,
     int feature,
     const std::string& app_id,
     bool is_disabled_mode_changed) {

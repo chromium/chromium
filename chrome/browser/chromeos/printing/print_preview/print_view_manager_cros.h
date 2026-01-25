@@ -60,7 +60,7 @@ class PrintViewManagerCros
   void PrintPreviewDone();
 
   // Start the print preview generation.
-  void HandleGeneratePrintPreview(const base::Value::Dict& settings);
+  void HandleGeneratePrintPreview(const base::DictValue& settings);
   // Inform the PrintRenderFrame that the dialog has been removed and clears out
   // the render frame host associated with this instance.
   void HandlePrintPreviewRemoved();

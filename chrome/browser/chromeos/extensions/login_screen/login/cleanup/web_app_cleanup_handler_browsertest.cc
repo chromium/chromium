@@ -74,7 +74,7 @@ class WebAppCleanupHandlerBrowserTest : public WebAppBrowserTestBase {
     {
       ScopedListPrefUpdate update(profile()->GetPrefs(),
                                   prefs::kWebAppInstallForceList);
-      update->Append(base::Value::Dict().Set(web_app::kUrlKey, install_url));
+      update->Append(base::DictValue().Set(web_app::kUrlKey, install_url));
     }
     webapps::AppId app_id = observer.Wait();
     return app_id;

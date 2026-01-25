@@ -87,13 +87,13 @@ void InitPolicies(policy::MockConfigurationPolicyProvider* provider,
   SetPolicy(&map, policy::key::kAlternativeBrowserPath,
             base::Value(cmd_line.GetProgram().MaybeAsASCII()));
 
-  base::Value::List params;
+  base::ListValue params;
   for (size_t i = 1; i < cmd_line.argv().size(); i++)
     params.Append(NativeToUTF8(cmd_line.argv()[i]));
   SetPolicy(&map, policy::key::kAlternativeBrowserParameters,
             base::Value(std::move(params)));
 
-  base::Value::List sitelist;
+  base::ListValue sitelist;
   sitelist.Append("example.com");
   SetPolicy(&map, policy::key::kBrowserSwitcherUrlList,
             base::Value(std::move(sitelist)));

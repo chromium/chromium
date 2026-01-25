@@ -123,7 +123,7 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   // Set expectation about the parameter that is passed to a call of
   // |Run*Routine| or |GetAvailableRoutines|.
   void SetExpectedLastPassedParameters(
-      base::Value::Dict expected_passed_parameter);
+      base::DictValue expected_passed_parameter);
 
   // Set expectation about the type of routine that is called.
   void SetExpectedLastCalledRoutine(
@@ -143,9 +143,9 @@ class FakeDiagnosticsService : public crosapi::mojom::DiagnosticsService {
   crosapi::mojom::DiagnosticsRoutineUpdatePtr routine_update_response_;
 
   // Expectation of the passed parameters to a |Run*Routine| call.
-  base::Value::Dict expected_passed_parameters_;
+  base::DictValue expected_passed_parameters_;
   // Actually passed parameter.
-  base::Value::Dict actual_passed_parameters_;
+  base::DictValue actual_passed_parameters_;
 
   // Expectation of the called routine.
   crosapi::mojom::DiagnosticsRoutineEnum expected_called_routine_{

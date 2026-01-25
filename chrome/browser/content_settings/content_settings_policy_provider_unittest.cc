@@ -117,7 +117,7 @@ TEST_F(PolicyProviderTest, PreciseGeolocationAllowedForUrlsWithOptions) {
       profile.GetTestingPrefService();
   PolicyProvider provider(prefs);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kTestSubdomainPattern);
   prefs->SetManagedPref(prefs::kManagedPreciseGeolocationAllowedForUrls,
                         std::move(list));
@@ -153,7 +153,7 @@ TEST_F(PolicyProviderTest, GeolocationBlockedForUrlsWithOptions) {
       profile.GetTestingPrefService();
   PolicyProvider provider(prefs);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kTestSubdomainPattern);
   prefs->SetManagedPref(prefs::kManagedGeolocationBlockedForUrls,
                         std::move(list));
@@ -231,7 +231,7 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   sync_preferences::TestingPrefServiceSyncable* prefs =
       profile.GetTestingPrefService();
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append("[*.]google.com");
   prefs->SetManagedPref(prefs::kManagedImagesBlockedForUrls, std::move(list));
 
@@ -289,7 +289,7 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   // certificates.
   std::string pattern_str("\"pattern\":\"[*.]google.com\"");
   std::string filter_str("\"filter\":{\"ISSUER\":{\"CN\":\"issuer name\"}}");
-  base::Value::List list;
+  base::ListValue list;
   list.Append("{" + pattern_str + "," + filter_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(list));
@@ -303,7 +303,7 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
       ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
 
   ASSERT_EQ(base::Value::Type::DICT, cert_filter_setting.type());
-  base::Value::List* cert_filters =
+  base::ListValue* cert_filters =
       cert_filter_setting.GetDict().FindList("filters");
   ASSERT_TRUE(cert_filters);
   ASSERT_FALSE(cert_filters->empty());
@@ -328,7 +328,7 @@ TEST_F(PolicyProviderTest, InvalidAutoSelectCertificateList) {
   std::string filter_str("\"filter\":{\"ISSUER\":{\"CN\":\"issuer name\"}}");
 
   // Missing pattern should be rejected.
-  base::Value::List missing_pattern_value;
+  base::ListValue missing_pattern_value;
   missing_pattern_value.Append("{" + filter_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(missing_pattern_value));
@@ -338,7 +338,7 @@ TEST_F(PolicyProviderTest, InvalidAutoSelectCertificateList) {
                 ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
 
   // Non-dict value should be rejected.
-  base::Value::List no_dict_value;
+  base::ListValue no_dict_value;
   no_dict_value.Append(pattern_str + "," + filter_str);
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(no_dict_value));
@@ -348,7 +348,7 @@ TEST_F(PolicyProviderTest, InvalidAutoSelectCertificateList) {
                 ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
 
   // Missing filter should be rejected.
-  base::Value::List missing_filter_value;
+  base::ListValue missing_filter_value;
   missing_filter_value.Append("{" + pattern_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(missing_filter_value));
@@ -358,7 +358,7 @@ TEST_F(PolicyProviderTest, InvalidAutoSelectCertificateList) {
                 ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
 
   // Valid configuration should not be rejected.
-  base::Value::List valid_value;
+  base::ListValue valid_value;
   valid_value.Append("{" + pattern_str + "," + filter_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
                         std::move(valid_value));
@@ -392,51 +392,51 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
 TEST_F(PolicyProviderTest, CookiesAllowedForUrlsUsageHistogram) {
   const struct TestCase {
     std::string desc;
-    base::Value::List managed_pref;
+    base::ListValue managed_pref;
     std::optional<net::CookiesAllowedForUrlsUsage> expected_bucket;
   } test_cases[] = {
       {
           "NoRules",
-          base::Value::List(),
+          base::ListValue(),
           std::nullopt,
       },
       {
           "WildcardPrimaryOnly",
-          base::Value::List().Append("*,https://www.a.com/"),
+          base::ListValue().Append("*,https://www.a.com/"),
           net::CookiesAllowedForUrlsUsage::kWildcardPrimaryOnly,
       },
       {
           "WildcardSecondaryOnly",
-          base::Value::List().Append("https://www.a.com/"),
+          base::ListValue().Append("https://www.a.com/"),
           net::CookiesAllowedForUrlsUsage::kWildcardSecondaryOnly,
       },
       {"ExplicitOnly",
-       base::Value::List().Append("https://www.a.com/,https://www.b.com/"),
+       base::ListValue().Append("https://www.a.com/,https://www.b.com/"),
        net::CookiesAllowedForUrlsUsage::kExplicitOnly},
       {
           "ExplicitAndPrimaryWildcard",
-          base::Value::List()
+          base::ListValue()
               .Append("*,https://www.a.com/")
               .Append("https://www.a.com/,https://www.b.com/"),
           net::CookiesAllowedForUrlsUsage::kExplicitAndPrimaryWildcard,
       },
       {
           "ExplicityAndSecondaryWildcard",
-          base::Value::List()
+          base::ListValue()
               .Append("https://www.a.com/")
               .Append("https://www.a.com/,https://www.b.com/"),
           net::CookiesAllowedForUrlsUsage::kExplicitAndSecondaryWildcard,
       },
       {
           "WildcardOnly",
-          base::Value::List()
+          base::ListValue()
               .Append("*,https://www.a.com/")
               .Append("https://www.a.com/"),
           net::CookiesAllowedForUrlsUsage::kWildcardOnly,
       },
       {
           "AllPresent",
-          base::Value::List()
+          base::ListValue()
               .Append("*,https://www.a.com/")
               .Append("https://www.a.com/")
               .Append("https://www.a.com/,https://www.b.com/"),
@@ -454,11 +454,11 @@ TEST_F(PolicyProviderTest, CookiesAllowedForUrlsUsageHistogram) {
     // Set some other cookie-related prefs to make sure they do not impact
     // results.
     prefs->SetManagedPref(prefs::kManagedCookiesBlockedForUrls,
-                          base::Value::List()
+                          base::ListValue()
                               .Append("https://www.c.com/")
                               .Append("*,https://www.c.com/"));
     prefs->SetManagedPref(prefs::kManagedCookiesSessionOnlyForUrls,
-                          base::Value::List()
+                          base::ListValue()
                               .Append("https://www.d.com/")
                               .Append("https://www.d.com/,https://www.e.com/"));
     base::HistogramTester histogram_tester;

@@ -272,9 +272,9 @@ void ExtensionsHandler::OnGetStorageItemsFinished(
     return;
   }
 
-  base::Value::Dict data = std::move(*result.data);
+  base::DictValue data = std::move(*result.data);
   std::move(callback)->sendSuccess(
-      std::make_unique<base::Value::Dict>(std::move(data)));
+      std::make_unique<base::DictValue>(std::move(data)));
 }
 
 void ExtensionsHandler::SetStorageItems(

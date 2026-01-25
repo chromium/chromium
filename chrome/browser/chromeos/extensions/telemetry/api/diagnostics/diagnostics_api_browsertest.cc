@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected passed parameters.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("id", 123456)
             .Set("command",
                  static_cast<int32_t>(
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected passed parameters.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("id", 654321)
             .Set("command",
                  static_cast<int32_t>(
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("expected_status",
                  static_cast<int32_t>(
                      crosapi::DiagnosticsAcPowerStatusEnum::kConnected))
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("length_seconds", 1000)
             .Set("minimum_charge_percent_required", 1));
     fake_service_impl->SetExpectedLastCalledRoutine(
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("length_seconds", 10)
             .Set("maximum_discharge_percent_allowed", 15));
     fake_service_impl->SetExpectedLastCalledRoutine(
@@ -580,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("length_seconds", 120));
+        base::DictValue().Set("length_seconds", 120));
     fake_service_impl->SetExpectedLastCalledRoutine(
         crosapi::DiagnosticsRoutineEnum::kCpuCache);
 
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("length_seconds", 120));
+        base::DictValue().Set("length_seconds", 120));
     fake_service_impl->SetExpectedLastCalledRoutine(
         crosapi::DiagnosticsRoutineEnum::kFloatingPointAccuracy);
 
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("length_seconds", 120));
+        base::DictValue().Set("length_seconds", 120));
     fake_service_impl->SetExpectedLastCalledRoutine(
         crosapi::DiagnosticsRoutineEnum::kPrimeSearch);
 
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("length_seconds", 120));
+        base::DictValue().Set("length_seconds", 120));
     fake_service_impl->SetExpectedLastCalledRoutine(
         crosapi::DiagnosticsRoutineEnum::kCpuStress);
 
@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
 
     // Set the expected runtime actions.
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict()
+        base::DictValue()
             .Set("type",
                  static_cast<int32_t>(
                      crosapi::DiagnosticsDiskReadRoutineTypeEnum::kLinearRead))
@@ -982,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     // Set the expected runtime actions.
-    fake_service_impl->SetExpectedLastPassedParameters(base::Value::Dict().Set(
+    fake_service_impl->SetExpectedLastPassedParameters(base::DictValue().Set(
         "test_type",
         static_cast<int32_t>(
             crosapi::DiagnosticsNvmeSelfTestTypeEnum::kShortSelfTest)));
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("percentage_used_threshold", 42));
+        base::DictValue().Set("percentage_used_threshold", 42));
 
     // Set the expected called routine.
     fake_service_impl->SetExpectedLastCalledRoutine(
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
 
     fake_service_impl->SetExpectedLastPassedParameters(
-        base::Value::Dict().Set("timeout_seconds", 10));
+        base::DictValue().Set("timeout_seconds", 10));
 
     // Set the expected called routine.
     fake_service_impl->SetExpectedLastCalledRoutine(

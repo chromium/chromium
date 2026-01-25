@@ -25,7 +25,7 @@ void SetValueOptional(std::string value,
     destination = std::move(value);
 }
 
-base::Value::Dict SerializeMediaMetadata(
+base::DictValue SerializeMediaMetadata(
     chrome::mojom::MediaMetadataPtr metadata) {
   DCHECK(metadata);
   media_galleries::MediaMetadata extension_metadata;

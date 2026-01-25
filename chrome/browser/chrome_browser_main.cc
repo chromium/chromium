@@ -417,7 +417,7 @@ StartupProfileInfo CreateInitialProfile(
     // profile. Don't clear it if the user launched a web app, in order to not
     // break any subsequent multi-profile session restore.
     g_browser_process->local_state()->SetList(prefs::kProfilesLastActive,
-                                              base::Value::List());
+                                              base::ListValue());
   }
 
   StartupProfileInfo profile_info;

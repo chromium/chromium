@@ -22,7 +22,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kMicrosoftOneDriveMount,
                                MicrosoftOneDriveMountAllowed);
 
-  base::Value::List account_restrictions_default;
+  base::ListValue account_restrictions_default;
   account_restrictions_default.Append(MicrosoftOneDriveNoAccountRestriction);
   registry->RegisterListPref(prefs::kMicrosoftOneDriveAccountRestrictions,
                              std::move(account_restrictions_default));

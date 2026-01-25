@@ -38,8 +38,8 @@ std::string DetermineUserType(Profile* profile);
 // Safe to call on non-UI thread.
 bool UserTypeMatchesJsonUserType(const std::string& user_type,
                                  const std::string& app_id,
-                                 const base::Value::Dict& json_root,
-                                 const base::Value::List* default_user_types);
+                                 const base::DictValue& json_root,
+                                 const base::ListValue* default_user_types);
 
 }  // namespace apps
 

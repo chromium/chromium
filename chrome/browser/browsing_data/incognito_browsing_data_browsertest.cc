@@ -360,9 +360,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   Profile* profile = GetBrowser()->profile();
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test/"));
   const std::string serialized_test_origin = test_origin.Serialize();
-  base::Value::Dict allowed_protocols_for_origin;
+  base::DictValue allowed_protocols_for_origin;
   allowed_protocols_for_origin.Set("tel", true);
-  base::Value::Dict origin_pref;
+  base::DictValue origin_pref;
   origin_pref.Set(serialized_test_origin,
                   std::move(allowed_protocols_for_origin));
   profile->GetPrefs()->SetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols,

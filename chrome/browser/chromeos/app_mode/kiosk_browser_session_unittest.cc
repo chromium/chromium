@@ -399,8 +399,8 @@ using KioskBrowserSessionTest = KioskBrowserSessionBaseTest<NoParam>;
 TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
   local_state()->SetDict(
       prefs::kKioskMetrics,
-      base::Value::Dict().Set(kKioskSessionStartTime,
-                              base::TimeToValue(base::Time::Now())));
+      base::DictValue().Set(kKioskSessionStartTime,
+                            base::TimeToValue(base::Time::Now())));
 
   StartWebKioskSession();
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
@@ -418,8 +418,8 @@ TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
 
-  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
-  const base::Value::List* sessions_list =
+  const base::DictValue& dict = local_state()->GetDict(prefs::kKioskMetrics);
+  const base::ListValue* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
   EXPECT_EQ(1u, sessions_list->size());
@@ -457,8 +457,8 @@ TEST_F(KioskBrowserSessionTest, ChromeAppKioskTracksBrowserCreation) {
                                  1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 
-  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
-  const base::Value::List* sessions_list =
+  const base::DictValue& dict = local_state()->GetDict(prefs::kKioskMetrics);
+  const base::ListValue* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
   EXPECT_EQ(1u, sessions_list->size());
@@ -500,7 +500,7 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
   // one: {now, 2,3,4,5 days ago}
   {
     auto session_list =
-        base::Value::List().Append(base::TimeToValue(base::Time::Now()));
+        base::ListValue().Append(base::TimeToValue(base::Time::Now()));
 
     const size_t kMaxDays = 4;
     for (size_t i = 0; i < kMaxDays; i++) {
@@ -510,7 +510,7 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
 
     local_state()->SetDict(
         prefs::kKioskMetrics,
-        base::Value::Dict()
+        base::DictValue()
             .Set(kKioskSessionLastDayList, std::move(session_list))
             // Emulates previous session crashes.
             .Set(kKioskSessionStartTime,
@@ -537,8 +537,8 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
 
-  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
-  const base::Value::List* sessions_list =
+  const base::DictValue& dict = local_state()->GetDict(prefs::kKioskMetrics);
+  const base::ListValue* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
   // There should be only two kiosk sessions on the list:

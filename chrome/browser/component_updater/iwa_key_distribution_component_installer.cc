@@ -133,7 +133,7 @@ void IwaKeyDistributionComponentInstallerPolicy::QueueOnDemandUpdate(
 }
 
 bool IwaKeyDistributionComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kDataFileName));
 }
@@ -150,7 +150,7 @@ bool IwaKeyDistributionComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 IwaKeyDistributionComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   // No custom install.
   return update_client::CrxInstaller::Result(0);
@@ -161,7 +161,7 @@ void IwaKeyDistributionComponentInstallerPolicy::OnCustomUninstall() {}
 void IwaKeyDistributionComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   if (install_dir.empty() || !version.IsValid()) {
     return;
   }

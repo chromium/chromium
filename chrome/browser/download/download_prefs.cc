@@ -661,7 +661,7 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
 
     // Since we only want to auto-open for the specified urls, block everything
     // else.
-    auto blocked = base::Value::List();
+    auto blocked = base::ListValue();
     blocked.Append("*");
     allowed_urls->Block(blocked);
   }

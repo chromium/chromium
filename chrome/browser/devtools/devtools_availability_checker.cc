@@ -148,7 +148,7 @@ bool IsInspectionAllowed(Profile* profile,
         // like the allowlist. But if the allowlist is not empty, we should
         // allow the DevTools UI to load its resources, so it can be used for
         // allowlisted contexts.
-        const base::Value::List& allowlist = profile->GetPrefs()->GetList(
+        const base::ListValue& allowlist = profile->GetPrefs()->GetList(
             prefs::kDeveloperToolsAvailabilityAllowlist);
         if (!allowlist.empty()) {
           return true;

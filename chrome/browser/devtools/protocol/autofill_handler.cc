@@ -249,10 +249,10 @@ void AutofillHandler::SetAddresses(
   }
 
   std::vector<autofill::AutofillProfile> test_address_for_countries;
-  base::Value::List profiles;
+  base::ListValue profiles;
 
   for (const auto& address : *addresses) {
-    base::Value::Dict address_fields;
+    base::DictValue address_fields;
     for (const auto& field : *address->GetFields()) {
       address_fields.Set(field->GetName(), field->GetValue());
     }

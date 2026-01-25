@@ -28,9 +28,9 @@ namespace chromeos {
 namespace {
 
 // Construct a fake print settings with the given ID's.
-base::Value::Dict GetFakePrintParams(int preview_id, int request_id) {
-  base::Value::Dict settings =
-      base::Value::Dict()
+base::DictValue GetFakePrintParams(int preview_id, int request_id) {
+  base::DictValue settings =
+      base::DictValue()
           .Set(::printing::kSettingLandscape, false)
           .Set(::printing::kSettingCollate, false)
           .Set(::printing::kSettingColor,
@@ -59,7 +59,7 @@ base::Value::Dict GetFakePrintParams(int preview_id, int request_id) {
 
   // Using a media size with realistic dimensions for a Letter paper.
   auto media_size =
-      base::Value::Dict()
+      base::DictValue()
           .Set(::printing::kSettingMediaSizeWidthMicrons, 215900)
           .Set(::printing::kSettingMediaSizeHeightMicrons, 279400)
           .Set(::printing::kSettingsImageableAreaLeftMicrons, 12700)

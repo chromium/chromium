@@ -491,8 +491,8 @@ bool AppDiscoveryMetrics::IsAppListAtCapacity() {
   return apps_installed_.size() > kAppListCapacity;
 }
 
-base::Value::List AppDiscoveryMetrics::BuildAppInstalledList() {
-  base::Value::List installed_apps;
+base::ListValue AppDiscoveryMetrics::BuildAppInstalledList() {
+  base::ListValue installed_apps;
   for (std::string app : apps_installed_) {
     installed_apps.Append(app);
   }

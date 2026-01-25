@@ -197,7 +197,7 @@ class LoginApitest : public LoginScreenApitestBase {
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-  base::Value::Dict config_;
+  base::DictValue config_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {

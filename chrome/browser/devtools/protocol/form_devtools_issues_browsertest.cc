@@ -40,15 +40,15 @@ class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
     SendCommandSync("Audits.enable");
   }
 
-  base::Value::Dict WaitForGenericIssueAdded(const std::string& error_type) {
+  base::DictValue WaitForGenericIssueAdded(const std::string& error_type) {
     auto matcher = [](const std::string& error_type,
-                      const base::Value::Dict& params) {
+                      const base::DictValue& params) {
       const std::string* maybe_error_type = params.FindStringByDottedPath(
           "issue.details.genericIssueDetails.errorType");
       return maybe_error_type && *maybe_error_type == error_type;
     };
 
-    base::Value::Dict notification = WaitForMatchingNotification(
+    base::DictValue notification = WaitForMatchingNotification(
         "Audits.issueAdded", base::BindRepeating(matcher, error_type));
 
     EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
@@ -65,8 +65,8 @@ class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        checkFormIssuesCommandReturnsIssuesList) {
   NavigateToFormPageAndEnableAudits();
-  const base::Value::Dict* res = SendCommandSync("Audits.checkFormsIssues");
-  const base::Value::List* issues = res->FindListByDottedPath("formIssues");
+  const base::DictValue* res = SendCommandSync("Audits.checkFormsIssues");
+  const base::ListValue* issues = res->FindListByDottedPath("formIssues");
   ASSERT_NE(issues, nullptr);
   ASSERT_EQ(issues->size(), 0ul);
 }
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasLabelAssociatedToNameAttribute) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormLabelForNameError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasInputsWithDuplicateId) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormDuplicateIdForInputError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasInputWithEmptyAutocompleteAttribute) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormAutocompleteAttributeEmptyError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasInputWithoutIdAndName) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormEmptyIdAndNameAttributesForInputError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillFormDevtoolsProtocolTest,
     FormHasInputWithAriaLabelledByAttributeThatLinksToNonExistingId) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormAriaLabelledByToNonExistingIdError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillFormDevtoolsProtocolTest,
     FormHasInputAssignedAutocompleteValueToIdOrNameAttributesIssue) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification = WaitForGenericIssueAdded(
+  base::DictValue notification = WaitForGenericIssueAdded(
       "FormInputAssignedAutocompleteValueToIdOrNameAttributeError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasLabelWithoutNeitherForNorNestedInput) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormLabelHasNeitherForNorNestedInputError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasLabelAssociatedToNonExistingId) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification =
+  base::DictValue notification =
       WaitForGenericIssueAdded("FormLabelForMatchesNonExistingIdError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormInputHasWrongButWellIntendedAutocompleteValueError) {
   NavigateToFormPageAndEnableAudits();
-  base::Value::Dict notification = WaitForGenericIssueAdded(
+  base::DictValue notification = WaitForGenericIssueAdded(
       "FormInputHasWrongButWellIntendedAutocompleteValueError");
   EXPECT_TRUE(notification
                   .FindIntByDottedPath(

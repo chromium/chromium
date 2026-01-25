@@ -66,10 +66,10 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
     const std::string& url,
     const std::string& id) {
   std::u16string err;
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", name);
   value.Set("version", version);
-  base::Value::List scripts;
+  base::ListValue scripts;
   scripts.Append("script.js");
   value.SetByDottedPath("app.background.scripts", std::move(scripts));
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(

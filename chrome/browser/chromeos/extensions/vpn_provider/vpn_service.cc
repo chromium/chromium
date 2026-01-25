@@ -266,7 +266,7 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
       CreateConfigurationInternal(extension_id, configuration_name);
 
   auto properties =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTypeProperty, shill::kTypeVPN)
           .Set(shill::kNameProperty, configuration_name)
           .Set(shill::kProviderHostProperty, extension_id)
@@ -305,7 +305,7 @@ void VpnService::NetworkListChanged() {
 
 void VpnService::OnGetShillProperties(
     const std::string& service_path,
-    std::optional<base::Value::Dict> configuration_properties) {
+    std::optional<base::DictValue> configuration_properties) {
   if (!configuration_properties || LookupConfiguration(service_path)) {
     return;
   }
@@ -408,7 +408,7 @@ void VpnService::SetActiveConfiguration(
 }
 
 void VpnService::SetParameters(const std::string& extension_id,
-                               base::Value::Dict parameters,
+                               base::DictValue parameters,
                                SuccessCallback success,
                                FailureCallback failure) {
   VpnConfiguration* active_configuration =

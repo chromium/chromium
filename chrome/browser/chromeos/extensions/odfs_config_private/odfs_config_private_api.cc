@@ -54,7 +54,7 @@ OdfsConfigPrivateGetAccountRestrictionsFunction::
 
 ExtensionFunction::ResponseAction
 OdfsConfigPrivateGetAccountRestrictionsFunction::Run() {
-  base::Value::List restrictions =
+  base::ListValue restrictions =
       chromeos::cloud_storage::GetMicrosoftOneDriveAccountRestrictions(
           Profile::FromBrowserContext(browser_context()));
   std::vector<std::string> restrictions_vector;

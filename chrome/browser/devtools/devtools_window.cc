@@ -153,7 +153,7 @@ static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
 
 void SetPreferencesFromJson(Profile* profile, const std::string& json) {
-  std::optional<base::Value::Dict> parsed =
+  std::optional<base::DictValue> parsed =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return;
@@ -366,7 +366,7 @@ bool DevToolsEventForwarder::ForwardEvent(
     return false;
   }
 
-  base::Value::Dict event_data;
+  base::DictValue event_data;
   event_data.Set("type", event_type);
   event_data.Set("key", ui::KeycodeConverter::DomKeyToKeyString(
                             static_cast<ui::DomKey>(event.dom_key)));
@@ -1863,7 +1863,7 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
 }
 
 void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
-  base::Value::Dict color;
+  base::DictValue color;
   color.Set("r", r);
   color.Set("g", g);
   color.Set("b", b);
@@ -1995,7 +1995,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     resetPrefs = true;
   } else {
     // Reset to default if stored window size is too small.
-    const base::Value::Dict& devtoolsPlacement =
+    const base::DictValue& devtoolsPlacement =
         prefs->GetDict(prefs::kAppWindowPlacement)
             .Find(kDevToolsApp)
             ->GetDict();
@@ -2008,8 +2008,8 @@ void DevToolsWindow::CreateDevToolsBrowser() {
   }
   if (resetPrefs) {
     ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
-    base::Value::Dict& wp_prefs = update.Get();
-    base::Value::Dict dev_tools_defaults;
+    base::DictValue& wp_prefs = update.Get();
+    base::DictValue dev_tools_defaults;
     dev_tools_defaults.Set("left", 100);
     dev_tools_defaults.Set("top", 100);
     dev_tools_defaults.Set("right", 740);

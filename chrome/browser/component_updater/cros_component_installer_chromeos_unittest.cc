@@ -410,7 +410,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityOK) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set("min_env_version", "2.1");
   policy.ComponentReady(version, path, std::move(manifest));
   // Component is compatible and was registered.
@@ -426,7 +426,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityMissingManifest) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   policy.ComponentReady(version, path, std::move(manifest));
   // No compatible path was registered.
   EXPECT_EQ(base::FilePath(), installer->GetCompatiblePath("component"));

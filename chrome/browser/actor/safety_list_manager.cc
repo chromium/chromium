@@ -63,16 +63,16 @@ void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
     return;
   }
 
-  base::Value::Dict* json_dict = json->GetIfDict();
+  base::DictValue* json_dict = json->GetIfDict();
   if (!json_dict) {
     return;
   }
 
-  if (base::Value::List* allowed = json_dict->FindList(kAllowedFieldName)) {
+  if (base::ListValue* allowed = json_dict->FindList(kAllowedFieldName)) {
     allowed_ = SafetyList::ParsePatternListFromJson(*allowed);
   }
 
-  if (base::Value::List* blocked = json_dict->FindList(kBlockedFieldName)) {
+  if (base::ListValue* blocked = json_dict->FindList(kBlockedFieldName)) {
     SafetyList parsed_blocked = SafetyList::ParsePatternListFromJson(*blocked);
     SafetyList::Patterns patterns = parsed_blocked.patterns();
     MaybeAppendHardcodedPatterns(patterns);

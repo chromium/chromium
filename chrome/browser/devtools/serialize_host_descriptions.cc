@@ -21,7 +21,7 @@ base::Value Serialize(
     std::string_view child_key,
     base::Value* root,
     const std::map<base::Value*, std::vector<base::Value*>>& children) {
-  base::Value::List children_list;
+  base::ListValue children_list;
   auto child_it = children.find(root);
   if (child_it != children.end()) {
     for (base::Value* child : child_it->second) {
@@ -44,7 +44,7 @@ void CreateDictionaryForest(
     std::vector<HostDescriptionNode> hosts,
     std::map<base::Value*, std::vector<base::Value*>>* children,
     std::unordered_set<base::Value*>* roots,
-    base::Value::List* representations) {
+    base::ListValue* representations) {
   representations->reserve(hosts.size());
 
   std::map<std::string_view, base::Value*> name_to_representation;
@@ -77,18 +77,18 @@ void CreateDictionaryForest(
 
 }  // namespace
 
-base::Value::List SerializeHostDescriptions(
+base::ListValue SerializeHostDescriptions(
     std::vector<HostDescriptionNode> hosts,
     std::string_view child_key) {
   // |representations| must outlive |children| and |roots|, which contain
   // pointers to objects in |representations|.
-  base::Value::List representations;
+  base::ListValue representations;
   std::map<base::Value*, std::vector<base::Value*>> children;
   std::unordered_set<base::Value*> roots;
 
   CreateDictionaryForest(std::move(hosts), &children, &roots, &representations);
 
-  base::Value::List result;
+  base::ListValue result;
   result.reserve(roots.size());
   for (auto* root : roots) {
     result.Append(Serialize(child_key, root, children));

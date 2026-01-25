@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Add url to the page colors block list.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url);
   Profile* profile = browser()->profile();
   profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   ScopedFakeExternalProtocolHandlerDelegate delegate;
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("geo://*");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
                                             std::move(allowlist));
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   ScopedFakeExternalProtocolHandlerDelegate delegate;
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("intent://*");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
                                             std::move(allowlist));
@@ -2105,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
   const std::string_view kHostA = "a.test";
   const std::string_view kHostB = "b.test";
   // Apply devtools overrides to enable 3pc restriction.
-  base::Value::Dict command_params;
+  base::DictValue command_params;
   command_params.Set("enableThirdPartyCookieRestriction", true);
   command_params.Set("disableThirdPartyCookieMetadata", false);
   command_params.Set("disableThirdPartyCookieHeuristics", false);

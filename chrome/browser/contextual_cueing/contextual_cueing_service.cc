@@ -93,9 +93,9 @@ void OnSuggestionsReceived(bool is_fre,
 }
 #endif
 
-base::Value::List ConvertSupportedToolsToPrefValue(
+base::ListValue ConvertSupportedToolsToPrefValue(
     const std::vector<std::string>& supported_tools) {
-  base::Value::List pref_tools;
+  base::ListValue pref_tools;
   for (const auto& tool : supported_tools) {
     pref_tools.Append(tool);
   }
@@ -103,7 +103,7 @@ base::Value::List ConvertSupportedToolsToPrefValue(
 }
 
 std::vector<std::string> GetSupportedToolsFromPref(
-    const base::Value::List& pref_value) {
+    const base::ListValue& pref_value) {
   std::vector<std::string> supported_tools;
   for (const base::Value& value : pref_value) {
     supported_tools.push_back(value.GetString());

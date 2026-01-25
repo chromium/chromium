@@ -27,9 +27,9 @@ FakeRecommendAppsFetcher::FakeRecommendAppsFetcher(
 FakeRecommendAppsFetcher::~FakeRecommendAppsFetcher() = default;
 
 void FakeRecommendAppsFetcher::OnTimer() {
-  base::Value::List apps;
+  base::ListValue apps;
   for (int i = 0; i < std::clamp(fake_apps_count_, 0, kMaxAppCount); i++) {
-    base::Value::Dict app;
+    base::DictValue app;
     app.Set("name", base::StringPrintf("Fake App %d", (i + 1)));
     app.Set("package_name",
             base::StringPrintf("com.example.fake.app%d", (i + 1)));

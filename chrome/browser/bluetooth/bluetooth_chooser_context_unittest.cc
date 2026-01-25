@@ -213,15 +213,15 @@ TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
         context->IsAllowedToAccessService(foo_origin_, device_id, service));
   }
 
-  base::Value::Dict expected_object;
+  base::DictValue expected_object;
   expected_object.Set(kDeviceAddressKey, kDeviceAddress1);
   expected_object.Set(kDeviceNameKey, fake_device1_->GetNameForDisplay());
   expected_object.Set(kWebBluetoothDeviceIdKey, device_id.str());
-  base::Value::Dict expected_services;
+  base::DictValue expected_services;
   expected_services.Set(kGlucoseUUIDString, /*value=*/true);
   expected_services.Set(kBloodPressureUUIDString, /*value=*/true);
   expected_object.Set(kServicesKey, std::move(expected_services));
-  base::Value::Dict expected_manufacturer_data;
+  base::DictValue expected_manufacturer_data;
   expected_manufacturer_data.Set("1", /*value=*/true);
   expected_manufacturer_data.Set("2", /*value=*/true);
   expected_object.Set(kManufacturerDataKey,

@@ -968,7 +968,7 @@ class MockReportingService : public net::ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       net::ReportingTargetType target_type) override {
     NOTREACHED();
@@ -1971,9 +1971,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveExternalProtocolData) {
   url::Origin test_origin = url::Origin::Create(GURL("https://example.test"));
   const std::string serialized_test_origin = test_origin.Serialize();
   // Add external protocol data on profile.
-  base::Value::Dict allowed_protocols_for_origin;
+  base::DictValue allowed_protocols_for_origin;
   allowed_protocols_for_origin.Set("tel", true);
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set(serialized_test_origin, std::move(allowed_protocols_for_origin));
   profile->GetPrefs()->SetDict(prefs::kProtocolHandlerPerOriginAllowedProtocols,
                                std::move(prefs));
@@ -2011,14 +2011,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
 
   // Add foo.com to the list of stored user-triggered isolated origins and
   // bar.com to the list of stored web-triggered isolated origins.
-  base::Value::List list;
+  base::ListValue list;
   list.Append("http://foo.com");
   prefs->SetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins,
                  list.Clone());
   EXPECT_FALSE(
       prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("https://bar.com", base::TimeToValue(base::Time::Now()));
   prefs->SetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins,
                  dict.Clone());
@@ -2936,11 +2936,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(0);
   client_hints_list.Append(2);
 
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               std::move(client_hints_list));
 
@@ -2993,11 +2993,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(0);
   client_hints_list.Append(2);
 
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               std::move(client_hints_list));
 
@@ -3076,7 +3076,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveZoomLevel) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTabDiscardExceptionsList) {
-  base::Value::Dict exclusion_map;
+  base::DictValue exclusion_map;
   exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
   exclusion_map.Set("b.com",
                     base::TimeToValue(base::Time::Now() - base::Hours(3)));
@@ -4015,10 +4015,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeSuspiciousNotificationIds) {
   // Add setting value.
   const GURL kOrigin1("http://host1.com:1");
-  base::Value::List suspicious_notification_ids;
+  base::ListValue suspicious_notification_ids;
   suspicious_notification_ids.Append("1");
   suspicious_notification_ids.Append("2");
-  base::Value::Dict suspicious_notification_id_dict;
+  base::DictValue suspicious_notification_id_dict;
   suspicious_notification_id_dict.Set("suspicious-notification-ids",
                                       std::move(suspicious_notification_ids));
   HostContentSettingsMap* host_content_settings_map =

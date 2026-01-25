@@ -67,7 +67,7 @@ bool GetValue(const base::Value& value, bool* result) {
 bool GetValue(const base::Value& value, gfx::Rect* rect) {
   if (!value.is_dict())
     return false;
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   std::optional<int> x = dict.FindInt("x");
   std::optional<int> y = dict.FindInt("y");
   std::optional<int> width = dict.FindInt("width");
@@ -96,8 +96,7 @@ bool GetValue(const base::Value& value, ImpressionEvent* event) {
     return false;
   }
 
-  const base::Value::List* impressions =
-      value.GetDict().FindList("impressions");
+  const base::ListValue* impressions = value.GetDict().FindList("impressions");
   if (!impressions) {
     return false;
   }
@@ -311,8 +310,8 @@ struct StorageTraits<const T&> {
 
 template <typename... Ts>
 struct ParamTuple {
-  bool Parse(const base::Value::List& list,
-             const base::Value::List::const_iterator& it) {
+  bool Parse(const base::ListValue& list,
+             const base::ListValue::const_iterator& it) {
     return it == list.end();
   }
 
@@ -324,8 +323,8 @@ struct ParamTuple {
 
 template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
-  bool Parse(const base::Value::List& list,
-             const base::Value::List::const_iterator& it) {
+  bool Parse(const base::ListValue& list,
+             const base::ListValue::const_iterator& it) {
     return it != list.end() && GetValue(*it, &head) && tail.Parse(list, it + 1);
   }
 
@@ -342,7 +341,7 @@ template <typename... As>
 bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
                     const std::string& method,
                     DispatchCallback callback,
-                    const base::Value::List& list) {
+                    const base::ListValue& list) {
   ParamTuple<As...> tuple;
   if (!tuple.Parse(list, list.begin())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
@@ -358,7 +357,7 @@ bool ParseAndHandleWithCallback(
     const base::RepeatingCallback<void(DispatchCallback, As...)>& handler,
     const std::string& method,
     DispatchCallback callback,
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   ParamTuple<As...> tuple;
   if (!tuple.Parse(list, list.begin())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
@@ -385,7 +384,7 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
 
   bool Dispatch(DispatchCallback callback,
                 const std::string& method,
-                const base::Value::List& params) override {
+                const base::ListValue& params) override {
     auto it = handlers_.find(method);
     return it != handlers_.end() && it->second.Run(std::move(callback), params);
   }
@@ -411,7 +410,7 @@ class DispatcherImpl : public DevToolsEmbedderMessageDispatcher {
 
  private:
   using Handler =
-      base::RepeatingCallback<bool(DispatchCallback, const base::Value::List&)>;
+      base::RepeatingCallback<bool(DispatchCallback, const base::ListValue&)>;
   using HandlerMap = std::map<std::string, Handler>;
   HandlerMap handlers_;
 };

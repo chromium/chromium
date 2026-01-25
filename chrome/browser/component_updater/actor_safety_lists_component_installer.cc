@@ -79,7 +79,7 @@ bool ActorSafetyListsComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 ActorSafetyListsComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -94,7 +94,7 @@ base::FilePath ActorSafetyListsComponentInstallerPolicy::GetInstalledPath(
 void ActorSafetyListsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Actor Safety Lists ready, version " << version.GetString()
           << " in " << install_dir.value();
 
@@ -107,7 +107,7 @@ void ActorSafetyListsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool ActorSafetyListsComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the json here, since we'll do the checking
   // in the parsing component

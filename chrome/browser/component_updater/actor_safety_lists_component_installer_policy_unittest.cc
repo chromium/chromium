@@ -36,13 +36,13 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
        VerifyInstallation_ValidDir) {
   ActorSafetyListsComponentInstallerPolicy policy;
 
-  EXPECT_FALSE(policy.VerifyInstallation(base::Value::Dict(),
+  EXPECT_FALSE(policy.VerifyInstallation(base::DictValue(),
                                          component_install_dir_.GetPath()));
   ASSERT_TRUE(base::WriteFile(
       ActorSafetyListsComponentInstallerPolicy::GetInstalledPathForTesting(
           component_install_dir_.GetPath()),
       ""));
-  EXPECT_TRUE(policy.VerifyInstallation(base::Value::Dict(),
+  EXPECT_TRUE(policy.VerifyInstallation(base::DictValue(),
                                         component_install_dir_.GetPath()));
 }
 
@@ -50,12 +50,12 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
        VerifyInstallation_InvalidDir) {
   ActorSafetyListsComponentInstallerPolicy policy;
 
-  EXPECT_FALSE(policy.VerifyInstallation(base::Value::Dict(),
+  EXPECT_FALSE(policy.VerifyInstallation(base::DictValue(),
                                          component_install_dir_.GetPath()));
   ASSERT_TRUE(base::WriteFile(component_install_dir_.GetPath().Append(
                                   base::FilePath(FILE_PATH_LITERAL("invalid"))),
                               ""));
-  EXPECT_FALSE(policy.VerifyInstallation(base::Value::Dict(),
+  EXPECT_FALSE(policy.VerifyInstallation(base::DictValue(),
                                          component_install_dir_.GetPath()));
 }
 
@@ -67,7 +67,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
 
   policy.ComponentReadyForTesting(base::Version("0.0.1"),
                                   base::FilePath(FILE_PATH_LITERAL("invalid")),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   EXPECT_EQ(future.Take(), std::nullopt);
 }
@@ -85,7 +85,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentReady_ValidFile) {
 
   policy.ComponentReadyForTesting(base::Version("0.0.1"),
                                   component_install_dir_.GetPath(),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   EXPECT_EQ(future.Take(), expectation);
 }
@@ -107,7 +107,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
       future.GetRepeatingCallback());
 
   policy.ComponentReadyForTesting(base::Version("0.0.1"), dir_v1.GetPath(),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   EXPECT_EQ(future.Take(), expectation_v1);
 
@@ -123,7 +123,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
       expectation_v2));
 
   policy.ComponentReadyForTesting(base::Version("0.0.2"), dir_v2.GetPath(),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   EXPECT_EQ(future.Take(), expectation_v2);
 }

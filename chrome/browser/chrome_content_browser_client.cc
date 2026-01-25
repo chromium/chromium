@@ -3954,7 +3954,7 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
       Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
   CHECK(prefs);
 
-  const base::Value::List& forced_colors_blocklist =
+  const base::ListValue& forced_colors_blocklist =
       prefs->GetList(prefs::kPageColorsBlockList);
 
   if (forced_colors_blocklist.empty()) {
@@ -5480,7 +5480,7 @@ void ChromeContentBrowserClient::UpdateDevToolsBackgroundServiceExpiration(
 
   ScopedDictPrefUpdate pref_update(
       pref_service, prefs::kDevToolsBackgroundServicesExpirationDict);
-  base::Value::Dict& exp_dict = pref_update.Get();
+  base::DictValue& exp_dict = pref_update.Get();
 
   // Convert |expiration_time| to minutes since that is the most granular
   // option that returns an int. base::Value does not accept int64.
@@ -6634,7 +6634,7 @@ ChromeContentBrowserClient::GetNetworkContextsParentDirectory() {
   return network_contexts_parent_directory_;
 }
 
-base::Value::Dict ChromeContentBrowserClient::GetNetLogConstants() {
+base::DictValue ChromeContentBrowserClient::GetNetLogConstants() {
   return net_log::GetPlatformConstantsForNetLog(
       base::CommandLine::ForCurrentProcess()->GetCommandLineString(),
       chrome::GetChannelName(chrome::WithExtendedStable(true)));
@@ -8638,9 +8638,9 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
       base::BindOnce(
           [](webapps::AppId app_id, webapps::ManifestId manifest_id,
              GURL frame_url, web_app::AppLock& lock,
-             base::Value::Dict& debug_value)
+             base::DictValue& debug_value)
               -> std::optional<blink::mojom::RelatedApplication> {
-            debug_value.Set("input", base::Value::Dict()
+            debug_value.Set("input", base::DictValue()
                                          .Set("manifest_id", manifest_id.spec())
                                          .Set("frame_url", frame_url.spec()));
 
@@ -8670,7 +8670,7 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
             debug_value.Set("did_find_application", true);
             debug_value.Set(
                 "application",
-                base::Value::Dict()
+                base::DictValue()
                     .Set("app_id", application.id.value_or(""))
                     .Set("manifest_url", application.url.value_or("")));
             return application;

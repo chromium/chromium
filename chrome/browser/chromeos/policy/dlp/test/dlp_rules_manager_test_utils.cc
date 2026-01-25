@@ -25,14 +25,13 @@ const char kLevel[] = "level";
 
 }  // namespace
 
-base::Value::Dict CreateSources(base::Value::List urls) {
-  return base::Value::Dict().Set(kUrls, std::move(urls));
+base::DictValue CreateSources(base::ListValue urls) {
+  return base::DictValue().Set(kUrls, std::move(urls));
 }
 
-base::Value::Dict CreateDestinations(
-    std::optional<base::Value::List> urls,
-    std::optional<base::Value::List> components) {
-  base::Value::Dict dsts;
+base::DictValue CreateDestinations(std::optional<base::ListValue> urls,
+                                   std::optional<base::ListValue> components) {
+  base::DictValue dsts;
   if (urls.has_value()) {
     dsts.Set(kUrls, std::move(urls.value()));
   }
@@ -42,20 +41,20 @@ base::Value::Dict CreateDestinations(
   return dsts;
 }
 
-base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
-                                             const std::string& level) {
-  return base::Value::Dict().Set(kClass, restriction).Set(kLevel, level);
+base::DictValue CreateRestrictionWithLevel(const std::string& restriction,
+                                           const std::string& level) {
+  return base::DictValue().Set(kClass, restriction).Set(kLevel, level);
 }
 
-base::Value::Dict CreateRule(const std::string& name,
-                             const std::string& desc,
-                             const std::string& rule_id,
-                             base::Value::List src_urls,
-                             std::optional<base::Value::List> dst_urls,
-                             std::optional<base::Value::List> dst_components,
-                             base::Value::List restrictions) {
+base::DictValue CreateRule(const std::string& name,
+                           const std::string& desc,
+                           const std::string& rule_id,
+                           base::ListValue src_urls,
+                           std::optional<base::ListValue> dst_urls,
+                           std::optional<base::ListValue> dst_components,
+                           base::ListValue restrictions) {
   auto rule =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kName, name)
           .Set(kDescription, desc)
           .Set(kSources, CreateSources(std::move(src_urls)))
@@ -93,26 +92,26 @@ DlpRule& DlpRule::AddRestriction(const std::string& type,
   return *this;
 }
 
-base::Value::Dict DlpRule::Create() const {
-  base::Value::List src_urls_list;
+base::DictValue DlpRule::Create() const {
+  base::ListValue src_urls_list;
   for (const std::string& src : src_urls) {
     src_urls_list.Append(src);
   }
 
-  base::Value::List dst_urls_list;
+  base::ListValue dst_urls_list;
   for (const std::string& dst : dst_urls) {
     dst_urls_list.Append(dst);
   }
 
-  base::Value::List dst_components_list;
+  base::ListValue dst_components_list;
   for (const std::string& component : dst_components) {
     dst_components_list.Append(component);
   }
 
-  base::Value::List restrictions_list;
+  base::ListValue restrictions_list;
   for (const auto& [type, level] : restrictions) {
     restrictions_list.Append(
-        base::Value::Dict().Set("class", type).Set("level", level));
+        base::DictValue().Set("class", type).Set("level", level));
   }
 
   return CreateRule(name, description, id, std::move(src_urls_list),

@@ -187,13 +187,13 @@ class WebsiteMetrics : public BrowserCollectionObserver,
     bool is_activated = false;
     bool promotable = false;
 
-    // Converts the struct UsageTime to base::Value::Dict, e.g.:
+    // Converts the struct UsageTime to base::DictValue, e.g.:
     // {
     //    "time": "3600",
     //    "url_content": "scope",
     //    "promotable": "false",
     // }
-    base::Value::Dict ConvertToDict() const;
+    base::DictValue ConvertToDict() const;
   };
 
   // Observes the root window's activation client for the OnWindowActivated

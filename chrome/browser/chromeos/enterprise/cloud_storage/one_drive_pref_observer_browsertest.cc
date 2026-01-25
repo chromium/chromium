@@ -69,7 +69,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
   }
 
   void SetOneDriveAccountRestrictions(std::vector<std::string> restrictions) {
-    base::Value::List restrictions_list;
+    base::ListValue restrictions_list;
     for (auto& restriction : restrictions) {
       restrictions_list.Append(std::move(restriction));
     }
@@ -107,7 +107,7 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
     EXPECT_EQ(event.event_name,
               extensions::api::odfs_config_private::OnMountChanged::kEventName);
     ASSERT_EQ(1u, event.event_args.size());
-    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    const base::DictValue* event_dict = event.event_args.front().GetIfDict();
     ASSERT_TRUE(event_dict);
     const std::string* mode = event_dict->FindString("mode");
     ASSERT_TRUE(mode);
@@ -120,10 +120,9 @@ class OneDrivePrefObserverBrowserTest : public policy::PolicyTest {
     EXPECT_EQ(event.event_name, extensions::api::odfs_config_private::
                                     OnAccountRestrictionsChanged::kEventName);
     ASSERT_EQ(1u, event.event_args.size());
-    const base::Value::Dict* event_dict = event.event_args.front().GetIfDict();
+    const base::DictValue* event_dict = event.event_args.front().GetIfDict();
     ASSERT_TRUE(event_dict);
-    const base::Value::List* restrictions =
-        event_dict->FindList("restrictions");
+    const base::ListValue* restrictions = event_dict->FindList("restrictions");
     ASSERT_TRUE(restrictions);
     EXPECT_THAT(*restrictions, ElementsAreArray(expected_restrictions));
   }

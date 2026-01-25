@@ -42,8 +42,7 @@ base::FilePath GetTestOrderingBookmarksFileNameInNewTempDir() {
       FILE_PATH_LITERAL("TestBookmarksMergedSurfaceOrdering"));
 }
 
-std::optional<base::Value::Dict> ReadFileToDict(
-    const base::FilePath& file_path) {
+std::optional<base::DictValue> ReadFileToDict(const base::FilePath& file_path) {
   std::string file_content;
   if (!base::ReadFileToString(file_path, &file_content)) {
     return std::nullopt;
@@ -88,7 +87,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
 
   BookmarkMergedSurfaceOrderingStorage storage(&service(), ordering_file_path);
   model().CreateAccountPermanentFolders();
-  base::Value::Dict expected;
+  base::DictValue expected;
   {
     // Populate bookmark bar nodes.
     const BookmarkNode* bb_1 =
@@ -108,7 +107,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
 
     expected.Set(
         BookmarkMergedSurfaceOrderingStorage::kBookmarkBarFolderNameKey,
-        base::Value::List()
+        base::ListValue()
             .Append(base::NumberToString(bb_2->id()))
             .Append(base::NumberToString(local_bb_1->id()))
             .Append(base::NumberToString(local_bb_2->id()))
@@ -118,7 +117,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
     task_environment().FastForwardUntilNoTasksRemain();
 
     EXPECT_TRUE(base::PathExists(ordering_file_path));
-    std::optional<base::Value::Dict> file_content =
+    std::optional<base::DictValue> file_content =
         ReadFileToDict(ordering_file_path);
     ASSERT_TRUE(file_content.has_value());
     EXPECT_EQ(file_content.value(), expected);
@@ -142,7 +141,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
 
     expected.Set(
         BookmarkMergedSurfaceOrderingStorage::kOtherBookmarkFolderNameKey,
-        base::Value::List()
+        base::ListValue()
             .Append(base::NumberToString(local_other_2->id()))
             .Append(base::NumberToString(other_1->id()))
             .Append(base::NumberToString(other_2->id()))
@@ -152,7 +151,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
     task_environment().FastForwardUntilNoTasksRemain();
 
     EXPECT_TRUE(base::PathExists(ordering_file_path));
-    std::optional<base::Value::Dict> file_content =
+    std::optional<base::DictValue> file_content =
         ReadFileToDict(ordering_file_path);
     ASSERT_TRUE(file_content.has_value());
     EXPECT_EQ(file_content.value().size(), 2u);
@@ -176,7 +175,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
         BookmarkParentFolder::MobileFolder()));
 
     expected.Set(BookmarkMergedSurfaceOrderingStorage::kMobileFolderNameKey,
-                 base::Value::List()
+                 base::ListValue()
                      .Append(base::NumberToString(mobile_1->id()))
                      .Append(base::NumberToString(local_mobile_1->id()))
                      .Append(base::NumberToString(mobile_2->id()))
@@ -186,7 +185,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
     task_environment().FastForwardUntilNoTasksRemain();
 
     EXPECT_TRUE(base::PathExists(ordering_file_path));
-    std::optional<base::Value::Dict> file_content =
+    std::optional<base::DictValue> file_content =
         ReadFileToDict(ordering_file_path);
     ASSERT_TRUE(file_content.has_value());
     EXPECT_EQ(file_content.value().size(), 3u);
@@ -205,7 +204,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NonDefaultOrderingTracked) {
   task_environment().FastForwardUntilNoTasksRemain();
 
   EXPECT_TRUE(base::PathExists(ordering_file_path));
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(ordering_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_EQ(file_content.value().size(), 2u);
@@ -238,7 +237,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, DefaultOrdering) {
 
   EXPECT_TRUE(base::PathExists(ordering_file_path));
 
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(ordering_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_TRUE(file_content->empty());
@@ -265,7 +264,7 @@ TEST_F(BookmarkMergedSurfaceOrderingStorageTest, NoAccountNodes) {
 
   EXPECT_TRUE(base::PathExists(ordering_file_path));
 
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(ordering_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_TRUE(file_content->empty());
@@ -395,7 +394,7 @@ TEST(BookmarkMergedSurfaceOrderingStorageShutdownTest,
   // `TaskEnvironment` and `BookmarkMergedSurfaceOrderingStorage` have been
   // destroyed, mimic-ing a browser shutdown.
   EXPECT_TRUE(base::PathExists(ordering_file_path));
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(ordering_file_path);
   EXPECT_TRUE(file_content.has_value());
 }

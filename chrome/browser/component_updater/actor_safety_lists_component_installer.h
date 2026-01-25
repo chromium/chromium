@@ -44,11 +44,11 @@ class ActorSafetyListsComponentInstallerPolicy
 
   void ComponentReadyForTesting(const base::Version& version,
                                 const base::FilePath& install_dir,
-                                base::Value::Dict manifest) {
+                                base::DictValue manifest) {
     ComponentReady(version, install_dir, std::move(manifest));
   }
 
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
 
   static base::FilePath GetInstalledPathForTesting(const base::FilePath& base);
@@ -58,12 +58,12 @@ class ActorSafetyListsComponentInstallerPolicy
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;

@@ -129,7 +129,7 @@ class AuthenticationScreenLoginStateApiTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::LoginManagerMixin login_manager_mixin_{&mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-  base::Value::Dict config_;
+  base::DictValue config_;
 };
 
 // Test that `loginState.getProfileType()` returns `SIGNIN_PROFILE` for

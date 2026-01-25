@@ -127,7 +127,7 @@ bool WasmTtsEngineComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 WasmTtsEngineComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -137,7 +137,7 @@ void WasmTtsEngineComponentInstallerPolicy::OnCustomUninstall() {}
 void WasmTtsEngineComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict /* manifest */) {
+    base::DictValue /* manifest */) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -223,7 +223,7 @@ void WasmTtsEngineComponentInstallerPolicy::MaybeReinstallTtsEngine(
 
 // Called during startup and installation before ComponentReady().
 bool WasmTtsEngineComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return base::PathExists(install_dir.Append(kManifestV3FileName)) &&

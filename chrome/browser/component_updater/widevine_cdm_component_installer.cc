@@ -79,7 +79,7 @@ const char ImageLoaderComponentName[] = "WidevineCdm";
 // with Chrome as it can't be used until Chrome is restarted.
 void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
                                    const base::FilePath& cdm_path,
-                                   base::Value::Dict manifest) {
+                                   base::DictValue manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // This check must be a subset of the check in VerifyInstallation() to
@@ -254,14 +254,14 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& path,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -270,7 +270,7 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Updates CDM path if necessary.
   void UpdateCdmPath(const base::Version& cdm_version,
                      const base::FilePath& cdm_install_dir,
-                     base::Value::Dict manifest);
+                     base::DictValue manifest);
 };
 
 WidevineCdmComponentInstallerPolicy::WidevineCdmComponentInstallerPolicy() =
@@ -287,7 +287,7 @@ bool WidevineCdmComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 WidevineCdmComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   DVLOG(1) << __func__ << ": install_dir=" << install_dir
            << ", manifest=" << manifest;
@@ -317,7 +317,7 @@ void WidevineCdmComponentInstallerPolicy::OnCustomUninstall() {}
 void WidevineCdmComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& path,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   DVLOG(1) << __func__ << ": version=" << version << ", path=" << path;
   if (!IsCdmManifestCompatibleWithChrome(manifest)) {
     VLOG(1) << "Widevine CDM component " << version << " is incompatible.";
@@ -334,7 +334,7 @@ void WidevineCdmComponentInstallerPolicy::ComponentReady(
 }
 
 bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
 #if !BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, what gets downloaded is an image rather than the directory
@@ -377,7 +377,7 @@ WidevineCdmComponentInstallerPolicy::GetInstallerAttributes() const {
 void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
     const base::Version& cdm_version,
     const base::FilePath& cdm_install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   // This function is called by ComponentReady() on a separate thread.
   DVLOG(1) << __func__ << ": version=" << cdm_version
            << ", dir=" << cdm_install_dir;

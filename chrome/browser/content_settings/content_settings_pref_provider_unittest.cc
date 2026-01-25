@@ -176,14 +176,14 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 
   // Set some pref data. Each content setting type has the following value:
   // {"[*.]example.com": {"setting": 1}}
-  base::Value::Dict plugins_data_pref;
+  base::DictValue plugins_data_pref;
   constexpr char kFlagKey[] = "flashPreviouslyChanged";
-  plugins_data_pref.Set(kFlagKey, base::Value::Dict());
+  plugins_data_pref.Set(kFlagKey, base::DictValue());
 
-  base::Value::Dict data_for_pattern;
+  base::DictValue data_for_pattern;
   data_for_pattern.Set("setting", static_cast<int>(CONTENT_SETTING_ALLOW));
-  base::Value::Dict pref_data;
-  base::Value::List pref_list;
+  base::DictValue pref_data;
+  base::ListValue pref_list;
   pref_data.Set(kPattern, std::move(data_for_pattern));
 #if !BUILDFLAG(IS_ANDROID)
   prefs->SetDict(kObsoleteInstalledWebAppMetadataExceptionsPref,
@@ -405,7 +405,7 @@ TEST_F(PrefProviderTest, Deadlock) {
   DeadlockCheckerObserver observer(&prefs, &provider);
   {
     ScopedDictPrefUpdate update(&prefs, info->pref_name());
-    base::Value::Dict& mutable_settings = update.Get();
+    base::DictValue& mutable_settings = update.Get();
     mutable_settings.Set("www.example.com,*",
                          base::Value(base::Value::Type::DICT));
   }
@@ -561,7 +561,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Expect the prefs are not empty before we trigger clearing them.
   for (const char* pref : cleared_prefs) {
-    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    const base::DictValue& dictionary = prefs.GetDict(pref);
     ASSERT_FALSE(dictionary.empty());
   }
 
@@ -570,7 +570,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Ensure they become empty afterwards.
   for (const char* pref : cleared_prefs) {
-    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    const base::DictValue& dictionary = prefs.GetDict(pref);
     EXPECT_TRUE(dictionary.empty());
   }
 
@@ -581,7 +581,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   };
 
   for (const char* pref : nonempty_prefs) {
-    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    const base::DictValue& dictionary = prefs.GetDict(pref);
     EXPECT_EQ(1u, dictionary.size());
   }
 

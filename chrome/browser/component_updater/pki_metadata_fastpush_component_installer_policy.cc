@@ -40,7 +40,7 @@ bool PKIMetadataFastpushComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 PKIMetadataFastpushComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -50,14 +50,14 @@ void PKIMetadataFastpushComponentInstallerPolicy::OnCustomUninstall() {}
 void PKIMetadataFastpushComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict /* manifest */) {
+    base::DictValue /* manifest */) {
   PKIMetadataComponentInstallerService::GetInstance()->OnFastpushComponentReady(
       install_dir);
 }
 
 // Called during startup and installation before ComponentReady().
 bool PKIMetadataFastpushComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& /* manifest */,
+    const base::DictValue& /* manifest */,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(install_dir)) {
     return false;

@@ -164,8 +164,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   print_settings->media_size = media_size.Clone();
 
   // Serialize the settings.
-  base::Value::Dict serialized_settings =
-      SerializePrintSettings(print_settings);
+  base::DictValue serialized_settings = SerializePrintSettings(print_settings);
 
   // Validate the serialization.
   EXPECT_EQ(static_cast<int>(preview_id),
@@ -264,7 +263,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   EXPECT_EQ(show_system_dialog, *serialized_settings.FindBool(
                                     ::printing::kSettingShowSystemDialog));
 
-  const base::Value::List actual_ipp_clients =
+  const base::ListValue actual_ipp_clients =
       (*serialized_settings.FindList(::printing::kSettingIppClientInfo))
           .Clone();
 
@@ -280,7 +279,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
             actual_ipp_clients[0].GetDict().FindInt(
                 ::printing::kSettingIppClientType));
 
-  const base::Value::List actual_page_range =
+  const base::ListValue actual_page_range =
       (*serialized_settings.FindList(::printing::kSettingPageRange)).Clone();
   // Only two entries in the list.
   EXPECT_EQ(static_cast<int>(page_range[0]),
@@ -290,7 +289,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
       static_cast<int>(page_range[1]),
       actual_page_range[0].GetDict().FindInt(::printing::kSettingPageRangeTo));
 
-  const base::Value::Dict actual_margins_custom =
+  const base::DictValue actual_margins_custom =
       (*serialized_settings.FindDict(::printing::kSettingMarginsCustom))
           .Clone();
   EXPECT_EQ(kMargin,
@@ -302,7 +301,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   EXPECT_EQ(kMargin,
             actual_margins_custom.FindInt(::printing::kSettingMarginTop));
 
-  const base::Value::Dict actual_media_size =
+  const base::DictValue actual_media_size =
       (*serialized_settings.FindDict(::printing::kSettingMediaSize)).Clone();
   EXPECT_EQ(kMediaSize, actual_media_size.FindInt(
                             ::printing::kSettingMediaSizeWidthMicrons));
@@ -321,7 +320,7 @@ TEST_F(PrintSettingsConverterTest, SerializePrintSettings) {
   EXPECT_EQ(media_size->is_default,
             actual_media_size.FindBool(::printing::kSettingMediaSizeIsDefault));
 
-  const base::Value::Dict actual_advanced_settings =
+  const base::DictValue actual_advanced_settings =
       (*serialized_settings.FindDict(::printing::kSettingAdvancedSettings))
           .Clone();
   EXPECT_EQ(kAdvancedSettingValue,

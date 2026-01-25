@@ -103,7 +103,7 @@ class IWAProtocolTestBase : public DevToolsProtocolTestBase {
 
   void InstallCommand(const GURL& url) {
     EXPECT_TRUE(SendCommandSync("PWA.install",
-                                base::Value::Dict{}
+                                base::DictValue{}
                                     .Set("manifestId", InstallManifestId())
                                     .Set("installUrlOrBundleUrl", url.spec())));
 
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_Twice) {
   Install();
 
   ASSERT_FALSE(SendCommandSync(
-      "PWA.install", base::Value::Dict{}
+      "PWA.install", base::DictValue{}
                          .Set("manifestId", InstallManifestId())
                          .Set("installUrlOrBundleUrl", InstallUrl().spec())));
 
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_Twice) {
 IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_UrlUnreachable) {
   ASSERT_FALSE(SendCommandSync(
       "PWA.install",
-      base::Value::Dict{}
+      base::DictValue{}
           .Set("manifestId", InstallManifestId())
           .Set("installUrlOrBundleUrl", "http://hello/this/is/not/existing")));
   AssertErrorMessageContains(
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_InvalidBundleId) {
   std::string garbage_id = "isolated-app://garbage_id";
 
   ASSERT_FALSE(SendCommandSync(
-      "PWA.install", base::Value::Dict{}
+      "PWA.install", base::DictValue{}
                          .Set("manifestId", garbage_id)
                          .Set("installUrlOrBundleUrl", InstallUrl().spec())));
 
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_UnmatchManifestId) {
       "aiv4bxauvcu3zvbu6r5yynoh5atkzqqaoeof5mwz54b4zfywcrjuoaacai";
 
   ASSERT_FALSE(SendCommandSync(
-      "PWA.install", base::Value::Dict{}
+      "PWA.install", base::DictValue{}
                          .Set("manifestId", unmatched_id)
                          .Set("installUrlOrBundleUrl", InstallUrl().spec())));
 
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestRemoteFile, Install_UnmatchManifestId) {
       "aiv4bxauvcu3zvbu6r5yynoh5atkzqqaoeof5mwz54b4zfywcrjuoaacai";
 
   ASSERT_FALSE(SendCommandSync(
-      "PWA.install", base::Value::Dict{}
+      "PWA.install", base::DictValue{}
                          .Set("manifestId", unmatched_id)
                          .Set("installUrlOrBundleUrl", InstallUrl().spec())));
 
@@ -270,6 +270,6 @@ IN_PROC_BROWSER_TEST_F(IWAProtocolTestLocalFile, Install_Uninstall) {
 
   ASSERT_TRUE(SendCommandSync(
       "PWA.uninstall",
-      base::Value::Dict{}.Set("manifestId", InstallManifestId())));
+      base::DictValue{}.Set("manifestId", InstallManifestId())));
   ASSERT_FALSE(AppExists());
 }

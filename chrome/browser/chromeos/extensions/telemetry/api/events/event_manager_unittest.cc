@@ -100,16 +100,16 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> CreateExtension(
       const std::string& extension_id,
       const std::vector<std::string> external_connectables) {
-    base::Value::List matches;
+    base::ListValue matches;
     for (const auto& match : external_connectables) {
       matches.Append(match);
     }
     auto extension =
         extensions::ExtensionBuilder("Test ChromeOS System Extension")
-            .SetManifestKey("chromeos_system_extension", base::Value::Dict())
+            .SetManifestKey("chromeos_system_extension", base::DictValue())
             .SetManifestKey(
                 "externally_connectable",
-                base::Value::Dict().Set("matches", std::move(matches)))
+                base::DictValue().Set("matches", std::move(matches)))
             .SetID(extension_id)
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)
             .Build();

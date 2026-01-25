@@ -260,7 +260,7 @@ struct ExecutionState {
 // Execution primarily means manipulation of the `execution_state`, particularly
 // `execution_state.limit`.
 ExecutionState ProcessCommands(ExecutionState execution_state,
-                               const base::Value::List& action_list,
+                               const base::ListValue& action_list,
                                const base::FilePath& command_file_path) {
   while (execution_state.limit <= execution_state.index) {
     for (ExecutionCommand command : ReadExecutionCommands(command_file_path)) {
@@ -280,7 +280,7 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
         case ExecutionCommand::Type::kRunUntilAction: {
           int offset_of_action = execution_state.index;
           while (offset_of_action < execution_state.length) {
-            const base::Value::Dict* dict =
+            const base::DictValue* dict =
                 action_list[offset_of_action].GetIfDict();
             if (!dict) {
               continue;
@@ -339,7 +339,7 @@ struct AllowNull {
 };
 
 std::optional<std::string> FindPopulateString(
-    const base::Value::Dict& container,
+    const base::DictValue& container,
     std::string_view key_name,
     std::variant<std::string_view, AllowNull> key_descriptor) {
   const std::string* value = container.FindString(key_name);
@@ -356,10 +356,10 @@ std::optional<std::string> FindPopulateString(
 }
 
 std::optional<std::vector<std::string>> FindPopulateStringVector(
-    const base::Value::Dict& container,
+    const base::DictValue& container,
     std::string_view key_name,
     std::variant<std::string_view, AllowNull> key_descriptor) {
-  const base::Value::List* list = container.FindList(key_name);
+  const base::ListValue* list = container.FindList(key_name);
   if (!list) {
     if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
@@ -426,8 +426,8 @@ std::vector<CapturedSiteParams> GetCapturedSites(
                  << value_with_error.error().message;
     return sites;
   }
-  base::Value::Dict root_node = std::move(*value_with_error).TakeDict();
-  const base::Value::List* list_node = root_node.FindList("tests");
+  base::DictValue root_node = std::move(*value_with_error).TakeDict();
+  const base::ListValue* list_node = root_node.FindList("tests");
   if (!list_node) {
     LOG(WARNING) << "No tests found in `testcases.json` config";
     return sites;
@@ -439,7 +439,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     if (!item_val.is_dict()) {
       continue;
     }
-    const base::Value::Dict& item = item_val.GetDict();
+    const base::DictValue& item = item_val.GetDict();
     CapturedSiteParams param;
     param.site_name = CHECK_DEREF(item.FindString("site_name"));
 
@@ -493,7 +493,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   return sites;
 }
 
-std::optional<base::Value::Dict> ReadRecipeFile(
+std::optional<base::DictValue> ReadRecipeFile(
     const base::FilePath& recipe_file_path) {
   // Read the text of the recipe file.
   base::ScopedAllowBlockingForTesting for_testing;
@@ -1228,7 +1228,7 @@ void TestRecipeReplayer::CleanupSiteData() {
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
     const std::optional<base::FilePath>& command_file_path) {
-  std::optional<base::Value::Dict> recipe = ReadRecipeFile(recipe_file_path);
+  std::optional<base::DictValue> recipe = ReadRecipeFile(recipe_file_path);
   if (!recipe) {
     return false;
   }
@@ -1237,7 +1237,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   // Iterate through and execute each action in the recipe.
-  base::Value::List* action_list = recipe.value().FindList("actions");
+  base::ListValue* action_list = recipe.value().FindList("actions");
   if (!action_list) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
@@ -1294,7 +1294,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
       return false;
     }
 
-    base::Value::Dict action =
+    base::DictValue action =
         std::move((*action_list)[execution_state.index].GetDict());
     std::optional<std::string> type =
         FindPopulateString(action, "type", "action type");
@@ -1394,7 +1394,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
 // Functions for deserializing and executing actions from the test recipe
 // JSON object.
 bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
-    base::Value::Dict& recipe) {
+    base::DictValue& recipe) {
   // Setup any saved address and credit card at the start of the test.
   auto* autofill_profile_container = recipe.Find("autofillProfile");
 
@@ -1443,7 +1443,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1485,7 +1485,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteClickAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
@@ -1513,7 +1513,7 @@ bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (ExtractFrameAndVerifyElement(action, &xpath, &frame, false, false,
@@ -1531,13 +1531,13 @@ bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::Value::Dict action) {
   }
 }
 
-bool TestRecipeReplayer::ExecuteCloseTabAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteCloseTabAction(base::DictValue action) {
   VLOG(1) << "Closing Active Tab";
   browser_->tab_strip_model()->CloseSelectedTabs();
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteCoolOffAction(base::DictValue action) {
   base::RunLoop heart_beat;
   base::TimeDelta cool_off_time = cool_off_action_timeout;
   base::Value* pause_time_container = action.Find("pauseTimeSec");
@@ -1558,7 +1558,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteHoverAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
@@ -1592,7 +1592,7 @@ bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteForceLoadPage(base::DictValue action) {
   bool should_force = action.FindBool("force").value_or(false);
   if (!should_force) {
     return true;
@@ -1610,7 +1610,7 @@ bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressEnterAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressEnterAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1623,14 +1623,14 @@ bool TestRecipeReplayer::ExecutePressEnterAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressEscapeAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressEscapeAction(base::DictValue action) {
   VLOG(1) << "Pressing 'Esc' in the current frame";
   SimulateKeyPressWrapper(GetWebContents(), ui::DomKey::ESCAPE);
   WaitTillPageIsIdle();
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressSpaceAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressSpaceAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -1643,11 +1643,11 @@ bool TestRecipeReplayer::ExecutePressSpaceAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteRunCommandAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteRunCommandAction(base::DictValue action) {
   // Extract the list of JavaScript commands into a vector.
   std::vector<std::string> commands;
 
-  base::Value::List* list = action.FindList("commands");
+  base::ListValue* list = action.FindList("commands");
   if (!list) {
     ADD_FAILURE() << "Failed to extract commands list from action";
     return false;
@@ -1683,7 +1683,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteSavePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteSavePasswordAction(base::DictValue action) {
   VLOG(1) << "Save password.";
 
   if (!feature_action_executor()->SavePassword())
@@ -1701,7 +1701,7 @@ bool TestRecipeReplayer::ExecuteSavePasswordAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::DictValue action) {
   std::optional<int> index = action.FindInt("index");
   if (!index.has_value()) {
     ADD_FAILURE() << "Failed to extract Selection Index from action";
@@ -1727,7 +1727,7 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypeAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteTypeAction(base::DictValue action) {
   std::optional<std::string> value =
       FindPopulateString(action, "value", "typing value");
   if (!value)
@@ -1751,7 +1751,7 @@ bool TestRecipeReplayer::ExecuteTypeAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteTypePasswordAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -1781,7 +1781,7 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::DictValue action) {
   VLOG(1) << "Update password.";
 
   if (!feature_action_executor()->UpdatePassword())
@@ -1800,7 +1800,7 @@ bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::Value::Dict action) {
 }
 
 bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, false, true))
@@ -1859,14 +1859,14 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateNoSavePasswordPromptAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that the page hasn't shown a save password prompt.";
   EXPECT_FALSE(feature_action_executor()->HasChromeShownSavePasswordPrompt());
   return true;
 }
 
 bool TestRecipeReplayer::ExecuteTriggerPasswordChangeAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   std::optional<std::string> url =
       FindPopulateString(action, "change_password_url", "Change Password URL");
   if (!url) {
@@ -1878,7 +1878,7 @@ bool TestRecipeReplayer::ExecuteTriggerPasswordChangeAction(
 }
 
 bool TestRecipeReplayer::ExecuteWaitForPasswordChangeStateAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   int expected_state = action.FindInt("state").value_or(0);
 
   feature_action_executor()->WaitForPasswordChangeState(expected_state);
@@ -1886,7 +1886,7 @@ bool TestRecipeReplayer::ExecuteWaitForPasswordChangeStateAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that an element is properly displaying or not displaying "
              "the password generation prompt";
   std::string xpath;
@@ -1928,17 +1928,17 @@ void TestRecipeReplayer::ValidatePasswordGenerationPromptState(
 }
 
 bool TestRecipeReplayer::ExecuteValidateSaveFallbackAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that Chrome shows the save fallback icon in the omnibox.";
   EXPECT_TRUE(feature_action_executor()->WaitForSaveFallback());
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteWaitForStateAction(base::DictValue action) {
   // Extract the list of JavaScript assertions into a vector.
   std::vector<std::string> state_assertions;
 
-  base::Value::List* list = action.FindList("assertions");
+  base::ListValue* list = action.FindList("assertions");
   if (!list) {
     ADD_FAILURE() << "Failed to extract wait assertions list from action";
     return false;
@@ -1960,7 +1960,7 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string* xpath) {
   xpath->clear();
   std::optional<std::string> xpath_text =
@@ -1972,7 +1972,7 @@ bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     int* visibility_enum_val) {
   const base::Value* visibility_container = action.Find("visibility");
   if (!visibility_container) {
@@ -1993,7 +1993,7 @@ bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetFrameFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame) {
   const base::Value* iframe_container = action.Find("context");
   if (!iframe_container) {
@@ -2063,7 +2063,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
 }
 
 bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string* xpath,
     content::RenderFrameHost** frame,
     bool set_focus,
@@ -2104,7 +2104,7 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
 }
 
 bool TestRecipeReplayer::GetIFramePathFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::vector<std::string>* iframe_path) {
   *iframe_path = std::vector<std::string>();
 
@@ -2173,7 +2173,7 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
 bool TestRecipeReplayer::WaitForElementToBeReady(
     const std::string& xpath,
     const int visibility_enum_val,
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame,
     bool ignore_failure) {
   std::vector<std::string> state_assertions;
@@ -2187,7 +2187,7 @@ bool TestRecipeReplayer::WaitForElementToBeReady(
 }
 
 bool TestRecipeReplayer::WaitForStateChange(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame,
     const std::vector<std::string>& state_assertions,
     const base::TimeDelta& timeout,
@@ -2506,7 +2506,7 @@ void TestRecipeReplayer::SimulateKeyPressWrapper(
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     bool* stored_cred) {
   std::optional<std::string> origin =
       FindPopulateString(action, "origin", "Origin");
@@ -2523,14 +2523,14 @@ bool TestRecipeReplayer::HasChromeStoredCredential(
 }
 
 bool TestRecipeReplayer::SetupSavedAutofillProfile(
-    base::Value::List saved_autofill_profile_container) {
+    base::ListValue saved_autofill_profile_container) {
   for (auto& list_entry : saved_autofill_profile_container) {
     if (!list_entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract an entry!";
       return false;
     }
 
-    const base::Value::Dict list_entry_dict = std::move(list_entry).TakeDict();
+    const base::DictValue list_entry_dict = std::move(list_entry).TakeDict();
     std::optional<std::string> type =
         FindPopulateString(list_entry_dict, "type", "profile field type");
     std::optional<std::string> value =
@@ -2558,14 +2558,14 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
 }
 
 bool TestRecipeReplayer::SetupSavedPasswords(
-    base::Value::List saved_password_list_container) {
+    base::ListValue saved_password_list_container) {
   for (auto& entry : saved_password_list_container) {
     if (!entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract a saved password!";
       return false;
     }
 
-    const base::Value::Dict entry_dict = std::move(entry.GetDict());
+    const base::DictValue entry_dict = std::move(entry.GetDict());
 
     std::optional<std::string> origin =
         FindPopulateString(entry_dict, "website", "Website");

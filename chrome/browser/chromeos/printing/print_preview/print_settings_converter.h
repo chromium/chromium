@@ -10,7 +10,7 @@
 
 namespace chromeos {
 
-base::Value::Dict SerializePrintSettings(
+base::DictValue SerializePrintSettings(
     const crosapi::mojom::PrintSettingsPtr& settings);
 
 }  // namespace chromeos

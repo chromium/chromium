@@ -61,7 +61,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   TestAppBannerManagerDesktop* AsTestAppBannerManagerDesktopForTesting()
       override;
 
-  const base::Value::List& debug_log() const { return debug_log_; }
+  const base::ListValue& debug_log() const { return debug_log_; }
 
  protected:
   // AppBannerManager:
@@ -83,7 +83,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnFinished();
 
   std::optional<bool> installable_;
-  base::Value::List debug_log_;
+  base::ListValue debug_log_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
   base::OnceClosure promotable_quit_closure_;

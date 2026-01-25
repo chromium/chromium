@@ -33,7 +33,7 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
     return;
   }
 
-  const base::Value::List* apps = app_list.GetDict().FindList("recommendedApp");
+  const base::ListValue* apps = app_list.GetDict().FindList("recommendedApp");
   if (!apps || apps->empty()) {
     std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
@@ -41,9 +41,9 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
 
   std::vector<Result> results;
   for (auto& big_app : *apps) {
-    const base::Value::Dict* big_app_dict = big_app.GetIfDict();
+    const base::DictValue* big_app_dict = big_app.GetIfDict();
     if (big_app_dict) {
-      const base::Value::Dict* app = big_app_dict->FindDict("androidApp");
+      const base::DictValue* app = big_app_dict->FindDict("androidApp");
       if (!app) {
         continue;
       }
@@ -66,7 +66,7 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
           app->FindStringByDottedPath("fastAppReinstall.explanationText");
       const std::string* contain_ads =
           app->FindStringByDottedPath("adsInformation.disclaimerText");
-      const base::Value::Dict* optimized_for_chrome =
+      const base::DictValue* optimized_for_chrome =
           big_app_dict->FindDict("merchCurated");
 
       auto extras = std::make_unique<PlayExtras>(

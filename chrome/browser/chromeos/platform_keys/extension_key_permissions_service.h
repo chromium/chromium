@@ -109,7 +109,7 @@ class ExtensionKeyPermissionsService {
   // instead.
   ExtensionKeyPermissionsService(const std::string& extension_id,
                                  extensions::StateStore* state_store,
-                                 base::Value::List state_store_value,
+                                 base::ListValue state_store_value,
                                  policy::PolicyService* profile_policies,
                                  content::BrowserContext* browser_context);
 
@@ -187,11 +187,11 @@ class ExtensionKeyPermissionsService {
 
   // Reads a KeyEntry list from |state| and stores them in
   // |state_store_entries_|.
-  void KeyEntriesFromState(const base::Value::List& state);
+  void KeyEntriesFromState(const base::ListValue& state);
 
   // Converts |state_store_entries_| to a base::Value for storing in the state
   // store.
-  base::Value::List KeyEntriesToState();
+  base::ListValue KeyEntriesToState();
 
   // Returns an existing entry for |public_key_spki_der_b64| from
   // |state_store_entries_|. If there is no existing entry, creates, adds and

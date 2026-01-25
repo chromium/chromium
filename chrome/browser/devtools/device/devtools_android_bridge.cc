@@ -175,7 +175,7 @@ DevToolsAndroidBridge::DevToolsAndroidBridge(Profile* profile)
       prefs::kDevToolsDiscoverTCPTargetsEnabled,
       base::BindRepeating(&DevToolsAndroidBridge::CreateDeviceProviders,
                           base::Unretained(this)));
-  base::Value::List target_discovery;
+  base::ListValue target_discovery;
   target_discovery.Append(kChromeDiscoveryURL);
   target_discovery.Append(kNodeDiscoveryURL);
   profile->GetPrefs()->SetDefaultPrefValue(
@@ -325,7 +325,7 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
 }
 
 static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
-    const base::Value::List* preferenceValue) {
+    const base::ListValue* preferenceValue) {
   std::set<net::HostPortPair> targets;
   if (!preferenceValue || preferenceValue->empty())
     return targets;
@@ -344,7 +344,7 @@ static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
 }
 
 static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
-    const base::Value::List* targetDiscoveryConfig) {
+    const base::ListValue* targetDiscoveryConfig) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::set<net::HostPortPair> targets =
       ParseTargetDiscoveryPreferenceValue(targetDiscoveryConfig);
@@ -371,7 +371,7 @@ static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
 void DevToolsAndroidBridge::CreateDeviceProviders() {
   AndroidDeviceManager::DeviceProviders device_providers;
   PrefService* service = profile_->GetPrefs();
-  const base::Value::List* targets =
+  const base::ListValue* targets =
       service->GetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled)
           ? std::addressof(service->GetList(prefs::kDevToolsTCPDiscoveryConfig))
           : nullptr;

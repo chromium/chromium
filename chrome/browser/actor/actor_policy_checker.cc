@@ -154,8 +154,7 @@ bool HasUrlAllowlist(Profile& profile) {
   if (!pref_service->HasPrefPath(allowlist_pref_path)) {
     return false;
   }
-  const base::Value::List& allowlist =
-      pref_service->GetList(allowlist_pref_path);
+  const base::ListValue& allowlist = pref_service->GetList(allowlist_pref_path);
   return !allowlist.empty();
 }
 

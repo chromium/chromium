@@ -25,7 +25,7 @@ struct DevToolsDispatchHttpRequestParams {
       DevToolsDispatchHttpRequestParams&&);
 
   static std::optional<DevToolsDispatchHttpRequestParams> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   std::string service;
   std::string path;

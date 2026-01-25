@@ -331,7 +331,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add setting for hosts[0].
   base::Value client_hint_value(42);
 
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               {std::move(client_hint_value)});
   host_content_settings_map->SetWebsiteSettingDefaultScope(
@@ -1340,7 +1340,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritWebsiteSetting) {
             otr_map->GetWebsiteSetting(host, host,
                                        ContentSettingsType::USB_CHOOSER_DATA));
 
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set("test", "value");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       host, host, ContentSettingsType::USB_CHOOSER_DATA,
@@ -1530,9 +1530,9 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
   {
     ScopedDictPrefUpdate update(prefs,
                                 GetPrefName(ContentSettingsType::COOKIES));
-    base::Value::Dict& all_settings_dictionary = update.Get();
+    base::DictValue& all_settings_dictionary = update.Get();
 
-    base::Value::Dict dummy_payload;
+    base::DictValue dummy_payload;
     dummy_payload.Set("setting", CONTENT_SETTING_ALLOW);
     all_settings_dictionary.Set("[*.]\xC4\x87ira.com,*",
                                 std::move(dummy_payload));
@@ -1540,7 +1540,7 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  const base::Value::Dict& all_settings_dictionary =
+  const base::DictValue& all_settings_dictionary =
       prefs->GetDict(GetPrefName(ContentSettingsType::COOKIES));
   EXPECT_FALSE(all_settings_dictionary.FindDict("[*.]\xC4\x87ira.com,*"));
   EXPECT_TRUE(all_settings_dictionary.FindDict("[*.]xn--ira-ppa.com,*"));
@@ -1812,7 +1812,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::COOKIES));
 
-  const base::Value::Dict& all_settings_dictionary =
+  const base::DictValue& all_settings_dictionary =
       profile->GetPrefs()->GetDict(GetPrefName(ContentSettingsType::COOKIES));
   EXPECT_TRUE(all_settings_dictionary.empty());
 }
@@ -1850,7 +1850,7 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   GURL unsupported_url = GURL("view-source:http://www.google.com");
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set("test", "value");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       unsupported_url, unsupported_url, ContentSettingsType::APP_BANNER,
@@ -2310,7 +2310,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
   //   WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       primary_url, secondary_url, ContentSettingsType::COOKIE_CONTROLS_METADATA,
-      base::Value(base::Value::Dict()));
+      base::Value(base::DictValue()));
 
   settings = host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::COOKIE_CONTROLS_METADATA);

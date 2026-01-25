@@ -47,7 +47,7 @@ class DevToolsAvailabilityCheckerTest : public testing::Test {
 };
 
 TEST_F(DevToolsAvailabilityCheckerTest, UrlAllowedByPolicy) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("https://allowed.com/page");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
@@ -58,7 +58,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, UrlAllowedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, UrlBlockedByPolicy) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("blocked.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -69,12 +69,12 @@ TEST_F(DevToolsAvailabilityCheckerTest, UrlBlockedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, AllowlistTakesPrecedence) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("example.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("example.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -87,12 +87,12 @@ TEST_F(DevToolsAvailabilityCheckerTest, AllowlistTakesPrecedence) {
 
 TEST_F(DevToolsAvailabilityCheckerTest,
        UrlAllowedWhenNotOnAllowlistNorBlocklist) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("allowed.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("blocked.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -106,12 +106,12 @@ TEST_F(DevToolsAvailabilityCheckerTest,
 
 TEST_F(DevToolsAvailabilityCheckerTest,
        UrlBlockedWhenNotOnAllowlistButOnBlocklist) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("allowed.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("example.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -125,7 +125,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
 
 TEST_F(DevToolsAvailabilityCheckerTest,
        UrlAllowedWhenNotOnBlocklistAndAllowlistIsEmpty) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("blocked.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -140,7 +140,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(DevToolsAvailabilityCheckerTest,
        UrlBlockedWhenNotOnAllowlistAndBlocklistIsEmpty) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("allowed.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
@@ -164,7 +164,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, DeveloperToolsDisallowedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, ExtensionAllowedByPolicy) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("abc");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
@@ -175,7 +175,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, ExtensionAllowedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, ExtensionBlockedByPolicy) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("abc");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -187,12 +187,12 @@ TEST_F(DevToolsAvailabilityCheckerTest, ExtensionBlockedByPolicy) {
 
 TEST_F(DevToolsAvailabilityCheckerTest,
        ExtensionNeitherAllowlistedNorBlocklisted) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("a");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("b");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));
@@ -222,7 +222,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
       static_cast<int>(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("foo.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
@@ -252,7 +252,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, NoPolicy_DefaultAllowed) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DevToolsAvailabilityCheckerTest, WebAppAllowedByPolicy) {
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("https://allowed-app.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                 std::move(allowlist));
@@ -262,7 +262,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppAllowedByPolicy) {
 }
 
 TEST_F(DevToolsAvailabilityCheckerTest, WebAppBlockedByPolicy) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("blocked-app.com");
   profile_->GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                 std::move(blocklist));

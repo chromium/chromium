@@ -13,12 +13,12 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kEchoCheckedOffers);
 }
 
-void RemoveEmptyValueDicts(base::Value::Dict& dict) {
+void RemoveEmptyValueDicts(base::DictValue& dict) {
   auto it = dict.begin();
   while (it != dict.end()) {
     base::Value& value = it->second;
     if (value.is_dict()) {
-      base::Value::Dict& sub_dict = value.GetDict();
+      base::DictValue& sub_dict = value.GetDict();
       RemoveEmptyValueDicts(sub_dict);
       if (sub_dict.empty()) {
         it = dict.erase(it);

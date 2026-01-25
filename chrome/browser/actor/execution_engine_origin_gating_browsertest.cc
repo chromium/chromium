@@ -139,7 +139,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   InteractiveTestApi::MultiStep VerifyUserConfirmationDialogRequest(
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     static constexpr char kGetUserConfirmationDialogRequest[] =
         R"js(
           (() => {
@@ -151,7 +151,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
   }
 
   InteractiveTestApi::MultiStep VerifyNavigationConfirmationRequest(
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     static constexpr char kGetNavigationConfirmationRequestData[] =
         R"js(
           (() => {
@@ -192,7 +192,7 @@ class ExecutionEngineOriginGatingBrowserTestBase
 
   InteractiveTestApi::MultiStep VerifyWebClientRequest(
       const std::string_view get_request_js,
-      const base::Value::Dict& expected_request) {
+      const base::DictValue& expected_request) {
     return InAnyContext(WithElement(
         glic::test::kGlicContentsElementId,
         [&, get_request_js](::ui::TrackedElement* el) {
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("taskId", actor_task().id().value());
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("taskId", actor_task().id().value());
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kOk);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(blocked_origin_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(normal_page_with_link).GetDebugString())
           .Set("forBlocklistedOrigin", true);
@@ -1112,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
   ClickTarget("#link", mojom::ActionResultCode::kOk);
 
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(second_url).GetDebugString())
           .Set("forBlocklistedOrigin", false);
@@ -1307,7 +1307,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSiteGatingBrowserTest,
       web_contents(), content::JsReplace("setLink($1);", confirmlist_url)));
   ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("navigationOrigin",
                url::Origin::Create(confirmlist_url).GetDebugString())
           .Set("forBlocklistedOrigin", true);

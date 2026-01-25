@@ -54,7 +54,7 @@ void SetListPref(PrefService* prefs,
                  const std::vector<std::string>& list) {
   if (pref_name.empty())
     return;
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (const auto& str : list)
     list_value.Append(str);
   prefs->SetList(pref_name, std::move(list_value));
@@ -330,7 +330,7 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
   alt_browser_params_.clear();
   if (!prefs_->IsManagedPreference(prefs::kAlternativeBrowserParameters))
     return;
-  const base::Value::List& params =
+  const base::ListValue& params =
       prefs_->GetList(prefs::kAlternativeBrowserParameters);
   for (const auto& param : params) {
     std::string param_string = param.GetString();
@@ -386,7 +386,7 @@ void BrowserSwitcherPrefs::GreylistChanged() {
   if (!prefs_->IsManagedPreference(prefs::kUrlGreylist))
     return;
 
-  const base::Value::List& url_gray_list = prefs_->GetList(prefs::kUrlGreylist);
+  const base::ListValue& url_gray_list = prefs_->GetList(prefs::kUrlGreylist);
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.GreylistSize",
                               url_gray_list.size());
 
@@ -421,7 +421,7 @@ void BrowserSwitcherPrefs::ChromeParametersChanged() {
   chrome_params_.clear();
   if (!prefs_->IsManagedPreference(prefs::kChromeParameters))
     return;
-  const base::Value::List& params = prefs_->GetList(prefs::kChromeParameters);
+  const base::ListValue& params = prefs_->GetList(prefs::kChromeParameters);
   for (const auto& param : params) {
     std::string param_string = param.GetString();
     chrome_params_.push_back(param_string);

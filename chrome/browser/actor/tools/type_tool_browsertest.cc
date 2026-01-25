@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_IncrementalTyping) {
       "keydown,input,keyup",  // t
       EvalJs(web_contents(), "getStableEventLog()"));
 
-  base::Value::List timestamps =
+  base::ListValue timestamps =
       EvalJs(web_contents(), "getStableEventLogTimes()").TakeValue().TakeList();
 
   // There are 3 events per character (keydown, input, keyup).
@@ -881,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
       "keydown,click,keyup",  // <enter>
       EvalJs(web_contents(), "getStableEventLog()"));
 
-  base::Value::List timestamps =
+  base::ListValue timestamps =
       EvalJs(web_contents(), "getStableEventLogTimes()").TakeValue().TakeList();
 
   // 3 events for the 'x' char and 3 events for the <enter>.

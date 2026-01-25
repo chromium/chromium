@@ -967,7 +967,7 @@ bool ComposeSession::CanShowFeedbackPage() {
 }
 
 void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
-  base::Value::Dict feedback_metadata;
+  base::DictValue feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
 
   chrome::ShowFeedbackPage(
@@ -979,7 +979,7 @@ void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
       l10n_util::GetStringUTF8(IDS_COMPOSE_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"compose",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {

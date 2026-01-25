@@ -453,7 +453,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 
 base::Value GetSystemProperties(
     const std::vector<std::string>& property_names) {
-  base::Value::Dict result;
+  base::DictValue result;
   for (const std::string& property_name : property_names) {
     std::unique_ptr<base::Value> value = GetValue(property_name);
     if (value) {
@@ -499,7 +499,7 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() = default;
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
-  const base::Value::List& list = args()[0].GetList();
+  const base::ListValue& list = args()[0].GetList();
 
   std::vector<std::string> property_names;
   for (const auto& property : list) {

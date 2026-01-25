@@ -289,7 +289,7 @@ bool ShouldThrottleCaptureNavigation(
     bool is_link_click,
     bool is_for_projector_swa,
     content::NavigationHandle* handle,
-    base::Value::Dict* debug_dict) {
+    base::DictValue* debug_dict) {
   content::WebContents* web_contents = handle->GetWebContents();
   CHECK(web_contents);
   CHECK(app_ids_to_launch.preferred);
@@ -503,7 +503,7 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   }
 
   bool is_for_prerender = handle->IsInPrerenderedMainFrame();
-  base::Value::Dict* debug_data = &debug_data_;
+  base::DictValue* debug_data = &debug_data_;
   if (is_for_prerender) {
     debug_data = debug_data_.EnsureDict("prerender");
   }

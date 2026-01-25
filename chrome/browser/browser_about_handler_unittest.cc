@@ -94,7 +94,7 @@ class BrowserAboutHandlerTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  void SetBlockList(base::Value::List blocklist) {
+  void SetBlockList(base::ListValue blocklist) {
     profile_->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                   std::move(blocklist));
     task_environment_.RunUntilIdle();
@@ -180,7 +180,7 @@ TEST_F(BrowserAboutHandlerTest, HandleNonNavigationAboutURL_Invalid) {
 TEST_F(BrowserAboutHandlerTest,
        HandleNonNavigationAboutURL_QuitDebugUrlIsBlocked) {
   GURL url(chrome::kChromeUIQuitURL);
-  SetBlockList(base::Value::List().Append(chrome::kChromeUIQuitURL));
+  SetBlockList(base::ListValue().Append(chrome::kChromeUIQuitURL));
 
   // Blocked URL should be handled and should not attempt to quit.
   EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
@@ -196,7 +196,7 @@ TEST_F(BrowserAboutHandlerTest,
 TEST_F(BrowserAboutHandlerTest,
        HandleNonNavigationAboutURL_QuitDebugUrlIsNotBlocked) {
   GURL url(chrome::kChromeUIQuitURL);
-  SetBlockList(base::Value::List());
+  SetBlockList(base::ListValue());
 
   // URL is not blocked, expect a quit attempt.
   EXPECT_TRUE(HandleNonNavigationAboutURL(url, profile()));
@@ -213,7 +213,7 @@ TEST_F(BrowserAboutHandlerTest,
 TEST_F(BrowserAboutHandlerTest,
        HandleNonNavigationAboutURL_RestartDebugUrlIsBlocked) {
   GURL url(chrome::kChromeUIRestartURL);
-  SetBlockList(base::Value::List().Append(chrome::kChromeUIRestartURL));
+  SetBlockList(base::ListValue().Append(chrome::kChromeUIRestartURL));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kWasRestarted));
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -231,7 +231,7 @@ TEST_F(BrowserAboutHandlerTest,
 TEST_F(BrowserAboutHandlerTest,
        HandleNonNavigationAboutURL_RestartDebugUrlIsNotBlocked) {
   GURL url(chrome::kChromeUIRestartURL);
-  SetBlockList(base::Value::List());
+  SetBlockList(base::ListValue());
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kWasRestarted));
 #endif  // !BUILDFLAG(IS_ANDROID)

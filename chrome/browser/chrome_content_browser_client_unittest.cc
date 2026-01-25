@@ -899,7 +899,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(settings_url, dest_url);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
@@ -918,7 +918,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectExploreURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kExplore)));
 
   dest_url = help_url;
@@ -938,7 +938,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestExploreURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kExplore)));
 
   dest_url = help_url;
@@ -955,7 +955,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGalleryURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kGallery)));
 
   dest_url = gallery_url;
@@ -974,7 +974,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestGalleryURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kGallery)));
 
   dest_url = gallery_url;
@@ -994,7 +994,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectTerminalURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kTerminal)));
 
   dest_url = terminal_url;
@@ -1012,7 +1012,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectPrintJobsURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kPrintJobs)));
 
   dest_url = print_jobs_url;
@@ -1030,7 +1030,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectKeyShortcutsURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kKeyShortcuts)));
 
   dest_url = key_shortcuts_url;
@@ -1045,7 +1045,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectOSSettingsURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(os_settings_url, dest_url);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
@@ -1073,7 +1073,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectRecorderURL) {
 
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           static_cast<int>(policy::SystemFeature::kRecorder)));
 
   dest_url = recorder_url;
@@ -1088,7 +1088,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(scanning_app_url, dest_url);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(static_cast<int>(policy::SystemFeature::kScanning));
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
@@ -1107,7 +1107,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectCameraAppURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(camera_app_url, dest_url);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(static_cast<int>(policy::SystemFeature::kCamera));
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
@@ -1124,7 +1124,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(GURL("chrome://settings/help"), dest_url);
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(static_cast<int>(policy::SystemFeature::kBrowserSettings));
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList, std::move(list));
@@ -1552,7 +1552,7 @@ TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportDisabled) {
 }
 
 TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportEnabled) {
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append("www.example.com");
   profile()->GetPrefs()->SetList(
       enterprise_reporting::kCloudLegacyTechReportAllowlist, std::move(policy));

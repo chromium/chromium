@@ -22,7 +22,7 @@ namespace chromeos {
 class ChromeKioskExternalLoaderBroker {
  public:
   using InstallDataChangeCallback =
-      base::RepeatingCallback<void(base::Value::Dict)>;
+      base::RepeatingCallback<void(base::DictValue)>;
 
   static ChromeKioskExternalLoaderBroker* Get();
 

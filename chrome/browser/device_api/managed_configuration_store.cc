@@ -24,12 +24,12 @@ void ManagedConfigurationStore::Initialize() {
 }
 
 bool ManagedConfigurationStore::SetCurrentPolicy(
-    const base::Value::Dict& current_configuration) {
+    const base::DictValue& current_configuration) {
   if (!store_) {
     Initialize();
   }
   // Get the previous policies stored in the database.
-  base::Value::Dict previous_policy;
+  base::DictValue previous_policy;
   value_store::ValueStore::ReadResult read_result = store_->Get();
   if (!read_result.status().ok()) {
     LOG(WARNING) << "Failed to read managed configuration for origin "
@@ -68,7 +68,7 @@ bool ManagedConfigurationStore::SetCurrentPolicy(
   return store_updated;
 }
 
-std::optional<base::Value::Dict> ManagedConfigurationStore::Get(
+std::optional<base::DictValue> ManagedConfigurationStore::Get(
     const std::vector<std::string>& keys) {
   if (!store_) {
     Initialize();

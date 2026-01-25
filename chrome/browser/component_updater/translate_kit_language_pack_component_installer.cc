@@ -48,7 +48,7 @@ TranslateKitLanguagePackComponentInstallerPolicy::
     ~TranslateKitLanguagePackComponentInstallerPolicy() = default;
 
 bool TranslateKitLanguagePackComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   // Check that the sub-directories of the package install directory exist.
   return std::ranges::all_of(
@@ -70,7 +70,7 @@ bool TranslateKitLanguagePackComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 TranslateKitLanguagePackComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   // Nothing custom here.
   return update_client::CrxInstaller::Result(0);
@@ -81,7 +81,7 @@ void TranslateKitLanguagePackComponentInstallerPolicy::OnCustomUninstall() {}
 void TranslateKitLanguagePackComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   CHECK(pref_service_);
   pref_service_->SetFilePath(
       on_device_translation::GetComponentPathPrefName(GetConfig()),

@@ -92,7 +92,7 @@ TranslateKitComponentInstallerPolicy::~TranslateKitComponentInstallerPolicy() =
     default;
 
 bool TranslateKitComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::PathExists(GetSquashFsImagePath(install_dir));
@@ -112,7 +112,7 @@ bool TranslateKitComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 TranslateKitComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   // Nothing custom here.
   return update_client::CrxInstaller::Result(0);
@@ -123,7 +123,7 @@ void TranslateKitComponentInstallerPolicy::OnCustomUninstall() {}
 void TranslateKitComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 

@@ -144,7 +144,7 @@ bool GetGalleryFilePathAndId(const std::string& gallery_id,
   return true;
 }
 
-std::optional<base::Value::List> ConstructFileSystemList(
+std::optional<base::ListValue> ConstructFileSystemList(
     content::RenderFrameHost* rfh,
     const extensions::Extension* extension,
     const std::vector<MediaFileSystemInfo>& filesystems) {
@@ -167,9 +167,9 @@ std::optional<base::Value::List> ConstructFileSystemList(
       extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
   const int child_id = rfh->GetProcess()->GetDeprecatedID();
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& filesystem : filesystems) {
-    base::Value::Dict file_system_dict_value;
+    base::DictValue file_system_dict_value;
 
     // Send the file system id so the renderer can create a valid FileSystem
     // object.
@@ -331,7 +331,7 @@ void MediaGalleriesEventRouter::DispatchEventToExtension(
     const std::string& extension_id,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args) {
+    base::ListValue event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   extensions::EventRouter* router = extensions::EventRouter::Get(profile_);
@@ -454,7 +454,7 @@ void MediaGalleriesGetMediaFileSystemsFunction::GetAndReturnGalleries() {
 
 void MediaGalleriesGetMediaFileSystemsFunction::ReturnGalleries(
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  std::optional<base::Value::List> list =
+  std::optional<base::ListValue> list =
       ConstructFileSystemList(render_frame_host(), extension(), filesystems);
   if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
@@ -565,7 +565,7 @@ void MediaGalleriesAddUserSelectedFolderFunction::OnDirectorySelected(
 void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
     MediaGalleryPrefId pref_id,
     const std::vector<MediaFileSystemInfo>& filesystems) {
-  std::optional<base::Value::List> list =
+  std::optional<base::ListValue> list =
       ConstructFileSystemList(render_frame_host(), extension(), filesystems);
   if (!list) {
     Respond(Error("Error returning Media Galleries filesystems."));
@@ -581,7 +581,7 @@ void MediaGalleriesAddUserSelectedFolderFunction::ReturnGalleriesAndId(
       }
     }
   }
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set("mediaFileSystems", std::move(*list));
   results.Set("selectedFileSystemIndex", base::Value(index));
   Respond(WithArguments(std::move(results)));
@@ -663,7 +663,7 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
     MediaGalleries::MediaMetadata metadata;
     metadata.mime_type = mime_type;
 
-    base::Value::Dict result_dictionary;
+    base::DictValue result_dictionary;
     result_dictionary.Set(kMetadataKey, metadata.ToValue());
     Respond(WithArguments(std::move(result_dictionary)));
     return;
@@ -702,7 +702,7 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
   DCHECK(metadata);
   DCHECK(attached_images);
 
-  base::Value::Dict result_dictionary;
+  base::DictValue result_dictionary;
   result_dictionary.Set(kMetadataKey,
                         SerializeMediaMetadata(std::move(metadata)));
 
@@ -721,7 +721,7 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
 }
 
 void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
-    base::Value::Dict result_dictionary,
+    base::DictValue result_dictionary,
     std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images,
     std::vector<blink::mojom::SerializedBlobPtr> blobs,
     std::unique_ptr<content::BlobHandle> current_blob) {

@@ -87,7 +87,7 @@ TEST(BrowsingDataLifetimePolicyHandler,
 
   // Set sync types to bookmarks and create handler.
   policy::PolicyMap policy;
-  base::Value::List sync_types_disabled_by_policy;
+  base::ListValue sync_types_disabled_by_policy;
   sync_types_disabled_by_policy.Append("bookmarks");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -96,9 +96,9 @@ TEST(BrowsingDataLifetimePolicyHandler,
   syncer::SyncPolicyHandler sync_handler;
 
   // Set BrowsinggDataOnExitList for some types.
-  base::Value::Dict browsing_data_types_first_dict =
-      base::Value::Dict()
-          .Set("data_types", base::Value::List()
+  base::DictValue browsing_data_types_first_dict =
+      base::DictValue()
+          .Set("data_types", base::ListValue()
                                  .Append("browsing_history")
                                  .Append("site_settings")
                                  .Append("cached_images_and_files")
@@ -106,7 +106,7 @@ TEST(BrowsingDataLifetimePolicyHandler,
           .Set("time_to_live_in_hours", 1);
 
   base::Value browsing_data_lifetime_value = base::Value(
-      base::Value::List().Append(std::move(browsing_data_types_first_dict)));
+      base::ListValue().Append(std::move(browsing_data_types_first_dict)));
 
   // Save the types to compare against before moving into Policy base::Value.
   syncer::UserSelectableTypeSet sync_types =
@@ -156,11 +156,11 @@ TEST(BrowsingDataLifetimePolicyHandler,
 
   // Set ClearBrowsingDataOnExitList for some other types.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  base::Value::List clear_browsing_data_list = base::Value::List()
-                                                   .Append("autofill")
-                                                   .Append("password_signin")
-                                                   .Append("hosted_app_data")
-                                                   .Append("download_history");
+  base::ListValue clear_browsing_data_list = base::ListValue()
+                                                 .Append("autofill")
+                                                 .Append("password_signin")
+                                                 .Append("hosted_app_data")
+                                                 .Append("download_history");
 
   policy.Set(policy::key::kClearBrowsingDataOnExitList,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -198,16 +198,16 @@ TEST(BrowsingDataLifetimePolicyHandler,
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
 
-  base::Value::Dict browsing_data_types_first_dict =
-      base::Value::Dict()
-          .Set("data_types", base::Value::List()
+  base::DictValue browsing_data_types_first_dict =
+      base::DictValue()
+          .Set("data_types", base::ListValue()
                                  .Append("hosted_app_data")
                                  .Append("download_history")
                                  .Append("cached_images_and_files"))
           .Set("time_to_live_in_hours", 1);
 
   base::Value browsing_data_unsupported_types_value = base::Value(
-      base::Value::List().Append(std::move(browsing_data_types_first_dict)));
+      base::ListValue().Append(std::move(browsing_data_types_first_dict)));
 
   policy_map.Set(
       policy::key::kBrowsingDataLifetime, policy::POLICY_LEVEL_MANDATORY,
@@ -235,14 +235,13 @@ TEST(BrowsingDataLifetimePolicyHandler,
 
   base::Value expected_value(base::Value::Type::LIST);
   expected_value.GetList().Append(
-      base::Value::Dict()
-          .Set("data_types",
-               base::Value::List()
+      base::DictValue()
+          .Set("data_types", base::ListValue()
 #if !BUILDFLAG(IS_ANDROID)
-               .Append("hosted_app_data")
-               .Append("download_history")
+                                 .Append("hosted_app_data")
+                                 .Append("download_history")
 #endif  // !BUILDFLAG(IS_ANDROID)
-               .Append("cached_images_and_files"))
+                                 .Append("cached_images_and_files"))
           .Set("time_to_live_in_hours", 1));
 
   base::Value* applied_value = nullptr;

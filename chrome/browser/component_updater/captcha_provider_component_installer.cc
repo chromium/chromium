@@ -82,7 +82,7 @@ bool CaptchaProviderComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 CaptchaProviderComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -92,7 +92,7 @@ void CaptchaProviderComponentInstallerPolicy::OnCustomUninstall() {}
 void CaptchaProviderComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Captcha Providers Component ready, version "
           << version.GetString() << " in " << install_dir.value();
 
@@ -105,7 +105,7 @@ void CaptchaProviderComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool CaptchaProviderComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(GetInstalledPath(install_dir));
 }
@@ -150,7 +150,7 @@ void OnCaptchaProviderComponentReady(std::optional<std::string> json_content) {
     return;
   }
 
-  base::Value::List* json_list = json->GetIfList();
+  base::ListValue* json_list = json->GetIfList();
   if (!json_list) {
     VLOG(1) << "Failed to get top level Captcha Providers list.";
     return;

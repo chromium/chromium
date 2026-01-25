@@ -54,7 +54,7 @@ bool ScreenAIComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 ScreenAIComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
@@ -64,7 +64,7 @@ void ScreenAIComponentInstallerPolicy::OnCustomUninstall() {}
 void ScreenAIComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Screen AI Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
@@ -73,7 +73,7 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
 }
 
 bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   VLOG(1) << "Verifying Screen AI component in " << install_dir.value();
 

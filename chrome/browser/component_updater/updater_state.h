@@ -98,7 +98,7 @@ class UpdaterState {
 #endif
   class StateReaderChromiumUpdater final : public StateReader {
    public:
-    explicit StateReaderChromiumUpdater(base::Value::Dict parsed_json);
+    explicit StateReaderChromiumUpdater(base::DictValue parsed_json);
 
    private:
     // Overrides for StateReader.
@@ -111,7 +111,7 @@ class UpdaterState {
     update_client::CategorizedError GetLastUpdateCheckError() const override;
 
     base::Time FindTimeKey(std::string_view key) const;
-    const base::Value::Dict parsed_json_;
+    const base::DictValue parsed_json_;
   };
 
   explicit UpdaterState(bool is_machine);

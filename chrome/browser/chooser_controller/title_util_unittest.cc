@@ -60,12 +60,12 @@ TEST_F(CreateChooserTitleTest, UrlFrameTree) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "Chooser Title Subframe Test")
                       .Set("version", "0.1")
                       .Set("manifest_version", 2)
                       .Set("web_accessible_resources",
-                           base::Value::List().Append("index.html"));
+                           base::ListValue().Append("index.html"));
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   ASSERT_TRUE(extension);

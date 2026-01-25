@@ -196,26 +196,26 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
       return bookmark_html_writer::Result::kCouldNotWriteHeader;
     }
 
-    base::Value::Dict* local_permanent_folders =
+    base::DictValue* local_permanent_folders =
         local_bookmarks_.FindDict(BookmarkCodec::kRootsKey);
     CHECK(local_permanent_folders);
 
-    base::Value::Dict* bookmark_bar_folder_value =
+    base::DictValue* bookmark_bar_folder_value =
         local_permanent_folders->FindDict(
             BookmarkCodec::kBookmarkBarFolderNameKey);
     CHECK(bookmark_bar_folder_value);
-    base::Value::Dict* other_folder_value = local_permanent_folders->FindDict(
+    base::DictValue* other_folder_value = local_permanent_folders->FindDict(
         BookmarkCodec::kOtherBookmarkFolderNameKey);
     CHECK(other_folder_value);
-    base::Value::Dict* mobile_folder_value = local_permanent_folders->FindDict(
+    base::DictValue* mobile_folder_value = local_permanent_folders->FindDict(
         BookmarkCodec::kMobileBookmarkFolderNameKey);
     CHECK(mobile_folder_value);
 
-    base::Value::Dict* account_permanent_folders =
+    base::DictValue* account_permanent_folders =
         account_bookmarks_.FindDict(BookmarkCodec::kRootsKey);
-    base::Value::Dict* account_bookmark_bar_folder_value = nullptr;
-    base::Value::Dict* account_other_folder_value = nullptr;
-    base::Value::Dict* account_mobile_folder_value = nullptr;
+    base::DictValue* account_bookmark_bar_folder_value = nullptr;
+    base::DictValue* account_other_folder_value = nullptr;
+    base::DictValue* account_mobile_folder_value = nullptr;
     if (account_permanent_folders) {
       account_bookmark_bar_folder_value = account_permanent_folders->FindDict(
           BookmarkCodec::kBookmarkBarFolderNameKey);
@@ -314,13 +314,13 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   ~Writer() = default;
 
   // Get the latest time of a given type, across a list of folders.
-  std::string GetLatestTime(const std::vector<base::Value::Dict*>& folders,
+  std::string GetLatestTime(const std::vector<base::DictValue*>& folders,
                             std::string_view time_type_key) {
     CHECK(std::ranges::any_of(
-        folders, [](const base::Value::Dict* folder) { return folder; }));
+        folders, [](const base::DictValue* folder) { return folder; }));
 
     int64_t latest_time = 0;
-    for (base::Value::Dict* folder : folders) {
+    for (base::DictValue* folder : folders) {
       if (!folder) {
         continue;
       }
@@ -405,7 +405,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Writes the start of a folder section, ready for subsequent calls to write
   // out children of the folder. `value` is the folder to be written, which must
   // be of `folder_type` either `BOOKMARK_BAR` or `FOLDER`.
-  [[nodiscard]] bool WriteFolderStart(const base::Value::Dict& value,
+  [[nodiscard]] bool WriteFolderStart(const base::DictValue& value,
                                       const std::string& date_added,
                                       const std::string& date_modified,
                                       BookmarkNode::Type folder_type) {
@@ -444,8 +444,8 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // Writes the child nodes of folder `folder` (this does not include writing
   // the folder itself).
-  [[nodiscard]] bool WriteDescendants(const base::Value::Dict& folder) {
-    const base::Value::List* child_values =
+  [[nodiscard]] bool WriteDescendants(const base::DictValue& folder) {
+    const base::ListValue* child_values =
         folder.FindList(BookmarkCodec::kChildrenKey);
     CHECK(child_values);
 
@@ -467,7 +467,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   }
 
   // Writes the node and all its children, returning true on success.
-  [[nodiscard]] bool WriteNodeAndDescendants(const base::Value::Dict& value) {
+  [[nodiscard]] bool WriteNodeAndDescendants(const base::DictValue& value) {
     const std::string* title_ptr = value.FindString(BookmarkCodec::kNameKey);
     CHECK(title_ptr);
     const std::string* date_added_string =
@@ -526,8 +526,8 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
 
   // The BookmarkModel as a base::Value, split into local and account bookmarks.
   // These values were generated from the BookmarkCodec.
-  base::Value::Dict local_bookmarks_;
-  base::Value::Dict account_bookmarks_;
+  base::DictValue local_bookmarks_;
+  base::DictValue account_bookmarks_;
 
   // Path we're writing to.
   base::FilePath path_;

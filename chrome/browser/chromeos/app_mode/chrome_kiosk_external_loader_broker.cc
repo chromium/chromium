@@ -18,11 +18,11 @@ namespace chromeos {
 namespace {
 static ChromeKioskExternalLoaderBroker* g_broker_instance = nullptr;
 
-base::Value::Dict CreatePrimaryAppLoaderPrefs(
+base::DictValue CreatePrimaryAppLoaderPrefs(
     const crosapi::mojom::AppInstallParams& primary_app_data) {
-  return base::Value::Dict()  //
+  return base::DictValue()  //
       .Set(primary_app_data.id,
-           base::Value::Dict()
+           base::DictValue()
                .Set(extensions::ExternalProviderImpl::kExternalVersion,
                     primary_app_data.version)
                .Set(extensions::ExternalProviderImpl::kExternalCrx,
@@ -31,12 +31,12 @@ base::Value::Dict CreatePrimaryAppLoaderPrefs(
                     primary_app_data.is_store_app));
 }
 
-base::Value::Dict CreateSecondaryAppLoaderPrefs(
+base::DictValue CreateSecondaryAppLoaderPrefs(
     const std::vector<std::string>& secondary_app_ids) {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   for (const std::string& id : secondary_app_ids) {
     prefs.Set(
-        id, base::Value::Dict()
+        id, base::DictValue()
                 .Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
                      extension_urls::GetWebstoreUpdateUrl().spec())
                 .Set(extensions::ExternalProviderImpl::kIsFromWebstore, true));

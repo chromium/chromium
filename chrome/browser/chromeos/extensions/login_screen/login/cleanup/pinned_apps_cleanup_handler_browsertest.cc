@@ -51,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(PinnedAppsCleanupHandlerBrowserTest,
   const std::string policy_pinned_id = extension->id();
 
   // App 1 is pinned by policy.
-  base::Value::List policy_value;
-  base::Value::Dict entry;
+  base::ListValue policy_value;
+  base::DictValue entry;
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_pinned_id);
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,

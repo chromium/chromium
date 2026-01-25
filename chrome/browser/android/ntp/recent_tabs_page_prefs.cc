@@ -67,7 +67,7 @@ void RecentTabsPagePrefs::SetSyncPromoCollapsed(JNIEnv* env,
 
 bool RecentTabsPagePrefs::GetForeignSessionCollapsed(JNIEnv* env,
                                                      std::string& session_tag) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       profile_->GetPrefs()->GetDict(prefs::kNtpCollapsedForeignSessions);
   return dict.contains(session_tag);
 }

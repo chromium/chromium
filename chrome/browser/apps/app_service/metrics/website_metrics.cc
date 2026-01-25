@@ -154,7 +154,7 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::
 }
 
 WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
-  const base::Value::Dict* data_dict = value.GetIfDict();
+  const base::DictValue* data_dict = value.GetIfDict();
   if (!data_dict) {
     return;
   }
@@ -174,8 +174,8 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
   promotable = promotable_value.value();
 }
 
-base::Value::Dict WebsiteMetrics::UrlInfo::ConvertToDict() const {
-  base::Value::Dict usage_time_dict;
+base::DictValue WebsiteMetrics::UrlInfo::ConvertToDict() const {
+  base::DictValue usage_time_dict;
   usage_time_dict.Set(kRunningTimeKey,
                       base::TimeDeltaToValue(running_time_in_two_hours));
   usage_time_dict.Set(kPromotableKey, promotable);
@@ -270,7 +270,7 @@ void WebsiteMetrics::OnHistoryDeletions(
   webcontents_to_ukm_key_.clear();
   url_infos_.clear();
 
-  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::Value::Dict());
+  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::DictValue());
 }
 
 void WebsiteMetrics::OnWindowDestroying(aura::Window* window) {
@@ -626,7 +626,7 @@ void WebsiteMetrics::SetTabInActivated(content::WebContents* web_contents) {
 }
 
 void WebsiteMetrics::SaveUsageTime() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (auto& it : url_infos_) {
     if (it.second.is_activated) {
       // Continued usage of active web content.
@@ -671,11 +671,11 @@ void WebsiteMetrics::RecordUsageTime() {
 
   // The app usage time AppKMs have been recorded, so clear the saved usage time
   // in the user pref.
-  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::Value::Dict());
+  profile_->GetPrefs()->SetDict(kWebsiteUsageTime, base::DictValue());
 }
 
 void WebsiteMetrics::RecordUsageTimeFromPref() {
-  const base::Value::Dict& usage_time =
+  const base::DictValue& usage_time =
       profile_->GetPrefs()->GetDict(kWebsiteUsageTime);
 
   for (const auto [urlstr, url_info_value] : usage_time) {

@@ -63,7 +63,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
                             SuccessCallback success,
                             FailureCallback failure) override;
   void SetParameters(const std::string& extension_id,
-                     base::Value::Dict parameters,
+                     base::DictValue parameters,
                      SuccessCallback success,
                      FailureCallback failure) override;
   void SendPacket(const std::string& extension_id,
@@ -143,7 +143,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
   // configuration provided that it belongs to some enabled extension.
   void OnGetShillProperties(
       const std::string& service_path,
-      std::optional<base::Value::Dict> configuration_properties);
+      std::optional<base::DictValue> configuration_properties);
 
   // Sets `configuration`s service path as given and enters it into
   // `service_path_to_configuration_map_`.

@@ -151,7 +151,7 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
   }
 
   void AddUserStatusPref(bool is_enterprise_account_data_protected) {
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("account_id", GetGaiaIdHashBase64());
     data.Set("user_status", 0);
     data.Set("updated_at", base::Time::Now().InSecondsFSinceUnixEpoch());

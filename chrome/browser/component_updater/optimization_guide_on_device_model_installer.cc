@@ -64,7 +64,7 @@ OptimizationGuideOnDeviceModelInstallerPolicy::
     ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return OnDeviceModelComponentStateManager::VerifyInstallation(install_dir,
                                                                 manifest);
@@ -84,7 +84,7 @@ bool OptimizationGuideOnDeviceModelInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
@@ -99,7 +99,7 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomUninstall() {
 void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   if (state_manager_) {
     state_manager_->SetReady(version, install_dir, manifest);
   }

@@ -174,7 +174,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
 
   void UpdateAppDisabledState(
-      const base::Value::List& disabled_system_features_pref,
+      const base::ListValue& disabled_system_features_pref,
       int feature,
       const std::string& app_id,
       bool is_disabled_mode_changed);

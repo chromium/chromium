@@ -45,7 +45,7 @@ constexpr int kDefaultLineNumber3 = 200;
 constexpr char kLaunchURL[] = "https://foo.example/";
 
 scoped_refptr<extensions::Extension> AddChromeApp(const std::string& app_id) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.SetByDottedPath(extensions::manifest_keys::kName,
                            "Kiosk app windows logs test.");
   manifest.SetByDottedPath(extensions::manifest_keys::kVersion, "1");

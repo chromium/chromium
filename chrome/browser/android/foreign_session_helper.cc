@@ -223,8 +223,8 @@ bool ForeignSessionHelper::GetForeignSessions(JNIEnv* env,
   // and only add back sessions that are still current.
   ScopedDictPrefUpdate pref_update(profile_->GetPrefs(),
                                    prefs::kNtpCollapsedForeignSessions);
-  base::Value::Dict& pref_collapsed_sessions = pref_update.Get();
-  base::Value::Dict collapsed_sessions = pref_collapsed_sessions.Clone();
+  base::DictValue& pref_collapsed_sessions = pref_update.Get();
+  base::DictValue collapsed_sessions = pref_collapsed_sessions.Clone();
   pref_collapsed_sessions.clear();
 
   ScopedJavaLocalRef<jobject> last_pushed_session;

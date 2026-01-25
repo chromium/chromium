@@ -39,9 +39,9 @@ StringType UTF8ToNative(std::string_view src) {
 #endif
 }
 
-base::Value::List UTF8VectorToValueList(
+base::ListValue UTF8VectorToValueList(
     const std::vector<std::string_view>& src) {
-  base::Value::List out;
+  base::ListValue out;
   for (std::string_view str : src) {
     out.Append(str);
   }
@@ -63,7 +63,7 @@ class AlternativeBrowserDriverTest : public testing::Test {
                                   base::Value(path));
   }
 
-  void SetBrowserParameters(const base::Value::List& params) {
+  void SetBrowserParameters(const base::ListValue& params) {
     prefs_backend_.SetManagedPref(prefs::kAlternativeBrowserParameters,
                                   base::Value(params.Clone()));
   }

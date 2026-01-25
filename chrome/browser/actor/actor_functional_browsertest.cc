@@ -42,7 +42,7 @@ template <>
 struct TypeConverter<base::Value, glic::mojom::GetTabContextOptions> {
   static base::Value Convert(const glic::mojom::GetTabContextOptions in) {
     base::Value raw_out(base::Value::Type::DICT);
-    base::Value::Dict& out = raw_out.GetDict();
+    base::DictValue& out = raw_out.GetDict();
     out.Set("includeInnerText", in.include_inner_text);
     out.Set("innerTextBytesLimit", static_cast<int>(in.inner_text_bytes_limit));
     out.Set("includeViewportScreenshot", in.include_viewport_screenshot);
@@ -192,7 +192,7 @@ class AsyncActionWaiter {
                                 json_value.error().message);
       }
 
-      const base::Value::Dict* dict = json_value->GetIfDict();
+      const base::DictValue* dict = json_value->GetIfDict();
       if (!dict) {
         return base::unexpected("Expected a JSON object from JS.");
       }

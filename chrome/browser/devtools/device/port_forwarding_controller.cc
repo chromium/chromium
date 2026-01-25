@@ -69,8 +69,8 @@ const char kConnectionIdParam[] = "connectionId";
 
 static bool ParseNotification(const std::string& json,
                               std::string& method,
-                              std::optional<base::Value::Dict>& params) {
-  std::optional<base::Value::Dict> value =
+                              std::optional<base::DictValue>& params) {
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
@@ -81,7 +81,7 @@ static bool ParseNotification(const std::string& json,
     return false;
   method = std::move(*method_value);
 
-  base::Value::Dict* param_dict = value->FindDict(kParamsParam);
+  base::DictValue* param_dict = value->FindDict(kParamsParam);
   if (param_dict) {
     params = std::move(*param_dict);
   }
@@ -91,7 +91,7 @@ static bool ParseNotification(const std::string& json,
 static bool ParseResponse(const std::string& json,
                           int* command_id,
                           int* error_code) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
@@ -111,7 +111,7 @@ static bool ParseResponse(const std::string& json,
 static std::string SerializeCommand(int command_id,
                                     const std::string& method,
                                     base::Value params) {
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set(kIdParam, command_id);
   command.Set(kMethodParam, method);
   command.Set(kParamsParam, std::move(params));
@@ -495,7 +495,7 @@ void PortForwardingController::Connection::SerializeChanges(
 void PortForwardingController::Connection::SendCommand(
     const std::string& method, int port) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::Dict params;
+  base::DictValue params;
   DCHECK(method == kBindMethod || kUnbindMethod == method);
   params.Set(kPortParam, port);
   int id = ++command_id_;
@@ -574,7 +574,7 @@ void PortForwardingController::Connection::OnFrameRead(
     return;
 
   std::string method;
-  std::optional<base::Value::Dict> params;
+  std::optional<base::DictValue> params;
   if (!ParseNotification(message, method, params)) {
     return;
   }
@@ -655,7 +655,7 @@ void PortForwardingController::OnPrefsChange() {
   forwarding_map_.clear();
 
   if (pref_service_->GetBoolean(prefs::kDevToolsPortForwardingEnabled)) {
-    const base::Value::Dict& value =
+    const base::DictValue& value =
         pref_service_->GetDict(prefs::kDevToolsPortForwardingConfig);
     for (auto dict_element : value) {
       int port_num;

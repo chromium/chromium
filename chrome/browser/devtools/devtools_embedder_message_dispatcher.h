@@ -158,7 +158,7 @@ class DevToolsEmbedderMessageDispatcher {
   virtual ~DevToolsEmbedderMessageDispatcher() = default;
   virtual bool Dispatch(DispatchCallback callback,
                         const std::string& method,
-                        const base::Value::List& params) = 0;
+                        const base::ListValue& params) = 0;
 
   static std::unique_ptr<DevToolsEmbedderMessageDispatcher>
   CreateForDevToolsFrontend(Delegate* delegate);

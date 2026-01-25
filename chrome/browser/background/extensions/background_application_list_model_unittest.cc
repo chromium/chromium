@@ -91,11 +91,11 @@ enum PushMessagingOption {
 // |background_permission| is true.
 static scoped_refptr<Extension> CreateExtension(const std::string& name,
                                                 bool background_permission) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 3);
   manifest.Set(extensions::manifest_keys::kName, name);
-  base::Value::List permissions;
+  base::ListValue permissions;
   if (background_permission) {
     permissions.Append("background");
   }

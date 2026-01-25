@@ -66,9 +66,8 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
                 kMaxPrefsFileSize)) {
           return nullptr;
         }
-        std::optional<base::Value::Dict> parsed_json =
-            base::JSONReader::ReadDict(contents,
-                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        std::optional<base::DictValue> parsed_json = base::JSONReader::ReadDict(
+            contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         return parsed_json ? std::make_unique<StateReaderChromiumUpdater>(
                                  std::move(*parsed_json))
                            : nullptr;
@@ -91,7 +90,7 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
 }
 
 UpdaterState::StateReaderChromiumUpdater::StateReaderChromiumUpdater(
-    base::Value::Dict parsed_json)
+    base::DictValue parsed_json)
     : parsed_json_(std::move(parsed_json)) {}
 
 base::Time UpdaterState::StateReaderChromiumUpdater::FindTimeKey(

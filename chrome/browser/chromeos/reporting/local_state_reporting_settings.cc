@@ -79,7 +79,7 @@ bool LocalStateReportingSettings::GetInteger(const std::string& path,
 
 bool LocalStateReportingSettings::GetList(
     const std::string& path,
-    const base::Value::List** out_value) const {
+    const base::ListValue** out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const pref_service = g_browser_process->local_state();
   if (!pref_service->FindPreference(path) ||
@@ -95,7 +95,7 @@ bool LocalStateReportingSettings::GetReportingEnabled(const std::string& path,
                                                       bool* out_value) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value::List* list_value;
+  const base::ListValue* list_value;
   if (GetBoolean(path, out_value)) {
     return true;
   } else if (GetList(path, &list_value)) {

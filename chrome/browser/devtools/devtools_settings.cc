@@ -65,8 +65,8 @@ void DevToolsSettings::Register(const std::string& name,
   remove_update->Remove(name);
 }
 
-base::Value::Dict DevToolsSettings::Get() {
-  base::Value::Dict settings;
+base::DictValue DevToolsSettings::Get() {
+  base::DictValue settings;
 
   PrefService* prefs = profile_->GetPrefs();
   // DevTools expects any kind of preference to be a string. Parsing is
@@ -89,7 +89,7 @@ std::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
     return base::Value(base::ToString(result));
   }
   const char* dict_name = GetDictionaryNameForSettingsName(name);
-  const base::Value::Dict& dict = prefs->GetDict(dict_name);
+  const base::DictValue& dict = prefs->GetDict(dict_name);
   const base::Value* value = dict.Find(name);
   return value ? std::optional<base::Value>(value->Clone()) : std::nullopt;
 }
@@ -116,7 +116,7 @@ void DevToolsSettings::Remove(const std::string& name) {
   PrefService* prefs = profile_->GetPrefs();
   for (auto* dict_name :
        {GetDictionaryNameForSyncedPrefs(), prefs::kDevToolsPreferences}) {
-    const base::Value::Dict& dict = prefs->GetDict(dict_name);
+    const base::DictValue& dict = prefs->GetDict(dict_name);
     if (dict.Find(name)) {
       ScopedDictPrefUpdate update(profile_->GetPrefs(), dict_name);
       update->Remove(name);
@@ -127,12 +127,11 @@ void DevToolsSettings::Remove(const std::string& name) {
 void DevToolsSettings::Clear() {
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
                                    kSyncDevToolsPreferencesDefault);
-  profile_->GetPrefs()->SetDict(prefs::kDevToolsPreferences,
-                                base::Value::Dict());
+  profile_->GetPrefs()->SetDict(prefs::kDevToolsPreferences, base::DictValue());
   profile_->GetPrefs()->SetDict(prefs::kDevToolsSyncedPreferencesSyncEnabled,
-                                base::Value::Dict());
+                                base::DictValue());
   profile_->GetPrefs()->SetDict(prefs::kDevToolsSyncedPreferencesSyncDisabled,
-                                base::Value::Dict());
+                                base::DictValue());
 }
 
 const char* DevToolsSettings::GetDictionaryNameForSettingsName(
@@ -174,7 +173,7 @@ void DevToolsSettings::DevToolsSyncPreferencesChanged() {
 
   ScopedDictPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
   ScopedDictPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
-  base::Value::Dict source_dict;
+  base::DictValue source_dict;
   std::swap(source_dict, *source_update);
   target_update->Merge(std::move(source_dict));
 }

@@ -146,7 +146,7 @@ void ManagedConfigurationAPI::RegisterProfilePrefs(
 void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const url::Origin& origin,
     const std::vector<std::string>& keys,
-    base::OnceCallback<void(std::optional<base::Value::Dict>)> callback) {
+    base::OnceCallback<void(std::optional<base::DictValue>)> callback) {
   if (!CanHaveManagedStore(origin)) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -193,7 +193,7 @@ const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
-  const base::Value::List& managed_configurations =
+  const base::ListValue& managed_configurations =
       profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);
 
   std::set<url::Origin> current_origins;
@@ -267,7 +267,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
   }
 
   if (configuration_url.empty()) {
-    PostStoreConfiguration(origin, base::Value::Dict());
+    PostStoreConfiguration(origin, base::DictValue());
     return;
   }
 
@@ -312,7 +312,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   if (!decoding_result.has_value() || !decoding_result->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
-    PostStoreConfiguration(origin, base::Value::Dict());
+    PostStoreConfiguration(origin, base::DictValue());
     return;
   }
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
@@ -320,7 +320,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   update->Set(GetOriginEncoded(origin), url_hash);
 
   // We need to transform each value into a string.
-  base::Value::Dict result_dict;
+  base::DictValue result_dict;
   for (auto item : decoding_result->GetDict()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
@@ -333,7 +333,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
 void ManagedConfigurationAPI::PostStoreConfiguration(
     const url::Origin& origin,
-    base::Value::Dict configuration) {
+    base::DictValue configuration) {
   MaybeCreateStoreForOrigin(origin);
   store_map_[origin]
       .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)

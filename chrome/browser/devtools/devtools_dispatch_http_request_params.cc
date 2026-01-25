@@ -19,7 +19,7 @@ DevToolsDispatchHttpRequestParams& DevToolsDispatchHttpRequestParams::operator=(
 
 // static
 std::optional<DevToolsDispatchHttpRequestParams>
-DevToolsDispatchHttpRequestParams::FromDict(const base::Value::Dict& dict) {
+DevToolsDispatchHttpRequestParams::FromDict(const base::DictValue& dict) {
   const std::string* service = dict.FindString("service");
   if (!service) {
     return std::nullopt;
@@ -44,7 +44,7 @@ DevToolsDispatchHttpRequestParams::FromDict(const base::Value::Dict& dict) {
     params.body = *body;
   }
 
-  const base::Value::Dict* query_params_dict = dict.FindDict("queryParams");
+  const base::DictValue* query_params_dict = dict.FindDict("queryParams");
   if (query_params_dict) {
     for (auto it : *query_params_dict) {
       const std::string& key = it.first;

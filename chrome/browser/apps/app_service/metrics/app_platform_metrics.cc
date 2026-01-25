@@ -317,7 +317,7 @@ AppPlatformMetrics::UsageTime::UsageTime() = default;
 AppPlatformMetrics::UsageTime::~UsageTime() = default;
 
 AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
-  const base::Value::Dict* data_dict = value.GetIfDict();
+  const base::DictValue* data_dict = value.GetIfDict();
   if (!data_dict) {
     return;
   }
@@ -365,8 +365,8 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
   window_is_closed = true;
 }
 
-base::Value::Dict AppPlatformMetrics::UsageTime::ConvertToDict() const {
-  base::Value::Dict usage_time_dict;
+base::DictValue AppPlatformMetrics::UsageTime::ConvertToDict() const {
+  base::DictValue usage_time_dict;
   usage_time_dict.Set(kUsageTimeAppIdKey, app_id);
   usage_time_dict.Set(kUsageTimeAppPublisherIdKey, app_publisher_id);
   usage_time_dict.Set(kUsageTimeAppTypeKey,
@@ -1017,8 +1017,8 @@ void AppPlatformMetrics::ClearRunningDuration() {
   running_duration_.clear();
   activated_count_.clear();
 
-  profile_->GetPrefs()->SetDict(kAppRunningDuration, base::Value::Dict());
-  profile_->GetPrefs()->SetDict(kAppActivatedCount, base::Value::Dict());
+  profile_->GetPrefs()->SetDict(kAppRunningDuration, base::DictValue());
+  profile_->GetPrefs()->SetDict(kAppActivatedCount, base::DictValue());
 }
 
 void AppPlatformMetrics::ReadInstalledApps() {
@@ -1279,7 +1279,7 @@ void AppPlatformMetrics::SaveUsageTime() {
 }
 
 void AppPlatformMetrics::LoadAppsUsageTimeUkmFromPref() {
-  const base::Value::Dict& usage_time_dict =
+  const base::DictValue& usage_time_dict =
       profile_->GetPrefs()->GetDict(kAppUsageTime);
 
   for (auto it : usage_time_dict) {

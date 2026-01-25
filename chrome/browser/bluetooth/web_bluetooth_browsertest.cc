@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::Value::List& promise_values = js_values.ExtractList();
+  const base::ListValue& promise_values = js_values.ExtractList();
   EXPECT_EQ(2U, promise_values.size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
   content::EvalJsResult inner_device_id_after_navigation =
       InvokeGetDevices(web_contents_.get());
   // Expect an empty list.
-  EXPECT_EQ(base::Value(base::Value::List()), inner_device_id_after_navigation);
+  EXPECT_EQ(base::Value(base::ListValue()), inner_device_id_after_navigation);
 }
 
 IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,

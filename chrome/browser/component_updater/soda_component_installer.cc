@@ -154,7 +154,7 @@ bool SodaComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 SodaComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       install_dir);
@@ -163,7 +163,7 @@ SodaComponentInstallerPolicy::OnCustomInstall(
 void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 
 bool SodaComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   bool missing_indicator_file =
@@ -184,7 +184,7 @@ bool SodaComponentInstallerPolicy::VerifyInstallation(
 void SodaComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
   if (on_installed_callback_) {

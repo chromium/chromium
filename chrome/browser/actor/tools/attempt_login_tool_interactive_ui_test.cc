@@ -291,12 +291,12 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
       url::Origin::Create(url).Serialize();
   const std::string expected_display_origin = "example.com:12345";
   auto expected_request =
-      base::Value::Dict()
+      base::DictValue()
           .Set("taskId", actor_task().id().value())
           .Set("showDialog", true)
           .Set("credentials",
-               base::Value::List()
-                   .Append(base::Value::Dict()
+               base::ListValue()
+                   .Append(base::DictValue()
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username1")
                                .Set("sourceSiteOrApp",
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
                                .Set("requestOrigin", expected_request_origin)
                                .Set("displayOrigin", expected_display_origin)
                                .Set("icon", kExpectedIconDataUrl))
-                   .Append(base::Value::Dict()
+                   .Append(base::DictValue()
                                .Set("id", GenerateCredentialId().value())
                                .Set("username", "username2")
                                .Set("sourceSiteOrApp",

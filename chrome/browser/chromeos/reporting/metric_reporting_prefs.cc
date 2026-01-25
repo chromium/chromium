@@ -36,7 +36,7 @@ bool IsWebsiteUrlAllowlisted(const GURL& url,
     return false;
   }
 
-  const base::Value::List* allowlisted_urls;
+  const base::ListValue* allowlisted_urls;
   if (!reporting_settings->GetList(policy_setting, &allowlisted_urls)) {
     // Policy likely unset. Disallow website metrics reporting regardless.
     return false;

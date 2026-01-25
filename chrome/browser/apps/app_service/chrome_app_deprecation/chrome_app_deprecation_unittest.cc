@@ -62,15 +62,15 @@ class ChromeAppDeprecationTest : public extensions::ExtensionServiceTestBase {
 
   scoped_refptr<const Extension> InstallTestApp(Profile* profile) {
     // Build a simple Chrome App.
-    base::Value::Dict manifest =
-        base::Value::Dict()
+    base::DictValue manifest =
+        base::DictValue()
             .Set("name", "Test app")
             .Set("version", "1.0.0")
             .Set("manifest_version", 3)
             .Set("description", "an extension")
-            .Set("app", base::Value::Dict().Set(
-                            "launch", base::Value::Dict().Set("local_path",
-                                                              "test.html")));
+            .Set("app", base::DictValue().Set(
+                            "launch",
+                            base::DictValue().Set("local_path", "test.html")));
 
     TestExtensionDir good_extension_dir;
     good_extension_dir.WriteManifest(manifest);

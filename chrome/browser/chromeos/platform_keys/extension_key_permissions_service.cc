@@ -41,7 +41,7 @@ bool ContainsTag(uint64_t tags, crosapi::mojom::KeyTag value) {
   return tags & static_cast<uint64_t>(value);
 }
 
-const base::Value::Dict* GetKeyPermissionsMap(
+const base::DictValue* GetKeyPermissionsMap(
     policy::PolicyService* const profile_policies) {
   if (!profile_policies) {
     return nullptr;
@@ -59,7 +59,7 @@ const base::Value::Dict* GetKeyPermissionsMap(
 }
 
 bool GetCorporateKeyUsageFromPref(
-    const base::Value::Dict* key_permissions_for_ext) {
+    const base::DictValue* key_permissions_for_ext) {
   if (!key_permissions_for_ext) {
     return false;
   }
@@ -81,13 +81,13 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
     return false;
   }
 
-  const base::Value::Dict* key_permissions_map =
+  const base::DictValue* key_permissions_map =
       GetKeyPermissionsMap(profile_policies);
   if (!key_permissions_map) {
     return false;
   }
 
-  const base::Value::Dict* key_permissions_for_ext =
+  const base::DictValue* key_permissions_for_ext =
       key_permissions_map->FindDict(extension_id);
   if (!key_permissions_for_ext) {
     return false;
@@ -121,7 +121,7 @@ crosapi::KeystoreServiceAsh* GetKeystoreService(
 ExtensionKeyPermissionsService::ExtensionKeyPermissionsService(
     const std::string& extension_id,
     extensions::StateStore* extensions_state_store,
-    base::Value::List state_store_value,
+    base::ListValue state_store_value,
     policy::PolicyService* profile_policies,
     content::BrowserContext* browser_context)
     : extension_id_(extension_id),
@@ -289,7 +289,7 @@ void ExtensionKeyPermissionsService::WriteToStateStore() {
 }
 
 void ExtensionKeyPermissionsService::KeyEntriesFromState(
-    const base::Value::List& state) {
+    const base::ListValue& state) {
   state_store_entries_.clear();
 
   for (const auto& entry : state) {
@@ -302,7 +302,7 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
       new_entry.sign_once = true;
       state_store_entries_.push_back(new_entry);
     } else if (entry.is_dict()) {
-      const base::Value::Dict& dict_entry = entry.GetDict();
+      const base::DictValue& dict_entry = entry.GetDict();
       const std::string* spki_b64_str = dict_entry.FindString(kStateStoreSPKI);
       if (spki_b64_str) {
         spki_b64 = *spki_b64_str;
@@ -321,15 +321,15 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
   }
 }
 
-base::Value::List ExtensionKeyPermissionsService::KeyEntriesToState() {
-  base::Value::List new_state;
+base::ListValue ExtensionKeyPermissionsService::KeyEntriesToState() {
+  base::ListValue new_state;
   for (const KeyEntry& entry : state_store_entries_) {
     // Drop entries that the extension doesn't have any permissions for anymore.
     if (!entry.sign_once && !entry.sign_unlimited) {
       continue;
     }
 
-    base::Value::Dict new_entry;
+    base::DictValue new_entry;
     new_entry.Set(kStateStoreSPKI, entry.spki_b64);
     // Omit writing default values, namely |false|.
     if (entry.sign_once) {
@@ -349,7 +349,7 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
     policy::PolicyService* const profile_policies) {
   std::vector<std::string> permissions;
 
-  const base::Value::Dict* key_permissions_service_map =
+  const base::DictValue* key_permissions_service_map =
       GetKeyPermissionsMap(profile_policies);
   if (!key_permissions_service_map) {
     return permissions;
@@ -357,7 +357,7 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
 
   for (const auto item : *key_permissions_service_map) {
     const auto& app_id = item.first;
-    const base::Value::Dict* key_permissions_service_for_app =
+    const base::DictValue* key_permissions_service_for_app =
         item.second.GetIfDict();
     if (!key_permissions_service_for_app) {
       continue;

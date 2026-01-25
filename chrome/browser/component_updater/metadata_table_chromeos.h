@@ -76,7 +76,7 @@ class MetadataTable {
                                const std::string& component_name) const;
 
   // Information about installed items.
-  base::Value::List installed_items_;
+  base::ListValue installed_items_;
 
   // Local state PrefService.
   const raw_ptr<PrefService> pref_service_;

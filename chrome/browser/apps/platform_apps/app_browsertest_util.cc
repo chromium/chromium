@@ -214,9 +214,8 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
     const Extension* extension) {
   scoped_refptr<WindowsGetAllFunction> function = new WindowsGetAllFunction();
   function->set_extension(extension);
-  base::Value::List result(
-      utils::ToList(utils::RunFunctionAndReturnSingleResult(
-          function.get(), "[]", browser()->profile())));
+  base::ListValue result(utils::ToList(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[]", browser()->profile())));
   return result.size();
 }
 

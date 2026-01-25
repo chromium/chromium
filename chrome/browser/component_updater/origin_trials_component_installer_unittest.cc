@@ -46,7 +46,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     policy_ = std::make_unique<ChromeOriginTrialsComponentInstallerPolicy>();
   }
 
-  void LoadUpdates(base::Value::Dict manifest) {
+  void LoadUpdates(base::DictValue manifest) {
     if (manifest.empty()) {
       manifest.Set(kManifestOriginTrialsKey, base::Value());
     }
@@ -72,7 +72,7 @@ TEST_F(OriginTrialsComponentInstallerTest,
       local_state()->GetString(embedder_support::prefs::kOriginTrialPublicKey));
 
   // Load with empty section in manifest
-  LoadUpdates(base::Value::Dict());
+  LoadUpdates(base::DictValue());
 
   EXPECT_FALSE(local_state()->HasPrefPath(
       embedder_support::prefs::kOriginTrialPublicKey));

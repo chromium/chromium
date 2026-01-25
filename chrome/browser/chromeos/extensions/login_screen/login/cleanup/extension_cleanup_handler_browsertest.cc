@@ -130,11 +130,11 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   void InstallUserExtension(const std::string& extension_id) {
-    base::Value::Dict manifest(base::Value::Dict()
-                                   .Set("name", "Foo")
-                                   .Set("description", "Bar")
-                                   .Set("manifest_version", 2)
-                                   .Set("version", "1.0"));
+    base::DictValue manifest(base::DictValue()
+                                 .Set("name", "Foo")
+                                 .Set("description", "Bar")
+                                 .Set("manifest_version", 2)
+                                 .Set("version", "1.0"));
 
     auto observer = GetTestExtensionRegistryObserver(extension_id);
     scoped_refptr<const extensions::Extension> extension =

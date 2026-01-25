@@ -53,7 +53,7 @@ TEST_F(UserReportingSettingsTest, InvalidIntegerPrefPath) {
       user_reporting_settings_->GetBoolean(kSettingPath, &out_bool_value));
   ASSERT_FALSE(user_reporting_settings_->GetReportingEnabled(kSettingPath,
                                                              &out_bool_value));
-  const base::Value::List* out_list_value = nullptr;
+  const base::ListValue* out_list_value = nullptr;
   ASSERT_FALSE(
       user_reporting_settings_->GetList(kSettingPath, &out_list_value));
   EXPECT_THAT(out_list_value, IsNull());
@@ -68,7 +68,7 @@ TEST_F(UserReportingSettingsTest, InvalidBooleanPrefPath) {
   int out_int_value;
   ASSERT_FALSE(
       user_reporting_settings_->GetInteger(kSettingPath, &out_int_value));
-  const base::Value::List* out_list_value = nullptr;
+  const base::ListValue* out_list_value = nullptr;
   ASSERT_FALSE(
       user_reporting_settings_->GetList(kSettingPath, &out_list_value));
   EXPECT_THAT(out_list_value, IsNull());
@@ -76,7 +76,7 @@ TEST_F(UserReportingSettingsTest, InvalidBooleanPrefPath) {
 
 TEST_F(UserReportingSettingsTest, InvalidListPrefPath) {
   profile_->GetTestingPrefService()->registry()->RegisterListPref(
-      kSettingPath, /*default_value=*/base::Value::List());
+      kSettingPath, /*default_value=*/base::ListValue());
 
   // Attempt to retrieve the list reporting setting with incorrect data type and
   // confirm it fails.
@@ -95,7 +95,7 @@ TEST_F(UserReportingSettingsTest, GetUnregisteredSetting) {
   int out_int_value;
   EXPECT_FALSE(
       user_reporting_settings_->GetInteger(kSettingPath, &out_int_value));
-  const base::Value::List* out_list_value = nullptr;
+  const base::ListValue* out_list_value = nullptr;
   EXPECT_FALSE(
       user_reporting_settings_->GetList(kSettingPath, &out_list_value));
 }
@@ -143,8 +143,8 @@ TEST_F(UserReportingSettingsTest, GetInteger) {
 
 TEST_F(UserReportingSettingsTest, GetList) {
   profile_->GetTestingPrefService()->registry()->RegisterListPref(
-      kSettingPath, /*default_value=*/base::Value::List());
-  const base::Value::List* out_value;
+      kSettingPath, /*default_value=*/base::ListValue());
+  const base::ListValue* out_value;
   ASSERT_TRUE(user_reporting_settings_->GetList(kSettingPath, &out_value));
   ASSERT_THAT(out_value, NotNull());
   EXPECT_TRUE(out_value->empty());
@@ -152,7 +152,7 @@ TEST_F(UserReportingSettingsTest, GetList) {
   // Update setting value and ensure the next fetch returns the updated value.
   static constexpr char kListSettingItem[] = "item";
   profile_->GetPrefs()->SetList(kSettingPath,
-                                base::Value::List().Append(kListSettingItem));
+                                base::ListValue().Append(kListSettingItem));
   ASSERT_TRUE(user_reporting_settings_->GetList(kSettingPath, &out_value));
   ASSERT_THAT(out_value, NotNull());
   ASSERT_THAT(out_value->size(), Eq(1uL));
@@ -161,7 +161,7 @@ TEST_F(UserReportingSettingsTest, GetList) {
 
 TEST_F(UserReportingSettingsTest, GetReportingEnabled_List) {
   profile_->GetTestingPrefService()->registry()->RegisterListPref(
-      kSettingPath, /*default_value=*/base::Value::List());
+      kSettingPath, /*default_value=*/base::ListValue());
   bool out_value = true;
   ASSERT_TRUE(
       user_reporting_settings_->GetReportingEnabled(kSettingPath, &out_value));
@@ -170,7 +170,7 @@ TEST_F(UserReportingSettingsTest, GetReportingEnabled_List) {
   // Update setting value and ensure the next fetch returns the updated value.
   static constexpr char kListSettingItem[] = "item";
   profile_->GetPrefs()->SetList(kSettingPath,
-                                base::Value::List().Append(kListSettingItem));
+                                base::ListValue().Append(kListSettingItem));
   ASSERT_TRUE(
       user_reporting_settings_->GetReportingEnabled(kSettingPath, &out_value));
   EXPECT_TRUE(out_value);
@@ -206,7 +206,7 @@ TEST_F(UserReportingSettingsTest, ObserveIntegerSetting) {
 
 TEST_F(UserReportingSettingsTest, ObserveListSetting) {
   profile_->GetTestingPrefService()->registry()->RegisterListPref(
-      kSettingPath, /*default_value=*/base::Value::List());
+      kSettingPath, /*default_value=*/base::ListValue());
   bool callback_called = false;
   const auto callback_subscription =
       user_reporting_settings_->AddSettingsObserver(
@@ -214,8 +214,7 @@ TEST_F(UserReportingSettingsTest, ObserveListSetting) {
                             [&callback_called]() { callback_called = true; }));
 
   // Update setting value and ensure callback was triggered.
-  profile_->GetPrefs()->SetList(kSettingPath,
-                                base::Value::List().Append("item"));
+  profile_->GetPrefs()->SetList(kSettingPath, base::ListValue().Append("item"));
   ASSERT_TRUE(callback_called);
 }
 

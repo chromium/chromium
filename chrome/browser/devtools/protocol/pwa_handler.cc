@@ -76,7 +76,7 @@ base::expected<FileHandlers, protocol::Response> GetFileHandlersFromApp(
     const webapps::AppId app_id,
     const std::string in_manifest_id,
     web_app::AppLock& app_lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   const web_app::WebApp* web_app = app_lock.registrar().GetAppById(app_id);
   if (web_app == nullptr) {
     return base::unexpected(protocol::Response::InvalidParams(
@@ -708,7 +708,7 @@ void PWAHandler::ChangeAppUserSettings(
       "PWAHandler::ChangeAppUserSettings", web_app::AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id, web_app::AppLock& app_lock,
-             base::Value::Dict& debug_value) -> std::optional<std::string> {
+             base::DictValue& debug_value) -> std::optional<std::string> {
             // Only consider apps that are installed with or without OS
             // integration. Apps coming via sync should not be considered.
             if (app_lock.registrar().IsInstallState(

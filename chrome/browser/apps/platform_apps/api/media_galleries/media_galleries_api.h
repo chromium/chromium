@@ -68,7 +68,7 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
       const std::string& extension_id,
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List event_args);
+      base::ListValue event_args);
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "MediaGalleriesAPI"; }
@@ -183,7 +183,7 @@ class MediaGalleriesGetMetadataFunction : public ExtensionFunction {
       std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images);
 
   void ConstructNextBlob(
-      base::Value::Dict result_dictionary,
+      base::DictValue result_dictionary,
       std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images,
       std::vector<blink::mojom::SerializedBlobPtr> blobs,
       std::unique_ptr<content::BlobHandle> current_blob);

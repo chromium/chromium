@@ -16,7 +16,7 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 
 // Removes empty dictionaries from |dict|, potentially nested.
 // Does not modify empty lists.
-void RemoveEmptyValueDicts(base::Value::Dict& dict);
+void RemoveEmptyValueDicts(base::DictValue& dict);
 
 }  // namespace chromeos::echo_offer
 

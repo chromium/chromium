@@ -43,7 +43,7 @@ constexpr char kFirstLoginFlowCompletedKey[] = "first_login_flow_completed";
 
 constexpr char kApsStateManager[] = "apps.app_preload_service.state_manager";
 
-const base::Value::Dict& GetStateManager(Profile* profile) {
+const base::DictValue& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
 }
 

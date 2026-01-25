@@ -259,7 +259,7 @@ ExtensionFunction::ResponseAction
 AccessibilityPrivateGetDisplayBoundsFunction::Run() {
   const std::vector<display::Display>& displays =
       display::Screen::Get()->GetAllDisplays();
-  base::Value::List result;
+  base::ListValue result;
   for (auto& display : displays) {
     const gfx::Rect& bounds = display.bounds();
     auto screen_rect = accessibility_private::ScreenRect();

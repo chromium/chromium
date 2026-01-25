@@ -40,7 +40,7 @@ class PrintPreviewUiWrapper : public ::printing::mojom::PrintPreviewUI {
 
   // Start the process for generating a print preview. Preview generation is
   // done asynchronously, updates are provided via mojom::PrintPreviewUI.
-  void GeneratePrintPreview(base::Value::Dict settings);
+  void GeneratePrintPreview(base::DictValue settings);
 
   // mojom::PrintPreviewUI::
   void SetOptionsFromDocument(

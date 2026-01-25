@@ -36,13 +36,13 @@ class DeviceLocalAccountExternalPolicyLoader
   // Update the list of extensions to be installed.
   // The dictionary should adhere to the interface of
   // ExternalLoader::LoadFinished.
-  void OnExtensionListsUpdated(const base::Value::Dict& prefs);
+  void OnExtensionListsUpdated(const base::DictValue& prefs);
 
  private:
   // If the cache was started, it must be stopped before |this| is destroyed.
   ~DeviceLocalAccountExternalPolicyLoader() override;
 
-  std::optional<base::Value::Dict> prefs_;
+  std::optional<base::DictValue> prefs_;
 };
 
 }  // namespace chromeos

@@ -23,7 +23,7 @@
 
 namespace {
 
-std::optional<base::Value::Dict> LoadManifestOnFileThread(
+std::optional<base::DictValue> LoadManifestOnFileThread(
     const base::FilePath& path,
     const base::FilePath::CharType* manifest_filename,
     bool localize) {
@@ -258,7 +258,7 @@ void EmbeddedA11yExtensionLoader::InstallExtension(
     extensions::ComponentLoader* component_loader,
     const base::FilePath& path,
     const std::string& extension_id,
-    std::optional<base::Value::Dict> manifest) {
+    std::optional<base::DictValue> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (component_loader->Exists(extension_id)) {
     // Because this is async and called from another thread, it's possible we

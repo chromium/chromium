@@ -151,7 +151,7 @@ void DevToolsFileHelper::Save(const std::string& url,
     return;
   }
 
-  const base::Value::Dict& file_map =
+  const base::DictValue& file_map =
       profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles);
   base::FilePath initial_path;
 
@@ -226,7 +226,7 @@ void DevToolsFileHelper::SaveToFileSelected(
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsEditedFiles);
-  base::Value::Dict& files_map = update.Get();
+  base::DictValue& files_map = update.Get();
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, the selected file path can be a content URL that isn't supposed
@@ -393,7 +393,7 @@ bool DevToolsFileHelper::IsUserConfirmedAutomaticFileSystem(
     const std::string& file_system_path,
     const base::Uuid& file_system_uuid) const {
   DCHECK(file_system_uuid.is_valid());
-  const base::Value::Dict& file_system_paths_value =
+  const base::DictValue& file_system_paths_value =
       profile_->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   const base::Value* value = file_system_paths_value.Find(file_system_path);
   if (value == nullptr || !value->is_string()) {
@@ -441,7 +441,7 @@ void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
-  base::Value::Dict& file_systems_paths_value = update.Get();
+  base::DictValue& file_systems_paths_value = update.Get();
   file_systems_paths_value.Set(path.AsUTF8Unsafe(), type);
 }
 
@@ -494,7 +494,7 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
-  base::Value::Dict& file_systems_paths_value = update.Get();
+  base::DictValue& file_systems_paths_value = update.Get();
   file_systems_paths_value.Remove(file_system_path);
 }
 
@@ -560,7 +560,7 @@ void DevToolsFileHelper::FilePathsChanged(
 }
 
 DevToolsFileHelper::PathToType DevToolsFileHelper::GetActiveFileSystemPaths() {
-  const base::Value::Dict& file_systems_paths_value =
+  const base::DictValue& file_systems_paths_value =
       profile_->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   PathToType result;
   for (auto pair : file_systems_paths_value) {

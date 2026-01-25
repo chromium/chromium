@@ -1765,7 +1765,7 @@ void ArcApps::OnDisableListPolicyChanged() {
     return;
   }
 
-  const base::Value::List& disabled_system_features_pref =
+  const base::ListValue& disabled_system_features_pref =
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
   bool disable_arc_settings = false;
   for (const auto& entry : disabled_system_features_pref) {

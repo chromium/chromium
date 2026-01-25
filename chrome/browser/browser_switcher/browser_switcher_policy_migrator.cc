@@ -35,7 +35,7 @@ void SecondsToMilliseconds(base::Value* val) {
 // pre-parsed. This is why we need to convert the string to a list, when
 // migrating from the old policy.
 void StringToList(base::Value* val) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(val->GetString());
   *val = base::Value(std::move(list));
 }

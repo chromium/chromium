@@ -47,7 +47,7 @@ BookmarkExpandedStateTracker::GetExpandedNodes() {
     return nodes;
   }
 
-  const base::Value::List& value =
+  const base::ListValue& value =
       pref_service_->GetList(bookmarks::prefs::kBookmarkEditorExpandedNodes);
 
   bool changed = false;
@@ -111,7 +111,7 @@ void BookmarkExpandedStateTracker::UpdatePrefs(const Nodes& nodes) {
     return;
   }
 
-  base::Value::List values;
+  base::ListValue values;
   values.reserve(nodes.size());
   for (const auto* node : nodes) {
     values.Append(base::NumberToString(node->id()));

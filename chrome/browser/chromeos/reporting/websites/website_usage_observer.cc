@@ -58,7 +58,7 @@ void WebsiteUsageObserver::OnUrlUsage(const GURL& url,
   }
   if (!profile_->GetPrefs()->HasPrefPath(kWebsiteUsage)) {
     // No data in the pref store, so we create an empty dictionary for now.
-    profile_->GetPrefs()->SetDict(kWebsiteUsage, base::Value::Dict());
+    profile_->GetPrefs()->SetDict(kWebsiteUsage, base::DictValue());
   }
 
   CreateOrUpdateWebsiteUsageEntry(url, running_time);
@@ -106,7 +106,7 @@ void WebsiteUsageObserver::CreateOrUpdateWebsiteUsageEntry(
 bool WebsiteUsageObserver::IsWebsiteUsageTelemetryEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(reporting_settings_);
-  const base::Value::List* allowed_telemetry_types;
+  const base::ListValue* allowed_telemetry_types;
   if (!reporting_settings_->GetList(kReportWebsiteTelemetry,
                                     &allowed_telemetry_types)) {
     // Policy likely unset. Disallow website usage telemetry tracking in any

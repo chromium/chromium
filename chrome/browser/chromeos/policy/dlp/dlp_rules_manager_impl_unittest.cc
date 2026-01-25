@@ -95,7 +95,7 @@ class DlpRulesManagerImplTest : public testing::Test {
   }
 
   void UpdatePolicyPref(const std::vector<dlp_test_util::DlpRule>& rules) {
-    base::Value::List policy_rules;
+    base::ListValue policy_rules;
     for (const auto& rule : rules) {
       policy_rules.Append(rule.Create());
     }

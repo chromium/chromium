@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(AppViewTest,
           ->GetBackgroundHostForExtension(bad_app->id())
           ->render_process_host(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  base::Value::Dict fake_embed_request_param;
+  base::DictValue fake_embed_request_param;
   fake_embed_request_param.Set(appview::kGuestInstanceID, guest_instance_id);
   fake_embed_request_param.Set(appview::kEmbedderID, host_app->id());
   extensions::AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(

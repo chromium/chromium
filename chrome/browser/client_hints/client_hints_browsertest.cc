@@ -2950,9 +2950,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
 
   // Add setting for the host.
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(42 /* client hint value */);
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               base::Value(std::move(client_hints_list)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
@@ -3731,14 +3731,14 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(true);
   // Add setting for the host.
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(
       static_cast<int>(network::mojom::WebClientHintsType::kViewportHeight));
   client_hints_list.Append(
       static_cast<int>(network::mojom::WebClientHintsType::kViewportWidth));
   client_hints_list.Append(static_cast<int>(
       network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               base::Value(std::move(client_hints_list)));
   HostContentSettingsMap* host_content_settings_map =
@@ -4074,7 +4074,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
   void EmulateMedia(std::string_view string) {
     base::Value features = base::test::ParseJson(string);
     DCHECK(features.is_list());
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("features", std::move(features));
     SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
   }
@@ -4214,27 +4214,27 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("userAgent", "MyTestAgent/2.0");
 
-  base::Value::Dict metadata;
-  base::Value::List brands;
-  base::Value::Dict brand1;
+  base::DictValue metadata;
+  base::ListValue brands;
+  base::DictValue brand1;
   brand1.Set("brand", "My Fake Browser");
   brand1.Set("version", "101");
   brands.Append(std::move(brand1));
-  base::Value::Dict brand2;
+  base::DictValue brand2;
   brand2.Set("brand", "Chromium");
   brand2.Set("version", "101");
   brands.Append(std::move(brand2));
   metadata.Set("brands", std::move(brands));
 
-  base::Value::List full_version_list;
-  base::Value::Dict fv_brand1;
+  base::ListValue full_version_list;
+  base::DictValue fv_brand1;
   fv_brand1.Set("brand", "My Fake Browser");
   fv_brand1.Set("version", "101.0.1234.0");
   full_version_list.Append(std::move(fv_brand1));
-  base::Value::Dict fv_brand2;
+  base::DictValue fv_brand2;
   fv_brand2.Set("brand", "Chromium");
   fv_brand2.Set("version", "101.0.5555.0");
   full_version_list.Append(std::move(fv_brand2));
@@ -4249,7 +4249,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
   metadata.Set("bitness", "64");
   metadata.Set("wow64", false);
 
-  base::Value::List form_factors;
+  base::ListValue form_factors;
   form_factors.Append(blink::kDesktopFormFactor);
   form_factors.Append(blink::kEInkFormFactor);
 
@@ -4285,9 +4285,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
 
   Attach();
 
-  base::Value::Dict params;
-  base::Value::Dict metadata;
-  base::Value::List form_factors;
+  base::DictValue params;
+  base::DictValue metadata;
+  base::ListValue form_factors;
   form_factors.Append("InvalidFormfactor");
 
   metadata.Set("formFactors", std::move(form_factors));

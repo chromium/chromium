@@ -54,7 +54,7 @@ void WebsiteUsageTelemetrySampler::MaybeCollect(
     // No usage data being tracked in the pref store. Return.
     return;
   }
-  const base::Value::Dict& usage_dict = user_prefs->GetDict(kWebsiteUsage);
+  const base::DictValue& usage_dict = user_prefs->GetDict(kWebsiteUsage);
   if (usage_dict.empty()) {
     // No website usage data to report. Return.
     return;

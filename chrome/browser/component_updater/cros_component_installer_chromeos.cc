@@ -139,7 +139,7 @@ bool CrOSComponentInstallerPolicy::AllowUpdates() const {
 
 update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   cros_component_installer_->EmitInstalledSignal(GetName());
 
@@ -154,7 +154,7 @@ void CrOSComponentInstallerPolicy::OnCustomUninstall() {
 }
 
 bool CrOSComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }
@@ -184,7 +184,7 @@ EnvVersionInstallerPolicy::~EnvVersionInstallerPolicy() = default;
 
 void EnvVersionInstallerPolicy::ComponentReady(const base::Version& version,
                                                const base::FilePath& path,
-                                               base::Value::Dict manifest) {
+                                               base::DictValue manifest) {
   std::string* min_env_version = manifest.FindString("min_env_version");
   if (!min_env_version) {
     return;
@@ -225,7 +225,7 @@ DemoAppInstallerPolicy::~DemoAppInstallerPolicy() = default;
 
 void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
                                             const base::FilePath& path,
-                                            base::Value::Dict manifest) {
+                                            base::DictValue manifest) {
   cros_component_installer_->RegisterCompatiblePath(
       GetName(), CompatibleComponentInfo(path, version));
 }
@@ -259,7 +259,7 @@ GrowthCampaignsInstallerPolicy::~GrowthCampaignsInstallerPolicy() = default;
 void GrowthCampaignsInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& path,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   cros_component_installer_->RegisterCompatiblePath(
       GetName(), CompatibleComponentInfo(path, version));
 }

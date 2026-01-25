@@ -53,7 +53,7 @@ class VpnServiceInterface : public KeyedService {
   // belongs to the extension with id |extension_id|.
   // Calls |success| or |failure| based on the outcome.
   virtual void SetParameters(const std::string& extension_id,
-                             base::Value::Dict parameters,
+                             base::DictValue parameters,
                              SuccessCallback,
                              FailureCallback) = 0;
 

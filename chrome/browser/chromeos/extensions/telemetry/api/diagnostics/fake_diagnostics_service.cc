@@ -433,7 +433,7 @@ void FakeDiagnosticsService::SetRoutineUpdateResponse(
 }
 
 void FakeDiagnosticsService::SetExpectedLastPassedParameters(
-    base::Value::Dict expected_passed_parameter) {
+    base::DictValue expected_passed_parameter) {
   expected_passed_parameters_ = std::move(expected_passed_parameter);
 }
 

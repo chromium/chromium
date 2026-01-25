@@ -250,9 +250,9 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   ASSERT_TRUE(body);
   ASSERT_TRUE(body->is_dict());
 
-  const base::Value::Dict& dict = body->GetDict();
+  const base::DictValue& dict = body->GetDict();
 
-  const base::Value::List* entries = dict.FindList("entries");
+  const base::ListValue* entries = dict.FindList("entries");
   ASSERT_TRUE(entries);
   ASSERT_EQ(1u, entries->size());
 

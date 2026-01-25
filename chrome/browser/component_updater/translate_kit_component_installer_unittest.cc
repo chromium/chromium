@@ -109,7 +109,7 @@ class RegisterTranslateKitComponentTest : public ::testing::Test {
     return fake_install_dir_.GetPath();
   }
   const base::Version& version() const { return fake_version_; }
-  const base::Value::Dict& manifest() const { return fake_manifest_; }
+  const base::DictValue& manifest() const { return fake_manifest_; }
 
   void SetVersion(std::string_view version_str) {
     fake_version_ = base::Version(version_str);
@@ -154,7 +154,7 @@ class RegisterTranslateKitComponentTest : public ::testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::ScopedTempDir fake_install_dir_;
   base::Version fake_version_;
-  base::Value::Dict fake_manifest_;
+  base::DictValue fake_manifest_;
   std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
 #if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<ash::FakeImageLoaderClient> fake_image_loader_client_ = nullptr;

@@ -105,14 +105,14 @@ ElementExpr GetElementByXpath(const std::string& xpath) {
 
 std::optional<std::vector<std::string>> GetExpectedFormSignatures(
     const base::FilePath& recipe_file_path) {
-  std::optional<base::Value::Dict> recipe =
+  std::optional<base::DictValue> recipe =
       captured_sites_test_utils::ReadRecipeFile(recipe_file_path);
   if (!recipe) {
     VLOG(1) << "Failed to read recipe file: " << recipe_file_path.value();
     return std::nullopt;
   }
 
-  base::Value::List* form_signatures_list =
+  base::ListValue* form_signatures_list =
       recipe.value().FindList("formSignaturesSubmitted");
   if (!form_signatures_list) {
     VLOG(1) << "No expected form signatures in recipe.";

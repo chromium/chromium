@@ -157,7 +157,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& local_id,
       const std::string& target_path,
       const std::string& type,
-      const base::Value::Dict* value);
+      const base::DictValue* value);
 
   AgentHostDelegate(const AgentHostDelegate&) = delete;
   AgentHostDelegate& operator=(const AgentHostDelegate&) = delete;
@@ -171,7 +171,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
                     const std::string& local_id,
                     const std::string& target_path,
                     const std::string& type,
-                    const base::Value::Dict* value);
+                    const base::DictValue* value);
   // DevToolsExternalAgentProxyDelegate overrides.
   void Attach(content::DevToolsExternalAgentProxy* proxy) override;
   void Detach(content::DevToolsExternalAgentProxy* proxy) override;
@@ -205,7 +205,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       proxies_;
 };
 
-static std::string GetStringProperty(const base::Value::Dict& value,
+static std::string GetStringProperty(const base::DictValue& value,
                                      const std::string& name) {
   const std::string* result = value.FindString(name);
   return result ? *result : std::string();
@@ -213,12 +213,12 @@ static std::string GetStringProperty(const base::Value::Dict& value,
 
 static std::string BuildUniqueTargetId(const std::string& serial,
                                        const std::string& browser_id,
-                                       const base::Value::Dict& value) {
+                                       const base::DictValue& value) {
   return base::StringPrintf("%s:%s:%s", serial.c_str(), browser_id.c_str(),
                             GetStringProperty(value, "id").c_str());
 }
 
-static std::string GetFrontendURLFromValue(const base::Value::Dict& value,
+static std::string GetFrontendURLFromValue(const base::DictValue& value,
                                            const std::string& browser_version) {
   std::string frontend_url = GetStringProperty(value, "devtoolsFrontendUrl");
   size_t ws_param = frontend_url.find("?ws");
@@ -234,7 +234,7 @@ static std::string GetFrontendURLFromValue(const base::Value::Dict& value,
   return frontend_url;
 }
 
-static std::string GetTargetPath(const base::Value::Dict& value) {
+static std::string GetTargetPath(const base::DictValue& value) {
   std::string target_path = GetStringProperty(value, "webSocketDebuggerUrl");
 
   if (base::StartsWith(target_path, "ws://", base::CompareCase::SENSITIVE)) {
@@ -258,7 +258,7 @@ AgentHostDelegate::GetOrCreateAgentHost(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    const base::Value::Dict* value) {
+    const base::DictValue* value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<DevToolsAgentHost> result =
       DevToolsAgentHost::GetForId(local_id);
@@ -281,7 +281,7 @@ AgentHostDelegate::AgentHostDelegate(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    const base::Value::Dict* value)
+    const base::DictValue* value)
     : device_(device),
       browser_id_(browser_id),
       local_id_(local_id),
@@ -490,7 +490,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
     const std::string& version_response,
     bool& is_chrome) {
   // Parse version, append to package name if available,
-  std::optional<base::Value::Dict> value_dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value_dict = base::JSONReader::ReadDict(
       version_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value_dict) {
     return;
@@ -570,7 +570,7 @@ DevToolsDeviceDiscovery::RemotePage::RemotePage(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const std::string& browser_id,
     const std::string& browser_version,
-    base::Value::Dict dict)
+    base::DictValue dict)
     : device_(device),
       browser_id_(browser_id),
       browser_version_(browser_version),

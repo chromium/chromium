@@ -145,12 +145,12 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
   std::string EvaluateAndGetValue(const std::string& expression,
                                   const std::string& unique_context_id,
                                   const std::string& session_id) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", expression);
     if (!unique_context_id.empty()) {
       params.Set("uniqueContextId", unique_context_id);
     }
-    const base::Value::Dict* result = SendSessionCommand(
+    const base::DictValue* result = SendSessionCommand(
         "Runtime.evaluate", std::move(params), session_id, /*wait=*/true);
     return *result->FindStringByDottedPath("result.value");
   }
@@ -169,31 +169,31 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
                                     const std::string& session_id) {
     std::string object_id;
     {
-      base::Value::Dict params;
+      base::DictValue params;
       params.Set("expression", base::StrCat({"document.getElementById('",
                                              id_attribute, "')"}));
       if (!unique_context_id.empty()) {
         params.Set("uniqueContextId", unique_context_id);
       }
-      const base::Value::Dict* result = SendSessionCommand(
+      const base::DictValue* result = SendSessionCommand(
           "Runtime.evaluate", std::move(params), session_id, /*wait=*/true);
       object_id = *result->FindStringByDottedPath("result.objectId");
     }
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("objectId", object_id);
-    const base::Value::Dict* result = SendSessionCommand(
+    const base::DictValue* result = SendSessionCommand(
         "DOM.describeNode", std::move(params), session_id, /*wait=*/true);
     return *result->FindIntByDottedPath("node.backendNodeId");
   }
 
   std::string GetOOPIFTargetId() {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("discover", true);
     SendCommandSync("Target.setDiscoverTargets", std::move(params));
     std::string frame_target_id;
     while (true) {
-      base::Value::Dict result;
+      base::DictValue result;
       result = WaitForNotification("Target.targetCreated", true);
       if (*result.FindStringByDottedPath("targetInfo.type") == "iframe") {
         frame_target_id =
@@ -205,15 +205,15 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
   }
 
   std::string AttachToTarget(const std::string& target_id) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("targetId", target_id);
     params.Set("flatten", true);
     SendCommandSync("Target.attachToTarget", std::move(params));
     return CHECK_DEREF(CHECK_DEREF(result()).FindString("sessionId"));
   }
 
-  base::Value::Dict GetTestCreditCard() {
-    base::Value::Dict card;
+  base::DictValue GetTestCreditCard() {
+    base::DictValue card;
     card.Set("number", "4444444444444444");
     card.Set("name", "John Smith");
     card.Set("expiryMonth", "01");
@@ -233,13 +233,13 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
             FormRendererId(123)};
   }
 
-  base::Value::Dict GetFilledOutForm(const std::string& unique_context_id) {
+  base::DictValue GetFilledOutForm(const std::string& unique_context_id) {
     return GetFilledOutForm(unique_context_id, "");
   }
 
-  base::Value::Dict GetFilledOutForm(const std::string& unique_context_id,
-                                     const std::string& session_id) {
-    base::Value::Dict card;
+  base::DictValue GetFilledOutForm(const std::string& unique_context_id,
+                                   const std::string& session_id) {
+    base::DictValue card;
     card.Set("number",
              EvaluateAndGetValue(
                  "document.getElementById('CREDIT_CARD_NUMBER').value",
@@ -280,27 +280,27 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
 
   EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
-  base::Value::Dict address_1_fields;
+  base::DictValue address_1_fields;
   address_1_fields.Set("name", "ADDRESS_HOME_LINE1");
   address_1_fields.Set("value", "Erika-mann");
-  base::Value::Dict address_1;
-  base::Value::List fields;
+  base::DictValue address_1;
+  base::ListValue fields;
   fields.Append(std::move(address_1_fields));
   address_1.Set("fields", std::move(fields));
 
-  base::Value::Dict address_2_fields;
+  base::DictValue address_2_fields;
   address_2_fields.Set("name", "ADDRESS_HOME_LINE2");
   address_2_fields.Set("value", "Faria lima");
-  base::Value::Dict address_2;
-  base::Value::List fields_2;
+  base::DictValue address_2;
+  base::ListValue fields_2;
   fields_2.Append(std::move(address_2_fields));
   address_2.Set("fields", std::move(fields_2));
 
-  base::Value::List test_addresses;
+  base::ListValue test_addresses;
   test_addresses.Append(std::move(address_1));
   test_addresses.Append(std::move(address_2));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("addresses", std::move(test_addresses));
 
   SendCommandSync("Autofill.setAddresses", std::move(params));
@@ -330,18 +330,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
 
   std::string frame_id;
   {
-    const base::Value::Dict* result = SendCommandSync("Page.getFrameTree");
-    const base::Value::List* frames =
+    const base::DictValue* result = SendCommandSync("Page.getFrameTree");
+    const base::ListValue* frames =
         result->FindListByDottedPath("frameTree.childFrames");
-    const base::Value::Dict* frame_dict = frames->front().GetIfDict();
+    const base::DictValue* frame_dict = frames->front().GetIfDict();
     frame_id = *frame_dict->FindStringByDottedPath("frame.id");
   }
 
   std::string unique_context_id;
   {
-    base::Value::Dict command_params;
+    base::DictValue command_params;
     SendCommandSync("Runtime.enable");
-    base::Value::Dict params;
+    base::DictValue params;
     for (int context_count = 1; true; context_count++) {
       params = WaitForNotification("Runtime.executionContextCreated", true);
       if (*params.FindStringByDottedPath("context.auxData.frameId") ==
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
       GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", unique_context_id);
 
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("fieldId", backend_node_id);
     params.Set("card", GetTestCreditCard());
     params.Set("frameId", "wrong");
@@ -366,13 +366,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   }
 
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("fieldId", backend_node_id);
     params.Set("card", GetTestCreditCard());
     params.Set("frameId", frame_id);
     SendCommandSync("Autofill.trigger", std::move(params));
     ASSERT_TRUE(result());
-    EXPECT_EQ(*result(), base::Value::Dict());
+    EXPECT_EQ(*result(), base::DictValue());
   }
 
   EXPECT_EQ(GetFilledOutForm(unique_context_id), GetTestCreditCard());
@@ -397,14 +397,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInOOPIFIframe) {
   int backend_node_id =
       GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", "", session_id);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("frameId", frame_target_id);
   params.Set("card", GetTestCreditCard());
   SendSessionCommand("Autofill.trigger", std::move(params), session_id,
                      /*wait=*/true);
   ASSERT_TRUE(result());
-  EXPECT_EQ(*result(), base::Value::Dict());
+  EXPECT_EQ(*result(), base::DictValue());
   EXPECT_EQ(GetFilledOutForm("", session_id), GetTestCreditCard());
 }
 
@@ -427,14 +427,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardAcrossOOPIFs) {
   int backend_node_id =
       GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", "", session_id);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("frameId", frame_target_id);
   params.Set("card", GetTestCreditCard());
   SendSessionCommand("Autofill.trigger", std::move(params), session_id,
                      /*wait=*/true);
   ASSERT_TRUE(result());
-  EXPECT_EQ(*result(), base::Value::Dict());
+  EXPECT_EQ(*result(), base::DictValue());
   EXPECT_EQ(GetFilledOutForm("", session_id), GetTestCreditCard());
 }
 
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                                        &FormFieldData::global_id),
       &profile);
 
-  base::Value::Dict notification = WaitForNotification(
+  base::DictValue notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);
 
   std::set<autofill::FieldType> field_types_added_to_address_ui;
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
                     autofill::FieldType::ADDRESS_HOME_COUNTRY, "en-US"))));
   // Assert that the filled fields sent to devtools match exactly the ones
   // filled by autofill.
-  const base::Value::List* filled_fields =
+  const base::ListValue* filled_fields =
       notification.FindListByDottedPath("filledFields");
   ASSERT_EQ(filled_fields->size(), filled_fields_by_autofill.size());
   for (size_t i = 0; i < filled_fields->size(); ++i) {
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
   std::string session_id = AttachToTarget(frame_target_id);
 
   SendCommandSync("Autofill.enable");
-  SendSessionCommand("Autofill.enable", base::Value::Dict(), session_id, true);
+  SendSessionCommand("Autofill.enable", base::DictValue(), session_id, true);
 
   AutofillProfile profile = CreateTestProfile();
   FormData form =
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilledInOOPIFs) {
       form.global_id(), autofill::mojom::ActionPersistence::kFill,
       filled_fields_by_autofill, &profile);
 
-  base::Value::Dict notification = WaitForNotification(
+  base::DictValue notification = WaitForNotification(
       "Autofill.addressFormFilled", /*allow_existing=*/true);
   EXPECT_EQ(notification.FindListByDottedPath("filledFields")->size(), 6u);
   EXPECT_FALSE(HasExistingNotification("Autofill.addressFormFilled"))
@@ -711,26 +711,26 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofill) {
 
   int backend_node_id = GetBackendNodeIdByIdAttribute("street-address");
 
-  auto address_fields = base::Value::List()
-                            .Append(base::Value::Dict()
+  auto address_fields = base::ListValue()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_LINE1")
                                         .Set("value", "123 Main Street"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_CITY")
                                         .Set("value", "New York"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_STATE")
                                         .Set("value", "NY"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_ZIP")
                                         .Set("value", "10001"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_COUNTRY")
                                         .Set("value", "US"));
 
-  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+  auto address = base::DictValue().Set("fields", std::move(address_fields));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("address", std::move(address));
 
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithInvalidFieldId) {
 
   EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", 99999);  // Invalid field ID
   params.Set("card", GetTestCreditCard());
 
@@ -801,13 +801,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
 
   // Use an invalid/unsupported field type
   auto address_fields =
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set("name", "INVALID_FIELD_TYPE")
-                                     .Set("value", "123 Main Street"));
+      base::ListValue().Append(base::DictValue()
+                                   .Set("name", "INVALID_FIELD_TYPE")
+                                   .Set("value", "123 Main Street"));
 
-  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+  auto address = base::DictValue().Set("fields", std::move(address_fields));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("address", std::move(address));
 
@@ -818,11 +818,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
             "Unsupported field type: INVALID_FIELD_TYPE");
 
   address_fields =
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set("name", "LOYALTY_MEMBERSHIP_ID")
-                                     .Set("value", "1234567890"));
+      base::ListValue().Append(base::DictValue()
+                                   .Set("name", "LOYALTY_MEMBERSHIP_ID")
+                                   .Set("value", "1234567890"));
 
-  address = base::Value::Dict().Set("fields", std::move(address_fields));
+  address = base::DictValue().Set("fields", std::move(address_fields));
 
   params.Set("fieldId", backend_node_id);
   params.Set("address", std::move(address));
@@ -848,18 +848,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofillInIframe) {
 
   std::string frame_id;
   {
-    const base::Value::Dict* result = SendCommandSync("Page.getFrameTree");
-    const base::Value::List* frames =
+    const base::DictValue* result = SendCommandSync("Page.getFrameTree");
+    const base::ListValue* frames =
         result->FindListByDottedPath("frameTree.childFrames");
-    const base::Value::Dict* frame_dict = frames->front().GetIfDict();
+    const base::DictValue* frame_dict = frames->front().GetIfDict();
     frame_id = *frame_dict->FindStringByDottedPath("frame.id");
   }
 
   std::string unique_context_id;
   {
-    base::Value::Dict command_params;
+    base::DictValue command_params;
     SendCommandSync("Runtime.enable");
-    base::Value::Dict params;
+    base::DictValue params;
     for (int context_count = 1; true; context_count++) {
       params = WaitForNotification("Runtime.executionContextCreated", true);
       if (*params.FindStringByDottedPath("context.auxData.frameId") ==
@@ -875,17 +875,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofillInIframe) {
       GetBackendNodeIdByIdAttribute("street-address", unique_context_id);
 
   // Use valid address field types
-  auto address_fields = base::Value::List()
-                            .Append(base::Value::Dict()
+  auto address_fields = base::ListValue()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_LINE1")
                                         .Set("value", "123 Main Street"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_CITY")
                                         .Set("value", "New York"));
 
-  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+  auto address = base::DictValue().Set("fields", std::move(address_fields));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("address", std::move(address));
   params.Set("frameId", frame_id);
@@ -925,19 +925,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithBothCardAndAddress) {
 
   int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
 
-  auto address_fields = base::Value::List()
-                            .Append(base::Value::Dict()
+  auto address_fields = base::ListValue()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_LINE1")
                                         .Set("value", "123 Main Street"))
-                            .Append(base::Value::Dict()
+                            .Append(base::DictValue()
                                         .Set("name", "ADDRESS_HOME_COUNTRY")
                                         .Set("value", "US"));
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   params.Set("card", GetTestCreditCard());
   params.Set("address",
-             base::Value::Dict().Set("fields", std::move(address_fields)));
+             base::DictValue().Set("fields", std::move(address_fields)));
 
   SendCommandSync("Autofill.trigger", std::move(params));
 
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithNeitherCardNorAddress) {
 
   int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("fieldId", backend_node_id);
   // Neither card nor address provided
 

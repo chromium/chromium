@@ -486,7 +486,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
                                 AppTypeName app_type_name) {
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         GetPrefService()->GetDict(kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
@@ -540,8 +540,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedCount(int expected_count, AppTypeName app_type_name) {
-    const base::Value::Dict& dict =
-        GetPrefService()->GetDict(kAppActivatedCount);
+    const base::DictValue& dict = GetPrefService()->GetDict(kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     std::optional<int> activated_count = dict.FindIntByDottedPath(key);
