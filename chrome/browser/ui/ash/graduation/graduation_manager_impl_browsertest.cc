@@ -134,7 +134,7 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
   }
 
   void SetGraduationEnablement(bool is_enabled) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
     browser()->profile()->GetPrefs()->SetDict(
         prefs::kGraduationEnablementStatus, status.Clone());
@@ -144,9 +144,9 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
                                             int day,
                                             int month,
                                             int year) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
-    base::Value::Dict start_date;
+    base::DictValue start_date;
     start_date.Set("day", day);
     start_date.Set("month", month);
     start_date.Set("year", year);
@@ -159,9 +159,9 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
                                           int day,
                                           int month,
                                           int year) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
-    base::Value::Dict end_date;
+    base::DictValue end_date;
     end_date.Set("day", day);
     end_date.Set("month", month);
     end_date.Set("year", year);

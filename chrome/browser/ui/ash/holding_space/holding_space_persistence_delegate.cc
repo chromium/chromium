@@ -107,7 +107,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
 
   // Attempt to find the finalized `item` in persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   auto item_it = std::ranges::find(
       list, item->id(), [](const base::Value& persisted_item) {
         return HoldingSpaceItem::DeserializeId(persisted_item.GetDict());
@@ -143,7 +143,7 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   // in-memory holding space model.
   MaybeRemoveItemsFromPersistence();
 
-  const base::Value::List& persisted_holding_space_items =
+  const base::ListValue& persisted_holding_space_items =
       profile()->GetPrefs()->GetList(kPersistencePath);
 
   // If persistent storage is empty we can immediately notify the callback of

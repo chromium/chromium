@@ -13,7 +13,7 @@
 namespace toolbar {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  base::Value::List default_pinned_actions;
+  base::ListValue default_pinned_actions;
   const std::optional<std::string>& chrome_labs_action =
       actions::ActionIdMap::ActionIdToString(kActionShowChromeLabs);
   // ActionIdToStringMappings are not initialized in unit tests, therefore will

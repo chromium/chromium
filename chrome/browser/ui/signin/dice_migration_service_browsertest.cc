@@ -1083,7 +1083,7 @@ DICE_MIGRATION_TEST_F(
   ASSERT_TRUE(value->is_dict());
   EXPECT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));
@@ -1170,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value->is_dict());
   ASSERT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value->is_dict());
   ASSERT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));

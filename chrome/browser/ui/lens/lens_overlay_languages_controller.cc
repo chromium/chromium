@@ -119,10 +119,10 @@ void LensOverlayLanguagesController::OnJsonParsed(
                              std::vector<mojom::LanguagePtr>());
     return;
   }
-  const base::Value::Dict& result_dict = result->GetDict();
-  const base::Value::List* source_language_list =
+  const base::DictValue& result_dict = result->GetDict();
+  const base::ListValue* source_language_list =
       result_dict.FindList("sourceLanguages");
-  const base::Value::List* target_language_list =
+  const base::ListValue* target_language_list =
       result_dict.FindList("targetLanguages");
 
   std::vector<lens::mojom::LanguagePtr> source_languages =
@@ -138,7 +138,7 @@ void LensOverlayLanguagesController::OnJsonParsed(
 
 std::vector<lens::mojom::LanguagePtr>
 LensOverlayLanguagesController::RetrieveLanguagesFromResults(
-    const base::Value::List* result_list) {
+    const base::ListValue* result_list) {
   if (!result_list) {
     return std::vector<lens::mojom::LanguagePtr>();
   }
@@ -149,7 +149,7 @@ LensOverlayLanguagesController::RetrieveLanguagesFromResults(
       continue;
     }
 
-    const base::Value::Dict& result_language_dict = result_language.GetDict();
+    const base::DictValue& result_language_dict = result_language.GetDict();
     const std::string* language_code =
         result_language_dict.FindString("language");
     const std::string* language_name = result_language_dict.FindString("name");

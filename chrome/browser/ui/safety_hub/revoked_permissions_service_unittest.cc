@@ -258,13 +258,13 @@ class RevokedPermissionsServiceTest
     return hcsm->GetSettingsForOneType(revoked_unused_site_type);
   }
 
-  base::Value::List GetRevokedPermissionsForOneOrigin(
+  base::ListValue GetRevokedPermissionsForOneOrigin(
       HostContentSettingsMap* hcsm,
       const GURL& url) {
     base::Value setting_value(
         hcsm->GetWebsiteSetting(url, url, revoked_unused_site_type, nullptr));
 
-    base::Value::List permissions_list;
+    base::ListValue permissions_list;
     if (!setting_value.is_dict() ||
         !setting_value.GetDict().FindList(permissions::kRevokedKey)) {
       return permissions_list;
@@ -291,7 +291,7 @@ class RevokedPermissionsServiceTest
     constraint.set_track_last_visit_for_autoexpiration(true);
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), chooser_type,
-        base::Value(base::Value::Dict().Set("foo", "bar")), constraint);
+        base::Value(base::DictValue().Set("foo", "bar")), constraint);
   }
 
   void SetupAbusiveNotificationSite(std::string url, ContentSetting setting) {
@@ -335,7 +335,7 @@ class RevokedPermissionsServiceTest
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(lifetime);
 
-    // `REVOKED_UNUSED_SITE_PERMISSIONS` stores base::Value::Dict with two keys:
+    // `REVOKED_UNUSED_SITE_PERMISSIONS` stores base::DictValue with two keys:
     // (1) key for a string list of revoked permission types
     // (2) key for a dictionary, which key is a string permission type, mapped
     // to its revoked permission data in base::Value (i.e. {"foo": "bar"})
@@ -345,19 +345,19 @@ class RevokedPermissionsServiceTest
     //  {"foo": "bar"}}
     // }
     auto dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set(permissions::kRevokedKey,
-                 base::Value::List()
+                 base::ListValue()
                      .Append(
                          UnusedSitePermissionsManager::
                              ConvertContentSettingsTypeToKey(geolocation_type))
                      .Append(UnusedSitePermissionsManager::
                                  ConvertContentSettingsTypeToKey(chooser_type)))
             .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::Value::Dict().Set(
+                 base::DictValue().Set(
                      UnusedSitePermissionsManager::
                          ConvertContentSettingsTypeToKey(chooser_type),
-                     base::Value(base::Value::Dict().Set("foo", "bar"))));
+                     base::Value(base::DictValue().Set("foo", "bar"))));
 
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), revoked_unused_site_type,
@@ -412,10 +412,10 @@ class RevokedPermissionsServiceTest
     permissions_data.primary_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url));
     permissions_data.permission_types = permission_types;
-    permissions_data.chooser_permissions_data = base::Value::Dict().Set(
+    permissions_data.chooser_permissions_data = base::DictValue().Set(
         UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
             chooser_type),
-        base::Value::Dict().Set("foo", "bar"));
+        base::DictValue().Set("foo", "bar"));
     permissions_data.constraints =
         content_settings::ContentSettingConstraints(expiration - lifetime);
     permissions_data.constraints.set_lifetime(lifetime);
@@ -955,7 +955,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ALLOW,
         hcsm()->GetContentSetting(GURL(url1), GURL(url1), geolocation_type));
-    EXPECT_EQ(base::Value::Dict().Set("foo", "bar"),
+    EXPECT_EQ(base::DictValue().Set("foo", "bar"),
               hcsm()->GetWebsiteSetting(GURL(url1), GURL(url1), chooser_type));
   }
   if (ShouldSetupSafeBrowsing()) {
@@ -973,7 +973,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ALLOW,
         hcsm()->GetContentSetting(GURL(url2), GURL(url2), geolocation_type));
-    EXPECT_EQ(base::Value::Dict().Set("foo", "bar"),
+    EXPECT_EQ(base::DictValue().Set("foo", "bar"),
               hcsm()->GetWebsiteSetting(GURL(url2), GURL(url2), chooser_type));
   }
   if (ShouldSetupSafeBrowsing()) {
@@ -1021,7 +1021,7 @@ TEST_P(RevokedPermissionsServiceTest, RegrantPermissionsForOrigin) {
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ALLOW,
         hcsm()->GetContentSetting(GURL(url1), GURL(url5), geolocation_type));
-    EXPECT_EQ(base::Value::Dict().Set("foo", "bar"),
+    EXPECT_EQ(base::DictValue().Set("foo", "bar"),
               hcsm()->GetWebsiteSetting(GURL(url1), GURL(url5), chooser_type));
   }
   if (ShouldSetupDisruptiveSites()) {
@@ -1406,7 +1406,7 @@ TEST_P(RevokedPermissionsServiceTest,
   if (ShouldSetupUnusedSites()) {
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url4), GURL(), chooser_type,
-        base::Value(base::Value::Dict().Set("foo", "baz")));
+        base::Value(base::DictValue().Set("foo", "baz")));
     EXPECT_EQ(0U, GetRevokedUnusedPermissions(hcsm()).size());
   }
 }

@@ -259,7 +259,7 @@ TEST_F(IOSPromoTriggerServiceTest, SetReminderForIOSDevice) {
 
   service_->SetReminderForIOSDevice(PromoType::kPassword, "test_guid");
 
-  const base::Value::Dict& promo_reminder_data =
+  const base::DictValue& promo_reminder_data =
       profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
   ASSERT_TRUE(promo_reminder_data.FindInt(prefs::kIOSPromoReminderPromoType));
   EXPECT_EQ(

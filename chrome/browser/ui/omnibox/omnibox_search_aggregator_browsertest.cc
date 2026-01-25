@@ -198,8 +198,8 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
 
   base::Value CreateEnterpriseSearchAggregatorPolicyValue(
       const std::string& suggest_url = kSearchAggregatorPolicySuggestUrl) {
-    base::Value::Dict policy_value;
-    policy_value = base::Value::Dict()
+    base::DictValue policy_value;
+    policy_value = base::DictValue()
                        .Set(policy::SearchAggregatorPolicyHandler::kIconUrl,
                             kSearchAggregatorPolicyIconUrl)
                        .Set(policy::SearchAggregatorPolicyHandler::kShortcut,

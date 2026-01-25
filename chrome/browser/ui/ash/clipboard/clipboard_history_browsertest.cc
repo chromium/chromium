@@ -811,7 +811,7 @@ class ClipboardHistoryPasteTypeBrowserTest
 
  private:
   // Returns all valid data formats for the last paste.
-  base::Value::List GetLastPaste() {
+  base::ListValue GetLastPaste() {
     return content::EvalJs(web_contents_.get(),
                            "(function() { return window.getLastPaste(); })();")
         .TakeValue()

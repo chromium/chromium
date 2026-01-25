@@ -71,7 +71,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
 #endif  // !BUILDFLAG(IS_ANDROID)
     Profile* profile) {
   pref_service_ = std::move(pref_service);
-  const base::Value::Dict& stored_notifications =
+  const base::DictValue& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
 
   pref_dict_key_map_ = {
@@ -239,7 +239,7 @@ SafetyHubMenuNotificationService::GetResultsFromAllModules() {
 }
 
 void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
-  base::Value::Dict notifications;
+  base::DictValue notifications;
   for (auto const& it : pref_dict_key_map_) {
     SafetyHubModuleInfoElement* info_element =
         module_info_map_.find(it.first)->second.get();
@@ -251,11 +251,11 @@ void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
 
 std::unique_ptr<SafetyHubMenuNotification>
 SafetyHubMenuNotificationService::GetNotificationFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     safety_hub::SafetyHubModuleType& type) const {
   // It can be assumed that all `safety_hub::SafetyHubModuleType`s are in
   // `pref_dict_key_map_`.
-  const base::Value::Dict* notification_dict =
+  const base::DictValue* notification_dict =
       dict.FindDict(pref_dict_key_map_.find(type)->second);
   if (!notification_dict) {
     auto new_notification = std::make_unique<SafetyHubMenuNotification>(type);
@@ -273,7 +273,7 @@ void SafetyHubMenuNotificationService::SetInfoElement(
     base::TimeDelta interval,
     base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
         result_getter,
-    const base::Value::Dict& stored_notifications) {
+    const base::DictValue& stored_notifications) {
   module_info_map_[type] = std::make_unique<SafetyHubModuleInfoElement>(
       priority, interval, result_getter,
       GetNotificationFromDict(stored_notifications, type));

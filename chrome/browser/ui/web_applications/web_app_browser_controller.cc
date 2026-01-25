@@ -193,7 +193,7 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
       AppLockDescription(app_id()),
       base::BindOnce(
           [](const webapps::AppId& app_id, bool wco_enabled, AppLock& lock,
-             base::Value::Dict& debug_value) {
+             base::DictValue& debug_value) {
             lock.sync_bridge().SetAppWindowControlsOverlayEnabled(app_id,
                                                                   wco_enabled);
           },
@@ -335,7 +335,7 @@ void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
       AppLockDescription(app_id()),
       base::BindOnce(
           [](const webapps::AppId& app_id, AppLock& lock,
-             base::Value::Dict& debug_value) {
+             base::DictValue& debug_value) {
             lock.sync_bridge().SetAlwaysShowToolbarInFullscreen(
                 app_id,
                 !lock.registrar().AlwaysShowToolbarInFullscreen(app_id));

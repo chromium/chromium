@@ -898,23 +898,23 @@ bool StateSnapshot::operator==(const StateSnapshot& other) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
-  base::Value::Dict root;
-  base::Value::Dict& profiles_dict = *root.EnsureDict("profiles");
+  base::DictValue root;
+  base::DictValue& profiles_dict = *root.EnsureDict("profiles");
   for (const auto& profile_pair : snapshot.profiles) {
-    base::Value::Dict profile_dict;
+    base::DictValue profile_dict;
 
-    base::Value::Dict browsers_dict;
+    base::DictValue browsers_dict;
     const ProfileState& profile = profile_pair.second;
     for (const auto& browser_pair : profile.browsers) {
-      base::Value::Dict browser_dict;
+      base::DictValue browser_dict;
       const BrowserState& browser = browser_pair.second;
 
       browser_dict.Set("browser",
                        base::StringPrintf("%p", browser.browser.get()));
 
-      base::Value::Dict tab_dicts;
+      base::DictValue tab_dicts;
       for (const auto& tab_pair : browser.tabs) {
-        base::Value::Dict tab_dict;
+        base::DictValue tab_dict;
         const TabState& tab = tab_pair.second;
         tab_dict.Set("url", tab.url.spec());
         tab_dicts.Set(base::StringPrintf("%p", tab_pair.first),
@@ -929,9 +929,9 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
       browsers_dict.Set(base::StringPrintf("%p", browser_pair.first),
                         std::move(browser_dict));
     }
-    base::Value::Dict app_dicts;
+    base::DictValue app_dicts;
     for (const auto& app_pair : profile.apps) {
-      base::Value::Dict app_dict;
+      base::DictValue app_dict;
       const AppState& app = app_pair.second;
 
       app_dict.Set("id", app.id);
@@ -1517,9 +1517,9 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   // The argument of add() is a dictionary-valued dictionary:
   // { $manifest_id : {'installURL' : $installURL} }
   // In our case, both $manifest_id and $installURL are sub_url.
-  base::Value::Dict inner_dict;
+  base::DictValue inner_dict;
   inner_dict.Set("installURL", sub_url);
-  base::Value::Dict outer_dict;
+  base::DictValue outer_dict;
   outer_dict.Set(sub_url, std::move(inner_dict));
 
   std::string script =
@@ -1530,7 +1530,7 @@ void WebAppIntegrationTestDriver::InstallSubApp(
   if (option == SubAppInstallDialogOptions::kUserDeny) {
     EXPECT_FALSE(add_result.is_ok());
   } else {
-    base::Value::Dict expected_output;
+    base::DictValue expected_output;
     expected_output.Set(sub_url, "success");
     EXPECT_EQ(expected_output, add_result);
   }
@@ -1552,7 +1552,7 @@ void WebAppIntegrationTestDriver::RemoveSubApp(Site parent_app, Site sub_app) {
       web_contents,
       content::JsReplace("navigator.subApps.remove([$1])", sub_url));
 
-  base::Value::Dict expected_output;
+  base::DictValue expected_output;
   expected_output.Set(sub_url, "success");
   EXPECT_EQ(expected_output, remove_result);
 
@@ -2185,7 +2185,7 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
       ::web_app::test::SetPreinstalledWebAppConfigDirForTesting(
           test_config_dir);
 
-  base::Value::List app_configs;
+  base::ListValue app_configs;
   auto json_parse_result = base::JSONReader::ReadAndReturnValueWithError(
       app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_parse_result.has_value())
@@ -2194,7 +2194,7 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
     return;
   }
   app_configs.Append(std::move(*json_parse_result));
-  base::AutoReset<const base::Value::List*> configs_for_testing =
+  base::AutoReset<const base::ListValue*> configs_for_testing =
       PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
   using InstallAppsResults =
@@ -3296,7 +3296,7 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
             continue;
           }
 
-          base::Value::List test_content_list =
+          base::ListValue test_content_list =
               EvalJs(web_contents, "launchFinishedPromise")
                   .TakeValue()
                   .TakeList();
@@ -3866,7 +3866,7 @@ void WebAppIntegrationTestDriver::CheckHasSubApp(Site parent_app,
   const content::EvalJsResult list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()");
 
-  const base::Value::Dict& list_result_dict = list_result.ExtractDict();
+  const base::DictValue& list_result_dict = list_result.ExtractDict();
 
   // Check that list() contained the sub_app_url key.
   EXPECT_NE(nullptr, list_result_dict.FindDict(sub_app_url));
@@ -3890,7 +3890,7 @@ void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site parent_app,
   const content::EvalJsResult list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()");
 
-  const base::Value::Dict& list_result_dict = list_result.ExtractDict();
+  const base::DictValue& list_result_dict = list_result.ExtractDict();
 
   // Check that list() did not contain the sub_app_url key.
   EXPECT_EQ(nullptr, list_result_dict.FindDict(sub_app_url));
@@ -4350,7 +4350,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set(kUrlKey, url.spec());
     item.Set(kDefaultLaunchContainerKey, std::move(default_launch_container));
     item.Set(kCreateDesktopShortcutKey, create_shortcut);
@@ -4373,12 +4373,12 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
   GURL url = GetUrlForSite(site);
   {
     ScopedListPrefUpdate update(profile()->GetPrefs(), prefs::kWebAppSettings);
-    base::Value::List& update_list = update.Get();
+    base::ListValue& update_list = update.Get();
     update_list.EraseIf([&](const base::Value& item) {
       return *item.GetDict().FindString(kManifestId) == url.spec();
     });
 
-    base::Value::Dict dict_item;
+    base::DictValue dict_item;
     dict_item.Set(kManifestId, url.spec());
     dict_item.Set(kRunOnOsLogin, policy);
 

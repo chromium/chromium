@@ -112,7 +112,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Creates a notification from the provided dictionary, for the specified
   // Safety Hub service type.
   std::unique_ptr<SafetyHubMenuNotification> GetNotificationFromDict(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       safety_hub::SafetyHubModuleType& type) const;
 
   // Sets the relevant, static meta information for the three-dot menu
@@ -125,7 +125,7 @@ class SafetyHubMenuNotificationService : public KeyedService {
       base::TimeDelta interval,
       base::RepeatingCallback<std::optional<std::unique_ptr<SafetyHubResult>>()>
           result_getter,
-      const base::Value::Dict& stored_notifications);
+      const base::DictValue& stored_notifications);
 
   // Called when the pref for Safe Browsing has been updated.
   void OnSafeBrowsingPrefUpdate();

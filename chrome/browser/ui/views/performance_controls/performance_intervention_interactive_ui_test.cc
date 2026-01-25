@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
   PrefService* const pref_service = g_browser_process->local_state();
 
   // Pre-populate the acceptance history with fake data.
-  base::Value::List previous_acceptance = base::Value::List();
+  base::ListValue previous_acceptance = base::ListValue();
   for (int i = 0; i < 9; i++) {
     previous_acceptance.Append(false);
   }

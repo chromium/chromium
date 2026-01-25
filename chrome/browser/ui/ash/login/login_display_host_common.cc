@@ -671,8 +671,7 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
 
 void LoginDisplayHostCommon::ShowOobeNotCompletedError() {
   GetWizardController()->GetScreen<SignInFatalErrorScreen>()->SetErrorState(
-      SignInFatalErrorScreen::Error::kOobeCompletionSkipped,
-      base::Value::Dict());
+      SignInFatalErrorScreen::Error::kOobeCompletionSkipped, base::DictValue());
   StartWizard(SignInFatalErrorView::kScreenId);
 }
 

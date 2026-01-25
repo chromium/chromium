@@ -171,7 +171,7 @@ TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest, Default) {
 TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
        NoClassroomInContextualGoogleIntegrationsPref) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List enabled_integrations;
+  base::ListValue enabled_integrations;
   enabled_integrations.Append(prefs::kGoogleCalendarIntegrationName);
   enabled_integrations.Append(prefs::kGoogleTasksIntegrationName);
   prefs->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
@@ -201,7 +201,7 @@ TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
 TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
        BlockedClassroomUrl) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("classroom.google.com");
   prefs->SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                         std::move(blocklist));

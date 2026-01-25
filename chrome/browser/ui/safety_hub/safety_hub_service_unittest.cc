@@ -28,12 +28,12 @@ class MockSafetyHubResult : public SafetyHubResult {
     return std::make_unique<MockSafetyHubResult>(*this);
   }
 
-  base::Value::Dict ToDictValue() const override { return BaseToDictValue(); }
+  base::DictValue ToDictValue() const override { return BaseToDictValue(); }
 
   bool IsTriggerForMenuNotification() const override { return true; }
 
   bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previousResult) const override {
+      const base::DictValue& previousResult) const override {
     return true;
   }
 

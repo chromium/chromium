@@ -775,7 +775,7 @@ TEST_F(ChromeShelfPrefsTest, CleanupPreloadPrefs) {
 
   for (const auto& test : tests) {
     for (const auto& pref_name : pref_names) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& item : test.pref_list) {
         list.Append(item);
       }

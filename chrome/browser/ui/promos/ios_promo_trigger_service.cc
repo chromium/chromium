@@ -100,7 +100,7 @@ void IOSPromoTriggerService::SetReminderForIOSDevice(
     desktop_to_mobile_promos::PromoType promo_type,
     const std::string& device_guid) {
   // Set the prefs for the in-app notification.
-  base::Value::Dict promo_reminder_data;
+  base::DictValue promo_reminder_data;
   promo_reminder_data.Set(prefs::kIOSPromoReminderPromoType,
                           static_cast<int>(promo_type));
   promo_reminder_data.Set(prefs::kIOSPromoReminderDeviceGUID, device_guid);

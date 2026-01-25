@@ -44,12 +44,11 @@ TEST(PasswordStatusCheckResultTest, ResultToDict) {
 
   // When converting to dict, the values of the password data should be
   // correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   auto* compromised_password_list =
       dict.FindList(safety_hub::kSafetyHubPasswordCheckOriginsKey);
   EXPECT_EQ(1U, compromised_password_list->size());
-  base::Value::Dict& password_data =
-      compromised_password_list->front().GetDict();
+  base::DictValue& password_data = compromised_password_list->front().GetDict();
   EXPECT_EQ(kOrigin1, password_data.Find(safety_hub::kOrigin)->GetString());
   EXPECT_EQ(kUsername1, password_data.Find(safety_hub::kUsername)->GetString());
 }

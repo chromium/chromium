@@ -1012,9 +1012,8 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable(
     return;
   }
 
-  const base::Value::Dict& dictionary =
-      g_browser_process->local_state()->GetDict(
-          prefs::kTaskManagerColumnVisibility);
+  const base::DictValue& dictionary = g_browser_process->local_state()->GetDict(
+      prefs::kTaskManagerColumnVisibility);
 
   // Do a best effort of retrieving the correct settings from the local state.
   // Use the default settings of the value if it fails to be retrieved.

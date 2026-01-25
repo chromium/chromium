@@ -45,8 +45,8 @@ class SettingsOverriddenParamsProvidersUnitTest
   // Adds a new extension that overrides the NTP.
   const extensions::Extension* AddExtensionControllingNewTab(
       const std::string& name = "ntp override") {
-    base::Value::Dict chrome_url_overrides =
-        base::Value::Dict().Set("newtab", "newtab.html");
+    base::DictValue chrome_url_overrides =
+        base::DictValue().Set("newtab", "newtab.html");
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetLocation(extensions::mojom::ManifestLocation::kInternal)

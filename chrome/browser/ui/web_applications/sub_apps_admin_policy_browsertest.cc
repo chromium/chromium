@@ -115,7 +115,7 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   void SetAllowlistedOrigins(
       const std::vector<std::string>& allowlisted_origins) {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
 
     for (auto& origin : allowlisted_origins) {
       allowed_origins.Append(base::Value(origin));

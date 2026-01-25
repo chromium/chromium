@@ -38,23 +38,23 @@ class ExtensionPostInstallDialogModelTest
   void AddOmniboxKeyword(extensions::ExtensionBuilder* builder,
                          const std::string& keyword) {
     using ManifestKeys = extensions::api::omnibox::ManifestKeys;
-    base::Value::Dict info;
+    base::DictValue info;
     info.Set(ManifestKeys::Omnibox::kKeyword, keyword);
     builder->SetManifestKey(ManifestKeys::kOmnibox, std::move(info));
   }
 
   void AddRegularAction(extensions::ExtensionBuilder* builder) {
     builder->SetManifestKey(extensions::manifest_keys::kAction,
-                            base::Value::Dict());
+                            base::DictValue());
   }
 
   void AddBrowserActionKeyBinding(extensions::ExtensionBuilder* builder,
                                   const std::string& key) {
     builder->SetManifestKey(
         extensions::manifest_keys::kCommands,
-        base::Value::Dict().Set(
+        base::DictValue().Set(
             extensions::manifest_values::kBrowserActionCommandEvent,
-            base::Value::Dict()
+            base::DictValue()
                 .Set("suggested_key", key)
                 .Set("description", "Invoke the page action")));
   }

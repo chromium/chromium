@@ -55,7 +55,7 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
             .SetLocation(location)
             .SetManifestKey(
                 "chrome_settings_overrides",
-                base::Value::Dict().Set("homepage", "http://www.google.com"))
+                base::DictValue().Set("homepage", "http://www.google.com"))
             .Build();
     extensions::PermissionsUpdater(profile()).GrantActivePermissions(
         extension.get());

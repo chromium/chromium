@@ -45,7 +45,7 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
 
 #if !BUILDFLAG(IS_ANDROID)
 // Fetches data for the version card to return data to the desktop UI.
-base::Value::Dict GetVersionCardData();
+base::DictValue GetVersionCardData();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safety_hub_util

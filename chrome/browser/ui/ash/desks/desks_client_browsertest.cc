@@ -3406,8 +3406,8 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   };
 
   // Converts a `gfx::Rect` to a list, as expected by `RestoreData`.
-  base::Value::List CreateBounds(const gfx::Rect& bounds) {
-    base::Value::List list;
+  base::ListValue CreateBounds(const gfx::Rect& bounds) {
+    base::ListValue list;
     list.Append(bounds.x());
     list.Append(bounds.y());
     list.Append(bounds.width());
@@ -3418,9 +3418,9 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   // Creates an admin template with the windows and URLs given by `definition`.
   std::unique_ptr<ash::DeskTemplate> CreateAdminTemplate(
       const AdminTemplateDefinition& definition) {
-    base::Value::Dict windows;
+    base::DictValue windows;
     for (size_t i = 0; i != definition.windows.size(); ++i) {
-      base::Value::Dict window;
+      base::DictValue window;
       window.Set("title", "Chrome");
       window.Set("window_state_type", 0);
 
@@ -3433,7 +3433,7 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
         window.Set("index", *definition.windows[i].activation_index);
       }
 
-      base::Value::List urls;
+      base::ListValue urls;
       for (const std::string& url : definition.windows[i].urls) {
         urls.Append(url);
       }
@@ -3442,12 +3442,12 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
       windows.Set(base::NumberToString(i + 1), std::move(window));
     }
 
-    base::Value::Dict root;
+    base::DictValue root;
     root.Set(app_constants::kChromeAppId, std::move(windows));
 
     // Policy for the admin template. The contents doesn't matter for the test
     // as long as the root is a dict.
-    base::Value policy(base::Value::Dict{});
+    base::Value policy(base::DictValue{});
 
     auto admin_template = std::make_unique<ash::DeskTemplate>(
         base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,

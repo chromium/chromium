@@ -193,7 +193,7 @@ GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
   return url;
 }
 
-base::Value::List WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
+base::ListValue WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
@@ -205,7 +205,7 @@ gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
     content::WebContents* web_contents,
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
-  base::Value::List rect_list =
+  base::ListValue rect_list =
       GetXYWidthHeightListValue(web_contents, rect_value_list, rect_var_name);
   return gfx::Rect(rect_list[0].GetInt(), rect_list[1].GetInt(),
                    rect_list[2].GetInt(), rect_list[3].GetInt());

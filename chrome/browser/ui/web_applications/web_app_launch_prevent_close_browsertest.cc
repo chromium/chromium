@@ -44,11 +44,10 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
 
     profile()->GetPrefs()->SetList(
         prefs::kWebAppInstallForceList,
-        base::Value::List().Append(
-            base::Value::Dict()
-                .Set(kUrlKey, url.spec())
-                .Set(kDefaultLaunchContainerKey,
-                     kDefaultLaunchContainerWindowValue)));
+        base::ListValue().Append(base::DictValue()
+                                     .Set(kUrlKey, url.spec())
+                                     .Set(kDefaultLaunchContainerKey,
+                                          kDefaultLaunchContainerWindowValue)));
 
     const webapps::AppId installed_app_id = observer.Wait();
     EXPECT_EQ(installed_app_id, app_id);
@@ -57,19 +56,19 @@ class PreventCloseControllerBrowserTest : public WebAppBrowserTestBase {
   void ConfigurePreventClose(const GURL& url, bool prevent_close) {
     profile()->GetPrefs()->SetList(
         prefs::kWebAppSettings,
-        base::Value::List().Append(base::Value::Dict()
-                                       .Set(kManifestId, url.spec())
-                                       .Set(kRunOnOsLogin, kRunWindowed)
-                                       .Set(kPreventClose, prevent_close)));
+        base::ListValue().Append(base::DictValue()
+                                     .Set(kManifestId, url.spec())
+                                     .Set(kRunOnOsLogin, kRunWindowed)
+                                     .Set(kPreventClose, prevent_close)));
     WebAppProvider::GetForTest(profile())
         ->policy_manager()
         .RefreshPolicySettingsForTesting();
   }
 
   void ClearPolicySettings() {
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
-                                   base::Value::List());
+                                   base::ListValue());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

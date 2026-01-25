@@ -155,7 +155,7 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list) {
     ScopedListPrefUpdate update(profile()->GetPrefs(), prefs::kPinnedActions);
-    base::Value::List& list_of_values = update.Get();
+    base::ListValue& list_of_values = update.Get();
     list_of_values.clear();
     for (auto id : updated_list) {
       const std::optional<std::string>& id_string =

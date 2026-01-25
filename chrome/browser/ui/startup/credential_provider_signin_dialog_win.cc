@@ -50,7 +50,7 @@ bool g_enable_gcpw_signin_during_tests = false;
 // sendLSTFetchResults.
 constexpr char kLSTFetchResultsMessage[] = "lstFetchResults";
 
-void WriteResultToHandle(const base::Value::Dict& result) {
+void WriteResultToHandle(const base::DictValue& result) {
   std::string json_result;
   if (base::JSONWriter::Write(result, &json_result) && !json_result.empty()) {
     // The caller of this Chrome process must provide a stdout handle  to
@@ -71,7 +71,7 @@ void WriteResultToHandle(const base::Value::Dict& result) {
 
 void WriteResultToHandleWithKeepAlive(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    base::Value::Dict signin_result) {
+    base::DictValue signin_result) {
   WriteResultToHandle(signin_result);
 
   // Release the keep_alive implicitly and allow the dialog to die.
@@ -80,8 +80,8 @@ void WriteResultToHandleWithKeepAlive(
 void HandleAllGcpwInfoFetched(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<CredentialProviderSigninInfoFetcher> fetcher,
-    base::Value::Dict signin_result,
-    base::Value::Dict fetch_result) {
+    base::DictValue signin_result,
+    base::DictValue fetch_result) {
   if (!signin_result.empty() && !fetch_result.empty()) {
     signin_result.Merge(std::move(fetch_result));
     WriteResultToHandle(std::move(signin_result));
@@ -98,7 +98,7 @@ void HandleAllGcpwInfoFetched(
 
 void HandleSigninCompleteForGcpwLogin(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    base::Value::Dict signin_result,
+    base::DictValue signin_result,
     const std::string& additional_mdm_oauth_scopes,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK(!signin_result.empty());
@@ -164,7 +164,7 @@ class CredentialProviderWebUIMessageHandler
     // there will be a DCHECK failure in web_ui about an unhandled message.
     web_ui()->RegisterMessageCallback(
         "updatePasswordAttributes",
-        base::BindRepeating([](const base::Value::List& args) {}));
+        base::BindRepeating([](const base::ListValue& args) {}));
   }
 
   void AbortIfPossible() {
@@ -175,34 +175,33 @@ class CredentialProviderWebUIMessageHandler
 
     // Build a result for the credential provider that includes only the abort
     // exit code.
-    base::Value::Dict result;
+    base::DictValue result;
     result.Set(credential_provider::kKeyExitCode,
                base::Value(credential_provider::kUiecAbort));
-    base::Value::List args;
+    base::ListValue args;
     args.Append(std::move(result));
     OnSigninComplete(args);
   }
 
  private:
-  base::Value::Dict ParseArgs(const base::Value::List& args,
-                              int* out_exit_code) {
+  base::DictValue ParseArgs(const base::ListValue& args, int* out_exit_code) {
     DCHECK(out_exit_code);
 
     if (args.empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value::Dict();
+      return base::DictValue();
     }
-    const base::Value::Dict* dict_result = args[0].GetIfDict();
+    const base::DictValue* dict_result = args[0].GetIfDict();
     if (!dict_result) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value::Dict();
+      return base::DictValue();
     }
     std::optional<int> exit_code =
         dict_result->FindInt(credential_provider::kKeyExitCode);
 
     if (exit_code && *exit_code != credential_provider::kUiecSuccess) {
       *out_exit_code = *exit_code;
-      return base::Value::Dict();
+      return base::DictValue();
     }
 
     const std::string* email =
@@ -220,14 +219,14 @@ class CredentialProviderWebUIMessageHandler
         id->empty() || !access_token || access_token->empty() ||
         !refresh_token || refresh_token->empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value::Dict();
+      return base::DictValue();
     }
 
     *out_exit_code = credential_provider::kUiecSuccess;
     return dict_result->Clone();
   }
 
-  void OnSigninComplete(const base::Value::List& args) {
+  void OnSigninComplete(const base::ListValue& args) {
     // If the callback was already called, ignore.  This may happen if the
     // user presses Escape right after finishing the signin process, the
     // Escape is processed first by AbortIfPossible(), and the signin then
@@ -237,7 +236,7 @@ class CredentialProviderWebUIMessageHandler
     }
 
     int exit_code;
-    base::Value::Dict signin_result = ParseArgs(args, &exit_code);
+    base::DictValue signin_result = ParseArgs(args, &exit_code);
 
     signin_result.Set(credential_provider::kKeyExitCode, exit_code);
 
@@ -447,7 +446,7 @@ bool StartGCPWSignin(const base::CommandLine& command_line,
   // If we are prevented from showing gcpw signin, return false and write our
   // result so that the launch fails and the process can exit gracefully.
   if (!CanStartGCPWSignin()) {
-    base::Value::Dict failure_result;
+    base::DictValue failure_result;
     failure_result.Set(
         credential_provider::kKeyExitCode,
         static_cast<int>(credential_provider::kUiecMissingSigninData));

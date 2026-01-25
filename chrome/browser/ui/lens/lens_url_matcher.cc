@@ -22,7 +22,7 @@ std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
     return {};
   }
 
-  base::Value::List* entries = json_value->GetIfList();
+  base::ListValue* entries = json_value->GetIfList();
   if (!entries) {
     return {};
   }

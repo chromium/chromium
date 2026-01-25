@@ -430,7 +430,7 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
 
   // Extensions that are installed by default shouldn't be given an icon.
   auto default_installed_manifest =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "default installed")
           .Set("description", "A default installed extension")
           .Set("manifest_version", 2)
@@ -681,7 +681,7 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
       extensions::ExtensionBuilder("a")
           .SetLocation(ManifestLocation::kInternal)
           .MergeManifest(
-              base::Value::Dict().Set("converted_from_user_script", true))
+              base::DictValue().Set("converted_from_user_script", true))
           .Build();
 
   // We should start off without any actions.

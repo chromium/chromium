@@ -2544,9 +2544,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
                                                   options);
 
   // Set policy to pin the web app.
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
@@ -2573,9 +2573,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
   // Set policy to pin the web app.
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
@@ -2610,9 +2610,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
       web_app::GenerateAppId(/*manifest_id=*/std::nullopt, app_url);
 
   // Set policy to pin the non existent web app.
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, app_url.spec());
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));
@@ -2634,17 +2634,17 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
   install_observer.BeginListening();
 
   {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, kAppUrl);
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(std::move(entry));
     profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
                                    std::move(policy_value));
   }
   {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set(web_app::kUrlKey, kAppUrl);
-    base::Value::List list;
+    base::ListValue list;
     list.Append(std::move(item));
     profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                    std::move(list));
@@ -3040,10 +3040,10 @@ class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
   // Setup: the customer pins Files Chrome App (ID:hhaomji...).
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
             file_manager::kFileManagerAppId);
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
   profile()->GetPrefs()->SetList(prefs::kPolicyPinnedLauncherApps,
                                  std::move(policy_value));

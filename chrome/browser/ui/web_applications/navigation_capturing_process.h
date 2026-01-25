@@ -257,7 +257,7 @@ class NavigationCapturingProcess
            disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB;
   }
 
-  base::Value::Dict& PopulateAndGetDebugData();
+  base::DictValue& PopulateAndGetDebugData();
 
   PipelineState state_ = PipelineState::kCreated;
 
@@ -303,7 +303,7 @@ class NavigationCapturingProcess
 
   // Debug information persisted to chrome://web-app-internals on destruction of
   // this class.
-  base::Value::Dict debug_data_;
+  base::DictValue debug_data_;
   std::optional<int64_t> navigation_handle_id_ = std::nullopt;
 
   // Stores the exact time when the navigation capturing process starts

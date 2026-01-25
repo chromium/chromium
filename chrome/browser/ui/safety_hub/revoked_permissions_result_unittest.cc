@@ -155,7 +155,7 @@ TEST_P(RevokedPermissionsResultTest, ResultToFromDict) {
 
   // When converting to dict, the values of the revoked permissions should be
   // correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   auto* revoked_origins_list = dict.FindList(kRevokedPermissionsResultKey);
   if (ShouldSetupUnusedSites() && ShouldSetupSafeBrowsing()) {
     EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));

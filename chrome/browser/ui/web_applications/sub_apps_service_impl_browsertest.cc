@@ -329,10 +329,9 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAdd) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
 
-  EXPECT_EQ(
-      AddSubAppsJS(iwa_frame, {kSub1, kSub2}),
-      base::Value(
-          base::Value::Dict().Set(kSub1, "success").Set(kSub2, "success")));
+  EXPECT_EQ(AddSubAppsJS(iwa_frame, {kSub1, kSub2}),
+            base::Value(
+                base::DictValue().Set(kSub1, "success").Set(kSub2, "success")));
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
@@ -1106,12 +1105,12 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
   // Call Add for both IWAs.
   EXPECT_EQ(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath2}),
-            base::Value(base::Value::Dict()
+            base::Value(base::DictValue()
                             .Set(kSubAppPath, "success")
                             .Set(kSubAppPath2, "success")));
-  EXPECT_EQ(AddSubAppsJS(iwa_frame_2, {}), base::Value(base::Value::Dict()));
+  EXPECT_EQ(AddSubAppsJS(iwa_frame_2, {}), base::Value(base::DictValue()));
   EXPECT_EQ(AddSubAppsJS(iwa_frame_1, {kSubAppPath, kSubAppPath3}),
-            base::Value(base::Value::Dict()
+            base::Value(base::DictValue()
                             .Set(kSubAppPath, "success")
                             .Set(kSubAppPath3, "success")));
 

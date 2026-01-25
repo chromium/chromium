@@ -286,8 +286,7 @@ bool ParseQueryFormulationMetadataResponse(
     return false;
   }
 
-  const base::Value::List* metadata_response =
-      response->GetList()[0].GetIfList();
+  const base::ListValue* metadata_response = response->GetList()[0].GetIfList();
   if (!metadata_response ||
       metadata_response->size() < kQFMetadataResponseMinSize) {
     return false;
@@ -303,7 +302,7 @@ bool ParseQueryFormulationMetadataResponse(
   // Deconstruct the metadata response in order to build our string for Copy
   // Text. If there is no `detected_text` object or the field is empty, then
   // there might not be any text to detect, so we can return true.
-  const base::Value::List* detected_text =
+  const base::ListValue* detected_text =
       (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
   if (!detected_text || detected_text->empty()) {
     return true;
@@ -311,7 +310,7 @@ bool ParseQueryFormulationMetadataResponse(
 
   // Similarly, if we don't have a `text_layout` object, then there may not be
   // any text to detect, so we should return true.
-  const base::Value::List* text_layout =
+  const base::ListValue* text_layout =
       (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
   if (!text_layout || text_layout->empty()) {
     return true;
@@ -319,7 +318,7 @@ bool ParseQueryFormulationMetadataResponse(
 
   // Lastly, if we don't have a `paragraph_list` object, then there may not be
   // any text to detect, so we should return true.
-  const base::Value::List* paragraph_list =
+  const base::ListValue* paragraph_list =
       (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
   if (!paragraph_list || paragraph_list->empty()) {
     return true;
@@ -328,12 +327,12 @@ bool ParseQueryFormulationMetadataResponse(
   // Begin constructing the extracted text by looping through a sequence of
   // paragraphs, lines, and words.
   for (int i = 0; i < static_cast<int>(paragraph_list->size()); i++) {
-    const base::Value::List* paragraph = (*paragraph_list)[i].GetIfList();
+    const base::ListValue* paragraph = (*paragraph_list)[i].GetIfList();
     if (!paragraph || paragraph->size() < kParagraphMinSize) {
       continue;
     }
 
-    const base::Value::List* line_list =
+    const base::ListValue* line_list =
         (*paragraph)[kParagraphFieldLines].GetIfList();
     if (!line_list || line_list->empty()) {
       continue;
@@ -346,12 +345,12 @@ bool ParseQueryFormulationMetadataResponse(
     }
 
     for (int j = 0; j < static_cast<int>(line_list->size()); j++) {
-      const base::Value::List* line = (*line_list)[j].GetIfList();
+      const base::ListValue* line = (*line_list)[j].GetIfList();
       if (!line || line->empty()) {
         continue;
       }
 
-      const base::Value::List* word_list = (*line)[kLineFieldWords].GetIfList();
+      const base::ListValue* word_list = (*line)[kLineFieldWords].GetIfList();
       if (!word_list || word_list->empty()) {
         continue;
       }
@@ -363,7 +362,7 @@ bool ParseQueryFormulationMetadataResponse(
       }
 
       for (const base::Value& word_value : *word_list) {
-        const base::Value::List* word = word_value.GetIfList();
+        const base::ListValue* word = word_value.GetIfList();
         if (!word || word->size() < kWordMinSize) {
           continue;
         }

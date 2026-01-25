@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
 
   // Check that no record of a survey being shown is present.
   {
-    const base::Value::Dict& pref_data =
+    const base::DictValue& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
 
   // Check that a record of the survey being shown has been recorded.
   {
-    const base::Value::Dict& pref_data =
+    const base::DictValue& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 
   // Check that no record of a survey being shown is present.
   {
-    const base::Value::Dict& pref_data =
+    const base::DictValue& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
 
   // Check that a record of the survey being shown has been recorded.
   {
-    const base::Value::Dict& pref_data =
+    const base::DictValue& pref_data =
         browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));

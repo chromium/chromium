@@ -166,13 +166,13 @@ TEST_F(PerformanceControlsNotificationTest,
 
   pref_service->SetList(performance_manager::user_tuning::prefs::
                             kPerformanceInterventionNotificationAcceptHistory,
-                        base::Value::List().Append(true));
+                        base::ListValue().Append(true));
   task_environment()->FastForwardBy(base::Days(1));
   EXPECT_EQ(100,
             PerformanceInterventionButtonController::GetAcceptancePercentage());
   histogram_tester.ExpectBucketCount(message_count_histogram_name, 100, 1);
 
-  base::Value::List updated_accept_history = base::Value::List();
+  base::ListValue updated_accept_history = base::ListValue();
   for (int i = 0;
        i < performance_manager::features::kAcceptanceRateWindowSize.Get() / 2;
        i++) {

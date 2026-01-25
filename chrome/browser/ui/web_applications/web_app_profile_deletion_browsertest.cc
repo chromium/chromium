@@ -238,8 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
   base::test::TestFuture<bool> commands_not_scheduled_future;
   command_scheduler.ScheduleCallbackWithResult(
       "TestCommandPostProfileDeletion", web_app::NoopLockDescription(),
-      base::BindOnce(
-          [](web_app::NoopLock&, base::Value::Dict&) { return true; }),
+      base::BindOnce([](web_app::NoopLock&, base::DictValue&) { return true; }),
       commands_not_scheduled_future.GetCallback(), /*arg_for_shutdown=*/false);
 
   ASSERT_TRUE(commands_not_scheduled_future.Wait());

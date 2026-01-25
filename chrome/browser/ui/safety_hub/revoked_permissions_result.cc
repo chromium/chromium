@@ -44,9 +44,9 @@ std::set<ContentSettingsPattern> RevokedPermissionsResult::GetRevokedOrigins()
   return origins;
 }
 
-base::Value::Dict RevokedPermissionsResult::ToDictValue() const {
-  base::Value::Dict result = BaseToDictValue();
-  base::Value::List revoked_origins;
+base::DictValue RevokedPermissionsResult::ToDictValue() const {
+  base::DictValue result = BaseToDictValue();
+  base::ListValue revoked_origins;
   for (const auto& permission : revoked_permissions_) {
     revoked_origins.Append(permission.primary_pattern.ToString());
   }
@@ -61,7 +61,7 @@ bool RevokedPermissionsResult::IsTriggerForMenuNotification() const {
 }
 
 bool RevokedPermissionsResult::WarrantsNewMenuNotification(
-    const base::Value::Dict& previous_result_dict) const {
+    const base::DictValue& previous_result_dict) const {
   std::set<ContentSettingsPattern> old_origins;
   for (const base::Value& origin_val :
        *previous_result_dict.FindList(kRevokedPermissionsResultKey)) {
@@ -77,7 +77,7 @@ bool RevokedPermissionsResult::WarrantsNewMenuNotification(
     // old values for now. This check can be deleted in the future.
     const std::string* origin_str{};
     if (origin_val.is_dict()) {
-      const base::Value::Dict& revoked_permission = origin_val.GetDict();
+      const base::DictValue& revoked_permission = origin_val.GetDict();
       origin_str = revoked_permission.FindString(kSafetyHubOriginKey);
     } else if (origin_val.is_string()) {
       origin_str = &origin_val.GetString();

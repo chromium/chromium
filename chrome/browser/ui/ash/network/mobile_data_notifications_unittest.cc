@@ -129,7 +129,7 @@ class MobileDataNotificationsTest : public testing::Test {
     device_test->ClearDevices();
     device_test->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                            "stub_cellular_device1");
-    base::Value::Dict home_provider;
+    base::DictValue home_provider;
     home_provider.Set("name", "Cellular1_Provider");
     home_provider.Set("country", "us");
     device_test->SetDeviceProperty(kCellularDevicePath,

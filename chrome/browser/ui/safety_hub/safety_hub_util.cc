@@ -117,8 +117,8 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-base::Value::Dict GetVersionCardData() {
-  base::Value::Dict result;
+base::DictValue GetVersionCardData() {
+  base::DictValue result;
   switch (g_browser_process->GetBuildState()->update_type()) {
     case BuildState::UpdateType::kNone:
       result.Set(safety_hub::kCardHeaderKey,

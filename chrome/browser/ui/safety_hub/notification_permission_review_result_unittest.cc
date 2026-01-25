@@ -19,12 +19,12 @@ TEST_F(NotificationPermissionReviewResultTest, ToDict) {
 
   // When converting to dict, the values of the notification permissions should
   // be correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   auto* notification_perms_list =
       dict.FindList(kSafetyHubNotificationPermissionsReviewResultKey);
   EXPECT_EQ(1U, notification_perms_list->size());
 
-  base::Value::Dict& notification_perm =
+  base::DictValue& notification_perm =
       notification_perms_list->front().GetDict();
   EXPECT_EQ(origin.ToString(),
             *notification_perm.FindString(kSafetyHubOriginKey));

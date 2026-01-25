@@ -44,8 +44,8 @@ class BookmarkUtilsGetBookmarkDropOperationTest : public testing::Test {
 
     profile_->GetTestingPrefService()->SetManagedPref(
         bookmarks::prefs::kManagedBookmarks,
-        base::Value(base::Value::List().Append(
-            base::Value::Dict()
+        base::Value(base::ListValue().Append(
+            base::DictValue()
                 .Set("name", "managed_bookmark")
                 .Set("url", GURL("http://google.com/").spec()))));
     model()->LoadEmptyForTest();

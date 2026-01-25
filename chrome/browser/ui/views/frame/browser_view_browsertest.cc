@@ -379,8 +379,8 @@ void SetDevToolsWindowSizePrefs(Browser* browser,
                                 int bottom) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
-  base::Value::Dict& wp_prefs = update.Get();
-  base::Value::Dict dev_tools_defaults;
+  base::DictValue& wp_prefs = update.Get();
+  base::DictValue dev_tools_defaults;
   dev_tools_defaults.Set("left", left);
   dev_tools_defaults.Set("right", right);
   dev_tools_defaults.Set("top", top);
@@ -390,7 +390,7 @@ void SetDevToolsWindowSizePrefs(Browser* browser,
   wp_prefs.Set(DevToolsWindow::kDevToolsApp, std::move(dev_tools_defaults));
 }
 
-const base::Value::Dict& GetDevToolsWindowSizePrefs(Browser* browser) {
+const base::DictValue& GetDevToolsWindowSizePrefs(Browser* browser) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   return prefs->GetDict(prefs::kAppWindowPlacement)
       .Find(DevToolsWindow::kDevToolsApp)
@@ -398,7 +398,7 @@ const base::Value::Dict& GetDevToolsWindowSizePrefs(Browser* browser) {
 }
 
 auto HasDimensions(int left, int right, int top, int bottom) {
-  return base::test::DictionaryHasValues(base::Value::Dict()
+  return base::test::DictionaryHasValues(base::DictValue()
                                              .Set("left", left)
                                              .Set("right", right)
                                              .Set("top", top)

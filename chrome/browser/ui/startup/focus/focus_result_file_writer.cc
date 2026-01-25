@@ -47,7 +47,7 @@ std::string_view FocusResultToString(const FocusResult& result) {
 }  // namespace
 
 std::string CreateFocusJsonString(const FocusResult& result) {
-  base::Value::Dict json_dict;
+  base::DictValue json_dict;
 
   json_dict.Set("status", FocusResultToString(result));
 

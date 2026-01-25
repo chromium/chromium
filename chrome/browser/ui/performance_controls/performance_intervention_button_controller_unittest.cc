@@ -82,7 +82,7 @@ class PerformanceInterventionButtonControllerUnitTest : public testing::Test {
     CHECK_LE(num_accepts, max_accept);
     PrefService* const pref_service = g_browser_process->local_state();
 
-    base::Value::List previous_acceptance = base::Value::List();
+    base::ListValue previous_acceptance = base::ListValue();
     for (int i = 0; i < max_accept - num_accepts; i++) {
       previous_acceptance.Append(false);
     }
@@ -192,7 +192,7 @@ TEST_F(PerformanceInterventionButtonControllerUnitTest,
   const int max_accept =
       performance_manager::features::kAcceptanceRateWindowSize.Get();
   PrefService* const pref_service = g_browser_process->local_state();
-  base::Value::List previous_acceptance = base::Value::List();
+  base::ListValue previous_acceptance = base::ListValue();
   for (int i = 0; i < max_accept; i++) {
     previous_acceptance.Append(false);
   }

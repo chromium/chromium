@@ -938,7 +938,7 @@ TEST_P(BookmarkEditorViewTest,
   // Configure the local bookmarks bar to be tracked as expanded.
   ScopedListPrefUpdate update(profile_->GetPrefs(),
                               bookmarks::prefs::kBookmarkEditorExpandedNodes);
-  base::Value::List& initial_expanded_nodes_list = update.Get();
+  base::ListValue& initial_expanded_nodes_list = update.Get();
   initial_expanded_nodes_list.Append(
       base::NumberToString(model()->bookmark_bar_node()->id()));
 

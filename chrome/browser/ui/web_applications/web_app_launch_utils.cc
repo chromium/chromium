@@ -205,8 +205,8 @@ std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
   return nullptr;
 }
 
-base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
-  base::Value::Dict value;
+base::DictValue ToDebugDict(const apps::AppLaunchParams& params) {
+  base::DictValue value;
   value.Set("app_id", params.app_id);
   value.Set("launch_id", params.launch_id);
   value.Set("container", static_cast<int>(params.container));
@@ -225,7 +225,7 @@ base::Value::Dict ToDebugDict(const apps::AppLaunchParams& params) {
             base::FilePathToValue(params.current_directory));
   value.Set("launch_source", static_cast<int>(params.launch_source));
   value.Set("display_id", base::saturated_cast<int>(params.display_id));
-  base::Value::List files_list;
+  base::ListValue files_list;
   for (const base::FilePath& file : params.launch_files) {
     files_list.Append(base::FilePathToValue(file));
   }
@@ -875,7 +875,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   Profile& profile,
                   WithAppResources& lock,
                   LaunchWebAppDebugValueCallback callback) {
-  base::Value::Dict debug_value;
+  base::DictValue debug_value;
   debug_value.Set("launch_params", ToDebugDict(params));
   debug_value.Set("launch_window_setting", static_cast<int>(launch_setting));
 

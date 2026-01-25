@@ -561,7 +561,7 @@ TEST_F(StartupTabProviderPrivacySandboxTest,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("1")
           .SetManifestKey("chrome_url_overrides",
-                          base::Value::Dict().Set("newtab", "custom_tab.html"))
+                          base::DictValue().Set("newtab", "custom_tab.html"))
           .Build();
   registry()->AddEnabled(extension);
   auto output = StartupTabProviderImpl::GetPrivacySandboxTabsForState(

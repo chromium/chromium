@@ -67,7 +67,7 @@ Each Safety Hub service has their own result type that inherits from
 needed for displaying the information in the UI and being able to distinguish
 two different results. To support serialization, the `ToDictValue()` method
 needs to be implemented by the derived result classes. Furthermore, the derived
-classes should have a constructor that takes a `base::Value::Dict` as argument
+classes should have a constructor that takes a `base::DictValue` as argument
 and restores the properties that are defined in the dictionary.
 
 ## Testing

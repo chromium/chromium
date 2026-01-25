@@ -516,7 +516,7 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   }
 
   PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service->GetDict(prefs::kSidePanelIdToWidth);
   std::string panel_id = SidePanelEntryIdToString(current_entry.value());
 
@@ -706,7 +706,7 @@ void SidePanel::UpdateSidePanelWidthPref(const std::string& panel_id,
                                          int width) {
   PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
   ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
 
   // Update the dictionary with the new width for the specified panel_id.
   dict.Set(panel_id, base::Value(width));

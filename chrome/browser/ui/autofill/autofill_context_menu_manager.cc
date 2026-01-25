@@ -164,18 +164,18 @@ bool IsPasswordFormField(ContentPasswordManagerDriver& password_manager_driver,
       ->GetPasswordForm(&password_manager_driver, current_field_renderer_id);
 }
 
-base::Value::Dict LoadTriggerFormAndFieldLogs(
+base::DictValue LoadTriggerFormAndFieldLogs(
     AutofillManager& manager,
     const LocalFrameToken& frame_token,
     const content::ContextMenuParams& params) {
   if (!ShouldShowAutofillContextMenu(params)) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   FormGlobalId form_global_id = {frame_token,
                                  FormRendererId(params.form_renderer_id)};
 
-  base::Value::Dict trigger_form_logs;
+  base::DictValue trigger_form_logs;
   if (const FormStructure* form = manager.FindCachedFormById(form_global_id)) {
     trigger_form_logs.Set("triggerFormSignature", form->FormSignatureAsStr());
 

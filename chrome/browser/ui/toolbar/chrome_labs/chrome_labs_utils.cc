@@ -70,7 +70,7 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile) {
                               chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::Value::Dict& new_badge_prefs = update.Get();
+  base::DictValue& new_badge_prefs = update.Get();
 
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs =
@@ -122,7 +122,7 @@ bool AreNewChromeLabsExperimentsAvailable(Profile* profile) {
                               chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::Value::Dict& new_badge_prefs = update.Get();
+  base::DictValue& new_badge_prefs = update.Get();
 
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs =

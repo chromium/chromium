@@ -91,9 +91,9 @@ class SafetyHubMenuNotificationServiceTest
 
   void CreateMockUnusedSitePermissionsEntry(const std::string url) {
     // Revoke permission and update the unused site permission service.
-    auto dict = base::Value::Dict().Set(
+    auto dict = base::DictValue().Set(
         permissions::kRevokedKey,
-        base::Value::List().Append(
+        base::ListValue().Append(
             UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
                 ContentSettingsType::GEOLOCATION)));
     hcsm()->SetWebsiteSettingDefaultScope(

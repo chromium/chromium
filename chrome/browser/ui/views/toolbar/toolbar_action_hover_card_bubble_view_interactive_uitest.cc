@@ -144,7 +144,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
   void ForcePinExtension(const extensions::ExtensionId& extension_id) {
     std::string policy_item_key =
         base::StringPrintf("%s", extension_id.c_str());
-    base::Value::Dict policy_item_value;
+    base::DictValue policy_item_value;
     policy_item_value.Set("toolbar_pin", "force_pinned");
 
     policy::PolicyMap policy_map =
@@ -161,7 +161,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
                                     std::move(policy_item_value));
     } else {
       // Set the new policy value.
-      base::Value::Dict policy_value;
+      base::DictValue policy_value;
       policy_value.Set(policy_item_key, std::move(policy_item_value));
       policy_map.Set(policy::key::kExtensionSettings,
                      policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

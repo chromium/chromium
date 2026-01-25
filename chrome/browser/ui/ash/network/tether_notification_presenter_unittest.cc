@@ -52,11 +52,11 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     void ShowPortalSignin(const std::string& network_id,
                           NetworkConnect::Source source) override {}
     void ConfigureNetworkIdAndConnect(const std::string& network_id,
-                                      const base::Value::Dict& shill_properties,
+                                      const base::DictValue& shill_properties,
                                       bool shared) override {}
-    void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
+    void CreateConfigurationAndConnect(base::DictValue shill_properties,
                                        bool shared) override {}
-    void CreateConfiguration(base::Value::Dict shill_properties,
+    void CreateConfiguration(base::DictValue shill_properties,
                              bool shared) override {}
 
     void ConnectToNetworkId(const std::string& network_id) override {

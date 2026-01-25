@@ -161,7 +161,7 @@ class PluginVmInstallerViewBrowserTestWithFeatureEnabled
   void SetPluginVmImagePref(std::string url, std::string hash) {
     ScopedDictPrefUpdate update(browser()->profile()->GetPrefs(),
                                 plugin_vm::prefs::kPluginVmImage);
-    base::Value::Dict& plugin_vm_image = update.Get();
+    base::DictValue& plugin_vm_image = update.Get();
     plugin_vm_image.Set("url", url);
     plugin_vm_image.Set("hash", hash);
   }

@@ -1478,7 +1478,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
     prefs_->SetBoolean(chromeos::prefs::kFloatingSsoEnabled, true);
   }
 
-  void SetBlockedDomainsForCookieSync(base::Value::List domains) {
+  void SetBlockedDomainsForCookieSync(base::ListValue domains) {
     prefs_->SetList(::prefs::kFloatingSsoDomainBlocklist, std::move(domains));
   }
 #endif
@@ -1708,7 +1708,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestCookiesSubpage,
   // Enable cookie sync, but configure domain blocklist to exclude the site we
   // are visiting in this test from sync.
   EnableCookieSync();
-  base::Value::List domain_blocklist;
+  base::ListValue domain_blocklist;
   domain_blocklist.Append("example");
   SetBlockedDomainsForCookieSync(std::move(domain_blocklist));
 

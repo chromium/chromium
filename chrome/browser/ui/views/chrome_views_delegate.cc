@@ -93,7 +93,7 @@ void ChromeViewsDelegate::SaveWindowPlacement(
   }
 
   std::unique_ptr<ScopedDictPrefUpdate> pref_update;
-  base::Value::Dict& window_preferences =
+  base::DictValue& window_preferences =
       chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs,
                                                     pref_update);
   window_preferences.Set("left", bounds.x());
@@ -123,7 +123,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
   }
 
   DCHECK(prefs->FindPreference(window_name));
-  const base::Value::Dict& dictionary = prefs->GetDict(window_name);
+  const base::DictValue& dictionary = prefs->GetDict(window_name);
   std::optional<int> left = dictionary.FindInt("left");
   std::optional<int> top = dictionary.FindInt("top");
   std::optional<int> right = dictionary.FindInt("right");

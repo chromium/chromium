@@ -1537,8 +1537,8 @@ class SiteSearchPolicyOmniboxViewTest
   ~SiteSearchPolicyOmniboxViewTest() override = default;
 
   base::Value CreateSiteSearchPolicyValue(bool featured) {
-    base::Value::Dict policy_dict =
-        base::Value::Dict()
+    base::DictValue policy_dict =
+        base::DictValue()
             .Set(policy::SiteSearchPolicyHandler::kShortcut,
                  kSiteSearchPolicyKeyword)
             .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
@@ -1548,7 +1548,7 @@ class SiteSearchPolicyOmniboxViewTest
       policy_dict.Set(policy::SiteSearchPolicyHandler::kAllowUserOverride,
                       is_allow_user_override().value());
     }
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(std::move(policy_dict));
     return base::Value(std::move(policy_value));
   }
@@ -1713,8 +1713,8 @@ class SearchAggregatorPolicyOmniboxViewTest : public OmniboxViewTest {
   ~SearchAggregatorPolicyOmniboxViewTest() override = default;
 
   base::Value CreateEnterpriseSearchAggregatorPolicyValue() {
-    base::Value::Dict policy_value;
-    policy_value = base::Value::Dict()
+    base::DictValue policy_value;
+    policy_value = base::DictValue()
                        .Set(policy::SearchAggregatorPolicyHandler::kIconUrl,
                             kSearchAggregatorPolicyIconUrl)
                        .Set(policy::SearchAggregatorPolicyHandler::kShortcut,

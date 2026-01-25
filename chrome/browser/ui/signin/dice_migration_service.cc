@@ -135,7 +135,7 @@ bool MaybeMigrateUser(Profile* profile) {
   // Backup the prefs.
   prefs->SetDict(
       kDiceMigrationBackup,
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin,
                            prefs->GetBoolean(prefs::kExplicitBrowserSignin))
           .SetByDottedPath(

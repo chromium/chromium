@@ -95,7 +95,7 @@ class MemorySaverBrowserTestMixin : public T {
   }
 
   void SetTabDiscardExceptionsMap(std::vector<std::string> patterns) {
-    base::Value::Dict exclusion_map;
+    base::DictValue exclusion_map;
     for (auto pattern : patterns) {
       exclusion_map.Set(pattern, base::TimeToValue(base::Time::Now()));
     }

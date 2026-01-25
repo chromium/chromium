@@ -68,8 +68,8 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     profile_ = profile_builder.Build();
     profile_->GetTestingPrefService()->SetManagedPref(
         bookmarks::prefs::kManagedBookmarks,
-        base::Value::List().Append(
-            base::Value::Dict()
+        base::ListValue().Append(
+            base::DictValue()
                 .Set("name", "Google")
                 .Set("url", GURL("http://google.com/").spec())));
     CHECK(managed_bookmark_service());

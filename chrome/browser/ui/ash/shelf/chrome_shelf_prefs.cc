@@ -505,7 +505,7 @@ void ChromeShelfPrefs::InitLocalPref(PrefService* prefs,
 std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
     Profile* profile) {
   CHECK(profile);
-  const base::Value::List& policy_apps =
+  const base::ListValue& policy_apps =
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
   if (policy_apps.empty()) {
     return {};

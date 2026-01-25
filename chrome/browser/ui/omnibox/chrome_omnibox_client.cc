@@ -214,7 +214,7 @@ bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
 }
 
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
-  const base::Value::Dict& url_dict = profile_->GetPrefs()->GetDict(
+  const base::DictValue& url_dict = profile_->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   return !url_dict.FindBool(DefaultSearchManager::kDisabledByPolicy)
               .value_or(false);
@@ -788,7 +788,7 @@ void ChromeOmniboxClient::OnNavigationLikely(
 
 void ChromeOmniboxClient::ShowFeedbackPage(const std::u16string& input_text,
                                            const GURL& destination_url) {
-  base::Value::Dict ai_metadata;
+  base::DictValue ai_metadata;
   ai_metadata.Set("input", base::UTF16ToUTF8(input_text));
   ai_metadata.Set("destination_url", destination_url.spec());
   chrome::ShowFeedbackPage(
@@ -798,7 +798,7 @@ void ChromeOmniboxClient::ShowFeedbackPage(const std::u16string& input_text,
       l10n_util::GetStringUTF8(IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"genai_history",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(ai_metadata));
 }
 
 void ChromeOmniboxClient::OnAutocompleteAccept(

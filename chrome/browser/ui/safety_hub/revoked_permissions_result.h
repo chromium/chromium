@@ -46,7 +46,7 @@ struct PermissionsData {
 
   ContentSettingsPattern primary_pattern;
   std::set<ContentSettingsType> permission_types;
-  base::Value::Dict chooser_permissions_data;
+  base::DictValue chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
   PermissionsRevocationType revocation_type;
 };
@@ -82,10 +82,10 @@ class RevokedPermissionsResult : public SafetyHubResult {
   std::set<ContentSettingsPattern> GetRevokedOrigins() const;
 
   // SafetyHubResult implementation
-  base::Value::Dict ToDictValue() const override;
+  base::DictValue ToDictValue() const override;
   bool IsTriggerForMenuNotification() const override;
   bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previous_result_dict) const override;
+      const base::DictValue& previous_result_dict) const override;
   std::u16string GetNotificationString() const override;
   int GetNotificationCommandId() const override;
   std::unique_ptr<SafetyHubResult> Clone() const override;

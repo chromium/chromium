@@ -127,12 +127,12 @@ class IOSPromosUtilsTest : public testing::Test {
                              std::string_view device_guid,
                              base::Value&& value,
                              base::Time timestamp = base::Time::Now()) {
-    base::Value::Dict timestamped_value;
+    base::DictValue timestamped_value;
     timestamped_value.Set("value", std::move(value));
     timestamped_value.Set("last_observed_change_time",
                           base::TimeToValue(timestamp));
     timestamped_value.Set("update_time", base::TimeToValue(timestamp));
-    base::Value::Dict cross_device_value;
+    base::DictValue cross_device_value;
     cross_device_value.Set(device_guid, std::move(timestamped_value));
     prefs->SetDict(pref_name, std::move(cross_device_value));
   }

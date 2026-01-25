@@ -27,7 +27,7 @@ SafetyHubMenuNotification::SafetyHubMenuNotification(
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     safety_hub::SafetyHubModuleType type)
     : module_type_(type) {
   is_currently_active_ =
@@ -50,8 +50,8 @@ SafetyHubMenuNotification::SafetyHubMenuNotification(
   }
 }
 
-base::Value::Dict SafetyHubMenuNotification::ToDictValue() const {
-  base::Value::Dict result;
+base::DictValue SafetyHubMenuNotification::ToDictValue() const {
+  base::DictValue result;
   result.Set(safety_hub::kSafetyHubMenuNotificationActiveKey,
              is_currently_active_);
   if (impression_count_ != 0) {
@@ -180,9 +180,9 @@ void SafetyHubMenuNotification::UpdateResult(
   // Use the latest available result. This is either the current result when a
   // new result was received, or, if it is unavailble, the result that was
   // stored on the disk.
-  base::Value::Dict previous_result_dict = current_result_
-                                               ? current_result_->ToDictValue()
-                                               : prev_stored_result_.Clone();
+  base::DictValue previous_result_dict = current_result_
+                                             ? current_result_->ToDictValue()
+                                             : prev_stored_result_.Clone();
   // For notifications that are not currently active yet, and have a previous
   // result, we have to determine whether the notification should be shown after
   // the interval by comparing the old (stored) data with the new data to check

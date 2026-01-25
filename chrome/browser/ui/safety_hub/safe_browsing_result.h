@@ -42,7 +42,7 @@ class SafetyHubSafeBrowsingResult : public SafetyHubResult {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Fetches data for the Safe Browsing card to return data to the desktop UI.
-  static base::Value::Dict GetSafeBrowsingCardData(
+  static base::DictValue GetSafeBrowsingCardData(
       const PrefService* pref_service);
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -50,12 +50,12 @@ class SafetyHubSafeBrowsingResult : public SafetyHubResult {
 
   std::unique_ptr<SafetyHubResult> Clone() const override;
 
-  base::Value::Dict ToDictValue() const override;
+  base::DictValue ToDictValue() const override;
 
   bool IsTriggerForMenuNotification() const override;
 
   bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previous_result_dict) const override;
+      const base::DictValue& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 

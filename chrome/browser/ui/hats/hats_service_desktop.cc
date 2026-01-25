@@ -102,8 +102,7 @@ bool DoesCooldownApply(Profile* profile,
   const std::optional<base::TimeDelta> cooldown_override =
       config.GetCooldownPeriodOverride(profile);
   const bool has_cooldown_override = cooldown_override.has_value();
-  const base::Value::Dict& pref_data =
-      prefs->GetDict(prefs::kHatsSurveyMetadata);
+  const base::DictValue& pref_data = prefs->GetDict(prefs::kHatsSurveyMetadata);
   const std::optional<base::Time> last_started_time = base::ValueToTime(
       pref_data.Find(has_cooldown_override
                          ? kAnyLastSurveyWithCooldownOverrideStartedTimePath
@@ -328,7 +327,7 @@ void HatsServiceDesktop::SetSurveyMetadataForTesting(
   const std::string& trigger = kHatsSurveyTriggerSettings;
   ScopedDictPrefUpdate update(GetPrefsForHatsMetadata(),
                               prefs::kHatsSurveyMetadata);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
   if (!metadata.last_major_version.has_value() &&
       !metadata.last_survey_started_time.has_value() &&
       !metadata.is_survey_full.has_value() &&
@@ -391,7 +390,7 @@ void HatsServiceDesktop::GetSurveyMetadataForTesting(
   const std::string& trigger = kHatsSurveyTriggerSettings;
   ScopedDictPrefUpdate update(GetPrefsForHatsMetadata(),
                               prefs::kHatsSurveyMetadata);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
 
   std::optional<int> last_major_version =
       pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
@@ -503,7 +502,7 @@ bool HatsServiceDesktop::CanShowSurvey(const std::string& trigger) const {
     return false;
   }
 
-  const base::Value::Dict& pref_data =
+  const base::DictValue& pref_data =
       GetPrefsForHatsMetadata()->GetDict(prefs::kHatsSurveyMetadata);
   std::optional<int> last_major_version =
       pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
@@ -609,7 +608,7 @@ void HatsServiceDesktop::RecordSurveyAsShown(std::string trigger_id) {
 
   ScopedDictPrefUpdate update(GetPrefsForHatsMetadata(),
                               prefs::kHatsSurveyMetadata);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
   pref_data.SetByDottedPath(
       GetMajorVersionPath(trigger),
       static_cast<int>(version_info::GetVersion().components()[0]));
@@ -724,7 +723,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   // Check the survey status in profile first.
   // We record the survey's over capacity information in user profile to avoid
   // duplicated checks since the survey won't change once it is full.
-  const base::Value::Dict& pref_data =
+  const base::DictValue& pref_data =
       GetPrefsForHatsMetadata()->GetDict(prefs::kHatsSurveyMetadata);
   std::optional<int> is_full =
       pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));

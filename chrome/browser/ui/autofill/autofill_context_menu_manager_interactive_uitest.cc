@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   ASSERT_TRUE(GetAutofillManager()->FindCachedFormById(form.global_id()));
 
   // Set up expected trigger form and field signatures.
-  base::Value::Dict extra_logs;
+  base::DictValue extra_logs;
   auto form_structure = std::make_unique<FormStructure>(form);
   extra_logs.Set("triggerFormSignature", form_structure->FormSignatureAsStr());
   extra_logs.Set("triggerFieldSignature",

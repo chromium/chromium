@@ -127,7 +127,7 @@ class DisruptiveNotificationPermissionsMigrationTest : public ::testing::Test {
 
   void SetupIgnoreContentSettingEntry(const GURL& url,
                                       base::TimeDelta lifetime) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("revoked_status", "ignore");
     dict.Set("site_engagement", 0.0);
     dict.Set("daily_notification_count", 4);
@@ -814,8 +814,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url), GURL(url),
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(base::Value::Dict().Set(safety_hub::kRevokedStatusDictKeyStr,
-                                          safety_hub::kIgnoreStr)));
+      base::Value(base::DictValue().Set(safety_hub::kRevokedStatusDictKeyStr,
+                                        safety_hub::kIgnoreStr)));
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
   SetDailyAverageNotificationCount(url, 4);

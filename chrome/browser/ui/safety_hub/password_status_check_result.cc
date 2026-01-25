@@ -31,11 +31,11 @@ std::unique_ptr<SafetyHubResult> PasswordStatusCheckResult::Clone() const {
   return std::make_unique<PasswordStatusCheckResult>(*this);
 }
 
-base::Value::Dict PasswordStatusCheckResult::ToDictValue() const {
-  base::Value::Dict result = BaseToDictValue();
-  base::Value::List compromised_passwords;
+base::DictValue PasswordStatusCheckResult::ToDictValue() const {
+  base::DictValue result = BaseToDictValue();
+  base::ListValue compromised_passwords;
   for (const PasswordPair& pair : compromised_passwords_) {
-    base::Value::Dict password_data;
+    base::DictValue password_data;
     password_data.Set(safety_hub::kOrigin, pair.origin);
     password_data.Set(safety_hub::kUsername, pair.username);
     compromised_passwords.Append(std::move(password_data));
@@ -50,7 +50,7 @@ bool PasswordStatusCheckResult::IsTriggerForMenuNotification() const {
 }
 
 bool PasswordStatusCheckResult::WarrantsNewMenuNotification(
-    const base::Value::Dict& previous_result_dict) const {
+    const base::DictValue& previous_result_dict) const {
   std::set<PasswordPair> old_passwords;
   for (const base::Value& password_data : *previous_result_dict.FindList(
            safety_hub::kSafetyHubPasswordCheckOriginsKey)) {

@@ -146,8 +146,7 @@ class UrlHidingInterstitialPage
   bool ShouldDisplayURL() const override { return false; }
 
  protected:
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
-  }
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override {}
 };
 
 // An observer that associates a URL-hiding interstitial when a page loads when

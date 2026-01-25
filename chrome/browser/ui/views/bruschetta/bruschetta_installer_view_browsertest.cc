@@ -52,9 +52,9 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
       const BruschettaInstallerViewBrowserTest&) = delete;
 
   void SetBruschettaVMConfigurationPref() {
-    base::Value::Dict pref;
+    base::DictValue pref;
 
-    base::Value::Dict config;
+    base::DictValue config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
     config.Set(prefs::kPolicyNameKey, "Config name");
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
   // We set the learn_more link for test cases by default as that's the most
   // common case, but unset it here for this specific test.
   browser()->profile()->GetPrefs()->SetDict(
-      prefs::kBruschettaInstallerConfiguration, base::Value::Dict());
+      prefs::kBruschettaInstallerConfiguration, base::DictValue());
   ShowUi("default");
   EXPECT_NE(nullptr, view_->GetOkButton());
   EXPECT_NE(nullptr, view_->GetCancelButton());

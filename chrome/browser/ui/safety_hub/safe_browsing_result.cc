@@ -17,10 +17,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
-base::Value::Dict CardDataToValue(int header_id,
-                                  int subheader_id,
-                                  safety_hub::SafetyHubCardState card_state) {
-  base::Value::Dict card_info;
+base::DictValue CardDataToValue(int header_id,
+                                int subheader_id,
+                                safety_hub::SafetyHubCardState card_state) {
+  base::DictValue card_info;
 
   card_info.Set(safety_hub::kCardHeaderKey,
                 l10n_util::GetStringUTF16(header_id));
@@ -70,9 +70,9 @@ SafeBrowsingState SafetyHubSafeBrowsingResult::GetState(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-base::Value::Dict SafetyHubSafeBrowsingResult::GetSafeBrowsingCardData(
+base::DictValue SafetyHubSafeBrowsingResult::GetSafeBrowsingCardData(
     const PrefService* pref_service) {
-  base::Value::Dict sb_card_info;
+  base::DictValue sb_card_info;
   SafeBrowsingState state = SafetyHubSafeBrowsingResult::GetState(pref_service);
   switch (state) {
     case SafeBrowsingState::kEnabledEnhanced:
@@ -113,8 +113,8 @@ std::unique_ptr<SafetyHubResult> SafetyHubSafeBrowsingResult::Clone() const {
   return std::make_unique<SafetyHubSafeBrowsingResult>(*this);
 }
 
-base::Value::Dict SafetyHubSafeBrowsingResult::ToDictValue() const {
-  base::Value::Dict result = BaseToDictValue();
+base::DictValue SafetyHubSafeBrowsingResult::ToDictValue() const {
+  base::DictValue result = BaseToDictValue();
   result.Set(safety_hub::kSafetyHubSafeBrowsingStatusKey,
              static_cast<int>(status_));
   return result;
@@ -125,7 +125,7 @@ bool SafetyHubSafeBrowsingResult::IsTriggerForMenuNotification() const {
 }
 
 bool SafetyHubSafeBrowsingResult::WarrantsNewMenuNotification(
-    const base::Value::Dict& previous_result_dict) const {
+    const base::DictValue& previous_result_dict) const {
   return true;
 }
 

@@ -226,8 +226,8 @@ class HatsServiceSurveyFeatureControlledByGroup
   ~HatsServiceSurveyFeatureControlledByGroup() override = default;
 
   void AddProfileToGroup(const std::string& group) {
-    base::Value::List pref_groups_list;
-    base::Value::Dict group_dict;
+    base::ListValue pref_groups_list;
+    base::DictValue group_dict;
     group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
     pref_groups_list.Append(std::move(group_dict));
     profile()->GetPrefs()->SetList(

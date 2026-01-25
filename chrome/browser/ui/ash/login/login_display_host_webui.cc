@@ -418,7 +418,7 @@ void TriggerShowLoginWizardFinish(
 // if no policy-specified locale is set.
 std::string GetManagedLoginScreenLocale() {
   auto* cros_settings = CrosSettings::Get();
-  const base::Value::List* login_screen_locales = nullptr;
+  const base::ListValue* login_screen_locales = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenLocales,
                               &login_screen_locales)) {
     return std::string();

@@ -1793,7 +1793,7 @@ bool NavigationCapturingProcess::IsHandledByNavigationCapturing() const {
   }
 }
 
-base::Value::Dict& NavigationCapturingProcess::PopulateAndGetDebugData() {
+base::DictValue& NavigationCapturingProcess::PopulateAndGetDebugData() {
   debug_data_.Set("!navigation_params_url",
                   navigation_params_url_.possibly_invalid_spec());
   debug_data_.Set("navigation_params_browser",

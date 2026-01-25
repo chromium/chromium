@@ -266,9 +266,9 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   EXPECT_EQ(revoked_permissions.size(), 1u);
 
   // Get the revoked permission types for the origin.
-  const base::Value::Dict& permission_types_by_values =
+  const base::DictValue& permission_types_by_values =
       revoked_permissions[0].setting_value.GetDict();
-  const base::Value::List revoked_permission_types =
+  const base::ListValue revoked_permission_types =
       permission_types_by_values.FindList(permissions::kRevokedKey)->Clone();
 
   // Assert all the allowed permissions are revoked.

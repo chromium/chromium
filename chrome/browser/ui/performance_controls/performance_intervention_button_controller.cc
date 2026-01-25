@@ -41,7 +41,7 @@ const base::TimeDelta kInterventionButtonTimeout = base::Seconds(10);
 // Erase the oldest entries if the history size exceeds
 // the max acceptance window.
 void TrimAcceptHistory(PrefService* pref_service) {
-  const base::Value::List& historical_acceptance = pref_service->GetList(
+  const base::ListValue& historical_acceptance = pref_service->GetList(
       performance_manager::user_tuning::prefs::
           kPerformanceInterventionNotificationAcceptHistory);
   const size_t current_size = historical_acceptance.size();
@@ -49,7 +49,7 @@ void TrimAcceptHistory(PrefService* pref_service) {
       performance_manager::features::kAcceptanceRateWindowSize.Get());
   if (current_size > max_acceptance) {
     const size_t difference = current_size - max_acceptance;
-    base::Value::List updated_acceptance = historical_acceptance.Clone();
+    base::ListValue updated_acceptance = historical_acceptance.Clone();
     updated_acceptance.erase(updated_acceptance.begin(),
                              updated_acceptance.begin() + difference);
     pref_service->SetList(performance_manager::user_tuning::prefs::
@@ -94,7 +94,7 @@ PerformanceInterventionButtonController::
 // static
 int PerformanceInterventionButtonController::GetAcceptancePercentage() {
   PrefService* const pref_service = g_browser_process->local_state();
-  const base::Value::List& historical_acceptance = pref_service->GetList(
+  const base::ListValue& historical_acceptance = pref_service->GetList(
       performance_manager::user_tuning::prefs::
           kPerformanceInterventionNotificationAcceptHistory);
 
@@ -259,11 +259,11 @@ void PerformanceInterventionButtonController::HideToolbarButton(
               kPerformanceInterventionNotificationImprovements) &&
       was_showing) {
     PrefService* const pref_service = g_browser_process->local_state();
-    const base::Value::List& historical_acceptance = pref_service->GetList(
+    const base::ListValue& historical_acceptance = pref_service->GetList(
         performance_manager::user_tuning::prefs::
             kPerformanceInterventionNotificationAcceptHistory);
 
-    base::Value::List updated_acceptance = historical_acceptance.Clone();
+    base::ListValue updated_acceptance = historical_acceptance.Clone();
     updated_acceptance.Append(accept_intervention);
 
     if (updated_acceptance.size() >

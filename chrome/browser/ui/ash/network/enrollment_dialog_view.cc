@@ -219,7 +219,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   }
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  const base::Value::Dict* policy =
+  const base::DictValue* policy =
       NetworkHandler::Get()
           ->managed_network_configuration_handler()
           ->FindPolicyByGuidAndProfile(

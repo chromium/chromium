@@ -65,8 +65,7 @@ constexpr char kRevocationResultHistogram[] =
 const base::TimeDelta kIgnoreExpirationOutsideSafetyHub = base::Days(90);
 const base::TimeDelta kIgnoreExpirationInsideSafetyHub = base::Days(365);
 
-std::optional<RevocationState> GetRevocationState(
-    const base::Value::Dict& dict) {
+std::optional<RevocationState> GetRevocationState(const base::DictValue& dict) {
   const std::string* revocation_state =
       dict.FindString(kRevokedStatusDictKeyStr);
   if (!revocation_state) {
@@ -183,7 +182,7 @@ DisruptiveNotificationPermissionsManager::ContentSettingHelper::
   if (value.is_none() || !value.is_dict()) {
     return std::nullopt;
   }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
 
   std::optional<RevocationState> revocation_state = GetRevocationState(dict);
   if (!revocation_state) {
@@ -224,7 +223,7 @@ void DisruptiveNotificationPermissionsManager::ContentSettingHelper::
 
   std::string_view revocation_state_string;
   base::TimeDelta lifetime;
-  base::Value::Dict dict;
+  base::DictValue dict;
   switch (entry.revocation_state) {
     case RevocationState::kProposed:
       revocation_state_string = kProposedStr;

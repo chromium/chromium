@@ -84,8 +84,8 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     PrefService* prefs = browser()->profile()->GetPrefs();
     ASSERT_FALSE(prefs->HasPrefPath(bookmarks::prefs::kManagedBookmarks));
     prefs->SetList(bookmarks::prefs::kManagedBookmarks,
-                   base::Value::List().Append(
-                       base::Value::Dict()
+                   base::ListValue().Append(
+                       base::DictValue()
                            .Set("name", "Google")
                            .Set("url", GURL("http://google.com/").spec())));
 
@@ -147,7 +147,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
   void NewAndBuildFullMenuWithBookmarksTitle() {
     // Remove the managed bookmarks node.
     browser()->profile()->GetPrefs()->SetList(
-        bookmarks::prefs::kManagedBookmarks, base::Value::List());
+        bookmarks::prefs::kManagedBookmarks, base::ListValue());
     root_menu_ = std::make_unique<views::MenuItemView>();
     root_menu_->CreateSubmenu();
     // Add a placeholder to ensure the bookmarks title is added.

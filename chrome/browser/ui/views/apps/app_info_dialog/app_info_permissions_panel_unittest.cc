@@ -39,16 +39,16 @@ class AppInfoPermissionsPanelTest : public testing::Test {
  protected:
   AppInfoPermissionsPanelTest() = default;
 
-  base::Value::Dict ValidAppManifest() {
-    return base::Value::Dict()
+  base::DictValue ValidAppManifest() {
+    return base::DictValue()
         .Set("name", "Test App Name")
         .Set("version", "2.0")
         .Set("manifest_version", 2)
         .Set("app",
-             base::Value::Dict().Set(
+             base::DictValue().Set(
                  "background",
-                 base::Value::Dict().Set(
-                     "scripts", base::Value::List().Append("background.js"))));
+                 base::DictValue().Set(
+                     "scripts", base::ListValue().Append("background.js"))));
   }
 
   // We need the UI thread in order to construct UI elements in the view.
@@ -76,8 +76,8 @@ TEST_F(AppInfoPermissionsPanelTest, RequiredPermissionsObtainedCorrectly) {
   scoped_refptr<const extensions::Extension> app =
       extensions::ExtensionBuilder()
           .SetManifest(ValidAppManifest())
-          .MergeManifest(base::Value::Dict().Set(
-              "permissions", base::Value::List()
+          .MergeManifest(base::DictValue().Set(
+              "permissions", base::ListValue()
                                  // A valid permission with a message
                                  .Append("desktopCapture")
                                  // An invalid permission
@@ -102,9 +102,9 @@ TEST_F(AppInfoPermissionsPanelTest, OptionalPermissionsObtainedCorrectly) {
   scoped_refptr<const extensions::Extension> app =
       extensions::ExtensionBuilder()
           .SetManifest(ValidAppManifest())
-          .MergeManifest(base::Value::Dict().Set(
+          .MergeManifest(base::DictValue().Set(
               "optional_permissions",
-              base::Value::List()
+              base::ListValue()
                   // A valid permission with a message
                   .Append("clipboardRead")
                   // An invalid permission
@@ -130,10 +130,10 @@ TEST_F(AppInfoPermissionsPanelTest, RetainedFilePermissionsObtainedCorrectly) {
   scoped_refptr<const extensions::Extension> app =
       extensions::ExtensionBuilder()
           .SetManifest(ValidAppManifest())
-          .MergeManifest(base::Value::Dict().Set(
+          .MergeManifest(base::DictValue().Set(
               "permissions",
-              base::Value::List().Append(base::Value::Dict().Set(
-                  "fileSystem", base::Value::List().Append("retainEntries")))))
+              base::ListValue().Append(base::DictValue().Set(
+                  "fileSystem", base::ListValue().Append("retainEntries")))))
           .SetID(kTestExtensionId)
           .Build();
   AppInfoPermissionsPanel panel(&profile_, app.get());

@@ -104,12 +104,12 @@ void SafetyHubExtensionsResult::OnExtensionUninstalled(
   }
 }
 
-base::Value::Dict SafetyHubExtensionsResult::ToDictValue() const {
+base::DictValue SafetyHubExtensionsResult::ToDictValue() const {
   // Only results that contain extensions that have been unpublished for a long
   // time should be serialized.
   CHECK(is_unpublished_extensions_only_);
-  base::Value::Dict result = BaseToDictValue();
-  base::Value::List extensions_list;
+  base::DictValue result = BaseToDictValue();
+  base::ListValue extensions_list;
   for (const auto& triggering_extension : triggering_extensions_) {
     extensions_list.Append(triggering_extension);
   }
@@ -129,7 +129,7 @@ unsigned int SafetyHubExtensionsResult::GetNumTriggeringExtensions() const {
 }
 
 bool SafetyHubExtensionsResult::WarrantsNewMenuNotification(
-    const base::Value::Dict& previous_result_dict) const {
+    const base::DictValue& previous_result_dict) const {
   std::set<extensions::ExtensionId> previous_triggering_extensions;
   for (const base::Value& extension_id : *previous_result_dict.FindList(
            safety_hub::kSafetyHubTriggeringExtensionIdsKey)) {

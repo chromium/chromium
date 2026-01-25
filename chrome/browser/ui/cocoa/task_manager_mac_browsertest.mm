@@ -100,7 +100,7 @@ class TaskManagerMacTest : public InProcessBrowserTest {
     }
 
     local_state->SetDict(prefs::kTaskManagerColumnVisibility,
-                         base::Value::Dict());
+                         base::DictValue());
   }
 
   void ToggleColumnVisibility(TaskManagerMac* task_manager, int col_id) {

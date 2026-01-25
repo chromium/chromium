@@ -738,20 +738,20 @@ class ProfilePickerCreationFlowBrowserTest
   // opened.
   void OpenProfileFromPicker(const base::FilePath& profile_path,
                              bool open_settings) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(base::FilePathToValue(profile_path));
     profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, args);
   }
 
   // Simulates a click on "Browse as Guest".
   void OpenGuestFromPicker() {
-    base::Value::List args;
+    base::ListValue args;
     profile_picker_handler()->HandleLaunchGuestProfile(args);
   }
 
   // Simulates a click on "Open all profiles".
   void OpenAllProfilesFromPicker() {
-    base::Value::List args;
+    base::ListValue args;
     for (const base::Value& profile :
          profile_picker_handler()->GetProfilesList()) {
       const std::optional<base::FilePath> profile_path =
@@ -791,7 +791,7 @@ class ProfilePickerCreationFlowBrowserTest
   // Simulates a click on "Continue without an account" to create a local
   // profile and open the profile customization dialog.
   void CreateLocalProfile() {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(base::Value());
     profile_picker_handler()->HandleContinueWithoutAccount(args);
   }
@@ -799,7 +799,7 @@ class ProfilePickerCreationFlowBrowserTest
   // Simulates a click on "Done" on the Profile Customization to confirm the
   // creation of the local profile.
   void ConfirmLocalProfileCreation(content::WebContents* dialog_web_contents) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(base::Value(kLocalProfileName));
     dialog_web_contents->GetWebUI()
         ->GetController()
@@ -815,7 +815,7 @@ class ProfilePickerCreationFlowBrowserTest
         ->GetController()
         ->GetAs<ProfileCustomizationUI>()
         ->GetProfileCustomizationHandlerForTesting()
-        ->HandleDeleteProfile(base::Value::List());
+        ->HandleDeleteProfile(base::ListValue());
   }
 
   // Returns profile picker webUI handler. Profile picker must be opened before
@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
 
   // Simulate profile deletion from the picker.
   ProfileDestructionWaiter waiter(profile);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::FilePathToValue(other_path));
   handler->HandleGetProfileStatistics(args);
   handler->HandleRemoveProfile(args);
@@ -2938,7 +2938,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate profile deletion from the picker.
   ProfileDestructionWaiter waiter(profile);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::FilePathToValue(profile->GetPath()));
   handler->HandleGetProfileStatistics(args);
   handler->HandleRemoveProfile(args);
@@ -3320,7 +3320,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   // Simulate clicking on the confirm switch button.
   ProfilePickerHandler* handler = profile_picker_handler();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::FilePathToValue(other_path));
   handler->HandleConfirmProfileSwitch(args);
 
@@ -3388,7 +3388,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   // Simulate clicking on the cancel button.
   ProfileDeletionObserver observer;
   ProfilePickerHandler* handler = profile_picker_handler();
-  base::Value::List args;
+  base::ListValue args;
   handler->HandleCancelProfileSwitch(args);
 
   // Check expectations when the profile creation flow is done.
@@ -4015,7 +4015,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerWithGlicParamBrowserTest,
   ProfilePicker::Show(ProfilePicker::Params::ForGlicManager(base::DoNothing()));
   WaitForLoadStop(GURL("chrome://profile-picker/"));
 
-  profile_picker_handler()->HandleOnLearnMoreClicked(base::Value::List());
+  profile_picker_handler()->HandleOnLearnMoreClicked(base::ListValue());
   Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_TRUE(new_browser);
   EXPECT_EQ(new_browser->profile()->GetPath(), initial_profile_path);

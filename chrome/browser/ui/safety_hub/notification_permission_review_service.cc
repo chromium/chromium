@@ -113,7 +113,7 @@ void NotificationPermissionsReviewService::
     AddPatternToNotificationPermissionReviewBlocklist(
         const ContentSettingsPattern& primary_pattern,
         const ContentSettingsPattern& secondary_pattern) {
-  base::Value::Dict permission_dict;
+  base::DictValue permission_dict;
   permission_dict.Set(kExcludedKey, base::Value(true));
 
   hcsm_->SetWebsiteSettingCustomScope(
@@ -204,7 +204,7 @@ NotificationPermissionsReviewService::GetNotificationPermissions() {
       static_cast<NotificationPermissionsReviewResult*>(result.release()));
 }
 
-base::Value::List NotificationPermissionsReviewService::
+base::ListValue NotificationPermissionsReviewService::
     PopulateNotificationPermissionReviewData() {
   return (GetNotificationPermissions().get())->GetSortedListValueForUI();
 }

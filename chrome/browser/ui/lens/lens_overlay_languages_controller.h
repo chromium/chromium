@@ -42,7 +42,7 @@ class LensOverlayLanguagesController {
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   std::vector<lens::mojom::LanguagePtr> RetrieveLanguagesFromResults(
-      const base::Value::List* result_list);
+      const base::ListValue* result_list);
 
   // Callback for when the get supported languages response is decoded.
   SupportedLanguagesRetrievedCallback callback_;

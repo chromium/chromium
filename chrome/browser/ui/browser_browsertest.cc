@@ -3143,22 +3143,22 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
   const absl::Cleanup policy_cleanup = [this]() {
     // Clear policy values, otherwise we won't be able to gracefully close the
     // browser test.
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
   };
 
   // Set up policy values.
   static constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kManifestId, kCalculatorAppUrl)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, true)));
   profile()->GetPrefs()->SetList(
       prefs::kWebAppInstallForceList,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kUrlKey, kCalculatorAppUrl)
               .Set(web_app::kDefaultLaunchContainerKey,
                    web_app::kDefaultLaunchContainerWindowValue)));

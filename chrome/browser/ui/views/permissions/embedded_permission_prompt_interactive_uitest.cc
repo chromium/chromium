@@ -1177,7 +1177,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         // is too large.
         WaitForMatchingNotification(
             "Audits.issueAdded",
-            base::BindRepeating([](const base::Value::Dict& params) {
+            base::BindRepeating([](const base::DictValue& params) {
               const std::string* code =
                   params.FindStringByDottedPath("issue.code");
               if (!code) {
@@ -1510,7 +1510,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   policies.Set(policy::key::kVideoCaptureAllowed,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::Value::List urls;
+  base::ListValue urls;
   urls.Append(GetURL().spec());
   policies.Set(policy::key::kVideoCaptureAllowedUrls,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   policies.Set(policy::key::kAudioCaptureAllowed,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::Value::List urls;
+  base::ListValue urls;
   urls.Append(GetURL().spec());
   policies.Set(policy::key::kAudioCaptureAllowedUrls,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
   policies.Set(policy::key::kAudioCaptureAllowed,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  base::Value::List urls;
+  base::ListValue urls;
   urls.Append(GetURL().spec());
   policies.Set(policy::key::kAudioCaptureAllowedUrls,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

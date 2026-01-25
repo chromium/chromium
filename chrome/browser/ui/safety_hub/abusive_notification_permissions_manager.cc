@@ -227,7 +227,7 @@ void AbusiveNotificationPermissionsManager::
     PermissionRevocationRequest::UndoExemptOriginFromFutureRevocations(hcsm,
                                                                        url);
   }
-  base::Value::Dict revoked_value;
+  base::DictValue revoked_value;
   revoked_value.Set(
       safety_hub::kRevokedStatusDictKeyStr,
       is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr);
