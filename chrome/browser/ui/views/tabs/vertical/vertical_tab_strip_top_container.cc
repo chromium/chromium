@@ -35,12 +35,6 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
   collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
-
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
-    projects_button_ = AddChildButtonFor(kActionToggleProjectsPanel);
-    projects_button_->SetProperty(views::kElementIdentifierKey,
-                                  kVerticalTabStripProjectsButtonElementId);
-  }
 }
 
 VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
@@ -57,11 +51,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
   CHECK(tab_search_button_);
   container_buttons.push_back(tab_search_button_);
-
-  if (tabs::IsProjectsPanelFeatureEnabled()) {
-    CHECK(projects_button_);
-    container_buttons.push_back(projects_button_);
-  }
 
   CHECK(collapse_button_);
   container_buttons.push_back(collapse_button_);
@@ -124,8 +113,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
       // If there is not enough space for all of the buttons to be on the same
       // line as the caption buttons, then we lay them out with collapse_button_
-      // anchored to the left, tab_search_ on the right, and the
-      // projects_button_ temporarily in the middle.
+      // anchored to the left and tab_search_ on the right.
       if (collapse_button_) {
         const gfx::Size pref_size = collapse_button_->GetPreferredSize();
         gfx::Rect bounds(GetLayoutConstant(
@@ -134,15 +122,6 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
                          pref_size.height());
         layout.child_layouts.emplace_back(
             collapse_button_.get(), collapse_button_->GetVisible(), bounds);
-      }
-
-      if (projects_button_) {
-        const gfx::Size pref_size = projects_button_->GetPreferredSize();
-        gfx::Rect bounds((host_size.width() - pref_size.width()) / 2,
-                         y_baseline - pref_size.height() / 2, pref_size.width(),
-                         pref_size.height());
-        layout.child_layouts.emplace_back(
-            projects_button_.get(), projects_button_->GetVisible(), bounds);
       }
 
       if (tab_search_button_) {
@@ -204,10 +183,6 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
   }
 
   if (collapse_button_ && IsHitInView(collapse_button_, point)) {
-    return false;
-  }
-
-  if (projects_button_ && IsHitInView(projects_button_, point)) {
     return false;
   }
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
@@ -34,8 +35,12 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
           &VerticalTabStripBottomContainer::OnCollapsedStateChanged,
           base::Unretained(this)));
 
-  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-          browser_->GetProfile())) {
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    tab_group_button_ = AddChildButtonFor(kActionToggleProjectsPanel);
+    tab_group_button_->SetProperty(views::kElementIdentifierKey,
+                                   kVerticalTabStripProjectsButtonElementId);
+  } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+                 browser_->GetProfile())) {
     tab_group_button_ = AddChildButtonFor(kActionTabGroupsMenu);
 
     // Creating MenuButtonController because tab_group_button is a LabelButton.
