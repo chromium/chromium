@@ -43,7 +43,7 @@ std::string GenerateId() {
 namespace {
 const double kCentimetersPerInch = 2.54;
 
-Status FlattenStringArray(const base::Value::List* src, std::u16string* dest) {
+Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
   std::u16string keys;
   for (const base::Value& i : *src) {
     if (!i.is_string())
@@ -69,7 +69,7 @@ Status FlattenStringArray(const base::Value::List* src, std::u16string* dest) {
 }  // namespace
 
 Status SendKeysOnWindow(WebView* web_view,
-                        const base::Value::List* key_list,
+                        const base::ListValue* key_list,
                         bool release_modifiers,
                         int* sticky_modifiers) {
   std::u16string keys;
@@ -449,7 +449,7 @@ double ConvertCentimeterToInch(double centimeter) {
 namespace {
 
 template <typename T>
-bool GetOptionalValue(const base::Value::Dict& dict,
+bool GetOptionalValue(const base::DictValue& dict,
                       std::string_view path,
                       T* out_value,
                       bool* has_value,
@@ -472,7 +472,7 @@ bool GetOptionalValue(const base::Value::Dict& dict,
 
 }  // namespace
 
-bool GetOptionalBool(const base::Value::Dict& dict,
+bool GetOptionalBool(const base::DictValue& dict,
                      std::string_view path,
                      bool* out_value,
                      bool* has_value) {
@@ -480,7 +480,7 @@ bool GetOptionalBool(const base::Value::Dict& dict,
                           &base::Value::GetIfBool);
 }
 
-bool GetOptionalInt(const base::Value::Dict& dict,
+bool GetOptionalInt(const base::DictValue& dict,
                     std::string_view path,
                     int* out_value,
                     bool* has_value) {
@@ -505,7 +505,7 @@ bool GetOptionalInt(const base::Value::Dict& dict,
   return false;
 }
 
-bool GetOptionalDouble(const base::Value::Dict& dict,
+bool GetOptionalDouble(const base::DictValue& dict,
                        std::string_view path,
                        double* out_value,
                        bool* has_value) {
@@ -513,7 +513,7 @@ bool GetOptionalDouble(const base::Value::Dict& dict,
                           &base::Value::GetIfDouble);
 }
 
-bool GetOptionalString(const base::Value::Dict& dict,
+bool GetOptionalString(const base::DictValue& dict,
                        std::string_view path,
                        std::string* out_value,
                        bool* has_value) {
@@ -533,9 +533,9 @@ bool GetOptionalString(const base::Value::Dict& dict,
   return false;
 }
 
-bool GetOptionalDictionary(const base::Value::Dict& dict,
+bool GetOptionalDictionary(const base::DictValue& dict,
                            std::string_view path,
-                           const base::Value::Dict** out_value,
+                           const base::DictValue** out_value,
                            bool* has_value) {
   if (has_value != nullptr)
     *has_value = false;
@@ -551,9 +551,9 @@ bool GetOptionalDictionary(const base::Value::Dict& dict,
   return false;
 }
 
-bool GetOptionalList(const base::Value::Dict& dict,
+bool GetOptionalList(const base::DictValue& dict,
                      std::string_view path,
-                     const base::Value::List** out_value,
+                     const base::ListValue** out_value,
                      bool* has_value) {
   if (has_value != nullptr)
     *has_value = false;
@@ -572,7 +572,7 @@ bool GetOptionalList(const base::Value::Dict& dict,
   return false;
 }
 
-bool GetOptionalSafeInt(const base::Value::Dict& dict,
+bool GetOptionalSafeInt(const base::DictValue& dict,
                         std::string_view path,
                         int64_t* out_value,
                         bool* has_value) {
@@ -609,7 +609,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
   return true;
 }
 
-bool SetSafeInt(base::Value::Dict& dict,
+bool SetSafeInt(base::DictValue& dict,
                 std::string_view path,
                 int64_t in_value_64) {
   int int_value = static_cast<int>(in_value_64);

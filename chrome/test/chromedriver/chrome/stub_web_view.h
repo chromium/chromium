@@ -30,17 +30,17 @@ class StubWebView : public WebView {
   Status Resume(const Timeout* timeout) override;
   Status StartBidiServer(std::string bidi_mapper_script,
                          bool enable_unsafe_extension_debugging) override;
-  Status PostBidiCommand(base::Value::Dict command) override;
-  Status SendBidiCommand(base::Value::Dict command,
+  Status PostBidiCommand(base::DictValue command) override;
+  Status SendBidiCommand(base::DictValue command,
                          const Timeout& timeout,
-                         base::Value::Dict& response) override;
+                         base::DictValue& response) override;
   Status SendCommand(const std::string& cmd,
-                     const base::Value::Dict& params) override;
+                     const base::DictValue& params) override;
   Status SendCommandFromWebSocket(const std::string& cmd,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   const int client_cmd_id) override;
   Status SendCommandAndGetResult(const std::string& cmd,
-                                 const base::Value::Dict& params,
+                                 const base::DictValue& params,
                                  std::unique_ptr<base::Value>* value) override;
   Status TraverseHistory(int delta, const Timeout* timeout) override;
   Status EvaluateScript(const std::string& frame,
@@ -49,21 +49,21 @@ class StubWebView : public WebView {
                         std::unique_ptr<base::Value>* result) override;
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::Value::List& args,
+                      const base::ListValue& args,
                       std::unique_ptr<base::Value>* result) override;
   Status CallUserAsyncFunction(const std::string& frame,
                                const std::string& function,
-                               const base::Value::List& args,
+                               const base::ListValue& args,
                                const base::TimeDelta& timeout,
                                std::unique_ptr<base::Value>* result) override;
   Status CallUserSyncScript(const std::string& frame,
                             const std::string& script,
-                            const base::Value::List& args,
+                            const base::ListValue& args,
                             const base::TimeDelta& timeout,
                             std::unique_ptr<base::Value>* result) override;
   Status GetFrameByFunction(const std::string& frame,
                             const std::string& function,
-                            const base::Value::List& args,
+                            const base::ListValue& args,
                             std::string* out_frame) override;
   Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                              const std::string& frame,
@@ -108,8 +108,8 @@ class StubWebView : public WebView {
   Status OverrideDownloadDirectoryIfNeeded(
       const std::string& download_directory) override;
   Status CaptureScreenshot(std::string* screenshot,
-                           const base::Value::Dict& params) override;
-  Status PrintToPDF(const base::Value::Dict& params, std::string* pdf) override;
+                           const base::DictValue& params) override;
+  Status PrintToPDF(const base::DictValue& params, std::string* pdf) override;
   Status SetFileInputFiles(const std::string& frame,
                            const base::Value& element,
                            const std::vector<base::FilePath>& files,
@@ -137,7 +137,7 @@ class StubWebView : public WebView {
   bool IsDetached() const override;
   Status CallFunctionWithTimeout(const std::string& frame,
                                  const std::string& function,
-                                 const base::Value::List& args,
+                                 const base::ListValue& args,
                                  const base::TimeDelta& timeout,
                                  const CallFunctionOptions& options,
                                  std::unique_ptr<base::Value>* result) override;

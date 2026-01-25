@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              check_elapsed();
-                             base::Value::List list;
+                             base::ListValue list;
                              list.Append(false);
                              post_and_listen(base::Value(),
                                              base::Value(std::move(list)));
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              check_elapsed();
-                             base::Value::Dict dict;
+                             base::DictValue dict;
                              dict.Set("foo", "bar");
                              post_and_listen(base::Value(),
                                              base::Value(std::move(dict)));

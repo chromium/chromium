@@ -53,7 +53,7 @@ ExternalConstantsBuilder::~ExternalConstantsBuilder() {
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUpdateURL(
     const std::vector<std::string>& urls) {
-  base::Value::List url_list;
+  base::ListValue url_list;
   url_list.reserve(urls.size());
   for (const std::string& url_string : urls) {
     url_list.Append(url_string);
@@ -199,7 +199,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxPublicKeyHash() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetDictPolicies(
-    const base::Value::Dict& dict_policies) {
+    const base::DictValue& dict_policies) {
   overrides_.Set(kDevOverrideKeyDictPolicies, dict_policies.Clone());
   return *this;
 }

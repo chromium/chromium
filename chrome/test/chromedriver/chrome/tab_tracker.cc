@@ -25,7 +25,7 @@ bool TabTracker::ListensToConnections() const {
 
 Status TabTracker::OnEvent(DevToolsClient* client,
                            const std::string& method,
-                           const base::Value::Dict& params) {
+                           const base::DictValue& params) {
   if (method == "Target.detachedFromTarget") {
     const std::string* target_id = params.FindString("targetId");
     if (!target_id) {

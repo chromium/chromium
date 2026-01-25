@@ -198,29 +198,30 @@ WebDriverLog::WebDriverLog(const std::string& type, Log::Level min_level)
 
 WebDriverLog::~WebDriverLog() {
   size_t sum = 0;
-  for (const base::Value::List& batch : batches_of_entries_)
+  for (const base::ListValue& batch : batches_of_entries_) {
     sum += batch.size();
+  }
   VLOG(1) << "Log type '" << type_ << "' lost " << sum
           << " entries on destruction";
 }
 
-base::Value::List WebDriverLog::GetAndClearEntries() {
+base::ListValue WebDriverLog::GetAndClearEntries() {
   if (batches_of_entries_.empty()) {
     emptied_ = true;
-    return base::Value::List();
+    return base::ListValue();
   } else {
-    base::Value::List list = std::move(batches_of_entries_.front());
+    base::ListValue list = std::move(batches_of_entries_.front());
     batches_of_entries_.pop_front();
     emptied_ = false;
     return list;
   }
 }
 
-bool GetFirstErrorMessageFromList(const base::Value::List& list,
+bool GetFirstErrorMessageFromList(const base::ListValue& list,
                                   std::string* message) {
   for (const auto& entry : list) {
     if (entry.is_dict()) {
-      const base::Value::Dict& log_entry = entry.GetDict();
+      const base::DictValue& log_entry = entry.GetDict();
       const std::string* level = log_entry.FindString("level");
       if (!level || *level != kLevelToName[Log::kError])
         continue;
@@ -236,9 +237,10 @@ bool GetFirstErrorMessageFromList(const base::Value::List& list,
 
 std::string WebDriverLog::GetFirstErrorMessage() const {
   std::string message;
-  for (const base::Value::List& list : batches_of_entries_)
+  for (const base::ListValue& list : batches_of_entries_) {
     if (GetFirstErrorMessageFromList(list, &message))
       break;
+  }
   return message;
 }
 
@@ -249,7 +251,7 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
   if (level < min_level_)
     return;
 
-  base::Value::Dict log_entry_dict;
+  base::DictValue log_entry_dict;
   log_entry_dict.Set("timestamp",
                      std::trunc(timestamp.InMillisecondsFSinceUnixEpoch()));
   log_entry_dict.Set("level", LevelToName(level));
@@ -258,7 +260,7 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
   log_entry_dict.Set("message", message);
   if (batches_of_entries_.empty() ||
       batches_of_entries_.back().size() >= internal::kMaxReturnedEntries) {
-    batches_of_entries_.push_back(base::Value::List());
+    batches_of_entries_.push_back(base::ListValue());
   }
   batches_of_entries_.back().Append(std::move(log_entry_dict));
 }

@@ -83,17 +83,17 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   // available and call `finished_callback` on completion (either retries
   // exhausted or all scripts are available).
   void VerifyAllScriptsAreParsedRepeatedly(
-      const base::Value::List* coverage_entries,
+      const base::ListValue* coverage_entries,
       base::OnceClosure done_callback,
       int retries);
 
-  std::vector<base::Value::Dict> scripts_;
-  base::Value::Dict script_coverage_;
+  std::vector<base::DictValue> scripts_;
+  base::DictValue script_coverage_;
   std::map<std::string, std::string> script_hash_map_;
   std::map<std::string, std::string> script_id_map_;
 
   base::OnceClosure value_closure_;
-  base::Value::Dict value_;
+  base::DictValue value_;
   int value_id_ = 0;
 
   const std::string uuid_;

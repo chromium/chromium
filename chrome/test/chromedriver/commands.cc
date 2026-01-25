@@ -34,12 +34,12 @@
 #include "chrome/test/chromedriver/util.h"
 
 namespace {
-void WriteChromeDriverExtendedStatus(base::Value::Dict& info) {
-  base::Value::Dict build;
+void WriteChromeDriverExtendedStatus(base::DictValue& info) {
+  base::DictValue build;
   build.Set("version", kChromeDriverVersion);
   info.Set("build", std::move(build));
 
-  base::Value::Dict os;
+  base::DictValue os;
   os.Set("name", base::SysInfo::OperatingSystemName());
   os.Set("version", base::SysInfo::OperatingSystemVersion());
   os.Set("arch", base::SysInfo::OperatingSystemArchitecture());
@@ -47,13 +47,13 @@ void WriteChromeDriverExtendedStatus(base::Value::Dict& info) {
 }
 }  // namespace
 
-void ExecuteGetStatus(const base::Value::Dict& params,
+void ExecuteGetStatus(const base::DictValue& params,
                       const std::string& session_id,
                       const CommandCallback& callback) {
   // W3C defined data:
   // ChromeDriver doesn't have a preset limit on number of active sessions,
   // so we are always ready.
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set("ready", true);
   info.Set("message", base::StringPrintf("%s ready for new sessions.",
                                          kChromeDriverProductShortName));
@@ -65,10 +65,10 @@ void ExecuteGetStatus(const base::Value::Dict& params,
                std::string(), kW3CDefault);
 }
 
-void ExecuteBidiSessionStatus(const base::Value::Dict& params,
+void ExecuteBidiSessionStatus(const base::DictValue& params,
                               const std::string& session_id,
                               const CommandCallback& callback) {
-  base::Value::Dict info;
+  base::DictValue info;
   if (session_id.empty()) {
     info.Set("ready", true);
     info.Set("message", base::StringPrintf("%s ready for new sessions.",
@@ -90,7 +90,7 @@ void ExecuteBidiSessionStatus(const base::Value::Dict& params,
 
 void ExecuteCreateSession(SessionThreadMap* session_thread_map,
                           const Command& init_session_cmd,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           const std::string& host,
                           const CommandCallback& callback) {
   std::string new_id = GenerateId();
@@ -113,7 +113,7 @@ void ExecuteCreateSession(SessionThreadMap* session_thread_map,
 
 void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
                            const Command& init_session_cmd,
-                           const base::Value::Dict& params,
+                           const base::DictValue& params,
                            const std::string& resource,
                            const CommandCallback& callback) {
   if (!resource.empty()) {
@@ -121,8 +121,8 @@ void ExecuteBidiSessionNew(SessionThreadMap* session_thread_map,
                  resource, kW3CDefault);
     return;
   }
-  base::Value::Dict new_params;
-  const base::Value::Dict* capabilities =
+  base::DictValue new_params;
+  const base::DictValue* capabilities =
       params.FindDictByDottedPath("params.capabilities");
   if (capabilities) {
     new_params.Set("capabilities", capabilities->Clone());
@@ -136,7 +136,7 @@ namespace {
 
 void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
                   const base::RepeatingClosure& all_get_session_func,
-                  base::Value::List& session_list,
+                  base::ListValue& session_list,
                   const Status& status,
                   std::unique_ptr<base::Value> value,
                   const std::string& session_id,
@@ -147,7 +147,7 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
   (*session_remaining_count)--;
 
   if (value) {
-    base::Value::Dict session;
+    base::DictValue session;
     session.Set("id", session_id);
     session.Set("capabilities",
                 base::Value::FromUniquePtrValue(std::move(value)));
@@ -163,12 +163,12 @@ void OnGetSession(const base::WeakPtr<size_t>& session_remaining_count,
 
 void ExecuteGetSessions(const Command& session_capabilities_command,
                         SessionThreadMap* session_thread_map,
-                        const base::Value::Dict& params,
+                        const base::DictValue& params,
                         const std::string& session_id,
                         const CommandCallback& callback) {
   size_t get_remaining_count = session_thread_map->size();
   base::WeakPtrFactory<size_t> weak_ptr_factory(&get_remaining_count);
-  base::Value::List session_list;
+  base::ListValue session_list;
 
   if (!get_remaining_count) {
     callback.Run(Status(kOk),
@@ -216,7 +216,7 @@ void OnSessionQuit(const base::WeakPtr<size_t>& quit_remaining_count,
 
 void ExecuteQuitAll(const Command& quit_command,
                     SessionThreadMap* session_thread_map,
-                    const base::Value::Dict& params,
+                    const base::DictValue& params,
                     const std::string& session_id,
                     const CommandCallback& callback) {
   size_t quit_remaining_count = session_thread_map->size();
@@ -251,7 +251,7 @@ void ExecuteSessionCommandOnSessionThread(
     const SessionCommand& command,
     bool w3c_standard_command,
     bool return_ok_without_session,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const CommandCallback& callback_on_cmd) {
   Session* session = GetThreadLocalSession();
@@ -386,7 +386,7 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
                            const SessionCommand& command,
                            bool w3c_standard_command,
                            bool return_ok_without_session,
-                           const base::Value::Dict& params,
+                           const base::DictValue& params,
                            const std::string& session_id,
                            const CommandCallback& callback) {
   auto iter = session_thread_map->find(session_id);

@@ -118,7 +118,7 @@ bool PadSecret(const std::string& secret, std::string* out) {
               secret.size());
 
   auto pwd_padding_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kPaddedPassword, padded_secret)
           .Set(kPasswordLength, static_cast<int>(secret.size()));
   SecurelyClearString(padded_secret);
@@ -134,7 +134,7 @@ bool PadSecret(const std::string& secret, std::string* out) {
 // find padded secret. It then removes the padding and returns original secret.
 bool UnpadSecret(const std::string& serialized_padded_secret,
                  std::string* out) {
-  std::optional<base::Value::Dict> pwd_padding = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> pwd_padding = base::JSONReader::ReadDict(
       serialized_padded_secret, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!pwd_padding) {
     LOGFN(ERROR) << "Failed to deserialize given secret from json.";
@@ -263,14 +263,14 @@ HRESULT EncryptUserPasswordUsingEscrowService(
     const std::string& device_id,
     const std::wstring& password,
     const base::TimeDelta& request_timeout,
-    std::optional<base::Value::Dict>& encrypted_data) {
+    std::optional<base::DictValue>& encrypted_data) {
   DCHECK(!encrypted_data);
 
   std::string resource_id;
   std::string public_key;
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
   request_dict.Set(kGenerateKeyPairRequestDeviceIdParameterName, device_id);
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
 
   // Fetch the results and extract the |resource_id| for the key and the
   // |public_key| to be used for encryption.
@@ -319,7 +319,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
   std::string cipher_text = base::Base64Encode(*opt);
 
   encrypted_data =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kUserPasswordLsaStoreIdKey, resource_id)
           .Set(kUserPasswordLsaStoreEncryptedPasswordKey, cipher_text);
 
@@ -333,7 +333,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
 // service.
 HRESULT DecryptUserPasswordUsingEscrowService(
     const std::string& access_token,
-    const base::Value::Dict& encrypted_data_dict,
+    const base::DictValue& encrypted_data_dict,
     const base::TimeDelta& request_timeout,
     std::wstring* decrypted_password) {
   DCHECK(decrypted_password);
@@ -353,7 +353,7 @@ HRESULT DecryptUserPasswordUsingEscrowService(
   }
 
   std::string private_key;
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
 
   // Fetch the results and extract the |private_key| to be used for decryption.
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
@@ -474,7 +474,7 @@ HRESULT PasswordRecoveryManager::StoreWindowsPasswordIfNeeded(
     return S_OK;
   }
 
-  std::optional<base::Value::Dict> encrypted_dict;
+  std::optional<base::DictValue> encrypted_dict;
   hr = EncryptUserPasswordUsingEscrowService(access_token, device_id, password,
                                              encryption_key_request_timeout_,
                                              encrypted_dict);
@@ -532,7 +532,7 @@ HRESULT PasswordRecoveryManager::RecoverWindowsPasswordIfPossible(
     LOGFN(ERROR) << "RetrievePrivateData hr=" << putHR(hr);
 
   std::string json_string = base::WideToUTF8(password_lsa_data);
-  std::optional<base::Value::Dict> encrypted_dict =
+  std::optional<base::DictValue> encrypted_dict =
       base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   SecurelyClearString(json_string);
   SecurelyClearBuffer(password_lsa_data, sizeof(password_lsa_data));

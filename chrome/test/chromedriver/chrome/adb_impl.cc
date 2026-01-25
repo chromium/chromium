@@ -35,9 +35,9 @@
 
 namespace {
 
-Status OverridePreferenceJson(const std::string &template_string,
-                             const base::Value::Dict *custom_prefs,
-                             std::string *prefs_str) {
+Status OverridePreferenceJson(const std::string& template_string,
+                              const base::DictValue* custom_prefs,
+                              std::string* prefs_str) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
@@ -45,7 +45,7 @@ Status OverridePreferenceJson(const std::string &template_string,
                                      parsed_json.error().message);
   }
 
-  base::Value::Dict *prefs = parsed_json->GetIfDict();
+  base::DictValue* prefs = parsed_json->GetIfDict();
   if (!prefs)
     return Status(kUnknownError, "malformed prefs dictionary");
 
@@ -384,7 +384,7 @@ Status AdbImpl::GetSocketByPattern(const std::string& device_serial,
 
 Status AdbImpl::SetPreferences(const std::string& device_serial,
                                const std::string& path,
-                               const base::Value::Dict* custom_prefs) {
+                               const base::DictValue* custom_prefs) {
   std::string prefs_str;
 
   Status status =
@@ -411,7 +411,7 @@ Status AdbImpl::SetPreferences(const std::string& device_serial,
 
 Status AdbImpl::SetLocalState(const std::string& device_serial,
                               const std::string& path,
-                              const base::Value::Dict* custom_local_state) {
+                              const base::DictValue* custom_local_state) {
   std::string prefs_str;
 
   Status status =

@@ -68,7 +68,7 @@ FrameInfo::FrameInfo(const std::string& parent_frame_id,
       frame_id(frame_id),
       chromedriver_frame_id(chromedriver_frame_id) {}
 
-InputCancelListEntry::InputCancelListEntry(base::Value::Dict* input_state,
+InputCancelListEntry::InputCancelListEntry(base::DictValue* input_state,
                                            const MouseEvent* mouse_event,
                                            const TouchEvent* touch_event,
                                            const KeyEvent* key_event)
@@ -214,7 +214,7 @@ void Session::SwitchFrameInternal(bool for_top_frame) {
   }
 }
 
-Status Session::OnBidiResponse(base::Value::Dict payload) {
+Status Session::OnBidiResponse(base::DictValue payload) {
   std::string* channel = payload.FindString("goog:channel");
   if (!channel) {
     return Status{kUnknownError,
@@ -308,12 +308,12 @@ Status Session::SendBidiSessionEnd() {
   if (status.IsError()) {
     return status;
   }
-  base::Value::Dict bidi_cmd;
+  base::DictValue bidi_cmd;
   bidi_cmd.Set("goog:channel", "/before-session-shutdown");
   bidi_cmd.Set("id", 1);
   bidi_cmd.Set("method", "session.end");
-  bidi_cmd.Set("params", base::Value::Dict());
-  base::Value::Dict response;
+  bidi_cmd.Set("params", base::DictValue());
+  base::DictValue response;
   Timeout timeout(base::Seconds(20));
   return web_view->SendBidiCommand(std::move(bidi_cmd), timeout, response);
 }

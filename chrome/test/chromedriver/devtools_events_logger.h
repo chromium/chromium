@@ -36,7 +36,7 @@ class DevToolsEventsLogger : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
  private:
   raw_ptr<Log> log_;  // The log where to create entries.

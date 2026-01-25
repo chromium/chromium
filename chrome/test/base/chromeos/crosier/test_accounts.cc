@@ -46,12 +46,12 @@ void GetGaiaTestAccount(std::string& out_email, std::string& out_password) {
       base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));
 
   std::unique_ptr<base::Value> store = ReadJsonFile(test_accounts_path);
-  const base::Value::List* default_pool =
+  const base::ListValue* default_pool =
       store->GetDict().FindList("ui.gaiaPoolDefault");
   CHECK(default_pool);
   CHECK(!default_pool->empty());
 
-  const base::Value::Dict& account =
+  const base::DictValue& account =
       (*default_pool)[base::RandIntInclusive(0, default_pool->size() - 1)]
           .GetDict();
   out_email = *account.FindString("email");
@@ -68,10 +68,10 @@ FamilyTestData GetFamilyTestData() {
       base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));
 
   std::unique_ptr<base::Value> store = ReadJsonFile(test_accounts_path);
-  const base::Value::List* default_pool = store->GetDict().FindList("family");
+  const base::ListValue* default_pool = store->GetDict().FindList("family");
   CHECK(default_pool);
   CHECK(!default_pool->empty());
-  const base::Value::Dict& accounts = (*default_pool)[0].GetDict();
+  const base::DictValue& accounts = (*default_pool)[0].GetDict();
   FamilyTestData test_data;
   test_data.unicorn =
       FamilyTestData::User{*accounts.FindString("unicornEmail"),

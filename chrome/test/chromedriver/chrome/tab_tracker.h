@@ -32,7 +32,7 @@ class TabTracker : public DevToolsEventListener {
   bool ListensToConnections() const override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
  private:
   raw_ptr<std::list<std::unique_ptr<WebViewImpl>>> tab_views_;

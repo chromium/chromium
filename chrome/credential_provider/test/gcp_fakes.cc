@@ -640,7 +640,7 @@ FakeScopedUserProfile::FakeScopedUserProfile(const std::wstring& sid,
 FakeScopedUserProfile::~FakeScopedUserProfile() = default;
 
 HRESULT FakeScopedUserProfile::SaveAccountInfo(
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   if (!is_valid_) {
     return E_INVALIDARG;
   }

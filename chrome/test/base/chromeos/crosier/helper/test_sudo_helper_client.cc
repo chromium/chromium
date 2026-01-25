@@ -72,7 +72,7 @@ TestSudoHelperClient::~TestSudoHelperClient() {
 bool TestSudoHelperClient::WaitForServer(base::TimeDelta max_wait) {
   base::ElapsedTimer elapsed;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKeyMethod, kMethodRunCommand);
   dict.Set(kKeyCommand, "true");
 
@@ -101,7 +101,7 @@ TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
   // expected in this testing context.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKeyMethod, kMethodRunCommand);
   dict.Set(kKeyCommand, command);
 
@@ -117,7 +117,7 @@ TestSudoHelperClient::Result TestSudoHelperClient::StartSessionManager(
 
   session_manager_stopped_callback_ = std::move(stopped_callback);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKeyMethod, kMethodStartSessionManager);
 
   base::ScopedFD sock;
@@ -147,7 +147,7 @@ TestSudoHelperClient::Result TestSudoHelperClient::StopSessionManager() {
   CHECK(session_manager_watcher_thread_)
       << "Unsupported because session manager is not started from this client.";
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kKeyMethod, kMethodStopSessionManager);
 
   return SendDictAndGetResult(dict);
@@ -186,7 +186,7 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     base::ScopedFD* out_sock,
     bool fatal_on_connection_error) {
   Result result;

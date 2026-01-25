@@ -195,7 +195,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 #endif
   void UpdatePrintSettings(
       uint32_t context_id,
-      base::Value::Dict job_settings,
+      base::DictValue job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;
   void StartPrinting(

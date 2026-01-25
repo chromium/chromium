@@ -55,10 +55,10 @@ testing::AssertionResult StatusOk(const Status& status) {
   return StatusCodeIs<kOk>(status);
 }
 
-bool ParseCommand(const base::Value::Dict& command,
+bool ParseCommand(const base::DictValue& command,
                   int* cmd_id,
                   std::string* method,
-                  base::Value::Dict* params,
+                  base::DictValue* params,
                   std::string* session_id) {
   std::optional<int> maybe_id = command.FindInt("id");
   if (!maybe_id) {
@@ -84,7 +84,7 @@ bool ParseCommand(const base::Value::Dict& command,
   }
 
   // params might miss, this is acceptable
-  const base::Value::Dict* maybe_params = command.FindDict("params");
+  const base::DictValue* maybe_params = command.FindDict("params");
   if (maybe_params) {
     *params = maybe_params->Clone();
   }
@@ -95,7 +95,7 @@ bool ParseCommand(const base::Value::Dict& command,
 bool ParseMessage(const std::string& message,
                   int* cmd_id,
                   std::string* method,
-                  base::Value::Dict* params,
+                  base::DictValue* params,
                   std::string* session_id) {
   std::optional<base::Value> value =
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -116,10 +116,10 @@ Status SerializeAsJson(const T& value, std::string* json) {
 }
 
 Status CreateCdpEvent(std::string method,
-                      base::Value::Dict params,
+                      base::DictValue params,
                       std::string session_id,
-                      base::Value::Dict* evt) {
-  base::Value::Dict dict;
+                      base::DictValue* evt) {
+  base::DictValue dict;
   dict.Set("method", std::move(method));
   dict.Set("params", std::move(params));
   if (!session_id.empty()) {
@@ -130,10 +130,10 @@ Status CreateCdpEvent(std::string method,
 }
 
 Status CreateCdpResponse(int cmd_id,
-                         base::Value::Dict result,
+                         base::DictValue result,
                          std::string session_id,
-                         base::Value::Dict* resp) {
-  base::Value::Dict dict;
+                         base::DictValue* resp) {
+  base::DictValue dict;
   dict.Set("id", cmd_id);
   dict.Set("result", std::move(result));
   if (!session_id.empty()) {
@@ -145,10 +145,10 @@ Status CreateCdpResponse(int cmd_id,
 
 Status CreateBidiCommand(int cmd_id,
                          std::string method,
-                         base::Value::Dict params,
+                         base::DictValue params,
                          const std::string* channel,
-                         base::Value::Dict* cmd) {
-  base::Value::Dict dict;
+                         base::DictValue* cmd) {
+  base::DictValue dict;
   dict.Set("id", cmd_id);
   dict.Set("method", std::move(method));
   dict.Set("params", std::move(params));
@@ -159,30 +159,30 @@ Status CreateBidiCommand(int cmd_id,
   return Status{kOk};
 }
 
-Status WrapBidiEventInCdpEvent(const base::Value::Dict& bidi_evt,
+Status WrapBidiEventInCdpEvent(const base::DictValue& bidi_evt,
                                std::string mapper_session_id,
-                               base::Value::Dict* evt) {
+                               base::DictValue* evt) {
   std::string payload;
   Status status = SerializeAsJson(bidi_evt, &payload);
   if (status.IsError()) {
     return status;
   }
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("name", "sendBidiResponse");
   params.Set("payload", payload);
   return CreateCdpEvent("Runtime.bindingCalled", std::move(params),
                         std::move(mapper_session_id), evt);
 }
 
-Status WrapBidiResponseInCdpEvent(const base::Value::Dict& bidi_resp,
+Status WrapBidiResponseInCdpEvent(const base::DictValue& bidi_resp,
                                   std::string mapper_session_id,
-                                  base::Value::Dict* evt) {
+                                  base::DictValue* evt) {
   std::string payload;
   Status status = SerializeAsJson(bidi_resp, &payload);
   if (status.IsError()) {
     return status;
   }
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("name", "sendBidiResponse");
   params.Set("payload", payload);
   return CreateCdpEvent("Runtime.bindingCalled", std::move(params),
@@ -257,7 +257,7 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
     EXPECT_TRUE(connected_);
     int cmd_id;
     std::string method;
-    base::Value::Dict params;
+    base::DictValue params;
     std::string session_id;
 
     if (!ParseMessage(message, &cmd_id, &method, &params, &session_id)) {
@@ -294,10 +294,10 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
   virtual bool OnUserCommand(SessionState* session_state,
                              int cmd_id,
                              std::string method,
-                             base::Value::Dict params,
+                             base::DictValue params,
                              std::string session_id) {
     EXPECT_STREQ("method", method.c_str());
-    base::Value::Dict response;
+    base::DictValue response;
     Status status =
         CreateDefaultCdpResponse(cmd_id, std::move(method), std::move(params),
                                  std::move(session_id), &response);
@@ -317,10 +317,10 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
 
   Status CreateDefaultCdpResponse(int cmd_id,
                                   std::string method,
-                                  base::Value::Dict params,
+                                  base::DictValue params,
                                   std::string session_id,
-                                  base::Value::Dict* response) {
-    base::Value::Dict result;
+                                  base::DictValue* response) {
+    base::DictValue result;
     std::optional<int> ping = params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
@@ -373,9 +373,9 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
         (session_state->handshake_add_script_handled &&
          session_state->handshake_runtime_eval_handled);
 
-    base::Value::Dict result;
+    base::DictValue result;
     result.Set("param", 1);
-    base::Value::Dict response;
+    base::DictValue response;
     Status status =
         CreateCdpResponse(cmd_id, std::move(result), session_id, &response);
     if (status.IsError()) {
@@ -455,7 +455,7 @@ TEST_F(DevToolsClientImplTest, SendCommand) {
   DevToolsClientImpl client("id", "");
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
@@ -465,9 +465,9 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
   DevToolsClientImpl client("id", "");
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
-  base::Value::Dict result;
+  base::DictValue result;
   ASSERT_TRUE(
       StatusOk(client.SendCommandAndGetResult("method", params, &result)));
   std::string json = base::WriteJson(result).value_or("");
@@ -571,7 +571,7 @@ class MockSyncWebSocket3 : public StubSyncWebSocket {
     EXPECT_TRUE(connected_);
     int cmd_id;
     std::string method;
-    base::Value::Dict params;
+    base::DictValue params;
     std::string session_id;
 
     if (!ParseMessage(message, &cmd_id, &method, &params, &session_id)) {
@@ -611,7 +611,7 @@ TEST_F(DevToolsClientImplTest, SendCommandSendFails) {
   DevToolsClientImpl client("id", "");
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -620,7 +620,7 @@ TEST_F(DevToolsClientImplTest, SendCommandReceiveNextMessageFails) {
   DevToolsClientImpl client("id", "");
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -643,7 +643,7 @@ class FakeSyncWebSocket : public StubSyncWebSocket {
     EXPECT_TRUE(connected_);
     int cmd_id;
     std::string method;
-    base::Value::Dict params;
+    base::DictValue params;
     std::string session_id;
 
     if (!ParseMessage(message, &cmd_id, &method, &params, &session_id)) {
@@ -678,7 +678,7 @@ bool ReturnCommand(const std::string& message,
   type = internal::kCommandResponseMessageType;
   session_id.clear();
   command_response.id = expected_id;
-  command_response.result = base::Value::Dict();
+  command_response.result = base::DictValue();
   return true;
 }
 
@@ -691,7 +691,7 @@ bool ReturnBadResponse(const std::string& message,
   type = internal::kCommandResponseMessageType;
   session_id.clear();
   command_response.id = expected_id;
-  command_response.result = base::Value::Dict();
+  command_response.result = base::DictValue();
   return false;
 }
 
@@ -704,7 +704,7 @@ bool ReturnCommandBadId(const std::string& message,
   type = internal::kCommandResponseMessageType;
   session_id.clear();
   command_response.id = expected_id + 100;
-  command_response.result = base::Value::Dict();
+  command_response.result = base::DictValue();
   return true;
 }
 
@@ -724,7 +724,7 @@ bool ReturnUnexpectedIdThenResponse(
   } else {
     type = internal::kCommandResponseMessageType;
     command_response.id = expected_id;
-    command_response.result = base::Value::Dict();
+    command_response.result = base::DictValue();
     command_response.result->Set("key", 2);
   }
   *first = false;
@@ -753,7 +753,7 @@ class MockListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     called_ = true;
     EXPECT_STREQ("method", method.c_str());
     EXPECT_TRUE(params.Find("key"));
@@ -775,12 +775,12 @@ bool ReturnEventThenResponse(bool* first,
   if (*first) {
     type = internal::kEventMessageType;
     event.method = "method";
-    event.params = base::Value::Dict();
+    event.params = base::DictValue();
     event.params->Set("key", 1);
   } else {
     type = internal::kCommandResponseMessageType;
     command_response.id = expected_id;
-    command_response.result = base::Value::Dict();
+    command_response.result = base::DictValue();
     command_response.result->Set("key", 2);
   }
   *first = false;
@@ -795,7 +795,7 @@ bool ReturnEvent(const std::string& message,
                  InspectorCommandResponse& command_response) {
   type = internal::kEventMessageType;
   event.method = "method";
-  event.params = base::Value::Dict();
+  event.params = base::DictValue();
   event.params->Set("key", 1);
   return true;
 }
@@ -809,14 +809,14 @@ bool ReturnOutOfOrderResponses(int* recurse_count,
                                InspectorEvent& event,
                                InspectorCommandResponse& command_response) {
   int key = 0;
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
   switch ((*recurse_count)++) {
     case 0:
       client->SendCommand("method", params);
       type = internal::kEventMessageType;
       event.method = "method";
-      event.params = base::Value::Dict();
+      event.params = base::DictValue();
       event.params->Set("key", 1);
       return true;
     case 1:
@@ -829,7 +829,7 @@ bool ReturnOutOfOrderResponses(int* recurse_count,
       break;
   }
   type = internal::kCommandResponseMessageType;
-  command_response.result = base::Value::Dict();
+  command_response.result = base::DictValue();
   command_response.result->Set("key", key);
   return true;
 }
@@ -865,7 +865,7 @@ TEST_F(DevToolsClientImplTest, FakeSyncWebSocketSelfTest) {
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommand));
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
@@ -876,7 +876,7 @@ TEST_F(DevToolsClientImplTest, SendCommandBadResponse) {
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnBadResponse));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -886,7 +886,7 @@ TEST_F(DevToolsClientImplTest, SendCommandBadId) {
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommandBadId));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -898,7 +898,7 @@ TEST_F(DevToolsClientImplTest, SendCommandUnexpectedId) {
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnUnexpectedIdThenResponse, &first));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
 
@@ -908,7 +908,7 @@ TEST_F(DevToolsClientImplTest, SendCommandResponseError) {
   EXPECT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(base::BindRepeating(&ReturnCommandError));
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_TRUE(client.SendCommand("method", params).IsError());
 }
 
@@ -922,8 +922,8 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnEventThenResponse, &first));
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   std::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
@@ -1080,18 +1080,18 @@ TEST(ParseInspectorMessage, BidiMessagePayloadNotADict) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpEvent) {
-  base::Value::Dict cdp_params;
+  base::DictValue cdp_params;
   cdp_params.Set("data", "hello");
   // payload_params.
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("method", "event");
   params.Set("session", "ABC");
   params.Set("params", std::move(cdp_params));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict evt;
+  base::DictValue evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
   std::string message;
@@ -1110,17 +1110,17 @@ TEST(ParseInspectorMessage, TunneledCdpEvent) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
-  base::Value::Dict cdp_params;
+  base::DictValue cdp_params;
   cdp_params.Set("data", "hello");
   // payload_params.
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("method", "event");
   params.Set("params", std::move(cdp_params));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict evt;
+  base::DictValue evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
   std::string message;
@@ -1140,14 +1140,14 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
 
 TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
   // payload_params.
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("method", "event");
   params.Set("session", "ABC");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict evt;
+  base::DictValue evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
   std::string message;
@@ -1166,13 +1166,13 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
 
 TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
   // payload_params.
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("session", "ABC");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("method", "goog:cdp.event");
   payload.Set("params", std::move(params));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict evt;
+  base::DictValue evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
   std::string message;
@@ -1186,10 +1186,10 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("method", "goog:cdp.event");
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict evt;
+  base::DictValue evt;
   ASSERT_TRUE(
       StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
   std::string message;
@@ -1203,14 +1203,14 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpResponse) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("data", "hola");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("id", 11);
   payload.Set("session", "ABC");
   payload.Set("result", std::move(result));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict resp;
+  base::DictValue resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
   std::string message;
@@ -1229,13 +1229,13 @@ TEST(ParseInspectorMessage, TunneledCdpResponse) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("data", "hola");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("id", 11);
   payload.Set("result", std::move(result));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict resp;
+  base::DictValue resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
   std::string message;
@@ -1254,13 +1254,13 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("data", "hola");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("session", "ABC");
   payload.Set("result", std::move(result));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict resp;
+  base::DictValue resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
   std::string message;
@@ -1274,11 +1274,11 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("id", 11);
   payload.Set("session", "ABC");
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict resp;
+  base::DictValue resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
   std::string message;
@@ -1296,14 +1296,14 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
 }
 
 TEST(ParseInspectorMessage, TunneledCdpResponseError) {
-  base::Value::Dict error;
+  base::DictValue error;
   error.Set("data", "hola");
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("id", 11);
   payload.Set("session", "ABC");
   payload.Set("error", std::move(error));
   payload.Set("goog:channel", DevToolsClientImpl::kCdpTunnelChannel);
-  base::Value::Dict resp;
+  base::DictValue resp;
   ASSERT_TRUE(
       StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
   std::string message;
@@ -1477,9 +1477,9 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
-  base::Value::Dict result;
+  base::DictValue result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
   std::optional<int> key = result.FindInt("key");
   ASSERT_TRUE(key);
@@ -1507,13 +1507,13 @@ class OnConnectedListener : public DevToolsEventListener {
     EXPECT_FALSE(on_connected_called_);
     EXPECT_FALSE(on_event_called_);
     on_connected_called_ = true;
-    base::Value::Dict params;
+    base::DictValue params;
     return client_->SendCommand(method_, params);
   }
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     EXPECT_EQ(client_, client);
     EXPECT_STREQ("onconnected-id", client->GetId().c_str());
     EXPECT_TRUE(on_connected_called_);
@@ -1544,7 +1544,7 @@ class OnConnectedSyncWebSocket : public StubSyncWebSocket {
     EXPECT_TRUE(connected_);
     int cmd_id;
     std::string method;
-    base::Value::Dict params;
+    base::DictValue params;
     std::string session_id;
 
     if (!ParseMessage(message, &cmd_id, &method, &params, &session_id)) {
@@ -1552,15 +1552,15 @@ class OnConnectedSyncWebSocket : public StubSyncWebSocket {
     }
 
     if (connect_complete_) {
-      base::Value::Dict response;
+      base::DictValue response;
       response.Set("id", cmd_id);
-      response.Set("result", base::Value::Dict());
+      response.Set("result", base::DictValue());
       queued_response_.push(base::WriteJson(response).value_or(""));
 
       // Push one event.
-      base::Value::Dict event;
+      base::DictValue event;
       event.Set("method", "updateEvent");
-      event.Set("params", base::Value::Dict());
+      event.Set("params", base::DictValue());
       queued_response_.push(base::WriteJson(event).value_or(""));
     } else {
       EnqueueHandshakeResponse(cmd_id, method);
@@ -1592,7 +1592,7 @@ TEST_F(DevToolsClientImplTest, ProcessOnConnectedFirstOnCommand) {
   OnConnectedListener listener3("Page.enable", &client);
   ASSERT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   EXPECT_TRUE(StatusOk(client.SendCommand("Runtime.execute", params)));
   listener1.VerifyCalled();
   listener2.VerifyCalled();
@@ -1607,7 +1607,7 @@ TEST_F(DevToolsClientImplTest, ProcessOnConnectedTabFirstOnCommand) {
   OnConnectedListener listener3("Page.enable", &client);
   ASSERT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   EXPECT_TRUE(StatusOk(client.SendCommand("Runtime.execute", params)));
   listener1.VerifyCalled();
   listener2.VerifyCalled();
@@ -1672,7 +1672,7 @@ class OtherEventListener : public DevToolsEventListener {
   Status OnConnected(DevToolsClient* client) override { return Status(kOk); }
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     received_event_ = true;
     return Status(kOk);
   }
@@ -1695,7 +1695,7 @@ class OnEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     EXPECT_EQ(client_, client);
     client_->SendCommand("method", params);
     EXPECT_TRUE(other_listener_->received_event_);
@@ -1718,7 +1718,7 @@ TEST_F(DevToolsClientImplTest, ProcessOnEventFirst) {
   client.AddListener(&listener2);
   ASSERT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   EXPECT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
 
@@ -1765,7 +1765,7 @@ class MockDevToolsEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     DevToolsClientImpl* client_impl = static_cast<DevToolsClientImpl*>(client);
     int msg_id = client_impl->NextMessageId();
 
@@ -1818,7 +1818,7 @@ TEST_F(DevToolsClientImplTest, BlockedByAlert) {
   msgs.push_back(
       JavaScriptDialogOpeningEvent("irrelevant", "irrelevant", "irrelevant"));
   msgs.push_back("{\"id\": 2, \"result\": {}}");
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_EQ(kUnexpectedAlertOpen,
             client.SendCommand("first", params).code());
 }
@@ -1902,7 +1902,7 @@ TEST_F(DevToolsClientImplTest, NoDialog) {
   DevToolsClientImpl client("", "");
   ASSERT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   // Check if the setup is correct
   EXPECT_TRUE(StatusOk(client.SendCommand("Runtime.execute", params)));
 
@@ -1933,12 +1933,12 @@ TEST_F(DevToolsClientImplTest, HandleDialogPassesParams) {
   socket_holder.Socket().AddCommandHandler(
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
-          [](bool& is_handled, int cmd_id, const base::Value::Dict& params,
-             base::Value::Dict& response) {
+          [](bool& is_handled, int cmd_id, const base::DictValue& params,
+             base::DictValue& response) {
             EXPECT_THAT(params.FindBool("accept"), Optional(Eq(false)));
             EXPECT_THAT(params.FindString("promptText"), Pointee(Eq("text")));
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             is_handled = true;
             return true;
           },
@@ -1966,13 +1966,13 @@ TEST_F(DevToolsClientImplTest, HandleDialogNullPrompt) {
   socket_holder.Socket().AddCommandHandler(
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
-          [](bool& is_handled, int cmd_id, const base::Value::Dict& params,
-             base::Value::Dict& response) {
+          [](bool& is_handled, int cmd_id, const base::DictValue& params,
+             base::DictValue& response) {
             EXPECT_THAT(params.FindBool("accept"), Optional(Eq(false)));
             EXPECT_THAT(params.FindString("promptText"),
                         Pointee(Eq("from-event")));
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             is_handled = true;
             return true;
           },
@@ -2008,10 +2008,10 @@ TEST_F(DevToolsClientImplTest, OneDialog) {
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
           [](StubSyncWebSocket& socket, int& counter, int cmd_id,
-             const base::Value::Dict& params, base::Value::Dict& response) {
+             const base::DictValue& params, base::DictValue& response) {
             socket.EnqueueResponse(JavaScriptDialogClosedEvent(true, ""));
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             ++counter;
             return true;
           },
@@ -2053,10 +2053,10 @@ TEST_F(DevToolsClientImplTest, TwoDialogs) {
 
   socket_holder.Socket().AddCommandHandler(
       "Page.handleJavaScriptDialog",
-      base::BindRepeating([](int cmd_id, const base::Value::Dict& params,
-                             base::Value::Dict& response) {
+      base::BindRepeating([](int cmd_id, const base::DictValue& params,
+                             base::DictValue& response) {
         response.Set("id", cmd_id);
-        response.Set("result", base::Value::Dict());
+        response.Set("result", base::DictValue());
         return true;
       }));
 
@@ -2073,11 +2073,11 @@ TEST_F(DevToolsClientImplTest, TwoDialogs) {
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
           [](StubSyncWebSocket& socket, int& counter, int cmd_id,
-             const base::Value::Dict& params, base::Value::Dict& response) {
+             const base::DictValue& params, base::DictValue& response) {
             socket.EnqueueResponse(JavaScriptDialogClosedEvent(true, ""));
             socket.EnqueueResponse(JavaScriptDialogClosedEvent(true, ""));
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             ++counter;
             return true;
           },
@@ -2147,10 +2147,10 @@ TEST_F(DevToolsClientImplTest, BeforeunloadIsNotAutoAccepted) {
   socket_holder.Socket().AddCommandHandler(
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
-          [](bool& is_handled, int cmd_id, const base::Value::Dict& params,
-             base::Value::Dict& response) {
+          [](bool& is_handled, int cmd_id, const base::DictValue& params,
+             base::DictValue& response) {
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             is_handled = true;
             return true;
           },
@@ -2185,10 +2185,10 @@ TEST_F(DevToolsClientImplTest, BeforeunloadIsAutoAccepted) {
   socket_holder.Socket().AddCommandHandler(
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
-          [](bool& is_handled, int cmd_id, const base::Value::Dict& params,
-             base::Value::Dict& response) {
+          [](bool& is_handled, int cmd_id, const base::DictValue& params,
+             base::DictValue& response) {
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             is_handled = true;
             return true;
           },
@@ -2224,10 +2224,10 @@ TEST_F(DevToolsClientImplTest, AlertAndBeforeunloadAreAutoAccepted) {
       "Page.handleJavaScriptDialog",
       base::BindRepeating(
           [](StubSyncWebSocket& socket, int& counter, int cmd_id,
-             const base::Value::Dict& params, base::Value::Dict& response) {
+             const base::DictValue& params, base::DictValue& response) {
             socket.EnqueueResponse(JavaScriptDialogClosedEvent(true, ""));
             response.Set("id", cmd_id);
-            response.Set("result", base::Value::Dict());
+            response.Set("result", base::DictValue());
             ++counter;
             return true;
           },
@@ -2251,14 +2251,14 @@ class MockCommandListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     msgs_.push_back(method);
     return Status(kOk);
   }
 
   Status OnCommandSuccess(DevToolsClient* client,
                           const std::string& method,
-                          const base::Value::Dict* result,
+                          const base::DictValue* result,
                           const Timeout& command_timeout) override {
     msgs_.push_back(method);
     if (!callback_.is_null())
@@ -2292,7 +2292,7 @@ TEST_F(DevToolsClientImplTest, ReceivesCommandResponse) {
                   << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
                      .str());
   msgs.push_back("{\"method\": \"event\", \"params\": {}}");
-  base::Value::Dict params;
+  base::DictValue params;
   ASSERT_EQ(kOk, client.SendCommand("cmd", params).code());
   ASSERT_EQ(2u, listener2.msgs_.size());
   ASSERT_EQ("cmd", listener2.msgs_.front());
@@ -2304,7 +2304,7 @@ TEST_F(DevToolsClientImplTest, SendCommandAndIgnoreResponse) {
   DevToolsClientImpl client("id", "");
   ASSERT_TRUE(socket_holder.ConnectSocket());
   ASSERT_TRUE(StatusOk(client.SetSocket(socket_holder.Wrapper())));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
   ASSERT_TRUE(StatusOk(client.SendCommandAndIgnoreResponse("method", params)));
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
@@ -2333,7 +2333,7 @@ class PingingListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& event_params) override {
+                 const base::DictValue& event_params) override {
     if (event_handled_) {
       return Status{kOk};
     }
@@ -2341,9 +2341,9 @@ class PingingListener : public DevToolsEventListener {
     EXPECT_EQ(client_, client);
     EXPECT_EQ(method, "event");
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("ping", ping_);
-    base::Value::Dict result;
+    base::DictValue result;
     event_handled_ = true;
     Status status = client_->SendCommandAndGetResult("method", params, &result);
     EXPECT_TRUE(StatusOk(status));
@@ -2376,14 +2376,14 @@ class MultiSessionMockSyncWebSocket2 : public MultiSessionMockSyncWebSocket {
   bool OnUserCommand(SessionState* session_state,
                      int cmd_id,
                      std::string method,
-                     base::Value::Dict params,
+                     base::DictValue params,
                      std::string session_id) override {
     EXPECT_STREQ("method", method.c_str());
 
     {
-      base::Value::Dict evt;
+      base::DictValue evt;
       Status status =
-          CreateCdpEvent("event", base::Value::Dict{}, event_session_, &evt);
+          CreateCdpEvent("event", base::DictValue{}, event_session_, &evt);
       EXPECT_TRUE(status.IsOk()) << status.message();
       if (status.IsError()) {
         return false;
@@ -2397,7 +2397,7 @@ class MultiSessionMockSyncWebSocket2 : public MultiSessionMockSyncWebSocket {
       queued_response_.push(std::move(message));
     }
     {
-      base::Value::Dict response;
+      base::DictValue response;
       Status status =
           CreateDefaultCdpResponse(cmd_id, std::move(method), std::move(params),
                                    std::move(session_id), &response);
@@ -2440,7 +2440,7 @@ TEST_F(DevToolsClientImplTest, RoutingChildParent) {
   ASSERT_TRUE(StatusOk(root_client.SetSocket(socket_holder.Wrapper())));
   DevToolsClientImpl client("child", "child_session");
   ASSERT_TRUE(StatusOk(client.AttachTo(&root_client)));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("param", 1);
   ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
@@ -2455,17 +2455,17 @@ TEST_F(DevToolsClientImplTest, RoutingTwoChildren) {
   ASSERT_TRUE(StatusOk(red_client.AttachTo(&root_client)));
   ASSERT_TRUE(StatusOk(blue_client.AttachTo(&root_client)));
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("ping", 2);
-    base::Value::Dict result;
+    base::DictValue result;
     ASSERT_TRUE(StatusOk(
         red_client.SendCommandAndGetResult("method", params, &result)));
     EXPECT_EQ(result.FindInt("pong").value_or(-1), 2);
   }
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("ping", 3);
-    base::Value::Dict result;
+    base::DictValue result;
     ASSERT_TRUE(StatusOk(
         blue_client.SendCommandAndGetResult("method", params, &result)));
     EXPECT_EQ(result.FindInt("pong").value_or(-1), 3);
@@ -2488,9 +2488,9 @@ TEST_F(DevToolsClientImplTest, RoutingWithEvent) {
   ASSERT_TRUE(StatusOk(red_client.AttachTo(&root_client)));
   ASSERT_TRUE(StatusOk(blue_client.AttachTo(&root_client)));
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("ping", 12);
-    base::Value::Dict result;
+    base::DictValue result;
     ASSERT_TRUE(StatusOk(
         red_client.SendCommandAndGetResult("method", params, &result)));
     EXPECT_EQ(result.FindInt("pong").value_or(-1), 12);
@@ -2510,10 +2510,10 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
 
   Status CreateDefaultBidiResponse(int cmd_id,
                                    std::string method,
-                                   base::Value::Dict params,
+                                   base::DictValue params,
                                    const std::string* channel,
-                                   base::Value::Dict* response) {
-    base::Value::Dict result;
+                                   base::DictValue* response) {
+    base::DictValue result;
     std::optional<int> ping = params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
@@ -2521,7 +2521,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       result.Set("param", 1);
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("id", std::move(cmd_id));
     dict.Set("result", std::move(result));
     if (channel) {
@@ -2534,7 +2534,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnPureCdpCommand(SessionState* session_state,
                                 int cmd_id,
                                 std::string method,
-                                base::Value::Dict params,
+                                base::DictValue params,
                                 std::string session_id) {
     return MultiSessionMockSyncWebSocket::OnUserCommand(
         session_state, cmd_id, method, std::move(params), session_id);
@@ -2543,11 +2543,11 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual Status CreateCdpOverBidiResponse(SessionState* session_state,
                                            int cmd_id,
                                            std::string cdp_method,
-                                           base::Value::Dict cdp_params,
+                                           base::DictValue cdp_params,
                                            std::string cdp_session,
                                            const std::string* channel,
-                                           base::Value::Dict* response) {
-    base::Value::Dict result;
+                                           base::DictValue* response) {
+    base::DictValue result;
     std::optional<int> ping = cdp_params.FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
@@ -2555,7 +2555,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       result.Set("param", 1);
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("id", cmd_id);
     dict.Set("result", std::move(result));
     if (channel) {
@@ -2571,14 +2571,14 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnCdpOverBidiCommand(SessionState* session_state,
                                     int cmd_id,
                                     std::string cdp_method,
-                                    base::Value::Dict cdp_params,
+                                    base::DictValue cdp_params,
                                     std::string cdp_session,
                                     const std::string* channel) {
     if (cdp_method != "method") {
       ADD_FAILURE();
       return false;
     }
-    base::Value::Dict response;
+    base::DictValue response;
     Status status = CreateCdpOverBidiResponse(
         session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
         std::move(cdp_session), channel, &response);
@@ -2587,7 +2587,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       return false;
     }
 
-    base::Value::Dict evt;
+    base::DictValue evt;
     status = WrapBidiResponseInCdpEvent(response, mapper_session_, &evt);
     if (status.IsError()) {
       ADD_FAILURE() << status.message();
@@ -2608,10 +2608,10 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnPureBidiCommand(SessionState* session_state,
                                  int cmd_id,
                                  std::string method,
-                                 base::Value::Dict params,
+                                 base::DictValue params,
                                  const std::string* channel) {
     EXPECT_STREQ("method", method.c_str());
-    base::Value::Dict bidi_response;
+    base::DictValue bidi_response;
     Status status = CreateDefaultBidiResponse(
         cmd_id, std::move(method), std::move(params), channel, &bidi_response);
     if (status.IsError()) {
@@ -2619,7 +2619,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       return false;
     }
 
-    base::Value::Dict evt;
+    base::DictValue evt;
     status = WrapBidiResponseInCdpEvent(bidi_response, mapper_session_, &evt);
     if (status.IsError()) {
       ADD_FAILURE() << status.message();
@@ -2639,12 +2639,12 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnBidiCommand(SessionState* session_state,
                              int cmd_id,
                              std::string method,
-                             base::Value::Dict params,
+                             base::DictValue params,
                              const std::string* channel) {
     if (method == "goog:cdp.sendCommand") {
       const std::string* cdp_method = params.FindString("method");
       const std::string* cdp_session = params.FindString("session");
-      const base::Value::Dict* cdp_params = params.FindDict("params");
+      const base::DictValue* cdp_params = params.FindDict("params");
       if (!cdp_method || !cdp_session || !cdp_params) {
         ADD_FAILURE();
         return false;
@@ -2659,10 +2659,10 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
 
   Status CreateRuntimeEvaluateResponse(int cmd_id,
                                        std::string session_id,
-                                       base::Value::Dict* response) {
-    base::Value::Dict inner_result;
+                                       base::DictValue* response) {
+    base::DictValue inner_result;
     inner_result.Set("type", "undefined");
-    base::Value::Dict result;
+    base::DictValue result;
     result.Set("result", std::move(inner_result));
 
     return CreateCdpResponse(cmd_id, std::move(result), session_id, response);
@@ -2671,7 +2671,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   bool OnUserCommand(SessionState* session_state,
                      int cmd_id,
                      std::string method,
-                     base::Value::Dict params,
+                     base::DictValue params,
                      std::string session_id) override {
     if (method != "Runtime.evaluate") {
       return OnPureCdpCommand(session_state, cmd_id, method, std::move(params),
@@ -2717,11 +2717,11 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       return false;
     }
 
-    const base::Value::Dict& bidi_dict = bidi_expr->GetDict();
+    const base::DictValue& bidi_dict = bidi_expr->GetDict();
 
     std::optional<int> bidi_cmd_id = bidi_dict.FindInt("id");
     const std::string* bidi_method = bidi_dict.FindString("method");
-    const base::Value::Dict* bidi_params = bidi_dict.FindDict("params");
+    const base::DictValue* bidi_params = bidi_dict.FindDict("params");
     const std::string* bidi_channel = bidi_dict.FindString("goog:channel");
     if (!bidi_cmd_id || !bidi_method || !bidi_params) {
       ADD_FAILURE();
@@ -2730,7 +2730,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
 
     {
       // Runtime evaluate result
-      base::Value::Dict response;
+      base::DictValue response;
       Status status =
           CreateRuntimeEvaluateResponse(cmd_id, session_id, &response);
       if (status.IsError()) {
@@ -2764,11 +2764,11 @@ class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
   Status CreateCdpOverBidiResponse(SessionState* session_state,
                                    int cmd_id,
                                    std::string cdp_method,
-                                   base::Value::Dict cdp_params,
+                                   base::DictValue cdp_params,
                                    std::string cdp_session,
                                    const std::string* channel,
-                                   base::Value::Dict* response) override {
-    base::Value::Dict result;
+                                   base::DictValue* response) override {
+    base::DictValue result;
     std::optional<int> ping = cdp_params.FindInt("wrapped-ping");
     if (!ping) {
       ADD_FAILURE();
@@ -2779,7 +2779,7 @@ class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
       ++(*wrapped_ping_counter_);
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("id", cmd_id);
     dict.Set("result", std::move(result));
     if (channel) {
@@ -2802,7 +2802,7 @@ class BidiEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override {
+                 const base::DictValue& params) override {
     if (method != "Runtime.bindingCalled") {
       return Status(kOk);
     }
@@ -2817,7 +2817,7 @@ class BidiEventListener : public DevToolsEventListener {
       return Status{kOk};
     }
 
-    const base::Value::Dict* payload = params.FindDict("payload");
+    const base::DictValue* payload = params.FindDict("payload");
     if (!payload) {
       ADD_FAILURE();
       return Status{kUnknownError,
@@ -2829,7 +2829,7 @@ class BidiEventListener : public DevToolsEventListener {
     return Status(kOk);
   }
 
-  std::vector<base::Value::Dict> payload_list;
+  std::vector<base::DictValue> payload_list;
 };
 
 }  // namespace
@@ -2845,9 +2845,9 @@ TEST_F(DevToolsClientImplTest, BidiCommand) {
   mapper_client.AddListener(&bidi_listener);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("ping", 196);
-  base::Value::Dict bidi_cmd;
+  base::DictValue bidi_cmd;
 
   ASSERT_TRUE(StatusOk(
       CreateBidiCommand(111, "method", std::move(params), nullptr, &bidi_cmd)));
@@ -2855,7 +2855,7 @@ TEST_F(DevToolsClientImplTest, BidiCommand) {
   ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
 
   ASSERT_EQ(static_cast<size_t>(1), bidi_listener.payload_list.size());
-  const base::Value::Dict& payload = bidi_listener.payload_list.front();
+  const base::DictValue& payload = bidi_listener.payload_list.front();
   ASSERT_EQ(111, payload.FindInt("id").value_or(-1));
   ASSERT_EQ(196, payload.FindIntByDottedPath("result.pong").value_or(-1));
 }
@@ -2876,13 +2876,13 @@ TEST_F(DevToolsClientImplTest, BidiCommandIds) {
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
 
   for (int cmd_id : {2, 3, 11, 1000021, 1000022, 1000023}) {
-    base::Value::Dict bidi_cmd;
-    ASSERT_TRUE(StatusOk(CreateBidiCommand(
-        cmd_id, "method", base::Value::Dict(), nullptr, &bidi_cmd)));
+    base::DictValue bidi_cmd;
+    ASSERT_TRUE(StatusOk(CreateBidiCommand(cmd_id, "method", base::DictValue(),
+                                           nullptr, &bidi_cmd)));
     ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
     ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(1), bidi_listener.payload_list.size());
-    const base::Value::Dict& payload = bidi_listener.payload_list.front();
+    const base::DictValue& payload = bidi_listener.payload_list.front();
     ASSERT_EQ(cmd_id, payload.FindInt("id").value_or(-1));
     bidi_listener.payload_list.clear();
   }
@@ -2904,9 +2904,9 @@ TEST_F(DevToolsClientImplTest, CdpCommandTunneling) {
   ASSERT_TRUE(
       StatusOk(page_client.SetTunnelSessionId(mapper_client.SessionId())));
   {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("wrapped-ping", 13);
-    base::Value::Dict result;
+    base::DictValue result;
     ASSERT_TRUE(StatusOk(
         page_client.SendCommandAndGetResult("method", params, &result)));
     EXPECT_EQ(wrapped_counter, 1);
@@ -2924,7 +2924,7 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
   bool OnCdpOverBidiCommand(SessionState* session_state,
                             int cmd_id,
                             std::string cdp_method,
-                            base::Value::Dict cdp_params,
+                            base::DictValue cdp_params,
                             std::string cdp_session,
                             const std::string* channel) override {
     if (cdp_method != "method") {
@@ -2932,19 +2932,19 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
       return false;
     }
 
-    base::Value::Dict cdp_evt_params;
+    base::DictValue cdp_evt_params;
     cdp_evt_params.Set("source", "cdp-over-bidi");
-    base::Value::Dict bidi_params;
+    base::DictValue bidi_params;
     bidi_params.Set("params", std::move(cdp_evt_params));
     bidi_params.Set("session", cdp_session);
     bidi_params.Set("method", "event");
-    base::Value::Dict bidi_evt;
+    base::DictValue bidi_evt;
     bidi_evt.Set("method", "goog:cdp.event");
     bidi_evt.Set("params", std::move(bidi_params));
     if (channel) {
       bidi_evt.Set("goog:channel", *channel);
     }
-    base::Value::Dict evt;
+    base::DictValue evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
     if (status.IsError()) {
       ADD_FAILURE() << status.message();
@@ -2958,7 +2958,7 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     }
     queued_response_.push(message);
 
-    base::Value::Dict response;
+    base::DictValue response;
     status = CreateCdpOverBidiResponse(
         session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
         std::move(cdp_session), channel, &response);
@@ -2984,22 +2984,22 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
   bool OnPureBidiCommand(SessionState* session_state,
                          int cmd_id,
                          std::string method,
-                         base::Value::Dict params,
+                         base::DictValue params,
                          const std::string* channel) override {
     if (method != "method") {
       ADD_FAILURE();
       return false;
     }
 
-    base::Value::Dict bidi_evt;
+    base::DictValue bidi_evt;
     bidi_evt.Set("method", "event");
-    base::Value::Dict bidi_evt_params;
+    base::DictValue bidi_evt_params;
     bidi_evt_params.Set("source", "bidi");
     bidi_evt.Set("params", std::move(bidi_evt_params));
     if (channel) {
       bidi_evt.Set("goog:channel", *channel);
     }
-    base::Value::Dict evt;
+    base::DictValue evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
     if (status.IsError()) {
       ADD_FAILURE() << status.message();
@@ -3013,7 +3013,7 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     }
     queued_response_.push(message);
 
-    base::Value::Dict bidi_response;
+    base::DictValue bidi_response;
     status = CreateDefaultBidiResponse(
         cmd_id, std::move(method), std::move(params), channel, &bidi_response);
     if (status.IsError()) {
@@ -3042,15 +3042,15 @@ class CdpEventListener : public DevToolsEventListener {
 
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params_dv) override {
-    base::Value::Dict data;
+                 const base::DictValue& params_dv) override {
+    base::DictValue data;
     data.Set("method", method);
     data.Set("params", params_dv.Clone());
     event_list.push_back(std::move(data));
     return Status(kOk);
   }
 
-  std::vector<base::Value::Dict> event_list;
+  std::vector<base::DictValue> event_list;
 };
 
 }  // namespace
@@ -3066,14 +3066,14 @@ TEST_F(DevToolsClientImplTest, BidiEvent) {
   mapper_client.AddListener(&bidi_listener);
   ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
-  base::Value::Dict bidi_cmd;
-  ASSERT_TRUE(StatusOk(CreateBidiCommand(37, "method", base::Value::Dict(),
-                                         nullptr, &bidi_cmd)));
+  base::DictValue bidi_cmd;
+  ASSERT_TRUE(StatusOk(
+      CreateBidiCommand(37, "method", base::DictValue(), nullptr, &bidi_cmd)));
   ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
   ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
 
   ASSERT_EQ(static_cast<size_t>(2), bidi_listener.payload_list.size());
-  const base::Value::Dict& payload = bidi_listener.payload_list.front();
+  const base::DictValue& payload = bidi_listener.payload_list.front();
   EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
   EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
               Pointee(Eq("bidi")));
@@ -3096,9 +3096,9 @@ TEST_F(DevToolsClientImplTest, BidiEventCrossRouting) {
   ASSERT_TRUE(
       StatusOk(page_client.SetTunnelSessionId(mapper_client.SessionId())));
 
-  base::Value::Dict bidi_cmd;
-  ASSERT_TRUE(StatusOk(CreateBidiCommand(414, "method", base::Value::Dict(),
-                                         nullptr, &bidi_cmd)));
+  base::DictValue bidi_cmd;
+  ASSERT_TRUE(StatusOk(
+      CreateBidiCommand(414, "method", base::DictValue(), nullptr, &bidi_cmd)));
   // The message is dispatched from a non-BiDiMapper client
   ASSERT_TRUE(StatusOk(page_client.PostBidiCommand(std::move(bidi_cmd))));
   ASSERT_TRUE(StatusOk(page_client.HandleReceivedEvents()));
@@ -3106,7 +3106,7 @@ TEST_F(DevToolsClientImplTest, BidiEventCrossRouting) {
   // BiDi commands can be sent from any client
   // but events and responses must arrive to the BiDiMapper client
   ASSERT_EQ(static_cast<size_t>(2), bidi_listener.payload_list.size());
-  const base::Value::Dict& payload = bidi_listener.payload_list.front();
+  const base::DictValue& payload = bidi_listener.payload_list.front();
   EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
   EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
               Pointee(Eq("bidi")));
@@ -3129,12 +3129,12 @@ TEST_F(DevToolsClientImplTest, CdpEventTunneling) {
   ASSERT_TRUE(StatusOk(mapper_client.AppointAsBidiServerForTesting()));
   ASSERT_TRUE(
       StatusOk(page_client.SetTunnelSessionId(mapper_client.SessionId())));
-  base::Value::Dict result;
-  page_client.SendCommandAndGetResult("method", base::Value::Dict(), &result);
+  base::DictValue result;
+  page_client.SendCommandAndGetResult("method", base::DictValue(), &result);
 
   ASSERT_EQ(static_cast<size_t>(0), mapper_bidi_listener.payload_list.size());
   ASSERT_EQ(static_cast<size_t>(1), red_cdp_listener.event_list.size());
-  const base::Value::Dict& payload = red_cdp_listener.event_list.front();
+  const base::DictValue& payload = red_cdp_listener.event_list.front();
   EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
   EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
               Pointee(Eq("cdp-over-bidi")));
@@ -3155,13 +3155,13 @@ TEST_F(DevToolsClientImplTest, BidiChannels) {
 
   for (std::string channel : {DevToolsClientImpl::kCdpTunnelChannel,
                               DevToolsClientImpl::kBidiChannelSuffix, ""}) {
-    base::Value::Dict bidi_cmd;
-    ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::Value::Dict(),
+    base::DictValue bidi_cmd;
+    ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::DictValue(),
                                            &channel, &bidi_cmd)));
     ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
     ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
-    for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
+    for (const base::DictValue& payload : mapper_bidi_listener.payload_list) {
       EXPECT_THAT(payload.FindString("goog:channel"), Pointee(Eq(channel)));
     }
     mapper_bidi_listener.payload_list.clear();
@@ -3169,13 +3169,13 @@ TEST_F(DevToolsClientImplTest, BidiChannels) {
 
   // no channel case
   {
-    base::Value::Dict bidi_cmd;
-    ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::Value::Dict(),
-                                           nullptr, &bidi_cmd)));
+    base::DictValue bidi_cmd;
+    ASSERT_TRUE(StatusOk(
+        CreateBidiCommand(1, "method", base::DictValue(), nullptr, &bidi_cmd)));
     ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
     ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
-    for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
+    for (const base::DictValue& payload : mapper_bidi_listener.payload_list) {
       EXPECT_EQ(nullptr, payload.FindString("goog:channel"));
     }
     mapper_bidi_listener.payload_list.clear();
@@ -3208,7 +3208,7 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
   bool OnPureCdpCommand(SessionState* session_state,
                         int cmd_id,
                         std::string method,
-                        base::Value::Dict params,
+                        base::DictValue params,
                         std::string session_id) override {
     if (method == "Target.exposeDevToolsProtocol") {
       EXPECT_EQ("root_session", session_id);
@@ -3243,8 +3243,8 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
         }
       }
     }
-    base::Value::Dict response;
-    EXPECT_TRUE(StatusOk(CreateCdpResponse(cmd_id, base::Value::Dict(),
+    base::DictValue response;
+    EXPECT_TRUE(StatusOk(CreateCdpResponse(cmd_id, base::DictValue(),
                                            std::move(session_id), &response)));
     std::string message;
     EXPECT_TRUE(StatusOk(SerializeAsJson(response, &message)));
@@ -3255,7 +3255,7 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
   bool OnPureBidiCommand(SessionState* session_state,
                          int cmd_id,
                          std::string method,
-                         base::Value::Dict params,
+                         base::DictValue params,
                          const std::string* channel) override {
     if (!channel) {
       ADD_FAILURE();

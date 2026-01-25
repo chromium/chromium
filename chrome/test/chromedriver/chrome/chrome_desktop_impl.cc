@@ -212,7 +212,7 @@ Status ChromeDesktopImpl::QuitImpl() {
   quit_gracefully = quit_gracefully || command_.HasSwitch("log-net-log");
   if (quit_gracefully) {
     Status status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
-        "Browser.close", base::Value::Dict());
+        "Browser.close", base::DictValue());
     // If status is not okay, we will try the old method of KillProcess
     if (status.IsOk() &&
         process_.WaitForExitWithTimeout(base::Seconds(10), nullptr)) {

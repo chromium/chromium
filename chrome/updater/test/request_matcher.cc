@@ -128,12 +128,12 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::Dict* object_request = doc->FindDict("request");
+      const base::DictValue* object_request = doc->FindDict("request");
       if (!object_request) {
         return false;
       }
@@ -161,12 +161,12 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::List* app_list =
+      const base::ListValue* app_list =
           doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         app_list = doc->FindListByDottedPath("request.app");  // V3 fallback.
@@ -200,12 +200,12 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::List* app_list =
+      const base::ListValue* app_list =
           doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         return false;

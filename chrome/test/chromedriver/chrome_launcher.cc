@@ -270,9 +270,9 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
 Status GetBrowserInfo(DevToolsClient& client,
                       const Timeout& timeout,
                       BrowserInfo& browser_info) {
-  base::Value::Dict result;
+  base::DictValue result;
   Status status = client.SendCommandAndGetResultWithTimeout(
-      "Browser.getVersion", base::Value::Dict(), &timeout, &result);
+      "Browser.getVersion", base::DictValue(), &timeout, &result);
   if (status.IsOk()) {
     status = browser_info.FillFromBrowserVersionResponse(result);
   } else {
@@ -1048,7 +1048,7 @@ std::string GenerateExtensionId(std::string_view input) {
   return output;
 }
 
-Status GetExtensionBackgroundPage(const base::Value::Dict& manifest,
+Status GetExtensionBackgroundPage(const base::DictValue& manifest,
                                   const std::string& id,
                                   std::string& bg_page) {
   std::string bg_page_name;
@@ -1136,7 +1136,7 @@ Status ProcessExtension(const std::string& extension,
     return Status(kUnknownError, "cannot read manifest");
   std::optional<base::Value> manifest_value = base::JSONReader::Read(
       manifest_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict* manifest =
+  base::DictValue* manifest =
       manifest_value ? manifest_value->GetIfDict() : nullptr;
   if (!manifest)
     return Status(kUnknownError, "invalid manifest");
@@ -1223,7 +1223,7 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
 
 Status WritePrefsFile(const std::string& template_string,
                       const base::FilePath& path,
-                      const base::Value::Dict* custom_prefs) {
+                      const base::DictValue* custom_prefs) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
@@ -1231,7 +1231,7 @@ Status WritePrefsFile(const std::string& template_string,
                                      parsed_json.error().message);
   }
 
-  base::Value::Dict* prefs = parsed_json->GetIfDict();
+  base::DictValue* prefs = parsed_json->GetIfDict();
   if (!prefs)
     return Status(kUnknownError, "malformed prefs dictionary");
 
@@ -1250,8 +1250,8 @@ Status WritePrefsFile(const std::string& template_string,
 }
 
 Status PrepareUserDataDir(const base::FilePath& user_data_dir,
-                          const base::Value::Dict* custom_prefs,
-                          const base::Value::Dict* custom_local_state) {
+                          const base::DictValue* custom_prefs,
+                          const base::DictValue* custom_local_state) {
   base::FilePath default_dir =
       user_data_dir.AppendASCII(chrome::kInitialProfile);
   if (!base::CreateDirectory(default_dir))

@@ -388,18 +388,17 @@ std::set<std::string> PolicyService::GetAppsWithPolicy() const {
   return apps_with_policy;
 }
 
-base::Value::Dict PolicyService::GetAllPolicies() const {
+base::DictValue PolicyService::GetAllPolicies() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict policies_by_app_id;
-  for (const auto& [app_id, app_policies] :
-       GetAppPolicies<base::Value::Dict>()) {
+  base::DictValue policies_by_app_id;
+  for (const auto& [app_id, app_policies] : GetAppPolicies<base::DictValue>()) {
     if (!app_policies.empty()) {
       policies_by_app_id.Set(app_id, app_policies.Clone());
     }
   }
 
-  return base::Value::Dict()
-      .Set("policiesByName", GetUpdaterPolicies<base::Value::Dict>())
+  return base::DictValue()
+      .Set("policiesByName", GetUpdaterPolicies<base::DictValue>())
       .Set("policiesByAppId", std::move(policies_by_app_id));
 }
 

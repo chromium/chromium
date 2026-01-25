@@ -18,7 +18,7 @@
 class StubSyncWebSocket : public SyncWebSocket {
  public:
   using CommandHandler = base::RepeatingCallback<
-      bool(int, const base::Value::Dict&, base::Value::Dict&)>;
+      bool(int, const base::DictValue&, base::DictValue&)>;
 
   StubSyncWebSocket();
 
@@ -56,7 +56,7 @@ class StubSyncWebSocket : public SyncWebSocket {
   void SetResponseLimit(int count);
 
  protected:
-  void GenerateDefaultResponse(int cmd_id, base::Value::Dict& response);
+  void GenerateDefaultResponse(int cmd_id, base::DictValue& response);
 
   void EnqueueHandshakeResponse(int cmd_id, const std::string& method);
 

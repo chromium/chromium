@@ -63,12 +63,12 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
       extensions::Extension::FROM_WEBSTORE:
       extensions::Extension::NO_FLAGS;
 
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set("name", "NaCl Extension");
   manifest.Set("version", "1");
   manifest.Set("manifest_version", 2);
   if (is_hosted_app) {
-    base::Value::List url_list;
+    base::ListValue url_list;
     url_list.Append(app_url);
     manifest.SetByDottedPath(extensions::manifest_keys::kWebURLs,
                              std::move(url_list));

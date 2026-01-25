@@ -28,23 +28,23 @@ TEST_F(FileBrowserHandlerManifestTest, PermissionAllowed) {
 
 TEST_F(FileBrowserHandlerManifestTest, GetHandlersRequiresPermission) {
   auto bad_manifest =
-      base::Value::Dict()
+      base::DictValue()
           .Set("name", "Foo")
           .Set("version", "1.0.0")
           .Set("manifest_version", 2)
           .Set("file_browser_handlers",
-               base::Value::List().Append(
-                   base::Value::Dict()
+               base::ListValue().Append(
+                   base::DictValue()
                        .Set("id", "open")
                        .Set("default_title", "open")
-                       .Set("file_filters", base::Value::List()
+                       .Set("file_filters", base::ListValue()
                                                 .Append("filesystem:*.txt")
                                                 .Append("filesystem:*.html"))));
   // Create a good manifest by extending the bad one with the missing
   // permission.
   auto good_manifest = bad_manifest.Clone();
   good_manifest.Set("permissions",
-                    base::Value::List().Append("fileBrowserHandler"));
+                    base::ListValue().Append("fileBrowserHandler"));
 
   ExtensionBuilder bad_app_builder;
   bad_app_builder.SetManifest(std::move(bad_manifest));
@@ -94,19 +94,19 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "file browser handler test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("permissions",
-                       base::Value::List().Append("fileBrowserHandler"))
+                       base::ListValue().Append("fileBrowserHandler"))
                   .Set("file_browser_handlers",
-                       base::Value::List().Append(
-                           base::Value::Dict()
+                       base::ListValue().Append(
+                           base::DictValue()
                                .Set("id", "ExtremelyCoolAction")
                                .Set("default_title", "Be Amazed")
                                .Set("default_icon", "icon.png")
-                               .Set("file_filters", base::Value::List().Append(
+                               .Set("file_filters", base::ListValue().Append(
                                                         "filesystem:*.txt")))))
           .Build();
 
@@ -139,19 +139,19 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
       ExtensionBuilder()
           .SetID(extension_misc::kQuickOfficeExtensionId)
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "file browser handler test")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("permissions",
-                       base::Value::List().Append("fileBrowserHandler"))
+                       base::ListValue().Append("fileBrowserHandler"))
                   .Set("file_browser_handlers",
-                       base::Value::List().Append(
-                           base::Value::Dict()
+                       base::ListValue().Append(
+                           base::DictValue()
                                .Set("id", "ID")
                                .Set("default_title", "Default title")
                                .Set("default_icon", "icon.png")
-                               .Set("file_filters", base::Value::List().Append(
+                               .Set("file_filters", base::ListValue().Append(
                                                         "filesystem:*.txt")))))
           .Build();
 
@@ -176,22 +176,22 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "file browser handler test create")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("permissions",
-                       base::Value::List().Append("fileBrowserHandler"))
+                       base::ListValue().Append("fileBrowserHandler"))
                   .Set("file_browser_handlers",
-                       base::Value::List().Append(
-                           base::Value::Dict()
+                       base::ListValue().Append(
+                           base::DictValue()
                                .Set("id", "ID")
                                .Set("default_title", "Default title")
                                .Set("default_icon", "icon.png")
-                               .Set("file_filters", base::Value::List().Append(
+                               .Set("file_filters", base::ListValue().Append(
                                                         "filesystem:*.txt"))
                                .Set("file_access",
-                                    base::Value::List().Append("create")))))
+                                    base::ListValue().Append("create")))))
           .Build();
 
   ASSERT_TRUE(extension.get());

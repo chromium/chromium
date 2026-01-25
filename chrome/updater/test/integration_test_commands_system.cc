@@ -55,7 +55,7 @@ std::string BoolToString(const bool value) {
 
 std::string RegistrationRequestToString(
     const RegistrationRequest& registration) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("app_id", registration.app_id);
   value.Set("brand_code", registration.brand_code);
   value.Set("brand_path", registration.brand_path.AsUTF8Unsafe());
@@ -108,7 +108,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     updater::test::ExpectClean(UpdaterScope::kUser);
   }
 
-  void Install(const base::Value::List& switches) const override {
+  void Install(const base::ListValue& switches) const override {
     RunCommand(
         "install",
         {Param("switches", StringFromValue(base::Value(switches.Clone())))});
@@ -123,7 +123,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const bool expect_success,
                             const bool wait_for_the_installer,
                             const int expected_exit_code,
-                            const base::Value::List& additional_switches,
+                            const base::ListValue& additional_switches,
                             const base::FilePath& updater_path) const override {
     RunCommand(
         "install_updater_and_app",
@@ -183,12 +183,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void ExitTestMode() const override { RunCommand("exit_test_mode"); }
 
-  void SetDictPolicies(const base::Value::Dict& values) const override {
+  void SetDictPolicies(const base::DictValue& values) const override {
     RunCommand("set_dict_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
 
-  void SetPlatformPolicies(const base::Value::Dict& values) const override {
+  void SetPlatformPolicies(const base::DictValue& values) const override {
     RunCommand("set_platform_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});
   }
@@ -321,7 +321,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void SetupRealUpdater(const base::FilePath& updater_path,
-                        const base::Value::List& switches) const override {
+                        const base::ListValue& switches) const override {
     RunCommand(
         "setup_real_updater",
         {Param("updater_path", updater_path.AsUTF8Unsafe()),
@@ -425,8 +425,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void UpdateAll() const override { RunCommand("update_all", {}); }
 
-  void GetAppStates(
-      const base::Value::Dict& expected_app_states) const override {
+  void GetAppStates(const base::DictValue& expected_app_states) const override {
     RunCommand(
         "get_app_states",
         {Param("expected_app_states",
@@ -490,7 +489,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       int expected_exit_code) const override {
     RunCommand(
         "expect_legacy_app_command_web_succeeds",
@@ -549,7 +548,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void InstallAppViaService(
       const std::string& app_id,
-      const base::Value::Dict& expected_final_values) const override {
+      const base::DictValue& expected_final_values) const override {
     RunCommand(
         "install_app_via_service",
         {Param("app_id", app_id),
@@ -712,7 +711,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("install_enterprise_companion_app");
   }
   void InstallEnterpriseCompanionAppOverrides(
-      const base::Value::Dict& external_overrides) override {
+      const base::DictValue& external_overrides) override {
     RunCommand(
         "install_enterprise_companion_app_overrides",
         {Param("external_overrides",

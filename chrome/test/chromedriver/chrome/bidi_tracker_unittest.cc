@@ -19,16 +19,16 @@ using testing::Eq;
 using testing::Optional;
 using testing::Pointee;
 
-SendBidiPayloadFunc CopyMessageTo(base::Value::Dict& destination) {
+SendBidiPayloadFunc CopyMessageTo(base::DictValue& destination) {
   return base::BindRepeating(
-      [](base::Value::Dict& dest, base::Value::Dict src) {
+      [](base::DictValue& dest, base::DictValue src) {
         dest = std::move(src);
         return Status{kOk};
       },
       std::ref(destination));
 }
 
-Status RejectPayload(base::Value::Dict payload) {
+Status RejectPayload(base::DictValue payload) {
   return Status{kTestError, "rejected"};
 }
 
@@ -45,18 +45,18 @@ testing::AssertionResult StatusOk(const Status& status) {
   return StatusCodeIs<kOk>(status);
 }
 
-base::Value::Dict CreateValidParams(std::optional<std::string> channel,
-                                    int pong = 1) {
-  base::Value::Dict result;
+base::DictValue CreateValidParams(std::optional<std::string> channel,
+                                  int pong = 1) {
+  base::DictValue result;
   result.Set("pong", pong);
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("id", 1);
   payload.Set("result", std::move(result));
   if (channel.has_value()) {
     payload.Set("goog:channel", std::move(*channel));
   }
 
-  base::Value::Dict event_params;
+  base::DictValue event_params;
   event_params.Set("name", "sendBidiResponse");
   event_params.Set("payload", std::move(payload));
   return event_params;
@@ -79,10 +79,10 @@ TEST(BidiTrackerTest, SetChannelSuffix) {
 }
 
 TEST(BidiTrackerTest, ChannelAndFilter) {
-  base::Value::Dict params = CreateValidParams("/some", 222);
+  base::DictValue params = CreateValidParams("/some", 222);
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
@@ -92,10 +92,10 @@ TEST(BidiTrackerTest, ChannelAndFilter) {
 }
 
 TEST(BidiTrackerTest, ChannelLongerThanFilter) {
-  base::Value::Dict params = CreateValidParams("/one/two", 333);
+  base::DictValue params = CreateValidParams("/one/two", 333);
   BidiTracker tracker;
   tracker.SetChannelSuffix("/two");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
@@ -106,10 +106,10 @@ TEST(BidiTrackerTest, ChannelLongerThanFilter) {
 }
 
 TEST(BidiTrackerTest, ChannelAndFilterAreDifferent) {
-  base::Value::Dict params = CreateValidParams("/uno");
+  base::DictValue params = CreateValidParams("/uno");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/dos");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
@@ -117,9 +117,9 @@ TEST(BidiTrackerTest, ChannelAndFilterAreDifferent) {
 }
 
 TEST(BidiTrackerTest, ChannelAndNoFilter) {
-  base::Value::Dict params = CreateValidParams("/some", 321);
+  base::DictValue params = CreateValidParams("/some", 321);
   BidiTracker tracker;
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
@@ -131,10 +131,10 @@ TEST(BidiTrackerTest, ChannelAndNoFilter) {
 TEST(BidiTrackerTest, NoChannelNoFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
-  base::Value::Dict params = CreateValidParams("/to-be-removed");
+  base::DictValue params = CreateValidParams("/to-be-removed");
   params.RemoveByDottedPath("payload.goog:channel");
   BidiTracker tracker;
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -145,11 +145,11 @@ TEST(BidiTrackerTest, NoChannelNoFilter) {
 TEST(BidiTrackerTest, NoChannelAndFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
-  base::Value::Dict params = CreateValidParams("/to-be-removed");
+  base::DictValue params = CreateValidParams("/to-be-removed");
   params.RemoveByDottedPath("payload.goog:channel");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/yyy");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -160,9 +160,9 @@ TEST(BidiTrackerTest, NoChannelAndFilter) {
 TEST(BidiTrackerTest, EmptyChannelNoFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
-  base::Value::Dict params = CreateValidParams("");
+  base::DictValue params = CreateValidParams("");
   BidiTracker tracker;
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -173,10 +173,10 @@ TEST(BidiTrackerTest, EmptyChannelNoFilter) {
 TEST(BidiTrackerTest, EmptyChannelAndFilter) {
   // The infrastructure ensures that that there are no missing or empty channels
   // If such a channel appears in the response we treat it as an error.
-  base::Value::Dict params = CreateValidParams("");
+  base::DictValue params = CreateValidParams("");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/x");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -185,7 +185,7 @@ TEST(BidiTrackerTest, EmptyChannelAndFilter) {
 }
 
 TEST(BidiTrackerTest, ChannelAndFilterReject) {
-  base::Value::Dict params = CreateValidParams("/some");
+  base::DictValue params = CreateValidParams("/some");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
   tracker.SetBidiCallback(base::BindRepeating(&RejectPayload));
@@ -194,10 +194,10 @@ TEST(BidiTrackerTest, ChannelAndFilterReject) {
 }
 
 TEST(BidiTrackerTest, UnexpectedMethod) {
-  base::Value::Dict params = CreateValidParams("/one");
+  base::DictValue params = CreateValidParams("/one");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/one");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Unexpected.method", std::move(params))));
@@ -205,11 +205,11 @@ TEST(BidiTrackerTest, UnexpectedMethod) {
 }
 
 TEST(BidiTrackerTest, UnexpectedName) {
-  base::Value::Dict params = CreateValidParams("/some");
+  base::DictValue params = CreateValidParams("/some");
   params.Set("name", "unexpected");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   EXPECT_TRUE(StatusOk(
       tracker.OnEvent(nullptr, "Runtime.bindingCalled", std::move(params))));
@@ -217,11 +217,11 @@ TEST(BidiTrackerTest, UnexpectedName) {
 }
 
 TEST(BidiTrackerTest, MissingName) {
-  base::Value::Dict params = CreateValidParams("/some");
+  base::DictValue params = CreateValidParams("/some");
   params.Remove("name");
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -232,7 +232,7 @@ TEST(BidiTrackerTest, MissingName) {
 TEST(BidiTrackerTest, NoCallback) {
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
-  base::Value::Dict params = CreateValidParams("/some");
+  base::DictValue params = CreateValidParams("/some");
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
   EXPECT_THAT(status.message(), ContainsRegex("no callback"));
@@ -241,9 +241,9 @@ TEST(BidiTrackerTest, NoCallback) {
 TEST(BidiTrackerTest, MissingPayload) {
   BidiTracker tracker;
   tracker.SetChannelSuffix("/some");
-  base::Value::Dict params = CreateValidParams("/some");
+  base::DictValue params = CreateValidParams("/some");
   params.Remove("payload");
-  base::Value::Dict actual_payload;
+  base::DictValue actual_payload;
   tracker.SetBidiCallback(CopyMessageTo(actual_payload));
   Status status = tracker.OnEvent(nullptr, "Runtime.bindingCalled", params);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));

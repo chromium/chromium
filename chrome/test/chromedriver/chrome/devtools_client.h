@@ -21,7 +21,7 @@ struct InspectorEvent {
   ~InspectorEvent();
   InspectorEvent(InspectorEvent&& other);
   std::string method;
-  std::optional<base::Value::Dict> params;
+  std::optional<base::DictValue> params;
 };
 
 struct InspectorCommandResponse {
@@ -30,7 +30,7 @@ struct InspectorCommandResponse {
   InspectorCommandResponse(InspectorCommandResponse&& other);
   int id;
   std::string error;
-  std::optional<base::Value::Dict> result;
+  std::optional<base::DictValue> result;
 };
 
 // A DevTools client of a single DevTools debugger.
@@ -65,35 +65,35 @@ class DevToolsClient {
 
   virtual bool IsConnected() const = 0;
 
-  virtual Status PostBidiCommand(base::Value::Dict command) = 0;
+  virtual Status PostBidiCommand(base::DictValue command) = 0;
 
   virtual Status SendCommand(const std::string& method,
-                             const base::Value::Dict& params) = 0;
+                             const base::DictValue& params) = 0;
 
   virtual Status SendCommandFromWebSocket(const std::string& method,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           const int client_command_id) = 0;
 
   virtual Status SendCommandWithTimeout(const std::string& method,
-                                        const base::Value::Dict& params,
+                                        const base::DictValue& params,
                                         const Timeout* timeout) = 0;
 
   virtual Status SendAsyncCommand(const std::string& method,
-                                  const base::Value::Dict& params) = 0;
+                                  const base::DictValue& params) = 0;
 
   virtual Status SendCommandAndGetResult(const std::string& method,
-                                         const base::Value::Dict& params,
-                                         base::Value::Dict* result) = 0;
+                                         const base::DictValue& params,
+                                         base::DictValue* result) = 0;
 
   virtual Status SendCommandAndGetResultWithTimeout(
       const std::string& method,
-      const base::Value::Dict& params,
+      const base::DictValue& params,
       const Timeout* timeout,
-      base::Value::Dict* result) = 0;
+      base::DictValue* result) = 0;
 
   virtual Status SendCommandAndIgnoreResponse(
       const std::string& method,
-      const base::Value::Dict& params) = 0;
+      const base::DictValue& params) = 0;
 
   // Adds a listener. This must only be done when the client is disconnected.
   virtual void AddListener(DevToolsEventListener* listener) = 0;

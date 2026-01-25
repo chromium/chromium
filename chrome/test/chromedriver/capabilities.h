@@ -104,8 +104,7 @@ struct Capabilities {
 
   // Accepts all W3C defined capabilities
   // and all ChromeDriver-specific extensions.
-  Status Parse(const base::Value::Dict& desired_caps,
-               bool w3c_compliant = true);
+  Status Parse(const base::DictValue& desired_caps, bool w3c_compliant = true);
 
   // Migrate capabilities to maintain backward compatibility.
   Status MigrateCapabilities();
@@ -182,7 +181,7 @@ struct Capabilities {
   // Time to wait for extension background page to appear. If 0, no waiting.
   base::TimeDelta extension_load_timeout;
 
-  std::unique_ptr<base::Value::Dict> local_state;
+  std::unique_ptr<base::DictValue> local_state;
 
   std::string log_path;
 
@@ -197,7 +196,7 @@ struct Capabilities {
 
   base::Value devtools_events_logging_prefs;
 
-  std::unique_ptr<base::Value::Dict> prefs;
+  std::unique_ptr<base::DictValue> prefs;
 
   Switches switches;
 
@@ -206,7 +205,7 @@ struct Capabilities {
   bool web_socket_url = false;
 };
 
-bool GetChromeOptionsDictionary(const base::Value::Dict& params,
-                                const base::Value::Dict** out);
+bool GetChromeOptionsDictionary(const base::DictValue& params,
+                                const base::DictValue** out);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CAPABILITIES_H_

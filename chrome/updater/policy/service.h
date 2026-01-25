@@ -75,17 +75,17 @@ class PolicyStatus {
     return {effective_policy()->ToString(), effective_policy()->source};
   }
 
-  // Creates a base::Value::Dict representation of an individual policy adhering
+  // Creates a base::DictValue representation of an individual policy adhering
   // to the format defined by //docs/updater/history_log.md.
-  base::Value::Dict ToDict() const {
-    base::Value::Dict values_by_source;
+  base::DictValue ToDict() const {
+    base::DictValue values_by_source;
     for (const auto& entry : all_policies()) {
       if constexpr (std::is_same_v<T, base::TimeDelta>) {
         values_by_source.Set(entry.source,
                              base::TimeDeltaToValue(entry.policy));
       } else if constexpr (std::is_same_v<T, UpdatesSuppressedTimes>) {
         values_by_source.Set(
-            entry.source, base::Value::Dict()
+            entry.source, base::DictValue()
                               .Set("StartHour", entry.policy.start_hour_)
                               .Set("StartMinute", entry.policy.start_minute_)
                               .Set("Duration", entry.policy.duration_minute_));
@@ -93,13 +93,13 @@ class PolicyStatus {
         values_by_source.Set(entry.source, entry.policy);
       }
     }
-    return base::Value::Dict()
+    return base::DictValue()
         .Set("valuesBySource", std::move(values_by_source))
         .Set("prevailingSource", effective_policy()->source);
   }
 
   void AddPolicyToContainer(const std::string& name,
-                            base::Value::Dict& policies) {
+                            base::DictValue& policies) {
     if (!*this) {
       return;
     }
@@ -223,7 +223,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
   // Helper methods.
-  base::Value::Dict GetAllPolicies() const;
+  base::DictValue GetAllPolicies() const;
 
   template <typename PolicyContainer>
   PolicyContainer GetUpdaterPolicies() const {

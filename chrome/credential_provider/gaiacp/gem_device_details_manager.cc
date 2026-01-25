@@ -232,7 +232,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     hr = S_OK;
   }
 
-  base::Value::List mac_address_value_list;
+  base::ListValue mac_address_value_list;
   for (const std::string& mac_address : mac_addresses)
     mac_address_value_list.Append(mac_address);
 
@@ -245,7 +245,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     }
   }
 
-  request_dict_ = std::make_unique<base::Value::Dict>();
+  request_dict_ = std::make_unique<base::DictValue>();
   request_dict_->Set(kUploadDeviceDetailsRequestSerialNumberParameterName,
                      base::WideToUTF8(serial_number));
   request_dict_->Set(kUploadDeviceDetailsRequestMachineGuidParameterName,
@@ -286,7 +286,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
                        base::WideToUTF8(known_resource_id));
   }
 
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
 
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl(),

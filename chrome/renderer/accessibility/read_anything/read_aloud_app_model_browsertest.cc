@@ -44,7 +44,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->set_speech_rate(speech_rate);
   }
 
-  const base::Value::List& EnabledLanguages() {
+  const base::ListValue& EnabledLanguages() {
     return model_->languages_enabled_in_pref();
   }
 
@@ -52,7 +52,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     model_->SetLanguageEnabled(lang, enabled);
   }
 
-  const base::Value::Dict& Voices() { return model_->voices(); }
+  const base::DictValue& Voices() { return model_->voices(); }
 
   void SetVoice(const std::string& voice, const std::string& lang) {
     model_->SetVoice(voice, lang);

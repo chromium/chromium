@@ -23,7 +23,7 @@ namespace {
 // it's safe to have a static string that we always return a pointer into.
 struct LazyDirectoryListerCacher {
   LazyDirectoryListerCacher() {
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set("header", l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_HEADER));
     value.Set("parentDirText",
               l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_PARENT));

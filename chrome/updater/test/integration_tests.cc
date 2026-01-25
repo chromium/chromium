@@ -289,8 +289,8 @@ struct TestApp {
   }
 };
 
-base::Value::List SetToList(const base::flat_set<std::string>& set) {
-  base::Value::List list;
+base::ListValue SetToList(const base::flat_set<std::string>& set) {
+  base::ListValue list;
   for (const auto& elem : set) {
     list.Append(elem);
   }
@@ -439,11 +439,11 @@ class IntegrationTest : public ::testing::Test {
 
   void ExitTestMode() { test_commands_->ExitTestMode(); }
 
-  void SetDictPolicies(const base::Value::Dict& values) {
+  void SetDictPolicies(const base::DictValue& values) {
     test_commands_->SetDictPolicies(values);
   }
 
-  void SetPlatformPolicies(const base::Value::Dict& values) {
+  void SetPlatformPolicies(const base::DictValue& values) {
     test_commands_->SetPlatformPolicies(values);
   }
 
@@ -489,7 +489,7 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectLegacyAppCommandWebSucceeds(const std::string& app_id,
                                          const std::string& command_id,
-                                         const base::Value::List& parameters,
+                                         const base::ListValue& parameters,
                                          int expected_exit_code) {
     test_commands_->ExpectLegacyAppCommandWebSucceeds(
         app_id, command_id, parameters, expected_exit_code);
@@ -532,9 +532,8 @@ class IntegrationTest : public ::testing::Test {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-  void InstallAppViaService(
-      const std::string& app_id,
-      const base::Value::Dict& expected_final_values = {}) {
+  void InstallAppViaService(const std::string& app_id,
+                            const base::DictValue& expected_final_values = {}) {
     test_commands_->InstallAppViaService(app_id, expected_final_values);
   }
 
@@ -649,7 +648,7 @@ class IntegrationTest : public ::testing::Test {
 
   void UpdateAll() { test_commands_->UpdateAll(); }
 
-  void GetAppStates(const base::Value::Dict& expected_app_states) {
+  void GetAppStates(const base::DictValue& expected_app_states) {
     test_commands_->GetAppStates(expected_app_states);
   }
 
@@ -829,7 +828,7 @@ class IntegrationTest : public ::testing::Test {
         << "Failed to load app json file at: " << app_json_path;
     EXPECT_TRUE(app_data);
     EXPECT_TRUE(app_data->is_dict());
-    const base::Value::Dict& app_info = app_data->GetDict();
+    const base::DictValue& app_info = app_data->GetDict();
     EXPECT_EQ(*app_info.FindString("app"), appid);
     EXPECT_EQ(*app_info.FindString("company"), COMPANY_SHORTNAME_STRING);
     EXPECT_EQ(*app_info.FindString("pv"), expected_version.GetString());
@@ -926,7 +925,7 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void InstallEnterpriseCompanionAppOverrides(
-      const base::Value::Dict& external_overrides) {
+      const base::DictValue& external_overrides) {
     test_commands_->InstallEnterpriseCompanionAppOverrides(external_overrides);
   }
 
@@ -1632,7 +1631,7 @@ TEST_F(IntegrationTest, GetUpdaterState) {
 }
 
 TEST_F(IntegrationTest, GetPoliciesJson) {
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("autoupdatecheckperiodminutes",
                     base::Seconds(64800).InMinutes());
   dict_policies.Set("updatessuppressedstarthour", 15);
@@ -1660,9 +1659,9 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
           const auto root = base::JSONReader::Read(
               result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           ASSERT_TRUE(root);
-          const base::Value::Dict& app_policies = CHECK_DEREF(
+          const base::DictValue& app_policies = CHECK_DEREF(
               CHECK_DEREF(root).GetDict().FindDict("policiesByAppId"));
-          const base::Value::Dict& test1_install_policy = CHECK_DEREF(
+          const base::DictValue& test1_install_policy = CHECK_DEREF(
               CHECK_DEREF(app_policies.FindDict("test1")).FindDict("Install"));
           EXPECT_EQ(
               CHECK_DEREF(test1_install_policy.FindString("prevailingSource")),
@@ -1671,7 +1670,7 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
                                                 "valuesBySource"))
                                     .FindInt("DictValuePolicy")),
                     6);
-          const base::Value::Dict& test2_update_policy = CHECK_DEREF(
+          const base::DictValue& test2_update_policy = CHECK_DEREF(
               CHECK_DEREF(app_policies.FindDict("test2")).FindDict("Update"));
           EXPECT_EQ(
               CHECK_DEREF(test2_update_policy.FindString("prevailingSource")),
@@ -1681,9 +1680,9 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
                                     .FindInt("DictValuePolicy")),
                     3);
 
-          const base::Value::Dict& updater_policies = CHECK_DEREF(
+          const base::DictValue& updater_policies = CHECK_DEREF(
               CHECK_DEREF(root).GetDict().FindDict("policiesByName"));
-          const base::Value::Dict& last_check_period_policy =
+          const base::DictValue& last_check_period_policy =
               CHECK_DEREF(updater_policies.FindDict("LastCheckPeriod"));
           EXPECT_EQ(CHECK_DEREF(last_check_period_policy.FindString(
                         "prevailingSource")),
@@ -1692,7 +1691,7 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
                                                 "valuesBySource"))
                                     .FindString("DictValuePolicy")),
                     "64800000000");
-          const base::Value::Dict& updates_suppressed_policy =
+          const base::DictValue& updates_suppressed_policy =
               CHECK_DEREF(updater_policies.FindDict("UpdatesSuppressed"));
           EXPECT_EQ(CHECK_DEREF(updates_suppressed_policy.FindString(
                         "prevailingSource")),
@@ -1700,7 +1699,7 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
           EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(updates_suppressed_policy.FindDict(
                                                 "valuesBySource"))
                                     .FindDict("DictValuePolicy")),
-                    base::Value::Dict()
+                    base::DictValue()
                         .Set("Duration", 120)
                         .Set("StartHour", 15)
                         .Set("StartMinute", 0));
@@ -2098,7 +2097,7 @@ TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
 TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecentlyPolicy) {
   ScopedServer test_server(test_commands_);
   ExpectInstallEvent(test_server, kUpdaterAppId);
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("autoupdatecheckperiodminutes", 60 * 18);
   ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(12)));
   ASSERT_NO_FATAL_FAILURE(Install());
@@ -2114,7 +2113,7 @@ TEST_F(IntegrationTest, NoCheckWhenSuppressed) {
   ScopedServer test_server(test_commands_);
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("updatessuppressedstarthour", (now.hour - 1 + 24) % 24);
   dict_policies.Set("updatessuppressedstartmin", 0);
   dict_policies.Set("updatessuppresseddurationmin", 120);
@@ -2464,7 +2463,7 @@ TEST_P(IntegrationGetAppStatesTest, Test) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
   }
 
-  base::Value::Dict expected_app_state;
+  base::DictValue expected_app_state;
   expected_app_state.Set("app_id", kAppId);
   expected_app_state.Set("version", v1.GetString());
   expected_app_state.Set("ap", "");
@@ -2472,7 +2471,7 @@ TEST_P(IntegrationGetAppStatesTest, Test) {
   expected_app_state.Set("brand_path", "");
   expected_app_state.Set("ecp", "");
   expected_app_state.Set("cohort", "");
-  base::Value::Dict expected_app_states;
+  base::DictValue expected_app_states;
   expected_app_states.Set(kAppId, std::move(expected_app_state));
 
   ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
@@ -2487,7 +2486,7 @@ TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
   ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install());
 
-  base::Value::Dict expected_app_states;
+  base::DictValue expected_app_states;
   for (const std::string appid :
        {"test1", "TEST2", "Test3", "TeSt4", "tEsT5"}) {
     const base::Version v1("0.1");
@@ -2496,7 +2495,7 @@ TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
 
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, v1));
 
-    base::Value::Dict expected_app_state;
+    base::DictValue expected_app_state;
     expected_app_state.Set("app_id", base::ToLowerASCII(appid));
     expected_app_state.Set("version", v1.GetString());
     expected_app_state.Set("ap", "");
@@ -2822,7 +2821,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);
 
-  base::Value::Dict expected_app_state;
+  base::DictValue expected_app_state;
   expected_app_state.Set("app_id", "e595682b-02d5-46d1-b7ab-90034bd6be0f");
   expected_app_state.Set("brand_code", "TSBD");
   expected_app_state.Set("brand_path", "/bp");
@@ -2833,7 +2832,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   // Cohort is only communicated over IPC on POSIX. Refer to crbug.com/40283110.
   expected_app_state.Set("cohort", "cohort_test");
 #endif
-  base::Value::Dict expected_app_states;
+  base::DictValue expected_app_states;
   expected_app_states.Set("e595682b-02d5-46d1-b7ab-90034bd6be0f",
                           std::move(expected_app_state));
   ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
@@ -2905,7 +2904,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(true));
     ASSERT_TRUE(vapid_test_server_.Start());
     InstallEnterpriseCompanionAppOverrides(
-        base::Value::Dict()
+        base::DictValue()
             .Set("crash_upload_url", test_server_->crash_upload_url().spec())
             .Set("dm_encrypted_reporting_url",
                  vapid_test_server_.base_url().spec())
@@ -3361,8 +3360,8 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp2, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp3, /*install_v1=*/true));
 
-  base::Value::Dict policies;
-  policies.Set(kApp2.appid, base::Value::Dict().Set("Update", kPolicyEnabled));
+  base::DictValue policies;
+  policies.Set(kApp2.appid, base::DictValue().Set("Update", kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   // Cloud policy sets update default to disabled, app1 to auto-update, and
@@ -3427,8 +3426,8 @@ TEST_F(IntegrationTestDeviceManagement, IPolicyStatus) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
 
-  base::Value::Dict policies;
-  policies.Set(kApp2.appid, base::Value::Dict().Set("Update", kPolicyEnabled));
+  base::DictValue policies;
+  policies.Set(kApp2.appid, base::DictValue().Set("Update", kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
   DMPushEnrollmentToken(kEnrollmentToken);
   ExpectDeviceManagementRegistrationRequest(*test_server_, kEnrollmentToken,
@@ -3559,15 +3558,15 @@ TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp2, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp3, /*install_v1=*/true));
 
-  base::Value::Dict policies;
-  policies.Set(kGlobalPolicyKey, base::Value::Dict()
+  base::DictValue policies;
+  policies.Set(kGlobalPolicyKey, base::DictValue()
                                      .Set("UpdateDefault", kPolicyDisabled)
                                      .Set("DownloadPreference", "cacheable"));
-  policies.Set(kApp1.appid, base::Value::Dict()
+  policies.Set(kApp1.appid, base::DictValue()
                                 .Set("Update", kPolicyDisabled)
                                 .Set("TargetChannel", "beta"));
-  policies.Set(kApp2.appid, base::Value::Dict().Set("Update", kPolicyEnabled));
-  policies.Set(kApp3.appid, base::Value::Dict()
+  policies.Set(kApp2.appid, base::DictValue().Set("Update", kPolicyEnabled));
+  policies.Set(kApp3.appid, base::DictValue()
                                 .Set("Update", kPolicyEnabled)
                                 .Set("TargetChannel", "canary"));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
@@ -3598,7 +3597,7 @@ TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
                                            omaha_settings);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, *test_server_,
-      /*request_attributes=*/base::Value::Dict().Set("dlpref", "cacheable"),
+      /*request_attributes=*/base::DictValue().Set("dlpref", "cacheable"),
       {
           AppUpdateExpectation(
               kApp1.GetInstallCommandLineArgs(/*install_v1=*/false),
@@ -3714,9 +3713,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     IntegrationTest::TearDown();
   }
 
-  void InstallUserUpdater() {
-    user_test_commands_->Install(base::Value::List());
-  }
+  void InstallUserUpdater() { user_test_commands_->Install(base::ListValue()); }
 
   void UninstallUserUpdater() {
     ASSERT_TRUE(WaitForUpdaterExit());
@@ -4751,7 +4748,7 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install());
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("installtest1", IsSystemInstall(GetUpdaterScopeForTesting())
                                         ? kPolicyForceInstallMachine
                                         : kPolicyForceInstallUser);
@@ -4847,7 +4844,7 @@ TEST_P(IntegrationLegacyAppCommandWebTest, NoUsageStats_NoPing) {
   }
   ASSERT_NO_FATAL_FAILURE(InstallApp(kAppId));
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
@@ -4886,7 +4883,7 @@ TEST_P(IntegrationLegacyAppCommandWebTest, UsageStatsEnabled_ExpectPing) {
         GetParam().version));
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
@@ -4920,7 +4917,7 @@ TEST_P(IntegrationLegacyAppCommandWebTest,
         GetParam().version));
   }
 
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432));
@@ -5449,7 +5446,7 @@ TEST_P(IntegrationLegacyUpdate3WebNewInstallTest, Install) {
   ASSERT_NO_FATAL_FAILURE(
       ExpectLegacyUpdate3WebSucceeds(kAppId, AppBundleWebCreateMode::kCreateApp,
                                      STATE_INSTALL_COMPLETE, S_OK));
-  base::Value::Dict expected_app_state;
+  base::DictValue expected_app_state;
   expected_app_state.Set("app_id", kAppId);
   expected_app_state.Set("version", v1.GetString());
 
@@ -5460,7 +5457,7 @@ TEST_P(IntegrationLegacyUpdate3WebNewInstallTest, Install) {
 
   expected_app_state.Set("brand_path", "");
   expected_app_state.Set("ecp", "");
-  base::Value::Dict expected_app_states;
+  base::DictValue expected_app_states;
   expected_app_states.Set(kAppId, std::move(expected_app_state));
 
   ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
@@ -5532,7 +5529,7 @@ TEST_P(IntegrationLegacyUpdate3WebTest, NoUpdate) {
 
 TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicyManual) {
   ASSERT_TRUE(WaitForUpdaterExit());
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("updatetest1", kPolicyAutomaticUpdatesOnly);
   ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdate3WebSucceeds(
@@ -5542,7 +5539,7 @@ TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicyManual) {
 
 TEST_P(IntegrationLegacyUpdate3WebTest, DisabledPolicy) {
   ASSERT_TRUE(WaitForUpdaterExit());
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("updatetest1", kPolicyDisabled);
   ASSERT_NO_FATAL_FAILURE(SetDictPolicies(dict_policies));
   ExpectLegacyUpdate3WebSucceeds(
@@ -6212,10 +6209,10 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
     }
     ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
         kMsiAppId,
-        base::Value::Dict()
+        base::DictValue()
             .Set(
                 "expected_update_state",
-                base::Value::Dict()
+                base::DictValue()
                     .Set("app_id", kMsiAppId)
                     .Set("state",
                          static_cast<int>(

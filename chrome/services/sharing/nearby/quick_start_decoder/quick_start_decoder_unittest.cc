@@ -569,7 +569,7 @@ TEST_F(QuickStartDecoderTest,
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyBootstrapConfigurations) {
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
-  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::Value::Dict());
+  message.GetPayload()->Set(kBootstrapConfigurationsKey, base::DictValue());
 
   base::test::TestFuture<
       ::ash::quick_start::mojom::BootstrapConfigurationsPtr,
@@ -585,8 +585,8 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_EmptyDeviceDetails) {
-  base::Value::Dict bootstrap_configurations;
-  bootstrap_configurations.Set(kDeviceDetailsKey, base::Value::Dict());
+  base::DictValue bootstrap_configurations;
+  bootstrap_configurations.Set(kDeviceDetailsKey, base::DictValue());
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
   message.GetPayload()->Set(kBootstrapConfigurationsKey,
@@ -606,8 +606,8 @@ TEST_F(QuickStartDecoderTest,
 }
 
 TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyValues) {
-  base::Value::Dict device_details;
-  base::Value::Dict bootstrap_configurations;
+  base::DictValue device_details;
+  base::DictValue bootstrap_configurations;
   bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
   QuickStartMessage message(QuickStartMessageType::kBootstrapConfigurations);
@@ -631,14 +631,14 @@ TEST_F(QuickStartDecoderTest, DecodeBootstrapConfigurations_EmptyValues) {
 
 TEST_F(QuickStartDecoderTest,
        DecodeBootstrapConfigurations_ValidBootstrapConfigurations) {
-  base::Value::Dict device_details;
+  base::DictValue device_details;
   device_details.Set(kInstanceIdKey, kExampleInstanceId);
-  base::Value::Dict bootstrap_configurations;
+  base::DictValue bootstrap_configurations;
   bootstrap_configurations.Set(kDeviceDetailsKey, std::move(device_details));
 
-  base::Value::Dict account;
+  base::DictValue account;
   account.Set(kNameKey, kExampleEmail);
-  base::Value::List accounts_list;
+  base::ListValue accounts_list;
   accounts_list.Append(std::move(account));
   bootstrap_configurations.Set(kBootstrapAccountsKey, std::move(accounts_list));
 
@@ -646,7 +646,7 @@ TEST_F(QuickStartDecoderTest,
   message.GetPayload()->Set(kBootstrapConfigurationsKey,
                             std::move(bootstrap_configurations));
 
-  base::Value::Dict second_device_auth_payload;
+  base::DictValue second_device_auth_payload;
   bool is_supervised_account = true;
   second_device_auth_payload.Set(kIsTransferUnicornKey, is_supervised_account);
   message.GetPayload()->Set(kSecondDeviceAuthPayloadKey,
@@ -711,7 +711,7 @@ TEST_F(QuickStartDecoderTest,
 TEST_F(QuickStartDecoderTest,
        ExtractFidoDataFromJsonResponseFailsIfSecondDeviceAuthPayloadMissing) {
   std::string json_serialized_payload =
-      base::WriteJson(base::Value::Dict()).value_or("");
+      base::WriteJson(base::DictValue()).value_or("");
   std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
                                       json_serialized_payload.end());
 
@@ -806,7 +806,7 @@ TEST_F(QuickStartDecoderTest,
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
@@ -834,7 +834,7 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationPassesWhenMissingPasswordAndOpenNetwork) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "Open");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -857,7 +857,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenPasswordFoundAndOpenNetwork) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "Open");
@@ -889,7 +889,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_PSK) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -920,7 +920,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_WEP) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "WEP");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -951,7 +951,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_EAP) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "EAP");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -982,7 +982,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_OWE) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "OWE");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -1013,7 +1013,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingPasswordAndNotOpenNetwork_SAE) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "SAE");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -1043,7 +1043,7 @@ TEST_F(QuickStartDecoderTest,
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
@@ -1072,7 +1072,7 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
 }
 
 TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -1101,7 +1101,7 @@ TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingSecurityType) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkIsHiddenKey, true);
@@ -1131,7 +1131,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsOnInvalidSecurityType) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "invalid");
@@ -1162,7 +1162,7 @@ TEST_F(QuickStartDecoderTest,
 
 TEST_F(QuickStartDecoderTest,
        ExtractWifiInformationFailsWhenMissingHiddenStatus) {
-  base::Value::Dict wifi_information;
+  base::DictValue wifi_information;
   wifi_information.Set(kWifiNetworkSsidKey, "ssid");
   wifi_information.Set(kWifiNetworkPasswordKey, "password");
   wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");

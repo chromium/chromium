@@ -38,13 +38,13 @@ class MockChrome : public StubChrome {
 typedef Status (*Command)(Session* session,
                           WebView* web_view,
                           const std::string& element_id,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value);
 
 Status CallElementCommand(Command command,
                           StubWebView* web_view,
                           const std::string& element_id,
-                          const base::Value::Dict& params = {},
+                          const base::DictValue& params = {},
                           bool w3c_compliant = true,
                           std::unique_ptr<base::Value>* value = nullptr) {
   MockChrome* chrome = new MockChrome();
@@ -67,11 +67,11 @@ class MockResponseWebView : public StubWebView {
 
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::Value::List& args,
+                      const base::ListValue& args,
                       std::unique_ptr<base::Value>* result) override {
     if (function ==
         webdriver::atoms::asString(webdriver::atoms::GET_LOCATION)) {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.SetByDottedPath("value.status", 0);
       dict.Set("x", 0.0);
       dict.Set("y", 128.8);
@@ -81,7 +81,7 @@ class MockResponseWebView : public StubWebView {
       // Do not set result; this should be an error state
       return Status(kStaleElementReference);
     } else {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.SetByDottedPath("value.status", 0);
       *result = std::make_unique<base::Value>(std::move(dict));
     }
@@ -93,7 +93,7 @@ class MockResponseWebView : public StubWebView {
 
 TEST(ElementCommandsTest, ExecuteGetElementRect_SizeError) {
   MockResponseWebView webview = MockResponseWebView();
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> result_value;
   Status status = CallElementCommand(ExecuteGetElementRect, &webview,
                                      "3247f4d1-ce70-49e9-9a99-bdc7591e032f",
@@ -103,7 +103,7 @@ TEST(ElementCommandsTest, ExecuteGetElementRect_SizeError) {
 
 TEST(ElementCommandsTest, ExecuteSendKeysToElement_NoValue) {
   MockResponseWebView webview = MockResponseWebView();
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> result_value;
   Status status = CallElementCommand(ExecuteSendKeysToElement, &webview,
                                      "3247f4d1-ce70-49e9-9a99-bdc7591e032f",
@@ -115,7 +115,7 @@ TEST(ElementCommandsTest, ExecuteSendKeysToElement_NoValue) {
 
 TEST(ElementCommandsTest, ExecuteSendKeysToElement_ValueNotAList) {
   MockResponseWebView webview = MockResponseWebView();
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("value", "not-a-list");
   std::unique_ptr<base::Value> result_value;
   Status status = CallElementCommand(ExecuteSendKeysToElement, &webview,

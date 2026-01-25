@@ -57,8 +57,8 @@ ReadAloudAppModel::~ReadAloudAppModel() = default;
 
 void ReadAloudAppModel::OnSettingsRestoredFromPrefs(
     double speech_rate,
-    base::Value::List* languages_enabled_in_pref,
-    base::Value::Dict* voices,
+    base::ListValue* languages_enabled_in_pref,
+    base::DictValue* voices,
     read_anything::mojom::HighlightGranularity granularity) {
   speech_rate_ = speech_rate;
   languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();

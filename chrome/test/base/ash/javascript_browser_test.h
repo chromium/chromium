@@ -40,7 +40,7 @@ class JavaScriptBrowserTest : public InProcessBrowserTest {
   // |RunJavaScriptBrowserTestF| call.
   std::u16string BuildRunTestJSCall(bool is_async,
                                     const std::string& test_name,
-                                    base::Value::List args);
+                                    base::ListValue args);
 
   Profile* GetProfile() const;
 

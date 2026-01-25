@@ -163,17 +163,16 @@ std::string GetUserFriendlyName(std::string_view printer_name) {
 }
 #endif
 
-base::Value::Dict AssemblePrinterSettings(
-    const std::string& device_name,
-    const PrinterBasicInfo& basic_info,
-    bool has_secure_protocol,
-    PrinterSemanticCapsAndDefaults* caps) {
-  base::Value::Dict printer_info;
+base::DictValue AssemblePrinterSettings(const std::string& device_name,
+                                        const PrinterBasicInfo& basic_info,
+                                        bool has_secure_protocol,
+                                        PrinterSemanticCapsAndDefaults* caps) {
+  base::DictValue printer_info;
   printer_info.Set(kSettingDeviceName, device_name);
   printer_info.Set(kSettingPrinterName, basic_info.display_name);
   printer_info.Set(kSettingPrinterDescription, basic_info.printer_description);
 
-  base::Value::Dict options;
+  base::DictValue options;
 
 #if BUILDFLAG(IS_CHROMEOS)
   printer_info.Set(
@@ -184,7 +183,7 @@ base::Value::Dict AssemblePrinterSettings(
 
   printer_info.Set(kSettingPrinterOptions, std::move(options));
 
-  base::Value::Dict printer_info_capabilities;
+  base::DictValue printer_info_capabilities;
   printer_info_capabilities.Set(kPrinter, std::move(printer_info));
   base::Value capabilities =
       AssemblePrinterCapabilities(device_name, has_secure_protocol, caps);
@@ -195,7 +194,7 @@ base::Value::Dict AssemblePrinterSettings(
   return printer_info_capabilities;
 }
 
-base::Value::Dict GetSettingsOnBlockingTaskRunner(
+base::DictValue GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,

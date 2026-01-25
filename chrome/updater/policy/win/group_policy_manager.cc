@@ -57,7 +57,7 @@ struct PolicySectionEvents
   virtual ~PolicySectionEvents() = default;
 };
 
-base::Value::Dict LoadGroupPolicies() {
+base::DictValue LoadGroupPolicies() {
   base::ScopedClosureRunner leave_policy_section_closure;
 
   if (base::IsManagedDevice()) {
@@ -95,7 +95,7 @@ base::Value::Dict LoadGroupPolicies() {
     }
   }
 
-  base::Value::Dict policies;
+  base::DictValue policies;
 
   for (base::win::RegistryValueIterator it(HKEY_LOCAL_MACHINE,
                                            UPDATER_POLICIES_KEY);

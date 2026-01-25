@@ -157,7 +157,7 @@ TEST(IsGitHash, SvnRevision) {
 }
 
 TEST(FillFromBrowserVersionResponse, Chrome) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("product", "Chrome/37.0.2062.124");
   BrowserInfo browser_info;
   Status status = browser_info.FillFromBrowserVersionResponse(response);
@@ -170,7 +170,7 @@ TEST(FillFromBrowserVersionResponse, Chrome) {
 }
 
 TEST(FillFromBrowserVersionResponse, HeadlessChrome) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("product", "HeadlessChrome/39.0.2171.59");
   BrowserInfo browser_info;
   Status status = browser_info.FillFromBrowserVersionResponse(response);

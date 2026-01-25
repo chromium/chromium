@@ -119,7 +119,7 @@ TEST(INIParserTest, DictionaryValueINIParser) {
       "key.4=value4\n"
       "key5=value5\n");
 
-  const base::Value::Dict& root = test_parser.root();
+  const base::DictValue& root = test_parser.root();
 
   const std::string* value = root.FindStringByDottedPath("section1.key1");
   ASSERT_TRUE(value);

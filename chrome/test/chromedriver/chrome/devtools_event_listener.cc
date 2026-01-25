@@ -18,13 +18,13 @@ Status DevToolsEventListener::OnConnected(DevToolsClient* client) {
 
 Status DevToolsEventListener::OnEvent(DevToolsClient* client,
                                       const std::string& method,
-                                      const base::Value::Dict& params) {
+                                      const base::DictValue& params) {
   return Status(kOk);
 }
 
 Status DevToolsEventListener::OnCommandSuccess(DevToolsClient* client,
                                                const std::string& method,
-                                               const base::Value::Dict* result,
+                                               const base::DictValue* result,
                                                const Timeout& command_timeout) {
   return Status(kOk);
 }

@@ -139,8 +139,8 @@ class IntegrationTests : public ::testing::Test {
     EXPECT_EQ(WaitForProcess(server_process_), 0);
   }
 
-  base::Value::Dict GetDefaultConstantsOverrides() {
-    base::Value::Dict overrides;
+  base::DictValue GetDefaultConstantsOverrides() {
+    base::DictValue overrides;
 
 #if BUILDFLAG(IS_WIN)
     // Allow access from builtin administrators.
@@ -164,7 +164,7 @@ class IntegrationTests : public ::testing::Test {
   void InstallConstantsOverrides() {
     InstallConstantsOverrides(GetDefaultConstantsOverrides());
   }
-  void InstallConstantsOverrides(const base::Value::Dict& overrides) {
+  void InstallConstantsOverrides(const base::DictValue& overrides) {
     std::optional<base::FilePath> overrides_json_path = GetOverridesFilePath();
     ASSERT_TRUE(overrides_json_path);
     ASSERT_TRUE(base::CreateDirectory(overrides_json_path->DirName()));
@@ -616,7 +616,7 @@ TEST_F(IntegrationTests, CloudPolicyProxy_FixedServer) {
   EXPECT_TRUE(CreateAppShutdown()->Run().ok());
   EXPECT_EQ(WaitForProcess(server_process_), 0);
 
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
 
@@ -669,7 +669,7 @@ TEST_F(IntegrationTests, CloudPolicyProxy_SettingsChangeAppliedAtRuntime) {
   // this service should be routed through the proxy.
   EXPECT_TRUE(CreateAppShutdown()->Run().ok());
   EXPECT_EQ(WaitForProcess(server_process_), 0);
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
   ASSERT_NO_FATAL_FAILURE(LaunchApp());
@@ -742,7 +742,7 @@ TEST_F(IntegrationTests, CloudPolicyProxy_PacScript) {
   EXPECT_TRUE(CreateAppShutdown()->Run().ok());
   EXPECT_EQ(WaitForProcess(server_process_), 0);
 
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
 
@@ -766,7 +766,7 @@ TEST_F(IntegrationTests, CloudPolicyProxy_PacScript) {
 // The application should tunnel network requests through the proxy server
 // configured by Group Policy.
 TEST_F(IntegrationTests, GroupPolicyProxy_ProxyServer) {
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
   ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
@@ -797,7 +797,7 @@ TEST_F(IntegrationTests, GroupPolicyProxy_ProxyServer) {
 // The application should tunnel network requests through the proxy server
 // configured by the PAC script specified by Group Policy.
 TEST_F(IntegrationTests, GroupPolicyProxy_PacScript) {
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
   ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
@@ -833,7 +833,7 @@ TEST_F(IntegrationTests, GroupPolicyProxy_PacScript) {
 // The application should canonicalize proxy URLs sources from PAC scripts
 // containing special characters.
 TEST_F(IntegrationTests, GroupPolicyProxy_PacProxyRequiresCanonicalization) {
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
   ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(
@@ -871,7 +871,7 @@ TEST_F(IntegrationTests, GroupPolicyProxy_PacProxyRequiresCanonicalization) {
 // The application should exit with a failure if proxy navigation fails and the
 // server is not directly reachable.
 TEST_F(IntegrationTests, GroupPolicyProxy_BadProxyServer) {
-  base::Value::Dict overrides = GetDefaultConstantsOverrides();
+  base::DictValue overrides = GetDefaultConstantsOverrides();
   overrides.Set(kDMServerUrlKey, "http://dm.server.not_exist/dmapi");
   ASSERT_NO_FATAL_FAILURE(InstallConstantsOverrides(overrides));
   ASSERT_NO_FATAL_FAILURE(SetLocalProxyPolicies(

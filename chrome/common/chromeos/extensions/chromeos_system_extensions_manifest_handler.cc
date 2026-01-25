@@ -23,7 +23,7 @@ using extensions::PermissionsParser;
 using extensions::mojom::APIPermissionID;
 
 bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
-  const base::Value::Dict* externally_connectable_dict =
+  const base::DictValue* externally_connectable_dict =
       extension->manifest()->FindDictPath(
           extensions::manifest_keys::kExternallyConnectable);
   // chromeos_system_extension's 'externally_connectable' must exist.

@@ -89,28 +89,28 @@ class WebView {
                                  bool enable_unsafe_extension_debugging) = 0;
 
   // Send the BiDi command to the BiDiMapper
-  virtual Status PostBidiCommand(base::Value::Dict command) = 0;
+  virtual Status PostBidiCommand(base::DictValue command) = 0;
 
   // Send the BiDi command to the BiDiMapper and receive the response
   // Precondition: commdand.Find("id") != nullptr
   // Precondition: commdand.FindString("goog:channel") != nullptr
-  virtual Status SendBidiCommand(base::Value::Dict command,
+  virtual Status SendBidiCommand(base::DictValue command,
                                  const Timeout& timeout,
-                                 base::Value::Dict& response) = 0;
+                                 base::DictValue& response) = 0;
 
   // Send a command to the DevTools debugger
   virtual Status SendCommand(const std::string& cmd,
-                             const base::Value::Dict& params) = 0;
+                             const base::DictValue& params) = 0;
 
   // Send a command to the DevTools debugger. Received from WebSocket
   virtual Status SendCommandFromWebSocket(const std::string& cmd,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           const int client_cmd_id) = 0;
 
   // Send a command to the DevTools debugger and wait for the result
   virtual Status SendCommandAndGetResult(
       const std::string& cmd,
-      const base::Value::Dict& params,
+      const base::DictValue& params,
       std::unique_ptr<base::Value>* value) = 0;
 
   // Navigate |delta| steps forward in the browser history. A negative value
@@ -138,7 +138,7 @@ class WebView {
   // |result| will never be NULL on success.
   virtual Status CallFunction(const std::string& frame,
                               const std::string& function,
-                              const base::Value::List& args,
+                              const base::ListValue& args,
                               std::unique_ptr<base::Value>* result) = 0;
 
   // Same as |CallAsyncFunction|, except no additional error callback is passed
@@ -148,7 +148,7 @@ class WebView {
   virtual Status CallUserAsyncFunction(
       const std::string& frame,
       const std::string& function,
-      const base::Value::List& args,
+      const base::ListValue& args,
       const base::TimeDelta& timeout,
       std::unique_ptr<base::Value>* result) = 0;
 
@@ -158,7 +158,7 @@ class WebView {
   // |result| will never be NULL on success.
   virtual Status CallUserSyncScript(const std::string& frame,
                                     const std::string& script,
-                                    const base::Value::List& args,
+                                    const base::ListValue& args,
                                     const base::TimeDelta& timeout,
                                     std::unique_ptr<base::Value>* result) = 0;
 
@@ -167,7 +167,7 @@ class WebView {
   // frame.
   virtual Status GetFrameByFunction(const std::string& frame,
                                     const std::string& function,
-                                    const base::Value::List& args,
+                                    const base::ListValue& args,
                                     std::string* out_frame) = 0;
 
   // Dispatch a sequence of mouse events.
@@ -250,9 +250,9 @@ class WebView {
 
   // Captures the visible portions of the web view as a base64-encoded PNG.
   virtual Status CaptureScreenshot(std::string* screenshot,
-                                   const base::Value::Dict& params) = 0;
+                                   const base::DictValue& params) = 0;
 
-  virtual Status PrintToPDF(const base::Value::Dict& params,
+  virtual Status PrintToPDF(const base::DictValue& params,
                             std::string* pdf) = 0;
 
   // Set files in a file input element.
@@ -320,7 +320,7 @@ class WebView {
   virtual Status CallFunctionWithTimeout(
       const std::string& frame,
       const std::string& function,
-      const base::Value::List& args,
+      const base::ListValue& args,
       const base::TimeDelta& timeout,
       const CallFunctionOptions& options,
       std::unique_ptr<base::Value>* result) = 0;

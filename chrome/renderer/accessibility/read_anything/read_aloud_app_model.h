@@ -60,11 +60,11 @@ class ReadAloudAppModel {
   void SetAudioCurrentlyPlaying(bool is_playing);
   double speech_rate() const { return speech_rate_; }
   void set_speech_rate(double rate) { speech_rate_ = rate; }
-  const base::Value::List& languages_enabled_in_pref() const {
+  const base::ListValue& languages_enabled_in_pref() const {
     return languages_enabled_in_pref_;
   }
   void SetLanguageEnabled(const std::string& lang, bool enabled);
-  const base::Value::Dict& voices() const { return voices_; }
+  const base::DictValue& voices() const { return voices_; }
   void SetVoice(const std::string& voice, const std::string& lang) {
     voices_.Set(lang, voice);
   }
@@ -82,8 +82,8 @@ class ReadAloudAppModel {
   bool IsHighlightOn();
   void OnSettingsRestoredFromPrefs(
       double speech_rate,
-      base::Value::List* languages_enabled_in_pref,
-      base::Value::Dict* voices,
+      base::ListValue* languages_enabled_in_pref,
+      base::DictValue* voices,
       read_anything::mojom::HighlightGranularity granularity);
 
   // Returns the next valid AXNodePosition.
@@ -318,11 +318,11 @@ class ReadAloudAppModel {
   double speech_rate_ = 1.0;
 
   // The languages that the user has enabled for reading aloud.
-  base::Value::List languages_enabled_in_pref_;
+  base::ListValue languages_enabled_in_pref_;
 
   // The user's preferred voices. Maps from a language to the last chosen
   // voice for that language.
-  base::Value::Dict voices_;
+  base::DictValue voices_;
 
   // The current granularity being used for the reading highlight.
   int highlight_granularity_ =

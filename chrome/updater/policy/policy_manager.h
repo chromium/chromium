@@ -22,7 +22,7 @@ namespace updater {
 //
 class PolicyManager : public PolicyManagerInterface {
  public:
-  explicit PolicyManager(base::Value::Dict policies);
+  explicit PolicyManager(base::DictValue policies);
   PolicyManager(const PolicyManager&) = delete;
   PolicyManager& operator=(const PolicyManager&) = delete;
 
@@ -65,13 +65,13 @@ class PolicyManager : public PolicyManagerInterface {
   ~PolicyManager() override;
 
  private:
-  const base::Value::Dict policies_;
+  const base::DictValue policies_;
   std::vector<std::string> force_install_apps_;
 };
 
 // A factory method to create a dict policy manager.
 scoped_refptr<PolicyManagerInterface> CreateDictPolicyManager(
-    base::Value::Dict policies);
+    base::DictValue policies);
 
 }  // namespace updater
 

@@ -33,16 +33,16 @@ std::string GetUserFriendlyName(std::string_view printer_name);
 // suitable for passage to the WebUI in JSON.
 // Data from `basic_info`, `has_secure_protocol`, and `caps` are all
 // incorporated into the returned value.
-base::Value::Dict AssemblePrinterSettings(const std::string& device_name,
-                                          const PrinterBasicInfo& basic_info,
-                                          bool has_secure_protocol,
-                                          PrinterSemanticCapsAndDefaults* caps);
+base::DictValue AssemblePrinterSettings(const std::string& device_name,
+                                        const PrinterBasicInfo& basic_info,
+                                        bool has_secure_protocol,
+                                        PrinterSemanticCapsAndDefaults* caps);
 
 #if !BUILDFLAG(IS_CHROMEOS) || defined(UNIT_TEST)
 // Returns the value from `AssemblePrinterSettings()` using the required
 // `print_backend` to obtain settings as necessary.  The returned value is
 // suitable for passage to the WebUI in JSON.
-base::Value::Dict GetSettingsOnBlockingTaskRunner(
+base::DictValue GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,

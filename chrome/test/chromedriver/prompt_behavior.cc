@@ -91,7 +91,7 @@ Status ParsePromptHandlerConfiguration(const base::Value* type_value,
 
 Status GetDefaultHandlerConfiguration(
     const std::string& dialog_type,
-    const base::Value::Dict& prompt_behavior_dict,
+    const base::DictValue& prompt_behavior_dict,
     bool w3c_compliant,
     PromptHandlerConfiguration& result) {
   if (prompt_behavior_dict.contains("default")) {
@@ -117,7 +117,7 @@ Status GetDefaultHandlerConfiguration(
 }
 
 Status FillInHandlerConfiguration(const std::string& dialog_type,
-                                  const base::Value::Dict& prompt_behavior_dict,
+                                  const base::DictValue& prompt_behavior_dict,
                                   bool w3c_compliant,
                                   PromptHandlerConfiguration& result) {
   if (prompt_behavior_dict.contains(dialog_type)) {
@@ -163,7 +163,7 @@ Status PromptBehavior::Create(bool w3c_compliant, PromptBehavior& result) {
 }
 
 Status PromptBehavior::Create(bool w3c_compliant,
-                              const base::Value::Dict& prompt_behavior_dict,
+                              const base::DictValue& prompt_behavior_dict,
                               PromptBehavior& result) {
   result = PromptBehavior(w3c_compliant);
 
@@ -239,7 +239,7 @@ base::Value PromptBehavior::MapperOptionsView() {
           {PromptHandlerType::kIgnore, prompt_behavior::kIgnore},
       };
 
-  base::Value::Dict result_dict;
+  base::DictValue result_dict;
   // List of fields to be filled in the result dictionary.
   std::vector<std::pair<std::string, PromptHandlerType>> dialog_to_handler = {
       {dialog_types::kAlert, alert.type},

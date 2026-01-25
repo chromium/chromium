@@ -87,7 +87,7 @@ const char* GetDefaultMessage(StatusCode code) {
   }
 }
 
-std::optional<std::string> GetElementIdKey(const base::Value::Dict& element,
+std::optional<std::string> GetElementIdKey(const base::DictValue& element,
                                            bool w3c_compliant) {
   std::string_view element_key = w3c_compliant ? kElementKeyW3C : kElementKey;
   std::vector<std::string_view> keys = {
@@ -220,8 +220,8 @@ const char* GetAsString(PointerType type) {
   }
 }
 
-base::Value::Dict GenerateTouchPoint(const TouchEvent& event) {
-  base::Value::Dict point;
+base::DictValue GenerateTouchPoint(const TouchEvent& event) {
+  base::DictValue point;
   point.Set("x", event.x);
   point.Set("y", event.y);
   point.Set("radiusX", event.radiusX);
@@ -247,7 +247,7 @@ class ObjectGroup {
     if (is_empty_) {
       return;
     }
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("objectGroup", object_group_name_);
     client_->SendCommandAndIgnoreResponse("Runtime.releaseObjectGroup", params);
   }
@@ -270,8 +270,8 @@ Status DescribeNode(DevToolsClient* client,
                     bool pierce,
                     base::Value* result_node) {
   DCHECK(result_node);
-  base::Value::Dict params;
-  base::Value::Dict cmd_result;
+  base::DictValue params;
+  base::DictValue cmd_result;
   params.Set("backendNodeId", backend_node_id);
   params.Set("depth", depth);
   params.Set("pierce", pierce);
@@ -316,7 +316,7 @@ Status GetFrameIdForBackendNodeId(DevToolsClient* client,
   return Status(kOk);
 }
 
-Status ResolveWeakReferences(base::Value::List& nodes) {
+Status ResolveWeakReferences(base::ListValue& nodes) {
   Status status{kOk};
   std::map<int, int> ref_to_idx;
   // Mapping
@@ -324,7 +324,7 @@ Status ResolveWeakReferences(base::Value::List& nodes) {
     if (!nodes[k].is_dict()) {
       continue;
     }
-    const base::Value::Dict& node = nodes[k].GetDict();
+    const base::DictValue& node = nodes[k].GetDict();
     std::optional<int> weak_node_ref =
         node.FindIntByDottedPath("weakLocalObjectReference");
     if (!weak_node_ref) {
@@ -342,7 +342,7 @@ Status ResolveWeakReferences(base::Value::List& nodes) {
     if (!nodes[k].is_dict()) {
       continue;
     }
-    const base::Value::Dict& node = nodes[k].GetDict();
+    const base::DictValue& node = nodes[k].GetDict();
     std::optional<int> weak_node_ref =
         node.FindIntByDottedPath("weakLocalObjectReference");
     if (!weak_node_ref) {
@@ -387,8 +387,8 @@ Status ResolveNode(DevToolsClient& client,
                    const std::string& object_group_name,
                    const Timeout* timeout,
                    std::string& object_id) {
-  base::Value::Dict params;
-  base::Value::Dict resolve_result;
+  base::DictValue params;
+  base::DictValue resolve_result;
   params.Set("backendNodeId", backend_node_id);
   // TODO(crbug.com/42323411): add support of uniqueContextId to
   // DOM.resolveNode params.Set("uniqueContextId", context_id);
@@ -718,8 +718,8 @@ Status WebViewImpl::HandleReceivedEvents() {
 }
 
 Status WebViewImpl::GetUrl(std::string* url) {
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   Status status = client_->SendCommandAndGetResult("Page.getNavigationHistory",
                                                    params, &result);
   if (status.IsError())
@@ -727,7 +727,7 @@ Status WebViewImpl::GetUrl(std::string* url) {
   std::optional<int> current_index = result.FindInt("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "navigation history missing currentIndex");
-  base::Value::List* entries = result.FindList("entries");
+  base::ListValue* entries = result.FindList("entries");
   if (!entries)
     return Status(kUnknownError, "navigation history missing entries");
   if (static_cast<int>(entries->size()) <= *current_index ||
@@ -748,13 +748,13 @@ Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
                        "javascript:", base::CompareCase::INSENSITIVE_ASCII)) {
     return Status(kUnknownError, "unsupported protocol");
   }
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("url", url);
   if (IsNonBlocking()) {
     // With non-blocking navigation tracker, the previous navigation might
     // still be in progress, and this can cause the new navigate command to be
     // ignored on Chrome v63 and above. Stop previous navigation first.
-    client_->SendCommand("Page.stopLoading", base::Value::Dict());
+    client_->SendCommand("Page.stopLoading", base::DictValue());
     // Use SendCommandAndIgnoreResponse to ensure no blocking occurs.
     return client_->SendCommandAndIgnoreResponse("Page.navigate", params);
   }
@@ -762,20 +762,20 @@ Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
 }
 
 Status WebViewImpl::Reload(const Timeout* timeout) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("ignoreCache", false);
   return client_->SendCommandWithTimeout("Page.reload", params, timeout);
 }
 
 Status WebViewImpl::Freeze(const Timeout* timeout) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("state", "frozen");
   return client_->SendCommandWithTimeout("Page.setWebLifecycleState", params,
                                          timeout);
 }
 
 Status WebViewImpl::Resume(const Timeout* timeout) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("state", "active");
   return client_->SendCommandWithTimeout("Page.setWebLifecycleState", params,
                                          timeout);
@@ -787,13 +787,13 @@ Status WebViewImpl::StartBidiServer(std::string bidi_mapper_script,
                                   enable_unsafe_extension_debugging);
 }
 
-Status WebViewImpl::PostBidiCommand(base::Value::Dict command) {
+Status WebViewImpl::PostBidiCommand(base::DictValue command) {
   return client_->PostBidiCommand(std::move(command));
 }
 
-Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
+Status WebViewImpl::SendBidiCommand(base::DictValue command,
                                     const Timeout& timeout,
-                                    base::Value::Dict& response) {
+                                    base::DictValue& response) {
   WebViewImplHolder target_holder(this);
   Status status{kOk};
   BidiTrackerGuard bidi_tracker_guard(*client_);
@@ -813,9 +813,9 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
   }
   bidi_tracker_guard.Tracker().SetChannelSuffix(*maybe_channel);
 
-  base::Value::Dict tmp;
-  auto on_bidi_message = [](base::Value::Dict& destination,
-                            base::Value::Dict payload) {
+  base::DictValue tmp;
+  auto on_bidi_message = [](base::DictValue& destination,
+                            base::DictValue payload) {
     destination = std::move(payload);
     return Status{kOk};
   };
@@ -826,7 +826,7 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
     return status;
   }
   auto response_is_received = [](const base::Value& expected_id,
-                                 const base::Value::Dict& destionation,
+                                 const base::DictValue& destionation,
                                  bool* is_condition_met) {
     const base::Value* maybe_response_id = destionation.Find("id");
     *is_condition_met =
@@ -845,21 +845,21 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
 }
 
 Status WebViewImpl::SendCommand(const std::string& cmd,
-                                const base::Value::Dict& params) {
+                                const base::DictValue& params) {
   return client_->SendCommand(cmd, params);
 }
 
 Status WebViewImpl::SendCommandFromWebSocket(const std::string& cmd,
-                                             const base::Value::Dict& params,
+                                             const base::DictValue& params,
                                              const int client_cmd_id) {
   return client_->SendCommandFromWebSocket(cmd, params, client_cmd_id);
 }
 
 Status WebViewImpl::SendCommandAndGetResult(
     const std::string& cmd,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     std::unique_ptr<base::Value>* value) {
-  base::Value::Dict result;
+  base::DictValue result;
   Status status = client_->SendCommandAndGetResult(cmd, params, &result);
   if (status.IsError())
     return status;
@@ -868,8 +868,8 @@ Status WebViewImpl::SendCommandAndGetResult(
 }
 
 Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   Status status = client_->SendCommandAndGetResult("Page.getNavigationHistory",
                                                    params, &result);
   if (status.IsError())
@@ -879,7 +879,7 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   if (!current_index)
     return Status(kUnknownError, "DevTools didn't return currentIndex");
 
-  base::Value::List* entries = result.FindList("entries");
+  base::ListValue* entries = result.FindList("entries");
   if (!entries)
     return Status(kUnknownError, "DevTools didn't return entries");
 
@@ -907,21 +907,21 @@ Status WebViewImpl::GetLoaderId(const std::string& frame_id,
                                 std::string& loader_id) {
   Status status{kOk};
 
-  base::Value::Dict frame_tree_result;
+  base::DictValue frame_tree_result;
   status = client_->SendCommandAndGetResultWithTimeout(
-      "Page.getFrameTree", base::Value::Dict(), &timeout, &frame_tree_result);
+      "Page.getFrameTree", base::DictValue(), &timeout, &frame_tree_result);
   if (status.IsError()) {
     return status;
   }
 
-  base::Value::Dict* maybe_frame_tree = frame_tree_result.FindDict("frameTree");
+  base::DictValue* maybe_frame_tree = frame_tree_result.FindDict("frameTree");
   if (!maybe_frame_tree) {
     return Status{kUnknownError,
                   "no frameTree in the response to Page.getFrameTree"};
   }
-  std::queue<base::Value::Dict*> q;
+  std::queue<base::DictValue*> q;
   for (q.push(maybe_frame_tree); !q.empty(); q.pop()) {
-    base::Value::Dict* frame_tree = q.front();
+    base::DictValue* frame_tree = q.front();
     std::string* current_frame_id =
         frame_tree->FindStringByDottedPath("frame.id");
     if (!current_frame_id) {
@@ -947,7 +947,7 @@ Status WebViewImpl::GetLoaderId(const std::string& frame_id,
       break;
     }
 
-    base::Value::List* child_frames = frame_tree->FindList("childFrames");
+    base::ListValue* child_frames = frame_tree->FindList("childFrames");
     if (!child_frames) {
       continue;
     }
@@ -967,7 +967,7 @@ Status WebViewImpl::GetLoaderId(const std::string& frame_id,
 Status WebViewImpl::CallFunctionWithTimeoutInternal(
     std::string frame,
     std::string function,
-    base::Value::List args,
+    base::ListValue args,
     const base::TimeDelta& timeout,
     bool include_shadow_root,
     std::unique_ptr<base::Value>* result) {
@@ -994,7 +994,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
 
   ObjectGroup object_group(client_.get());
 
-  base::Value::List nodes;
+  base::ListValue nodes;
   // Resolving the references in the execution context obtained earlier.
   status =
       ResolveElementReferencesInPlace(frame_id, context_id, object_group.name(),
@@ -1046,7 +1046,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
       "function(){ return (%s).apply(null, [%s, %s, %s, arguments]); }",
       kCallFunctionScript, function.c_str(), json.c_str(), w3c.c_str());
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("functionDeclaration", wrapper_function);
   if (!context_id.empty()) {
     params.Set("uniqueContextId", context_id);
@@ -1057,12 +1057,12 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
     params.Set("objectGroup", object_group.name());
   }
 
-  base::Value::Dict serialization_options;
+  base::DictValue serialization_options;
   serialization_options.Set("serialization", "deep");
 
   params.Set("serializationOptions", std::move(serialization_options));
 
-  base::Value::Dict cmd_result;
+  base::DictValue cmd_result;
 
   status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.callFunctionOn", params, &local_timeout, &cmd_result);
@@ -1080,14 +1080,14 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
                   "Runtime.callFunctionOn threw exception: " + description);
   }
 
-  base::Value::List* maybe_received_list =
+  base::ListValue* maybe_received_list =
       cmd_result.FindListByDottedPath("result.deepSerializedValue.value");
   if (!maybe_received_list || maybe_received_list->empty()) {
     return Status(kUnknownError,
                   "result.deepSerializedValue.value list is missing or empty "
                   "in Runtime.callFunctionOn response");
   }
-  base::Value::List& received_list = *maybe_received_list;
+  base::ListValue& received_list = *maybe_received_list;
 
   if (!received_list[0].is_dict()) {
     return Status(kUnknownError,
@@ -1114,7 +1114,7 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
         kUnknownError,
         "deserialized Runtime.callFunctionOn result is not a dictionary"};
   }
-  base::Value::Dict& call_result = maybe_call_result->GetDict();
+  base::DictValue& call_result = maybe_call_result->GetDict();
 
   std::optional<int> status_code = call_result.FindInt("status");
   if (!status_code) {
@@ -1175,7 +1175,7 @@ Status WebViewImpl::EvaluateScript(const std::string& frame,
 Status WebViewImpl::CallFunctionWithTimeout(
     const std::string& frame,
     const std::string& function,
-    const base::Value::List& args,
+    const base::ListValue& args,
     const base::TimeDelta& timeout,
     const CallFunctionOptions& options,
     std::unique_ptr<base::Value>* result) {
@@ -1198,7 +1198,7 @@ Status WebViewImpl::CallFunctionWithTimeout(
 
 Status WebViewImpl::CallFunction(const std::string& frame,
                                  const std::string& function,
-                                 const base::Value::List& args,
+                                 const base::ListValue& args,
                                  std::unique_ptr<base::Value>* result) {
   // Timeout set to Max is treated as no timeout.
 
@@ -1210,7 +1210,7 @@ Status WebViewImpl::CallFunction(const std::string& frame,
 
 Status WebViewImpl::CallUserSyncScript(const std::string& frame,
                                        const std::string& script,
-                                       const base::Value::List& args,
+                                       const base::ListValue& args,
                                        const base::TimeDelta& timeout,
                                        std::unique_ptr<base::Value>* result) {
   WebViewImplHolder target_holder(this);
@@ -1224,7 +1224,7 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
     return target->CallUserSyncScript(frame, script, args, timeout, result);
   }
 
-  base::Value::List sync_args;
+  base::ListValue sync_args;
   sync_args.Append(script);
   sync_args.Append(args.Clone());
 
@@ -1235,7 +1235,7 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
 Status WebViewImpl::CallUserAsyncFunction(
     const std::string& frame,
     const std::string& function,
-    const base::Value::List& args,
+    const base::ListValue& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   return CallAsyncFunctionInternal(frame, function, args, timeout, result);
@@ -1244,7 +1244,7 @@ Status WebViewImpl::CallUserAsyncFunction(
 // TODO (crbug.com/chromedriver/4364): Simplify this function
 Status WebViewImpl::GetFrameByFunction(const std::string& frame,
                                        const std::string& function,
-                                       const base::Value::List& args,
+                                       const base::ListValue& args,
                                        std::string* out_frame) {
   WebViewImplHolder target_holder(this);
   Status status{kOk};
@@ -1268,7 +1268,7 @@ Status WebViewImpl::GetFrameByFunction(const std::string& frame,
     return Status{kNoSuchFrame};
   }
 
-  const base::Value::Dict& element_dict = result->GetDict();
+  const base::DictValue& element_dict = result->GetDict();
 
   const std::string element_key = w3c_compliant_ ? kElementKeyW3C : kElementKey;
   const std::string* element_id = element_dict.FindString(element_key);
@@ -1308,14 +1308,14 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
   // Touch events are filtered by the compositor if there are no touch listeners
   // on the page. Wait two frames for the compositor to sync with the main
   // thread to get consistent behavior.
-  base::Value::Dict promise_params;
+  base::DictValue promise_params;
   promise_params.Set(
       "expression",
       "new Promise(x => setTimeout(() => setTimeout(x, 20), 20))");
   promise_params.Set("awaitPromise", true);
   client_->SendCommand("Runtime.evaluate", promise_params);
   for (const MouseEvent& event : events) {
-    base::Value::Dict params;
+    base::DictValue params;
 
     switch (event.type) {
       case kPressedMouseEventType:
@@ -1334,9 +1334,9 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
         break;
     }
 
-    base::Value::List touch_points;
+    base::ListValue touch_points;
     if (event.type != kReleasedMouseEventType) {
-      base::Value::Dict touch_point;
+      base::DictValue touch_point;
       touch_point.Set("x", event.x);
       touch_point.Set("y", event.y);
       touch_points.Append(std::move(touch_point));
@@ -1359,7 +1359,7 @@ Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
 
   Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
-    base::Value::Dict params;
+    base::DictValue params;
     std::string type = GetAsString(it->type);
     params.Set("type", type);
     params.Set("x", it->x);
@@ -1395,13 +1395,13 @@ Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
 
 Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
                                        bool async_dispatch_events) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::string type = GetAsString(event.type);
   params.Set("type", type);
-  base::Value::List point_list;
+  base::ListValue point_list;
   Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
-    base::Value::Dict point = GenerateTouchPoint(event);
+    base::DictValue point = GenerateTouchPoint(event);
     point_list.Append(std::move(point));
   }
   params.Set("touchPoints", std::move(point_list));
@@ -1432,11 +1432,11 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
   if (events.size() == 0)
     return Status(kOk);
 
-  base::Value::Dict params;
+  base::DictValue params;
   Status status(kOk);
   size_t touch_count = 1;
   for (const TouchEvent& event : events) {
-    base::Value::List point_list;
+    base::ListValue point_list;
     double current_time = base::Time::Now().InSecondsFSinceUnixEpoch();
     params.Set("timestamp", current_time);
     std::string type = GetAsString(event.type);
@@ -1465,7 +1465,7 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
                                       bool async_dispatch_events) {
   Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("type", GetAsString(it->type));
     if (it->modifiers & kNumLockKeyModifierMask) {
       params.Set("isKeypad", true);
@@ -1521,7 +1521,7 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
           command = "Undo";
       }
 
-      base::Value::List command_list;
+      base::ListValue command_list;
       command_list.Append(command);
       params.Set("commands", std::move(command_list));
     }
@@ -1552,11 +1552,11 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
 
 Status WebViewImpl::GetCookies(base::Value* cookies,
                                const std::string& current_page_url) {
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
 
   if (browser_info_->browser_name != "webview") {
-    base::Value::List url_list;
+    base::ListValue url_list;
     url_list.Append(current_page_url);
     params.Set("urls", std::move(url_list));
     Status status =
@@ -1570,7 +1570,7 @@ Status WebViewImpl::GetCookies(base::Value* cookies,
       return status;
   }
 
-  base::Value::List* const cookies_tmp = result.FindList("cookies");
+  base::ListValue* const cookies_tmp = result.FindList("cookies");
   if (!cookies_tmp)
     return Status(kUnknownError, "DevTools didn't return cookies");
   *cookies = base::Value(std::move(*cookies_tmp));
@@ -1581,7 +1581,7 @@ Status WebViewImpl::DeleteCookie(const std::string& name,
                                  const std::string& url,
                                  const std::string& domain,
                                  const std::string& path) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("url", url);
   std::string command;
   params.Set("name", name);
@@ -1600,7 +1600,7 @@ Status WebViewImpl::AddCookie(const std::string& name,
                               bool secure,
                               bool http_only,
                               double expiry) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("name", name);
   params.Set("url", url);
   params.Set("value", value);
@@ -1613,7 +1613,7 @@ Status WebViewImpl::AddCookie(const std::string& name,
   if (expiry >= 0)
     params.Set("expires", expiry);
 
-  base::Value::Dict result;
+  base::DictValue result;
   Status status =
       client_->SendCommandAndGetResult("Network.setCookie", params, &result);
   if (status.IsError())
@@ -1673,7 +1673,7 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
     navigation_tracker_->set_timed_out(true);
-    client_->SendCommand("Page.stopLoading", base::Value::Dict());
+    client_->SendCommand("Page.stopLoading", base::DictValue());
     // We don't consider |timeout| here to make sure the navigation actually
     // stops and we cleanup properly after a command that caused a navigation
     // that timed out.  Otherwise we might have to wait for that before
@@ -1786,8 +1786,8 @@ Status WebViewImpl::OverrideDownloadDirectoryIfNeeded(
 }
 
 Status WebViewImpl::CaptureScreenshot(std::string* screenshot,
-                                      const base::Value::Dict& params) {
-  base::Value::Dict result;
+                                      const base::DictValue& params) {
+  base::DictValue result;
   Timeout timeout(base::Seconds(10));
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Page.captureScreenshot", params, &timeout, &result);
@@ -1800,9 +1800,9 @@ Status WebViewImpl::CaptureScreenshot(std::string* screenshot,
   return Status(kOk);
 }
 
-Status WebViewImpl::PrintToPDF(const base::Value::Dict& params,
+Status WebViewImpl::PrintToPDF(const base::DictValue& params,
                                std::string* pdf) {
-  base::Value::Dict result;
+  base::DictValue result;
   Timeout timeout(base::Seconds(10));
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Page.printToPDF", params, &timeout, &result);
@@ -1832,7 +1832,7 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
 
-  const base::Value::Dict& element_dict = element.GetDict();
+  const base::DictValue& element_dict = element.GetDict();
 
   const std::string element_key = w3c_compliant_ ? kElementKeyW3C : kElementKey;
   StatusCode no_such_element = kNoSuchElement;
@@ -1901,7 +1901,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
   if (status.IsError())
     return status;
 
-  base::Value::List file_list;
+  base::ListValue file_list;
   // if the append flag is true, we need to retrieve the files that
   // already exist in the element and add them too.
   // Additionally, we need to add the old files first so that it looks
@@ -1918,8 +1918,8 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     // figure out how many files there are
     std::optional<int> number_of_files;
     {
-      base::Value::Dict cmd_result;
-      base::Value::Dict params;
+      base::DictValue cmd_result;
+      base::DictValue params;
       params.Set("functionDeclaration",
                  "function() { return this.files.length }");
       params.Set("objectId", inner_remote_object_id);
@@ -1936,8 +1936,8 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     for (int i = 0; i < *number_of_files; i++) {
       std::string file_object_id;
       {
-        base::Value::Dict cmd_result;
-        base::Value::Dict params;
+        base::DictValue cmd_result;
+        base::DictValue params;
         params.Set("functionDeclaration", "function() { return this.files[" +
                                               base::NumberToString(i) + "] }");
         params.Set("objectId", inner_remote_object_id);
@@ -1955,9 +1955,9 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
 
       // Now convert each RemoteObject into the full path
       {
-        base::Value::Dict params;
+        base::DictValue params;
         params.Set("objectId", file_object_id);
-        base::Value::Dict get_file_info_result;
+        base::DictValue get_file_info_result;
         status = client_->SendCommandAndGetResult("DOM.getFileInfo", params,
                                                   &get_file_info_result);
         if (status.IsError())
@@ -1984,7 +1984,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     file_list.Append(file_path.AsUTF8Unsafe());
   }
 
-  base::Value::Dict set_files_params;
+  base::DictValue set_files_params;
   set_files_params.Set("backendNodeId", backend_node_id);
   set_files_params.Set("files", std::move(file_list));
   return client_->SendCommand("DOM.setFileInputFiles", set_files_params);
@@ -1995,13 +1995,13 @@ Status WebViewImpl::TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) {
 }
 
 Status WebViewImpl::InitProfileInternal() {
-  base::Value::Dict params;
+  base::DictValue params;
 
   return client_->SendCommand("Profiler.enable", params);
 }
 
 Status WebViewImpl::StopProfileInternal() {
-  base::Value::Dict params;
+  base::DictValue params;
   Status status_debug = client_->SendCommand("Debugger.disable", params);
   Status status_profiler = client_->SendCommand("Profiler.disable", params);
 
@@ -2019,13 +2019,13 @@ Status WebViewImpl::StartProfile() {
   if (status_init.IsError())
     return status_init;
 
-  base::Value::Dict params;
+  base::DictValue params;
   return client_->SendCommand("Profiler.start", params);
 }
 
 Status WebViewImpl::EndProfile(std::unique_ptr<base::Value>* profile_data) {
-  base::Value::Dict params;
-  base::Value::Dict profile_result;
+  base::DictValue params;
+  base::DictValue profile_result;
 
   Status status = client_->SendCommandAndGetResult("Profiler.stop", params,
                                                    &profile_result);
@@ -2045,7 +2045,7 @@ Status WebViewImpl::SynthesizeTapGesture(int x,
                                          int y,
                                          int tap_count,
                                          bool is_long_press) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("x", x);
   params.Set("y", y);
   params.Set("tapCount", tap_count);
@@ -2058,7 +2058,7 @@ Status WebViewImpl::SynthesizeScrollGesture(int x,
                                             int y,
                                             int xoffset,
                                             int yoffset) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("x", x);
   params.Set("y", y);
   // Chrome's synthetic scroll gesture is actually a "swipe" gesture, so the
@@ -2072,10 +2072,10 @@ Status WebViewImpl::SynthesizeScrollGesture(int x,
 Status WebViewImpl::CallAsyncFunctionInternal(
     const std::string& frame,
     const std::string& function,
-    const base::Value::List& args,
+    const base::ListValue& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
-  base::Value::List async_args;
+  base::ListValue async_args;
   async_args.Append("return (" + function + ").apply(null, arguments);");
   async_args.Append(args.Clone());
   /*is_user_supplied=*/
@@ -2094,7 +2094,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     return status;
   }
 
-  base::Value::Dict* result_info = query_value->GetIfDict();
+  base::DictValue* result_info = query_value->GetIfDict();
   if (!result_info) {
     return Status(kUnknownError, "async result info is not a dictionary");
   }
@@ -2229,8 +2229,8 @@ Status ResolveElementReferenceInPlace(DevToolsClient& client,
                                       const std::string& expected_loader_id,
                                       const std::string& key,
                                       const Timeout& timeout,
-                                      base::Value::Dict& arg_dict,
-                                      base::Value::List& nodes) {
+                                      base::DictValue& arg_dict,
+                                      base::ListValue& nodes) {
   Status status{kOk};
   const StatusCode no_such_element =
       key == kShadowRootKey ? kNoSuchShadowRoot : kNoSuchElement;
@@ -2279,7 +2279,7 @@ Status ResolveElementReferenceInPlace(DevToolsClient& client,
 
   arg_dict.Set(std::move(key), static_cast<int>(nodes.size()));
 
-  base::Value::Dict node;
+  base::DictValue node;
   node.Set("objectId", std::move(object_id));
   nodes.Append(std::move(node));
   return status;
@@ -2290,8 +2290,8 @@ Status ResolveWindowReferenceInPlace(DevToolsClient& client,
                                      const std::string& context_id,
                                      const std::string& object_group_name,
                                      const Timeout& timeout,
-                                     base::Value::Dict& arg_dict,
-                                     base::Value::List& nodes) {
+                                     base::DictValue& arg_dict,
+                                     base::ListValue& nodes) {
   Status status{kOk};
 
   const std::string* element_id = arg_dict.FindString(kWindowKey);
@@ -2307,14 +2307,14 @@ Status ResolveWindowReferenceInPlace(DevToolsClient& client,
     return Status(kNoSuchWindow, "Window with such id was not found");
   }
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("objectGroup", object_group_name);
   params.Set("expression", "window");
   params.Set("awaitPromise", true);
   if (!context_id.empty()) {
     params.Set("uniqueContextId", context_id);
   }
-  base::Value::Dict evaluate_result;
+  base::DictValue evaluate_result;
   status = client.SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, &timeout, &evaluate_result);
   if (status.IsError()) {
@@ -2330,7 +2330,7 @@ Status ResolveWindowReferenceInPlace(DevToolsClient& client,
 
   arg_dict.Set(kWindowKey, static_cast<int>(nodes.size()));
 
-  base::Value::Dict node;
+  base::DictValue node;
   node.Set("objectId", std::move(*object_id));
   nodes.Append(std::move(node));
   return status;
@@ -2341,8 +2341,8 @@ Status ResolveFrameReferenceInPlace(DevToolsClient& client,
                                     const std::string& context_id,
                                     const std::string& object_group_name,
                                     const Timeout& timeout,
-                                    base::Value::Dict& arg_dict,
-                                    base::Value::List& nodes) {
+                                    base::DictValue& arg_dict,
+                                    base::ListValue& nodes) {
   Status status{kOk};
 
   const std::string* element_id = arg_dict.FindString(kFrameKey);
@@ -2352,8 +2352,8 @@ Status ResolveFrameReferenceInPlace(DevToolsClient& client,
 
   const std::string& frame_id = *element_id;
 
-  base::Value::Dict params;
-  base::Value::Dict get_frame_owner_result;
+  base::DictValue params;
+  base::DictValue get_frame_owner_result;
   params.Set("frameId", frame_id);
   status = client.SendCommandAndGetResultWithTimeout(
       "DOM.getFrameOwner", params, &timeout, &get_frame_owner_result);
@@ -2382,7 +2382,7 @@ Status ResolveFrameReferenceInPlace(DevToolsClient& client,
 
   arg_dict.Set(kFrameKey, static_cast<int>(nodes.size()));
 
-  base::Value::Dict node;
+  base::DictValue node;
   node.Set("objectId", std::move(object_id));
   nodes.Append(std::move(node));
   return status;
@@ -2396,8 +2396,8 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const std::string& object_group_name,
     const std::string& expected_loader_id,
     const Timeout& timeout,
-    base::Value::Dict& arg_dict,
-    base::Value::List& nodes) {
+    base::DictValue& arg_dict,
+    base::ListValue& nodes) {
   if (arg_dict.contains(kElementKeyW3C)) {
     return ResolveElementReferenceInPlace(
         *client_, expected_frame_id, context_id, object_group_name,
@@ -2440,8 +2440,8 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const std::string& object_group_name,
     const std::string& expected_loader_id,
     const Timeout& timeout,
-    base::Value::List& arg_list,
-    base::Value::List& nodes) {
+    base::ListValue& arg_list,
+    base::ListValue& nodes) {
   Status status{kOk};
   for (auto it = arg_list.begin(); status.IsOk() && it != arg_list.end();
        ++it) {
@@ -2459,7 +2459,7 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const std::string& expected_loader_id,
     const Timeout& timeout,
     base::Value& arg,
-    base::Value::List& nodes) {
+    base::ListValue& nodes) {
   if (arg.is_list()) {
     return ResolveElementReferencesInPlace(
         expected_frame_id, context_id, object_group_name, expected_loader_id,
@@ -2474,12 +2474,12 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
 }
 
 Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
-                                            const base::Value::List& nodes,
+                                            const base::ListValue& nodes,
                                             bool include_shadow_root,
                                             base::Value& res) {
   Status status{kOk};
   if (res.is_list()) {
-    base::Value::List& list = res.GetList();
+    base::ListValue& list = res.GetList();
     for (base::Value& elem : list) {
       status =
           CreateElementReferences(frame_id, nodes, include_shadow_root, elem);
@@ -2494,7 +2494,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
     return status;
   }
 
-  base::Value::Dict& dict = res.GetDict();
+  base::DictValue& dict = res.GetDict();
   std::optional<std::string> maybe_key = GetElementIdKey(dict, w3c_compliant_);
 
   if (!maybe_key) {
@@ -2519,7 +2519,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
   if (!nodes[*maybe_node_idx].is_dict()) {
     return Status{kUnknownError, "serialized node is not a dictionary"};
   }
-  const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
+  const base::DictValue& node = nodes[*maybe_node_idx].GetDict();
 
   if (*maybe_key == kWindowKey) {
     const std::string* context = node.FindStringByDottedPath("value.context");
@@ -2555,7 +2555,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
 
   dict.Set(*maybe_key, std::move(shared_id));
 
-  const base::Value::Dict* shadow_root =
+  const base::DictValue* shadow_root =
       node.FindDictByDottedPath("value.shadowRoot");
   if (include_shadow_root && shadow_root) {
     maybe_backend_node_id =
@@ -2572,7 +2572,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
     shared_id =
         base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
                            maybe_loader_id->c_str(), *maybe_backend_node_id);
-    base::Value::Dict shadow_root_dict;
+    base::DictValue shadow_root_dict;
     shadow_root_dict.Set(kShadowRootKey, std::move(shared_id));
     dict.Set("shadowRoot", std::move(shadow_root_dict));
   }
@@ -2666,16 +2666,16 @@ Status EvaluateScript(DevToolsClient* client,
                       const std::string& expression,
                       const base::TimeDelta& timeout,
                       const bool await_promise,
-                      base::Value::Dict& result) {
+                      base::DictValue& result) {
   Status status{kOk};
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", expression);
   if (!context_id.empty()) {
     params.Set("uniqueContextId", context_id);
   }
   params.Set("returnByValue", true);
   params.Set("awaitPromise", await_promise);
-  base::Value::Dict cmd_result;
+  base::DictValue cmd_result;
 
   Timeout local_timeout(timeout);
   status = client->SendCommandAndGetResultWithTimeout(
@@ -2693,7 +2693,7 @@ Status EvaluateScript(DevToolsClient* client,
                   "Runtime.evaluate threw exception: " + description);
   }
 
-  base::Value::Dict* unscoped_result = cmd_result.FindDict("result");
+  base::DictValue* unscoped_result = cmd_result.FindDict("result");
   if (!unscoped_result)
     return Status(kUnknownError, "evaluate missing dictionary 'result'");
   result = std::move(*unscoped_result);
@@ -2707,7 +2707,7 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  const base::TimeDelta& timeout,
                                  const bool await_promise,
                                  std::unique_ptr<base::Value>* result) {
-  base::Value::Dict temp_result;
+  base::DictValue temp_result;
   Status status = EvaluateScript(client, context_id, expression, timeout,
                                  await_promise, temp_result);
   if (status.IsError())
@@ -2730,7 +2730,7 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
 
 Status ParseCallFunctionResult(const base::Value& temp_result,
                                std::unique_ptr<base::Value>* result) {
-  const base::Value::Dict* dict = temp_result.GetIfDict();
+  const base::DictValue* dict = temp_result.GetIfDict();
   if (!dict)
     return Status(kUnknownError, "call function result must be a dictionary");
   std::optional<int> status_code = dict->FindInt("status");

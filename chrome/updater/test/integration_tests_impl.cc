@@ -491,7 +491,7 @@ void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration) {
   loop.Run();
 }
 
-void RegisterAppByValue(UpdaterScope scope, const base::Value::Dict& value) {
+void RegisterAppByValue(UpdaterScope scope, const base::DictValue& value) {
   RegistrationRequest registration;
   registration.app_id = *value.FindString("app_id");
   registration.brand_code = *value.FindString("brand_code");
@@ -542,7 +542,7 @@ void EnterTestMode(const GURL& update_url,
           .Modify());
 }
 
-void SetDictPolicies(const base::Value::Dict& values) {
+void SetDictPolicies(const base::DictValue& values) {
   ASSERT_TRUE(ExternalConstantsBuilder().SetDictPolicies(values).Modify());
 }
 
@@ -573,7 +573,7 @@ void ExpectVersionNotActive(UpdaterScope scope, const std::string& version) {
   EXPECT_NE(prefs->GetActiveVersion(), version);
 }
 
-void Install(UpdaterScope scope, const base::Value::List& switches) {
+void Install(UpdaterScope scope, const base::ListValue& switches) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -596,7 +596,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const bool expect_success,
                           const bool wait_for_the_installer,
                           const int expected_exit_code,
-                          const base::Value::List& additional_switches,
+                          const base::ListValue& additional_switches,
                           const base::FilePath& updater_path) {
   ASSERT_FALSE(updater_path.empty());
   base::CommandLine command_line(updater_path);
@@ -769,7 +769,7 @@ void ExpectNoCrashes(UpdaterScope scope) {
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer& test_server,
-                              const base::Value::Dict& request_attributes,
+                              const base::DictValue& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps,
                               const base::Version& updater_version) {
   base::FilePath exe_path;
@@ -1019,7 +1019,7 @@ void UpdateAll(UpdaterScope scope) {
 
 void InstallAppViaService(UpdaterScope scope,
                           const std::string& appid,
-                          const base::Value::Dict& expected_final_values) {
+                          const base::DictValue& expected_final_values) {
   RegistrationRequest registration;
   registration.app_id = appid;
   registration.version = kNullVersion;
@@ -1042,7 +1042,7 @@ void InstallAppViaService(UpdaterScope scope,
       }));
   loop.Run();
 
-  const base::Value::Dict* expected_update_state =
+  const base::DictValue* expected_update_state =
       expected_final_values.FindDict("expected_update_state");
   if (expected_update_state) {
 #define CHECK_STATE_MEMBER_STRING(p)                 \
@@ -1089,7 +1089,7 @@ void InstallAppViaService(UpdaterScope scope,
 }
 
 void GetAppStates(UpdaterScope updater_scope,
-                  const base::Value::Dict& expected_app_states) {
+                  const base::DictValue& expected_app_states) {
   scoped_refptr<UpdateService> update_service =
       CreateUpdateServiceProxy(updater_scope);
 
@@ -1105,7 +1105,7 @@ void GetAppStates(UpdaterScope updater_scope,
                                                         expected_app_id);
               });
           ASSERT_TRUE(it != std::end(states));
-          const base::Value::Dict* expected = expected_state.GetIfDict();
+          const base::DictValue* expected = expected_state.GetIfDict();
           ASSERT_TRUE(expected);
           EXPECT_EQ(it->app_id, *expected->FindString("app_id"));
           EXPECT_EQ(it->version, *expected->FindString("version"));
@@ -1319,7 +1319,7 @@ std::vector<TestUpdaterVersion> GetRealUpdaterVersions() {
 
 void SetupRealUpdater(UpdaterScope scope,
                       const base::FilePath& updater_path,
-                      const base::Value::List& switches) {
+                      const base::ListValue& switches) {
   base::CommandLine command_line(updater_path);
   command_line.AppendSwitch(kInstallSwitch);
   for (const base::Value& cmd_line_switch : switches) {
@@ -1868,7 +1868,7 @@ void InstallEnterpriseCompanionApp() {
 }
 
 void InstallEnterpriseCompanionAppOverrides(
-    const base::Value::Dict& external_overrides) {
+    const base::DictValue& external_overrides) {
   std::optional<base::FilePath> json_path =
       enterprise_companion::GetOverridesFilePath();
   EXPECT_TRUE(json_path);

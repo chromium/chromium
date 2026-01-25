@@ -1076,7 +1076,7 @@ TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
   // `chrome/browser/web_applications/web_app_offline.h`
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
   dict.Set("customized_background_color",
            skia::SkColorToHexString(SK_ColorYELLOW));

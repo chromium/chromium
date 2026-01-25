@@ -37,7 +37,7 @@ void AssertDeviceMetricsCommand(const Command& command,
 
 void AssertBrandsAndVersions(
     std::optional<std::vector<BrandVersion>> expected_list,
-    const base::Value::List* actual_list) {
+    const base::ListValue* actual_list) {
   // Testing expected_list.has_value <=> actual_list != nullptr by parts:
   // Testing that expected_list.has_value => actual_list != nullptr
   ASSERT_TRUE(!expected_list.has_value() || (actual_list != nullptr));
@@ -51,7 +51,7 @@ void AssertBrandsAndVersions(
   ASSERT_EQ(expected_list->size(), actual_list->size());
 
   for (size_t k = 0; k < expected_list->size(); ++k) {
-    const base::Value::Dict* brand_version = (*actual_list)[k].GetIfDict();
+    const base::DictValue* brand_version = (*actual_list)[k].GetIfDict();
     ASSERT_NE(nullptr, brand_version);
     ASSERT_THAT(brand_version->FindString("brand"),
                 Pointee(Eq(expected_list->at(k).brand)));
@@ -67,7 +67,7 @@ void AssertClientHintsCommand(const Command& command,
   ASSERT_THAT(command.params.FindString("userAgent"),
               Pointee(Eq(expected_user_agent)));
 
-  const base::Value::Dict* actual_client_hints =
+  const base::DictValue* actual_client_hints =
       command.params.FindDict("userAgentMetadata");
   ASSERT_NE(nullptr, actual_client_hints);
 
@@ -134,7 +134,7 @@ TEST(MobileEmulationOverrideManager, SendsCommandOnNavigation) {
   mobile_device.device_metrics = device_metrics;
   MobileEmulationOverrideManager manager(&client, std::move(mobile_device),
                                          mock_chrome_version);
-  base::Value::Dict main_frame_params;
+  base::DictValue main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)
                 .code());
@@ -146,7 +146,7 @@ TEST(MobileEmulationOverrideManager, SendsCommandOnNavigation) {
   ASSERT_NO_FATAL_FAILURE(
       AssertDeviceMetricsCommand(client.commands_[2], device_metrics));
 
-  base::Value::Dict sub_frame_params;
+  base::DictValue sub_frame_params;
   sub_frame_params.SetByDottedPath("frame.parentId", "id");
   ASSERT_EQ(
       kOk,

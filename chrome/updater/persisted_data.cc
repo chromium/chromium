@@ -539,7 +539,7 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
 bool PersistedData::HasApp(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::Value::Dict* apps =
+  const base::DictValue* apps =
       pref_service_->GetDict(update_client::kPersistedDataPreference)
           .FindDict("apps");
   return apps && apps->Find(base::ToLowerASCII(id)) != nullptr;
@@ -569,7 +569,7 @@ bool PersistedData::RemoveApp(const std::string& id) {
 
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
-  base::Value::Dict* apps = update->FindDict("apps");
+  base::DictValue* apps = update->FindDict("apps");
 
   return apps ? apps->Remove(base::ToLowerASCII(id)) : false;
 }
@@ -580,9 +580,9 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   // The prefs is a dictionary of dictionaries, where each inner dictionary
   // corresponds to an app:
   // {"updateclientdata":{"apps":{"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}":{...
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
-  const base::Value::Dict* apps = dict.FindDict("apps");
+  const base::DictValue* apps = dict.FindDict("apps");
   if (!apps) {
     return {};
   }
@@ -597,14 +597,14 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   return app_ids;
 }
 
-const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
+const base::DictValue* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_) {
     return nullptr;
   }
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(update_client::kPersistedDataPreference);
-  const base::Value::Dict* apps = dict.FindDict("apps");
+  const base::DictValue* apps = dict.FindDict("apps");
   if (!apps) {
     return nullptr;
   }
@@ -614,7 +614,7 @@ const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
 std::string PersistedData::GetString(const std::string& id,
                                      const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict* app_key = GetAppKey(id);
+  const base::DictValue* app_key = GetAppKey(id);
   if (!app_key) {
     return {};
   }
@@ -625,11 +625,11 @@ std::string PersistedData::GetString(const std::string& id,
   return *value;
 }
 
-base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
-                                                    base::Value::Dict& root) {
+base::DictValue* PersistedData::GetOrCreateAppKey(const std::string& id,
+                                                  base::DictValue& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict* apps = root.EnsureDict("apps");
-  base::Value::Dict* app = apps->EnsureDict(base::ToLowerASCII(id));
+  base::DictValue* apps = root.EnsureDict("apps");
+  base::DictValue* app = apps->EnsureDict(base::ToLowerASCII(id));
   return app;
 }
 
@@ -641,11 +641,11 @@ std::optional<int> PersistedData::GetInteger(const std::string& id,
   }
   ScopedDictPrefUpdate update(pref_service_,
                               update_client::kPersistedDataPreference);
-  base::Value::Dict* apps = update->FindDict("apps");
+  base::DictValue* apps = update->FindDict("apps");
   if (!apps) {
     return std::nullopt;
   }
-  base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
+  base::DictValue* app = apps->FindDict(base::ToLowerASCII(id));
   if (!app) {
     return std::nullopt;
   }
@@ -695,8 +695,7 @@ std::optional<PersistedData::Cookie> PersistedData::GetRemoteLoggingCookie()
     return std::nullopt;
   }
 
-  const base::Value::Dict& cookie =
-      pref_service_->GetDict(kRemoteLoggingCookie);
+  const base::DictValue& cookie = pref_service_->GetDict(kRemoteLoggingCookie);
   const std::string* value = cookie.FindString(kCookieValueKey);
   std::optional<base::Time> expiration =
       base::ValueToTime(cookie.Find(kCookieExpirationKey));
@@ -715,7 +714,7 @@ void PersistedData::SetRemoteLoggingCookie(const Cookie& logging_cookie) {
   if (pref_service_) {
     pref_service_->SetDict(
         kRemoteLoggingCookie,
-        base::Value::Dict()
+        base::DictValue()
             .Set(kCookieValueKey, logging_cookie.value)
             .Set(kCookieExpirationKey,
                  base::TimeToValue(logging_cookie.expiration)));

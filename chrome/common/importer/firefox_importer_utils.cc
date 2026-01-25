@@ -28,7 +28,7 @@
 namespace {
 
 // Retrieves the file system path of the profile name.
-base::FilePath GetProfilePath(const base::Value::Dict& root,
+base::FilePath GetProfilePath(const base::DictValue& root,
                               const std::string& profile_name) {
   std::string path_str;
   const std::string* is_relative =
@@ -68,7 +68,7 @@ std::vector<FirefoxDetail> GetFirefoxDetails(
 }
 
 std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
-    const base::Value::Dict& root,
+    const base::DictValue& root,
     const std::string& firefox_install_id) {
   std::vector<FirefoxDetail> profile_details;
 

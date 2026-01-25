@@ -18,7 +18,7 @@ std::string GetPDFPlaceholderHTML(const GURL& pdf_url) {
           IDR_PDF_PLUGIN_HTML);
   webui::AppendWebUiCssTextDefaults(&template_html);
 
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("fileName", pdf_url.ExtractFileName());
   values.Set("open", l10n_util::GetStringUTF8(IDS_ACCNAME_OPEN));
   values.Set("pdfUrl", pdf_url.spec());

@@ -57,7 +57,7 @@ class AppInventoryManager {
 
  private:
   base::TimeDelta upload_app_inventory_request_timeout_;
-  std::unique_ptr<base::Value::Dict> request_dict_;
+  std::unique_ptr<base::DictValue> request_dict_;
 };
 
 }  // namespace credential_provider

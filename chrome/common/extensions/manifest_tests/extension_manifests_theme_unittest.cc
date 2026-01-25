@@ -24,9 +24,9 @@ class ThemeExtensionsTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
-  scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
+  scoped_refptr<Extension> CreateExtension(const base::DictValue& manifest,
                                            std::u16string* error) {
-    base::Value::Dict manifest_base;
+    base::DictValue manifest_base;
     manifest_base.Set("name", "test");
     manifest_base.Set("version", "1.0");
     manifest_base.Set("manifest_version", 3);
@@ -41,7 +41,7 @@ class ThemeExtensionsTest : public testing::Test {
 };
 
 TEST_F(ThemeExtensionsTest, InvalidThemeImagesValueType) {
-  base::Value::Dict manifest = base::test::ParseJsonDict(R"({
+  base::DictValue manifest = base::test::ParseJsonDict(R"({
         "theme": {
           "images": {
             "invalid_image_type": false
@@ -68,7 +68,7 @@ TEST_F(ThemeExtensionsTest, InvalidThemeImagesPath) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.relative_path);
 
-    base::Value::Dict manifest = base::test::ParseJsonDict(base::StringPrintf(
+    base::DictValue manifest = base::test::ParseJsonDict(base::StringPrintf(
         R"({
           "theme": {
             "images": {
@@ -86,7 +86,7 @@ TEST_F(ThemeExtensionsTest, InvalidThemeImagesPath) {
 }
 
 TEST_F(ThemeExtensionsTest, ThemeImagesPathDoesntExist) {
-  base::Value::Dict manifest = base::test::ParseJsonDict(
+  base::DictValue manifest = base::test::ParseJsonDict(
       R"({
         "theme": {
           "images": {
@@ -108,7 +108,7 @@ TEST_F(ThemeExtensionsTest, ThemeImagesPathDoesntExist) {
 }
 
 TEST_F(ThemeExtensionsTest, ThemeImagesPathVariantDoesntExist) {
-  base::Value::Dict manifest = base::test::ParseJsonDict(
+  base::DictValue manifest = base::test::ParseJsonDict(
       R"({
         "theme": {
           "images": {

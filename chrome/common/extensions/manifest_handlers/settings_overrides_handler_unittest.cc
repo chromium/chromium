@@ -116,7 +116,7 @@ using extensions::SettingsOverrides;
 using extensions::api::manifest_types::ChromeSettingsOverrides;
 namespace manifest_keys = extensions::manifest_keys;
 
-scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
+scoped_refptr<Extension> CreateExtension(const base::DictValue& manifest,
                                          std::u16string* error) {
   return Extension::Create(
       base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
@@ -126,7 +126,7 @@ scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
 
 scoped_refptr<Extension> CreateExtension(std::string_view manifest,
                                          std::u16string* error) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       manifest, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     ADD_FAILURE() << "Manifest isn't a Dictionary";
@@ -136,16 +136,16 @@ scoped_refptr<Extension> CreateExtension(std::string_view manifest,
 }
 
 scoped_refptr<Extension> CreateExtensionWithSearchProvider(
-    base::Value::Dict search_provider,
+    base::DictValue search_provider,
     std::u16string* error) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "name")
                       .Set("manifest_version", 2)
                       .Set("version", "0.1")
                       .Set("description", "desc")
                       .Set("chrome_settings_overrides",
-                           base::Value::Dict().Set("search_provider",
-                                                   std::move(search_provider)));
+                           base::DictValue().Set("search_provider",
+                                                 std::move(search_provider)));
   return CreateExtension(std::move(manifest), error);
 }
 
@@ -308,12 +308,12 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
   };
 
   auto search_provider =
-      base::Value::Dict()
+      base::DictValue()
           .Set("search_url", "http://www.foo.com/s?q={searchTerms}")
           .Set("is_default", true);
   for (const KeyValue& kv : kMandatorySearchProviderKeyValues)
     search_provider.Set(kv.key, kv.value);
-  base::Value::Dict search_provider_with_all_keys_dict =
+  base::DictValue search_provider_with_all_keys_dict =
       std::move(search_provider);
 
   // Missing all keys from |kMandatorySearchProviderValues|.
@@ -321,7 +321,7 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
     SCOPED_TRACE(testing::Message()
                  << "key = " << kv.key << " value = " << kv.value);
     // Build a search provider entry with |kv.key| missing:
-    base::Value::Dict provider_with_missing_key =
+    base::DictValue provider_with_missing_key =
         search_provider_with_all_keys_dict.Clone();
     ASSERT_TRUE(provider_with_missing_key.Remove(kv.key));
 

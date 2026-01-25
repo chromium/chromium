@@ -20,15 +20,14 @@ Status target_utils::GetTopLevelViewsInfo(
     const Timeout* timeout,
     WebViewsInfo& views_info) {
   Status status{kOk};
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   params.Set(
       "filter",
-      base::Value::List{}
-          .Append(
-              base::Value::Dict{}.Set("type", "browser").Set("exclude", true))
-          .Append(base::Value::Dict{}.Set("type", "page").Set("exclude", true))
-          .Append(base::Value::Dict{}.Set("exclude", false)));
+      base::ListValue{}
+          .Append(base::DictValue{}.Set("type", "browser").Set("exclude", true))
+          .Append(base::DictValue{}.Set("type", "page").Set("exclude", true))
+          .Append(base::DictValue{}.Set("exclude", false)));
   status = devtools_websocket_client.SendCommandAndGetResultWithTimeout(
       "Target.getTargets", params, timeout, &result);
   if (status.IsError()) {
@@ -69,8 +68,8 @@ Status target_utils::AttachToPageOrTabTarget(
     const Timeout* timeout,
     std::unique_ptr<DevToolsClient>& target_client,
     bool is_tab) {
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   params.Set("targetId", target_id);
   params.Set("flatten", true);
   Status status = browser_client.SendCommandAndGetResultWithTimeout(

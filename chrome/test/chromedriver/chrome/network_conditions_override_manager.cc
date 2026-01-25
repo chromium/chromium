@@ -33,7 +33,7 @@ Status NetworkConditionsOverrideManager::OnConnected(DevToolsClient* client) {
 Status NetworkConditionsOverrideManager::OnEvent(
     DevToolsClient* client,
     const std::string& method,
-    const base::Value::Dict& params) {
+    const base::DictValue& params) {
   if (method == "Page.frameNavigated") {
     if (!params.FindByDottedPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
@@ -49,7 +49,7 @@ Status NetworkConditionsOverrideManager::ApplyOverrideIfNeeded() {
 
 Status NetworkConditionsOverrideManager::ApplyOverride(
     const NetworkConditions* network_conditions) {
-  base::Value::Dict params, empty_params;
+  base::DictValue params, empty_params;
   params.Set("offline", network_conditions->offline);
   params.Set("latency", network_conditions->latency);
   params.Set("downloadThroughput", network_conditions->download_throughput);
@@ -59,7 +59,7 @@ Status NetworkConditionsOverrideManager::ApplyOverride(
   if (status.IsError())
     return status;
 
-  base::Value::Dict result;
+  base::DictValue result;
   status = client_->SendCommandAndGetResult(
       "Network.canEmulateNetworkConditions", empty_params, &result);
   std::optional<bool> can = result.FindBool("result");

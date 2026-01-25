@@ -234,13 +234,13 @@ bool MatchesCommand(const std::string& method,
                     const std::string& path,
                     const CommandMapping& command,
                     std::string* session_id,
-                    base::Value::Dict* out_params);
+                    base::DictValue* out_params);
 
 bool IsNewSession(const CommandMapping& command);
 
-Status ParseBidiCommand(const std::string& data, base::Value::Dict& parsed);
+Status ParseBidiCommand(const std::string& data, base::DictValue& parsed);
 
-base::Value::Dict CreateBidiErrorResponse(
+base::DictValue CreateBidiErrorResponse(
     Status status,
     std::optional<base::Value> maybe_id = std::nullopt);
 

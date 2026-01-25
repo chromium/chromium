@@ -31,12 +31,12 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "No default properties")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("browser_action",
-                       base::Value::Dict().Set("default_title", "Title")))
+                       base::DictValue().Set("default_title", "Title")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -51,12 +51,12 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "String default icon")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("browser_action",
-                       base::Value::Dict().Set("default_icon", "icon.png")))
+                       base::DictValue().Set("default_icon", "icon.png")))
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -78,16 +78,16 @@ TEST_F(BrowserActionManifestTest,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "Dictionary default icon")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
                   .Set("browser_action",
-                       base::Value::Dict().Set("default_icon",
-                                               base::Value::Dict()
-                                                   .Set("19", "icon19.png")
-                                                   .Set("24", "icon24.png")
-                                                   .Set("38", "icon38.png"))))
+                       base::DictValue().Set("default_icon",
+                                             base::DictValue()
+                                                 .Set("19", "icon19.png")
+                                                 .Set("24", "icon24.png")
+                                                 .Set("38", "icon38.png"))))
           .Build();
 
   ASSERT_TRUE(extension.get());

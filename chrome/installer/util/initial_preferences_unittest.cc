@@ -207,7 +207,7 @@ TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithProviderName) {
   installer::InitialPreferences prefs(prefs_file());
   ASSERT_TRUE(prefs.read_from_file());
 
-  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  const base::ListValue* extensions = prefs.GetInitialExtensionsList();
   ASSERT_NE(extensions, nullptr);
   ASSERT_EQ(extensions->size(), 2u);
 
@@ -240,7 +240,7 @@ TEST_F(InitialPreferencesTest, ParseInitialExtensionsWithoutProviderName) {
   installer::InitialPreferences prefs(prefs_file());
   ASSERT_TRUE(prefs.read_from_file());
 
-  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  const base::ListValue* extensions = prefs.GetInitialExtensionsList();
   ASSERT_NE(extensions, nullptr);
   ASSERT_EQ(extensions->size(), 2u);
 
@@ -268,7 +268,7 @@ TEST_F(InitialPreferencesTest, MissingInitialExtensionsBlock) {
   installer::InitialPreferences prefs(prefs_file());
   ASSERT_TRUE(prefs.read_from_file());
 
-  const base::Value::List* extensions = prefs.GetInitialExtensionsList();
+  const base::ListValue* extensions = prefs.GetInitialExtensionsList();
   EXPECT_EQ(extensions, nullptr);
 }
 
@@ -307,23 +307,23 @@ TEST_F(InitialPreferencesTest, ValidateBookmarksJSON) {
 
   installer::InitialPreferences prefs(prefs_file());
 
-  const base::Value::Dict* bookmarks = prefs.GetBookmarksBlock();
+  const base::DictValue* bookmarks = prefs.GetBookmarksBlock();
   ASSERT_TRUE(bookmarks);
 
   ASSERT_TRUE(bookmarks->FindDict("first_run_bookmarks"));
 
-  const base::Value::List* children =
+  const base::ListValue* children =
       bookmarks->FindListByDottedPath("first_run_bookmarks.children");
   ASSERT_TRUE(children);
   ASSERT_EQ(children->size(), 2u);
 
-  const base::Value::Dict* first_child = (*children)[0].GetIfDict();
+  const base::DictValue* first_child = (*children)[0].GetIfDict();
   ASSERT_TRUE(first_child);
   EXPECT_EQ(*first_child->FindString("name"), "ABC");
   EXPECT_EQ(*first_child->FindString("type"), "url");
   EXPECT_EQ(*first_child->FindString("url"), "https://google.com");
 
-  const base::Value::Dict* second_child = (*children)[1].GetIfDict();
+  const base::DictValue* second_child = (*children)[1].GetIfDict();
   ASSERT_TRUE(second_child);
   EXPECT_EQ(*second_child->FindString("name"), "Folder1");
   EXPECT_EQ(*second_child->FindString("type"), "folder");

@@ -45,14 +45,14 @@ struct FrameInfo {
 };
 
 struct InputCancelListEntry {
-  InputCancelListEntry(base::Value::Dict* input_state,
+  InputCancelListEntry(base::DictValue* input_state,
                        const MouseEvent* mouse_event,
                        const TouchEvent* touch_event,
                        const KeyEvent* key_event);
   InputCancelListEntry(InputCancelListEntry&& other);
   ~InputCancelListEntry();
 
-  raw_ptr<base::Value::Dict> input_state;
+  raw_ptr<base::DictValue> input_state;
   std::unique_ptr<MouseEvent> mouse_event;
   std::unique_ptr<TouchEvent> touch_event;
   std::unique_ptr<KeyEvent> key_event;
@@ -97,7 +97,7 @@ struct Session {
   std::string GetCurrentFrameId() const;
   std::vector<WebDriverLog*> GetAllLogs() const;
 
-  Status OnBidiResponse(base::Value::Dict payload);
+  Status OnBidiResponse(base::DictValue payload);
   void AddBidiConnection(int connection_id,
                          SendTextFunc send_response,
                          CloseFunc close_connection);
@@ -118,10 +118,10 @@ struct Session {
   int sticky_modifiers;
   // List of input sources for each active input. Everytime a new input source
   // is added, there must be a corresponding entry made in `input_state_table`.
-  base::Value::List active_input_sources;
+  base::ListValue active_input_sources;
   // Map between input id and input source state for the corresponding input
   // source. One entry for each item in `active_input_sources`.
-  base::Value::Dict input_state_table;
+  base::DictValue input_state_table;
   // List of actions for Release Actions command.
   std::vector<InputCancelListEntry> input_cancel_list;
   // List of |FrameInfo|s for each frame to the current target frame from the
@@ -145,7 +145,7 @@ struct Session {
   std::vector<std::unique_ptr<WebDriverLog>> devtools_logs;
   std::unique_ptr<WebDriverLog> driver_log;
   ScopedTempDirWithRetry temp_dir;
-  std::unique_ptr<base::Value::Dict> capabilities;
+  std::unique_ptr<base::DictValue> capabilities;
   // |command_listeners| should be declared after |chrome|. When the |Session|
   // is destroyed, |command_listeners| should be freed first, since some
   // |CommandListener|s might be |CommandListenerProxy|s that forward to

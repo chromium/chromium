@@ -33,26 +33,26 @@ class StubDevToolsClient : public DevToolsClient {
   bool IsDialogOpen() const override;
   bool AutoAcceptsBeforeunload() const override;
   void SetAutoAcceptBeforeunload(bool value) override;
-  Status PostBidiCommand(base::Value::Dict command) override;
+  Status PostBidiCommand(base::DictValue command) override;
   Status SendCommand(const std::string& method,
-                     const base::Value::Dict& params) override;
+                     const base::DictValue& params) override;
   Status SendCommandFromWebSocket(const std::string& method,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   const int client_command_id) override;
   Status SendCommandWithTimeout(const std::string& method,
-                                const base::Value::Dict& params,
+                                const base::DictValue& params,
                                 const Timeout* timeout) override;
   Status SendAsyncCommand(const std::string& method,
-                          const base::Value::Dict& params) override;
+                          const base::DictValue& params) override;
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override;
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override;
   Status SendCommandAndGetResultWithTimeout(const std::string& method,
-                                            const base::Value::Dict& params,
+                                            const base::DictValue& params,
                                             const Timeout* timeout,
-                                            base::Value::Dict* result) override;
+                                            base::DictValue* result) override;
   Status SendCommandAndIgnoreResponse(const std::string& method,
-                                      const base::Value::Dict& params) override;
+                                      const base::DictValue& params) override;
   void AddListener(DevToolsEventListener* listener) override;
   void RemoveListener(DevToolsEventListener* listener) override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,

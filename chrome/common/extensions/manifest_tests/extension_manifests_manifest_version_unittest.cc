@@ -19,32 +19,32 @@ namespace {
 namespace errors = manifest_errors;
 
 TEST_F(ChromeManifestTest, ManifestVersionError) {
-  base::Value::Dict mv_missing;
+  base::DictValue mv_missing;
   mv_missing.Set("name", "Miles");
   mv_missing.Set("version", "0.55");
 
-  base::Value::Dict mv0 = mv_missing.Clone();
+  base::DictValue mv0 = mv_missing.Clone();
   mv0.Set("manifest_version", 0);
 
-  base::Value::Dict mv1 = mv_missing.Clone();
+  base::DictValue mv1 = mv_missing.Clone();
   mv1.Set("manifest_version", 1);
 
-  base::Value::Dict mv2 = mv_missing.Clone();
+  base::DictValue mv2 = mv_missing.Clone();
   mv2.Set("manifest_version", 2);
 
-  base::Value::Dict mv3 = mv_missing.Clone();
+  base::DictValue mv3 = mv_missing.Clone();
   mv3.Set("manifest_version", 3);
 
-  base::Value::Dict mv4 = mv_missing.Clone();
+  base::DictValue mv4 = mv_missing.Clone();
   mv4.Set("manifest_version", 4);
 
-  base::Value::Dict mv_string = mv_missing.Clone();
+  base::DictValue mv_string = mv_missing.Clone();
   mv_string.Set("manifest_version", "2");
 
   struct {
     const char* test_name;
     bool require_modern_manifest_version;
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     std::string expected_error;
   } test_data[] = {
       {"require_modern_with_default", true, mv_missing.Clone(),

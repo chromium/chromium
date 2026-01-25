@@ -31,14 +31,14 @@ class ConsoleLogger : public DevToolsEventListener {
   // Translates an event into a log entry.
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
  private:
   raw_ptr<Log> log_;  // The log where to create entries.
 
-  Status OnLogEntryAdded(const base::Value::Dict& params);
-  Status OnRuntimeConsoleApiCalled(const base::Value::Dict& params);
-  Status OnRuntimeExceptionThrown(const base::Value::Dict& params);
+  Status OnLogEntryAdded(const base::DictValue& params);
+  Status OnRuntimeConsoleApiCalled(const base::DictValue& params);
+  Status OnRuntimeExceptionThrown(const base::DictValue& params);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CONSOLE_LOGGER_H_

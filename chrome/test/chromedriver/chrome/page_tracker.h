@@ -31,7 +31,7 @@ class PageTracker : public DevToolsEventListener {
   // Overridden from DevToolsEventListener:
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
   Status OnConnected(DevToolsClient* client) override;
   Status IsPendingActivePage(const Timeout* timeout, bool* is_pending);
   Status OnPageCreated(const std::string& session_id,

@@ -69,7 +69,7 @@ class StorageSchemaManifestHandlerTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   ScopedCurrentChannel scoped_channel_;
-  base::Value::Dict manifest_;
+  base::DictValue manifest_;
 };
 
 TEST_F(StorageSchemaManifestHandlerTest, Parse) {
@@ -88,7 +88,7 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 }
 
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
-  base::Value::List permissions;
+  base::ListValue permissions;
   permissions.Append("storage");
   manifest_.Set("permissions", std::move(permissions));
 

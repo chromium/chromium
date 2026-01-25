@@ -43,11 +43,11 @@ class WebDriverLog : public Log {
 
   ~WebDriverLog() override;
 
-  // Returns entries accumulated so far, as a `base::Value::List` ready for
+  // Returns entries accumulated so far, as a `base::ListValue` ready for
   // serialization into the wire protocol response to the "/log" command. The
   // caller assumes ownership of the list, and the WebDriverLog creates and owns
   // a new empty list for further accumulation.
-  base::Value::List GetAndClearEntries();
+  base::ListValue GetAndClearEntries();
 
   // Finds the first error message in the log and returns it. If none exist,
   // returns an empty string. Does not clear entries.
@@ -76,7 +76,7 @@ class WebDriverLog : public Log {
   // A queue of batches of entries. Each batch can have no more than
   // |kMaxReturnedEntries| values in it. This is to avoid HTTP response buffer
   // overflow (crbug.com/681892).
-  base::circular_deque<base::Value::List> batches_of_entries_;
+  base::circular_deque<base::ListValue> batches_of_entries_;
 };
 
 // Initializes logging system for ChromeDriver. Returns true on success.

@@ -45,9 +45,9 @@ Status Device::SetUp(const std::string& package,
                      bool keep_app_data_dir,
                      int* devtools_port,
                      const std::string& prefs_file,
-                     const base::Value::Dict* custom_prefs,
+                     const base::DictValue* custom_prefs,
                      const std::string& local_state_file,
-                     const base::Value::Dict* custom_local_state) {
+                     const base::DictValue* custom_local_state) {
   if (!active_package_.empty())
     return Status(kUnknownError,
         active_package_ + " was launched and has not been quit");

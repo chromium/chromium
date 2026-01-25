@@ -94,11 +94,11 @@ class ExperimentsFetchTask : public extension::Task {
 // Builds the request dictionary to fetch experiments from the backend. If
 // |dm_token| is empty, it isn't added into request. If user id isn't found for
 // the given |sid|, returns an empty dictionary.
-std::unique_ptr<base::Value::Dict> GetExperimentsRequestDict(
+std::unique_ptr<base::DictValue> GetExperimentsRequestDict(
     const std::wstring& sid,
     const std::wstring& device_resource_id,
     const std::wstring& dm_token) {
-  std::unique_ptr<base::Value::Dict> dict(new base::Value::Dict);
+  std::unique_ptr<base::DictValue> dict(new base::DictValue);
 
   std::wstring user_id;
 
@@ -117,7 +117,7 @@ std::unique_ptr<base::Value::Dict> GetExperimentsRequestDict(
 
   dict->Set(kGcpwVersionKey, base::WideToUTF8(TEXT(CHROME_VERSION_STRING)));
 
-  base::Value::List keys;
+  base::ListValue keys;
   for (auto& experiment : ExperimentsManager::Get()->GetExperimentsList())
     keys.Append(experiment);
 
@@ -175,14 +175,14 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperiments(
 HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
     const std::wstring& sid,
     const std::string& access_token,
-    std::unique_ptr<base::Value::Dict> request_dict) {
+    std::unique_ptr<base::DictValue> request_dict) {
   if (!request_dict) {
     LOGFN(ERROR) << "Request dictionary is null";
     return E_FAIL;
   }
 
   // Make the fetch experiments HTTP request.
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GetExperimentsUrl(), access_token, {}, *request_dict,
       kDefaultFetchExperimentsRequestTimeout, kMaxNumHttpRetries,

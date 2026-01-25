@@ -175,7 +175,7 @@ TEST(Session, OnBidiResponseChan) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
@@ -194,7 +194,7 @@ TEST(Session, OnBidiResponseNoChan) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("/512") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
@@ -212,7 +212,7 @@ TEST(Session, OnBidiResponseNullChan) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
   EXPECT_EQ("", received);
@@ -224,7 +224,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel1) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", "x/512/unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
@@ -237,7 +237,7 @@ TEST(Session, OnBidiResponseUnexpectedChannel2) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", "unexpected");
   payload.Set("data", "ok");
   EXPECT_TRUE(session.OnBidiResponse(std::move(payload)).IsError());
@@ -250,7 +250,7 @@ TEST(Session, OnBidiResponseUnknownConnection) {
   std::string received;
   session.AddBidiConnection(136, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
@@ -269,7 +269,7 @@ TEST(Session, OnBidiResponseRemovedConnection) {
   session.AddBidiConnection(2, base::BindRepeating(&SaveTo, &received2),
                             base::BindRepeating([] {}));
   session.RemoveBidiConnection(1);
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("/1") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
@@ -286,7 +286,7 @@ TEST(Session, OnBidiResponseAfterCloseAllConnections) {
   session.AddBidiConnection(5, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
   session.CloseAllConnections();
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("/5") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   // Response must be accepted as it is addressed to a closed connection.
@@ -307,7 +307,7 @@ TEST(Session, OnBidiResponseCorrectConnection) {
                             base::BindRepeating([] {}));
   session.AddBidiConnection(3, base::BindRepeating(&SaveTo, &received3),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("abc/2") + Session::kChannelSuffix);
   payload.Set("data", "ok");
   EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
@@ -328,7 +328,7 @@ TEST(Session, OnBidiResponseFormat) {
   std::string received;
   session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
                             base::BindRepeating([] {}));
-  base::Value::Dict payload;
+  base::DictValue payload;
   payload.Set("goog:channel", std::string("abc/512") + Session::kChannelSuffix);
   payload.Set("string_field", "some_String");
   payload.Set("integer_field", 1);

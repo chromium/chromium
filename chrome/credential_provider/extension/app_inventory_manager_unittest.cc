@@ -149,7 +149,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
       AppInventoryManager::Get()->GetGemServiceUploadAppInventoryUrl();
   ASSERT_TRUE(app_inventory_url.is_valid());
 
-  auto expected_response_value = base::Value::Dict().Set(
+  auto expected_response_value = base::DictValue().Set(
       "deviceResourceId", base::WideToUTF8(device_resource_id));
   std::string expected_response =
       base::WriteJson(expected_response_value).value_or("");
@@ -180,16 +180,16 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     std::optional<base::Value> body_value = base::JSONReader::Read(
         request_data.body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-    base::Value::Dict request;
+    base::DictValue request;
 
     request.Set("device_resource_id", "valid-device-resource-id");
     request.Set("dm_token", "valid-dm-token");
     request.Set("obfuscated_gaia_id", "test-gaia-id");
     request.Set("user_sid", "S-1-4-2");
-    base::Value::List app_info_value_list;
+    base::ListValue app_info_value_list;
 
     if (has_app_data) {
-      base::Value::Dict request_dict_1;
+      base::DictValue request_dict_1;
       request_dict_1.Set(kAppDisplayName, base::WideToUTF8(kAppDisplayName1));
       request_dict_1.Set(kAppDisplayVersion,
                          base::WideToUTF8(kAppDisplayVersion1));
@@ -198,7 +198,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
       request_dict_1.Set(kAppType, 1);
       app_info_value_list.Append(std::move(request_dict_1));
 
-      base::Value::Dict request_dict_2;
+      base::DictValue request_dict_2;
       request_dict_2.Set(kAppDisplayName, base::WideToUTF8(kAppDisplayName2));
       request_dict_2.Set(kAppDisplayVersion,
                          base::WideToUTF8(kAppDisplayVersion2));

@@ -42,12 +42,12 @@ class EsimPolicyInteractiveUiTest : public EsimInteractiveUiTestBase {
                              bool set_existing_esim_as_managed) {
     return Steps(Do([allow_only_managed_cellular, set_existing_esim_as_managed,
                      this]() {
-      base::Value::Dict global_config;
+      base::DictValue global_config;
       global_config.Set(
           ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
           allow_only_managed_cellular);
 
-      auto onc_configs = base::Value::List();
+      auto onc_configs = base::ListValue();
       if (set_existing_esim_as_managed) {
         onc_configs.Append(GenerateCellularPolicy(*esim_info_));
       }

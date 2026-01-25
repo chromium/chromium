@@ -25,7 +25,7 @@ plugins::PluginPlaceholder* CreateNonLoadablePlaceholderHelper(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_BLOCKED_PLUGIN_HTML);
 
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("name", "");
   values.Set("message", message);
 
@@ -55,4 +55,3 @@ NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
       render_frame, params,
       l10n_util::GetStringFUTF8(IDS_PLUGIN_DEPRECATED, u"Adobe Flash Player"));
 }
-

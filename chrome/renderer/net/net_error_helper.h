@@ -124,7 +124,7 @@ class NetErrorHelper
   mojo::AssociatedRemote<chrome::mojom::NetErrorPageSupport>
       remote_net_error_page_support_;
 
-  base::Value::Dict error_page_params_;
+  base::DictValue error_page_params_;
 
   // Weak factories for vending weak pointers to PageControllers. Weak
   // pointers are invalidated on each commit, to prevent getting messages from

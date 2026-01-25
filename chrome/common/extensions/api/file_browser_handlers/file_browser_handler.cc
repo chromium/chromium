@@ -148,7 +148,7 @@ namespace {
 
 std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     const std::string& extension_id,
-    const base::Value::Dict* file_browser_handler,
+    const base::DictValue* file_browser_handler,
     std::u16string* error) {
   std::unique_ptr<FileBrowserHandler> result(new FileBrowserHandler());
   result->set_extension_id(extension_id);
@@ -179,7 +179,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
       *error = errors::kInvalidFileAccessList;
       return nullptr;
     }
-    const base::Value::List& access_list_view = access_list_value->GetList();
+    const base::ListValue& access_list_view = access_list_value->GetList();
     for (size_t i = 0; i < access_list_view.size(); ++i) {
       const std::string* access = access_list_view[i].GetIfString();
       if (!access || result->AddFileAccessPermission(*access)) {
@@ -197,7 +197,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   // Initialize file filters (mandatory, unless "create" access is specified,
   // in which case is ignored). The list can be empty.
   if (!result->HasCreateAccessPermission()) {
-    const base::Value::List* file_filters_list =
+    const base::ListValue* file_filters_list =
         file_browser_handler->FindList(keys::kFileFilters);
     if (!file_filters_list) {
       *error = errors::kInvalidFileFiltersList;
@@ -255,11 +255,11 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 
 // Loads FileBrowserHandlers from |extension_actions| into a list in |result|.
 bool LoadFileBrowserHandlers(const std::string& extension_id,
-                             const base::Value::List& extension_actions,
+                             const base::ListValue& extension_actions,
                              FileBrowserHandler::List* result,
                              std::u16string* error) {
   for (const auto& entry : extension_actions) {
-    const base::Value::Dict* dict = entry.GetIfDict();
+    const base::DictValue* dict = entry.GetIfDict();
     if (!dict) {
       *error = errors::kInvalidFileBrowserHandler16;
       return false;

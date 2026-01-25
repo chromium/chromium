@@ -123,7 +123,7 @@ class ATL_NO_VTABLE CTestCredentialBase : public T, public ITestCredential {
       CGaiaCredentialBase::UIProcessInfo* uiprocinfo) override;
 
   // Overrides to directly save to a fake scoped user profile.
-  HRESULT ForkPerformPostSigninActionsStub(const base::Value::Dict& dict,
+  HRESULT ForkPerformPostSigninActionsStub(const base::DictValue& dict,
                                            BSTR* status_text) override;
 
   UiExitCodes default_exit_code_ = kUiecSuccess;
@@ -354,7 +354,7 @@ HRESULT CTestCredentialBase<T>::ForkGaiaLogonStub(
 
 template <class T>
 HRESULT CTestCredentialBase<T>::ForkPerformPostSigninActionsStub(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     BSTR* status_text) {
   return CGaiaCredentialBase::PerformPostSigninActions(
       dict, /* com_initialized */ true);

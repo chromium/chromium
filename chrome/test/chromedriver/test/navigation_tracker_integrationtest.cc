@@ -61,7 +61,7 @@ TEST_F(NavigationTrackerTest, SimpleNavigation) {
       "function(){"
       "  return document.querySelector('span').textContent;"
       "}",
-      base::Value::List(), timeout.GetRemainingTime(), options, &result)));
+      base::ListValue(), timeout.GetRemainingTime(), options, &result)));
   ASSERT_TRUE(result->is_string());
   const std::string text = result->GetString();
   EXPECT_EQ("DONE!", text);

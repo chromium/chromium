@@ -157,12 +157,12 @@ bool NSSDecryptor::ReadAndParseLogins(
     return false;
   }
 
-  const base::Value::Dict* parsed_json_dict = parsed_json->GetIfDict();
+  const base::DictValue* parsed_json_dict = parsed_json->GetIfDict();
   if (!parsed_json_dict) {
     return false;
   }
 
-  const base::Value::List* disabled_hosts =
+  const base::ListValue* disabled_hosts =
       parsed_json_dict->FindList("disabledHosts");
   if (disabled_hosts) {
     for (const auto& value : *disabled_hosts) {
@@ -172,7 +172,7 @@ bool NSSDecryptor::ReadAndParseLogins(
     }
   }
 
-  const base::Value::List* password_list = parsed_json_dict->FindList("logins");
+  const base::ListValue* password_list = parsed_json_dict->FindList("logins");
   if (password_list) {
     for (const auto& value : *password_list) {
       auto* dict = value.GetIfDict();

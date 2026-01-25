@@ -98,14 +98,14 @@ class BookmarksExtensionAPITest : public BookmarksBrowserTest {
         ManagedBookmarkServiceFactory::GetForProfile(profile);
     bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-    base::Value::List list;
-    base::Value::Dict node;
+    base::ListValue list;
+    base::DictValue node;
     node.Set("name", "Managed Bookmark");
     node.Set("url", "http://www.chromium.org");
     list.Append(node.Clone());
     node.clear();
     node.Set("name", "Managed Folder");
-    node.Set("children", base::Value::List());
+    node.Set("children", base::ListValue());
     list.Append(std::move(node));
     profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks,
                              base::Value(std::move(list)));

@@ -674,7 +674,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
     uint32_t context_id,
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   DCHECK(print_backend_);
 
@@ -689,7 +689,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   PrinterBasicInfo basic_info;
   if (print_backend_->GetPrinterBasicInfo(*printer_name, &basic_info) ==
       mojom::ResultCode::kSuccess) {
-    base::Value::Dict advanced_settings;
+    base::DictValue advanced_settings;
     for (const auto& pair : basic_info.options)
       advanced_settings.Set(pair.first, pair.second);
 

@@ -35,7 +35,7 @@ class NetworkConditionsOverrideManager : public DevToolsEventListener {
   Status OnConnected(DevToolsClient* client) override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
  private:
   Status ApplyOverrideIfNeeded();

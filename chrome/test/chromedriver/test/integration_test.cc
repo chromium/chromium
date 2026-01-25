@@ -90,7 +90,7 @@ void IntegrationTest::SetUp() {
 
 void IntegrationTest::TearDown() {
   if (browser_client_) {
-    browser_client_->SendCommand("Browser.close", base::Value::Dict());
+    browser_client_->SendCommand("Browser.close", base::DictValue());
   }
 
   browser_client_.reset();
@@ -122,9 +122,9 @@ Status IntegrationTest::SetUpConnection() {
     return status;
   }
   Timeout timeout{base::Seconds(10)};
-  base::Value::Dict result;
+  base::DictValue result;
   status = browser_client_->SendCommandAndGetResultWithTimeout(
-      "Browser.getVersion", base::Value::Dict(), &timeout, &result);
+      "Browser.getVersion", base::DictValue(), &timeout, &result);
   if (status.IsError()) {
     return status;
   }

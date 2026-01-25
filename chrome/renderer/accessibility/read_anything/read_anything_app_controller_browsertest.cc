@@ -995,9 +995,9 @@ TEST_F(ReadAnythingAppControllerTest,
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
   std::string language_value = "it";
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   voices.Set(language_value, voice_value);
-  base::Value::List languages_enabled_in_pref = base::Value::List();
+  base::ListValue languages_enabled_in_pref = base::ListValue();
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
@@ -1207,9 +1207,9 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
   std::string language_value = "it";
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   voices.Set(language_value, voice_value);
-  base::Value::List languages_enabled_in_pref = base::Value::List();
+  base::ListValue languages_enabled_in_pref = base::ListValue();
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
@@ -2476,9 +2476,9 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
   std::string language_value = "it-IT";
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   voices.Set(language_value, voice_value);
-  base::Value::List languages_enabled_in_pref = base::Value::List();
+  base::ListValue languages_enabled_in_pref = base::ListValue();
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;

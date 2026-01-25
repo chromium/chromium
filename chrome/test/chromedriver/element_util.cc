@@ -55,7 +55,7 @@ const char kFindSubFrameScript[] =
 bool ParseFromValue(base::Value* value, WebPoint* point) {
   if (!value->is_dict())
     return false;
-  base::Value::Dict& dict = value->GetDict();
+  base::DictValue& dict = value->GetDict();
   auto x = dict.FindDouble("x");
   auto y = dict.FindDouble("y");
   if (!x.has_value() || !y.has_value())
@@ -68,7 +68,7 @@ bool ParseFromValue(base::Value* value, WebPoint* point) {
 bool ParseFromValue(base::Value* value, WebSize* size) {
   if (!value->is_dict())
     return false;
-  base::Value::Dict& dict = value->GetDict();
+  base::DictValue& dict = value->GetDict();
   auto width = dict.FindDouble("width");
   auto height = dict.FindDouble("height");
   if (!width.has_value() || !height.has_value())
@@ -81,7 +81,7 @@ bool ParseFromValue(base::Value* value, WebSize* size) {
 bool ParseFromValue(base::Value* value, WebRect* rect) {
   if (!value->is_dict())
     return false;
-  base::Value::Dict& dict = value->GetDict();
+  base::DictValue& dict = value->GetDict();
   auto x = dict.FindDouble("left");
   auto y = dict.FindDouble("top");
   auto width = dict.FindDouble("width");
@@ -96,8 +96,8 @@ bool ParseFromValue(base::Value* value, WebRect* rect) {
   return true;
 }
 
-base::Value::Dict CreateValueFrom(const WebRect& rect) {
-  base::Value::Dict dict;
+base::DictValue CreateValueFrom(const WebRect& rect) {
+  base::DictValue dict;
   dict.Set("left", static_cast<int>(rect.X()));
   dict.Set("top", static_cast<int>(rect.Y()));
   dict.Set("width", static_cast<int>(rect.Width()));
@@ -108,7 +108,7 @@ base::Value::Dict CreateValueFrom(const WebRect& rect) {
 Status CallAtomsJs(const std::string& frame,
                    WebView* web_view,
                    const char* const* atom_function,
-                   const base::Value::List& args,
+                   const base::ListValue& args,
                    std::unique_ptr<base::Value>* result) {
   return web_view->CallFunction(
       frame, webdriver::atoms::asString(atom_function), args, result);
@@ -119,7 +119,7 @@ Status VerifyElementClickable(const Session* session,
                               WebView* web_view,
                               const std::string& element_id,
                               const WebPoint& location) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(CreateValueFrom(location));
   std::unique_ptr<base::Value> result;
@@ -157,7 +157,7 @@ Status ScrollElementRegionIntoViewHelper(
     const std::string& clickable_element_id,
     WebPoint* location) {
   WebPoint tmp_location = *location;
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(center);
   args.Append(CreateValueFrom(region));
@@ -215,7 +215,7 @@ Status GetElementEffectiveStyle(const Session* session,
                                 const std::string& element_id,
                                 const std::string& property,
                                 std::string* value) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(property);
   std::unique_ptr<base::Value> result;
@@ -278,7 +278,7 @@ Status GetElementLocationInViewCenterHelper(Session* session,
                                             const std::string& element_id,
                                             bool center,
                                             WebPoint* location) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(center);
   std::unique_ptr<base::Value> result;
@@ -305,7 +305,7 @@ std::string GetElementKey(bool w3c_compliant) {
 
 base::Value CreateElementCommon(const std::string& key,
                                 const std::string& value) {
-  base::Value::Dict element;
+  base::DictValue element;
   element.SetByDottedPath(key, value);
   return base::Value(std::move(element));
 }
@@ -318,8 +318,8 @@ base::Value CreateShadowRoot(const std::string& shadow_root_id) {
   return CreateElementCommon(kShadowRootKey, shadow_root_id);
 }
 
-base::Value::Dict CreateValueFrom(const WebPoint& point) {
-  base::Value::Dict dict;
+base::DictValue CreateValueFrom(const WebPoint& point) {
+  base::DictValue dict;
   dict.Set("x", static_cast<int>(point.x));
   dict.Set("y", static_cast<int>(point.y));
   return dict;
@@ -330,7 +330,7 @@ Status FindElementCommon(int interval_ms,
                          const std::string* root_element_id,
                          Session* session,
                          WebView* web_view,
-                         const base::Value::Dict& params,
+                         const base::DictValue& params,
                          std::unique_ptr<base::Value>* value,
                          bool is_shadow_root) {
   const std::string* strategy = params.FindString("using");
@@ -361,9 +361,9 @@ Status FindElementCommon(int interval_ms,
     script = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENT);
   else
     script = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENTS);
-  base::Value::Dict locator;
+  base::DictValue locator;
   locator.Set(*strategy, *target);
-  base::Value::List arguments;
+  base::ListValue arguments;
   arguments.Append(std::move(locator));
   if (root_element_id) {
     if (is_shadow_root)
@@ -428,7 +428,7 @@ Status FindElement(int interval_ms,
                    const std::string* root_element_id,
                    Session* session,
                    WebView* web_view,
-                   const base::Value::Dict& params,
+                   const base::DictValue& params,
                    std::unique_ptr<base::Value>* value) {
   return FindElementCommon(interval_ms, only_one, root_element_id, session,
                            web_view, params, value, false);
@@ -439,7 +439,7 @@ Status FindShadowElement(int interval_ms,
                          const std::string* shadow_root_id,
                          Session* session,
                          WebView* web_view,
-                         const base::Value::Dict& params,
+                         const base::DictValue& params,
                          std::unique_ptr<base::Value>* value) {
   return FindElementCommon(interval_ms, only_one, shadow_root_id, session,
                            web_view, params, value, true);
@@ -448,7 +448,7 @@ Status FindShadowElement(int interval_ms,
 Status GetActiveElement(Session* session,
                         WebView* web_view,
                         std::unique_ptr<base::Value>* value) {
-  base::Value::List args;
+  base::ListValue args;
   Status status = web_view->CallFunction(
       session->GetCurrentFrameId(),
       "function() { return document.activeElement || document.body }", args,
@@ -516,7 +516,7 @@ Status GetElementAttribute(Session* session,
                            const std::string& element_id,
                            const std::string& attribute_name,
                            std::unique_ptr<base::Value>* value) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(attribute_name);
   return CallAtomsJs(
@@ -600,7 +600,7 @@ Status GetElementClickableLocation(
         "  }"
         "  throw new Error('no img is found for the area');"
         "}";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(CreateElement(element_id, session->w3c_compliant));
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(
@@ -657,7 +657,7 @@ Status GetElementRegion(Session* session,
                         WebView* web_view,
                         const std::string& element_id,
                         WebRect* rect) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status = web_view->CallFunction(
@@ -675,7 +675,7 @@ Status GetElementTagName(Session* session,
                          WebView* web_view,
                          const std::string& element_id,
                          std::string* name) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status = web_view->CallFunction(
@@ -694,7 +694,7 @@ Status GetElementSize(Session* session,
                       WebView* web_view,
                       const std::string& element_id,
                       WebSize* size) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status = CallAtomsJs(session->GetCurrentFrameId(), web_view,
@@ -711,7 +711,7 @@ Status IsElementDisplayed(Session* session,
                           const std::string& element_id,
                           bool ignore_opacity,
                           bool* is_displayed) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(ignore_opacity);
   std::unique_ptr<base::Value> result;
@@ -729,7 +729,7 @@ Status IsElementEnabled(Session* session,
                         WebView* web_view,
                         const std::string& element_id,
                         bool* is_enabled) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status = CallAtomsJs(session->GetCurrentFrameId(), web_view,
@@ -746,7 +746,7 @@ Status IsOptionElementSelected(Session* session,
                                WebView* web_view,
                                const std::string& element_id,
                                bool* is_selected) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status = CallAtomsJs(session->GetCurrentFrameId(), web_view,
@@ -763,7 +763,7 @@ Status IsOptionElementTogglable(Session* session,
                                 WebView* web_view,
                                 const std::string& element_id,
                                 bool* is_togglable) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   std::unique_ptr<base::Value> result;
   Status status =
@@ -783,7 +783,7 @@ Status SetOptionElementSelected(Session* session,
                                 bool selected) {
   // TODO(crbug.com/40299291): need to fix throwing error if an alert is
   // triggered.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(CreateElement(element_id, session->w3c_compliant));
   args.Append(selected);
   std::unique_ptr<base::Value> result;
@@ -859,7 +859,7 @@ Status ScrollElementRegionIntoView(
   auto end = std::ranges::find(frames, web_view->GetId(), &FrameInfo::frame_id);
   for (auto it = frames.begin(); it != end; ++it) {
     const FrameInfo& frame = *it;
-    base::Value::List args;
+    base::ListValue args;
     args.Append(frame.chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(frame.parent_frame_id, kFindSubFrameScript,
@@ -906,7 +906,7 @@ Status GetElementLocationInViewCenter(Session* session,
     return status;
 
   for (const FrameInfo& frame : base::Reversed(session->frames)) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(frame.chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(frame.parent_frame_id, kFindSubFrameScript,
@@ -954,7 +954,7 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("backendNodeId", backend_node_id);
   body.Set("fetchRelatives", false);
 
@@ -969,7 +969,7 @@ Status GetAXNodeByElementId(Session* session,
   if (!nodes)
     return Status(kUnknownError, "No `nodes` found in CDP response");
 
-  base::Value::List& nodes_list = nodes->GetList();
+  base::ListValue& nodes_list = nodes->GetList();
   if (nodes_list.size() < 1)
     return Status(kUnknownError, "Empty nodes list in CDP response");
 

@@ -367,7 +367,7 @@ bool OutputInJSONFormat() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
 }
 
-std::string DictToJSONString(const base::Value::Dict& dict) {
+std::string DictToJSONString(const base::DictValue& dict) {
   return base::WriteJson(dict).value_or("");
 }
 
@@ -529,10 +529,9 @@ void UpdaterUtilApp::ListApps() {
       [](base::OnceCallback<void(int)> cb,
          const std::vector<updater::UpdateService::AppState>& states) {
         if (OutputInJSONFormat()) {
-          base::Value::Dict apps;
+          base::DictValue apps;
           for (updater::UpdateService::AppState app : states) {
-            apps.Set(app.app_id,
-                     base::Value::Dict().Set("version", app.version));
+            apps.Set(app.app_id, base::DictValue().Set("version", app.version));
           }
           std::cout << DictToJSONString(std::move(apps)) << std::endl;
         } else {
@@ -605,9 +604,9 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
              base::OnceCallback<void(int)> cb, UpdateService::Result result) {
             if (result == UpdateService::Result::kSuccess) {
               if (OutputInJSONFormat()) {
-                base::Value::Dict app;
+                base::DictValue app;
                 app.Set(app_state->app_id(),
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("CurrentVersion", app_state->current_version())
                             .Set("NextVersion", app_state->next_version()));
                 std::cout << DictToJSONString(std::move(app)) << std::endl;

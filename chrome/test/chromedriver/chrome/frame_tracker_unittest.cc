@@ -21,7 +21,7 @@ TEST(FrameTracker, GetContextIdForFrame) {
   const char context[] =
       "{\"uniqueId\":\"100\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}"
       "}";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
@@ -42,7 +42,7 @@ TEST(FrameTracker, GetContextIdForFrameAfterContextsClear) {
   const char context[] =
       "{\"uniqueId\":\"100\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}"
       "}";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
@@ -61,7 +61,7 @@ TEST(FrameTracker, GetContextForDestroyedFrame) {
   StubDevToolsClient client;
   FrameTracker tracker(&client);
   std::string context_id;
-  base::Value::Dict params;
+  base::DictValue params;
 
   const char context_bad[] =
       "{\"uniqueId\":\"543\",\"auxData\":{\"frameId\":\"bad\",\"isDefault\":"
@@ -102,7 +102,7 @@ TEST(FrameTracker, AuxData) {
   ASSERT_EQ("", context_id);
 
   const char context[] = "{\"uniqueId\":\"100\",\"auxData\":{}}";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("context", base::test::ParseJson(context));
   params.SetByDottedPath("context.auxData.frameId", "f");
   params.SetByDottedPath("context.auxData.isDefault", true);
@@ -122,7 +122,7 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
 
   const char context[] =
       "{\"uniqueId\":\"1\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
@@ -145,7 +145,7 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
 
   const char context[] =
       "{\"uniqueId\":\"1\",\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("context", base::test::ParseJson(context));
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)

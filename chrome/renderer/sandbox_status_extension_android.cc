@@ -124,7 +124,7 @@ void SandboxStatusExtension::GetSandboxStatus(gin::Arguments* args) {
                      std::move(global_callback)));
 }
 
-base::Value::Dict SandboxStatusExtension::ReadSandboxStatus() {
+base::DictValue SandboxStatusExtension::ReadSandboxStatus() {
   std::string secontext;
   base::FilePath path(FILE_PATH_LITERAL("/proc/self/attr/current"));
   base::ReadFileToString(path, &secontext);
@@ -133,7 +133,7 @@ base::Value::Dict SandboxStatusExtension::ReadSandboxStatus() {
   path = base::FilePath(FILE_PATH_LITERAL("/proc/self/status"));
   base::ReadFileToString(path, &proc_status);
 
-  base::Value::Dict status;
+  base::DictValue status;
   status.Set("uid", static_cast<int>(getuid()));
   status.Set("pid", getpid());
   status.Set("secontext", secontext);
@@ -146,7 +146,7 @@ base::Value::Dict SandboxStatusExtension::ReadSandboxStatus() {
 
 void SandboxStatusExtension::RunCallback(
     std::unique_ptr<v8::Global<v8::Function>> callback,
-    base::Value::Dict status) {
+    base::DictValue status) {
   if (!render_frame())
     return;
 

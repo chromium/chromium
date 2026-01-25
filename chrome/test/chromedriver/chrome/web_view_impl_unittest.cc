@@ -69,26 +69,26 @@ testing::AssertionResult StatusOk(const Status& status) {
   return StatusCodeIs<kOk>(status);
 }
 
-base::Value::Dict CreateElementPlaceholder(
+base::DictValue CreateElementPlaceholder(
     int index,
     std::string element_key = kElementKeyW3C) {
-  base::Value::Dict placeholder;
+  base::DictValue placeholder;
   placeholder.Set(element_key, index);
   return placeholder;
 }
 
 // Create weak local object reference on a node
-base::Value::Dict CreateWeakNodeReference(int weak_local_object_reference) {
-  base::Value::Dict node;
+base::DictValue CreateWeakNodeReference(int weak_local_object_reference) {
+  base::DictValue node;
   node.Set("type", "node");
   node.Set("weakLocalObjectReference", weak_local_object_reference);
   return node;
 }
 
-base::Value::Dict CreateNode(int backend_node_id,
-                             const std::string& loader_id,
-                             int weak_local_object_reference = -1) {
-  base::Value::Dict node;
+base::DictValue CreateNode(int backend_node_id,
+                           const std::string& loader_id,
+                           int weak_local_object_reference = -1) {
+  base::DictValue node;
   node.Set("type", "node");
   node.SetByDottedPath("value.backendNodeId", backend_node_id);
   node.SetByDottedPath("value.loaderId", loader_id);
@@ -99,32 +99,32 @@ base::Value::Dict CreateNode(int backend_node_id,
 }
 
 std::string WrapToJson(base::Value value, int status = 0) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("value", std::move(value));
   result.Set("status", 0);
   return base::WriteJson(result).value_or("");
 }
 
-base::Value::Dict GenerateResponse(int backend_node_id,
-                                   const std::string& loader_id) {
-  base::Value::Dict dict;
+base::DictValue GenerateResponse(int backend_node_id,
+                                 const std::string& loader_id) {
+  base::DictValue dict;
   dict.Set("value", WrapToJson(base::Value(CreateElementPlaceholder(0)), 0));
-  base::Value::Dict node = CreateNode(backend_node_id, loader_id);
-  base::Value::List serialized_list;
+  base::DictValue node = CreateNode(backend_node_id, loader_id);
+  base::ListValue serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(node));
-  base::Value::Dict response;
+  base::DictValue response;
   response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
   return response;
 }
 
-base::Value::Dict GenerateResponseWithScriptArguments(
-    base::Value::List args,
+base::DictValue GenerateResponseWithScriptArguments(
+    base::ListValue args,
     const std::string& element_key,
     const std::string& loader_id) {
-  base::Value::List arr;
-  base::Value::List nodes;
+  base::ListValue arr;
+  base::ListValue nodes;
   for (base::Value& arg : args) {
     if (!arg.is_dict()) {
       arr.Append(std::move(arg));
@@ -141,16 +141,16 @@ base::Value::Dict GenerateResponseWithScriptArguments(
     nodes.Append(CreateNode(object_id, loader_id));
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("value", WrapToJson(base::Value(std::move(arr)), 0));
-  base::Value::List serialized_list;
+  base::ListValue serialized_list;
   serialized_list.Append(std::move(dict));
 
   for (base::Value& node : nodes) {
     serialized_list.Append(std::move(node));
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
   return response;
@@ -164,7 +164,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   ~FakeDevToolsClient() override = default;
 
   void SetStatus(const Status& status) { status_ = status; }
-  void SetResult(const base::Value::Dict& result) { result_ = result.Clone(); }
+  void SetResult(const base::DictValue& result) { result_ = result.Clone(); }
 
   void SetElementKey(std::string element_key) {
     element_key_ = std::move(element_key);
@@ -174,27 +174,27 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   // Overridden from DevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override {
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
     if (status_.IsError())
       return status_;
 
     if (method == "Page.getFrameTree") {
       // Unused padding frame
-      base::Value::Dict unused_child;
+      base::DictValue unused_child;
       unused_child.SetByDottedPath("frame.id", "unused");
       unused_child.SetByDottedPath("frame.loaderId", "unused_loader");
       // Used by the dedicated tests
-      base::Value::Dict good_child;
+      base::DictValue good_child;
       good_child.SetByDottedPath("frame.id", "good");
       good_child.SetByDottedPath("frame.loaderId", "good_loader");
       // Default constructed WebViewImpl will point here
       // Needed for the tests that are neutral to getFrameTree
-      base::Value::Dict default_child;
+      base::DictValue default_child;
       default_child.SetByDottedPath("frame.id", GetOwner()->GetId());
       default_child.SetByDottedPath("frame.loaderId", "default_loader");
       // root
-      base::Value::List children;
+      base::ListValue children;
       children.Append(std::move(good_child));
       children.Append(std::move(default_child));
       for (base::Value& frame : extra_child_frames_) {
@@ -217,7 +217,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
       result->SetByDottedPath("object.objectId",
                               base::NumberToString(*maybe_backend_node_id));
     } else if (method == "Runtime.callFunctionOn" && result_.empty()) {
-      const base::Value::List* args = params.FindList("arguments");
+      const base::ListValue* args = params.FindList("arguments");
       if (args == nullptr) {
         return Status{kInvalidArgument,
                       "arguments are not provided to Runtime.callFunctionOn"};
@@ -231,7 +231,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
     return Status(kOk);
   }
 
-  void AddExtraChildFrame(base::Value::Dict frame) {
+  void AddExtraChildFrame(base::DictValue frame) {
     extra_child_frames_.Append(std::move(frame));
   }
 
@@ -239,14 +239,14 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
  private:
   Status status_;
-  base::Value::Dict result_;
-  base::Value::List extra_child_frames_;
+  base::DictValue result_;
+  base::ListValue extra_child_frames_;
   std::string element_key_ = kElementKeyW3C;
   std::string loader_id_ = "root_loader";
 };
 
-void AssertEvalFails(const base::Value::Dict& command_result) {
-  base::Value::Dict result;
+void AssertEvalFails(const base::DictValue& command_result) {
+  base::DictValue result;
   FakeDevToolsClient client;
   client.SetResult(command_result);
   Status status = internal::EvaluateScript(
@@ -258,7 +258,7 @@ void AssertEvalFails(const base::Value::Dict& command_result) {
 }  // namespace
 
 TEST(EvaluateScript, CommandError) {
-  base::Value::Dict result;
+  base::DictValue result;
   FakeDevToolsClient client;
   client.SetStatus(Status(kUnknownError));
   Status status = internal::EvaluateScript(
@@ -268,20 +268,20 @@ TEST(EvaluateScript, CommandError) {
 }
 
 TEST(EvaluateScript, MissingResult) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   ASSERT_NO_FATAL_FAILURE(AssertEvalFails(dict));
 }
 
 TEST(EvaluateScript, Throws) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath("exceptionDetails.exception.className", "SyntaxError");
   dict.SetByDottedPath("result.type", "object");
   ASSERT_NO_FATAL_FAILURE(AssertEvalFails(dict));
 }
 
 TEST(EvaluateScript, Ok) {
-  base::Value::Dict result;
-  base::Value::Dict dict;
+  base::DictValue result;
+  base::DictValue dict;
   dict.SetByDottedPath("result.key", 100);
   FakeDevToolsClient client;
   client.SetResult(dict);
@@ -294,7 +294,7 @@ TEST(EvaluateScript, Ok) {
 TEST(EvaluateScriptAndGetValue, MissingType) {
   std::unique_ptr<base::Value> result;
   FakeDevToolsClient client;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath("result.value", 1);
   client.SetResult(dict);
   ASSERT_TRUE(internal::EvaluateScriptAndGetValue(
@@ -306,7 +306,7 @@ TEST(EvaluateScriptAndGetValue, MissingType) {
 TEST(EvaluateScriptAndGetValue, Undefined) {
   std::unique_ptr<base::Value> result;
   FakeDevToolsClient client;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath("result.type", "undefined");
   client.SetResult(dict);
   Status status = internal::EvaluateScriptAndGetValue(
@@ -319,7 +319,7 @@ TEST(EvaluateScriptAndGetValue, Undefined) {
 TEST(EvaluateScriptAndGetValue, Ok) {
   std::unique_ptr<base::Value> result;
   FakeDevToolsClient client;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath("result.type", "integer");
   dict.SetByDottedPath("result.value", 1);
   client.SetResult(dict);
@@ -339,7 +339,7 @@ TEST(ParseCallFunctionResult, NotDict) {
 
 TEST(ParseCallFunctionResult, Ok) {
   std::unique_ptr<base::Value> result;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("status", 0);
   dict.Set("value", 1);
   Status status =
@@ -351,7 +351,7 @@ TEST(ParseCallFunctionResult, Ok) {
 
 TEST(ParseCallFunctionResult, ScriptError) {
   std::unique_ptr<base::Value> result;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("status", 1);
   dict.Set("value", 1);
   Status status =
@@ -394,9 +394,9 @@ class MockSyncWebSocket : public SyncWebSocket {
     }
 
     std::string response_str;
-    base::Value::Dict response;
+    base::DictValue response;
     response.Set("id", *id);
-    base::Value::Dict result;
+    base::DictValue result;
     result.Set("param", 1);
     response.Set("result", std::move(result));
     base::JSONWriter::Write(response, &response_str);
@@ -614,7 +614,7 @@ TEST(ManageCookies, AddCookie_SameSiteTrue) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   std::string samesite = "Strict";
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("success", true);
   client_ptr->SetResult(dict);
   Status status = view.AddCookie("utest", "chrome://version", "value", "domain",
@@ -634,7 +634,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
     // Good 1
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
     node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
     int backend_node_id = -1;
@@ -644,7 +644,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   }
   {
     // Good 2
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kElementKey, ElementReference("good", "good_loader", 25));
     node_ref.Set(kElementKeyW3C, ElementReference("good", "good_loader", 13));
     int backend_node_id = -1;
@@ -654,7 +654,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   }
   {
     // Stale
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kElementKey, ElementReference("root", "past_loader", 25));
     node_ref.Set(kElementKeyW3C, ElementReference("root", "past_loader", 13));
     int backend_node_id = -1;
@@ -665,7 +665,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   }
   {
     // Unknown
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
     node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
     int backend_node_id = -1;
@@ -688,7 +688,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
     // Good 1
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
@@ -697,7 +697,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   }
   {
     // Good 2
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kShadowRootKey, ElementReference("good", "good_loader", 11));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
@@ -706,7 +706,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   }
   {
     // Stale
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kShadowRootKey, ElementReference("root", "past_loader", 11));
     int backend_node_id = -1;
     EXPECT_EQ(kDetachedShadowRoot,
@@ -716,7 +716,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   }
   {
     // Unknown
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
     int backend_node_id = -1;
     EXPECT_EQ(
@@ -736,7 +736,7 @@ TEST(GetBackendNodeId, NonW3C) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
   {
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
     node_ref.Set(kElementKeyW3C, ElementReference("root", "root_loader", 13));
     int backend_node_id = -1;
@@ -745,7 +745,7 @@ TEST(GetBackendNodeId, NonW3C) {
     EXPECT_EQ(25, backend_node_id);
   }
   {
-    base::Value::Dict node_ref;
+    base::DictValue node_ref;
     node_ref.Set(kShadowRootKey, ElementReference("root", "root_loader", 11));
     int backend_node_id = -1;
     EXPECT_TRUE(StatusOk(view.GetBackendNodeIdByElement(
@@ -778,7 +778,7 @@ TEST_P(ParentToChildRouting, ElementIdAsResultRootFrame) {
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
 
   EXPECT_TRUE(StatusOk(
-      view.CallUserSyncScript(TargetFrame(), "some_code", base::Value::List(),
+      view.CallUserSyncScript(TargetFrame(), "some_code", base::ListValue(),
                               base::TimeDelta::Max(), &result)));
   ASSERT_TRUE(result->is_dict());
   EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
@@ -817,7 +817,7 @@ TEST_P(ChildToParentRouting, ElementIdAsResultChildFrame) {
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
 
   EXPECT_TRUE(StatusOk(
-      view.CallUserSyncScript(TargetFrame(), "some_code", base::Value::List(),
+      view.CallUserSyncScript(TargetFrame(), "some_code", base::ListValue(),
                               base::TimeDelta::Max(), &result)));
   ASSERT_TRUE(result->is_dict());
   EXPECT_THAT(result->GetDict().FindString(kElementKeyW3C),
@@ -846,11 +846,10 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   view.GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
   {
     // missing frame.id case
-    base::Value::Dict bad_child;
+    base::DictValue bad_child;
     bad_child.SetByDottedPath("frame.loaderId", "bad_loader");
     client_ptr->AddExtraChildFrame(std::move(bad_child));
-    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code",
-                                         base::Value::List(),
+    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code", base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
     client_ptr->ClearExtraChildFrames();
@@ -858,11 +857,10 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   result.reset();
   {
     // missing loaderId case
-    base::Value::Dict bad_child;
+    base::DictValue bad_child;
     bad_child.SetByDottedPath("frame.id", "bad");
     client_ptr->AddExtraChildFrame(std::move(bad_child));
-    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code",
-                                         base::Value::List(),
+    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code", base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
     client_ptr->ClearExtraChildFrames();
@@ -870,10 +868,9 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   result.reset();
   {
     // empty frame description
-    base::Value::Dict bad_child;
+    base::DictValue bad_child;
     client_ptr->AddExtraChildFrame(std::move(bad_child));
-    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code",
-                                         base::Value::List(),
+    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code", base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
     client_ptr->ClearExtraChildFrames();
@@ -881,11 +878,10 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   result.reset();
   {
     // frame is not a dictionary
-    base::Value::Dict bad_child;
+    base::DictValue bad_child;
     bad_child.Set("frame", "bad");
     client_ptr->AddExtraChildFrame(std::move(bad_child));
-    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code",
-                                         base::Value::List(),
+    EXPECT_FALSE(view.CallUserSyncScript("bad", "some_code", base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
     client_ptr->ClearExtraChildFrames();
@@ -894,19 +890,19 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   {
     // frame does not exist
     EXPECT_FALSE(view.CallUserSyncScript("non_existent_frame", "some_code",
-                                         base::Value::List(),
+                                         base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
   }
   result.reset();
   {
     // no execution context information
-    base::Value::Dict bad_child;
+    base::DictValue bad_child;
     bad_child.SetByDottedPath("frame.id", "no_execution_context");
     bad_child.SetByDottedPath("frame.loaderId", "no_execution_context_loader");
     client_ptr->AddExtraChildFrame(std::move(bad_child));
     EXPECT_FALSE(view.CallUserSyncScript("no_execution_context", "some_code",
-                                         base::Value::List(),
+                                         base::ListValue(),
                                          base::TimeDelta::Max(), &result)
                      .IsOk());
     client_ptr->ClearExtraChildFrames();
@@ -914,13 +910,13 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
   result.reset();
   {
     // Test self-check: make sure that one shot frames work correctly
-    base::Value::Dict another_good_child;
+    base::DictValue another_good_child;
     another_good_child.SetByDottedPath("frame.id", "bad");
     another_good_child.SetByDottedPath("frame.loaderId", "bad_loader");
     client_ptr->AddExtraChildFrame(std::move(another_good_child));
-    EXPECT_TRUE(StatusOk(
-        view.CallUserSyncScript("bad", "some_code", base::Value::List(),
-                                base::TimeDelta::Max(), &result)));
+    EXPECT_TRUE(
+        StatusOk(view.CallUserSyncScript("bad", "some_code", base::ListValue(),
+                                         base::TimeDelta::Max(), &result)));
     client_ptr->ClearExtraChildFrames();
   }
 }
@@ -970,8 +966,8 @@ class CallUserSyncScriptArgs
 
 TEST_P(CallUserSyncScriptArgs, Root) {
   // Expecting success as the frame and loader_id match each other.
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("root", "root_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -981,8 +977,8 @@ TEST_P(CallUserSyncScriptArgs, Root) {
 
 TEST_P(CallUserSyncScriptArgs, GoodChild) {
   // Expecting success as the frame and loader_id match each other.
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("good", "good_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -992,18 +988,18 @@ TEST_P(CallUserSyncScriptArgs, GoodChild) {
 
 TEST_P(CallUserSyncScriptArgs, DeepElement) {
   std::string element_id = ElementReference("good", "good_loader", 99);
-  base::Value::Dict ref;
+  base::DictValue ref;
   ref.Set(ElementKey(), element_id);
-  base::Value::List list;
+  base::ListValue list;
   list.Append(1);
   list.Append(std::move(ref));
   list.Append("xyz");
-  base::Value::Dict arg;
+  base::DictValue arg;
   arg.SetByDottedPath("uno.a", "b");
   arg.SetByDottedPath("uno.dos", std::move(list));
   arg.SetByDottedPath("dos.b", 7.7);
-  base::Value::List nodes;
-  base::Value::List args;
+  base::ListValue nodes;
+  base::ListValue args;
   args.Append(std::move(arg));
   std::unique_ptr<base::Value> result;
   client_ptr->SetElementKey(ElementKey());
@@ -1014,15 +1010,15 @@ TEST_P(CallUserSyncScriptArgs, DeepElement) {
 
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(result->GetList().size(), size_t(1));
-  base::Value::Dict* received_ref = result->GetList()[0].GetIfDict();
+  base::DictValue* received_ref = result->GetList()[0].GetIfDict();
   ASSERT_NE(received_ref, nullptr);
   std::string* maybe_backend_node_id = received_ref->FindString(ElementKey());
   EXPECT_THAT(maybe_backend_node_id, Pointee(Eq(element_id)));
 }
 
 TEST_P(CallUserSyncScriptArgs, FrameAndLoaderMismatch) {
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("root", "root_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -1035,8 +1031,8 @@ TEST_P(CallUserSyncScriptArgs, FrameAndLoaderMismatch) {
 }
 
 TEST_P(CallUserSyncScriptArgs, NoSuchFrame) {
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("unknown", "root_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -1049,8 +1045,8 @@ TEST_P(CallUserSyncScriptArgs, NoSuchFrame) {
 }
 
 TEST_P(CallUserSyncScriptArgs, NoSuchLoader) {
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("root", "bad_loader", 99));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -1064,8 +1060,8 @@ TEST_P(CallUserSyncScriptArgs, NoSuchLoader) {
 }
 
 TEST_P(CallUserSyncScriptArgs, NoSuchBackendNodeId) {
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(),
           ElementReference("good", "good_loader", kNonExistingBackendNodeId));
   args.Append(std::move(ref));
@@ -1094,8 +1090,8 @@ TEST_P(CallUserSyncScriptArgs, MalformedReference) {
     bad_refs.push_back(ref_prefix);
   }
   for (const std::string& ref_str : bad_refs) {
-    base::Value::List args;
-    base::Value::Dict ref;
+    base::ListValue args;
+    base::DictValue ref;
     ref.Set(ElementKey(), ref_str);
     args.Append(std::move(ref));
     std::unique_ptr<base::Value> result;
@@ -1106,8 +1102,8 @@ TEST_P(CallUserSyncScriptArgs, MalformedReference) {
 }
 
 TEST_P(CallUserSyncScriptArgs, NoBackendNodeId) {
-  base::Value::List args;
-  base::Value::Dict ref;
+  base::ListValue args;
+  base::DictValue ref;
   ref.Set(ElementKey(), ElementReference("good", "good_loader", "xx"));
   args.Append(std::move(ref));
   std::unique_ptr<base::Value> result;
@@ -1125,18 +1121,18 @@ INSTANTIATE_TEST_SUITE_P(References,
                                                           false)));
 
 TEST(CallUserSyncScript, WeakReference) {
-  base::Value::Dict node = CreateNode(557, "root_loader", 13);
-  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
-  base::Value::Dict dict;
-  base::Value::List placeholder_list;
+  base::DictValue node = CreateNode(557, "root_loader", 13);
+  base::DictValue weak_ref = CreateWeakNodeReference(13);
+  base::DictValue dict;
+  base::ListValue placeholder_list;
   placeholder_list.Append(CreateElementPlaceholder(0));
   placeholder_list.Append(CreateElementPlaceholder(1));
   dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
-  base::Value::List serialized_list;
+  base::ListValue serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(node));
   serialized_list.Append(std::move(weak_ref));
-  base::Value::Dict response;
+  base::DictValue response;
   response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
@@ -1152,11 +1148,11 @@ TEST(CallUserSyncScript, WeakReference) {
 
   std::unique_ptr<base::Value> result;
   EXPECT_TRUE(
-      StatusOk(view.CallUserSyncScript("root", "some_code", base::Value::List(),
+      StatusOk(view.CallUserSyncScript("root", "some_code", base::ListValue(),
                                        base::TimeDelta::Max(), &result)));
 
   ASSERT_TRUE(result->is_list());
-  const base::Value::List& result_list = result->GetList();
+  const base::ListValue& result_list = result->GetList();
   ASSERT_EQ(2u, result_list.size());
   ASSERT_TRUE(result_list[0].is_dict());
   EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
@@ -1167,18 +1163,18 @@ TEST(CallUserSyncScript, WeakReference) {
 }
 
 TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
-  base::Value::Dict node = CreateNode(557, "root_loader", 13);
-  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
-  base::Value::Dict dict;
-  base::Value::List placeholder_list;
+  base::DictValue node = CreateNode(557, "root_loader", 13);
+  base::DictValue weak_ref = CreateWeakNodeReference(13);
+  base::DictValue dict;
+  base::ListValue placeholder_list;
   placeholder_list.Append(CreateElementPlaceholder(0));
   placeholder_list.Append(CreateElementPlaceholder(1));
   dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
-  base::Value::List serialized_list;
+  base::ListValue serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(weak_ref));
   serialized_list.Append(std::move(node));
-  base::Value::Dict response;
+  base::DictValue response;
   response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
@@ -1194,11 +1190,11 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
 
   std::unique_ptr<base::Value> result;
   EXPECT_TRUE(
-      StatusOk(view.CallUserSyncScript("root", "some_code", base::Value::List(),
+      StatusOk(view.CallUserSyncScript("root", "some_code", base::ListValue(),
                                        base::TimeDelta::Max(), &result)));
 
   ASSERT_TRUE(result->is_list());
-  const base::Value::List& result_list = result->GetList();
+  const base::ListValue& result_list = result->GetList();
   ASSERT_EQ(2u, result_list.size());
   ASSERT_TRUE(result_list[0].is_dict());
   EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
@@ -1209,15 +1205,15 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
 }
 
 TEST(CallUserSyncScript, WeakReferenceNotResolved) {
-  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
-  base::Value::Dict dict;
-  base::Value::List placeholder_list;
+  base::DictValue weak_ref = CreateWeakNodeReference(13);
+  base::DictValue dict;
+  base::ListValue placeholder_list;
   placeholder_list.Append(CreateElementPlaceholder(0));
   dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
-  base::Value::List serialized_list;
+  base::ListValue serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(weak_ref));
-  base::Value::Dict response;
+  base::DictValue response;
   response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
@@ -1232,9 +1228,8 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
-  Status status =
-      view.CallUserSyncScript("root", "some_code", base::Value::List(),
-                              base::TimeDelta::Max(), &result);
+  Status status = view.CallUserSyncScript(
+      "root", "some_code", base::ListValue(), base::TimeDelta::Max(), &result);
   EXPECT_TRUE(status.IsError());
 }
 
@@ -1243,10 +1238,10 @@ namespace {
 bool ReturnError(int code,
                  const std::string& message,
                  int cmd_id,
-                 const base::Value::Dict& params,
-                 base::Value::Dict& response) {
+                 const base::DictValue& params,
+                 base::DictValue& response) {
   response.Set("id", cmd_id);
-  base::Value::Dict error;
+  base::DictValue error;
   error.Set("code", code);
   error.Set("message", message);
   response.Set("error", std::move(error));
@@ -1306,7 +1301,7 @@ class BidiDevToolsClient : public StubDevToolsClient {
  public:
   explicit BidiDevToolsClient(const std::string& id) : StubDevToolsClient(id) {}
 
-  Status PostBidiCommand(base::Value::Dict command) override {
+  Status PostBidiCommand(base::DictValue command) override {
     base::Value* id = command.Find("id");
     EXPECT_NE(nullptr, id);
     if (id == nullptr) {
@@ -1319,7 +1314,7 @@ class BidiDevToolsClient : public StubDevToolsClient {
       return Status{kTestError,
                     "[BidiDevToolsClient], no 'method' in the BiDi command"};
     }
-    base::Value::Dict* params = command.FindDict("param");
+    base::DictValue* params = command.FindDict("param");
     EXPECT_NE(nullptr, params);
     if (params == nullptr) {
       return Status{kTestError,
@@ -1328,7 +1323,7 @@ class BidiDevToolsClient : public StubDevToolsClient {
 
     std::string* channel = command.FindString("goog:channel");
 
-    base::Value::Dict result;
+    base::DictValue result;
     std::optional<int> ping = params->FindInt("ping");
     if (ping) {
       result.Set("pong", *ping);
@@ -1336,14 +1331,14 @@ class BidiDevToolsClient : public StubDevToolsClient {
       result.Set("param", 1);
     }
 
-    base::Value::Dict payload;
+    base::DictValue payload;
     payload.Set("id", std::move(*id));
     payload.Set("result", std::move(result));
     if (channel != nullptr) {
       payload.Set("goog:channel", std::move(*channel));
     }
 
-    base::Value::Dict event_params;
+    base::DictValue event_params;
     event_params.Set("name", "sendBidiResponse");
     event_params.Set("payload", std::move(payload));
 
@@ -1381,17 +1376,17 @@ TEST(SendBidiCommandTest, Success) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", 1);
   command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
   Timeout timeout{base::Seconds(1)};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   EXPECT_TRUE(
       StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
@@ -1409,17 +1404,17 @@ TEST(SendBidiCommandTest, MaxJsUintId) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", 9007199254740991.0);
   command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
   Timeout timeout{base::Seconds(1)};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   EXPECT_TRUE(
       StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
@@ -1438,16 +1433,16 @@ TEST(SendBidiCommandTest, NoId) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
   Timeout timeout{kErrorWaitDuration};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(
       view.SendBidiCommand(std::move(command), timeout, response)));
@@ -1471,10 +1466,10 @@ TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", 1);
   command.Set("method", "some");
   command.Set("param", std::move(param));
@@ -1483,7 +1478,7 @@ TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
   }
 
   Timeout timeout{kErrorWaitDuration};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   Status status = view.SendBidiCommand(std::move(command), timeout, response);
   EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
@@ -1514,17 +1509,17 @@ TEST_P(SendBidiCommandSpecialChannelTest, ChannelValues) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", 1);
   command.Set("goog:channel", Channel());
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
   Timeout timeout{base::Seconds(1)};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   EXPECT_TRUE(
       StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
@@ -1545,7 +1540,7 @@ class NeverReturningBidiDevToolsClient : public BidiDevToolsClient {
   explicit NeverReturningBidiDevToolsClient(const std::string& id)
       : BidiDevToolsClient(id) {}
 
-  Status PostBidiCommand(base::Value::Dict command) override {
+  Status PostBidiCommand(base::DictValue command) override {
     return Status{kOk};
   }
 };
@@ -1561,17 +1556,17 @@ TEST(SendBidiCommandTest, NoResponse) {
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
 
-  base::Value::Dict param;
+  base::DictValue param;
   param.Set("ping", 123);
 
-  base::Value::Dict command;
+  base::DictValue command;
   command.Set("id", 1);
   command.Set("goog:channel", "/test");
   command.Set("method", "some");
   command.Set("param", std::move(param));
 
   Timeout timeout{base::Milliseconds(10)};
-  base::Value::Dict response;
+  base::DictValue response;
   const int initial_listener_count = client_ptr->EventListenerCount();
   EXPECT_TRUE(StatusCodeIs<kTimeout>(
       view.SendBidiCommand(std::move(command), timeout, response)));

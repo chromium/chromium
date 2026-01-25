@@ -104,7 +104,7 @@ TEST(ExtensionTest, LocationPriorityTest) {
 
 TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
   std::string unsanitized_name = "Test\n\n\n\n\n\n\n\n\n\n\n\nNew lines\u0085";
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", unsanitized_name)
                       .Set("manifest_version", 2)
                       .Set("description", "some description")
@@ -119,7 +119,7 @@ TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
 
 TEST(ExtensionTest, EnsureWhitespacesInExtensionNameAreCollapsed) {
   std::string unsanitized_name = "Test                        Whitespace";
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", unsanitized_name)
                       .Set("manifest_version", 2)
                       .Set("description", "some description")
@@ -137,7 +137,7 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
   auto run_rtl_test = [](const wchar_t* name, const wchar_t* expected) {
     SCOPED_TRACE(
         base::StringPrintf("Name: %ls, Expected: %ls", name, expected));
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", base::WideToUTF8(name))
                         .Set("manifest_version", 2)
                         .Set("description", "some description")

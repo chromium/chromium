@@ -174,11 +174,11 @@ void EnterTestMode(const GURL& update_url,
 void ExitTestMode(UpdaterScope scope);
 
 // Sets the dict policies that are surfaced via external constants.
-void SetDictPolicies(const base::Value::Dict& values);
+void SetDictPolicies(const base::DictValue& values);
 
 // Sets platform policies. Platform policy is group policy on Windows, and
 // Managed Preferences on macOS.
-void SetPlatformPolicies(const base::Value::Dict& values);
+void SetPlatformPolicies(const base::DictValue& values);
 
 // Sets whether the machine is in managed state.
 void SetMachineManaged(bool is_managed_device);
@@ -195,7 +195,7 @@ void CopyLog(const base::FilePath& src_dir, const std::string& infix);
 void ExpectInstalled(UpdaterScope scope);
 
 // Installs the updater.
-void Install(UpdaterScope scope, const base::Value::List& switches);
+void Install(UpdaterScope scope, const base::ListValue& switches);
 
 // Installs the updater and an app via the command line.
 void InstallUpdaterAndApp(UpdaterScope scope,
@@ -208,7 +208,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool expect_success,
                           bool wait_for_the_installer,
                           int expected_exit_code,
-                          const base::Value::List& additional_switches,
+                          const base::ListValue& additional_switches,
                           const base::FilePath& updater_path);
 
 // Expects that the updater is installed on the system and the specified
@@ -267,10 +267,10 @@ void UpdateAll(UpdaterScope scope);
 // app.
 void InstallAppViaService(UpdaterScope scope,
                           const std::string& app_id,
-                          const base::Value::Dict& expected_final_values);
+                          const base::DictValue& expected_final_values);
 
 void GetAppStates(UpdaterScope updater_scope,
-                  const base::Value::Dict& expected_app_states);
+                  const base::DictValue& expected_app_states);
 
 // Deletes the file.
 void DeleteFile(UpdaterScope scope, const base::FilePath& path);
@@ -327,7 +327,7 @@ std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
 // `UpdaterSetup.exe` in `updater_path`.
 void SetupRealUpdater(UpdaterScope scope,
                       const base::FilePath& updater_path,
-                      const base::Value::List& switches);
+                      const base::ListValue& switches);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
@@ -374,7 +374,7 @@ void ExpectAppVersion(UpdaterScope scope,
 
 void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration);
 void RegisterAppByValue(UpdaterScope scope,
-                        const base::Value::Dict& registration_data);
+                        const base::DictValue& registration_data);
 
 [[nodiscard]] bool WaitForUpdaterExit();
 
@@ -393,7 +393,7 @@ void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
-                                       const base::Value::List& parameters,
+                                       const base::ListValue& parameters,
                                        int expected_exit_code);
 void ExpectPolicyStatusValues(
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value,
@@ -411,7 +411,7 @@ void LegacyInstallApp(UpdaterScope scope,
 // Entries of the `arguments` dictionary should be the function's parameter
 // name/value pairs.
 void InvokeTestServiceFunction(const std::string& function_name,
-                               const base::Value::Dict& arguments);
+                               const base::DictValue& arguments);
 
 void RunUninstallCmdLine(UpdaterScope scope);
 void RunHandoff(UpdaterScope scope, const std::string& app_id);
@@ -496,7 +496,7 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 void ExpectAppsUpdateSequence(
     UpdaterScope scope,
     ScopedServer& test_server,
-    const base::Value::Dict& request_attributes,
+    const base::DictValue& request_attributes,
     const std::vector<AppUpdateExpectation>& apps,
     const base::Version& updater_version = base::Version(kUpdaterVersion));
 
@@ -587,7 +587,7 @@ void InstallEnterpriseCompanionApp();
 // Installs the constants overrides for the enterprise companion app, always at
 // the system scope.
 void InstallEnterpriseCompanionAppOverrides(
-    const base::Value::Dict& external_overrides);
+    const base::DictValue& external_overrides);
 
 // Expects that the enterprise companion app is not installed, always at system
 // scope.

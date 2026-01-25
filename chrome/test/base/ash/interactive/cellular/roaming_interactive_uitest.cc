@@ -31,9 +31,9 @@ class RoamingInteractiveUITest : public EsimInteractiveUiTestBase {
   ui::test::internal::InteractiveTestPrivate::MultiStep
   RestrictCellularRoaming() {
     return Steps(Do([this]() {
-      base::Value::Dict global_config;
+      base::DictValue global_config;
 
-      auto onc_configs = base::Value::List();
+      auto onc_configs = base::ListValue();
       onc_configs.Append(GenerateCellularPolicy(*esim_info_,
                                                 /*allow_apn_modificaiton=*/true,
                                                 /*allow_roaming=*/false));

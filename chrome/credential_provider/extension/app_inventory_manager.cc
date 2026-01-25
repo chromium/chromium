@@ -165,7 +165,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
     }
   }
 
-  request_dict_ = std::make_unique<base::Value::Dict>();
+  request_dict_ = std::make_unique<base::DictValue>();
   request_dict_->Set(kUploadAppInventoryRequestUserSidParameterName,
                      base::WideToUTF8(context.user_sid));
   request_dict_->Set(kDmToken, base::WideToUTF8(dm_token_value));
@@ -187,7 +187,7 @@ HRESULT AppInventoryManager::UploadAppInventory(
   request_dict_->Set(kUploadAppInventoryRequestWin32AppsParameterName,
                      GetInstalledWin32Apps());
 
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       AppInventoryManager::Get()->GetGemServiceUploadAppInventoryUrl(),
       /* access_token= */ std::string(), {}, *request_dict_,
@@ -220,9 +220,9 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
                                 .append(a));
   }
 
-  base::Value::List app_info_value_list;
+  base::ListValue app_info_value_list;
   for (std::wstring regPath : app_path_list) {
-    base::Value::Dict request_dict;
+    base::DictValue request_dict;
 
     wchar_t display_name[256];
     ULONG display_length = std::size(display_name);

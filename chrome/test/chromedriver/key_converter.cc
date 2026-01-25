@@ -570,8 +570,8 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
   return Status(kOk);
 }
 
-Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
-                                  base::Value::Dict& input_state,
+Status ConvertKeyActionToKeyEvent(const base::DictValue& action_object,
+                                  base::DictValue& input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* key_events) {
   const std::string* raw_key = action_object.FindString("value");
@@ -591,7 +591,7 @@ Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
   if (key.size() == 0)
     key = *raw_key;
 
-  base::Value::Dict* pressed = input_state.FindDict("pressed");
+  base::DictValue* pressed = input_state.FindDict("pressed");
   if (!pressed)
     return Status(kUnknownError, "missing 'pressed'");
   bool already_pressed = pressed->contains(key);

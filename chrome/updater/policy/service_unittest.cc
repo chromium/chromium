@@ -615,141 +615,141 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
 
   EXPECT_EQ(
       policy_service->GetAllPolicies(),
-      base::Value::Dict()
+      base::DictValue()
           .Set("policiesByName",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("CloudPolicyOverridesPlatformPolicy",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("Group Policy", false))
+                                 base::DictValue().Set("Group Policy", false))
                             .Set("prevailingSource", "Group Policy"))
                    .Set("LastCheckPeriod",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set(
-                                     "Default", base::TimeDeltaToValue(
-                                                    base::Minutes(270))))
+                                 base::DictValue().Set("Default",
+                                                       base::TimeDeltaToValue(
+                                                           base::Minutes(270))))
                             .Set("prevailingSource", "Default"))
                    .Set("UpdatesSuppressed",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict()
+                                 base::DictValue()
                                      .Set("Group Policy",
-                                          base::Value::Dict()
+                                          base::DictValue()
                                               .Set("StartHour", 5)
                                               .Set("StartMinute", 10)
                                               .Set("Duration", 30))
                                      .Set("DictValuePolicy",
-                                          base::Value::Dict()
+                                          base::DictValue()
                                               .Set("StartHour", 1)
                                               .Set("StartMinute", 1)
                                               .Set("Duration", 20))
                                      .Set("Device Management",
-                                          base::Value::Dict()
+                                          base::DictValue()
                                               .Set("StartHour", 5)
                                               .Set("StartMinute", 10)
                                               .Set("Duration", 30)))
                             .Set("prevailingSource", "Group Policy"))
                    .Set("DownloadPreference",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("DictValuePolicy",
-                                                         "cacheable"))
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "cacheable"))
                             .Set("prevailingSource", "DictValuePolicy"))
                    .Set("PackageCacheSizeLimit",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("Group Policy", 1000))
+                                 base::DictValue().Set("Group Policy", 1000))
                             .Set("prevailingSource", "Group Policy"))
                    .Set("PackageCacheExpires",
-                        base::Value::Dict()
-                            .Set("valuesBySource", base::Value::Dict().Set(
-                                                       "Device Management", 60))
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("Device Management", 60))
                             .Set("prevailingSource", "Device Management"))
                    .Set("ProxyMode",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("DictValuePolicy",
-                                                         "direct"))
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "direct"))
                             .Set("prevailingSource", "DictValuePolicy"))
                    .Set("ProxyPacURL",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("DictValuePolicy",
-                                                         "url://proxyurl"))
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "url://proxyurl"))
                             .Set("prevailingSource", "DictValuePolicy"))
                    .Set("ProxyServer",
-                        base::Value::Dict()
+                        base::DictValue()
                             .Set("valuesBySource",
-                                 base::Value::Dict().Set("DictValuePolicy",
-                                                         "test-server"))
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "test-server"))
                             .Set("prevailingSource", "DictValuePolicy")))
           .Set(
               "policiesByAppId",
-              base::Value::Dict()
-                  .Set("app1",
-                       base::Value::Dict()
-                           .Set("Install",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict()
-                                             .Set("Group Policy", 0)
-                                             .Set("Device Management", 1)
-                                             .Set("Default", 1))
-                                    .Set("prevailingSource", "Group Policy"))
-                           .Set("Update",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict()
-                                             .Set("Device Management", 3)
-                                             .Set("DictValuePolicy", 2)
-                                             .Set("Default", 1))
-                                    .Set("prevailingSource",
-                                         "Device Management"))
-                           .Set("TargetChannel",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict()
-                                             .Set("Group Policy", "channel_gp")
-                                             .Set("Device Management",
-                                                  "channel_dm")
-                                             .Set("DictValuePolicy",
-                                                  "channel_DictValuePolicy"))
-                                    .Set("prevailingSource", "Group Policy"))
-                           .Set("TargetVersionPrefix",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict().Set(
-                                             "DictValuePolicy", "103.3."))
-                                    .Set("prevailingSource", "DictValuePolicy"))
-                           .Set("RollbackToTargetVersionAllowed",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict().Set("Default",
-                                                                 false))
-                                    .Set("prevailingSource", "Default")))
-                  .Set("app2",
-                       base::Value::Dict()
-                           .Set("Install",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict()
-                                             .Set("DictValuePolicy", 2)
-                                             .Set("Default", 1))
-                                    .Set("prevailingSource", "DictValuePolicy"))
-                           .Set("Update",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict()
-                                             .Set("Group Policy", 1)
-                                             .Set("Default", 1))
-                                    .Set("prevailingSource", "Group Policy"))
-                           .Set("RollbackToTargetVersionAllowed",
-                                base::Value::Dict()
-                                    .Set("valuesBySource",
-                                         base::Value::Dict().Set("Default",
-                                                                 false))
-                                    .Set("prevailingSource", "Default")))));
+              base::DictValue()
+                  .Set(
+                      "app1",
+                      base::DictValue()
+                          .Set("Install",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", 0)
+                                            .Set("Device Management", 1)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set(
+                              "Update",
+                              base::DictValue()
+                                  .Set("valuesBySource",
+                                       base::DictValue()
+                                           .Set("Device Management", 3)
+                                           .Set("DictValuePolicy", 2)
+                                           .Set("Default", 1))
+                                  .Set("prevailingSource", "Device Management"))
+                          .Set("TargetChannel",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", "channel_gp")
+                                            .Set("Device Management",
+                                                 "channel_dm")
+                                            .Set("DictValuePolicy",
+                                                 "channel_DictValuePolicy"))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set("TargetVersionPrefix",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("DictValuePolicy",
+                                                              "103.3."))
+                                   .Set("prevailingSource", "DictValuePolicy"))
+                          .Set("RollbackToTargetVersionAllowed",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("Default", false))
+                                   .Set("prevailingSource", "Default")))
+                  .Set(
+                      "app2",
+                      base::DictValue()
+                          .Set("Install",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("DictValuePolicy", 2)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "DictValuePolicy"))
+                          .Set("Update",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", 1)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set("RollbackToTargetVersionAllowed",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("Default", false))
+                                   .Set("prevailingSource", "Default")))));
 }
 
 TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
@@ -1010,7 +1010,7 @@ class PolicyManagersTest : public ::testing::Test {
   }
 #endif
 
-  void SetPlatformPolicies(const base::Value::Dict& policies) const {
+  void SetPlatformPolicies(const base::DictValue& policies) const {
 #if BUILDFLAG(IS_MAC)
     const base::FilePath policy_file_path =
         GetLibraryFolderPath(UpdaterScope::kSystem)
@@ -1098,7 +1098,7 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
   }
 #endif
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
 
   ASSERT_TRUE(ExternalConstantsBuilder()
@@ -1106,10 +1106,10 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
                   .SetDictPolicies(dict_policies)
                   .Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   PolicyService::PolicyManagers managers(CreateExternalConstants());
@@ -1135,10 +1135,10 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
 
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyDisabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyDisabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
@@ -1175,10 +1175,10 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
 
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
@@ -1207,7 +1207,7 @@ TEST_F(PolicyManagersTest,
   }
 #endif
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
 
   ASSERT_TRUE(ExternalConstantsBuilder()
@@ -1215,10 +1215,10 @@ TEST_F(PolicyManagersTest,
                   .SetDictPolicies(dict_policies)
                   .Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =

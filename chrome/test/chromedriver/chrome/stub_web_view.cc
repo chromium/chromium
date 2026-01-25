@@ -68,30 +68,30 @@ Status StubWebView::StartBidiServer(std::string bidi_mapper_script,
   return Status{kOk};
 }
 
-Status StubWebView::PostBidiCommand(base::Value::Dict command) {
+Status StubWebView::PostBidiCommand(base::DictValue command) {
   return Status{kOk};
 }
 
-Status StubWebView::SendBidiCommand(base::Value::Dict command,
+Status StubWebView::SendBidiCommand(base::DictValue command,
                                     const Timeout& timeout,
-                                    base::Value::Dict& response) {
+                                    base::DictValue& response) {
   return Status{kOk};
 }
 
 Status StubWebView::SendCommand(const std::string& cmd,
-                                const base::Value::Dict& params) {
+                                const base::DictValue& params) {
   return Status(kOk);
 }
 
 Status StubWebView::SendCommandFromWebSocket(const std::string& cmd,
-                                             const base::Value::Dict& params,
+                                             const base::DictValue& params,
                                              const int client_cmd_id) {
   return Status(kOk);
 }
 
 Status StubWebView::SendCommandAndGetResult(
     const std::string& cmd,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     std::unique_ptr<base::Value>* value) {
   return Status(kOk);
 }
@@ -109,7 +109,7 @@ Status StubWebView::EvaluateScript(const std::string& frame,
 
 Status StubWebView::CallFunction(const std::string& frame,
                                  const std::string& function,
-                                 const base::Value::List& args,
+                                 const base::ListValue& args,
                                  std::unique_ptr<base::Value>* result) {
   return Status(kOk);
 }
@@ -117,7 +117,7 @@ Status StubWebView::CallFunction(const std::string& frame,
 Status StubWebView::CallUserAsyncFunction(
     const std::string& frame,
     const std::string& function,
-    const base::Value::List& args,
+    const base::ListValue& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   return Status(kOk);
@@ -125,7 +125,7 @@ Status StubWebView::CallUserAsyncFunction(
 
 Status StubWebView::CallUserSyncScript(const std::string& frame,
                                        const std::string& script,
-                                       const base::Value::List& args,
+                                       const base::ListValue& args,
                                        const base::TimeDelta& timeout,
                                        std::unique_ptr<base::Value>* result) {
   return Status(kOk);
@@ -133,7 +133,7 @@ Status StubWebView::CallUserSyncScript(const std::string& frame,
 
 Status StubWebView::GetFrameByFunction(const std::string& frame,
                                        const std::string& function,
-                                       const base::Value::List& args,
+                                       const base::ListValue& args,
                                        std::string* out_frame) {
   return Status(kOk);
 }
@@ -230,11 +230,11 @@ Status StubWebView::OverrideDownloadDirectoryIfNeeded(
 }
 
 Status StubWebView::CaptureScreenshot(std::string* screenshot,
-                                      const base::Value::Dict& params) {
+                                      const base::DictValue& params) {
   return Status(kOk);
 }
 
-Status StubWebView::PrintToPDF(const base::Value::Dict& params,
+Status StubWebView::PrintToPDF(const base::DictValue& params,
                                std::string* pdf) {
   return Status(kOk);
 }
@@ -307,7 +307,7 @@ bool StubWebView::IsDetached() const {
 Status StubWebView::CallFunctionWithTimeout(
     const std::string& frame,
     const std::string& function,
-    const base::Value::List& args,
+    const base::ListValue& args,
     const base::TimeDelta& timeout,
     const CallFunctionOptions& options,
     std::unique_ptr<base::Value>* result) {

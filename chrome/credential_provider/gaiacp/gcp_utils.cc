@@ -982,12 +982,12 @@ std::wstring GetSelectedLanguage() {
   return GetLanguageSelector().matched_candidate();
 }
 
-void SecurelyClearDictionaryValue(base::optional_ref<base::Value::Dict> dict) {
+void SecurelyClearDictionaryValue(base::optional_ref<base::DictValue> dict) {
   SecurelyClearDictionaryValueWithKey(dict, kKeyPassword);
 }
 
 void SecurelyClearDictionaryValueWithKey(
-    base::optional_ref<base::Value::Dict> dict,
+    base::optional_ref<base::DictValue> dict,
     const std::string& password_key) {
   if (!dict.has_value()) {
     return;
@@ -1019,7 +1019,7 @@ std::string SearchForKeyInStringDictUTF8(
     const std::initializer_list<std::string_view>& path) {
   DCHECK_GT(path.size(), 0UL);
 
-  std::optional<base::Value::Dict> json_obj =
+  std::optional<base::DictValue> json_obj =
       base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
@@ -1030,13 +1030,13 @@ std::string SearchForKeyInStringDictUTF8(
   return value ? *value : std::string();
 }
 
-std::wstring GetDictString(const base::Value::Dict& dict, const char* name) {
+std::wstring GetDictString(const base::DictValue& dict, const char* name) {
   DCHECK(name);
   const std::string* value = dict.FindString(name);
   return value ? base::UTF8ToWide(*value) : std::wstring();
 }
 
-std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name) {
+std::string GetDictStringUTF8(const base::DictValue& dict, const char* name) {
   DCHECK(name);
   const std::string* value = dict.FindString(name);
   return value ? *value : std::string();
@@ -1049,7 +1049,7 @@ HRESULT SearchForListInStringDictUTF8(
     std::vector<std::string>* output) {
   DCHECK_GT(path.size(), 0UL);
 
-  std::optional<base::Value::Dict> json_obj =
+  std::optional<base::DictValue> json_obj =
       base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
@@ -1059,7 +1059,7 @@ HRESULT SearchForListInStringDictUTF8(
   auto* value = json_obj->FindListByDottedPath(base::JoinString(path, "."));
   if (value) {
     for (const base::Value& entry_val : *value) {
-      const base::Value::Dict& entry = entry_val.GetDict();
+      const base::DictValue& entry = entry_val.GetDict();
       const std::string* list_key_str = entry.FindString(list_key);
       if (list_key_str) {
         output->push_back(*list_key_str);
@@ -1096,7 +1096,7 @@ base::Version GetMinimumSupportedChromeVersion() {
 }
 
 bool ExtractKeysFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::vector<std::pair<std::string, std::string*>>& needed_outputs) {
   for (const std::pair<std::string, std::string*>& output : needed_outputs) {
     const std::string* output_value = dict.FindString(output.first);
@@ -1223,7 +1223,7 @@ void GetOsVersion(std::string* version) {
 
 HRESULT GenerateDeviceId(std::string* device_id) {
   // Build the json data encapsulating different device ids.
-  base::Value::Dict device_ids_dict;
+  base::DictValue device_ids_dict;
 
   // Add the serial number to the dictionary.
   std::wstring serial_number = GetSerialNumber();

@@ -1409,7 +1409,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
       [](base::Value* install_settings_deserialized_raw,
          std::string_view setting_key) -> std::string {
     if (install_settings_deserialized_raw) {
-      const base::Value::Dict* install_settings_dict =
+      const base::DictValue* install_settings_dict =
           install_settings_deserialized_raw->GetIfDict();
       if (install_settings_dict) {
         const std::string* install_setting_value =

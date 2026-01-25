@@ -40,7 +40,7 @@ struct BrowserInfo {
   bool is_android = false;
   bool is_headless_shell = false;
 
-  Status FillFromBrowserVersionResponse(const base::Value::Dict& response);
+  Status FillFromBrowserVersionResponse(const base::DictValue& response);
 
   Status ParseBrowserInfo(std::string_view data);
 

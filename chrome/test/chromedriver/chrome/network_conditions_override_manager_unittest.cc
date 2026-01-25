@@ -72,7 +72,7 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
   NetworkConditions network_conditions = {false, 100, 750 * 1024, 750 * 1024};
 
   NetworkConditionsOverrideManager manager(&client);
-  base::Value::Dict main_frame_params;
+  base::DictValue main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)
                 .code());
@@ -87,7 +87,7 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
   ASSERT_NO_FATAL_FAILURE(
       AssertNetworkConditionsCommand(client.commands_[2], network_conditions));
 
-  base::Value::Dict sub_frame_params;
+  base::DictValue sub_frame_params;
   sub_frame_params.SetByDottedPath("frame.parentId", "id");
   ASSERT_EQ(
       kOk,

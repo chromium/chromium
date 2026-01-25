@@ -289,8 +289,8 @@ class WifiLanMediumTest : public ::testing::Test {
       managed_network_config_handler_->SetPolicy(
           ::onc::ONC_SOURCE_DEVICE_POLICY,
           /*userhash=*/std::string(),
-          /*network_configs_onc=*/base::Value::List(),
-          /*global_network_config=*/base::Value::Dict());
+          /*network_configs_onc=*/base::ListValue(),
+          /*global_network_config=*/base::DictValue());
 
       base::RunLoop().RunUntilIdle();
     }
@@ -308,7 +308,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   void AddWifiService(bool add_ip_configs, const net::IPAddress& local_addr) {
     if (add_ip_configs) {
-      base::Value::Dict ipv4;
+      base::DictValue ipv4;
       ipv4.Set(shill::kAddressProperty, local_addr.ToString());
       ipv4.Set(shill::kMethodProperty, shill::kTypeIPv4);
       cros_network_config_helper_->network_state_helper()

@@ -92,13 +92,13 @@ Status ParseFilePath(base::FilePath* to_set,
   return Status(kOk);
 }
 
-Status ParseDict(std::unique_ptr<base::Value::Dict>* to_set,
+Status ParseDict(std::unique_ptr<base::DictValue>* to_set,
                  const base::Value& option,
                  Capabilities* capabilities) {
-  const base::Value::Dict* dict = option.GetIfDict();
+  const base::DictValue* dict = option.GetIfDict();
   if (!dict)
     return Status(kInvalidArgument, "must be a dictionary");
-  *to_set = std::make_unique<base::Value::Dict>(dict->Clone());
+  *to_set = std::make_unique<base::DictValue>(dict->Clone());
   return Status(kOk);
 }
 
@@ -139,7 +139,7 @@ Status ParseDeviceName(const std::string& device_name,
 
 Status ParseMobileEmulation(const base::Value& option,
                             Capabilities* capabilities) {
-  const base::Value::Dict* mobile_emulation = option.GetIfDict();
+  const base::DictValue* mobile_emulation = option.GetIfDict();
   if (!mobile_emulation)
     return Status(kInvalidArgument, "'mobileEmulation' must be a dictionary");
 
@@ -171,7 +171,7 @@ Status ParseMobileEmulation(const base::Value& option,
   }
 
   if (mobile_emulation->Find("deviceMetrics")) {
-    const base::Value::Dict* metrics =
+    const base::DictValue* metrics =
         mobile_emulation->FindDict("deviceMetrics");
     if (!metrics)
       return Status(kInvalidArgument, "'deviceMetrics' must be a dictionary");
@@ -239,7 +239,7 @@ Status ParseMobileEmulation(const base::Value& option,
     if (!mobile_emulation->Find("clientHints")->is_dict()) {
       return Status{kInvalidArgument, "'clientHints' must be a dictionary"};
     }
-    const base::Value::Dict& client_hints_dict =
+    const base::DictValue& client_hints_dict =
         *mobile_emulation->FindDict("clientHints");
 
     ClientHints client_hints;
@@ -322,8 +322,7 @@ Status ParseMobileEmulation(const base::Value& option,
     }
 
     if (client_hints_dict.Find("brands")) {
-      const base::Value::List* brand_list =
-          client_hints_dict.FindList("brands");
+      const base::ListValue* brand_list = client_hints_dict.FindList("brands");
       if (!brand_list) {
         return Status(kInvalidArgument,
                       "'clientHints.brands' must be an array of objects");
@@ -358,7 +357,7 @@ Status ParseMobileEmulation(const base::Value& option,
     }
 
     if (client_hints_dict.Find("fullVersionList")) {
-      const base::Value::List* full_version_list_list =
+      const base::ListValue* full_version_list_list =
           client_hints_dict.FindList("fullVersionList");
       if (!full_version_list_list) {
         return Status(
@@ -508,7 +507,7 @@ Status ParseUnhandledPromptBehavior(bool w3c_compliant,
 }
 
 Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
-  const base::Value::Dict* timeouts = option.GetIfDict();
+  const base::DictValue* timeouts = option.GetIfDict();
   if (!timeouts)
     return Status(kInvalidArgument, "'timeouts' must be a JSON object");
   for (auto it : *timeouts) {
@@ -573,7 +572,7 @@ Status ParseExtensions(const base::Value& option, Capabilities* capabilities) {
 Status ParseProxy(bool w3c_compliant,
                   const base::Value& option,
                   Capabilities* capabilities) {
-  const base::Value::Dict* proxy_dict = option.GetIfDict();
+  const base::DictValue* proxy_dict = option.GetIfDict();
   if (!proxy_dict)
     return Status(kInvalidArgument, "must be a dictionary");
   const std::string* proxy_type_str = proxy_dict->FindString("proxyType");
@@ -735,7 +734,7 @@ Status ParseNetAddress(NetAddress* to_set,
 
 Status ParseLoggingPrefs(const base::Value& option,
                          Capabilities* capabilities) {
-  const base::Value::Dict* logging_prefs = option.GetIfDict();
+  const base::DictValue* logging_prefs = option.GetIfDict();
   if (!logging_prefs)
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -767,7 +766,7 @@ Status ParseInspectorDomainStatus(
 
 Status ParsePerfLoggingPrefs(const base::Value& option,
                              Capabilities* capabilities) {
-  const base::Value::Dict* perf_logging_prefs = option.GetIfDict();
+  const base::DictValue* perf_logging_prefs = option.GetIfDict();
   if (!perf_logging_prefs)
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -824,7 +823,7 @@ Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
 Status ParseChromeOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::Value::Dict* chrome_options = capability.GetIfDict();
+  const base::DictValue* chrome_options = capability.GetIfDict();
   if (!chrome_options)
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -923,7 +922,7 @@ Status ParseChromeOptions(
 Status ParseSeleniumOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::Value::Dict* selenium_options = capability.GetIfDict();
+  const base::DictValue* selenium_options = capability.GetIfDict();
   if (!selenium_options)
     return Status(kInvalidArgument, "must be a dictionary");
   std::map<std::string, Parser> parser_map;
@@ -940,9 +939,9 @@ Status ParseSeleniumOptions(
 }
 }  // namespace
 
-bool GetChromeOptionsDictionary(const base::Value::Dict& params,
-                                const base::Value::Dict** out) {
-  const base::Value::Dict* result =
+bool GetChromeOptionsDictionary(const base::DictValue& params,
+                                const base::DictValue** out) {
+  const base::DictValue* result =
       params.FindDict(kChromeDriverOptionsKeyPrefixed);
   if (result) {
     *out = result;
@@ -1141,7 +1140,7 @@ Status Capabilities::MigrateCapabilities() {
   return Status(kOk);
 }
 
-Status Capabilities::Parse(const base::Value::Dict& desired_caps,
+Status Capabilities::Parse(const base::DictValue& desired_caps,
                            bool w3c_compliant) {
   std::map<std::string, Parser> parser_map;
 
@@ -1206,7 +1205,7 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
   // Network emulation requires device mode, which is only enabled when
   // mobile emulation is on.
 
-  const base::Value::Dict* chrome_options = nullptr;
+  const base::DictValue* chrome_options = nullptr;
   if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
       chrome_options->FindDict("mobileEmulation")) {
     parser_map["networkConnectionEnabled"] =

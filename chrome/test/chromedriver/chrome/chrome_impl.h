@@ -51,7 +51,7 @@ struct WindowBounds {
   std::optional<Position> position;
   std::optional<Size> size;
   std::optional<std::string> state;
-  base::Value::Dict ToDict() const;
+  base::DictValue ToDict() const;
   bool Matches(const Window& window) const;
 };
 }  // namespace internal
@@ -82,14 +82,14 @@ class ChromeImpl : public Chrome {
                    std::string* window_handle) override;
   Status GetWindowRect(const std::string& id, WindowRect* rect) override;
   Status SetWindowRect(const std::string& target_id,
-                       const base::Value::Dict& params) override;
+                       const base::DictValue& params) override;
   Status MaximizeWindow(const std::string& target_id) override;
   Status MinimizeWindow(const std::string& target_id) override;
   Status FullScreenWindow(const std::string& target_id) override;
   Status CloseWebView(const std::string& id) override;
   Status ActivateWebView(const std::string& id) override;
   Status SetAcceptInsecureCerts() override;
-  Status SetPermission(std::unique_ptr<base::Value::Dict> permission_descriptor,
+  Status SetPermission(std::unique_ptr<base::DictValue> permission_descriptor,
                        PermissionState desired_state,
                        WebView* current_view,
                        const std::string& current_frame_id) override;
@@ -117,8 +117,8 @@ class ChromeImpl : public Chrome {
 
   virtual Status GetWindow(const std::string& tab_target_id,
                            internal::Window& window);
-  Status ParseWindow(const base::Value::Dict& params, internal::Window& window);
-  Status ParseWindowBounds(const base::Value::Dict& params,
+  Status ParseWindow(const base::DictValue& params, internal::Window& window);
+  Status ParseWindowBounds(const base::DictValue& params,
                            internal::Window& window);
   Status GetWindowBounds(int window_id, internal::Window& window);
   Status SetWindowBounds(internal::Window window,
@@ -135,7 +135,7 @@ class ChromeImpl : public Chrome {
 
  private:
   static Status PermissionNameToChromePermissions(
-      const base::Value::Dict& permission_descriptor,
+      const base::DictValue& permission_descriptor,
       Chrome::PermissionState setting,
       std::vector<std::string>* chrome_permissions);
 

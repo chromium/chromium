@@ -27,7 +27,7 @@ class CommandInjectingSocket : public SyncWebSocketWrapper {
 
   void SetMethod(std::string method);
 
-  void SetParams(base::Value::Dict params);
+  void SetParams(base::DictValue params);
 
   void SetSessionId(std::string session_id);
 
@@ -36,7 +36,7 @@ class CommandInjectingSocket : public SyncWebSocketWrapper {
  protected:
   bool InterceptResponse(const std::string& message);
 
-  base::Value::Dict params_;
+  base::DictValue params_;
   std::string method_;
   std::string session_id_;
   int next_cmd_id = 1000'000'000;

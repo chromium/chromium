@@ -388,11 +388,11 @@ class GetChromeInstallPathWithPrefsTest
     return result;
   }
 
-  static base::Value::Dict prefs_json() {
+  static base::DictValue prefs_json() {
     base::FilePath result;
     if (GetParam().target_dir_key.has_value())
       base::PathService::Get(GetParam().target_dir_key.value(), &result);
-    base::Value::Dict distribution;
+    base::DictValue distribution;
     distribution.SetByDottedPath("distribution.program_files_dir",
                                  result.AsUTF8Unsafe());
     return distribution;

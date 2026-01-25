@@ -180,11 +180,11 @@ TEST(FirefoxImporterUtilsTest, GetProfilesINI) {
 #endif
 
 TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
-  base::Value::Dict no_profiles;
+  base::DictValue no_profiles;
   EXPECT_EQ(0u,
             GetFirefoxDetailsFromDictionary(no_profiles, std::string()).size());
 
-  base::Value::Dict single_profile;
+  base::DictValue single_profile;
   single_profile.SetByDottedPath("Profile0.Path", "first");
   // Ensure that when there is only one profile the profile name shown in the UI
   // is empty, since there's no need to disambiguate among multiple profiles
@@ -198,7 +198,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
                            base::FilePath(FILE_PATH_LITERAL("first")),
                            std::u16string()}));
 
-  base::Value::Dict no_default;
+  base::DictValue no_default;
   no_default.SetByDottedPath("Profile0.Path", "first");
   no_default.SetByDottedPath("Profile0.Name", "namey");
   no_default.SetByDottedPath("Profile0.IsRelative", "0");
@@ -214,7 +214,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
           FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
                         u"namey name"}));
 
-  base::Value::Dict default_first;
+  base::DictValue default_first;
   default_first.SetByDottedPath("Profile0.Path", "first");
   default_first.SetByDottedPath("Profile0.Name", "namey");
   default_first.SetByDottedPath("Profile0.IsRelative", "0");
@@ -231,7 +231,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
           FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
                         u"namey name"}));
 
-  base::Value::Dict default_second;
+  base::DictValue default_second;
   default_second.SetByDottedPath("Profile0.Path", "first");
   default_second.SetByDottedPath("Profile0.Name", "namey");
   default_second.SetByDottedPath("Profile0.IsRelative", "0");
@@ -249,7 +249,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
                         u"namey name"}));
 
   // Firefox format from version 67
-  base::Value::Dict default_single_install;
+  base::DictValue default_single_install;
   default_single_install.SetByDottedPath("Install01.Default", "second");
   default_single_install.SetByDottedPath("Profile0.IsRelative", "0");
   default_single_install.SetByDottedPath("Profile0.Default", "1");
@@ -259,7 +259,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
       GetFirefoxDetailsFromDictionary(default_single_install, std::string());
   EXPECT_EQ("second", default_single_install_details[0].path.MaybeAsASCII());
 
-  base::Value::Dict default_single_install_unknown_profile;
+  base::DictValue default_single_install_unknown_profile;
   default_single_install_unknown_profile.SetByDottedPath("Install01.Default",
                                                          "wrong");
   default_single_install_unknown_profile.SetByDottedPath("Profile0.Path",
@@ -306,7 +306,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
                                 std::u16string()}));
 
-  base::Value::Dict one_of_profiles_is_not_ascii_named;
+  base::DictValue one_of_profiles_is_not_ascii_named;
   one_of_profiles_is_not_ascii_named.SetByDottedPath("Profile0.Path", "first");
   one_of_profiles_is_not_ascii_named.SetByDottedPath("Profile0.Name", "namey");
   one_of_profiles_is_not_ascii_named.SetByDottedPath("Profile0.IsRelative",

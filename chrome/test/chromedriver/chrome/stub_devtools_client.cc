@@ -66,53 +66,52 @@ void StubDevToolsClient::SetAutoAcceptBeforeunload(bool value) {
   autoaccept_beforeunload_ = value;
 }
 
-Status StubDevToolsClient::PostBidiCommand(base::Value::Dict command) {
+Status StubDevToolsClient::PostBidiCommand(base::DictValue command) {
   return Status{kOk};
 }
 
 Status StubDevToolsClient::SendCommand(const std::string& method,
-                                       const base::Value::Dict& params) {
-  base::Value::Dict result;
+                                       const base::DictValue& params) {
+  base::DictValue result;
   return SendCommandAndGetResult(method, params, &result);
 }
 
 Status StubDevToolsClient::SendCommandFromWebSocket(
     const std::string& method,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     const int client_command_id) {
   return SendCommand(method, params);
 }
 
-Status StubDevToolsClient::SendCommandWithTimeout(
-    const std::string& method,
-    const base::Value::Dict& params,
-    const Timeout* timeout) {
+Status StubDevToolsClient::SendCommandWithTimeout(const std::string& method,
+                                                  const base::DictValue& params,
+                                                  const Timeout* timeout) {
   return SendCommand(method, params);
 }
 
 Status StubDevToolsClient::SendAsyncCommand(const std::string& method,
-                                            const base::Value::Dict& params) {
+                                            const base::DictValue& params) {
   return SendCommand(method, params);
 }
 
 Status StubDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
-    const base::Value::Dict& params,
-    base::Value::Dict* result) {
+    const base::DictValue& params,
+    base::DictValue* result) {
   return Status(kOk);
 }
 
 Status StubDevToolsClient::SendCommandAndGetResultWithTimeout(
     const std::string& method,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     const Timeout* timeout,
-    base::Value::Dict* result) {
+    base::DictValue* result) {
   return SendCommandAndGetResult(method, params, result);
 }
 
 Status StubDevToolsClient::SendCommandAndIgnoreResponse(
     const std::string& method,
-    const base::Value::Dict& params) {
+    const base::DictValue& params) {
   return SendCommand(method, params);
 }
 

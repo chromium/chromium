@@ -346,7 +346,7 @@ TEST(PermissionsTest, CreateUnion) {
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
@@ -392,7 +392,7 @@ TEST(PermissionsTest, CreateUnion) {
 
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-send-to::8899");
     base::Value value(std::move(list));
@@ -406,7 +406,7 @@ TEST(PermissionsTest, CreateUnion) {
 
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
@@ -473,7 +473,7 @@ TEST(PermissionsTest, CreateIntersection) {
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
@@ -511,7 +511,7 @@ TEST(PermissionsTest, CreateIntersection) {
   apis2.insert(APIPermissionID::kClipboardWrite);
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
     list.Append("udp-send-to::8899");
@@ -523,7 +523,7 @@ TEST(PermissionsTest, CreateIntersection) {
   expected_apis.insert(APIPermissionID::kTab);
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
     base::Value value(std::move(list));
@@ -587,7 +587,7 @@ TEST(PermissionsTest, CreateDifference) {
   std::unique_ptr<APIPermission> permission =
       permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
@@ -614,7 +614,7 @@ TEST(PermissionsTest, CreateDifference) {
   apis2.insert(APIPermissionID::kClipboardWrite);
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("tcp-connect:*.example.com:80");
     list.Append("udp-send-to::8899");
     base::Value value(std::move(list));
@@ -625,7 +625,7 @@ TEST(PermissionsTest, CreateDifference) {
   expected_apis.insert(APIPermissionID::kBackground);
   permission = permission_info->CreateAPIPermission();
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("udp-bind::8080");
     list.Append("udp-send-to::8888");
     base::Value value(std::move(list));

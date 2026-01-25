@@ -62,7 +62,7 @@ class TestSudoHelperClient {
  private:
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);
 
-  Result SendDictAndGetResult(const base::Value::Dict& dict,
+  Result SendDictAndGetResult(const base::DictValue& dict,
                               base::ScopedFD* out_sock = nullptr,
                               bool fatal_on_connection_error = true);
 

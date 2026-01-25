@@ -35,7 +35,7 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
   Status OnConnected(DevToolsClient* client) override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
   bool IsEmulatingTouch() const;
   bool HasOverrideMetrics() const;

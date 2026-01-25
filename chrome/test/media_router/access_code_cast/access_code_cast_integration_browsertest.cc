@@ -346,7 +346,7 @@ int AccessCodeCastIntegrationBrowserTest::WaitForAddSinkErrorCode(
 
 bool AccessCodeCastIntegrationBrowserTest::HasSinkInDevicesDict(
     const MediaSink::Id& sink_id) {
-  base::test::TestFuture<base::Value::Dict> media_sink;
+  base::test::TestFuture<base::DictValue> media_sink;
   GetPrefUpdater()->GetMediaSinkInternalValueBySinkId(sink_id,
                                                       media_sink.GetCallback());
 

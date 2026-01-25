@@ -111,26 +111,26 @@ class DevToolsClientImpl : public DevToolsClient {
   bool IsDialogOpen() const override;
   bool AutoAcceptsBeforeunload() const override;
   void SetAutoAcceptBeforeunload(bool value) override;
-  Status PostBidiCommand(base::Value::Dict command) override;
+  Status PostBidiCommand(base::DictValue command) override;
   Status SendCommand(const std::string& method,
-                     const base::Value::Dict& params) override;
+                     const base::DictValue& params) override;
   Status SendCommandFromWebSocket(const std::string& method,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   int client_command_id) override;
   Status SendCommandWithTimeout(const std::string& method,
-                                const base::Value::Dict& params,
+                                const base::DictValue& params,
                                 const Timeout* timeout) override;
   Status SendAsyncCommand(const std::string& method,
-                          const base::Value::Dict& params) override;
+                          const base::DictValue& params) override;
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override;
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override;
   Status SendCommandAndGetResultWithTimeout(const std::string& method,
-                                            const base::Value::Dict& params,
+                                            const base::DictValue& params,
                                             const Timeout* timeout,
-                                            base::Value::Dict* result) override;
+                                            base::DictValue* result) override;
   Status SendCommandAndIgnoreResponse(const std::string& method,
-                                      const base::Value::Dict& params) override;
+                                      const base::DictValue& params) override;
 
   // Add a listener for connection and events.
   // Listeners cannot be added to the object that is already connected.
@@ -198,12 +198,11 @@ class DevToolsClientImpl : public DevToolsClient {
     friend class base::RefCounted<ResponseInfo>;
     ~ResponseInfo();
   };
-  Status PostBidiCommandInternal(std::string channel,
-                                 base::Value::Dict command);
+  Status PostBidiCommandInternal(std::string channel, base::DictValue command);
   Status SendCommandInternal(const std::string& method,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              const std::string& session_id,
-                             base::Value::Dict* result,
+                             base::DictValue* result,
                              bool expect_response,
                              bool wait_for_response,
                              int client_command_id,
@@ -213,8 +212,8 @@ class DevToolsClientImpl : public DevToolsClient {
   Status EnsureListenersNotifiedOfCommandResponse();
   Status SetUpDevTools();
   Status SetupTabTarget();
-  Status HandleDialogOpening(const base::Value::Dict& params);
-  Status HandleDialogClosed(const base::Value::Dict& params);
+  Status HandleDialogOpening(const base::DictValue& params);
+  Status HandleDialogClosed(const base::DictValue& params);
 
   std::unique_ptr<SyncWebSocket> socket_;
   // WebViewImpl that owns this instance; nullptr for browser-wide DevTools.

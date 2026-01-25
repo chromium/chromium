@@ -55,11 +55,11 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
   }
 
   void VerifyNoCustomApnsInShill() {
-    const base::Value::Dict* cellular_properties =
+    const base::DictValue* cellular_properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             esim_info().service_path());
     ASSERT_TRUE(cellular_properties);
-    const base::Value::List* shill_custom_apns =
+    const base::ListValue* shill_custom_apns =
         cellular_properties->FindList(shill::kCellularCustomApnListProperty);
     if (shill_custom_apns) {
       EXPECT_EQ(0u, shill_custom_apns->size());
@@ -69,11 +69,11 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
   void VerifyCustomApnInShill(bool expect_exists,
                               const std::string& expected_apn_name,
                               const std::string& expected_apn_type) {
-    const base::Value::Dict* cellular_properties =
+    const base::DictValue* cellular_properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             esim_info().service_path());
     ASSERT_TRUE(cellular_properties);
-    const base::Value::List* shill_custom_apns =
+    const base::ListValue* shill_custom_apns =
         cellular_properties->FindList(shill::kCellularCustomApnListProperty);
     ASSERT_TRUE(shill_custom_apns);
 
@@ -96,11 +96,11 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
   }
 
   void VerifyLastGoodApn(const std::string& expected_apn_name) {
-    const base::Value::Dict* cellular_properties =
+    const base::DictValue* cellular_properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             esim_info().service_path());
     ASSERT_TRUE(cellular_properties);
-    const base::Value::Dict* last_good_apn =
+    const base::DictValue* last_good_apn =
         cellular_properties->FindDict(shill::kCellularLastGoodApnProperty);
     ASSERT_TRUE(last_good_apn);
     const std::string* apn_name =
@@ -309,12 +309,12 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
               Log("Prohibiting APN modification with policy"),
 
               Do([this, with_managed_network]() {
-                auto network_configs = base::Value::List();
+                auto network_configs = base::ListValue();
                 if (with_managed_network) {
                   network_configs.Append(GenerateCellularPolicy(
                       esim_info(), /*allow_apn_modification=*/false));
                 }
-                base::Value::Dict global_config;
+                base::DictValue global_config;
                 global_config.Set(
                     ::onc::global_network_config::kAllowAPNModification, false);
                 NetworkHandler::Get()
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, ApnPolicyWithManagedNetwork) {
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
-  base::Value::Dict global_config;
+  base::DictValue global_config;
   global_config.Set(::onc::global_network_config::kAllowAPNModification, true);
 
   // Run the following steps with the OS Settings context set as the default.

@@ -1084,8 +1084,8 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     bool images_enabled,
     read_anything::mojom::Colors color,
     double speech_rate,
-    base::Value::Dict voices,
-    base::Value::List languages_enabled_in_pref,
+    base::DictValue voices,
+    base::ListValue languages_enabled_in_pref,
     read_anything::mojom::HighlightGranularity granularity,
     read_anything::mojom::LineFocus line_focus) {
   read_aloud_model_.OnSettingsRestoredFromPrefs(

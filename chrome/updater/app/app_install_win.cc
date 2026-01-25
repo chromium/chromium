@@ -634,7 +634,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     return;
   }
 
-  base::Value::Dict install_settings_dict;
+  base::DictValue install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);
 
   const base::CommandLine cmd_line(*base::CommandLine::ForCurrentProcess());

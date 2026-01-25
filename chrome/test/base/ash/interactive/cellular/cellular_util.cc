@@ -100,9 +100,9 @@ void ConfigureEsimProfile(const EuiccInfo& euicc_info,
   }
 }
 
-base::Value::Dict GenerateCellularPolicy(const SimInfo& info,
-                                         bool allow_apn_modification,
-                                         bool allow_roaming) {
+base::DictValue GenerateCellularPolicy(const SimInfo& info,
+                                       bool allow_apn_modification,
+                                       bool allow_roaming) {
   auto network_config =
       chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
           kCellularPolicyPattern, info.guid().c_str(), info.iccid().c_str()));
@@ -110,11 +110,11 @@ base::Value::Dict GenerateCellularPolicy(const SimInfo& info,
   auto* cellular = network_config->FindDict(onc::network_type::kCellular);
   CHECK(cellular);
   if (allow_apn_modification) {
-    base::Value::List recommended;
+    base::ListValue recommended;
     recommended.Append(base::Value(onc::cellular::kCustomAPNList));
     cellular->Set(onc::kRecommended, std::move(recommended));
   } else {
-    cellular->Set(::onc::cellular::kCustomAPNList, base::Value::List());
+    cellular->Set(::onc::cellular::kCustomAPNList, base::ListValue());
   }
   cellular->Set(::onc::cellular::kAllowRoaming, allow_roaming);
   return std::move(*network_config);

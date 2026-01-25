@@ -32,7 +32,7 @@ BrowserInfo& BrowserInfo::operator=(const BrowserInfo&) = default;
 BrowserInfo& BrowserInfo::operator=(BrowserInfo&&) = default;
 
 Status BrowserInfo::FillFromBrowserVersionResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   const std::string* browser_string = response.FindString("product");
   if (!browser_string) {
     return Status(kUnknownError, "version doesn't include 'Browser'");

@@ -72,9 +72,9 @@ class HttpServiceRequest {
   // within the given |request_timeout|. If the background thread returns before
   // the timeout expires, it is guaranteed that a result can be returned and the
   // requester will delete itself.
-  std::optional<base::Value::Dict> WaitForResponseFromHttpService(
+  std::optional<base::DictValue> WaitForResponseFromHttpService(
       const base::TimeDelta& request_timeout) {
-    std::optional<base::Value::Dict> result;
+    std::optional<base::DictValue> result;
 
     // Start the thread and wait on its handle until |request_timeout| expires
     // or the thread finishes.
@@ -446,10 +446,10 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     const GURL& request_url,
     std::string access_token,
     const std::vector<std::pair<std::string, std::string>>& headers,
-    const base::Value::Dict& request_dict,
+    const base::DictValue& request_dict,
     const base::TimeDelta& request_timeout,
     unsigned int request_retries,
-    std::optional<base::Value::Dict>* request_result) {
+    std::optional<base::DictValue>* request_result) {
   DCHECK(request_result);
 
   std::string request_body;
@@ -481,7 +481,7 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
 
     *request_result = std::move(extracted_param);
 
-    const base::Value::Dict* error_detail =
+    const base::DictValue* error_detail =
         (*request_result)->FindDict(kErrorKeyInRequestResult);
     if (!error_detail)
       return S_OK;

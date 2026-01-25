@@ -82,12 +82,12 @@ scoped_refptr<const Extension> GetExtensionWithHostPermission(
     const std::string& id,
     const std::string& host_permissions,
     ManifestLocation location) {
-  base::Value::List permissions;
+  base::ListValue permissions;
   if (!host_permissions.empty())
     permissions.Append(host_permissions);
 
   return ExtensionBuilder()
-      .SetManifest(base::Value::Dict()
+      .SetManifest(base::DictValue()
                        .Set("name", id)
                        .Set("description", "an extension")
                        .Set("manifest_version", 2)

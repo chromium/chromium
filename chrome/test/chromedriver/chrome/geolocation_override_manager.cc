@@ -29,7 +29,7 @@ Status GeolocationOverrideManager::OnConnected(DevToolsClient* client) {
 
 Status GeolocationOverrideManager::OnEvent(DevToolsClient* client,
                                            const std::string& method,
-                                           const base::Value::Dict& params) {
+                                           const base::DictValue& params) {
   if (method == "Page.frameNavigated") {
     if (!params.FindByDottedPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
@@ -41,7 +41,7 @@ Status GeolocationOverrideManager::ApplyOverrideIfNeeded() {
   if (!overridden_geoposition_)
     return Status(kOk);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("latitude", overridden_geoposition_->latitude);
   params.Set("longitude", overridden_geoposition_->longitude);
   params.Set("accuracy", overridden_geoposition_->accuracy);

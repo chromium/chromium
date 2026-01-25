@@ -182,11 +182,11 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
-// Overload for base::Value::Dict switches.
+// Overload for base::DictValue switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::Dict&, Args...)> callback) {
+    base::RepeatingCallback<bool(const base::DictValue&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
@@ -195,11 +195,11 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
-// Overload for base::Value::List switches.
+// Overload for base::ListValue switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::List&, Args...)> callback) {
+    base::RepeatingCallback<bool(const base::ListValue&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {

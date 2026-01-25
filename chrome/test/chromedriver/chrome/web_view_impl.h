@@ -104,17 +104,17 @@ class WebViewImpl : public WebView {
   Status Resume(const Timeout* timeout) override;
   Status StartBidiServer(std::string bidi_mapper_script,
                          bool enable_unsafe_extension_debugging) override;
-  Status PostBidiCommand(base::Value::Dict command) override;
-  Status SendBidiCommand(base::Value::Dict command,
+  Status PostBidiCommand(base::DictValue command) override;
+  Status SendBidiCommand(base::DictValue command,
                          const Timeout& timeout,
-                         base::Value::Dict& response) override;
+                         base::DictValue& response) override;
   Status SendCommand(const std::string& cmd,
-                     const base::Value::Dict& params) override;
+                     const base::DictValue& params) override;
   Status SendCommandFromWebSocket(const std::string& cmd,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   const int client_cmd_id) override;
   Status SendCommandAndGetResult(const std::string& cmd,
-                                 const base::Value::Dict& params,
+                                 const base::DictValue& params,
                                  std::unique_ptr<base::Value>* value) override;
   Status TraverseHistory(int delta, const Timeout* timeout) override;
   Status EvaluateScript(const std::string& frame,
@@ -123,27 +123,27 @@ class WebViewImpl : public WebView {
                         std::unique_ptr<base::Value>* result) override;
   Status CallFunctionWithTimeout(const std::string& frame,
                                  const std::string& function,
-                                 const base::Value::List& args,
+                                 const base::ListValue& args,
                                  const base::TimeDelta& timeout,
                                  const CallFunctionOptions& options,
                                  std::unique_ptr<base::Value>* result) override;
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::Value::List& args,
+                      const base::ListValue& args,
                       std::unique_ptr<base::Value>* result) override;
   Status CallUserSyncScript(const std::string& frame,
                             const std::string& script,
-                            const base::Value::List& args,
+                            const base::ListValue& args,
                             const base::TimeDelta& timeout,
                             std::unique_ptr<base::Value>* result) override;
   Status CallUserAsyncFunction(const std::string& frame,
                                const std::string& function,
-                               const base::Value::List& args,
+                               const base::ListValue& args,
                                const base::TimeDelta& timeout,
                                std::unique_ptr<base::Value>* result) override;
   Status GetFrameByFunction(const std::string& frame,
                             const std::string& function,
-                            const base::Value::List& args,
+                            const base::ListValue& args,
                             std::string* out_frame) override;
   Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                              const std::string& frame,
@@ -187,8 +187,8 @@ class WebViewImpl : public WebView {
   Status OverrideDownloadDirectoryIfNeeded(
       const std::string& download_directory) override;
   Status CaptureScreenshot(std::string* screenshot,
-                           const base::Value::Dict& params) override;
-  Status PrintToPDF(const base::Value::Dict& params, std::string* pdf) override;
+                           const base::DictValue& params) override;
+  Status PrintToPDF(const base::DictValue& params, std::string* pdf) override;
   Status SetFileInputFiles(const std::string& frame,
                            const base::Value& element,
                            const std::vector<base::FilePath>& files,
@@ -249,13 +249,13 @@ class WebViewImpl : public WebView {
                      std::string& loader_id);
   Status CallFunctionWithTimeoutInternal(std::string frame,
                                          std::string function,
-                                         base::Value::List args,
+                                         base::ListValue args,
                                          const base::TimeDelta& timeout,
                                          bool include_shadow_root,
                                          std::unique_ptr<base::Value>* result);
   Status CallAsyncFunctionInternal(const std::string& frame,
                                    const std::string& function,
-                                   const base::Value::List& args,
+                                   const base::ListValue& args,
                                    const base::TimeDelta& timeout,
                                    std::unique_ptr<base::Value>* result);
   Status IsNotPendingNavigation(const std::string& frame_id,
@@ -267,23 +267,23 @@ class WebViewImpl : public WebView {
                                          const std::string& expected_loader_id,
                                          const Timeout& timeout,
                                          base::Value& arg,
-                                         base::Value::List& nodes);
+                                         base::ListValue& nodes);
   Status ResolveElementReferencesInPlace(const std::string& expected_frame_id,
                                          const std::string& context_id,
                                          const std::string& object_group_name,
                                          const std::string& expected_loader_id,
                                          const Timeout& timeout,
-                                         base::Value::Dict& arg_dict,
-                                         base::Value::List& nodes);
+                                         base::DictValue& arg_dict,
+                                         base::ListValue& nodes);
   Status ResolveElementReferencesInPlace(const std::string& expected_frame_id,
                                          const std::string& context_id,
                                          const std::string& object_group_name,
                                          const std::string& expected_loader_id,
                                          const Timeout& timeout,
-                                         base::Value::List& arg_list,
-                                         base::Value::List& nodes);
+                                         base::ListValue& arg_list,
+                                         base::ListValue& nodes);
   Status CreateElementReferences(const std::string& frame_id,
-                                 const base::Value::List& nodes,
+                                 const base::ListValue& nodes,
                                  bool include_shadow_root,
                                  base::Value& res);
 
@@ -358,7 +358,7 @@ Status EvaluateScript(DevToolsClient* client,
                       const std::string& expression,
                       const base::TimeDelta& timeout,
                       const bool await_promise,
-                      base::Value::Dict& result);
+                      base::DictValue& result);
 Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  const std::string& context_id,
                                  const std::string& expression,

@@ -52,7 +52,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectClean(updater_scope_);
   }
 
-  void Install(const base::Value::List& switches) const override {
+  void Install(const base::ListValue& switches) const override {
     updater::test::Install(updater_scope_, switches);
   }
 
@@ -65,7 +65,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                             const bool expect_success,
                             const bool wait_for_the_installer,
                             const int expected_exit_code,
-                            const base::Value::List& additional_switches,
+                            const base::ListValue& additional_switches,
                             const base::FilePath& updater_path) const override {
     updater::test::InstallUpdaterAndApp(
         updater_scope_, app_id, is_silent_install, tag,
@@ -107,11 +107,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
-  void SetDictPolicies(const base::Value::Dict& values) const override {
+  void SetDictPolicies(const base::DictValue& values) const override {
     updater::test::SetDictPolicies(values);
   }
 
-  void SetPlatformPolicies(const base::Value::Dict& values) const override {
+  void SetPlatformPolicies(const base::DictValue& values) const override {
     updater::test::SetPlatformPolicies(values);
   }
 
@@ -229,7 +229,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void SetupRealUpdater(const base::FilePath& updater_path,
-                        const base::Value::List& switches) const override {
+                        const base::ListValue& switches) const override {
     updater::test::SetupRealUpdater(updater_scope_, updater_path, switches);
   }
 
@@ -329,8 +329,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
 
-  void GetAppStates(
-      const base::Value::Dict& expected_app_states) const override {
+  void GetAppStates(const base::DictValue& expected_app_states) const override {
     updater::test::GetAppStates(updater_scope_, expected_app_states);
   }
 
@@ -382,7 +381,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       int expected_exit_code) const override {
     updater::test::ExpectLegacyAppCommandWebSucceeds(
         updater_scope_, app_id, command_id, parameters, expected_exit_code);
@@ -426,7 +425,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void InstallAppViaService(
       const std::string& app_id,
-      const base::Value::Dict& expected_final_values) const override {
+      const base::DictValue& expected_final_values) const override {
     updater::test::InstallAppViaService(updater_scope_, app_id,
                                         expected_final_values);
   }
@@ -572,7 +571,7 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void InstallEnterpriseCompanionAppOverrides(
-      const base::Value::Dict& external_overrides) override {
+      const base::DictValue& external_overrides) override {
     updater::test::InstallEnterpriseCompanionAppOverrides(external_overrides);
   }
 
