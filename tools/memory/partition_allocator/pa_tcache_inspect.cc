@@ -487,10 +487,10 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
             << "kiB";
 }
 
-base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
+base::DictValue Dump(PartitionRootInspector& root_inspector) {
   auto slot_span_to_value = [](const SlotSpanMetadata& slot_span,
                                size_t slots_per_span) {
-    base::Value::Dict result;
+    base::DictValue result;
 
     result.Set("num_allocated_slots", slot_span.num_allocated_slots);
     result.Set("num_unprovisioned_slots", slot_span.num_unprovisioned_slots);
@@ -509,7 +509,7 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
   };
 
   auto bucket_to_value = [&](const PartitionRootInspector::BucketStats& stats) {
-    base::Value::Dict result;
+    base::DictValue result;
     const size_t kPageSize = base::GetPageSize();
     size_t slots_per_span =
         (stats.bucket.num_system_pages_per_slot_span * kPageSize) /
@@ -523,19 +523,19 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
     result.Set("allocated_slots", static_cast<int>(stats.allocated_slots));
     result.Set("freelist_size", static_cast<int>(stats.freelist_size));
 
-    base::Value::List active_list;
+    base::ListValue active_list;
     for (auto& slot_span : stats.active_slot_spans) {
       active_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.Set("active_slot_spans", std::move(active_list));
 
-    base::Value::List empty_list;
+    base::ListValue empty_list;
     for (auto& slot_span : stats.empty_slot_spans) {
       empty_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.Set("empty_slot_spans", std::move(empty_list));
 
-    base::Value::List decommitted_list;
+    base::ListValue decommitted_list;
     for (auto& slot_span : stats.decommitted_slot_spans) {
       decommitted_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
@@ -544,12 +544,12 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
     return result;
   };
 
-  base::Value::List bucket_stats;
+  base::ListValue bucket_stats;
   for (const auto& stats : root_inspector.bucket_stats()) {
     bucket_stats.Append(bucket_to_value(stats));
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("buckets", std::move(bucket_stats));
   return result;
 }
@@ -622,7 +622,7 @@ int main(int argc, char** argv) {
                       (iter / 50) % root_inspector.bucket_stats().size());
 
       if (!json_filename.empty()) {
-        base::Value::Dict dump = Dump(root_inspector);
+        base::DictValue dump = Dump(root_inspector);
         std::string json_string;
         ok = base::JSONWriter::WriteWithOptions(
             dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);

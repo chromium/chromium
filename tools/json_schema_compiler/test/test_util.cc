@@ -23,18 +23,18 @@ base::Value ReadJson(std::string_view json) {
 }
 
 base::Value List(base::Value a) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(a));
   return base::Value(std::move(list));
 }
 base::Value List(base::Value a, base::Value b) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(a));
   list.Append(std::move(b));
   return base::Value(std::move(list));
 }
 base::Value List(base::Value a, base::Value b, base::Value c) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(a));
   list.Append(std::move(b));
   list.Append(std::move(c));
@@ -42,7 +42,7 @@ base::Value List(base::Value a, base::Value b, base::Value c) {
 }
 
 base::Value Dictionary(const std::string& ak, base::Value av) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(ak, std::move(av));
   return base::Value(std::move(dict));
 }
@@ -50,7 +50,7 @@ base::Value Dictionary(const std::string& ak,
                        base::Value av,
                        const std::string& bk,
                        base::Value bv) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(ak, std::move(av));
   dict.Set(bk, std::move(bv));
   return base::Value(std::move(dict));
@@ -61,7 +61,7 @@ base::Value Dictionary(const std::string& ak,
                        base::Value bv,
                        const std::string& ck,
                        base::Value cv) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(ak, std::move(av));
   dict.Set(bk, std::move(bv));
   dict.Set(ck, std::move(cv));

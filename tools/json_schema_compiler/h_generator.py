@@ -220,7 +220,7 @@ class _Generator(object):
           (c.Append('using %s = std::vector<%s >;' %
                     (classname, item_cpp_type)))
         else:
-          c.Append('using %s = base::Value::List;' % classname)
+          c.Append('using %s = base::ListValue;' % classname)
     elif type_.property_type == PropertyType.STRING:
       if generate_typedefs:
         if type_.description:
@@ -258,7 +258,7 @@ class _Generator(object):
         c.Concat(self._GenerateManifestKeyConstants(type_.properties.values()))
 
       value_type = ('base::Value' if type_.property_type is PropertyType.CHOICES
-                    else 'base::Value::Dict')
+                    else 'base::DictValue')
 
       if (type_.origin.from_json
           or (type_.origin.from_manifest_keys
@@ -274,7 +274,7 @@ class _Generator(object):
             .Comment('Populates a %s object from a Dict& instance. Returns'
                     ' whether |out| was successfully populated.' %  classname) \
             .Append('static bool Populate(%s);' % self._GenerateParams(
-                ('const base::Value::Dict& value', '%s& out' % classname)))
+                ('const base::DictValue& value', '%s& out' % classname)))
           )
         (c.Append() \
           .Comment('Creates a deep copy of %s.' % classname) \
@@ -286,13 +286,13 @@ class _Generator(object):
 
         if type_.property_type is not PropertyType.CHOICES:
           (c.Append() \
-            .Comment('Creates a {classname} object from a base::Value::Dict,'
+            .Comment('Creates a {classname} object from a base::DictValue,'
                       ' or {failure} on failure.'.format(
                         classname=classname,
                         failure=('unexpected'
                           if self._generate_error_messages else 'nullopt'))) \
             .Append('static {return_type} '
-                    'FromValue(const base::Value::Dict& value);'.format(
+                    'FromValue(const base::DictValue& value);'.format(
                       return_type=return_type))
           )
 
@@ -334,7 +334,7 @@ class _Generator(object):
           # Most additionalProperties actually have type "any", which is better
           # modelled as a Value::Dict rather than a map of string -> Value.
           if type_.additional_properties.property_type == PropertyType.ANY:
-            c.Append('base::Value::Dict additional_properties;')
+            c.Append('base::DictValue additional_properties;')
           else:
             (c.Cblock(self._GenerateType(type_.additional_properties)) \
               .Append('std::map<std::string, %s> additional_properties;' %
@@ -386,14 +386,14 @@ class _Generator(object):
     (c.Sblock('struct Params {'))
     if self._generate_error_messages:
       (c.Append('static base::expected<Params, std::u16string> '
-        'Create(const base::Value::List& args);') \
+        'Create(const base::ListValue& args);') \
         .Comment('DEPRECATED: prefer the variant of this function '
           'returning errors with `base::expected`.')
       )
 
     (c.Append('static std::optional<Params> Create(%s);' %
                 self._GenerateParams(
-                    ('const base::Value::List& args',))) \
+                    ('const base::ListValue& args',))) \
       .Append('Params(const Params&) = delete;') \
       .Append('Params& operator=(const Params&) = delete;') \
       .Append('Params(Params&& rhs) noexcept;') \
@@ -439,7 +439,7 @@ class _Generator(object):
     # manifest types.
     if type_.IsRootManifestKeyType():
       params = [
-          'const base::Value::Dict& root_dict',
+          'const base::DictValue& root_dict',
           '%s& out' % classname, 'std::u16string& error'
       ]
       comment = (
@@ -448,7 +448,7 @@ class _Generator(object):
           ' and |error| is populated.')
     else:
       params = [
-          'const base::Value::Dict& root_dict', 'std::string_view key',
+          'const base::DictValue& root_dict', 'std::string_view key',
           '%s& out' % classname, 'std::u16string& error',
           'std::vector<std::string_view>& error_path_reversed'
       ]
@@ -492,7 +492,7 @@ class _Generator(object):
       declaration_list.append(
           cpp_util.GetParameterDeclaration(
               param, self._type_helper.GetCppType(param.type_)))
-    c.Append('base::Value::List Create(%s);' % ', '.join(declaration_list))
+    c.Append('base::ListValue Create(%s);' % ', '.join(declaration_list))
     return c
 
   def _GenerateEventNameConstant(self, event):

@@ -30,7 +30,7 @@ JsonExporter::~JsonExporter() = default;
 
 void JsonExporter::OnStartSession(
     const DataColumnKeyUnits& data_columns_units) {
-  base::Value::Dict column_labels;
+  base::DictValue column_labels;
   for (const auto& column : data_columns_units) {
     column_labels.Set(
         column.first.sampler_name + "_" + column.first.column_name,
@@ -41,7 +41,7 @@ void JsonExporter::OnStartSession(
 
 bool JsonExporter::OnSample(base::TimeTicks sample_time,
                             const DataRow& data_row) {
-  base::Value::Dict sample_value;
+  base::DictValue sample_value;
 
   sample_value.Set("sample_time", (sample_time - time_base_).InMicrosecondsF());
   for (const auto& datum : data_row) {
@@ -54,7 +54,7 @@ bool JsonExporter::OnSample(base::TimeTicks sample_time,
 }
 
 void JsonExporter::OnEndSession() {
-  base::Value::Dict output;
+  base::DictValue output;
   output.Set("column_labels", column_labels_.Clone());
   output.Set("data_rows", data_rows_.Clone());
 

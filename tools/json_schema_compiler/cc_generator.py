@@ -319,14 +319,14 @@ class _Generator(object):
     """Generates the function for populating a type given a pointer to it.
 
     E.g for type "Foo", generates:
-        bool Foo::Populate(const base::Value::Dict& dict, Foo& out)
+        bool Foo::Populate(const base::DictValue& dict, Foo& out)
     """
     classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
     c = Code()
     (c.Append('// static') \
       .Append('bool %(namespace)s::Populate(') \
       .Sblock('    %s) {' % self._GenerateParams(
-          ('const base::Value::Dict& dict', '%(name)s& out'))))
+          ('const base::DictValue& dict', '%(name)s& out'))))
 
     # TODO(crbug.com/40729306): The generated code here will ignore
     # unrecognized keys, but the parsing code for types passed to APIs in the
@@ -413,7 +413,7 @@ class _Generator(object):
   def _GenerateTypePopulateProperty(self, prop, src, dst):
     """Generate the code to populate a single property in a type.
 
-    src: base::Value::Dict*
+    src: base::DictValue*
     dst: Type*
     """
     c = Code()
@@ -456,7 +456,7 @@ class _Generator(object):
     return_type = self._type_helper.GetOptionalReturnType(
         cpp_namespace, support_errors=self._generate_error_messages)
 
-    param_type = ('base::Value::Dict' if is_dict else 'base::Value')
+    param_type = ('base::DictValue' if is_dict else 'base::Value')
 
     c = Code()
     (c.Append(f'// static') \
@@ -557,7 +557,7 @@ class _Generator(object):
     """Generates definition for ManifestKeys::ParseFromDictionary.
     """
     params = [
-        'const base::Value::Dict& root_dict',
+        'const base::DictValue& root_dict',
         '%(classname)s& out',
     ]
 
@@ -573,7 +573,7 @@ class _Generator(object):
     c.Append()
 
     c.Append('std::vector<std::string_view> error_path_reversed;')
-    c.Append('const base::Value::Dict& dict = root_dict;')
+    c.Append('const base::DictValue& dict = root_dict;')
 
     for prop in properties:
       c.Concat(self._InitializePropertyToDefault(prop, 'out'))
@@ -597,7 +597,7 @@ class _Generator(object):
     """Generates T::ParseFromDictionary for a child manifest type.
     """
     params = [
-        'const base::Value::Dict& root_dict', 'std::string_view key',
+        'const base::DictValue& root_dict', 'std::string_view key',
         '%(classname)s& out', 'std::u16string& error',
         'std::vector<std::string_view>& error_path_reversed'
     ]
@@ -637,7 +637,7 @@ class _Generator(object):
     c.Sblock('if (!value)')
     c.Append('return false;')
     if len(properties) > 0:
-      c.Eblock('const base::Value::Dict& dict = value->GetDict();')
+      c.Eblock('const base::DictValue& dict = value->GetDict();')
     else:
       c.Eblock('')
 
@@ -739,11 +739,11 @@ class _Generator(object):
 
   def _GenerateObjectTypeToValue(self, cpp_namespace, type_):
     """Generates a function that serializes an object-representing type
-    into a base::Value::Dict.
+    into a base::DictValue.
     """
     c = Code()
-    (c.Sblock('base::Value::Dict %s::ToValue() const {' % cpp_namespace) \
-        .Append('base::Value::Dict to_value_result;') \
+    (c.Sblock('base::DictValue %s::ToValue() const {' % cpp_namespace) \
+        .Append('base::DictValue to_value_result;') \
         .Append()
     )
 
@@ -994,7 +994,7 @@ class _Generator(object):
 
   def _GenerateFunctionParamsCreate(self, function):
     """Generate function to create an instance of Params. The generated
-    function takes a const base::Value::List& of arguments.
+    function takes a const base::ListValue& of arguments.
 
     E.g for function "Bar", generate Bar::Params::Create()
     """
@@ -1003,7 +1003,7 @@ class _Generator(object):
     (c.Append('// static') \
       .Sblock('std::optional<Params> Params::Create(%s) {' %
                   self._GenerateParams([
-                      'const base::Value::List& args']))
+                      'const base::ListValue& args']))
     )
 
     failure_value = 'std::nullopt'
@@ -1054,7 +1054,7 @@ class _Generator(object):
 
     (c.Append('// static') \
       .Sblock('base::expected<Params, std::u16string> '
-          'Params::Create(const base::Value::List& args) {')
+          'Params::Create(const base::ListValue& args) {')
     )
 
     (c.Append('std::u16string error;') \
@@ -1435,9 +1435,9 @@ class _Generator(object):
     c = Code()
     c.Concat(self._GeneratePropertyFunctions(function_scope, params))
 
-    (c.Sblock('base::Value::List %(function_scope)s'
+    (c.Sblock('base::ListValue %(function_scope)s'
                   'Create(%(declaration_list)s) {') \
-      .Append('base::Value::List create_results;') \
+      .Append('base::ListValue create_results;') \
       .Append('create_results.reserve(%d);' % len(params) if len(params)
               else '')
     )

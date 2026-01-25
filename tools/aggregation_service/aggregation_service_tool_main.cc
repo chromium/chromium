@@ -240,7 +240,7 @@ int main(int argc, char* argv[]) {
 
   bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
 
-  base::Value::Dict additional_shared_info_fields;
+  base::DictValue additional_shared_info_fields;
   if (command_line.HasSwitch(kSwitchAdditionalSharedInfoFields)) {
     std::string additional_shared_info_fields_str =
         command_line.GetSwitchValueASCII(kSwitchAdditionalSharedInfoFields);
@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
           ? command_line.GetSwitchValueASCII(kSwitchApi)
           : "attribution-reporting";
 
-  base::Value::Dict report_dict = tool.AssembleReport(
+  base::DictValue report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(reporting_origin), std::move(processing_url),

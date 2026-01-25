@@ -20,15 +20,15 @@ namespace objects_movable = test::api::objects_movable;
 
 TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
   {
-    base::Value::List strings;
+    base::ListValue strings;
     strings.Append("one");
     strings.Append("two");
-    base::Value::Dict info_value;
+    base::DictValue info_value;
     info_value.Set("strings", std::move(strings));
     info_value.Set("integer", 5);
     info_value.Set("boolean", true);
 
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(std::move(info_value));
     std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
@@ -40,14 +40,14 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     EXPECT_TRUE(params->info.boolean);
   }
   {
-    base::Value::List strings;
+    base::ListValue strings;
     strings.Append("one");
     strings.Append("two");
-    base::Value::Dict info_value;
+    base::DictValue info_value;
     info_value.Set("strings", std::move(strings));
     info_value.Set("integer", 5);
 
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(std::move(info_value));
     std::optional<test::api::objects::ObjectParam::Params> params(
         test::api::objects::ObjectParam::Params::Create(params_value));
@@ -58,11 +58,11 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
   info.state = test::api::objects::FirstState::kFoo;
-  base::Value::List results =
+  base::ListValue results =
       test::api::objects::ReturnsObject::Results::Create(info);
   ASSERT_EQ(1u, results.size());
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set("state", "foo");
   EXPECT_EQ(expected, results[0]);
 }
@@ -70,10 +70,10 @@ TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
   object.state = test::api::objects::FirstState::kBar;
-  base::Value::List results = test::api::objects::OnObjectFired::Create(object);
+  base::ListValue results = test::api::objects::OnObjectFired::Create(object);
   ASSERT_EQ(1u, results.size());
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set("state", "bar");
   EXPECT_EQ(expected, results[0]);
 }

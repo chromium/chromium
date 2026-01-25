@@ -64,7 +64,7 @@ TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
         EqualsUtf16("", GetPopulateError<errors::ChoiceType>(value.GetDict())));
   }
   {
-    base::Value::Dict value;
+    base::DictValue value;
     EXPECT_TRUE(EqualsUtf16("'integers' is required",
                             GetPopulateError<errors::ChoiceType>(value)));
   }
@@ -74,12 +74,12 @@ TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
 
 TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value).has_value());
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     params_value.Append(5);
     EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2",
@@ -92,12 +92,12 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
 
 TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     EXPECT_TRUE(errors::TestFunction::Params::Create(params_value).has_value());
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(base::Value());
     EXPECT_TRUE(EqualsUtf16("'num' is required",
                             errors::TestFunction::Params::Create(params_value)
@@ -124,12 +124,12 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     std::u16string error;
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append("Yeah!");
     EXPECT_TRUE(errors::TestString::Params::Create(params_value).has_value());
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     std::u16string error;
     EXPECT_TRUE(
@@ -141,7 +141,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
 
 TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
   {
-    base::Value::Dict value;
+    base::DictValue value;
     EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ObjectType>(value)));
   }
   {

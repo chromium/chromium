@@ -51,11 +51,11 @@ bool ParseManifestKeys(const std::string& key_values,
            "choice_with_arrays": {"entries": "choice"},
            "choice_with_optional": {"entries": "choice"}
          })";
-  base::Value::Dict dict_value = base::test::ParseJsonDict(kStubValuesStr);
-  base::Value::Dict provided_values = base::test::ParseJsonDict(key_values);
+  base::DictValue dict_value = base::test::ParseJsonDict(kStubValuesStr);
+  base::DictValue provided_values = base::test::ParseJsonDict(key_values);
 
-  // Annoying: `base::Value::Dict` values are recursively merged in
-  // `base::Value::Dict::Merge()`, rather than overwritten. Remove them from
+  // Annoying: `base::DictValue` values are recursively merged in
+  // `base::DictValue::Merge()`, rather than overwritten. Remove them from
   // the `dict_value` if a new value was provided for them.
   if (provided_values.contains("choice_with_arrays")) {
     dict_value.Remove("choice_with_arrays");
@@ -111,14 +111,14 @@ TEST(IdlCompiler, Basics) {
   EXPECT_EQ(a.Clone().ToValue(), a.ToValue());
 
   // Test Function2, which takes an integer parameter.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(5);
   std::optional<Function2::Params> f2_params = Function2::Params::Create(list);
   EXPECT_EQ(5, f2_params->x);
 
   // Test Function3, which takes a MyType1 parameter.
   list.clear();
-  base::Value::Dict tmp;
+  base::DictValue tmp;
   tmp.Set("x", 17);
   tmp.Set("y", "hello");
   tmp.Set("z", "zstring");
@@ -132,15 +132,15 @@ TEST(IdlCompiler, Basics) {
 
   // Test functions that take a callback function as a parameter, with varying
   // callback signatures.
-  base::Value::List f4_results = Function4::Results::Create();
-  base::Value::List expected;
+  base::ListValue f4_results = Function4::Results::Create();
+  base::ListValue expected;
   EXPECT_EQ(expected, f4_results);
 
-  base::Value::List f5_results = Function5::Results::Create(13);
+  base::ListValue f5_results = Function5::Results::Create(13);
   ASSERT_EQ(1u, f5_results.size());
   EXPECT_TRUE(f5_results[0].is_int());
 
-  base::Value::List f6_results = Function6::Results::Create(a);
+  base::ListValue f6_results = Function6::Results::Create(a);
   ASSERT_EQ(1u, f6_results.size());
   auto c = MyType1::FromValue(f6_results[0]);
   ASSERT_TRUE(c);
@@ -151,7 +151,7 @@ TEST(IdlCompiler, Basics) {
 TEST(IdlCompiler, OptionalArguments) {
   // Test a function that takes one optional argument, both without and with
   // that argument.
-  base::Value::List list;
+  base::ListValue list;
   std::optional<Function7::Params> f7_params = Function7::Params::Create(list);
   EXPECT_FALSE(f7_params->arg.has_value());
   list.Append(7);
@@ -175,7 +175,7 @@ TEST(IdlCompiler, OptionalArguments) {
   std::optional<Function9::Params> f9_params = Function9::Params::Create(list);
   EXPECT_FALSE(f9_params->arg.has_value());
   list.clear();
-  base::Value::Dict tmp;
+  base::DictValue tmp;
   tmp.Set("x", 17);
   tmp.Set("y", "hello");
   tmp.Set("z", "zstring");
@@ -193,9 +193,9 @@ TEST(IdlCompiler, OptionalArguments) {
 TEST(IdlCompiler, ArrayTypes) {
   // Tests of a function that takes an integer and an array of integers. First
   // use an empty array.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(33);
-  list.Append(base::Value::List());
+  list.Append(base::ListValue());
   std::optional<Function10::Params> f10_params =
       Function10::Params::Create(list);
   ASSERT_TRUE(f10_params != std::nullopt);
@@ -205,7 +205,7 @@ TEST(IdlCompiler, ArrayTypes) {
   // Same function, but this time with 2 values in the array.
   list.clear();
   list.Append(33);
-  base::Value::List sublist;
+  base::ListValue sublist;
   sublist.Append(34);
   sublist.Append(35);
   list.Append(std::move(sublist));
@@ -224,7 +224,7 @@ TEST(IdlCompiler, ArrayTypes) {
   b.x = 6;
   a.y = std::string("foo");
   b.y = std::string("bar");
-  base::Value::List sublist2;
+  base::ListValue sublist2;
   sublist2.Append(base::Value(a.ToValue()));
   sublist2.Append(base::Value(b.ToValue()));
   list.Append(std::move(sublist2));
@@ -256,10 +256,10 @@ TEST(IdlCompiler, ObjectTypes) {
   EXPECT_FALSE(b2->y.has_value());
 
   // Test the params to the ObjectFunction1 function.
-  base::Value::Dict icon_props;
+  base::DictValue icon_props;
   icon_props.Set("hello", "world");
   ASSERT_TRUE(ObjectFunction1::Params::Icon::FromValue(icon_props));
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(icon_props));
   std::optional<ObjectFunction1::Params> params =
       ObjectFunction1::Params::Create(list);

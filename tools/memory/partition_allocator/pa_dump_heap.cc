@@ -160,9 +160,9 @@ class HeapDumper {
     return true;
   }
 
-  base::Value::List Dump() const {
+  base::ListValue Dump() const {
     auto partition_page_to_value = [](uintptr_t offset, const char* data) {
-      base::Value::Dict ret;
+      base::DictValue ret;
       std::string value;
       if (offset == 0) {
         value = "metadata";
@@ -218,17 +218,17 @@ class HeapDumper {
       return ret;
     };
     auto super_page_to_value = [&](uintptr_t address, const char* data) {
-      base::Value::Dict ret;
+      base::DictValue ret;
       ret.Set("address", base::StringPrintf("0x%lx", address));
 
-      base::Value::List partition_pages;
+      base::ListValue partition_pages;
       for (uintptr_t offset = 0; offset < kSuperPageSize;
            offset += PartitionPageSize()) {
         partition_pages.Append(partition_page_to_value(offset, data));
       }
       ret.Set("partition_pages", std::move(partition_pages));
 
-      base::Value::List page_sizes;
+      base::ListValue page_sizes;
       // Looking at how well the heap would compress.
       const size_t page_size = base::GetPageSize();
       for (uintptr_t page_address = address;
@@ -269,7 +269,7 @@ class HeapDumper {
                                page_size, &compressed);
         }
 
-        base::Value::Dict page_size_dict;
+        base::DictValue page_size_dict;
         page_size_dict.Set("uncompressed", static_cast<int>(uncompressed_size));
         page_size_dict.Set("compressed", static_cast<int>(compressed_size));
         page_sizes.Append(std::move(page_size_dict));
@@ -279,7 +279,7 @@ class HeapDumper {
       return ret;
     };
 
-    base::Value::List super_pages_value;
+    base::ListValue super_pages_value;
     for (const auto& address_data : super_pages_) {
       super_pages_value.Append(
           super_page_to_value(address_data.first, address_data.second));
@@ -289,14 +289,14 @@ class HeapDumper {
   }
 
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
-  base::Value::List DumpAllocatedSizes() {
+  base::ListValue DumpAllocatedSizes() {
     // Note: Here and below, it is safe to follow pointers into the super page,
     // or to the root or buckets, since they share the same address in the this
     // process as in the Chromium process.
 
     // Since there is no tracking of full slot spans, the way to enumerate all
     // allocated memory is to walk the heap itself.
-    base::Value::List ret;
+    base::ListValue ret;
 
     for (const auto& address_data : super_pages_) {
       const char* data = address_data.second;
@@ -320,7 +320,7 @@ class HeapDumper {
           continue;
         }
 
-        base::Value::Dict slot_span_value;
+        base::DictValue slot_span_value;
         slot_span_value.Set("start_address",
                             base::StringPrintf("0x%lx", slot_span_start));
         slot_span_value.Set("slot_size",
@@ -339,7 +339,7 @@ class HeapDumper {
           head = head->GetNext(0);
         }
 
-        base::Value::List allocated_sizes_value;
+        base::ListValue allocated_sizes_value;
         for (size_t slot_index = 0; slot_index < free_slots.size();
              slot_index++) {
           // Skip unprovisioned slots, which are always at the end of the slot
@@ -376,10 +376,10 @@ class HeapDumper {
   }
 #endif  // PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)
 
-  base::Value::List DumpBuckets() {
-    base::Value::List ret;
+  base::ListValue DumpBuckets() {
+    base::ListValue ret;
     for (const auto& bucket : root_.get()->buckets) {
-      base::Value::Dict bucket_value;
+      base::DictValue bucket_value;
       bucket_value.Set("slot_size", static_cast<int>(bucket.slot_size));
       ret.Append(std::move(bucket_value));
     }
@@ -453,7 +453,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  base::Value::Dict overall_dump;
+  base::DictValue overall_dump;
   overall_dump.Set("superpages", dumper.Dump());
 
 #if PA_CONFIG(IN_SLOT_METADATA_STORE_REQUESTED_SIZE)

@@ -22,8 +22,8 @@ namespace enums = test::api::enums;
 
 namespace {
 
-static base::Value::Dict CreateTestTypeDictionary() {
-  base::Value::Dict dict;
+static base::DictValue CreateTestTypeDictionary() {
+  base::DictValue dict;
   dict.Set("number", 1.1);
   dict.Set("integer", 4);
   dict.Set("string", "bling");
@@ -63,13 +63,13 @@ void PopulateManifestKeys(std::string_view manifest_json,
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
   base::Value results(simple_api::IncrementInteger::Results::Create(5));
-  base::Value::List expected;
+  base::ListValue expected;
   expected.Append(5);
   EXPECT_EQ(expected, results);
 }
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
-  base::Value::List params_value;
+  base::ListValue params_value;
   params_value.Append(6);
   std::optional<simple_api::IncrementInteger::Params> params(
       simple_api::IncrementInteger::Params::Create(params_value));
@@ -79,7 +79,7 @@ TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append("text");
     params_value.Append("text");
     std::optional<simple_api::OptionalString::Params> params(
@@ -87,7 +87,7 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
     EXPECT_FALSE(params.has_value());
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     std::optional<simple_api::IncrementInteger::Params> params(
         simple_api::IncrementInteger::Params::Create(params_value));
     EXPECT_FALSE(params.has_value());
@@ -96,14 +96,14 @@ TEST(JsonSchemaCompilerSimpleTest, NumberOfParams) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.has_value());
     EXPECT_FALSE(params->str);
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append("asdf");
     std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
@@ -115,7 +115,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(base::Value());
     std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
@@ -126,7 +126,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     std::optional<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
@@ -136,7 +136,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsWrongType) {
 
 TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(base::Value());
     params_value.Append("asdf");
     std::optional<simple_api::OptionalBeforeRequired::Params> params(
@@ -149,8 +149,8 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
 
 TEST(JsonSchemaCompilerSimpleTest, RequiredFunctionParameter) {
   {
-    base::Value::List params_value;
-    params_value.Append(base::Value::Dict());
+    base::ListValue params_value;
+    params_value.Append(base::DictValue());
     params_value.Append("asdf");
     std::optional<simple_api::RequiredFunctionParameter::Params> params(
         simple_api::RequiredFunctionParameter::Params::Create(params_value));
@@ -159,7 +159,7 @@ TEST(JsonSchemaCompilerSimpleTest, RequiredFunctionParameter) {
     EXPECT_EQ("asdf", params->second);
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(5);
     params_value.Append("asdf");
     std::optional<simple_api::RequiredFunctionParameter::Params> params(
@@ -170,13 +170,13 @@ TEST(JsonSchemaCompilerSimpleTest, RequiredFunctionParameter) {
 
 TEST(JsonSchemaCompilerSimpleTest, NoParamsResultCreate) {
   base::Value results(simple_api::OptionalString::Results::Create());
-  base::Value::List expected;
+  base::ListValue expected;
   EXPECT_EQ(expected, results);
 }
 
 TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
   {
-    base::Value::Dict value = CreateTestTypeDictionary();
+    base::DictValue value = CreateTestTypeDictionary();
     auto test_type = simple_api::TestType::FromValue(value);
     EXPECT_TRUE(test_type);
     EXPECT_EQ("bling", test_type->string);
@@ -186,7 +186,7 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
     EXPECT_EQ(value, test_type->ToValue());
   }
   {
-    base::Value::Dict value = CreateTestTypeDictionary();
+    base::DictValue value = CreateTestTypeDictionary();
     value.Remove("number");
     EXPECT_FALSE(simple_api::TestType::FromValue(std::move(value)));
   }
@@ -194,10 +194,10 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
 
 TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
   {
-    base::Value::Dict value = CreateTestTypeDictionary();
+    base::DictValue value = CreateTestTypeDictionary();
     auto test_type = simple_api::TestType::FromValue(value.Clone());
     ASSERT_TRUE(test_type);
-    base::Value::List results =
+    base::ListValue results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
     EXPECT_EQ(results[0], value);
@@ -207,7 +207,7 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
 TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
   {
     base::Value results(simple_api::OnIntegerFired::Create(5));
-    base::Value::List expected;
+    base::ListValue expected;
     expected.Append(5);
     EXPECT_EQ(expected, results);
   }
@@ -216,7 +216,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
 TEST(JsonSchemaCompilerSimpleTest, OnStringFiredCreate) {
   {
     base::Value results(simple_api::OnStringFired::Create("yo dawg"));
-    base::Value::List expected;
+    base::ListValue expected;
     expected.Append("yo dawg");
     EXPECT_EQ(expected, results);
   }
@@ -225,7 +225,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnStringFiredCreate) {
 TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
   {
     simple_api::TestType some_test_type;
-    base::Value::Dict expected = CreateTestTypeDictionary();
+    base::DictValue expected = CreateTestTypeDictionary();
 
     std::optional<double> number_value = expected.FindDouble("number");
     ASSERT_TRUE(number_value);

@@ -44,7 +44,7 @@ class JsonExporter : public Monitor {
   base::FilePath file_path_;
   base::TimeTicks time_base_;
   base::Value column_labels_;
-  base::Value::List data_rows_;
+  base::ListValue data_rows_;
 };
 
 }  // namespace power_sampler

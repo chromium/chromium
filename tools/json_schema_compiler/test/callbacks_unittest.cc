@@ -15,9 +15,9 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   base::Value results(
       test::api::callbacks::ReturnsObject::Results::Create(some_object));
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set("state", "foo");
-  base::Value::List expected;
+  base::ListValue expected;
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }
@@ -28,9 +28,9 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsMultipleResultCreate) {
   base::Value results(
       test::api::callbacks::ReturnsMultiple::Results::Create(5, some_object));
 
-  base::Value::Dict expected_dict;
+  base::DictValue expected_dict;
   expected_dict.Set("state", "foo");
-  base::Value::List expected;
+  base::ListValue expected;
   expected.Append(5);
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
