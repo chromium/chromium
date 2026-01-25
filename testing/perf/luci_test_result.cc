@@ -57,7 +57,7 @@ base::Value ToValue(const LuciTestResult::Artifact& artifact) {
   // One and only one of the two optional fields must have value.
   DCHECK(artifact.file_path.has_value() != artifact.contents.has_value());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   if (artifact.file_path.has_value()) {
     dict.Set(kKeyFilePath, artifact.file_path->AsUTF8Unsafe());
@@ -71,13 +71,13 @@ base::Value ToValue(const LuciTestResult::Artifact& artifact) {
 }
 
 base::Value ToValue(const LuciTestResult& result) {
-  base::Value::Dict test_report;
+  base::DictValue test_report;
 
-  base::Value::Dict* test_result = test_report.EnsureDict(kKeyTestResult);
+  base::DictValue* test_result = test_report.EnsureDict(kKeyTestResult);
   test_result->Set(kKeyTestPath, result.test_path());
 
   if (!result.extra_variant_pairs().empty()) {
-    base::Value::Dict* variant_dict = test_result->EnsureDict(kKeyVariant);
+    base::DictValue* variant_dict = test_result->EnsureDict(kKeyVariant);
     for (const auto& pair : result.extra_variant_pairs())
       variant_dict->Set(pair.first, pair.second);
   }
@@ -96,16 +96,16 @@ base::Value ToValue(const LuciTestResult& result) {
   }
 
   if (!result.output_artifacts().empty()) {
-    base::Value::Dict* artifacts_dict =
+    base::DictValue* artifacts_dict =
         test_result->EnsureDict(kKeyOutputArtifacts);
     for (const auto& pair : result.output_artifacts())
       artifacts_dict->Set(pair.first, ToValue(pair.second));
   }
 
   if (!result.tags().empty()) {
-    base::Value::List* tags_list = test_result->EnsureList(kKeyTags);
+    base::ListValue* tags_list = test_result->EnsureList(kKeyTags);
     for (const auto& tag : result.tags()) {
-      base::Value::Dict tag_dict;
+      base::DictValue tag_dict;
       tag_dict.Set(kKeyKey, tag.key);
       tag_dict.Set(kKeyValue, tag.value);
       tags_list->Append(std::move(tag_dict));
