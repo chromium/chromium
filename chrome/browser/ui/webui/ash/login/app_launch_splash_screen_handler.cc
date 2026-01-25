@@ -35,11 +35,11 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::Show(base::Value::Dict data) {
+void AppLaunchSplashScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 
-void AppLaunchSplashScreenHandler::SetAppData(base::Value::Dict data) {
+void AppLaunchSplashScreenHandler::SetAppData(base::DictValue data) {
   CallExternalAPI("setAppData", std::move(data));
 }
 

@@ -69,12 +69,12 @@ class FamilyLinkUserInternalsMessageHandler
   const supervised_user::SupervisedUserUrlFilteringService*
   GetSupervisedUserUrlFilteringService();
 
-  void HandleRegisterForEvents(const base::Value::List& args);
-  void HandleGetBasicInfo(const base::Value::List& args);
-  void HandleTryURL(const base::Value::List& args);
+  void HandleRegisterForEvents(const base::ListValue& args);
+  void HandleGetBasicInfo(const base::ListValue& args);
+  void HandleTryURL(const base::ListValue& args);
 
   void SendBasicInfo();
-  void SendFamilyLinkUserSettings(const base::Value::Dict& settings);
+  void SendFamilyLinkUserSettings(const base::DictValue& settings);
   void SendWebContentFiltersInfo();
 
   void OnTryURLResult(

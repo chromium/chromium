@@ -22,7 +22,7 @@ DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() = default;
 
 void DeviceDisabledScreenHandler::Show(const Params& params) {
   ShowInWebUI(
-      base::Value::Dict()
+      base::DictValue()
           .Set("serial", params.serial)
           .Set("domain", params.domain)
           .Set("message", params.message)
@@ -35,14 +35,14 @@ void DeviceDisabledScreenHandler::Show(const Params& params) {
 }
 
 void DeviceDisabledScreenHandler::UpdateMessage(const std::string& message) {
-  CallExternalAPI("updateData", base::Value::Dict().Set("message", message));
+  CallExternalAPI("updateData", base::DictValue().Set("message", message));
 }
 
 void DeviceDisabledScreenHandler::UpdateRestrictionScheduleMessage(
     const std::u16string& end_day,
     const std::u16string& end_time) {
   CallExternalAPI("updateData",
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("restrictionScheduleEndDay", end_day)
                       .Set("restrictionScheduleEndTime", end_time));
 }

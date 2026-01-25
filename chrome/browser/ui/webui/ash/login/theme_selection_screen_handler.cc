@@ -20,7 +20,7 @@ ThemeSelectionScreenHandler::ThemeSelectionScreenHandler()
 
 ThemeSelectionScreenHandler::~ThemeSelectionScreenHandler() = default;
 
-void ThemeSelectionScreenHandler::Show(base::Value::Dict data) {
+void ThemeSelectionScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

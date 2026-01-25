@@ -34,9 +34,9 @@ class FastPairSoftwareScanningHandler
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleBatterySaverActiveStatusRequest(const base::Value::List& args);
+  void HandleBatterySaverActiveStatusRequest(const base::ListValue& args);
   void HandleHardwareOffloadingSupportStatusRequest(
-      const base::Value::List& args);
+      const base::ListValue& args);
   void OnBatterySaverActiveStatusChange(bool is_enabled);
   void OnHardwareOffloadingSupportedStatusChange(bool is_enabled);
 

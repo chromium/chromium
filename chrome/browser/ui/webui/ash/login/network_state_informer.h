@@ -71,7 +71,7 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
   static bool IsProxyError(State state, NetworkError::ErrorReason reason);
 
   // Method to get proxy_config_ for testing.
-  const std::optional<base::Value::Dict>& GetProxyConfigForTesting() const {
+  const std::optional<base::DictValue>& GetProxyConfigForTesting() const {
     CHECK_IS_TEST();
     return proxy_config_;
   }
@@ -88,7 +88,7 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
 
   State state_;
   std::string network_path_;
-  std::optional<base::Value::Dict> proxy_config_;
+  std::optional<base::DictValue> proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
 

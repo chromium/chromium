@@ -29,7 +29,7 @@ void BaseWebUIHandler::OnJavascriptAllowed() {
   InitAfterJavascriptAllowed();
 }
 
-void BaseWebUIHandler::GetLocalizedStrings(base::Value::Dict* dict) {
+void BaseWebUIHandler::GetLocalizedStrings(base::DictValue* dict) {
   auto builder = std::make_unique<::login::LocalizedValuesBuilder>(dict);
   DeclareLocalizedValues(builder.get());
   GetAdditionalParameters(dict);
@@ -39,7 +39,7 @@ void BaseWebUIHandler::RegisterMessages() {
   DeclareJSCallbacks();
 }
 
-void BaseWebUIHandler::GetAdditionalParameters(base::Value::Dict* dict) {}
+void BaseWebUIHandler::GetAdditionalParameters(base::DictValue* dict) {}
 
 void BaseWebUIHandler::InitAfterJavascriptAllowed() {}
 

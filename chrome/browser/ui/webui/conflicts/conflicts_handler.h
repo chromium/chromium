@@ -28,9 +28,9 @@ class ConflictsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestModuleList" message.
-  void HandleRequestModuleList(const base::Value::List& args);
+  void HandleRequestModuleList(const base::ListValue& args);
 
-  void OnConflictsDataFetched(base::Value::Dict results);
+  void OnConflictsDataFetched(base::DictValue results);
 
   // The ID of the callback that will get invoked with the module list.
   std::string module_list_callback_id_;

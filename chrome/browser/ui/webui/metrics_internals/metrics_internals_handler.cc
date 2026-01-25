@@ -16,9 +16,9 @@
 namespace {
 // Unwraps a CBOR Web Token (CWT) containing an OKP (RFC 8037 section 2 Octet
 // Key Pair) into a dictionary to pass to webui.
-base::Value::Dict OkpCwtToDict(
+base::DictValue OkpCwtToDict(
     const fcp::confidential_compute::OkpCwt& decoded_key) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (decoded_key.issued_at.has_value()) {
     dict.Set("issued_at", base::NumberToString(absl::ToUnixMillis(
                               decoded_key.issued_at.value())));
@@ -44,7 +44,7 @@ base::Value::Dict OkpCwtToDict(
   if (public_key.curve.has_value()) {
     dict.Set("key_curve", static_cast<double>(public_key.curve.value()));
   }
-  base::Value::List key_ops_list;
+  base::ListValue key_ops_list;
   for (const auto& op : public_key.key_ops) {
     key_ops_list.Append(static_cast<double>(op));
   }
@@ -134,7 +134,7 @@ metrics::MetricsServiceObserver* MetricsInternalsHandler::GetUmaObserver() {
 }
 
 void MetricsInternalsHandler::HandleFetchVariationsSummary(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
@@ -144,7 +144,7 @@ void MetricsInternalsHandler::HandleFetchVariationsSummary(
 
 void MetricsInternalsHandler::HandleFetchStoredSeedInfo(
     variations::VariationsSeedStore::SeedType seed_type,
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   base::OnceCallback<void(base::ValueView)> resolve_js_callback =
@@ -156,7 +156,7 @@ void MetricsInternalsHandler::HandleFetchStoredSeedInfo(
 }
 
 void MetricsInternalsHandler::HandleFetchUmaSummary(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
@@ -166,7 +166,7 @@ void MetricsInternalsHandler::HandleFetchUmaSummary(
 }
 
 void MetricsInternalsHandler::HandleFetchUmaLogsData(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   // |args| should have two elements: the callback ID, and a bool parameter that
   // determines whether we should include log proto data.
@@ -182,10 +182,10 @@ void MetricsInternalsHandler::HandleFetchUmaLogsData(
 }
 
 void MetricsInternalsHandler::HandleFetchEncryptionPublicKey(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  base::Value::Dict result;
+  base::DictValue result;
   if (auto* dwa_service =
           g_browser_process->GetMetricsServicesManager()->GetDwaService()) {
     const auto& cwt = dwa_service->GetEncryptionPublicKey();
@@ -197,7 +197,7 @@ void MetricsInternalsHandler::HandleFetchEncryptionPublicKey(
 }
 
 void MetricsInternalsHandler::HandleIsUsingMetricsServiceObserver(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id,

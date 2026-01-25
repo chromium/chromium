@@ -55,7 +55,7 @@ base::Value CreateInputMethodsEntry(
     input_method::InputMethodUtil* util) {
   const std::string& ime_id = method.id();
   auto input_method =
-      base::Value::Dict()
+      base::DictValue()
           .Set("value", ime_id)
           .Set("title", util->GetInputMethodLongNameStripped(method))
           .Set("selected", ime_id == selected);
@@ -69,15 +69,15 @@ bool InsertString(const std::string& str, std::set<std::string>* to) {
   return result.second;
 }
 
-void AddOptgroupOtherLayouts(base::Value::List& input_methods_list) {
+void AddOptgroupOtherLayouts(base::ListValue& input_methods_list) {
   // clang-format off
-  input_methods_list.Append(base::Value::Dict()
+  input_methods_list.Append(base::DictValue()
     .Set("optionGroupName",
          l10n_util::GetStringUTF16(IDS_OOBE_OTHER_KEYBOARD_LAYOUTS)));
   // clang-format on
 }
 
-base::Value::Dict CreateLanguageEntry(
+base::DictValue CreateLanguageEntry(
     const std::string& language_code,
     const std::u16string& language_display_name,
     const std::u16string& language_native_display_name) {
@@ -90,7 +90,7 @@ base::Value::Dict CreateLanguageEntry(
       base::i18n::StringContainsStrongRTLChars(display_name);
   const char* directionality = has_rtl_chars ? "rtl" : "ltr";
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("code", language_code)
       .Set("displayName", language_display_name)
       .Set("textDirection", directionality)
@@ -102,7 +102,7 @@ base::Value::Dict CreateLanguageEntry(
 // `insert_divider` is true, an entry with its "code" attribute set to
 // kMostRelevantLanguagesDivider is placed between the most relevant languages
 // and all others.
-base::Value::List GetLanguageList(
+base::ListValue GetLanguageList(
     const std::string& app_locale,
     const input_method::InputMethodDescriptors& descriptors,
     const std::vector<std::string>& base_language_codes,
@@ -263,14 +263,14 @@ base::Value::List GetLanguageList(
   std::ranges::copy(display_names, std::back_inserter(out_display_names));
 
   // Build the language list from the language map.
-  base::Value::List language_list;
+  base::ListValue language_list;
   for (const auto& out_display_name : out_display_names) {
     // Sets the directionality of the display language name.
     std::u16string display_name(out_display_name);
     if (insert_divider && display_name == divider16) {
       // Insert divider.
       language_list.Append(
-          base::Value::Dict().Set("code", kMostRelevantLanguagesDivider));
+          base::DictValue().Set("code", kMostRelevantLanguagesDivider));
       continue;
     }
 
@@ -316,7 +316,7 @@ void GetKeyboardLayoutsForResolvedLocale(
   GetAndMergeKeyboardLayoutsForLocale(util, resolved_locale, &selected,
                                       &layouts);
 
-  base::Value::List input_methods_list;
+  base::ListValue input_methods_list;
   std::set<std::string> input_methods_added;
   for (std::vector<std::string>::const_iterator it = layouts.begin();
        it != layouts.end(); ++it) {
@@ -384,7 +384,7 @@ void ResolveLanguageListInThreadPool(
 
   const std::string list_locale =
       language_switch_result ? language_switch_result->loaded_locale : locale;
-  base::Value::List language_list(
+  base::ListValue language_list(
       GetUILanguageList(locale, nullptr, selected_code, input_method_manager));
 
   task_runner->PostTask(
@@ -394,9 +394,9 @@ void ResolveLanguageListInThreadPool(
 }
 
 void AdjustUILanguageList(const std::string& selected,
-                          base::Value::List& languages_list) {
+                          base::ListValue& languages_list) {
   for (auto& it : languages_list) {
-    base::Value::Dict& language_info = it.GetDict();
+    base::DictValue& language_info = it.GetDict();
 
     std::string value = language_info.FindString("code")
                             ? *language_info.FindString("code")
@@ -444,14 +444,14 @@ void ResolveUILanguageList(
                      input_method_manager, std::move(callback)));
 }
 
-base::Value::List GetMinimalUILanguageList() {
+base::ListValue GetMinimalUILanguageList() {
   const std::string application_locale =
       g_browser_process->GetApplicationLocale();
   std::u16string language_native_display_name =
       l10n_util::GetDisplayNameForLocale(application_locale, application_locale,
                                          true);
 
-  base::Value::List language_list;
+  base::ListValue language_list;
   language_list.Append(CreateLanguageEntry(application_locale,
                                            language_native_display_name,
                                            language_native_display_name));
@@ -459,7 +459,7 @@ base::Value::List GetMinimalUILanguageList() {
   return language_list;
 }
 
-base::Value::List GetUILanguageList(
+base::ListValue GetUILanguageList(
     const std::string& app_locale,
     const std::vector<std::string>* most_relevant_language_codes,
     const std::string& selected,
@@ -468,7 +468,7 @@ base::Value::List GetUILanguageList(
       input_method_manager->GetComponentExtensionIMEManager();
   input_method::InputMethodDescriptors descriptors =
       component_extension_ime_manager->GetXkbIMEAsInputMethodDescriptor();
-  base::Value::List languages_list(GetLanguageList(
+  base::ListValue languages_list(GetLanguageList(
       app_locale, descriptors, l10n_util::GetUserFacingUILocaleList(),
       most_relevant_language_codes
           ? *most_relevant_language_codes
@@ -478,7 +478,7 @@ base::Value::List GetUILanguageList(
 
   // Filter the list for the allowlisted languages in Fjord OOBE.
   if (fjord_util::ShouldShowFjordOobe()) {
-    base::Value::List filtered_language_list;
+    base::ListValue filtered_language_list;
     for (const auto& language : languages_list) {
       if (fjord_util::IsAllowlistedLanguage(
               language.GetDict().Find("code")->GetString())) {
@@ -493,7 +493,7 @@ base::Value::List GetUILanguageList(
 
 std::string FindMostRelevantLocale(
     const std::vector<std::string>& most_relevant_language_codes,
-    const base::Value::List& available_locales,
+    const base::ListValue& available_locales,
     const std::string& fallback_locale) {
   for (const auto& most_relevant : most_relevant_language_codes) {
     for (const auto& entry : available_locales) {
@@ -515,11 +515,11 @@ std::string FindMostRelevantLocale(
   return fallback_locale;
 }
 
-base::Value::List GetAndActivateOobeInputMethods(
+base::ListValue GetAndActivateOobeInputMethods(
     const std::string& locale,
     const std::string& selected,
     input_method::InputMethodManager* input_method_manager) {
-  base::Value::List input_methods_list;
+  base::ListValue input_methods_list;
   input_method::InputMethodUtil* util =
       input_method_manager->GetInputMethodUtil();
 

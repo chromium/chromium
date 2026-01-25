@@ -43,7 +43,7 @@ void GeminiIntroScreenHandler::DeclareLocalizedValues(
   builder->Add("geminiIntroScreenSubtitle", IDS_GEMINI_INTRO_SUBTITLE);
 }
 
-void GeminiIntroScreenHandler::Show(base::Value::Dict data) {
+void GeminiIntroScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

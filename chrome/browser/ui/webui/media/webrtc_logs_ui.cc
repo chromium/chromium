@@ -102,7 +102,7 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;
 
   // Asynchronously fetches the list of upload WebRTC logs. Called from JS.
-  void HandleRequestWebRtcLogs(const base::Value::List& args);
+  void HandleRequestWebRtcLogs(const base::ListValue& args);
 
   // Asynchronously load WebRTC text logs.
   void LoadWebRtcTextLogs(const std::string& callback_id);
@@ -122,8 +122,8 @@ class WebRtcLogsDOMHandler final : public WebUIMessageHandler {
   void UpdateUI(const std::string& callback_id);
 
   // Update the text/event logs part of the forementioned page.
-  base::Value::List UpdateUIWithTextLogs() const;
-  base::Value::List UpdateUIWithEventLogs() const;
+  base::ListValue UpdateUIWithTextLogs() const;
+  base::ListValue UpdateUIWithEventLogs() const;
 
   // Convert a history entry about a captured WebRTC event log into a
   // Value of the type expected by updateWebRtcLogsList().
@@ -190,7 +190,7 @@ void WebRtcLogsDOMHandler::RegisterMessages() {
 }
 
 void WebRtcLogsDOMHandler::HandleRequestWebRtcLogs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   std::string callback_id = args[0].GetString();
   AllowJavascript();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -242,22 +242,22 @@ void WebRtcLogsDOMHandler::OnWebRtcEventLogsLoaded(
 void WebRtcLogsDOMHandler::UpdateUI(const std::string& callback_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("textLogs", UpdateUIWithTextLogs());
   result.Set("eventLogs", UpdateUIWithEventLogs());
   result.Set("version", version_info::GetVersionNumber());
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
+base::ListValue WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::Value::List result;
+  base::ListValue result;
   const std::vector<const UploadList::UploadInfo*> uploads =
       text_log_upload_list_->GetUploads(50);
 
   for (const auto* upload : uploads) {
-    base::Value::Dict upload_value;
+    base::DictValue upload_value;
     upload_value.Set("id", upload->upload_id);
 
     std::u16string value_w;
@@ -314,9 +314,9 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
   return result;
 }
 
-base::Value::List WebRtcLogsDOMHandler::UpdateUIWithEventLogs() const {
+base::ListValue WebRtcLogsDOMHandler::UpdateUIWithEventLogs() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& log : event_logs_) {
     result.Append(EventLogUploadInfoToValue(log));
   }
@@ -353,7 +353,7 @@ base::Value WebRtcLogsDOMHandler::FromPendingLog(
     return base::Value();
   }
 
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set("state", "pending");
   log.Set("capture_time",
           base::TimeFormatFriendlyDateAndTime(info.capture_time));
@@ -371,7 +371,7 @@ base::Value WebRtcLogsDOMHandler::FromActivelyUploadedLog(
     return base::Value();
   }
 
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set("state", "actively_uploaded");
   log.Set("capture_time",
           base::TimeFormatFriendlyDateAndTime(info.capture_time));
@@ -389,7 +389,7 @@ base::Value WebRtcLogsDOMHandler::FromNotUploadedLog(
     return base::Value();
   }
 
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set("state", "not_uploaded");
   log.Set("capture_time",
           base::TimeFormatFriendlyDateAndTime(info.capture_time));
@@ -411,7 +411,7 @@ base::Value WebRtcLogsDOMHandler::FromUploadUnsuccessfulLog(
     return base::Value();
   }
 
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set("state", "upload_unsuccessful");
   log.Set("capture_time",
           base::TimeFormatFriendlyDateAndTime(info.capture_time));
@@ -434,7 +434,7 @@ base::Value WebRtcLogsDOMHandler::FromUploadSuccessfulLog(
     return base::Value();
   }
 
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set("state", "upload_successful");
   log.Set("capture_time",
           base::TimeFormatFriendlyDateAndTime(info.capture_time));

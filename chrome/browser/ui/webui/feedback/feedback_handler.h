@@ -21,13 +21,13 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleShowDialog(const base::Value::List& args);
+  void HandleShowDialog(const base::ListValue& args);
 #if BUILDFLAG(IS_CHROMEOS)
-  void HandleShowAssistantLogsInfo(const base::Value::List& args);
+  void HandleShowAssistantLogsInfo(const base::ListValue& args);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  void HandleShowAutofillMetadataInfo(const base::Value::List& args);
-  void HandleShowMetrics(const base::Value::List& args);
-  void HandleShowSystemInfo(const base::Value::List& args);
+  void HandleShowAutofillMetadataInfo(const base::ListValue& args);
+  void HandleShowMetrics(const base::ListValue& args);
+  void HandleShowSystemInfo(const base::ListValue& args);
 
   base::WeakPtr<FeedbackDialog> dialog_;
 };

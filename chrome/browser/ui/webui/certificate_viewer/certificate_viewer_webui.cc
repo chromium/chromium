@@ -131,7 +131,7 @@ int ConvertTrustToInt(CertificateTrust::CertificateTrustType trust) {
 
 // Helper class for building a Value representation of a certificate. The class
 // gathers data for a single node of the representation tree and builds a
-// `base::Value::Dict` out of that.
+// `base::DictValue` out of that.
 class CertNodeBuilder {
  public:
   // Starts the node with "label" set to |label|.
@@ -151,19 +151,19 @@ class CertNodeBuilder {
   CertNodeBuilder& Payload(std::string_view payload);
 
   // Adds |child| in the list keyed "children". Can be called multiple times.
-  CertNodeBuilder& Child(base::Value::Dict child);
+  CertNodeBuilder& Child(base::DictValue child);
 
   // Similar to Child, but if the argument is null, then this does not add
   // anything.
-  CertNodeBuilder& ChildIfNotNullopt(std::optional<base::Value::Dict> child);
+  CertNodeBuilder& ChildIfNotNullopt(std::optional<base::DictValue> child);
 
-  // Creates a base::Value::Dict representation of the collected information.
+  // Creates a base::DictValue representation of the collected information.
   // Only call this once.
-  base::Value::Dict Build();
+  base::DictValue Build();
 
  private:
-  base::Value::Dict node_;
-  base::Value::List children_;
+  base::DictValue node_;
+  base::ListValue children_;
   // |built_| is false until Build() is called. Once it is |true|, |node_| and
   // |children_| are no longer valid for use.
   bool built_ = false;
@@ -182,20 +182,20 @@ CertNodeBuilder& CertNodeBuilder::Payload(std::string_view payload) {
   return *this;
 }
 
-CertNodeBuilder& CertNodeBuilder::Child(base::Value::Dict child) {
+CertNodeBuilder& CertNodeBuilder::Child(base::DictValue child) {
   children_.Append(std::move(child));
   return *this;
 }
 
 CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
-    std::optional<base::Value::Dict> child) {
+    std::optional<base::DictValue> child) {
   if (child) {
     return Child(std::move(*child));
   }
   return *this;
 }
 
-base::Value::Dict CertNodeBuilder::Build() {
+base::DictValue CertNodeBuilder::Build() {
   DCHECK(!built_);
   if (!children_.empty()) {
     node_.Set("children", std::move(children_));
@@ -214,9 +214,9 @@ std::string HandleOptionalOrError(
   return std::get<std::string>(s);
 }
 
-base::Value::List GenerateConstraintList(
+base::ListValue GenerateConstraintList(
     const chrome_browser_server_certificate_database::Constraints constraints) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& dns_constraint : constraints.dns_names()) {
     list.Append(base::Value(dns_constraint));
   }
@@ -244,7 +244,7 @@ std::string DialogArgsForCertList(
 
   // Certificate information. The keys in this dictionary's general key
   // correspond to the IDs in the Html page.
-  base::Value::Dict cert_info;
+  base::DictValue cert_info;
   const x509_certificate_model::X509CertificateModel& model = certs.front();
 
   cert_info.Set("isError", !model.is_valid());
@@ -300,10 +300,10 @@ std::string DialogArgsForCertList(
   cert_info.SetByDottedPath("general.sha256", model.HashCertSHA256());
 
   // Certificate hierarchy is constructed from bottom up.
-  base::Value::List children;
+  base::ListValue children;
   int index = 0;
   for (const auto& cert : certs) {
-    base::Value::Dict cert_node;
+    base::DictValue cert_node;
     cert_node.Set("label", base::Value(cert.GetTitle()));
     cert_node.SetByDottedPath("payload.index", base::Value(index));
     // Add the child from the previous iteration.
@@ -312,7 +312,7 @@ std::string DialogArgsForCertList(
     }
 
     // Add this node to the children list for the next iteration.
-    children = base::Value::List();
+    children = base::ListValue();
     children.Append(std::move(cert_node));
     ++index;
   }
@@ -320,7 +320,7 @@ std::string DialogArgsForCertList(
   cert_info.Set("hierarchy", std::move(children));
 
   if (cert_metadata.has_value()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(
         "trust",
         base::Value(ConvertTrustToInt(cert_metadata->trust().trust_type())));
@@ -517,7 +517,7 @@ void CertificateViewerDialogHandler::RegisterMessages() {
 }
 
 void CertificateViewerDialogHandler::HandleExportCertificate(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   int cert_index = GetCertificateIndex(args[0].GetInt());
   if (cert_index < 0) {
     return;
@@ -548,7 +548,7 @@ bool CertificateViewerDialogHandler::CanModifyMetadata() const {
 }
 
 void CertificateViewerDialogHandler::HandleUpdateTrustState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   std::optional<CertificateTrust::CertificateTrustType> trust_opt =
@@ -556,7 +556,7 @@ void CertificateViewerDialogHandler::HandleUpdateTrustState(
   // Trust type is invalid for some reason. Should only happen if a user is
   // messing with the HTML/JS.
   if (!trust_opt) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("success", base::Value(false));
     dict.Set("error", base::Value("An error occured updating the trust state"));
     ResolveJavascriptCallback(callback_id, dict);
@@ -564,7 +564,7 @@ void CertificateViewerDialogHandler::HandleUpdateTrustState(
   }
 
   if (!CanModifyMetadata()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("success", base::Value(false));
     dict.Set("error",
              base::Value("Modification of this certificate is not allowed"));
@@ -589,7 +589,7 @@ void CertificateViewerDialogHandler::UpdateTrustStateDone(
     const base::Value& callback_id,
     CertificateTrust::CertificateTrustType new_trust,
     bool success) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("success", base::Value(success));
   cert_metadata_->mutable_trust()->set_trust_type(new_trust);
   // No error message set, use the default message.
@@ -597,14 +597,14 @@ void CertificateViewerDialogHandler::UpdateTrustStateDone(
 }
 
 void CertificateViewerDialogHandler::HandleDeleteConstraint(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
   std::string constraint_to_delete = args[1].GetString();
 
   if (!CanModifyMetadata()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("success", base::Value(false));
     dict.Set("error",
              base::Value("Modification of this certificate is not allowed"));
@@ -657,7 +657,7 @@ void CertificateViewerDialogHandler::HandleDeleteConstraint(
   }
 
   if (!removed) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("success", base::Value(false));
     dict.Set("error",
              base::Value("Error removing constraint from certificate"));
@@ -675,14 +675,14 @@ void CertificateViewerDialogHandler::HandleDeleteConstraint(
 }
 
 void CertificateViewerDialogHandler::HandleAddConstraint(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
   std::string constraint_to_add = args[1].GetString();
 
   if (!CanModifyMetadata()) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("success", base::Value(false));
     dict.Set("error",
              base::Value("Modification of this certificate is not allowed"));
@@ -727,11 +727,11 @@ void CertificateViewerDialogHandler::UpdateConstraintsDone(
     const chrome_browser_server_certificate_database::Constraints
         new_constraints,
     bool success) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   // No error message set, use the default message.
   dict.Set("success", base::Value(success));
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("status", std::move(dict));
   if (success) {
     cert_metadata_->clear_constraints();
@@ -742,7 +742,7 @@ void CertificateViewerDialogHandler::UpdateConstraintsDone(
 }
 
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   int cert_index = GetCertificateIndex(args[1].GetInt());
@@ -771,7 +771,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL));
 
-    std::optional<base::Value::Dict> details_extensions;
+    std::optional<base::DictValue> details_extensions;
     if (!extensions.empty()) {
       CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
       for (const x509_certificate_model::Extension& extension : extensions) {
@@ -838,7 +838,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
   }
   contents_builder.Child(fingerprint_builder.Build());
 
-  base::Value::List root_list;
+  base::ListValue root_list;
   root_list.Append(CertNodeBuilder(model.GetTitle())
                        .Child(contents_builder.Build())
                        .Build());

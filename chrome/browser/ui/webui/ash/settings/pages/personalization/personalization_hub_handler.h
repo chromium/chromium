@@ -27,7 +27,7 @@ class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleOpenPersonalizationHub(const base::Value::List& args);
+  void HandleOpenPersonalizationHub(const base::ListValue& args);
 };
 
 }  // namespace ash::settings

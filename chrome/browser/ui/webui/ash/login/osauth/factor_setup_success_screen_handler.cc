@@ -20,7 +20,7 @@ FactorSetupSuccessScreenHandler::FactorSetupSuccessScreenHandler()
 
 FactorSetupSuccessScreenHandler::~FactorSetupSuccessScreenHandler() = default;
 
-void FactorSetupSuccessScreenHandler::Show(base::Value::Dict params) {
+void FactorSetupSuccessScreenHandler::Show(base::DictValue params) {
   ShowInWebUI(std::move(params));
 }
 

@@ -27,11 +27,11 @@ class ConfirmPasswordChangeHandler
   ~ConfirmPasswordChangeHandler() override;
 
   // Called by the JS UI to find out what to show and what size to be.
-  void HandleGetInitialState(const base::Value::List& params);
+  void HandleGetInitialState(const base::ListValue& params);
 
   // Tries to change the cryptohome password once the confirm-password-change
   // dialog is filled in and the password change is confirmed.
-  void HandleChangePassword(const base::Value::List& passwords);
+  void HandleChangePassword(const base::ListValue& passwords);
 
   // InSessionPasswordChangeManager::Observer:
   void OnEvent(InSessionPasswordChangeManager::Event event) override;

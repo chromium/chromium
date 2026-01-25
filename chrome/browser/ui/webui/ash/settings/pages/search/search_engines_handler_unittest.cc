@@ -76,7 +76,7 @@ TEST_F(SearchEnginesHandlerAshTest, OpenBrowserSearchSettings) {
           GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
           ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
           ash::NewWindowDelegate::Disposition::kSwitchToTab));
-  base::Value::List empty_args;
+  base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("openBrowserSearchSettings", empty_args);
 }
 

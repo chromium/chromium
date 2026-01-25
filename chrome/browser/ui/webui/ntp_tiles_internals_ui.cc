@@ -71,8 +71,7 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
       std::string_view message,
-      base::RepeatingCallback<void(const base::Value::List&)> callback)
-      override;
+      base::RepeatingCallback<void(const base::ListValue&)> callback) override;
   void CallJavascriptFunctionSpan(
       std::string_view name,
       base::span<const base::ValueView> values) override;
@@ -123,7 +122,7 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
     std::string_view message,
-    base::RepeatingCallback<void(const base::Value::List&)> callback) {
+    base::RepeatingCallback<void(const base::ListValue&)> callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 

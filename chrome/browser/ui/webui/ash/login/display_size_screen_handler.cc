@@ -49,7 +49,7 @@ void DisplaySizeScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_SUBTITLE);
 }
 
-void DisplaySizeScreenHandler::Show(base::Value::Dict data) {
+void DisplaySizeScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

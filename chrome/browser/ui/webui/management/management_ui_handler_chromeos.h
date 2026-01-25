@@ -33,14 +33,14 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   void RegisterMessages() override;
 
   // Returns the list of device reporting items for a given profile.
-  static base::Value::List GetDeviceReportingInfo(
+  static base::ListValue GetDeviceReportingInfo(
       const policy::DeviceCloudPolicyManagerAsh* manager,
       Profile* profile);
   static void AddDlpDeviceReportingElementForTesting(
-      base::Value::List* report_sources,
+      base::ListValue* report_sources,
       const std::string& message_id);
   static void AddDeviceReportingInfoForTesting(
-      base::Value::List* report_sources,
+      base::ListValue* report_sources,
       const policy::StatusCollector* collector,
       const policy::SystemLogUploader* uploader,
       Profile* profile);
@@ -56,18 +56,18 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
   // Adds device return instructions for a managed user as an update is required
   // as per device policy but the device cannot be updated due to End of Life
   // (Auto Update Expiration).
-  void AddUpdateRequiredEolInfo(base::Value::Dict* response) const;
+  void AddUpdateRequiredEolInfo(base::DictValue* response) const;
   // Adds a boolean which indicates if the network traffic can be monitored by
   // the admin via policy configurations, either via a proxy server, via
   // secure DNS templates with identifiers, or via XDR monitoring. If true, a
   // warning will be added to the transparency panel to inform the user that the
   // admin may be able to see their network traffic.
-  void AddMonitoredNetworkPrivacyDisclosure(base::Value::Dict* response);
+  void AddMonitoredNetworkPrivacyDisclosure(base::DictValue* response);
   // Adds flags indicating whether Desk Sync feature is active for windows
   // and/or cookies. If at least one of them is true, a dedicated section will
   // be added to inform the user that their data is being synced across their
   // ChromeOS devices.
-  void AddDeskSyncNotice(Profile* profile, base::Value::Dict* response);
+  void AddDeskSyncNotice(Profile* profile, base::DictValue* response);
 
   // ManagementUIHandler
   void RegisterPrefChange(PrefChangeRegistrar& pref_registrar) override;
@@ -76,7 +76,7 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
 
   virtual const ash::SecureDnsManager* GetSecureDnsManager() const;
 
-  base::Value::Dict GetContextualManagedData(Profile* profile) override;
+  base::DictValue GetContextualManagedData(Profile* profile) override;
 
   // ManagementUIHandler
   bool managed() const override;
@@ -91,12 +91,12 @@ class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
 
   void NotifyPluginVmDataCollectionUpdated();
 
-  void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
+  void GetManagementStatus(Profile* profile, base::DictValue* status) const;
 
-  void HandleGetLocalTrustRootsInfo(const base::Value::List& args);
-  void HandleGetFilesUploadToCloudInfo(const base::Value::List& args);
-  void HandleGetDeviceReportingInfo(const base::Value::List& args);
-  void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
+  void HandleGetLocalTrustRootsInfo(const base::ListValue& args);
+  void HandleGetFilesUploadToCloudInfo(const base::ListValue& args);
+  void HandleGetDeviceReportingInfo(const base::ListValue& args);
+  void HandleGetPluginVmDataCollectionStatus(const base::ListValue& args);
 
   bool device_managed_ = false;
 

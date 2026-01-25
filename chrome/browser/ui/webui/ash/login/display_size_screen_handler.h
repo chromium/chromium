@@ -21,7 +21,7 @@ class DisplaySizeScreenView {
   virtual ~DisplaySizeScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(base::Value::Dict data) = 0;
+  virtual void Show(base::DictValue data) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<DisplaySizeScreenView> AsWeakPtr() = 0;
@@ -44,7 +44,7 @@ class DisplaySizeScreenHandler final : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // DisplaySizeScreenView:
-  void Show(base::Value::Dict data) override;
+  void Show(base::DictValue data) override;
   base::WeakPtr<DisplaySizeScreenView> AsWeakPtr() override;
 
  private:

@@ -22,7 +22,7 @@ class SignInFatalErrorView {
 
   // Shows the contents of the screen.
   virtual void Show(SignInFatalErrorScreen::Error error,
-                    const base::Value::Dict& params) = 0;
+                    const base::DictValue& params) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<SignInFatalErrorView> AsWeakPtr() = 0;
@@ -41,7 +41,7 @@ class SignInFatalErrorScreenHandler final : public SignInFatalErrorView,
 
  private:
   void Show(SignInFatalErrorScreen::Error error,
-            const base::Value::Dict& params) override;
+            const base::DictValue& params) override;
   base::WeakPtr<SignInFatalErrorView> AsWeakPtr() override;
 
   // BaseScreenHandler:

@@ -230,7 +230,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     const syncer::DeviceInfoTracker* tracker,
     base::Clock* clock) {
   auto result_mojom = history::mojom::HistoryEntry::New();
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   auto url_and_title = SetHistoryEntryUrlAndTitle(entry);
   result_mojom->url = url_and_title.first;
   result_mojom->title = url_and_title.second;

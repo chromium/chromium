@@ -50,35 +50,35 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleRequestCrostiniInstallerView(const base::Value::List& args);
-  void HandleRequestRemoveCrostini(const base::Value::List& args);
+  void HandleRequestCrostiniInstallerView(const base::ListValue& args);
+  void HandleRequestRemoveCrostini(const base::ListValue& args);
   // Export the crostini container.
-  void HandleExportCrostiniContainer(const base::Value::List& args);
+  void HandleExportCrostiniContainer(const base::ListValue& args);
   // Import the crostini container.
-  void HandleImportCrostiniContainer(const base::Value::List& args);
+  void HandleImportCrostiniContainer(const base::ListValue& args);
   // Export a guest disk image.
-  void HandleExportDiskImage(const base::Value::List& args);
+  void HandleExportDiskImage(const base::ListValue& args);
   // Import a guest disk image.
-  void HandleImportDiskImage(const base::Value::List& args);
+  void HandleImportDiskImage(const base::ListValue& args);
   // Handle a request for the CrostiniInstallerView status.
-  void HandleCrostiniInstallerStatusRequest(const base::Value::List& args);
+  void HandleCrostiniInstallerStatusRequest(const base::ListValue& args);
   // crostini::CrostiniDialogStatusObserver
   void OnCrostiniDialogStatusChanged(crostini::DialogType dialog_type,
                                      bool open) override;
   // Handle a request for the CrostiniExportImport operation status.
   void HandleCrostiniExportImportOperationStatusRequest(
-      const base::Value::List& args);
+      const base::ListValue& args);
   // CrostiniExportImport::Observer:
   void OnCrostiniExportImportOperationStatusChanged(bool in_progress) override;
   // Handle a request for querying status of ARC adb sideloading.
-  void HandleQueryArcAdbRequest(const base::Value::List& args);
+  void HandleQueryArcAdbRequest(const base::ListValue& args);
   // Handle a request for enabling adb sideloading in ARC.
-  void HandleEnableArcAdbRequest(const base::Value::List& args);
+  void HandleEnableArcAdbRequest(const base::ListValue& args);
   // Called after establishing whether enabling adb sideloading is allowed for
   // the user and device
   void OnCanEnableArcAdbSideloading(bool can_change_adb_sideloading);
   // Handle a request for disabling adb sideloading in ARC.
-  void HandleDisableArcAdbRequest(const base::Value::List& args);
+  void HandleDisableArcAdbRequest(const base::ListValue& args);
   // Called after establishing whether disabling adb sideloading is allowed for
   // the user and device
   void OnCanDisableArcAdbSideloading(bool can_change_adb_sideloading);
@@ -90,60 +90,60 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
       SessionManagerClient::AdbSideloadResponseCode response_code,
       bool enabled);
   // Handles a request for forwarding a new port.
-  void HandleAddCrostiniPortForward(const base::Value::List& args);
+  void HandleAddCrostiniPortForward(const base::ListValue& args);
   // Handles a request for removing one port.
-  void HandleRemoveCrostiniPortForward(const base::Value::List& args);
+  void HandleRemoveCrostiniPortForward(const base::ListValue& args);
   // Handles a request for removing all ports.
-  void HandleRemoveAllCrostiniPortForwards(const base::Value::List& args);
+  void HandleRemoveAllCrostiniPortForwards(const base::ListValue& args);
   // CrostiniPortForwarder::Observer.
-  void OnActivePortsChanged(const base::Value::List& activePorts) override;
+  void OnActivePortsChanged(const base::ListValue& activePorts) override;
   void OnActiveNetworkChanged(const base::Value& interface,
                               const base::Value& ipAddress) override;
   // Handles a request for activating an existing port.
-  void HandleActivateCrostiniPortForward(const base::Value::List& args);
+  void HandleActivateCrostiniPortForward(const base::ListValue& args);
   // Handles a request for deactivating an existing port.
-  void HandleDeactivateCrostiniPortForward(const base::Value::List& args);
+  void HandleDeactivateCrostiniPortForward(const base::ListValue& args);
   // Callback of port forwarding requests.
   void OnPortForwardComplete(std::string callback_id, bool success);
   // Fetches disk info for a VM, can be slow (seconds).
-  void HandleGetCrostiniDiskInfo(const base::Value::List& args);
+  void HandleGetCrostiniDiskInfo(const base::ListValue& args);
   void ResolveGetCrostiniDiskInfoCallback(
       std::string callback_id,
       std::unique_ptr<crostini::CrostiniDiskInfo> disk_info);
   // Handles a request to resize a Crostini disk.
-  void HandleResizeCrostiniDisk(const base::Value::List& args);
+  void HandleResizeCrostiniDisk(const base::ListValue& args);
   void ResolveResizeCrostiniDiskCallback(std::string callback_id,
                                          bool succeeded);
   // Returns a list of currently forwarded ports.
-  void HandleGetCrostiniActivePorts(const base::Value::List& args);
+  void HandleGetCrostiniActivePorts(const base::ListValue& args);
   // Returns the current active network for forwarded ports.
-  void HandleGetCrostiniActiveNetworkInfo(const base::Value::List& args);
+  void HandleGetCrostiniActiveNetworkInfo(const base::ListValue& args);
   // Checks if Crostini is running.
-  void HandleCheckCrostiniIsRunning(const base::Value::List& args);
+  void HandleCheckCrostiniIsRunning(const base::ListValue& args);
   // Checks if Bruschetta is running.
-  void HandleCheckBruschettaIsRunning(const base::Value::List& args);
+  void HandleCheckBruschettaIsRunning(const base::ListValue& args);
   // guest_os::ContainerStartedObserver
   void OnContainerStarted(const guest_os::GuestId& container_id) override;
   // crostini::ContainerShutdownObserver
   void OnContainerShutdown(const guest_os::GuestId& container_id) override;
   // Handles a request to shut down Crostini.
-  void HandleShutdownCrostini(const base::Value::List& args);
+  void HandleShutdownCrostini(const base::ListValue& args);
   // Handles a request to shut down Bruschetta.
-  void HandleShutdownBruschetta(const base::Value::List& args);
+  void HandleShutdownBruschetta(const base::ListValue& args);
   // Handle a request for checking permission for changing ARC adb sideloading.
-  void HandleCanChangeArcAdbSideloadingRequest(const base::Value::List& args);
+  void HandleCanChangeArcAdbSideloadingRequest(const base::ListValue& args);
   // Get permission of changing ARC adb sideloading
   void FetchCanChangeAdbSideloading();
   // Callback of FetchCanChangeAdbSideloading.
   void OnCanChangeArcAdbSideloading(bool can_change_arc_adb_sideloading);
   // Handle a request for the running info of all known containers
-  void HandleRequestContainerInfo(const base::Value::List& args);
+  void HandleRequestContainerInfo(const base::ListValue& args);
   // Handle a request to set the badge color for a container
-  void HandleSetContainerBadgeColor(const base::Value::List& args);
+  void HandleSetContainerBadgeColor(const base::ListValue& args);
   // Handle a request to show the installer for Bruschetta
-  void HandleRequestBruschettaInstallerView(const base::Value::List& args);
+  void HandleRequestBruschettaInstallerView(const base::ListValue& args);
   // Handle a request to start uninstalling Bruschetta
-  void HandleRequestBruschettaUninstallerView(const base::Value::List& args);
+  void HandleRequestBruschettaUninstallerView(const base::ListValue& args);
 
   raw_ptr<Profile> profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;

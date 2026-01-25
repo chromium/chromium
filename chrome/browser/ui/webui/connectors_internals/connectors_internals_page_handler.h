@@ -43,7 +43,7 @@ class ConnectorsInternalsPageHandler
 #if !BUILDFLAG(IS_ANDROID)
   void OnSignalsCollected(GetDeviceTrustStateCallback callback,
                           bool is_device_trust_enabled,
-                          const base::Value::Dict signals);
+                          const base::DictValue signals);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;

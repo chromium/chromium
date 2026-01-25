@@ -163,7 +163,7 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("keyCode", static_cast<int>(event->key_code()));
   response.Set("key", GetStringForKeyboardCode(event->key_code()));
   ui::InputDeviceType deviceType = ui::INPUT_DEVICE_UNKNOWN;
@@ -182,13 +182,13 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   action_assignment_pane_active_ = true;
   if (!IsJavascriptAllowed()) {
     AllowJavascript();
@@ -200,7 +200,7 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   action_assignment_pane_active_ = false;
   if (!skip_pre_target_handler_for_testing_) {
     web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
@@ -209,7 +209,7 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
 }
 
 void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
-  base::Value::Dict response;
+  base::DictValue response;
 
   static constexpr auto kAssignmentInfo = std::to_array<AssignmentInfo>({
       {"select", ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes},
@@ -220,14 +220,14 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
 
   for (const AssignmentInfo& info : kAssignmentInfo) {
     const auto& keycodes = prefs_->GetDict(info.pref_name);
-    base::Value::List keys;
+    base::ListValue keys;
     for (const auto item : keycodes) {
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
         NOTREACHED();
       }
       for (const base::Value& device_type : item.second.GetList()) {
-        base::Value::Dict key;
+        base::DictValue key;
         key.Set("key", GetStringForKeyboardCode(
                            static_cast<ui::KeyboardCode>(key_code)));
         key.Set("device", device_type.GetString());

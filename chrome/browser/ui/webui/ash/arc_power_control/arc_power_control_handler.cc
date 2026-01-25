@@ -178,7 +178,7 @@ void ArcPowerControlHandler::OnThrottle(bool throttled) {
   }
 }
 
-void ArcPowerControlHandler::HandleReady(const base::Value::List& args) {
+void ArcPowerControlHandler::HandleReady(const base::ListValue& args) {
   arc::mojom::PowerInstance* power_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->power(),
       GetWakefulnessMode);
@@ -200,7 +200,7 @@ void ArcPowerControlHandler::HandleReady(const base::Value::List& args) {
 }
 
 void ArcPowerControlHandler::HandleSetWakefulnessMode(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(1U, args.size());
 
   if (!power_control_enabled_) {
@@ -255,8 +255,7 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
   }
 }
 
-void ArcPowerControlHandler::HandleSetThrottling(
-    const base::Value::List& args) {
+void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue& args) {
   DCHECK_EQ(1U, args.size());
 
   if (!power_control_enabled_) {
@@ -293,12 +292,12 @@ void ArcPowerControlHandler::HandleSetThrottling(
   }
 }
 
-void ArcPowerControlHandler::HandleStartTracing(const base::Value::List& args) {
+void ArcPowerControlHandler::HandleStartTracing(const base::ListValue& args) {
   DCHECK(!args.size());
   StartTracing();
 }
 
-void ArcPowerControlHandler::HandleStopTracing(const base::Value::List& args) {
+void ArcPowerControlHandler::HandleStopTracing(const base::ListValue& args) {
   DCHECK(!args.size());
   StopTracing();
 }

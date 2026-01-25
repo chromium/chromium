@@ -26,7 +26,7 @@ class FactorSetupSuccessScreenView {
   virtual ~FactorSetupSuccessScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(base::Value::Dict params) = 0;
+  virtual void Show(base::DictValue params) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<FactorSetupSuccessScreenView> AsWeakPtr() = 0;
@@ -50,7 +50,7 @@ class FactorSetupSuccessScreenHandler final
 
  private:
   // FactorSetupSuccessScreenView:
-  void Show(base::Value::Dict params) override;
+  void Show(base::DictValue params) override;
   base::WeakPtr<FactorSetupSuccessScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:

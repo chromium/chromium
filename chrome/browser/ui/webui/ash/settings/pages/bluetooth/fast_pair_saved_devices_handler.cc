@@ -36,10 +36,10 @@ const char kSavedDeviceAccountKeyKey[] = "accountKey";
 
 // Converts |device| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value::Dict SavedDeviceToDictionary(const std::string& device_name,
-                                          const std::string& image_url,
-                                          const std::string account_key) {
-  return base::Value::Dict()
+base::DictValue SavedDeviceToDictionary(const std::string& device_name,
+                                        const std::string& image_url,
+                                        const std::string account_key) {
+  return base::DictValue()
       .Set(kSavedDeviceNameKey, device_name)
       .Set(kSavedDeviceImageUrlKey, image_url)
       .Set(kSavedDeviceAccountKeyKey, EncodeKey(account_key));
@@ -72,7 +72,7 @@ void FastPairSavedDevicesHandler::RegisterMessages() {
 }
 
 void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
   std::vector<uint8_t> account_key;
   base::HexStringToBytes(args[0].GetString(), &account_key);
@@ -89,7 +89,7 @@ void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
   AllowJavascript();
 
@@ -130,7 +130,7 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   if (devices.empty()) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__ << ": No devices saved to the user's account";
-    base::Value::List saved_devices_list;
+    base::ListValue saved_devices_list;
     quick_pair::RecordSavedDevicesCount(
         /*num_devices=*/saved_devices_list.size());
     FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
@@ -204,7 +204,7 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
 
   // We initialize a list of the saved devices that we will parse with the
   // decoded urls we have.
-  base::Value::List saved_devices_list;
+  base::ListValue saved_devices_list;
   saved_devices_list.reserve(devices_.size());
 
   // |nearby::fastpair::StoredDiscoveryItem| contains information about

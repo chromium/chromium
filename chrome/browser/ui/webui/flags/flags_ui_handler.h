@@ -37,25 +37,25 @@ class FlagsUIHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestDeprecatedFeatures" message.
-  void HandleRequestDeprecatedFeatures(const base::Value::List& args);
+  void HandleRequestDeprecatedFeatures(const base::ListValue& args);
 
   // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(const base::Value::List& args);
+  void HandleRequestExperimentalFeatures(const base::ListValue& args);
 
   // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(const base::Value::List& args);
+  void HandleEnableExperimentalFeatureMessage(const base::ListValue& args);
 
   // Callback for the "setOriginListFlag" message.
-  void HandleSetOriginListFlagMessage(const base::Value::List& args);
+  void HandleSetOriginListFlagMessage(const base::ListValue& args);
 
   // Callback for the "setStringFlag" message.
-  void HandleSetStringFlagMessage(const base::Value::List& args);
+  void HandleSetStringFlagMessage(const base::ListValue& args);
 
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(const base::Value::List& args);
+  void HandleRestartBrowser(const base::ListValue& args);
 
   // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(const base::Value::List& args);
+  void HandleResetAllFlags(const base::ListValue& args);
 
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;

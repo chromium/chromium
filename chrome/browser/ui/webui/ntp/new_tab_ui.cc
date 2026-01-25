@@ -113,7 +113,7 @@ bool NewTabUI::IsNewTab(const GURL& url) {
 }
 
 // static
-void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
+void NewTabUI::SetUrlTitleAndDirection(base::DictValue* dictionary,
                                        const std::u16string& title,
                                        const GURL& gurl) {
   dictionary->Set("url", gurl.spec());
@@ -149,7 +149,7 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
 
 // static
 void NewTabUI::SetFullNameAndDirection(const std::u16string& full_name,
-                                       base::Value::Dict* dictionary) {
+                                       base::DictValue* dictionary) {
   dictionary->Set("full_name", full_name);
   dictionary->Set("full_name_direction", GetHtmlTextDirection(full_name));
 }

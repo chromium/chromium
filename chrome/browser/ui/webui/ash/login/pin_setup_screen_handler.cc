@@ -98,7 +98,7 @@ void PinSetupScreenHandler::Show(const std::string& token,
                                  bool has_login_support,
                                  bool using_pin_as_main_factor,
                                  bool is_recovery_mode) {
-  ShowInWebUI(base::Value::Dict()
+  ShowInWebUI(base::DictValue()
                   .Set("authToken", base::Value(token))
                   .Set("isChildAccount", is_child_account)
                   .Set("hasLoginSupport", has_login_support)

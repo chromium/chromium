@@ -79,7 +79,7 @@ class NearbyShareDialogUI : public ui::MojoWebUIController,
                           content::WebContents* new_contents) override;
 
  private:
-  void HandleClose(const base::Value::List& args);
+  void HandleClose(const base::ListValue& args);
 
   // Search for a query parameter such as file, text, address, phone, or url,
   // then use it to populate an attachment, if found; otherwise, do nothing.

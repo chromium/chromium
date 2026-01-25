@@ -340,7 +340,7 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
 
   // Use in ASSERT_NO_FATAL_FAILURE.
   void ExtractCertProvisioningProcesses(
-      base::Value::List& args,
+      base::ListValue& args,
       base::Value* out_all_processes,
       std::vector<std::string>* out_profile_ids) {
     ASSERT_EQ(1U, args.size());
@@ -367,7 +367,7 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
     content::TestWebUIListenerObserver result_waiter(
         &web_ui_, "certificate-provisioning-processes-changed");
 
-    base::Value::List args;
+    base::ListValue args;
     web_ui_.HandleReceivedMessage("refreshCertificateProvisioningProcessses",
                                   args);
 
@@ -746,7 +746,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, ResetsWhenSupported) {
   user_scheduler_.GetWorkers().try_emplace(kUserCertProfileId,
                                            std::move(worker));
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kUserCertProfileId);
   web_ui_.HandleReceivedMessage("triggerCertificateProvisioningProcessReset",
                                 args);

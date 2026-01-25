@@ -589,7 +589,7 @@ base::RefCountedMemory* ExtensionsUI::GetFaviconResourceBytes(
 // Normally volatile data does not belong in loadTimeData, but in this case
 // prevents flickering on a very prominent surface (top of the landing page).
 void ExtensionsUI::OnDevModeChanged() {
-  base::Value::Dict update;
+  base::DictValue update;
   update.Set(kInDevModeKey, *in_dev_mode_);
   update.Set(kLoadTimeClassesKey, GetLoadTimeClasses(*in_dev_mode_));
   content::WebUIDataSource::Update(Profile::FromWebUI(web_ui()),

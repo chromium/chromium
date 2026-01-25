@@ -25,12 +25,12 @@ UrgentPasswordExpiryNotificationHandler::
     ~UrgentPasswordExpiryNotificationHandler() = default;
 
 void UrgentPasswordExpiryNotificationHandler::HandleContinue(
-    const base::Value::List& params) {
+    const base::ListValue& params) {
   InSessionPasswordChangeManager::Get()->StartInSessionPasswordChange();
 }
 
 void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
-    const base::Value::List& params) {
+    const base::ListValue& params) {
   const std::string callback_id = params[0].GetString();
   const int ms_until_expiry = params[1].GetInt();
 

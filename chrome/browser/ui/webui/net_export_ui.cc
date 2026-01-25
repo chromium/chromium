@@ -91,18 +91,18 @@ class NetExportMessageHandler final
   void RegisterMessages() override;
 
   // Messages
-  void OnEnableNotifyUIWithState(const base::Value::List& list);
-  void OnStartNetLog(const base::Value::List& list);
-  void OnStopNetLog(const base::Value::List& list);
-  void OnSendNetLog(const base::Value::List& list);
-  void OnShowFile(const base::Value::List& list);
+  void OnEnableNotifyUIWithState(const base::ListValue& list);
+  void OnStartNetLog(const base::ListValue& list);
+  void OnStopNetLog(const base::ListValue& list);
+  void OnSendNetLog(const base::ListValue& list);
+  void OnShowFile(const base::ListValue& list);
 
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
   // net_log::NetExportFileWriter::StateObserver implementation.
-  void OnNewState(const base::Value::Dict& state) override;
+  void OnNewState(const base::DictValue& state) override;
 
  private:
   // Send NetLog data via email.
@@ -127,7 +127,7 @@ class NetExportMessageHandler final
 
   // Fires net-log-info-changed event to update the JavaScript UI in the
   // renderer.
-  void NotifyUIWithState(const base::Value::Dict& state);
+  void NotifyUIWithState(const base::DictValue& state);
 
   // Opens the SelectFileDialog UI with the default path to save a
   // NetLog file.
@@ -197,7 +197,7 @@ void NetExportMessageHandler::RegisterMessages() {
 // After this function, NotifyUIWithState() will be called on all |file_writer_|
 // state changes.
 void NetExportMessageHandler::OnEnableNotifyUIWithState(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   AllowJavascript();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observation_manager_.IsObserving()) {
@@ -206,7 +206,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
   NotifyUIWithState(file_writer_->GetState());
 }
 
-void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
+void NetExportMessageHandler::OnStartNetLog(const base::ListValue& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Determine the capture mode.
@@ -237,10 +237,10 @@ void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
   }
 }
 
-void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
+void NetExportMessageHandler::OnStopNetLog(const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value::Dict ui_thread_polled_data;
+  base::DictValue ui_thread_polled_data;
 
   Profile* profile = Profile::FromWebUI(web_ui());
   ui_thread_polled_data.Set("prerenderInfo",
@@ -255,13 +255,13 @@ void NetExportMessageHandler::OnStopNetLog(const base::Value::List& list) {
   file_writer_->StopNetLog(std::move(ui_thread_polled_data));
 }
 
-void NetExportMessageHandler::OnSendNetLog(const base::Value::List& list) {
+void NetExportMessageHandler::OnSendNetLog(const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::SendEmail));
 }
 
-void NetExportMessageHandler::OnShowFile(const base::Value::List& list) {
+void NetExportMessageHandler::OnShowFile(const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_writer_->GetFilePathToCompletedLog(
       base::BindOnce(&NetExportMessageHandler::ShowFileInShell,
@@ -286,7 +286,7 @@ void NetExportMessageHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 
-void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
+void NetExportMessageHandler::OnNewState(const base::DictValue& state) {
   NotifyUIWithState(state);
 }
 
@@ -342,8 +342,7 @@ bool NetExportMessageHandler::UsingMobileUI() {
 #endif
 }
 
-void NetExportMessageHandler::NotifyUIWithState(
-    const base::Value::Dict& state) {
+void NetExportMessageHandler::NotifyUIWithState(const base::DictValue& state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_ui());
   FireWebUIListener(net_log::kNetLogInfoChangedEvent, state);

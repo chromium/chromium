@@ -44,23 +44,23 @@ using content::BrowserThread;
 // consisting of a title and a list of fields. Returns a pointer to the new
 // section's contents, for use with |AddSectionEntry| below. Note that
 // |parent_list|, not the caller, owns the newly added section.
-base::Value::List* AddSection(base::Value::List* parent_list,
-                              std::string_view title) {
-  base::Value::Dict section;
-  base::Value::List section_contents;
+base::ListValue* AddSection(base::ListValue* parent_list,
+                            std::string_view title) {
+  base::DictValue section;
+  base::ListValue section_contents;
   section.Set("title", title);
   // Grab a raw pointer to the result before |Pass()|ing it on.
-  base::Value::List* result =
+  base::ListValue* result =
       section.Set("data", std::move(section_contents))->GetIfList();
   parent_list->Append(std::move(section));
   return result;
 }
 
 // Adds a bool entry to a section (created with |AddSection| above).
-void AddSectionEntry(base::Value::List* section_list,
+void AddSectionEntry(base::ListValue* section_list,
                      std::string_view name,
                      bool value) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("stat_name", name);
   entry.Set("stat_value", value);
   entry.Set("is_valid", true);
@@ -68,10 +68,10 @@ void AddSectionEntry(base::Value::List* section_list,
 }
 
 // Adds a string entry to a section (created with |AddSection| above).
-void AddSectionEntry(base::Value::List* section_list,
+void AddSectionEntry(base::ListValue* section_list,
                      std::string_view name,
                      std::string_view value) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("stat_name", name);
   entry.Set("stat_value", value);
   entry.Set("is_valid", true);
@@ -232,7 +232,7 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserUrlFilteringService() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.empty()) << "Expected call is (void)";
 
   AllowJavascript();
@@ -249,12 +249,12 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   SendBasicInfo();
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.size() == 2u && args[0].is_string() && args[1].is_string())
       << "Expected call is (callback_id: string, url_str: string)";
 
@@ -286,13 +286,13 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
-  base::Value::List section_list;
+  base::ListValue section_list;
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  base::Value::List* section_profile = AddSection(&section_list, "Profile");
+  base::ListValue* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
 
-  base::Value::List* section_filter = AddSection(&section_list, "Filter");
+  base::ListValue* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "SafeSites enabled",
                   supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
   AddSectionEntry(
@@ -300,13 +300,12 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       WebFilterTypeToString(
           GetSupervisedUserUrlFilteringService()->GetWebFilterType()));
 
-  base::Value::List* section_search =
-      AddSection(&section_list, "Google search");
+  base::ListValue* section_search = AddSection(&section_list, "Google search");
   AddSectionEntry(
       section_search, "Safe search enforced",
       supervised_user::IsGoogleSafeSearchEnforced(*profile->GetPrefs()));
 
-  base::Value::List* section_browser =
+  base::ListValue* section_browser =
       AddSection(&section_list, "Browser and web");
   AddSectionEntry(section_browser, "Incognito mode allowed",
                   IncognitoModePrefs::IsIncognitoAllowed(profile));
@@ -318,7 +317,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
     for (const auto& account :
          identity_manager
              ->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
-      base::Value::List* section_user = AddSection(
+      base::ListValue* section_user = AddSection(
           &section_list, "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
@@ -340,7 +339,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
     }
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("sections", std::move(section_list));
   FireWebUIListener("basic-info-received", result);
 
@@ -355,14 +354,14 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   FireWebUIListener("user-settings-received", settings);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
     supervised_user::SupervisedUserURLFilter::Result filtering_result) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("allowResult", FilteringResultToString(filtering_result));
   result.Set("manual", filtering_result.IsFromManualList() &&
                            filtering_result.IsAllowed());
@@ -372,7 +371,7 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     supervised_user::SupervisedUserURLFilter::Result filtering_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("url", filtering_result.url.possibly_invalid_spec());
   result.Set("result", FilteringResultToString(filtering_result));
   result.Set("reason", FilteringReasonToString(filtering_result));

@@ -15,7 +15,7 @@ class Extension;
 // |enabled| is injected for easier testing.
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
-                           base::Value::Dict* info);
+                           base::DictValue* info);
 
 }  // namespace extensions
 

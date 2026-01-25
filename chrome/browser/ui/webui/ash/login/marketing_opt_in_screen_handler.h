@@ -67,7 +67,7 @@ class MarketingOptInScreenHandler final : public BaseScreenHandler,
 
  private:
   // BaseScreenHandler:
-  void GetAdditionalParameters(base::Value::Dict* parameters) override;
+  void GetAdditionalParameters(base::DictValue* parameters) override;
 
   base::WeakPtrFactory<MarketingOptInScreenView> weak_ptr_factory_{this};
 };

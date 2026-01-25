@@ -47,22 +47,21 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
 
   void NotifyJS(const std::string& event_name, const base::Value& value);
 
-  void HandleInitialMicrophoneSwitchState(const base::Value::List& args);
+  void HandleInitialMicrophoneSwitchState(const base::ListValue& args);
   void HandleInitialMicrophoneMutedBySecurityCurtainState(
-      const base::Value::List& args);
-  void HandleInitialCameraSwitchForceDisabledState(
-      const base::Value::List& args);
-  void HandleInitialCameraLedFallbackState(const base::Value::List& args);
-  void HandleInitialPrimaryUserLocationState(const base::Value::List& args);
-  void HandleGetCurrentTimezoneName(const base::Value::List& args);
-  void HandleGetCurrentSunSetTime(const base::Value::List& args);
-  void HandleGetCurrentSunRiseTime(const base::Value::List& args);
+      const base::ListValue& args);
+  void HandleInitialCameraSwitchForceDisabledState(const base::ListValue& args);
+  void HandleInitialCameraLedFallbackState(const base::ListValue& args);
+  void HandleInitialPrimaryUserLocationState(const base::ListValue& args);
+  void HandleGetCurrentTimezoneName(const base::ListValue& args);
+  void HandleGetCurrentSunSetTime(const base::ListValue& args);
+  void HandleGetCurrentSunRiseTime(const base::ListValue& args);
 
  private:
   ScopedSessionObserver session_observer_{this};
 
   // return the callback_id
-  const base::ValueView ValidateArgs(const base::Value::List& args);
+  const base::ValueView ValidateArgs(const base::ListValue& args);
 
   bool mic_muted_by_security_curtain_ = false;
 

@@ -165,7 +165,7 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
 }
 
 std::string GetWebsiteReportingAllowlistMessageParam(
-    const base::Value::List& url_allowlist) {
+    const base::ListValue& url_allowlist) {
   std::vector<std::string> url_patterns;
   for (const base::Value& pattern_value : url_allowlist) {
     url_patterns.push_back(pattern_value.GetString());
@@ -175,11 +175,11 @@ std::string GetWebsiteReportingAllowlistMessageParam(
 }
 
 void AddDeviceReportingElement(
-    base::Value::List* report_sources,
+    base::ListValue* report_sources,
     const std::string& message_id,
     const DeviceReportingType& type,
-    base::Value::List message_params = base::Value::List()) {
-  base::Value::Dict data;
+    base::ListValue message_params = base::ListValue()) {
+  base::DictValue data;
   data.Set("messageId", message_id);
   data.Set("reportingType", ToJSDeviceReportingType(type));
   data.Set("messageParams", std::move(message_params));
@@ -193,7 +193,7 @@ const policy::DlpRulesManager* GetDlpRulesManager() {
 
 // If you are adding a privacy note, please also add it to
 // go/chrome-policy-privacy-note-mappings.
-void AddDeviceReportingInfo(base::Value::List* report_sources,
+void AddDeviceReportingInfo(base::ListValue* report_sources,
                             const policy::StatusCollector* collector,
                             const policy::SystemLogUploader* uploader,
                             Profile* profile) {
@@ -363,7 +363,7 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
                               DeviceReportingType::kWebsiteInfoAndActivity);
   } else if (!website_activity_allowlist.empty()) {
     // Admin defined subset of URLs allowlisted for website activity reporting.
-    base::Value::List message_params;
+    base::ListValue message_params;
     message_params.Append(
         GetWebsiteReportingAllowlistMessageParam(website_activity_allowlist));
     AddDeviceReportingElement(report_sources,
@@ -373,7 +373,7 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   } else if (!website_telemetry_types.empty() &&
              !website_telemetry_allowlist.empty()) {
     // Admin defined subset of URLs allowlisted for website telemetry reporting.
-    base::Value::List message_params;
+    base::ListValue message_params;
     message_params.Append(
         GetWebsiteReportingAllowlistMessageParam(website_telemetry_allowlist));
     AddDeviceReportingElement(report_sources,
@@ -384,7 +384,7 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
 }
 
 void AddStatusOverviewManagedDeviceAndAccount(
-    base::Value::Dict* status,
+    base::DictValue* status,
     bool device_managed,
     bool account_managed,
     const std::string& device_manager,
@@ -483,10 +483,10 @@ void ManagementUIHandlerChromeOS::RegisterMessages() {
 }
 
 // static
-base::Value::List ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
+base::ListValue ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
     const policy::DeviceCloudPolicyManagerAsh* manager,
     Profile* profile) {
-  base::Value::List report_sources;
+  base::ListValue report_sources;
   policy::StatusUploader* uploader = nullptr;
   policy::SystemLogUploader* syslog_uploader = nullptr;
   policy::StatusCollector* collector = nullptr;
@@ -503,7 +503,7 @@ base::Value::List ManagementUIHandlerChromeOS::GetDeviceReportingInfo(
 
 // static
 void ManagementUIHandlerChromeOS::AddDlpDeviceReportingElementForTesting(
-    base::Value::List* report_sources,
+    base::ListValue* report_sources,
     const std::string& message_id) {
   AddDeviceReportingElement(report_sources, message_id,
                             DeviceReportingType::kDlpEvents);
@@ -511,7 +511,7 @@ void ManagementUIHandlerChromeOS::AddDlpDeviceReportingElementForTesting(
 
 // static
 void ManagementUIHandlerChromeOS::AddDeviceReportingInfoForTesting(
-    base::Value::List* report_sources,
+    base::ListValue* report_sources,
     const policy::StatusCollector* collector,
     const policy::SystemLogUploader* uploader,
     Profile* profile) {
@@ -549,7 +549,7 @@ bool ManagementUIHandlerChromeOS::IsUpdateRequiredEol() const {
 }
 
 void ManagementUIHandlerChromeOS::AddUpdateRequiredEolInfo(
-    base::Value::Dict* response) const {
+    base::DictValue* response) const {
   if (!device_managed_ || !IsUpdateRequiredEol()) {
     response->Set("eolMessage", std::string());
     return;
@@ -566,7 +566,7 @@ void ManagementUIHandlerChromeOS::AddUpdateRequiredEolInfo(
 }
 
 void ManagementUIHandlerChromeOS::AddMonitoredNetworkPrivacyDisclosure(
-    base::Value::Dict* response) {
+    base::DictValue* response) {
   bool showMonitoredNetworkDisclosure = false;
 
   // Check for secure DNS templates with identifiers.
@@ -602,7 +602,7 @@ void ManagementUIHandlerChromeOS::AddMonitoredNetworkPrivacyDisclosure(
 
   // Check for proxy config.
   ash::NetworkHandler* network_handler = ash::NetworkHandler::Get();
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.
   if (ash::NetworkHandler::HasUiProxyConfigService() &&
@@ -629,9 +629,8 @@ void ManagementUIHandlerChromeOS::AddMonitoredNetworkPrivacyDisclosure(
                 showMonitoredNetworkDisclosure);
 }
 
-void ManagementUIHandlerChromeOS::AddDeskSyncNotice(
-    Profile* profile,
-    base::Value::Dict* response) {
+void ManagementUIHandlerChromeOS::AddDeskSyncNotice(Profile* profile,
+                                                    base::DictValue* response) {
   const bool are_windows_synced =
       IsActiveProfile(profile) &&
       ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled();
@@ -649,13 +648,13 @@ void ManagementUIHandlerChromeOS::RegisterPrefChange(
           base::Unretained(this)));
 }
 
-base::Value::Dict ManagementUIHandlerChromeOS::GetContextualManagedData(
+base::DictValue ManagementUIHandlerChromeOS::GetContextualManagedData(
     Profile* profile) {
   std::string enterprise_manager = GetDeviceManager();
   if (enterprise_manager.empty()) {
     enterprise_manager = GetAccountManager(profile);
   }
-  base::Value::Dict response;
+  base::DictValue response;
   AddUpdateRequiredEolInfo(&response);
   AddMonitoredNetworkPrivacyDisclosure(&response);
   AddDeskSyncNotice(profile, &response);
@@ -769,7 +768,7 @@ void ManagementUIHandlerChromeOS::NotifyPluginVmDataCollectionUpdated() {
 
 void ManagementUIHandlerChromeOS::GetManagementStatus(
     Profile* profile,
-    base::Value::Dict* status) const {
+    base::DictValue* status) const {
   status->Set(kDeviceManagedInfo, base::Value());
   status->Set(kAccountManagedInfo, base::Value());
   status->Set(kOverview, base::Value());
@@ -798,7 +797,7 @@ void ManagementUIHandlerChromeOS::GetManagementStatus(
 }
 
 void ManagementUIHandlerChromeOS::HandleGetLocalTrustRootsInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   base::Value trust_roots_configured(false);
   AllowJavascript();
@@ -923,7 +922,7 @@ const ash::SecureDnsManager* ManagementUIHandlerChromeOS::GetSecureDnsManager()
 }
 
 void ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
 
   AllowJavascript();
@@ -934,15 +933,15 @@ void ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo(
 }
 
 void ManagementUIHandlerChromeOS::HandleGetDeviceReportingInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
-  base::Value::List report_sources = GetDeviceReportingInfo(
+  base::ListValue report_sources = GetDeviceReportingInfo(
       GetDeviceCloudPolicyManager(), Profile::FromWebUI(web_ui()));
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 }
 
 void ManagementUIHandlerChromeOS::HandleGetPluginVmDataCollectionStatus(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   base::Value plugin_vm_data_collection_enabled(
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(

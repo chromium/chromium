@@ -98,7 +98,7 @@ class ConstrainedWebDialogUI : public content::WebUIController {
 
  private:
   // JS Message Handler
-  void OnDialogCloseMessage(const base::Value::List& args);
+  void OnDialogCloseMessage(const base::ListValue& args);
 };
 
 // Create and show a constrained HTML dialog. The actual object that gets

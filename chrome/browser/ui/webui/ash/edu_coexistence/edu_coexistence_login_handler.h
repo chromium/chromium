@@ -54,11 +54,11 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
 
  private:
   // Registered WebUi Message handlers.
-  void InitializeEduArgs(const base::Value::List& args);
+  void InitializeEduArgs(const base::ListValue& args);
   void SendInitializeEduArgs();
-  void ConsentValid(const base::Value::List& args);
-  void ConsentLogged(const base::Value::List& args);
-  void OnError(const base::Value::List& args);
+  void ConsentValid(const base::ListValue& args);
+  void ConsentLogged(const base::ListValue& args);
+  void OnError(const base::ListValue& args);
 
   // Used for getting child access token.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>

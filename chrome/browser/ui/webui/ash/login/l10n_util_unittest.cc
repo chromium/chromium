@@ -30,10 +30,10 @@ namespace ash {
 
 namespace {
 
-void VerifyOnlyUILanguages(const base::Value::List& list) {
+void VerifyOnlyUILanguages(const base::ListValue& list) {
   for (const auto& value : list) {
     ASSERT_TRUE(value.is_dict());
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
     const std::string* code = dict.FindString("code");
     ASSERT_TRUE(code);
     EXPECT_NE("ga", *code)
@@ -42,10 +42,10 @@ void VerifyOnlyUILanguages(const base::Value::List& list) {
   }
 }
 
-void VerifyLanguageCode(const base::Value::List& list,
+void VerifyLanguageCode(const base::ListValue& list,
                         size_t index,
                         const std::string& expected_code) {
-  const base::Value::Dict& value = list[index].GetDict();
+  const base::DictValue& value = list[index].GetDict();
   const std::string* actual_code = value.FindString("code");
   ASSERT_TRUE(actual_code);
   EXPECT_EQ(expected_code, *actual_code)
@@ -111,9 +111,9 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
 }
 
 TEST_F(L10nUtilTest, FindMostRelevantLocale) {
-  base::Value::List available_locales;
+  base::ListValue available_locales;
   for (const char* locale : {"de", "fr", "en-GB"}) {
-    available_locales.Append(base::Value::Dict().Set("value", locale));
+    available_locales.Append(base::DictValue().Set("value", locale));
   }
 
   std::vector<std::string> most_relevant_language_codes;
@@ -202,13 +202,13 @@ class L10nUtilTestWithFjordOobe : public L10nUtilTest {
     scoped_feature_list_.InitAndEnableFeature(features::kFjordOobeForceEnabled);
   }
 
-  void VerifyAllowlistedLanguages(const base::Value::List& list) {
+  void VerifyAllowlistedLanguages(const base::ListValue& list) {
     const std::set<std::string> allowlisted_languages =
         fjord_util::GetAllowlistedLanguagesForTesting();
     ASSERT_EQ(allowlisted_languages.size(), list.size());
 
     for (const base::Value& language : list) {
-      const base::Value::Dict& value = language.GetDict();
+      const base::DictValue& value = language.GetDict();
       const std::string* language_code = value.FindString("code");
       ASSERT_TRUE(allowlisted_languages.contains(*language_code));
     }

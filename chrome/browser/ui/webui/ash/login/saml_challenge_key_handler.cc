@@ -30,7 +30,7 @@ const char kResponseField[] = "response";
 
 const size_t kPatternsSizeWarningLevel = 500;
 
-bool UrlMatchesPattern(const GURL& url, const base::Value::List& patterns) {
+bool UrlMatchesPattern(const GURL& url, const base::ListValue& patterns) {
   if (!url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }
@@ -110,7 +110,7 @@ void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
       base::BindOnce(&SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl,
                      weak_factory_.GetWeakPtr(), url));
 
-  const base::Value::List* patterns = nullptr;
+  const base::ListValue* patterns = nullptr;
   switch (status) {
     case CrosSettingsProvider::TRUSTED:
       if (!settings->GetList(kDeviceWebBasedAttestationAllowedUrls,
@@ -170,7 +170,7 @@ base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {
 
 void SamlChallengeKeyHandler::ReturnResult(
     const attestation::TpmChallengeKeyResult& result) {
-  base::Value::Dict js_result;
+  base::DictValue js_result;
   if (!result.IsSuccess()) {
     LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
   }

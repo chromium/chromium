@@ -33,16 +33,16 @@ class MediaRouterInternalsWebUIMessageHandler
   void RegisterMessages() override;
 
   // Handlers for JavaScript messages.
-  void HandleGetState(const base::Value::List& args);
-  void HandleGetProviderState(const base::Value::List& args);
-  void HandleGetLogs(const base::Value::List& args);
+  void HandleGetState(const base::ListValue& args);
+  void HandleGetProviderState(const base::ListValue& args);
+  void HandleGetLogs(const base::ListValue& args);
 
-  void HandleGetMirroringStats(const base::Value::List& args);
-  void HandleSetMirroringStatsEnabled(const base::Value::List& args);
-  void HandleIsMirroringStatsEnabled(const base::Value::List& args);
+  void HandleGetMirroringStats(const base::ListValue& args);
+  void HandleSetMirroringStatsEnabled(const base::ListValue& args);
+  void HandleIsMirroringStatsEnabled(const base::ListValue& args);
 
   // MirroringStatsObserver implementation.
-  void OnMirroringStatsUpdated(const base::Value::Dict& json_logs) override;
+  void OnMirroringStatsUpdated(const base::DictValue& json_logs) override;
 
   void OnProviderState(base::Value callback_id, mojom::ProviderStatePtr state);
 

@@ -80,7 +80,7 @@ std::string GetSessionServiceInternalsAsString(Profile* profile) {
   }
   events.push_back("</pre>");
 
-  base::Value::Dict internals_output;
+  base::DictValue internals_output;
 #if DCHECK_IS_ON()
   internals_output.Set(
       "AppSessionService",

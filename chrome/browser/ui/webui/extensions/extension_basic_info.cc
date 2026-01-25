@@ -33,7 +33,7 @@ namespace extensions {
 
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
-                           base::Value::Dict* info) {
+                           base::DictValue* info) {
   info->Set(kInfoIdKey, extension->id());
   info->Set(kInfoNameKey, extension->name());
   info->Set(kEnabledKey, enabled);

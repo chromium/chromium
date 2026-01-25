@@ -59,8 +59,7 @@ void ManagedUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void ManagedUIHandler::HandleObserveManagedUI(
-    const base::Value::List& /*args*/) {
+void ManagedUIHandler::HandleObserveManagedUI(const base::ListValue& /*args*/) {
   AllowJavascript();
   AddObservers();
 }
@@ -111,8 +110,8 @@ void ManagedUIHandler::RemoveObservers() {
   pref_registrar_.RemoveAll();
 }
 
-base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
-  base::Value::Dict update;
+base::DictValue ManagedUIHandler::GetDataSourceUpdate() const {
+  base::DictValue update;
 #if BUILDFLAG(IS_CHROMEOS)
   update.Set("deviceManagedByOrg", GetDeviceManagedUiWebUILabel());
 #endif

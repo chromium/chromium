@@ -65,7 +65,7 @@ class DemoSetupScreenHandler final : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // BaseWebUIHandler:
-  void GetAdditionalParameters(base::Value::Dict* parameters) override;
+  void GetAdditionalParameters(base::DictValue* parameters) override;
 
  private:
   base::WeakPtrFactory<DemoSetupScreenView> weak_ptr_factory_{this};

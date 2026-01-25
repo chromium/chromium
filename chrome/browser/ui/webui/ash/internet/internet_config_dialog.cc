@@ -171,12 +171,12 @@ void InternetConfigDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string InternetConfigDialog::GetDialogArgs() const {
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
 
   if (prefilled_wifi_config_.has_value()) {
-    base::Value::Dict prefilled_properties =
+    base::DictValue prefilled_properties =
         chromeos::network_config::WiFiConfigPropertiesToMojoJsValue(
             *prefilled_wifi_config_);
     args.Set("prefilledProperties", std::move(prefilled_properties));

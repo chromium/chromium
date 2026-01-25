@@ -27,7 +27,7 @@ class CastFeedbackUI : public content::WebUIController {
   ~CastFeedbackUI() override;
 
  private:
-  void OnCloseMessage(const base::Value::List&);
+  void OnCloseMessage(const base::ListValue&);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebContents> web_contents_;

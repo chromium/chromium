@@ -55,7 +55,7 @@ void CreateAndAddOverviewDataSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
-  base::Value::Dict localized_strings;
+  base::DictValue localized_strings;
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);
@@ -71,7 +71,7 @@ std::unique_ptr<Result> LoadGraphicsModel(const std::string& json_text) {
                                     "Failed to load tracing model");
   }
 
-  base::Value::Dict model = graphics_model.Serialize();
+  base::DictValue model = graphics_model.Serialize();
   return std::make_unique<Result>(base::Value(std::move(model)),
                                   base::FilePath(), "Tracing model is loaded");
 }
@@ -132,7 +132,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
   }
 
  private:
-  void HandleLoadFromText(const base::Value::List& args) {
+  void HandleLoadFromText(const base::ListValue& args) {
     DCHECK_EQ(1U, args.size());
     if (!args[0].is_string()) {
       LOG(ERROR) << "Invalid input";
@@ -193,7 +193,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
     }
   }
 
-  void HandleSetMaxTime(const base::Value::List& args) {
+  void HandleSetMaxTime(const base::ListValue& args) {
     if (args.size() != 1) {
       LOG(ERROR) << "Expect 1 numeric arg";
       return;

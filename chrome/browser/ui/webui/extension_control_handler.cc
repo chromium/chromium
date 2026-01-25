@@ -24,7 +24,7 @@ void ExtensionControlHandler::RegisterMessages() {
 }
 
 void ExtensionControlHandler::HandleDisableExtension(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(args.size(), 1u);
   const std::string& extension_id = args[0].GetString();
   auto* extension_registrar =

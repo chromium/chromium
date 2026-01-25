@@ -21,9 +21,8 @@ smb_client::SmbService* GetSmbService(Profile* profile) {
   return smb_client::SmbServiceFactory::Get(profile);
 }
 
-base::Value::List BuildShareList(
-    const std::vector<smb_client::SmbUrl>& shares) {
-  base::Value::List shares_list;
+base::ListValue BuildShareList(const std::vector<smb_client::SmbUrl>& shares) {
+  base::ListValue shares_list;
   shares_list.reserve(shares.size());
   for (const auto& share : shares) {
     shares_list.Append(share.GetWindowsUNCString());
@@ -72,7 +71,7 @@ smb_client::SmbService* SmbHandler::GetLocalSmbService() {
   return GetSmbService(profile_);
 }
 
-void SmbHandler::HandleSmbMount(const base::Value::List& args) {
+void SmbHandler::HandleSmbMount(const base::ListValue& args) {
   CHECK_EQ(8U, args.size());
 
   const std::string& callback_id = args[0].GetString();
@@ -114,7 +113,7 @@ void SmbHandler::HandleSmbMountResponse(const std::string& callback_id,
                             base::Value(static_cast<int>(result)));
 }
 
-void SmbHandler::HandleStartDiscovery(const base::Value::List& args) {
+void SmbHandler::HandleStartDiscovery(const base::ListValue& args) {
   smb_client::SmbService* const service = GetSmbService(profile_);
   if (!service) {
     return;
@@ -134,7 +133,7 @@ void SmbHandler::HandleDiscoveryDone() {
   }
 }
 
-void SmbHandler::HandleHasAnySmbMountedBefore(const base::Value::List& args) {
+void SmbHandler::HandleHasAnySmbMountedBefore(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
   smb_client::SmbService* const service = GetLocalSmbService();
@@ -160,7 +159,7 @@ void SmbHandler::HandleGatherSharesResponse(
                     base::Value(done));
 }
 
-void SmbHandler::HandleUpdateCredentials(const base::Value::List& args) {
+void SmbHandler::HandleUpdateCredentials(const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
 
   const std::string& username = args[0].GetString();

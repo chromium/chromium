@@ -37,7 +37,7 @@ void OfflineLoginScreenHandler::DeclareLocalizedValues(
   builder->Add("offlineLoginOkBtn", IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT);
 }
 
-void OfflineLoginScreenHandler::Show(base::Value::Dict params) {
+void OfflineLoginScreenHandler::Show(base::DictValue params) {
   ShowInWebUI(std::move(params));
 }
 

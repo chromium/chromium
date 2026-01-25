@@ -29,7 +29,7 @@ struct DialogArgs {
   DialogArgs(const DialogArgs&);
   DialogArgs& operator=(const DialogArgs&);
 
-  base::Value::Dict ToValue();
+  base::DictValue ToValue();
 
   std::vector<GURL> urls;
   std::string name;

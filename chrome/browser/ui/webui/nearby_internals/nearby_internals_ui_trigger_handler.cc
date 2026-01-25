@@ -174,10 +174,10 @@ std::string TransferUpdateMetaDataToString(
 
 // Converts |status_code| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
-base::Value::Dict StatusCodeToDictionary(
+base::DictValue StatusCodeToDictionary(
     const NearbySharingService::StatusCodes status_code,
     TriggerEvent trigger_event) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kStatusCodeKey, StatusCodeToString(status_code));
   dictionary.Set(kTriggerEventKey, TriggerEventToString(trigger_event));
   dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
@@ -186,8 +186,8 @@ base::Value::Dict StatusCodeToDictionary(
 
 // Converts |share_target| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
-base::Value::Dict ShareTargetToDictionary(const ShareTarget share_target) {
-  base::Value::Dict share_target_dictionary;
+base::DictValue ShareTargetToDictionary(const ShareTarget share_target) {
+  base::DictValue share_target_dictionary;
   share_target_dictionary.Set(kShareTargetDeviceNamesKey,
                               share_target.device_name);
   share_target_dictionary.Set(kShareTargetIdKey, share_target.id.ToString());
@@ -197,9 +197,9 @@ base::Value::Dict ShareTargetToDictionary(const ShareTarget share_target) {
 
 // Converts |id_to_share_target_map| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value::List ShareTargetMapToList(
+base::ListValue ShareTargetMapToList(
     const base::flat_map<std::string, ShareTarget>& id_to_share_target_map) {
-  base::Value::List share_target_list;
+  base::ListValue share_target_list;
   share_target_list.reserve(id_to_share_target_map.size());
 
   for (const auto& it : id_to_share_target_map) {
@@ -211,10 +211,10 @@ base::Value::List ShareTargetMapToList(
 
 // Converts |transfer_metadata| to a raw dictionary value used as a JSON
 // argument to JavaScript functions.
-base::Value::Dict TransferUpdateToDictionary(
+base::DictValue TransferUpdateToDictionary(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kTransferUpdateMetaDataKey,
                  TransferUpdateMetaDataToString(transfer_metadata));
   dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
@@ -223,13 +223,13 @@ base::Value::Dict TransferUpdateToDictionary(
   return dictionary;
 }
 
-base::Value::Dict StatusBooleansToDictionary(const bool is_scanning,
-                                             const bool is_transferring,
-                                             const bool is_receiving_files,
-                                             const bool is_sending_files,
-                                             const bool is_conecting,
-                                             const bool is_in_high_visibility) {
-  base::Value::Dict dictionary;
+base::DictValue StatusBooleansToDictionary(const bool is_scanning,
+                                           const bool is_transferring,
+                                           const bool is_receiving_files,
+                                           const bool is_sending_files,
+                                           const bool is_conecting,
+                                           const bool is_in_high_visibility) {
+  base::DictValue dictionary;
   dictionary.Set(kIsScanning, is_scanning);
   dictionary.Set(kIsTransferring, is_transferring);
   dictionary.Set(kIsSending, is_sending_files);
@@ -311,12 +311,12 @@ void NearbyInternalsUiTriggerHandler::RegisterMessages() {
 }
 
 void NearbyInternalsUiTriggerHandler::InitializeContents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -334,7 +334,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -352,7 +352,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
 }
 
 void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -368,7 +368,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -386,7 +386,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
 }
 
 void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -404,7 +404,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
 }
 
 void NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -470,7 +470,7 @@ void NearbyInternalsUiTriggerHandler::OnCancelCalled(
       StatusCodeToDictionary(status_codes, TriggerEvent::kCancel));
 }
 
-void NearbyInternalsUiTriggerHandler::SendText(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -499,7 +499,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::Value::List& args) {
           TriggerEvent::kSendText));
 }
 
-void NearbyInternalsUiTriggerHandler::Accept(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::Accept(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -521,7 +521,7 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::Value::List& args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Open(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::Open(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -542,7 +542,7 @@ void NearbyInternalsUiTriggerHandler::Open(const base::Value::List& args) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Reject(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::Reject(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -564,7 +564,7 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::Value::List& args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::Cancel(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::Cancel(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -586,7 +586,7 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::Value::List& args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyInternalsUiTriggerHandler::GetState(const base::Value::List& args) {
+void NearbyInternalsUiTriggerHandler::GetState(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service_) {
@@ -604,7 +604,7 @@ void NearbyInternalsUiTriggerHandler::GetState(const base::Value::List& args) {
 }
 
 void NearbyInternalsUiTriggerHandler::ShowReceivedNotification(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (!service) {

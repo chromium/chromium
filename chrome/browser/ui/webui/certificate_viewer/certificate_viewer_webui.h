@@ -122,23 +122,23 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // chain.
   //
   // The input is an integer index to the certificate in the chain to export.
-  void HandleExportCertificate(const base::Value::List& args);
+  void HandleExportCertificate(const base::ListValue& args);
 
   // Gets the details for a specific certificate in the certificate chain.
   // Responds with a tree structure containing the fields and values for certain
   // nodes.
   //
   // The input is an integer index to the certificate in the chain to view.
-  void HandleRequestCertificateFields(const base::Value::List& args);
+  void HandleRequestCertificateFields(const base::ListValue& args);
 
   // Update the trust state of the certificate.
-  void HandleUpdateTrustState(const base::Value::List& args);
+  void HandleUpdateTrustState(const base::ListValue& args);
   void UpdateTrustStateDone(const base::Value& callback_id,
                             CertificateTrust::CertificateTrustType new_trust,
                             bool success);
 
-  void HandleAddConstraint(const base::Value::List& args);
-  void HandleDeleteConstraint(const base::Value::List& args);
+  void HandleAddConstraint(const base::ListValue& args);
+  void HandleDeleteConstraint(const base::ListValue& args);
   void UpdateConstraintsDone(
       const base::Value& callback_id,
       const chrome_browser_server_certificate_database::Constraints

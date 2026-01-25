@@ -116,7 +116,7 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
 void LockScreenReauthHandler::HandleStartOnlineAuth(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   AllowJavascript();
   OnReauthDialogReadyForTesting();
 
@@ -126,7 +126,7 @@ void LockScreenReauthHandler::HandleStartOnlineAuth(
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -225,7 +225,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     const bool force_reauth_gaia_page,
     const std::string& partition_name,
     net::CookieAccessResult result) {
-  base::Value::Dict params;
+  base::DictValue params;
 
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
@@ -303,7 +303,7 @@ void LockScreenReauthHandler::CallJavascript(const std::string& function,
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
-    const base::Value::List& params) {
+    const base::ListValue& params) {
   absl::Cleanup run_callback_on_return = [this] {
     auth_flow_auto_reload_manager_.Terminate();
   };
@@ -413,7 +413,7 @@ void LockScreenReauthHandler::CheckCredentials(
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   DCHECK(!value.empty());
   const std::string& old_password = value[0].GetString();
   lock_screen_reauth_manager_->UpdateUserPassword(old_password);
@@ -429,7 +429,7 @@ void LockScreenReauthHandler::ShowSamlConfirmPasswordScreen() {
 }
 
 void LockScreenReauthHandler::HandleOnPasswordTyped(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   OnPasswordTyped(value[0].GetString());
 }
 

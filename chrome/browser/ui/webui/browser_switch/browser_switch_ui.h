@@ -71,14 +71,14 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   //
   // If it fails, the JavaScript promise is rejected. If it succeeds, the
   // JavaScript promise is not resolved, because we close the tab anyways.
-  void HandleLaunchAlternativeBrowserAndCloseTab(const base::Value::List& args);
+  void HandleLaunchAlternativeBrowserAndCloseTab(const base::ListValue& args);
 
   void OnLaunchFinished(base::TimeTicks start,
                         std::string callback_id,
                         bool success);
 
   // Navigates to the New Tab Page.
-  void HandleGotoNewTabPage(const base::Value::List& args);
+  void HandleGotoNewTabPage(const base::ListValue& args);
 
   // Resolves a promise with a JSON object with all the LBS rulesets, formatted
   // like this:
@@ -91,7 +91,7 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   //   "ieem": { "sitelist": [...], "greylist": [...] },
   //   "external": { "sitelist": [...], "greylist": [...] }
   // }
-  void HandleGetAllRulesets(const base::Value::List& args);
+  void HandleGetAllRulesets(const base::ListValue& args);
 
   // Resolves a promise with a JSON object describing the decision for a URL
   // (stay/go) + reason. The result is formatted like this:
@@ -101,7 +101,7 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   //   "reason": ("globally_disabled"|"protocol"|"sitelist"|...),
   //   "matching_rule": (string|undefined)
   // }
-  void HandleGetDecision(const base::Value::List& args);
+  void HandleGetDecision(const base::ListValue& args);
 
   // Resolves a promise with the time of the last policy fetch and next policy
   // fetch, as JS timestamps.
@@ -110,7 +110,7 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   //   "last_fetch": 123456789,
   //   "next_fetch": 234567890
   // }
-  void HandleGetTimestamps(const base::Value::List& args);
+  void HandleGetTimestamps(const base::ListValue& args);
 
   // Resolves a promise with the configured sitelist XML download URLs. The keys
   // are the name of the pref associated with the sitelist.
@@ -122,17 +122,17 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   //     "external_greylist_url": null
   //   }
   // }
-  void HandleGetRulesetSources(const base::Value::List& args);
+  void HandleGetRulesetSources(const base::ListValue& args);
 
   // Immediately re-download and apply XML rules.
-  void HandleRefreshXml(const base::Value::List& args);
+  void HandleRefreshXml(const base::ListValue& args);
 
   // Resolves a promise with the boolean value describing whether the feature
   // is enabled or not which is configured by BrowserSwitcherEnabled key
-  void HandleIsBrowserSwitchEnabled(const base::Value::List& args);
+  void HandleIsBrowserSwitchEnabled(const base::ListValue& args);
 
   // Handles the request for all internals data as a JSON string.
-  void HandleGetBrowserSwitchInternalsJson(const base::Value::List& args);
+  void HandleGetBrowserSwitchInternalsJson(const base::ListValue& args);
 
   // Gathers all the data for the JSON export.
   std::string GetBrowserSwitchInternalsJson();

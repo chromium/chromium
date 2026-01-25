@@ -32,7 +32,7 @@ SelectToSpeakHandler::SelectToSpeakHandler() = default;
 
 SelectToSpeakHandler::~SelectToSpeakHandler() = default;
 
-void SelectToSpeakHandler::HandleGetAppLocale(const base::Value::List& args) {
+void SelectToSpeakHandler::HandleGetAppLocale(const base::ListValue& args) {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   AllowJavascript();
   FireWebUIListener("app-locale-updated", base::Value(app_locale));
@@ -47,10 +47,10 @@ void SelectToSpeakHandler::OnVoicesChanged() {
       GURL(chrome::GetOSSettingsUrl(
           chromeos::settings::mojom::kSelectToSpeakSubpagePath)),
       &voices);
-  base::Value::List responses;
+  base::ListValue responses;
   for (const auto& voice : voices) {
-    base::Value::Dict response;
-    base::Value::List event_types;
+    base::DictValue response;
+    base::ListValue event_types;
     std::string language_code;
     std::string language_and_country_code = voice.lang;
     if (!language_and_country_code.empty()) {

@@ -24,7 +24,7 @@ void QuickStartScreenHandler::SetPIN(const std::string pin) {
   CallExternalAPI("setPin", pin);
 }
 
-void QuickStartScreenHandler::SetQRCode(base::Value::List blob,
+void QuickStartScreenHandler::SetQRCode(base::ListValue blob,
                                         const std::string url) {
   CallExternalAPI("setQRCode", std::move(blob), url);
 }

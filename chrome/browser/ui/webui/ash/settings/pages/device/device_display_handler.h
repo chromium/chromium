@@ -25,8 +25,8 @@ class DisplayHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleHighlightDisplay(const base::Value::List& args);
-  void HandleDragDisplayDelta(const base::Value::List& args);
+  void HandleHighlightDisplay(const base::ListValue& args);
+  void HandleDragDisplayDelta(const base::ListValue& args);
 
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;

@@ -23,7 +23,7 @@ class PersonalizedRecommendAppsScreenView {
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  virtual void SetAppsAndUseCasesData(base::Value::List useCasesApps) = 0;
+  virtual void SetAppsAndUseCasesData(base::ListValue useCasesApps) = 0;
   virtual void SetOverviewStep() = 0;
 
   // Gets a WeakPtr to the instance.
@@ -51,7 +51,7 @@ class PersonalizedRecommendAppsScreenHandler
 
   // PersonalizedRecommendAppsScreenView:
   void Show() override;
-  void SetAppsAndUseCasesData(base::Value::List useCasesApps) override;
+  void SetAppsAndUseCasesData(base::ListValue useCasesApps) override;
   void SetOverviewStep() override;
   base::WeakPtr<PersonalizedRecommendAppsScreenView> AsWeakPtr() override;
 

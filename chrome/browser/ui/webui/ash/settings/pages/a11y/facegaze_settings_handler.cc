@@ -20,14 +20,14 @@ FaceGazeSettingsHandler::~FaceGazeSettingsHandler() {
 }
 
 void FaceGazeSettingsHandler::HandleRequestEnableFaceGaze(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(args.size(), 1U);
   const bool& enable = args[0].GetBool();
   AccessibilityManager::Get()->RequestEnableFaceGaze(enable);
 }
 
 void FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(args.size(), 1U);
   const bool& enabled = args[0].GetBool();
 
@@ -41,9 +41,9 @@ void FaceGazeSettingsHandler::HandleDisableDialogResult(bool accepted) {
 
 void FaceGazeSettingsHandler::HandleSendGestureInfoToSettings(
     const std::vector<ash::FaceGazeGestureInfo>& gesture_info) {
-  base::Value::List gesture_info_list;
+  base::ListValue gesture_info_list;
   for (const auto& gesture_info_entry : gesture_info) {
-    base::Value::Dict gesture;
+    base::DictValue gesture;
     gesture.Set("gesture", gesture_info_entry.gesture);
     gesture.Set("confidence", gesture_info_entry.confidence);
     gesture_info_list.Append(std::move(gesture));

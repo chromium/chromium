@@ -39,7 +39,7 @@ class NetworkUI : public ui::MojoWebUIController {
 
   ~NetworkUI() override;
 
-  static base::Value::Dict GetLocalizedStrings();
+  static base::DictValue GetLocalizedStrings();
 
   // Instantiates implementation of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.

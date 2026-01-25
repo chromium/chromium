@@ -28,7 +28,7 @@ class WelcomeView {
   virtual void Show() = 0;
 
   // Sets language list and reloads localized contents.
-  virtual void SetLanguageList(base::Value::List language_list) = 0;
+  virtual void SetLanguageList(base::ListValue language_list) = 0;
 
   // Change the current input method.
   virtual void SetInputMethodId(const std::string& input_method_id) = 0;
@@ -76,7 +76,7 @@ class WelcomeScreenHandler final : public WelcomeView,
 
   // WelcomeView:
   void Show() override;
-  void SetLanguageList(base::Value::List language_list) override;
+  void SetLanguageList(base::ListValue language_list) override;
   void SetInputMethodId(const std::string& input_method_id) override;
   void ShowDemoModeConfirmationDialog() override;
   void ShowEditRequisitionDialog(const std::string& requisition) override;
@@ -90,16 +90,16 @@ class WelcomeScreenHandler final : public WelcomeView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
  private:
   // JS callbacks.
   void HandleRecordChromeVoxHintSpokenSuccess();
 
   // Returns available timezones.
-  static base::Value::List GetTimezoneList();
+  static base::ListValue GetTimezoneList();
 
-  base::Value::List language_list_;
+  base::ListValue language_list_;
 
   base::WeakPtrFactory<WelcomeView> weak_ptr_factory_{this};
 };

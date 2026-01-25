@@ -38,13 +38,13 @@ class InternetHandler
   friend class InternetHandlerTest;
 
   // Settings JS handlers.
-  void AddThirdPartyVpn(const base::Value::List& args);
-  void ConfigureThirdPartyVpn(const base::Value::List& args);
+  void AddThirdPartyVpn(const base::ListValue& args);
+  void ConfigureThirdPartyVpn(const base::ListValue& args);
   void RequestGmsCoreNotificationsDisabledDeviceNames(
-      const base::Value::List& args);
-  void ShowCarrierAccountDetail(const base::Value::List& args);
-  void ShowCellularSetupUI(const base::Value::List& args);
-  void ShowPortalSignin(const base::Value::List& args);
+      const base::ListValue& args);
+  void ShowCarrierAccountDetail(const base::ListValue& args);
+  void ShowCellularSetupUI(const base::ListValue& args);
+  void ShowPortalSignin(const base::ListValue& args);
 
   // Sets list of names of devices whose "Google Play Services" notifications
   // are disabled.
@@ -59,7 +59,7 @@ class InternetHandler
       tether::GmsCoreNotificationsStateTracker*
           gms_core_notifications_state_tracker);
 
-  base::Value::List device_names_without_notifications_;
+  base::ListValue device_names_without_notifications_;
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

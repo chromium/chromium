@@ -36,7 +36,7 @@ class PointerHandler : public ::settings::SettingsPageUIHandler,
   void PointingStickExists(bool exists) override;
 
   // Initializes the page with the current pointer information.
-  void HandleInitialize(const base::Value::List& args);
+  void HandleInitialize(const base::ListValue& args);
 
   std::unique_ptr<system::PointerDeviceObserver> pointer_device_observer_;
 };

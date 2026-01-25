@@ -37,7 +37,7 @@ class LockScreenNetworkUI : public ui::MojoWebDialogUI {
   explicit LockScreenNetworkUI(content::WebUI* web_ui);
   ~LockScreenNetworkUI() override;
 
-  base::Value::Dict GetLocalizedStrings();
+  base::DictValue GetLocalizedStrings();
 
   // Instantiates implementation of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.

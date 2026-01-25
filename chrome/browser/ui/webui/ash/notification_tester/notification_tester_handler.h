@@ -40,7 +40,7 @@ class NotificationTesterHandler : public content::WebUIMessageHandler {
  private:
   // MessageHandler callback that fires when the MessageHandler receives a
   // message to generate a notification from the front-end.
-  void HandleGenerateNotificationForm(const base::Value::List& args);
+  void HandleGenerateNotificationForm(const base::ListValue& args);
 
   // Given the name of an icon (string) within the notification tester
   // resources, return the corresponding icon.
@@ -67,7 +67,7 @@ class NotificationTesterHandler : public content::WebUIMessageHandler {
   // Return a RichNotificationData object populated with the user-configured
   // notification object from the front-end.
   message_center::RichNotificationData DictToOptionalFields(
-      const base::Value::Dict* notifObj);
+      const base::DictValue* notifObj);
 };
 
 }  // namespace ash

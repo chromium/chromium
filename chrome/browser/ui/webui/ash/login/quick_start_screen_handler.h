@@ -27,7 +27,7 @@ class QuickStartView {
 
   virtual void Show() = 0;
   virtual void SetPIN(const std::string pin) = 0;
-  virtual void SetQRCode(base::Value::List blob, const std::string url) = 0;
+  virtual void SetQRCode(base::ListValue blob, const std::string url) = 0;
   virtual void ShowInitialUiStep() = 0;
   virtual void ShowBluetoothDialog() = 0;
   virtual void ShowConnectingToPhoneStep() = 0;
@@ -59,7 +59,7 @@ class QuickStartScreenHandler final : public QuickStartView,
   // QuickStartView:
   void Show() override;
   void SetPIN(const std::string pin) override;
-  void SetQRCode(base::Value::List blob, const std::string url) override;
+  void SetQRCode(base::ListValue blob, const std::string url) override;
   void ShowInitialUiStep() override;
   void ShowBluetoothDialog() override;
   void ShowConnectingToPhoneStep() override;

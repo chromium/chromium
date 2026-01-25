@@ -68,7 +68,7 @@ class KeyboardHandlerTest : public ChromeAshTestBase {
         return false;
       }
 
-      const base::Value::Dict& keyboard_params = data->arg2()->GetDict();
+      const base::DictValue& keyboard_params = data->arg2()->GetDict();
       const std::vector<std::pair<std::string, bool*>> path_to_out_param = {
           {"showCapsLock", has_caps_lock_out},
           {"showExternalMetaKey", has_external_meta_key_out},

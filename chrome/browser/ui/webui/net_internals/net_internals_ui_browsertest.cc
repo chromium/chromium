@@ -65,7 +65,7 @@ base::Time ToTime(const char* time_string) {
 }
 
 std::vector<network::mojom::RequestDestination> ToRequestDestinationList(
-    const base::Value::List* list) {
+    const base::ListValue* list) {
   std::vector<network::mojom::RequestDestination> result;
   if (!list) {
     return result;
@@ -287,19 +287,19 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
                        const content::WebUI::MessageCallback& handler);
 
   void HandleMessage(const content::WebUI::MessageCallback& handler,
-                     const base::Value::List& data);
+                     const base::ListValue& data);
 
   // Performs a DNS lookup. Resolves a Javascript Promise with the host's IP
   // address or an error string.
-  void DnsLookup(const base::Value::List& list);
+  void DnsLookup(const base::ListValue& list);
   void DnsLookupFinished(std::string callback_id, base::Value* result);
 
   // Sets/resets a mock network context for testing.
-  void SetNetworkContextForTesting(const base::Value::List& list);
-  void ResetNetworkContextForTesting(const base::Value::List& list);
+  void SetNetworkContextForTesting(const base::ListValue& list);
+  void ResetNetworkContextForTesting(const base::ListValue& list);
 
   // Register a test shared dictionary for testing.
-  void RgisterTestSharedDictionary(const base::Value::List& list);
+  void RgisterTestSharedDictionary(const base::ListValue& list);
 
   Browser* browser() { return net_internals_test_->browser(); }
 
@@ -351,7 +351,7 @@ void NetInternalsTest::MessageHandler::RegisterMessage(
 
 void NetInternalsTest::MessageHandler::HandleMessage(
     const content::WebUI::MessageCallback& handler,
-    const base::Value::List& data) {
+    const base::ListValue& data) {
   handler.Run(data);
 }
 
@@ -361,8 +361,7 @@ void NetInternalsTest::MessageHandler::DnsLookupFinished(
   ResolveJavascriptCallback(callback_id, *result);
 }
 
-void NetInternalsTest::MessageHandler::DnsLookup(
-    const base::Value::List& list) {
+void NetInternalsTest::MessageHandler::DnsLookup(const base::ListValue& list) {
   AllowJavascript();
   ASSERT_GE(3u, list.size());
   ASSERT_TRUE(list[0].is_string());
@@ -394,20 +393,20 @@ void NetInternalsTest::MessageHandler::DnsLookup(
 }
 
 void NetInternalsTest::MessageHandler::SetNetworkContextForTesting(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   NetInternalsUI::SetNetworkContextForTesting(&network_context_for_testing_);
 }
 
 void NetInternalsTest::MessageHandler::ResetNetworkContextForTesting(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   NetInternalsUI::SetNetworkContextForTesting(nullptr);
 }
 
 void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   const std::string* dictionary_json_string = list[0].GetIfString();
   CHECK(dictionary_json_string);
-  base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
+  base::DictValue dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
   base::HexStringToSpan(*dict.FindString("hash"), hash_value);
   const std::string* id_string = dict.FindString("id");

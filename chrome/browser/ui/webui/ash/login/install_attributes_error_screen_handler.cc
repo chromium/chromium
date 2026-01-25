@@ -37,7 +37,7 @@ void InstallAttributesErrorScreenHandler::Show() {
   bool restart_required = user_manager::UserManager::Get()->IsUserLoggedIn() ||
                           !base::CommandLine::ForCurrentProcess()->HasSwitch(
                               switches::kFirstExecAfterBoot);
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("restartRequired", restart_required);
   ShowInWebUI(std::move(data));
 }

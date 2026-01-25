@@ -63,7 +63,7 @@ void FastPairSoftwareScanningHandler::OnJavascriptAllowed() {}
 void FastPairSoftwareScanningHandler::OnJavascriptDisallowed() {}
 
 void FastPairSoftwareScanningHandler::HandleBatterySaverActiveStatusRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   if (battery_saver_active_provider_) {
     FireWebUIListener(
@@ -73,8 +73,7 @@ void FastPairSoftwareScanningHandler::HandleBatterySaverActiveStatusRequest(
 }
 
 void FastPairSoftwareScanningHandler::
-    HandleHardwareOffloadingSupportStatusRequest(
-        const base::Value::List& args) {
+    HandleHardwareOffloadingSupportStatusRequest(const base::ListValue& args) {
   AllowJavascript();
   if (hardware_offloading_supported_provider_) {
     FireWebUIListener(

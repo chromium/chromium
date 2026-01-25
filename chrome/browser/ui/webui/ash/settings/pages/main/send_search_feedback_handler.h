@@ -35,7 +35,7 @@ class SendSearchFeedbackHandler : public ::settings::SettingsPageUIHandler {
 
   // Opens the feedback dialog.
   // |args| contains a description template.
-  virtual void HandleOpenFeedbackDialog(const base::Value::List& args);
+  virtual void HandleOpenFeedbackDialog(const base::ListValue& args);
 };
 
 }  // namespace ash::settings

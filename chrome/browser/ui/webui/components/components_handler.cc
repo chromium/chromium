@@ -43,11 +43,11 @@ void ComponentsHandler::OnJavascriptDisallowed() {
 }
 
 void ComponentsHandler::HandleRequestComponentsData(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("components", LoadComponents());
 
   ResolveJavascriptCallback(callback_id, result);
@@ -57,7 +57,7 @@ void ComponentsHandler::HandleRequestComponentsData(
 // TODO(shrikant): We need to make this button available based on current
 // state e.g. If component state is currently updating then we need to disable
 // button. (https://code.google.com/p/chromium/issues/detail?id=272540)
-void ComponentsHandler::HandleCheckUpdate(const base::Value::List& args) {
+void ComponentsHandler::HandleCheckUpdate(const base::ListValue& args) {
   if (args.size() != 1) {
     NOTREACHED();
   }
@@ -71,7 +71,7 @@ void ComponentsHandler::HandleCheckUpdate(const base::Value::List& args) {
 }
 
 void ComponentsHandler::OnEvent(const update_client::CrxUpdateItem& item) {
-  base::Value::Dict parameters;
+  base::DictValue parameters;
   parameters.Set("event", ServiceStatusToString(item.state));
   parameters.Set("id", item.id);
   if (item.component) {
@@ -115,16 +115,16 @@ void ComponentsHandler::OnDemandUpdate(const std::string& component_id) {
       component_updater::Callback());
 }
 
-base::Value::List ComponentsHandler::LoadComponents() {
+base::ListValue ComponentsHandler::LoadComponents() {
   const std::vector<std::string> component_ids =
       component_updater_->GetComponentIDs();
 
-  // Construct `base::Value::Dict` to return to UI.
-  base::Value::List component_list;
+  // Construct `base::DictValue` to return to UI.
+  base::ListValue component_list;
   for (const auto& component_id : component_ids) {
     update_client::CrxUpdateItem item;
     if (component_updater_->GetComponentDetails(component_id, &item)) {
-      base::Value::Dict component_entry;
+      base::DictValue component_entry;
       component_entry.Set("id", component_id);
       component_entry.Set("status", ServiceStatusToString(item.state));
       if (item.component) {

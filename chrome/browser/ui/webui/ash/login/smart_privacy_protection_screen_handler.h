@@ -50,7 +50,7 @@ class SmartPrivacyProtectionScreenHandler final
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
  private:
   base::WeakPtrFactory<SmartPrivacyProtectionView> weak_ptr_factory_{this};

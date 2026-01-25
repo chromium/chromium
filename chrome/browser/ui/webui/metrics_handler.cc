@@ -47,13 +47,13 @@ void MetricsHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
+void MetricsHandler::HandleRecordAction(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& string_action = args[0].GetString();
   base::RecordComputedAction(string_action);
 }
 
-void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
+void MetricsHandler::HandleRecordInHistogram(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   int int_value = static_cast<int>(args[1].GetDouble());
   int int_boundary_value = static_cast<int>(args[2].GetDouble());
@@ -75,8 +75,7 @@ void MetricsHandler::HandleRecordInHistogram(const base::Value::List& args) {
   counter->Add(int_value);
 }
 
-void MetricsHandler::HandleRecordBooleanHistogram(
-    const base::Value::List& args) {
+void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue& args) {
   if (args.size() < 2 || !args[0].is_string() || !args[1].is_bool()) {
     NOTREACHED();
   }
@@ -88,7 +87,7 @@ void MetricsHandler::HandleRecordBooleanHistogram(
   counter->AddBoolean(value);
 }
 
-void MetricsHandler::HandleRecordTime(const base::Value::List& args) {
+void MetricsHandler::HandleRecordTime(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   double value = args[1].GetDouble();
 
@@ -102,7 +101,7 @@ void MetricsHandler::HandleRecordTime(const base::Value::List& args) {
   counter->AddTime(time_value);
 }
 
-void MetricsHandler::HandleRecordMediumTime(const base::Value::List& args) {
+void MetricsHandler::HandleRecordMediumTime(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   double value = args[1].GetDouble();
 
@@ -111,8 +110,7 @@ void MetricsHandler::HandleRecordMediumTime(const base::Value::List& args) {
   base::UmaHistogramMediumTimes(histogram_name, base::Milliseconds(value));
 }
 
-void MetricsHandler::HandleRecordSparseHistogram(
-    const base::Value::List& args) {
+void MetricsHandler::HandleRecordSparseHistogram(const base::ListValue& args) {
   const std::string& histogram_name = args[0].GetString();
   int sample = args[1].GetInt();
 

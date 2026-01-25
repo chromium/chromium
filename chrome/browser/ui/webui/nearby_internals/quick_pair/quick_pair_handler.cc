@@ -35,9 +35,9 @@ const char kImageUrl[] =
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-base::Value::Dict LogMessageToDictionary(
+base::DictValue LogMessageToDictionary(
     const ash::quick_pair::LogBuffer::LogMessage& log_message) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kLogMessageTextKey, log_message.text);
   dictionary.Set(kLogMessageTimeKey,
                  base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
@@ -96,10 +96,10 @@ void QuickPairHandler::OnJavascriptDisallowed() {
   observation_.Reset();
 }
 
-void QuickPairHandler::HandleGetLogMessages(const base::Value::List& args) {
+void QuickPairHandler::HandleGetLogMessages(const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& log : *ash::quick_pair::LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }
@@ -116,7 +116,7 @@ void QuickPairHandler::OnLogMessageAdded(
                     LogMessageToDictionary(log_message));
 }
 
-void QuickPairHandler::NotifyFastPairError(const base::Value::List& args) {
+void QuickPairHandler::NotifyFastPairError(const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -129,7 +129,7 @@ void QuickPairHandler::OnImageDecodedFastPairError(gfx::Image image) {
       kTestDeviceName, image, base::DoNothing(), base::DoNothing());
 }
 
-void QuickPairHandler::NotifyFastPairDiscovery(const base::Value::List& args) {
+void QuickPairHandler::NotifyFastPairDiscovery(const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -143,7 +143,7 @@ void QuickPairHandler::OnImageDecodedFastPairDiscovery(gfx::Image image) {
       base::DoNothing());
 }
 
-void QuickPairHandler::NotifyFastPairPairing(const base::Value::List& args) {
+void QuickPairHandler::NotifyFastPairPairing(const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -157,7 +157,7 @@ void QuickPairHandler::OnImageDecodedFastPairPairing(gfx::Image image) {
 }
 
 void QuickPairHandler::NotifyFastPairApplicationAvailable(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -173,7 +173,7 @@ void QuickPairHandler::OnImageDecodedFastPairApplicationAvailable(
 }
 
 void QuickPairHandler::NotifyFastPairApplicationInstalled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,
@@ -190,7 +190,7 @@ void QuickPairHandler::OnImageDecodedFastPairApplicationInstalled(
 }
 
 void QuickPairHandler::NotifyFastPairAssociateAccountKey(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   image_decoder_->DecodeImageFromUrl(
       GURL(kImageUrl),
       /*resize_to_notification_size=*/true,

@@ -51,13 +51,13 @@ void ParentalControlsHandler::OnJavascriptAllowed() {}
 void ParentalControlsHandler::OnJavascriptDisallowed() {}
 
 void ParentalControlsHandler::HandleShowAddSupervisionDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   AddSupervisionDialog::Show();
 }
 
 void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
 
   apps::AppServiceProxy* proxy =

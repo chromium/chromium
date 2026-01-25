@@ -55,7 +55,7 @@ void PointerHandler::PointingStickExists(bool exists) {
   FireWebUIListener("has-pointing-stick-changed", base::Value(exists));
 }
 
-void PointerHandler::HandleInitialize(const base::Value::List& args) {
+void PointerHandler::HandleInitialize(const base::ListValue& args) {
   AllowJavascript();
 
   // CheckDevices() results in TouchpadExists() and MouseExists() being called.

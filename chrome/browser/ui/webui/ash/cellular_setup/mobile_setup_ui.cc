@@ -86,7 +86,7 @@ constexpr char kMdn[] = "MDN";
 // return an empty dictionary if either is not set.
 base::Value GetCellularNetworkInfoValue(const NetworkState* network,
                                         const DeviceState* device) {
-  base::Value::Dict info;
+  base::DictValue info;
   if (!device || !network) {
     return base::Value(std::move(info));
   }
@@ -164,7 +164,7 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   void Reset();
 
   // Handlers for JS WebUI messages.
-  void HandleGetDeviceInfo(const base::Value::List& args);
+  void HandleGetDeviceInfo(const base::ListValue& args);
 
   // NetworkStateHandlerObserver implementation.
   void NetworkConnectionStateChanged(const NetworkState* network) override;
@@ -246,7 +246,7 @@ void MobileSetupUIHTMLSource::StartDataRequest(
   }
 
   NET_LOG(EVENT) << "Starting mobile setup: " << NetworkId(network);
-  base::Value::Dict strings;
+  base::DictValue strings;
 
   strings.Set("view_account_error_title",
               l10n_util::GetStringUTF16(IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE));
@@ -305,7 +305,7 @@ void MobileSetupHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
+void MobileSetupHandler::HandleGetDeviceInfo(const base::ListValue& args) {
   if (!web_ui()) {
     return;
   }

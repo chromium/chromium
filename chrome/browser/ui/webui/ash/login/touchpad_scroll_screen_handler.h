@@ -26,7 +26,7 @@ class TouchpadScrollScreenView {
   virtual void SetReverseScrolling(bool value) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show(base::Value::Dict data) = 0;
+  virtual void Show(base::DictValue data) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<TouchpadScrollScreenView> AsWeakPtr() = 0;
@@ -52,7 +52,7 @@ class TouchpadScrollScreenHandler final : public BaseScreenHandler,
   void SetReverseScrolling(bool value) override;
 
   // TouchpadScrollScreenView:
-  void Show(base::Value::Dict data) override;
+  void Show(base::DictValue data) override;
   base::WeakPtr<TouchpadScrollScreenView> AsWeakPtr() override;
 
  private:

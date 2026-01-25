@@ -166,14 +166,14 @@ std::u16string GetMessageFromBackendError(const BackendServerError& error) {
 
 void AppendWorkerStatus(CertProvisioningScheduler* scheduler,
                         bool is_device_wide,
-                        base::Value::List& all_processes) {
+                        base::ListValue& all_processes) {
   if (!scheduler) {
     return;
   }
 
   const auto& worker_map = scheduler->GetWorkers();
   for (const auto& [profile_id, worker] : worker_map) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("processId", worker->GetProcessId());
     entry.Set("certProfileId", profile_id);
     entry.Set("certProfileName", worker->GetCertProfile().name);
@@ -197,7 +197,7 @@ void AppendWorkerStatus(CertProvisioningScheduler* scheduler,
 
   const auto& failed_workers_map = scheduler->GetFailedCertProfileIds();
   for (const auto& [profile_id, worker] : failed_workers_map) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set("processId", worker.process_id);
     entry.Set("certProfileId", profile_id);
     entry.Set("certProfileName", worker.cert_profile_name);
@@ -284,8 +284,7 @@ CertificateProvisioningUiHandler::ReadAndResetUiRefreshCountForTesting() {
 }
 
 void CertificateProvisioningUiHandler::
-    HandleRefreshCertificateProvisioningProcesses(
-        const base::Value::List& args) {
+    HandleRefreshCertificateProvisioningProcesses(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
   AllowJavascript();
   RefreshCertificateProvisioningProcesses();
@@ -293,7 +292,7 @@ void CertificateProvisioningUiHandler::
 
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessUpdate(
-        const base::Value::List& args) {
+        const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& cert_profile_id = args[0];
   if (!cert_profile_id.is_string()) {
@@ -320,7 +319,7 @@ void CertificateProvisioningUiHandler::
 
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessReset(
-        const base::Value::List& args) {
+        const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& cert_profile_id = args[0];
   if (!cert_profile_id.is_string()) {
@@ -346,7 +345,7 @@ void CertificateProvisioningUiHandler::
 
 void CertificateProvisioningUiHandler::
     RefreshCertificateProvisioningProcesses() {
-  base::Value::List all_processes;
+  base::ListValue all_processes;
   AppendWorkerStatus(user_scheduler_, /*is_device_wide=*/false, all_processes);
   AppendWorkerStatus(device_scheduler_, /*is_device_wide=*/true, all_processes);
 

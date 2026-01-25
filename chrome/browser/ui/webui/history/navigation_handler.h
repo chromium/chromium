@@ -23,7 +23,7 @@ class NavigationHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleNavigateToUrl(const base::Value::List& args);
+  void HandleNavigateToUrl(const base::ListValue& args);
 };
 
 }  // namespace webui

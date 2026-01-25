@@ -27,8 +27,8 @@ class OsSettingsHatsHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleSettingsUsedSearch(const base::Value::List& args);
-  void HandleSendSettingsHats(const base::Value::List& args);
+  void HandleSettingsUsedSearch(const base::ListValue& args);
+  void HandleSendSettingsHats(const base::ListValue& args);
   raw_ptr<Profile> profile_;
 };
 

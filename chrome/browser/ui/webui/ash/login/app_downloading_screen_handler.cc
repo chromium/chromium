@@ -42,7 +42,7 @@ void AppDownloadingScreenHandler::DeclareLocalizedValues(
 }
 
 void AppDownloadingScreenHandler::Show() {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("numOfApps", GetNumberOfUserSelectedApps());
   ShowInWebUI(std::move(data));
 }

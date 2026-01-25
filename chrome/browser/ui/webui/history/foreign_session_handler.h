@@ -87,32 +87,32 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   void OnForeignSessionUpdated();
 
-  base::Value::List GetForeignSessions();
+  base::ListValue GetForeignSessions();
 
   // Returns a string used to show the user when a session was last modified.
   std::u16string FormatSessionTime(const base::Time& time);
 
   // Opens all the tabs of a foreign session, potentially spanning multiple
   // windows. This as a javascript callback handler.
-  void HandleOpenForeignSessionAllTabs(const base::Value::List& args);
+  void HandleOpenForeignSessionAllTabs(const base::ListValue& args);
 
   // Opens a single foreign session tab. This is a javascript callback handler.
-  void HandleOpenForeignSessionTab(const base::Value::List& args);
+  void HandleOpenForeignSessionTab(const base::ListValue& args);
 
   // Determines whether foreign sessions should be obtained from the sync model.
   // This is a javascript callback handler, and it is also called when the sync
   // model has changed and the new tab page needs to reflect the changes.
-  void HandleGetForeignSessions(const base::Value::List& args);
+  void HandleGetForeignSessions(const base::ListValue& args);
 
   // Delete a foreign session. This will remove it from the list of foreign
   // sessions on all devices. It will reappear if the session is re-activated
   // on the original device.
   // This is a javascript callback handler.
-  void HandleDeleteForeignSession(const base::Value::List& args);
+  void HandleDeleteForeignSession(const base::ListValue& args);
 
-  void HandleSetForeignSessionCollapsed(const base::Value::List& args);
+  void HandleSetForeignSessionCollapsed(const base::ListValue& args);
 
-  std::optional<base::Value::List> initial_session_list_;
+  std::optional<base::ListValue> initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };

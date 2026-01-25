@@ -105,9 +105,9 @@ DialogArgs::~DialogArgs() = default;
 DialogArgs::DialogArgs(const DialogArgs&) = default;
 DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
 
-base::Value::Dict DialogArgs::ToValue() {
-  base::Value::Dict dialog_args_value;
-  base::Value::List product_spec_urls;
+base::DictValue DialogArgs::ToValue() {
+  base::DictValue dialog_args_value;
+  base::ListValue product_spec_urls;
   for (const auto& url : urls) {
     product_spec_urls.Append(url.spec());
   }

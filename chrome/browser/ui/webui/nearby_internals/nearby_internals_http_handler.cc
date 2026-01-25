@@ -34,7 +34,7 @@ enum class Rpc {
 // chrome/browser/resources/chromeos/nearby_internals/types.ts
 enum class Direction { kRequest = 0, kResponse = 1 };
 
-std::string FormatAsJSON(const base::Value::Dict& value) {
+std::string FormatAsJSON(const base::DictValue& value) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
@@ -57,10 +57,10 @@ const char kHttpMessageDirectionKey[] = "direction";
 
 // Converts a RPC request/response to a raw dictionary value used as a
 // JSON argument to JavaScript functions.
-base::Value::Dict HttpMessageToDictionary(const base::Value::Dict& message,
-                                          Direction dir,
-                                          Rpc rpc) {
-  base::Value::Dict dictionary;
+base::DictValue HttpMessageToDictionary(const base::DictValue& message,
+                                        Direction dir,
+                                        Rpc rpc) {
+  base::DictValue dictionary;
   dictionary.Set(kHttpMessageBodyKey, FormatAsJSON(message));
   dictionary.Set(kHttpMessageTimeKey, GetJavascriptTimestamp());
   dictionary.Set(kHttpMessageRpcKey, static_cast<int>(rpc));
@@ -110,11 +110,11 @@ void NearbyInternalsHttpHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsHttpHandler::InitializeContents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 }
 
-void NearbyInternalsHttpHandler::UpdateDevice(const base::Value::List& args) {
+void NearbyInternalsHttpHandler::UpdateDevice(const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
@@ -125,7 +125,7 @@ void NearbyInternalsHttpHandler::UpdateDevice(const base::Value::List& args) {
 }
 
 void NearbyInternalsHttpHandler::ListPublicCertificates(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {
@@ -136,7 +136,7 @@ void NearbyInternalsHttpHandler::ListPublicCertificates(
 }
 
 void NearbyInternalsHttpHandler::ListContactPeople(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {

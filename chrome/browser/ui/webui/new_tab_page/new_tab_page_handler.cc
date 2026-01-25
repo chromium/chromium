@@ -368,7 +368,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
     return nullptr;
   }
 
-  base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
+  base::DictValue& middle_slot_dict = middle_slot->GetDict();
   if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false)) {
     return nullptr;
   }
@@ -379,7 +379,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   if (parts) {
     std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
     for (const base::Value& part : *parts) {
-      const base::Value::Dict& part_dict = part.GetDict();
+      const base::DictValue& part_dict = part.GetDict();
       if (part_dict.Find("image")) {
         auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
         auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
@@ -424,12 +424,12 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   return promo;
 }
 
-base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
+base::DictValue MakeModuleInteractionTriggerIdDictionary() {
   const auto data = base::GetFieldTrialParamValueByFeature(
       features::kHappinessTrackingSurveysForDesktopNtpModules,
       ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam);
   if (data.empty()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
@@ -441,14 +441,14 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
         << value_with_error.error().message << ") on line "
         << value_with_error.error().line << " at position "
         << value_with_error.error().column;
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   if (!value_with_error->is_dict()) {
     LOG(WARNING)
         << "ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam "
            "data skipped. Not a dictionary.";
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(*value_with_error).TakeDict();
@@ -689,7 +689,7 @@ void NewTabPageHandler::SetModulesDisabled(
   }
 
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   for (const auto& module_id : module_ids) {
     if (disabled) {
       if (!list.contains(module_id)) {
@@ -769,7 +769,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
           features::kHappinessTrackingSurveysForDesktopNtpModules,
           ntp_features::kNtpModuleIgnoredCriteriaThreshold, 25);
   for (const auto& module_id : module_ids) {
-    const base::Value::Dict& interacted_counts_dict =
+    const base::DictValue& interacted_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
     std::optional<int> interacted_count =
         interacted_counts_dict.FindInt(module_id);
@@ -777,7 +777,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
       continue;
     }
 
-    const base::Value::Dict& loaded_counts_dict =
+    const base::DictValue& loaded_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesLoadedCountDict);
     std::optional<int> loaded_count = loaded_counts_dict.FindInt(module_id);
     if (loaded_count.value_or(0) >= module_ignored_criteria_threshold) {
@@ -827,7 +827,7 @@ void NewTabPageHandler::GetModulesEligibleForRemoval(
   }
 
   // (3) Skip modules removal if it's force disabled for all modules.
-  const base::Value::Dict& module_removal_disabled_dict =
+  const base::DictValue& module_removal_disabled_dict =
       profile_->GetPrefs()->GetDict(
           ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
   const bool is_all_module_removal_disabled =
@@ -842,7 +842,7 @@ void NewTabPageHandler::GetModulesEligibleForRemoval(
   // force disabled and if the staleness count is above the threshold.
   const int staleness_threshold =
       ntp_features::kStaleModulesCountThreshold.Get();
-  const base::Value::Dict& staleness_counts_dict =
+  const base::DictValue& staleness_counts_dict =
       profile_->GetPrefs()->GetDict(ntp_prefs::kNtpModuleStalenessCountDict);
 
   for (const auto& module_id_detail : *module_id_details_) {
@@ -862,7 +862,7 @@ void NewTabPageHandler::GetModulesEligibleForRemoval(
 
 void NewTabPageHandler::SetModulesOrder(
     const std::vector<std::string>& module_ids) {
-  base::Value::List module_ids_value;
+  base::ListValue module_ids_value;
   for (const auto& module_id : module_ids) {
     module_ids_value.Append(module_id);
   }
@@ -1324,7 +1324,7 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
     return;
   }
 
-  base::Value::Dict& dict = value->GetDict();
+  base::DictValue& dict = value->GetDict();
   auto* target_url_params_value =
       dict.FindStringByDottedPath("ddllog.target_url_params");
   auto target_url_params =
@@ -1396,8 +1396,7 @@ void NewTabPageHandler::RecordModuleInteraction(const std::string& module_id) {
 
 void NewTabPageHandler::IncrementDictPrefKeyCount(const std::string& pref_name,
                                                   const std::string& key) {
-  const base::Value::Dict& counts_dict =
-      profile_->GetPrefs()->GetDict(pref_name);
+  const base::DictValue& counts_dict = profile_->GetPrefs()->GetDict(pref_name);
   std::optional<int> count = counts_dict.FindInt(key);
   ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_name);
   update->Set(key,
@@ -1412,7 +1411,7 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   static const std::string kNoTriggerId;
   DCHECK(kModuleInteractionNames.find(interaction) !=
          kModuleInteractionNames.end());
-  const base::Value::Dict* module_id_trigger_dict =
+  const base::DictValue* module_id_trigger_dict =
       interaction_module_id_trigger_dict_.FindDict(interaction);
   if (module_id_trigger_dict) {
     auto* trigger_id = module_id_trigger_dict->FindString(module_id);
@@ -1427,7 +1426,7 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
 void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
                                         bool hidden) {
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpHiddenModules);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   if (hidden) {
     if (!list.contains(module_id)) {
       list.Append(module_id);

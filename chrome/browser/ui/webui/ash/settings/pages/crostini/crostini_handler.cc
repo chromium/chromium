@@ -221,7 +221,7 @@ void CrostiniHandler::OnJavascriptAllowed() {
       guest_os::prefs::kGuestOsContainers,
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                           handler_weak_ptr_factory_.GetWeakPtr(),
-                          base::Value::List()));
+                          base::ListValue()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
@@ -241,24 +241,23 @@ void CrostiniHandler::OnJavascriptDisallowed() {
 }
 
 void CrostiniHandler::HandleRequestCrostiniInstallerView(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   crostini::CrostiniInstallerFactory::GetForProfile(
       Profile::FromWebUI(web_ui()))
       ->ShowDialog(crostini::CrostiniUISurface::kSettings);
 }
 
-void CrostiniHandler::HandleRequestRemoveCrostini(
-    const base::Value::List& args) {
+void CrostiniHandler::HandleRequestRemoveCrostini(const base::ListValue& args) {
   AllowJavascript();
   crostini::ShowCrostiniUninstallerView(Profile::FromWebUI(web_ui()));
 }
 
 namespace {
 
-base::Value::Dict CrostiniDiskInfoToValue(
+base::DictValue CrostiniDiskInfoToValue(
     std::unique_ptr<crostini::CrostiniDiskInfo> disk_info) {
-  base::Value::Dict disk_value;
+  base::DictValue disk_value;
   if (!disk_info) {
     disk_value.Set("succeeded", false);
     return disk_value;
@@ -268,9 +267,9 @@ base::Value::Dict CrostiniDiskInfoToValue(
   disk_value.Set("isUserChosenSize", disk_info->is_user_chosen_size);
   disk_value.Set("isLowSpaceAvailable", disk_info->is_low_space_available);
   disk_value.Set("defaultIndex", disk_info->default_index);
-  base::Value::List ticks;
+  base::ListValue ticks;
   for (const auto& tick : disk_info->ticks) {
-    base::Value::Dict t;
+    base::DictValue t;
     t.Set("value", static_cast<double>(tick->value));
     t.Set("ariaValue", tick->aria_value);
     t.Set("label", tick->label);
@@ -282,7 +281,7 @@ base::Value::Dict CrostiniDiskInfoToValue(
 }  // namespace
 
 void CrostiniHandler::HandleExportCrostiniContainer(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Exporting  = " << container_id;
@@ -292,7 +291,7 @@ void CrostiniHandler::HandleExportCrostiniContainer(
 }
 
 void CrostiniHandler::HandleImportCrostiniContainer(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Importing  = " << container_id;
@@ -300,7 +299,7 @@ void CrostiniHandler::HandleImportCrostiniContainer(
       ->ImportContainer(container_id, web_ui()->GetWebContents());
 }
 
-void CrostiniHandler::HandleExportDiskImage(const base::Value::List& args) {
+void CrostiniHandler::HandleExportDiskImage(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Exporting  = " << container_id;
@@ -309,7 +308,7 @@ void CrostiniHandler::HandleExportDiskImage(const base::Value::List& args) {
       ->ExportDiskImageFlow(container_id, web_ui()->GetWebContents());
 }
 
-void CrostiniHandler::HandleImportDiskImage(const base::Value::List& args) {
+void CrostiniHandler::HandleImportDiskImage(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Importing  = " << container_id;
@@ -318,7 +317,7 @@ void CrostiniHandler::HandleImportDiskImage(const base::Value::List& args) {
 }
 
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
   bool status = crostini::CrostiniManager::GetForProfile(profile_)
@@ -327,7 +326,7 @@ void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
 }
 
 void CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
   bool in_progress =
@@ -373,7 +372,7 @@ void CrostiniHandler::OnQueryAdbSideload(
                     base::Value(enabled), base::Value(need_powerwash));
 }
 
-void CrostiniHandler::HandleEnableArcAdbRequest(const base::Value::List& args) {
+void CrostiniHandler::HandleEnableArcAdbRequest(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
 
   crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
@@ -396,8 +395,7 @@ void CrostiniHandler::OnCanEnableArcAdbSideloading(
   chrome::AttemptRelaunch();
 }
 
-void CrostiniHandler::HandleDisableArcAdbRequest(
-    const base::Value::List& args) {
+void CrostiniHandler::HandleDisableArcAdbRequest(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
 
   crostini::CrostiniFeatures::Get()->CanChangeAdbSideloading(
@@ -434,7 +432,7 @@ void CrostiniHandler::OnCrostiniExportImportOperationStatusChanged(
                     base::Value(in_progress));
 }
 
-void CrostiniHandler::HandleQueryArcAdbRequest(const base::Value::List& args) {
+void CrostiniHandler::HandleQueryArcAdbRequest(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
 
@@ -445,7 +443,7 @@ void CrostiniHandler::HandleQueryArcAdbRequest(const base::Value::List& args) {
 }
 
 void CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
 
@@ -464,8 +462,7 @@ void CrostiniHandler::OnCanChangeArcAdbSideloading(
                     base::Value(can_change_arc_adb_sideloading));
 }
 
-void CrostiniHandler::OnActivePortsChanged(
-    const base::Value::List& activePorts) {
+void CrostiniHandler::OnActivePortsChanged(const base::ListValue& activePorts) {
   // Other side listens with cr.addWebUIListener
   FireWebUIListener("crostini-port-forwarder-active-ports-changed",
                     activePorts);
@@ -477,7 +474,7 @@ void CrostiniHandler::OnActiveNetworkChanged(const base::Value& interface,
 }
 
 void CrostiniHandler::HandleAddCrostiniPortForward(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(5U, args.size());
 
   const std::string& callback_id = args[0].GetString();
@@ -500,7 +497,7 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
 }
 
 void CrostiniHandler::HandleRemoveCrostiniPortForward(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
@@ -522,7 +519,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
 }
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
@@ -534,7 +531,7 @@ void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
 }
 
 void CrostiniHandler::HandleActivateCrostiniPortForward(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
@@ -556,7 +553,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
 }
 
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto& list = args;
   CHECK_EQ(4U, list.size());
 
@@ -591,7 +588,7 @@ void CrostiniHandler::ResolveGetCrostiniDiskInfoCallback(
                             CrostiniDiskInfoToValue(std::move(disk_info)));
 }
 
-void CrostiniHandler::HandleGetCrostiniDiskInfo(const base::Value::List& args) {
+void CrostiniHandler::HandleGetCrostiniDiskInfo(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(3U, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -603,7 +600,7 @@ void CrostiniHandler::HandleGetCrostiniDiskInfo(const base::Value::List& args) {
       profile_, vm_name, full_info);
 }
 
-void CrostiniHandler::HandleResizeCrostiniDisk(const base::Value::List& args) {
+void CrostiniHandler::HandleResizeCrostiniDisk(const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
   const std::string& callback_id = args[0].GetString();
   const std::string& vm_name = args[1].GetString();
@@ -621,7 +618,7 @@ void CrostiniHandler::ResolveResizeCrostiniDiskCallback(std::string callback_id,
 }
 
 void CrostiniHandler::HandleGetCrostiniActivePorts(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
@@ -634,7 +631,7 @@ void CrostiniHandler::HandleGetCrostiniActivePorts(
 }
 
 void CrostiniHandler::HandleGetCrostiniActiveNetworkInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
@@ -646,7 +643,7 @@ void CrostiniHandler::HandleGetCrostiniActiveNetworkInfo(
 }
 
 void CrostiniHandler::HandleCheckCrostiniIsRunning(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
@@ -657,7 +654,7 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 }
 
 void CrostiniHandler::HandleCheckBruschettaIsRunning(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
@@ -677,7 +674,7 @@ void CrostiniHandler::OnContainerStarted(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CrostiniHandler::HandleRequestContainerInfo,
                                 handler_weak_ptr_factory_.GetWeakPtr(),
-                                base::Value::List()));
+                                base::ListValue()));
 }
 
 void CrostiniHandler::OnContainerShutdown(
@@ -689,29 +686,28 @@ void CrostiniHandler::OnContainerShutdown(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CrostiniHandler::HandleRequestContainerInfo,
                                 handler_weak_ptr_factory_.GetWeakPtr(),
-                                base::Value::List()));
+                                base::ListValue()));
 }
 
-void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
+void CrostiniHandler::HandleShutdownCrostini(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
 
   crostini::CrostiniManager::GetForProfile(profile_)->StopRunningVms(
       base::DoNothing());
 }
 
-void CrostiniHandler::HandleShutdownBruschetta(const base::Value::List& args) {
+void CrostiniHandler::HandleShutdownBruschetta(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
 
   bruschetta::BruschettaServiceFactory::GetForProfile(profile_)
       ->StopRunningVms();
 }
 
-void CrostiniHandler::HandleRequestContainerInfo(
-    const base::Value::List& args) {
+void CrostiniHandler::HandleRequestContainerInfo(const base::ListValue& args) {
   constexpr char kIdKey[] = "id";
   constexpr char kIpv4Key[] = "ipv4";
 
-  base::Value::List container_info_list;
+  base::ListValue container_info_list;
 
   // Realistically there should only be either a termina or baguette container.
   std::vector<guest_os::GuestId> containers =
@@ -722,7 +718,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
                     baguette_containers.end());
 
   for (const auto& container_id : containers) {
-    base::Value::Dict container_info_value;
+    base::DictValue container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
                     ->GetInfo(container_id);
@@ -744,7 +740,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
 }
 
 void CrostiniHandler::HandleRequestBruschettaInstallerView(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   BruschettaInstallerView::Show(Profile::FromWebUI(web_ui()),
                                 CHECK_DEREF(g_browser_process->local_state()),
@@ -752,7 +748,7 @@ void CrostiniHandler::HandleRequestBruschettaInstallerView(
 }
 
 void CrostiniHandler::HandleRequestBruschettaUninstallerView(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   BruschettaUninstallerView::Show(Profile::FromWebUI(web_ui()),
                                   bruschetta::GetBruschettaAlphaId());

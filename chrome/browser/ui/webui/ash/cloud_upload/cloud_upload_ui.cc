@@ -141,7 +141,7 @@ void CloudUploadUI::CreatePageHandler(
 
 void CloudUploadUI::RespondWithUserActionAndCloseDialog(
     mojom::UserAction action) {
-  base::Value::List args;
+  base::ListValue args;
   switch (action) {
     case mojom::UserAction::kCancel:
       args.Append(kUserActionCancel);
@@ -172,7 +172,7 @@ void CloudUploadUI::RespondWithUserActionAndCloseDialog(
 }
 
 void CloudUploadUI::RespondWithLocalTaskAndCloseDialog(int task_position) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::NumberToString(task_position));
   ui::MojoWebDialogUI::CloseDialog(args);
 }

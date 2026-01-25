@@ -29,8 +29,8 @@ class StructuredMetricsInternalsHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleFetchStructuredMetricsEvents(const base::Value::List& args);
-  void HandleFetchStructuredMetricsSummary(const base::Value::List& args);
+  void HandleFetchStructuredMetricsEvents(const base::ListValue& args);
+  void HandleFetchStructuredMetricsSummary(const base::ListValue& args);
 
   // Interface for providing events to the debug page.
   std::unique_ptr<metrics::structured::StructuredMetricsDebugProvider>

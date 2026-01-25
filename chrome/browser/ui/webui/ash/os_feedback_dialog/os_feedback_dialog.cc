@@ -59,7 +59,7 @@ void OsFeedbackDialog::ShowDialogAsync(
   // taking status. Screenshot is optional data.
   ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
       base::BindOnce(
-          [](content::BrowserContext* context, base::Value::Dict feedback_info,
+          [](content::BrowserContext* context, base::DictValue feedback_info,
              base::OnceClosure callback, gfx::NativeWindow parent,
              bool /*taken_ok*/) {
             // The dialog will be self-destroyed when it is closed.
@@ -81,7 +81,7 @@ gfx::NativeWindow OsFeedbackDialog::FindDialogWindow() {
 }
 
 // Protected.
-OsFeedbackDialog::OsFeedbackDialog(base::Value::Dict feedback_info)
+OsFeedbackDialog::OsFeedbackDialog(base::DictValue feedback_info)
     : SystemWebDialogDelegate(GetUrl(),
                               /* title=*/std::u16string()),
       feedback_info_(std::move(feedback_info)) {}

@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_EQ(1UL, account_manager_accounts.size());
 
   // Call "getAccounts".
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandleFunctionName);
   web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
@@ -281,11 +281,11 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::Value::List& result = call_data.arg3()->GetList();
+  const base::ListValue& result = call_data.arg3()->GetList();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
-  const base::Value::Dict& device_account = result[0].GetDict();
+  const base::DictValue& device_account = result[0].GetDict();
   EXPECT_TRUE(device_account.FindBool("isDeviceAccount").value());
   EXPECT_TRUE(device_account.FindBool("isSignedIn").value());
   EXPECT_FALSE(device_account.FindBool("unmigrated").value());
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Call "getAccounts".
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandleFunctionName);
   web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
@@ -331,11 +331,11 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::Value::List& result = call_data.arg3()->GetList();
+  const base::ListValue& result = call_data.arg3()->GetList();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // Check first (device) account.
-  const base::Value::Dict& device_account = result[0].GetDict();
+  const base::DictValue& device_account = result[0].GetDict();
   EXPECT_TRUE(device_account.FindBool("isDeviceAccount").value());
   EXPECT_TRUE(device_account.FindBool("isSignedIn").value());
   EXPECT_FALSE(device_account.FindBool("unmigrated").value());
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 
   // Check secondary accounts.
   for (const base::Value& account_value : result) {
-    const base::Value::Dict& account = account_value.GetDict();
+    const base::DictValue& account = account_value.GetDict();
     if (ValueOrEmpty(account.FindString("id")) == GetDeviceAccountInfo().id) {
       continue;
     }
@@ -446,7 +446,7 @@ class AccountManagerUIHandlerTestWithManagedArcAccountRestriction
   }
 
   std::optional<const base::Value> FindAccountDictByEmail(
-      const base::Value::List& accounts,
+      const base::ListValue& accounts,
       const std::string& email) {
     for (const base::Value& account : accounts) {
       if (ValueOrEmpty(account.GetDict().FindString("email")) == email) {
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(
                                                           false);
 
   // Call "getAccounts".
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandleFunctionName);
   web_ui()->HandleReceivedMessage(kGetAccountsMessage, args);
 
@@ -503,11 +503,11 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::Value::List& result = call_data.arg3()->GetList();
+  const base::ListValue& result = call_data.arg3()->GetList();
   ASSERT_EQ(account_manager_accounts.size(), result.size());
 
   // The value for the device account should be always `true`.
-  const base::Value::Dict& device_account = result[0].GetDict();
+  const base::DictValue& device_account = result[0].GetDict();
   EXPECT_TRUE(device_account.FindBool("isAvailableInArc").value());
 
   // Check secondary accounts.

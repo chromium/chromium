@@ -91,7 +91,7 @@ void ExtendedUpdatesUI::CreatePageHandler(
   page_handler_ = std::make_unique<ExtendedUpdatesPageHandler>(
       std::move(page), std::move(receiver), web_ui(),
       base::BindOnce(&ExtendedUpdatesUI::CloseDialog, base::Unretained(this),
-                     base::Value::List()));
+                     base::ListValue()));
 }
 
 ExtendedUpdatesUIConfig::ExtendedUpdatesUIConfig()

@@ -29,8 +29,8 @@
 namespace {
 // Returns the device information to be displayed on the
 // chrome://enterprise-reporting page.
-base::Value::Dict GetDeviceInfo(content::WebUI* web_ui) {
-  base::Value::Dict device_info;
+base::DictValue GetDeviceInfo(content::WebUI* web_ui) {
+  base::DictValue device_info;
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
 

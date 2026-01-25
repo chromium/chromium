@@ -34,9 +34,9 @@ void ChoobeScreenHandler::DeclareLocalizedValues(
 }
 
 void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
-  base::Value::List screens_list;
+  base::ListValue screens_list;
   for (auto screen : screens) {
-    base::Value::Dict screen_dict;
+    base::DictValue screen_dict;
     screen_dict.Set("screenId", base::Value(screen.screen_id.name));
     screen_dict.Set("title", base::Value(screen.title_id));
     if (screen.subtitle_resource.has_value()) {
@@ -52,7 +52,7 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
     screens_list.Append(std::move(screen_dict));
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("screens", std::move(screens_list));
 
   ShowInWebUI(std::move(data));

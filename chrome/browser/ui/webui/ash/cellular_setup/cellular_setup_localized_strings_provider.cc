@@ -144,7 +144,7 @@ void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
   }
 }
 
-void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
+void AddNonStringLoadTimeDataToDict(base::DictValue* dict) {
   for (const auto& entry : GetBooleanValues()) {
     dict->SetByDottedPath(entry.name, entry.value);
   }

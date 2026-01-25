@@ -73,7 +73,7 @@ void MarketingOptInScreenHandler::Show(bool opt_in_visible,
                                        bool opt_in_default_state,
                                        bool legal_footer_visible,
                                        bool cloud_gaming_enabled) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set(kOptInVisibility, opt_in_visible);
   data.Set(kOptInDefaultState, opt_in_default_state);
   data.Set(kLegalFooterVisibility, legal_footer_visible);
@@ -98,7 +98,7 @@ MarketingOptInScreenHandler::AsWeakPtr() {
 }
 
 void MarketingOptInScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* parameters) {
+    base::DictValue* parameters) {
   BaseScreenHandler::GetAdditionalParameters(parameters);
 }
 

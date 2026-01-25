@@ -32,7 +32,7 @@ class ConsolidatedConsentScreenView {
   virtual ~ConsolidatedConsentScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(base::Value::Dict data) = 0;
+  virtual void Show(base::DictValue data) = 0;
 
   // Updates the UI of the opt-ins.
   // When an opt-in is managed, its toggle would be disabled.
@@ -64,7 +64,7 @@ class ConsolidatedConsentScreenHandler final
       const ConsolidatedConsentScreenHandler&) = delete;
 
   // ConsolidatedConsentScreenView
-  void Show(base::Value::Dict data) override;
+  void Show(base::DictValue data) override;
   void SetUsageMode(bool enabled, bool managed) override;
   void SetBackupMode(bool enabled, bool managed) override;
   void SetLocationMode(bool enabled, bool managed) override;

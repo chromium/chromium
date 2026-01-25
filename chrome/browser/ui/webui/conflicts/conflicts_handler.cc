@@ -27,7 +27,7 @@ void ConflictsHandler::RegisterMessages() {
 }
 
 void ConflictsHandler::HandleRequestModuleList(
-    const base::Value::List& args_list) {
+    const base::ListValue& args_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Make sure the JS doesn't call 'requestModuleList' more than once.
@@ -41,7 +41,7 @@ void ConflictsHandler::HandleRequestModuleList(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ConflictsHandler::OnConflictsDataFetched(base::Value::Dict results) {
+void ConflictsHandler::OnConflictsDataFetched(base::DictValue results) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!module_list_callback_id_.empty());
 

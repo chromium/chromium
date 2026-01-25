@@ -40,7 +40,7 @@ void ManagementTransitionScreenHandler::DeclareLocalizedValues(
 void ManagementTransitionScreenHandler::Show(
     arc::ArcManagementTransition arc_management_transition,
     std::string management_entity) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("arcTransition", static_cast<int>(arc_management_transition));
   data.Set("managementEntity", management_entity);
 

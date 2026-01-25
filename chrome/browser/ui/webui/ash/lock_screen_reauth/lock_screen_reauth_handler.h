@@ -36,11 +36,11 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void ReloadGaiaAuthenticator();
 
   // WebUI message handlers.
-  void HandleStartOnlineAuth(const base::Value::List&);
-  void HandleCompleteAuthentication(const base::Value::List&);
-  void HandleAuthenticatorLoaded(const base::Value::List&);
-  void HandleUpdateUserPassword(const base::Value::List&);
-  void HandleOnPasswordTyped(const base::Value::List& value);
+  void HandleStartOnlineAuth(const base::ListValue&);
+  void HandleCompleteAuthentication(const base::ListValue&);
+  void HandleAuthenticatorLoaded(const base::ListValue&);
+  void HandleUpdateUserPassword(const base::ListValue&);
+  void HandleOnPasswordTyped(const base::ListValue& value);
   void HandleWebviewLoadAborted(int error_code);
   void HandleGetDeviceId(const std::string& callback_id);
 

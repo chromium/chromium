@@ -56,7 +56,7 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void GetLog(const base::Value::List& value) {
+  void GetLog(const base::ListValue& value) {
     AllowJavascript();
     std::string callback_id = value[0].GetString();
     base::Value data(device_event_log::GetAsString(
@@ -65,7 +65,7 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), data);
   }
 
-  void ClearLog(const base::Value::List& value) const {
+  void ClearLog(const base::ListValue& value) const {
     device_event_log::ClearAll();
   }
 };

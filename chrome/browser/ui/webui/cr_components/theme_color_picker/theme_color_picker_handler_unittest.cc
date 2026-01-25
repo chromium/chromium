@@ -437,7 +437,7 @@ TEST_P(ThemeColorPickerHandlerSetThemeTest, SetThirdPartyTheme) {
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_.get());
   scoped_refptr<const extensions::Extension> extension;
   extension = extensions::ExtensionBuilder()
-                  .SetManifest(base::Value::Dict()
+                  .SetManifest(base::DictValue()
                                    .Set("name", "Foo Extension")
                                    .Set("version", "1.0.0")
                                    .Set("manifest_version", 2))

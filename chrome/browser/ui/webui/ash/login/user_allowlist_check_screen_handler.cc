@@ -31,7 +31,7 @@ void UserAllowlistCheckScreenHandler::DeclareJSCallbacks() {}
 
 void UserAllowlistCheckScreenHandler::Show(bool enterprise_managed,
                                            bool family_link_allowed) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("enterpriseManaged", enterprise_managed);
   params.Set("familyLinkAllowed", family_link_allowed);
   ShowInWebUI(std::move(params));

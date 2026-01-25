@@ -20,7 +20,7 @@
 #endif
 
 namespace {
-bool ExtractKeyValue(const base::Value::List& args,
+bool ExtractKeyValue(const base::ListValue& args,
                      std::string& key,
                      std::string& value) {
   if (args.size() != 2) {
@@ -90,7 +90,7 @@ void FlagsUIHandler::Init(std::unique_ptr<flags_ui::FlagsStorage> flags_storage,
 }
 
 void FlagsUIHandler::HandleRequestDeprecatedFeatures(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
@@ -105,7 +105,7 @@ void FlagsUIHandler::HandleRequestDeprecatedFeatures(
 }
 
 void FlagsUIHandler::HandleRequestExperimentalFeatures(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
@@ -120,10 +120,10 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
 }
 
 void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
-  base::Value::Dict results;
+  base::DictValue results;
 
-  base::Value::List supported_features;
-  base::Value::List unsupported_features;
+  base::ListValue supported_features;
+  base::ListValue unsupported_features;
 
   if (deprecated_features_only) {
     about_flags::GetFlagFeatureEntriesForDeprecatedPage(
@@ -166,7 +166,7 @@ void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
 }
 
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
   if (args.size() != 2) {
@@ -187,7 +187,7 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 }
 
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
@@ -198,7 +198,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
                                  flags_storage_.get());
 }
 
-void FlagsUIHandler::HandleSetStringFlagMessage(const base::Value::List& args) {
+void FlagsUIHandler::HandleSetStringFlagMessage(const base::ListValue& args) {
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
@@ -209,7 +209,7 @@ void FlagsUIHandler::HandleSetStringFlagMessage(const base::Value::List& args) {
                              flags_storage_.get());
 }
 
-void FlagsUIHandler::HandleRestartBrowser(const base::Value::List& args) {
+void FlagsUIHandler::HandleRestartBrowser(const base::ListValue& args) {
   DCHECK(flags_storage_);
 #if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS be less intrusive and restart inside the user session after
@@ -222,7 +222,7 @@ void FlagsUIHandler::HandleRestartBrowser(const base::Value::List& args) {
   chrome::AttemptRestart();
 }
 
-void FlagsUIHandler::HandleResetAllFlags(const base::Value::List& args) {
+void FlagsUIHandler::HandleResetAllFlags(const base::ListValue& args) {
   DCHECK(flags_storage_);
   about_flags::ResetAllFlags(flags_storage_.get());
 }

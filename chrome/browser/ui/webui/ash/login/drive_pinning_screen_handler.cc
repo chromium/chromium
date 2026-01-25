@@ -37,7 +37,7 @@ void DrivePinningScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_CHOOBE_DRIVE_PINNING_SUBTITLE_DISABLED);
 }
 
-void DrivePinningScreenHandler::Show(base::Value::Dict data) {
+void DrivePinningScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

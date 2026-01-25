@@ -122,8 +122,7 @@ void HIDDetectionScreenHandler::DeclareLocalizedValues(
                IDS_HID_DETECTION_A11Y_CONTINUE_BUTTON_DISABLED);
 }
 
-void HIDDetectionScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
+void HIDDetectionScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 

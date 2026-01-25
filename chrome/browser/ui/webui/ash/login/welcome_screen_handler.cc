@@ -69,14 +69,14 @@ void WelcomeScreenHandler::Show() {
     return;
   }
 
-  base::Value::Dict welcome_screen_params;
+  base::DictValue welcome_screen_params;
   welcome_screen_params.Set("isDeveloperMode",
                             base::CommandLine::ForCurrentProcess()->HasSwitch(
                                 chromeos::switches::kSystemDevMode));
   ShowInWebUI(std::move(welcome_screen_params));
 }
 
-void WelcomeScreenHandler::SetLanguageList(base::Value::List language_list) {
+void WelcomeScreenHandler::SetLanguageList(base::ListValue language_list) {
   language_list_ = std::move(language_list);
   GetOobeUI()->GetCoreOobe()->ReloadContent();
 }
@@ -230,7 +230,7 @@ void WelcomeScreenHandler::DeclareJSCallbacks() {
               &WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess);
 }
 
-void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
+void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   // GetAdditionalParameters() is called when OOBE language is updated.
   // This happens in two different cases:
   //
@@ -258,7 +258,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   const std::string selected_input_method =
       input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id();
 
-  base::Value::List language_list = language_list_.Clone();
+  base::ListValue language_list = language_list_.Clone();
 
   if (language_list.empty()) {
     language_list = GetMinimalUILanguageList();
@@ -299,7 +299,7 @@ void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
 }
 
 void WelcomeScreenHandler::UpdateA11yState(const A11yState& state) {
-  base::Value::Dict a11y_info;
+  base::DictValue a11y_info;
   a11y_info.Set("highContrastEnabled", state.high_contrast);
   a11y_info.Set("largeCursorEnabled", state.large_cursor);
   a11y_info.Set("spokenFeedbackEnabled", state.spoken_feedback);
@@ -311,20 +311,20 @@ void WelcomeScreenHandler::UpdateA11yState(const A11yState& state) {
 }
 
 // static
-base::Value::List WelcomeScreenHandler::GetTimezoneList() {
+base::ListValue WelcomeScreenHandler::GetTimezoneList() {
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
 
-  base::Value::List timezone_list;
-  base::Value::List timezones = ash::system::GetTimezoneList();
+  base::ListValue timezone_list;
+  base::ListValue timezones = ash::system::GetTimezoneList();
   for (const auto& value : timezones) {
     CHECK(value.is_list());
-    const base::Value::List& timezone = value.GetList();
+    const base::ListValue& timezone = value.GetList();
 
     const std::string& timezone_id = timezone[0].GetString();
     const std::string& timezone_name = timezone[1].GetString();
 
-    base::Value::Dict timezone_option;
+    base::DictValue timezone_option;
     timezone_option.Set("value", timezone_id);
     timezone_option.Set("title", timezone_name);
     timezone_option.Set("selected", timezone_id == current_timezone_id);

@@ -28,7 +28,7 @@ class SmbHandlerTest : public ash::smb_client::SmbServiceBaseTest {
 
  protected:
   void VerifyHasSmbMountedBeforeResult(bool expected_result) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback-id");
     handler()->HandleHasAnySmbMountedBefore(args);
 

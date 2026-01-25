@@ -149,33 +149,33 @@ class DiscardsGraphDumpImplTest : public testing::Test {
 class TestNodeDataDescriber : public performance_manager::NodeDataDescriber {
  public:
   // NodeDataDescriber implementations:
-  base::Value::Dict DescribeFrameNodeData(
+  base::DictValue DescribeFrameNodeData(
       const performance_manager::FrameNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("type", "frame");
     return dict;
   }
-  base::Value::Dict DescribePageNodeData(
+  base::DictValue DescribePageNodeData(
       const performance_manager::PageNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("type", "page");
     return dict;
   }
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeProcessNodeData(
       const performance_manager::ProcessNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("type", "process");
     return dict;
   }
-  base::Value::Dict DescribeSystemNodeData(
+  base::DictValue DescribeSystemNodeData(
       const performance_manager::SystemNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("type", "system");
     return dict;
   }
-  base::Value::Dict DescribeWorkerNodeData(
+  base::DictValue DescribeWorkerNodeData(
       const performance_manager::WorkerNode* node) const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("type", "worker");
     return dict;
   }
@@ -348,7 +348,7 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
                 std::optional<base::Value> v = base::JSONReader::Read(
                     kv.second, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
                 EXPECT_TRUE(v->is_dict());
-                base::Value::Dict* dict = v->GetDict().FindDict("test");
+                base::DictValue* dict = v->GetDict().FindDict("test");
                 EXPECT_TRUE(dict);
                 std::string* str = dict->FindString("type");
                 EXPECT_TRUE(str);

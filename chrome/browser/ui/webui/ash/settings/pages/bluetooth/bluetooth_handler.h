@@ -31,9 +31,9 @@ class BluetoothHandler : public ::settings::SettingsPageUIHandler {
   void BluetoothDeviceAdapterReady(
       scoped_refptr<device::BluetoothAdapter> adapter);
 
-  void HandleRequestFastPairDeviceSupport(const base::Value::List& args);
+  void HandleRequestFastPairDeviceSupport(const base::ListValue& args);
 
-  void HandleShowBluetoothRevampHatsSurvey(const base::Value::List& args);
+  void HandleShowBluetoothRevampHatsSurvey(const base::ListValue& args);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothHandler> weak_ptr_factory_{this};

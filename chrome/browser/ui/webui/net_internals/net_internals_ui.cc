@@ -68,22 +68,22 @@ void CreateAndAddNetInternalsHTMLSource(Profile* profile) {
 
 void IgnoreBoolCallback(bool result) {}
 
-// This function converts std::vector<net::IPEndPoint> to base::Value::List.
-base::Value::List IPEndpointsToBaseList(
+// This function converts std::vector<net::IPEndPoint> to base::ListValue.
+base::ListValue IPEndpointsToBaseList(
     const std::vector<net::IPEndPoint>& resolved_addresses) {
   return base::ToValueList(resolved_addresses,
                            &net::IPEndPoint::ToStringWithoutPort);
 }
 
-// This function converts net::HostResolverEndpointResults to base::Value::List.
-base::Value::List HostResolverEndpointResultsToBaseList(
+// This function converts net::HostResolverEndpointResults to base::ListValue.
+base::ListValue HostResolverEndpointResultsToBaseList(
     const net::HostResolverEndpointResults& endpoint_results) {
-  base::Value::List endpoint_results_list;
+  base::ListValue endpoint_results_list;
   for (const auto& endpoint : endpoint_results) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("ip_endpoints", IPEndpointsToBaseList(endpoint.ip_endpoints));
 
-    base::Value::List alpns;
+    base::ListValue alpns;
     for (const std::string& alpn : endpoint.metadata.supported_protocol_alpns) {
       alpns.Append(alpn);
     }
@@ -99,10 +99,9 @@ base::Value::List HostResolverEndpointResultsToBaseList(
   return endpoint_results_list;
 }
 
-base::Value::List GetMatchDestList(
+base::ListValue GetMatchDestList(
     const std::vector<::network::mojom::RequestDestination>& match_dest) {
-  base::Value::List result =
-      base::Value::List::with_capacity(match_dest.size());
+  base::ListValue result = base::ListValue::with_capacity(match_dest.size());
   for (const auto& item : match_dest) {
     result.Append(network::RequestDestinationToString(
         item, network::EmptyRequestDestinationOption::kUseTheEmptyString));
@@ -180,31 +179,30 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   // Resolve JS |callback_id| with |result|.
   // If the renderer is displaying a log file, the message will be ignored.
   void ResolveCallbackWithResult(const std::string& callback_id,
-                                 base::Value::Dict result);
+                                 base::DictValue result);
 
   //--------------------------------
   // Javascript message handlers:
   //--------------------------------
 
-  void OnReloadProxySettings(const base::Value::List& list);
-  void OnClearBadProxies(const base::Value::List& list);
-  void OnResolveHost(const base::Value::List& list);
-  void OnClearHostResolverCache(const base::Value::List& list);
-  void OnDomainSecurityPolicyDelete(const base::Value::List& list);
-  void OnHSTSQuery(const base::Value::List& list);
-  void OnHSTSAdd(const base::Value::List& list);
-  void OnCloseIdleSockets(const base::Value::List& list);
-  void OnFlushSocketPools(const base::Value::List& list);
+  void OnReloadProxySettings(const base::ListValue& list);
+  void OnClearBadProxies(const base::ListValue& list);
+  void OnResolveHost(const base::ListValue& list);
+  void OnClearHostResolverCache(const base::ListValue& list);
+  void OnDomainSecurityPolicyDelete(const base::ListValue& list);
+  void OnHSTSQuery(const base::ListValue& list);
+  void OnHSTSAdd(const base::ListValue& list);
+  void OnCloseIdleSockets(const base::ListValue& list);
+  void OnFlushSocketPools(const base::ListValue& list);
   void OnResolveHostDone(const std::string& callback_id,
                          const net::ResolveErrorInfo&,
                          const net::AddressList&,
                          const net::HostResolverEndpointResults&,
                          NetInternalsResolveHostClient* dns_lookup_client);
-  void OnClearSharedDictionary(const base::Value::List& list);
-  void OnClearSharedDictionaryCacheForIsolationKey(
-      const base::Value::List& list);
-  void OnGetSharedDictionaryUsageInfo(const base::Value::List& list);
-  void OnGetSharedDictionaryInfo(const base::Value::List& list);
+  void OnClearSharedDictionary(const base::ListValue& list);
+  void OnClearSharedDictionaryCacheForIsolationKey(const base::ListValue& list);
+  void OnGetSharedDictionaryUsageInfo(const base::ListValue& list);
+  void OnGetSharedDictionaryInfo(const base::ListValue& list);
 
   void OnClearSharedDictionaryDone(const std::string& callback_id);
   void OnClearSharedDictionaryForIsolationKeyDone(
@@ -291,16 +289,16 @@ void NetInternalsMessageHandler::OnJavascriptDisallowed() {
 }
 
 void NetInternalsMessageHandler::OnReloadProxySettings(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   GetNetworkContext()->ForceReloadProxyConfig(base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnClearBadProxies(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   GetNetworkContext()->ClearBadProxiesCache(base::NullCallback());
 }
 
-void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
+void NetInternalsMessageHandler::OnResolveHost(const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   const std::string* hostname = list[1].GetIfString();
   DCHECK(callback_id);
@@ -328,12 +326,12 @@ void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
 }
 
 void NetInternalsMessageHandler::OnClearHostResolverCache(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   GetNetworkContext()->ClearHostCache(/*filter=*/nullptr, base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnClearSharedDictionary(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   DCHECK(callback_id);
 
@@ -344,7 +342,7 @@ void NetInternalsMessageHandler::OnClearSharedDictionary(
 }
 
 void NetInternalsMessageHandler::OnClearSharedDictionaryCacheForIsolationKey(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   const std::string* frame_origin = list[1].GetIfString();
   const std::string* top_frame_site = list[2].GetIfString();
@@ -362,7 +360,7 @@ void NetInternalsMessageHandler::OnClearSharedDictionaryCacheForIsolationKey(
 }
 
 void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfo(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   DCHECK(callback_id);
   GetNetworkContext()->GetSharedDictionaryUsageInfo(base::BindOnce(
@@ -371,7 +369,7 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfo(
 }
 
 void NetInternalsMessageHandler::OnGetSharedDictionaryInfo(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   const std::string* frame_origin = list[1].GetIfString();
   const std::string* top_frame_site = list[2].GetIfString();
@@ -387,7 +385,7 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfo(
 }
 
 void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   // |list| should be: [<domain to query>].
   const std::string* domain = list[0].GetIfString();
   DCHECK(domain);
@@ -399,7 +397,7 @@ void NetInternalsMessageHandler::OnDomainSecurityPolicyDelete(
       *domain, base::BindOnce(&IgnoreBoolCallback));
 }
 
-void NetInternalsMessageHandler::OnHSTSQuery(const base::Value::List& list) {
+void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue& list) {
   const std::string* callback_id = list[0].GetIfString();
   const std::string* domain = list[1].GetIfString();
   DCHECK(callback_id && domain);
@@ -413,11 +411,11 @@ void NetInternalsMessageHandler::OnHSTSQuery(const base::Value::List& list) {
 
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
     const std::string& callback_id,
-    base::Value::Dict result) {
+    base::DictValue result) {
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void NetInternalsMessageHandler::OnHSTSAdd(const base::Value::List& list) {
+void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue& list) {
   DCHECK_GE(2u, list.size());
 
   // |list| should be: [<domain to query>, <STS include subdomains>]
@@ -436,12 +434,12 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::Value::List& list) {
 }
 
 void NetInternalsMessageHandler::OnFlushSocketPools(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   GetNetworkContext()->CloseAllConnections(base::NullCallback());
 }
 
 void NetInternalsMessageHandler::OnCloseIdleSockets(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   GetNetworkContext()->CloseIdleConnections(base::NullCallback());
 }
 
@@ -462,13 +460,13 @@ void NetInternalsMessageHandler::OnResolveHostDone(
     return;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
 
-  base::Value::List resolved_addresses_list =
+  base::ListValue resolved_addresses_list =
       IPEndpointsToBaseList(resolved_addresses.endpoints());
   result.Set("resolved_addresses", std::move(resolved_addresses_list));
 
-  base::Value::List alternative_endpoints_list =
+  base::ListValue alternative_endpoints_list =
       HostResolverEndpointResultsToBaseList(alternative_endpoints);
   result.Set("alternative_endpoints", std::move(alternative_endpoints_list));
 
@@ -478,9 +476,9 @@ void NetInternalsMessageHandler::OnResolveHostDone(
 void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfoDone(
     const std::string& callback_id,
     const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
-  base::Value::List result_list;
+  base::ListValue result_list;
   for (const auto& usage : usage_info) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("frame_origin", usage.isolation_key.frame_origin().Serialize());
     dict.Set("top_frame_site",
              usage.isolation_key.top_frame_site().Serialize());
@@ -495,9 +493,9 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryUsageInfoDone(
 void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
     const std::string& callback_id,
     std::vector<network::mojom::SharedDictionaryInfoPtr> dictionaries) {
-  base::Value::List dict_list;
+  base::ListValue dict_list;
   for (const auto& item : dictionaries) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("match", item->match);
     dict.Set("match_dest", GetMatchDestList(item->match_dest));
     dict.Set("id", item->id);

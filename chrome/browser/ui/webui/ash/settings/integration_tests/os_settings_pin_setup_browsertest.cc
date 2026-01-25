@@ -158,8 +158,8 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
 
   void SetPinDisabledPolicy(bool disabled) {
     policy::PolicyMap policies;
-    base::Value policy_value{disabled ? base::Value::List()
-                                      : base::Value::List().Append("PIN")};
+    base::Value policy_value{disabled ? base::ListValue()
+                                      : base::ListValue().Append("PIN")};
 
     policies.Set("QuickUnlockModeAllowlist", policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

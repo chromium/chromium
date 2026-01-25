@@ -67,7 +67,7 @@ void MultideviceSetupHandler::RegisterMessages() {
 }
 
 void MultideviceSetupHandler::HandleGetProfileInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   DCHECK(!args.empty());
@@ -76,7 +76,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(Profile::FromWebUI(web_ui()));
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("email", user->GetDisplayEmail());
 
   scoped_refptr<base::RefCountedMemory> image =
@@ -88,7 +88,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 }
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       Profile::FromWebUI(web_ui()),

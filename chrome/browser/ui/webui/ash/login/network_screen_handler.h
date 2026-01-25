@@ -22,7 +22,7 @@ class NetworkScreenView {
   virtual ~NetworkScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void ShowScreenWithData(base::Value::Dict data) = 0;
+  virtual void ShowScreenWithData(base::DictValue data) = 0;
 
   // Shows error message in a bubble.
   virtual void ShowError(const std::u16string& message) = 0;
@@ -52,7 +52,7 @@ class NetworkScreenHandler final : public NetworkScreenView,
 
  private:
   // NetworkScreenView:
-  void ShowScreenWithData(base::Value::Dict data) override;
+  void ShowScreenWithData(base::DictValue data) override;
   void ShowError(const std::u16string& message) override;
   void ClearErrors() override;
   void SetQuickStartEntryPointVisibility(bool visible) override;
@@ -61,7 +61,7 @@ class NetworkScreenHandler final : public NetworkScreenView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
  private:
   base::WeakPtrFactory<NetworkScreenView> weak_ptr_factory_{this};

@@ -114,9 +114,9 @@ bool IsBrowserManaged() {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-base::Value::List GetPermissionsForExtension(
+base::ListValue GetPermissionsForExtension(
     scoped_refptr<const extensions::Extension> extension) {
-  base::Value::List permission_messages;
+  base::ListValue permission_messages;
   // Only consider force installed extensions
   if (!extensions::Manifest::IsPolicyLocation(extension->location())) {
     return permission_messages;
@@ -139,18 +139,17 @@ base::Value::List GetPermissionsForExtension(
   return permission_messages;
 }
 
-base::Value::List GetPowerfulExtensions(
+base::ListValue GetPowerfulExtensions(
     const extensions::ExtensionSet& extensions) {
-  base::Value::List powerful_extensions;
+  base::ListValue powerful_extensions;
 
   for (const auto& extension : extensions) {
-    base::Value::List permission_messages =
-        GetPermissionsForExtension(extension);
+    base::ListValue permission_messages = GetPermissionsForExtension(extension);
 
     // Only show extension on page if there is at least one permission
     // message to show.
     if (!permission_messages.empty()) {
-      base::Value::Dict extension_to_add =
+      base::DictValue extension_to_add =
           extensions::util::GetExtensionInfo(extension.get());
       extension_to_add.Set("permissions", std::move(permission_messages));
       powerful_extensions.Append(std::move(extension_to_add));
@@ -184,8 +183,8 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void AddThreatProtectionPermission(const char* title,
                                    const char* permission,
-                                   base::Value::List* info) {
-  base::Value::Dict value;
+                                   base::ListValue* info) {
+  base::DictValue value;
   value.Set("title", title);
   value.Set("permission", permission);
   info->Append(std::move(value));
@@ -265,7 +264,7 @@ void ManagementUIHandler::OnJavascriptDisallowed() {
   RemoveObservers();
 }
 
-void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
+void ManagementUIHandler::AddReportingInfo(base::ListValue* report_sources,
                                            bool is_browser) {
   const policy::PolicyService* policy_service = GetPolicyService();
 
@@ -375,7 +374,7 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
         continue;
       }
 
-      base::Value::Dict data;
+      base::DictValue data;
       data.Set("messageId", report_definition.message);
       data.Set("reportingType",
                GetReportingTypeValue(report_definition.reporting_type));
@@ -399,7 +398,7 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
         kProfileReportingBrowser, kProfileReportingExtension,
         kProfileReportingPolicy};
     for (const auto& message : messages) {
-      base::Value::Dict data;
+      base::DictValue data;
       data.Set("messageId", message);
       report_sources->Append(std::move(data));
     }
@@ -410,15 +409,15 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       report_sources->Append(std::move(device_signal_data));
     }
 #endif
-    base::Value::Dict learn_more_data;
+    base::DictValue learn_more_data;
     learn_more_data.Set("messageId", kProfileReportingLearnMore);
     report_sources->Append(std::move(learn_more_data));
   }
 }
 
-base::Value::Dict ManagementUIHandler::GetContextualManagedData(
+base::DictValue ManagementUIHandler::GetContextualManagedData(
     Profile* profile) {
-  base::Value::Dict response;
+  base::DictValue response;
 #if !BUILDFLAG(IS_CHROMEOS)
   int message_id = IDS_MANAGEMENT_NOT_MANAGED_NOTICE;
   if (browser_managed_) {
@@ -449,9 +448,8 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
   return response;
 }
 
-base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
-    Profile* profile) {
-  base::Value::List info;
+base::DictValue ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
+  base::ListValue info;
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   constexpr struct {
@@ -516,7 +514,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
   const std::string enterprise_manager =
       connectors_service->GetManagementDomain();
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("description",
              enterprise_manager.empty()
                  ? l10n_util::GetStringUTF16(
@@ -525,7 +523,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                        IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
                        base::UTF8ToUTF16(enterprise_manager)));
 #else
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("description", l10n_util::GetStringUTF16(
                                 IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
@@ -533,9 +531,9 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
   return result;
 }
 
-base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
+base::ListValue ManagementUIHandler::GetManagedWebsitesInfo(
     Profile* profile) const {
-  base::Value::List managed_websites;
+  base::ListValue managed_websites;
   auto* managed_configuration =
       ManagedConfigurationAPIFactory::GetForProfile(profile);
 
@@ -550,9 +548,9 @@ base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
   return managed_websites;
 }
 
-base::Value::List ManagementUIHandler::GetApplicationsInfo(
+base::ListValue ManagementUIHandler::GetApplicationsInfo(
     Profile* profile) const {
-  base::Value::List applications;
+  base::ListValue applications;
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // Only display web apps for the profile that contains them.
@@ -563,7 +561,7 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
   auto& registrar = provider->registrar_unsafe();
 
   for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-    base::Value::List permission_messages;
+    base::ListValue permission_messages;
     // Display RunOnOsLogin if it is set to autostart by admin policy.
     web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> policy =
         registrar.GetAppRunOnOsLoginMode(app_id);
@@ -574,7 +572,7 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
     }
 
     if (!permission_messages.empty()) {
-      base::Value::Dict app_info;
+      base::DictValue app_info;
       app_info.Set("name", registrar.GetAppShortName(app_id));
       // We try to match the same icon size as used for the extensions
       GURL icon = apps::AppIconSource::GetIconURL(
@@ -601,18 +599,18 @@ ManagementUIHandler::GetUserPermissionService() {
       Profile::FromWebUI(web_ui()));
 }
 
-base::Value::Dict ManagementUIHandler::GetDeviceSignalGrantedMessage() {
+base::DictValue ManagementUIHandler::GetDeviceSignalGrantedMessage() {
   // Insert the device signals consent disclosure at the end of browser
   // reporting section.
   auto* user_permission_service = GetUserPermissionService();
   if (user_permission_service && user_permission_service->CanCollectSignals() ==
                                      device_signals::UserPermission::kGranted) {
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("messageId", kManagementDeviceSignalsDisclosure);
     data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
     return data;
   }
-  return base::Value::Dict();
+  return base::DictValue();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -683,7 +681,7 @@ void ManagementUIHandler::RemoveManagementPromotionObserver(
   promotion_eligibility_observers_.RemoveObserver(observer);
 }
 
-void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
+void ManagementUIHandler::HandleGetExtensions(const base::ListValue& args) {
   AllowJavascript();
   // List of all enabled extensions
   const extensions::ExtensionSet& extensions =
@@ -695,14 +693,14 @@ void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
 }
 
 void ManagementUIHandler::HandleGetContextualManagedData(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   auto result = GetContextualManagedData(Profile::FromWebUI(web_ui()));
   ResolveJavascriptCallback(args[0] /* callback_id */, result);
 }
 
 void ManagementUIHandler::HandleGetThreatProtectionInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   ResolveJavascriptCallback(
       args[0] /* callback_id */,
@@ -710,7 +708,7 @@ void ManagementUIHandler::HandleGetThreatProtectionInfo(
 }
 
 void ManagementUIHandler::HandleGetManagedWebsites(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   ResolveJavascriptCallback(
@@ -718,7 +716,7 @@ void ManagementUIHandler::HandleGetManagedWebsites(
       GetManagedWebsitesInfo(Profile::FromWebUI(web_ui())));
 }
 
-void ManagementUIHandler::HandleGetApplications(const base::Value::List& args) {
+void ManagementUIHandler::HandleGetApplications(const base::ListValue& args) {
   AllowJavascript();
 
   ResolveJavascriptCallback(args[0] /* callback_id */,
@@ -726,23 +724,23 @@ void ManagementUIHandler::HandleGetApplications(const base::Value::List& args) {
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(
-    const base::Value::List& args) {
-  base::Value::List report_sources;
+    const base::ListValue& args) {
+  base::ListValue report_sources;
   AllowJavascript();
   AddReportingInfo(&report_sources, /*is_browser=*/true);
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 }
 
 void ManagementUIHandler::HandleInitProfileReportingInfo(
-    const base::Value::List& args) {
-  base::Value::List report_sources;
+    const base::ListValue& args) {
+  base::ListValue report_sources;
   AllowJavascript();
   AddReportingInfo(&report_sources, /*is_browser=*/false);
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 }
 
 void ManagementUIHandler::HandleShouldShowPromotion(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string callback_id = args[0].GetString();
@@ -768,7 +766,7 @@ void ManagementUIHandler::HandleShouldShowPromotion(
 }
 
 void ManagementUIHandler::HandleSetBannerDismissed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::UmaHistogramEnumeration(
       "Enterprise.ManagementPromotionBannerAction",
       policy::ManagementPromotionBannerAction::kManagementBannerDismissed);
@@ -777,7 +775,7 @@ void ManagementUIHandler::HandleSetBannerDismissed(
 }
 
 void ManagementUIHandler::HandleRecordBannerRedirected(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::UmaHistogramEnumeration(
       "Enterprise.ManagementPromotionBannerAction",
       policy::ManagementPromotionBannerAction::kManagementRedirected);
@@ -804,13 +802,13 @@ void ManagementUIHandler::OnPromotionEligibilityFetched(
 }
 
 void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {
-  base::Value::List report_sources;
+  base::ListValue report_sources;
   AddReportingInfo(&report_sources, /*is_browser=*/true);
   FireWebUIListener("browser-reporting-info-updated", report_sources);
 }
 
 void ManagementUIHandler::NotifyProfileReportingInfoUpdated() {
-  base::Value::List report_sources;
+  base::ListValue report_sources;
   AddReportingInfo(&report_sources, /*is_browser=*/false);
   FireWebUIListener("profile-reporting-info-updated", report_sources);
 }

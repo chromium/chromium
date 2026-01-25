@@ -25,7 +25,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
  private:
   void LoginWithPin(const std::string& username, const std::string& pin);

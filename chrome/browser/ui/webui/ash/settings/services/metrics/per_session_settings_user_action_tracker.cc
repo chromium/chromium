@@ -245,7 +245,7 @@ void PerSessionSettingsUserActionTracker::
   // Fetch the dictionary from the pref.
   ScopedDictPrefUpdate total_unique_settings_changed_(
       profile_pref_service_, ::prefs::kTotalUniqueOsSettingsChanged);
-  base::Value::Dict& pref_data = total_unique_settings_changed_.Get();
+  base::DictValue& pref_data = total_unique_settings_changed_.Get();
 
   // Set the dictionary.
   // Value is a constant 1 since we only want to know which Setting has been

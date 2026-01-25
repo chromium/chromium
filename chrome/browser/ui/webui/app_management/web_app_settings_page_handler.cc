@@ -205,7 +205,7 @@ void WebAppSettingsPageHandler::GetOverlappingPreferredApps(
       web_app::AllAppsLockDescription(),
       base::BindOnce(
           [](const webapps::AppId& app_id, web_app::AllAppsLock& all_apps_lock,
-             base::Value::Dict& debug_value) {
+             base::DictValue& debug_value) {
             return all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
                 app_id);
           },

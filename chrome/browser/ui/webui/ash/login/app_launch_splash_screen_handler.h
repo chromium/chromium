@@ -34,7 +34,7 @@ class AppLaunchSplashScreenView {
   virtual ~AppLaunchSplashScreenView() = default;
 
   // Shows the screen after it's populated with the given `data`.
-  virtual void Show(base::Value::Dict data) = 0;
+  virtual void Show(base::DictValue data) = 0;
 
   // Sets the current app launch state.
   virtual void UpdateAppLaunchText(AppLaunchState state) = 0;
@@ -42,7 +42,7 @@ class AppLaunchSplashScreenView {
   virtual void HideThrobber() = 0;
 
   // Sets the contents of the screen with the given `data`.
-  virtual void SetAppData(base::Value::Dict data) = 0;
+  virtual void SetAppData(base::DictValue data) = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<AppLaunchSplashScreenView> AsWeakPtr() = 0;
@@ -67,10 +67,10 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // AppLaunchSplashScreenView implementation:
-  void Show(base::Value::Dict data) override;
+  void Show(base::DictValue data) override;
   void UpdateAppLaunchText(AppLaunchState state) override;
   void HideThrobber() override;
-  void SetAppData(base::Value::Dict data) override;
+  void SetAppData(base::DictValue data) override;
 
   // Gets a WeakPtr to the instance.
   base::WeakPtr<AppLaunchSplashScreenView> AsWeakPtr() override;

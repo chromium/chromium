@@ -50,11 +50,11 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
  private:
-  base::Value::Dict BuildAndroidAppsInfo();
-  void HandleRequestAndroidAppsInfo(const base::Value::List& args);
+  base::DictValue BuildAndroidAppsInfo();
+  void HandleRequestAndroidAppsInfo(const base::ListValue& args);
   void HandleAppChanged(const std::string& app_id);
   void SendAndroidAppsInfo();
-  void ShowAndroidAppsSettings(const base::Value::List& args);
+  void ShowAndroidAppsSettings(const base::ListValue& args);
   int64_t GetDisplayIdForCurrentProfile();
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

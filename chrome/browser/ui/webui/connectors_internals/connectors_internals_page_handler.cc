@@ -278,7 +278,7 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
     GetDeviceTrustStateCallback callback,
     bool is_device_trust_enabled,
-    const base::Value::Dict signals) {
+    const base::DictValue signals) {
   std::string signals_json;
   base::JSONWriter::WriteWithOptions(
       signals, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);

@@ -55,8 +55,7 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void RequestGmsCoreNotificationsDisabledDeviceNames() {
-    handler_->RequestGmsCoreNotificationsDisabledDeviceNames(
-        base::Value::List());
+    handler_->RequestGmsCoreNotificationsDisabledDeviceNames(base::ListValue());
   }
 
   void VerifyMostRecentDeviceNamesSent(

@@ -92,18 +92,18 @@ class CrashesDOMHandler : public WebUIMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(const base::Value::List& args);
+  void HandleRequestCrashes(const base::ListValue& args);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Asynchronously triggers crash uploading. Called from JS.
-  void HandleRequestUploads(const base::Value::List& args);
+  void HandleRequestUploads(const base::ListValue& args);
 #endif
 
   // Sends the recent crashes list JS.
   void UpdateUI();
 
   // Asynchronously requests a user triggered upload. Called from JS.
-  void HandleRequestSingleCrashUpload(const base::Value::List& args);
+  void HandleRequestSingleCrashUpload(const base::ListValue& args);
 
   scoped_refptr<UploadList> upload_list_;
   bool list_available_ = false;
@@ -143,7 +143,7 @@ void CrashesDOMHandler::OnJavascriptDisallowed() {
   upload_list_->CancelLoadCallback();
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
+void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue& args) {
   AllowJavascript();
   if (first_load_) {
     first_load_ = false;
@@ -158,7 +158,7 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void CrashesDOMHandler::HandleRequestUploads(const base::Value::List& args) {
+void CrashesDOMHandler::HandleRequestUploads(const base::ListValue& args) {
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
   DCHECK(debugd_client);
 
@@ -209,12 +209,12 @@ void CrashesDOMHandler::UpdateUI() {
   // possible to manually upload reports.
   bool upload_list = manual_uploads_supported || crash_reporting_enabled;
 
-  base::Value::List crash_list;
+  base::ListValue crash_list;
   if (upload_list) {
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("enabled", crash_reporting_enabled);
   result.Set("dynamicBackend", system_crash_reporter);
   result.Set("manualUploads", allow_manual_uploads);
@@ -227,7 +227,7 @@ void CrashesDOMHandler::UpdateUI() {
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // Only allow manual uploads if crash uploads aren’t disabled by policy.
   if (!ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled() &&
       IsMetricsReportingPolicyManaged()) {

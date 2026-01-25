@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
       notification_service->GetNotificationToShow();
   ASSERT_FALSE(notification.has_value());
   // Update the extension pref to flag the extension as unpublished.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("is-present", true);
   dict.Set("is-live", true);
   dict.Set("last-updated-time-millis", 100000000);

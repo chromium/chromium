@@ -58,7 +58,7 @@ void FloatingWorkspaceDialogHandler::RegisterMessages() {
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FloatingWorkspaceDialogHandler::Initialize(const base::Value::List& args) {
+void FloatingWorkspaceDialogHandler::Initialize(const base::ListValue& args) {
   AllowJavascript();
   switch (state_) {
     case FloatingWorkspaceDialog::State::kDefault:
@@ -104,7 +104,7 @@ void FloatingWorkspaceDialogHandler::ShowErrorScreen() {
 }
 
 void FloatingWorkspaceDialogHandler::ShowNetworkDetails(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& guid = args[0].GetString();
 
@@ -117,7 +117,7 @@ void FloatingWorkspaceDialogHandler::ShowNetworkDetails(
 }
 
 void FloatingWorkspaceDialogHandler::ShowNetworkConfig(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& guid = args[0].GetString();
 
@@ -129,7 +129,7 @@ void FloatingWorkspaceDialogHandler::ShowNetworkConfig(
   }
 }
 
-void FloatingWorkspaceDialogHandler::AddNetwork(const base::Value::List& args) {
+void FloatingWorkspaceDialogHandler::AddNetwork(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& onc_type = args[0].GetString();
 
@@ -142,8 +142,7 @@ void FloatingWorkspaceDialogHandler::AddNetwork(const base::Value::List& args) {
 }
 
 // This is needed for proxy connection.
-void FloatingWorkspaceDialogHandler::GetHostname(
-    const base::Value::List& args) {
+void FloatingWorkspaceDialogHandler::GetHostname(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
   std::string hostname =

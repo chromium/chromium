@@ -44,7 +44,7 @@ void SmartPrivacyProtectionScreenHandler::DeclareLocalizedValues(
 }
 
 void SmartPrivacyProtectionScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
+    base::DictValue* dict) {
   dict->Set("isQuickDimEnabled", base::Value(features::IsQuickDimEnabled()));
 }
 

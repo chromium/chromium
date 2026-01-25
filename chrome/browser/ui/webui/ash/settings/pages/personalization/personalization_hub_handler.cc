@@ -26,7 +26,7 @@ void PersonalizationHubHandler::RegisterMessages() {
 }
 
 void PersonalizationHubHandler::HandleOpenPersonalizationHub(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
   // Record entry point metric to Personalization Hub through Settings.
   personalization_app::LogPersonalizationEntryPoint(

@@ -956,9 +956,9 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible, true);
   prefs->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles, false);
   prefs->SetTime(ntp_prefs::kNtpLastModuleStalenessUpdate, base::Time());
-  prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::Value::Dict());
+  prefs->SetDict(ntp_prefs::kNtpModuleStalenessCountDict, base::DictValue());
   prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
-                 base::Value::Dict());
+                 base::DictValue());
   prefs->SetInteger(ntp_prefs::kNtpContextMenuClickCount, 0);
 }
 
@@ -1283,7 +1283,7 @@ void NewTabPageUI::CreateActionChipsHandler(
 // OnColorProviderChanged can be called during the destruction process and
 // should not directly access any member variables.
 void NewTabPageUI::OnColorProviderChanged() {
-  base::Value::Dict update;
+  base::DictValue update;
   if (!web_contents() || !web_ui()) {
     return;
   }
@@ -1296,7 +1296,7 @@ void NewTabPageUI::OnColorProviderChanged() {
 }
 
 void NewTabPageUI::OnCustomBackgroundImageUpdated() {
-  base::Value::Dict update;
+  base::DictValue update;
   url::RawCanonOutputT<char> encoded_url;
   auto custom_background_url =
       (ntp_custom_background_service_
@@ -1393,7 +1393,7 @@ void NewTabPageUI::OnEnterpriseShortcutsPolicyChanged() {
 
 void NewTabPageUI::OnLoad() {
   MaybeEnableEnterpriseShortcutsVisibility();
-  base::Value::Dict update;
+  base::DictValue update;
   update.Set("navigationStartTime",
              navigation_start_time_.InMillisecondsFSinceUnixEpoch());
   const bool modules_enabled = ntp::HasModulesEnabled(

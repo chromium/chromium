@@ -48,7 +48,7 @@ class SendSearchFeedbackHandlerTest : public testing::Test {
 };
 
 TEST_F(SendSearchFeedbackHandlerTest, TestHandleOpenFeedbackDialog) {
-  base::Value::List args;
+  base::ListValue args;
   std::string description_template = "#Settings foo bar";
   args.Append(description_template);
   EXPECT_CALL(*handler_, OpenFeedbackDialogWrapper(description_template))

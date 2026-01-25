@@ -62,7 +62,7 @@ class InspectUI : public content::WebUIController,
                                         const std::string& browser_id,
                                         const GURL& frontend_url);
 
-  void PopulateNativeUITargets(const base::Value::List& targets);
+  void PopulateNativeUITargets(const base::ListValue& targets);
   void ShowNativeUILaunchButton(bool enabled);
   void SetHostVersion(const std::string& version);
   void SetRemoteDebuggingEnabled(bool enabled);

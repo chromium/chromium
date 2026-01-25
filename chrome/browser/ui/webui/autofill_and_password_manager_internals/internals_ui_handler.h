@@ -82,20 +82,20 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // LogReceiver implementation.
-  void LogEntry(const base::Value::Dict& entry) override;
+  void LogEntry(const base::DictValue& entry) override;
 
   void StartSubscription();
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnDeleteAutofillAiCacheEntry(const base::Value::List& args);
-  void OnGetAutofillAiCache(const base::Value::List& args);
-  void OnLoaded(const base::Value::List& args);
-  void OnResetCache(const base::Value::List& args);
-  void OnDumpAddresses(const base::Value::List& args);
+  void OnDeleteAutofillAiCacheEntry(const base::ListValue& args);
+  void OnGetAutofillAiCache(const base::ListValue& args);
+  void OnLoaded(const base::ListValue& args);
+  void OnResetCache(const base::ListValue& args);
+  void OnDumpAddresses(const base::ListValue& args);
 #if !BUILDFLAG(IS_ANDROID)
-  void CheckAutofillAiPermissions(const base::Value::List& args);
-  void SetDomNodeId(const base::Value::List& args);
+  void CheckAutofillAiPermissions(const base::ListValue& args);
+  void SetDomNodeId(const base::ListValue& args);
 #endif
 
   void OnResetCacheDone(const std::string& message);

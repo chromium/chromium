@@ -101,7 +101,7 @@ void AccessibilityHandler::RegisterMessages() {
 }
 
 void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kAppearanceSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
@@ -109,7 +109,7 @@ void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
 }
 
 void AccessibilityHandler::HandleSetStartupSoundEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
   if (args[0].is_bool()) {
@@ -121,7 +121,7 @@ void AccessibilityHandler::HandleSetStartupSoundEnabled(
 }
 
 void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
   if (args[0].is_bool()) {
@@ -134,7 +134,7 @@ void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
 }
 
 void AccessibilityHandler::HandleManageA11yPageReady(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 }
 
@@ -153,19 +153,19 @@ void AccessibilityHandler::OnJavascriptDisallowed() {
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AccessibilityManager::Get()->ShowChromeVoxTutorial();
 }
 
 void AccessibilityHandler::HandleUpdateBluetoothBrailleDisplayAddress(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string address = args[0].GetString();
   AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(address);
 }
 
 void AccessibilityHandler::HandleGetStartupSoundEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   FireWebUIListener(
       "startup-sound-setting-retrieved",
@@ -173,7 +173,7 @@ void AccessibilityHandler::HandleGetStartupSoundEnabled(
 }
 
 void AccessibilityHandler::HandlePreviewFlashNotification(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AccessibilityManager::Get()->PreviewFlashNotification();
 }
 
@@ -291,9 +291,9 @@ void AccessibilityHandler::MaybeAddDictationLocales() {
     ui_languages.insert(language::SplitIntoMainAndTail(enabled_language).first);
   }
 
-  base::Value::List locales_list;
+  base::ListValue locales_list;
   for (auto& locale : locales) {
-    base::Value::Dict option;
+    base::DictValue option;
     option.Set("value", locale.first);
     option.Set("name",
                l10n_util::GetDisplayNameForLocale(

@@ -64,7 +64,7 @@ TEST_F(ExtensionsInternalsUnitTest, Basic) {
   auto extensions_list = base::JSONReader::Read(
       source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
-  base::Value::Dict& extension_json = extensions_list->GetList()[0].GetDict();
+  base::DictValue& extension_json = extensions_list->GetList()[0].GetDict();
 
   EXPECT_THAT(extension_json.FindString("id"),
               testing::Pointee(extension->id()));
@@ -95,7 +95,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
           .AddAPIPermission("activeTab")
           .SetManifestKey("automation", true)
           .SetManifestKey("optional_permissions",
-                          base::Value::List().Append("storage"))
+                          base::ListValue().Append("storage"))
           .AddHostPermission("https://example.com/*")
           .AddContentScript("not-real.js", {"https://chromium.org/foo"})
           .Build();
@@ -110,15 +110,14 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
 
   base::Value* extension_1 = &extensions_list->GetList()[0];
   ASSERT_TRUE(extension_1->is_dict());
-  base::Value::Dict* permissions =
-      extension_1->GetDict().FindDict("permissions");
+  base::DictValue* permissions = extension_1->GetDict().FindDict("permissions");
   ASSERT_TRUE(permissions);
 
   // Permissions section should always have four elements: active, optional,
   // tab-specific and withheld.
   EXPECT_EQ(permissions->size(), 4U);
 
-  base::Value::Dict* active = permissions->FindDict("active");
+  base::DictValue* active = permissions->FindDict("active");
   ASSERT_NE(active->FindList("api"), nullptr);
   EXPECT_EQ(active->FindList("api")->front().GetString(), "activeTab");
   ASSERT_NE(active->FindList("manifest"), nullptr);
@@ -132,7 +131,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
   EXPECT_EQ(active->FindList("scriptable_hosts")->front().GetString(),
             "https://chromium.org/foo");
 
-  base::Value::Dict* optional = permissions->FindDict("optional");
+  base::DictValue* optional = permissions->FindDict("optional");
   EXPECT_EQ(optional->FindList("api")->front().GetString(), "storage");
 }
 
@@ -153,7 +152,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
   auto extensions_list = base::JSONReader::Read(
       source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
-  base::Value::Dict* permissions =
+  base::DictValue* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
   // Check that initially there is no tab-scpecific data.
@@ -176,7 +175,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
   permissions = extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
   // Check the tab specific data is present now.
-  base::Value::Dict* tab_specific = permissions->FindDict("tab_specific");
+  base::DictValue* tab_specific = permissions->FindDict("tab_specific");
   EXPECT_EQ(tab_specific->size(), 1U);
   EXPECT_EQ(tab_specific->FindDict("1")
                 ->FindList("explicit_hosts")
@@ -209,7 +208,7 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
   auto extensions_list = base::JSONReader::Read(
       source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
-  base::Value::Dict* permissions =
+  base::DictValue* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
   // Check the host is initially in active hosts and there are no withheld
@@ -279,7 +278,7 @@ TEST_F(ExtensionsInternalsUnitTest, RegistryExtensionStatus) {
       source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   for (const auto& info : extensions_list->GetList()) {
-    const base::Value::Dict& extension_json = info.GetDict();
+    const base::DictValue& extension_json = info.GetDict();
     const std::string* registry_status =
         extension_json.FindString("registry_status");
     ASSERT_TRUE(registry_status);

@@ -34,7 +34,7 @@ void DisplayHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void DisplayHandler::HandleHighlightDisplay(const base::Value::List& args) {
+void DisplayHandler::HandleHighlightDisplay(const base::ListValue& args) {
   AllowJavascript();
 
   int64_t display_id;
@@ -48,7 +48,7 @@ void DisplayHandler::HandleHighlightDisplay(const base::Value::List& args) {
   cros_display_config_->HighlightDisplay(display_id);
 }
 
-void DisplayHandler::HandleDragDisplayDelta(const base::Value::List& args) {
+void DisplayHandler::HandleDragDisplayDelta(const base::ListValue& args) {
   DCHECK_EQ(3U, args.size());
   AllowJavascript();
 

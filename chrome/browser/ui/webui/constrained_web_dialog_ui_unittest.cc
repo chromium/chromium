@@ -109,7 +109,7 @@ TEST_F(ConstrainedWebDialogUITest, DialogCloseWithEmptyArgs) {
         ASSERT_EQ(json_retval, "");
         run_loop.Quit();
       }));
-  base::Value::List args;
+  base::ListValue args;
   web_ui()->HandleReceivedMessage("dialogClose", args);
   run_loop.Run();
 }
@@ -123,7 +123,7 @@ TEST_F(ConstrainedWebDialogUITest, DialogCloseWithJsonInArgs) {
         json_retval = cb_json_retval;
         run_loop.Quit();
       }));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kJsonRetval);
   web_ui()->HandleReceivedMessage("dialogClose", args);
   run_loop.Run();

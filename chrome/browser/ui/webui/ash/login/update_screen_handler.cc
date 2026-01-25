@@ -41,7 +41,7 @@ UpdateScreenHandler::UpdateScreenHandler() : BaseScreenHandler(kScreenId) {}
 UpdateScreenHandler::~UpdateScreenHandler() = default;
 
 void UpdateScreenHandler::Show(bool is_opt_out_enabled) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("isOptOutEnabled", is_opt_out_enabled);
   ShowInWebUI(std::move(data));
 }

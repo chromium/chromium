@@ -79,11 +79,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                       CupsPrintersManager* printers_manager);
 
   // Gets all CUPS printers and return it to WebUI.
-  void HandleGetCupsSavedPrintersList(const base::Value::List& args);
-  void HandleGetCupsEnterprisePrintersList(const base::Value::List& args);
-  void HandleUpdateCupsPrinter(const base::Value::List& args);
-  void HandleRemoveCupsPrinter(const base::Value::List& args);
-  void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
+  void HandleGetCupsSavedPrintersList(const base::ListValue& args);
+  void HandleGetCupsEnterprisePrintersList(const base::ListValue& args);
+  void HandleUpdateCupsPrinter(const base::ListValue& args);
+  void HandleRemoveCupsPrinter(const base::ListValue& args);
+  void HandleRetrieveCupsPrinterPpd(const base::ListValue& args);
 
   void OnSetUpPrinter(const std::string& printer_id,
                       const std::string& printer_name,
@@ -92,7 +92,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
   // using an IPP call to the printer.
-  void HandleGetPrinterInfo(const base::Value::List& args);
+  void HandleGetPrinterInfo(const base::ListValue& args);
 
   // Handles the callback for HandleGetPrinterInfo. |callback_id| is the
   // identifier to resolve the correct Promise. |result| indicates if the query
@@ -125,16 +125,16 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,
-                     base::Value::Dict info,
+                     base::DictValue info,
                      chromeos::PpdProvider::CallbackResultCode res,
                      const chromeos::Printer::PpdReference& ppd_ref,
                      const std::string& usb_manufacturer);
 
-  void HandleAddCupsPrinter(const base::Value::List& args);
+  void HandleAddCupsPrinter(const base::ListValue& args);
 
-  void HandleReconfigureCupsPrinter(const base::Value::List& args);
+  void HandleReconfigureCupsPrinter(const base::ListValue& args);
 
-  void AddOrReconfigurePrinter(const base::Value::List& args,
+  void AddOrReconfigurePrinter(const base::ListValue& args,
                                bool is_printer_edit);
 
   // Handles the result of adding a printer which the user specified the
@@ -153,15 +153,15 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // printer supported.  Takes one argument, the callback id for the result.
   // The callback will be invoked with {success: <boolean>, models:
   // <Array<string>>}.
-  void HandleGetCupsPrinterManufacturers(const base::Value::List& args);
+  void HandleGetCupsPrinterManufacturers(const base::ListValue& args);
 
   // Given a manufacturer, get a list of all models of printers for which we can
   // get drivers.  Takes two arguments - the callback id and the manufacturer
   // name for which we want to list models.  The callback will be called with
   // {success: <boolean>, models: Array<string>}.
-  void HandleGetCupsPrinterModels(const base::Value::List& args);
+  void HandleGetCupsPrinterModels(const base::ListValue& args);
 
-  void HandleSelectPPDFile(const base::Value::List& args);
+  void HandleSelectPPDFile(const base::ListValue& args);
 
   // chromeos::PpdProvider callback handlers.
   void ResolveManufacturersDone(
@@ -174,14 +174,14 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       chromeos::PpdProvider::CallbackResultCode result_code,
       const chromeos::PpdProvider::ResolvedPrintersList& printers);
 
-  void HandleStartDiscovery(const base::Value::List& args);
-  void HandleStopDiscovery(const base::Value::List& args);
+  void HandleStartDiscovery(const base::ListValue& args);
+  void HandleStopDiscovery(const base::ListValue& args);
 
   // Logs printer set ups that are abandoned.
-  void HandleSetUpCancel(const base::Value::List& args);
+  void HandleSetUpCancel(const base::ListValue& args);
 
   // Given a printer id, find the corresponding ppdManufacturer and ppdModel.
-  void HandleGetPrinterPpdManufacturerAndModel(const base::Value::List& args);
+  void HandleGetPrinterPpdManufacturerAndModel(const base::ListValue& args);
   void OnGetPrinterPpdManufacturerAndModel(
       const std::string& callback_id,
       chromeos::PpdProvider::CallbackResultCode result_code,
@@ -192,7 +192,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void UpdateDiscoveredPrinters();
 
   // Attempt to add a discovered printer.
-  void HandleAddDiscoveredPrinter(const base::Value::List& args);
+  void HandleAddDiscoveredPrinter(const base::ListValue& args);
 
   // Called when we get a response from
   // PrintscanmgrClient::CupsRetrievePrinterPpd.
@@ -225,7 +225,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void OnLocalPrintersUpdated() override;
 
   // Handles getting the EULA URL if available.
-  void HandleGetEulaUrl(const base::Value::List& args);
+  void HandleGetEulaUrl(const base::ListValue& args);
 
   // Post EULA URL callback.
   void OnGetEulaUrl(const std::string& callback_id,
@@ -251,7 +251,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                     const chromeos::Printer& printer,
                     const net::IPEndPoint& endpoint);
 
-  void HandleQueryPrintServer(const base::Value::List& args);
+  void HandleQueryPrintServer(const base::ListValue& args);
 
   void QueryPrintServer(const std::string& callback_id,
                         const GURL& server_url,
@@ -264,11 +264,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const GURL& server_url,
       std::vector<PrinterDetector::DetectedPrinter>&& returned_printers);
 
-  void HandleOpenPrintManagementApp(const base::Value::List& args);
+  void HandleOpenPrintManagementApp(const base::ListValue& args);
 
-  void HandleOpenScanningApp(const base::Value::List& args);
+  void HandleOpenScanningApp(const base::ListValue& args);
 
-  void HandleRequestPrinterStatus(const base::Value::List& args);
+  void HandleRequestPrinterStatus(const base::ListValue& args);
 
   void OnPrinterStatusReceived(
       const std::string& callback_id,

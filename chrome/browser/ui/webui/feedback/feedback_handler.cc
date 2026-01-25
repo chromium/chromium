@@ -99,15 +99,14 @@ void FeedbackHandler::RegisterMessages() {
                                          base::Unretained(this)));
 }
 
-void FeedbackHandler::HandleShowDialog(const base::Value::List& args) {
+void FeedbackHandler::HandleShowDialog(const base::ListValue& args) {
   if (dialog_) {
     dialog_->Show();
   }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void FeedbackHandler::HandleShowAssistantLogsInfo(
-    const base::Value::List& args) {
+void FeedbackHandler::HandleShowAssistantLogsInfo(const base::ListValue& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/assistant_logs_info.html"), std::u16string(),
                 std::string(),
@@ -117,7 +116,7 @@ void FeedbackHandler::HandleShowAssistantLogsInfo(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FeedbackHandler::HandleShowAutofillMetadataInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(!args.empty());
   ShowChildPage(
       Profile::FromWebUI(web_ui()), dialog_,
@@ -126,13 +125,13 @@ void FeedbackHandler::HandleShowAutofillMetadataInfo(
       args.front().GetString());
 }
 
-void FeedbackHandler::HandleShowSystemInfo(const base::Value::List& args) {
+void FeedbackHandler::HandleShowSystemInfo(const base::ListValue& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/system_info.html"),
                 l10n_util::GetStringUTF16(IDS_FEEDBACK_SYSINFO_PAGE_TITLE));
 }
 
-void FeedbackHandler::HandleShowMetrics(const base::Value::List& args) {
+void FeedbackHandler::HandleShowMetrics(const base::ListValue& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 GURL("chrome://histograms"), std::u16string());
 }

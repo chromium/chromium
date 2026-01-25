@@ -65,7 +65,7 @@ class HIDDetectionScreenHandler final : public HIDDetectionView,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
   // State that has been exported to JS. Used by tests.
   std::string keyboard_state_for_test() const { return keyboard_state_; }
