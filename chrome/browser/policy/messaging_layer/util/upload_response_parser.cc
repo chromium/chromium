@@ -37,7 +37,7 @@ namespace {
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
 std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
-    const base::Value::Dict& sequence_information) {
+    const base::DictValue& sequence_information) {
   const std::optional<int> int_priority_result =
       sequence_information.FindInt(json_keys::kPriority);
   if (int_priority_result.has_value()) {
@@ -106,7 +106,7 @@ StatusOr<Destination> GetDestinationProto(
 }
 
 StatusOr<ConfigFile> GetConfigurationProtoFromDict(
-    const base::Value::Dict& file) {
+    const base::DictValue& file) {
   ConfigFile config_file;
 
   // Handle the version.
@@ -178,7 +178,7 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
 }  // namespace
 
 UploadResponseParser::UploadResponseParser(bool is_generation_guid_required,
-                                           base::Value::Dict response)
+                                           base::DictValue response)
     : is_generation_guid_required_(is_generation_guid_required),
       response_(std::move(response)) {}
 
@@ -191,9 +191,8 @@ UploadResponseParser::~UploadResponseParser() = default;
 
 StatusOr<SequenceInformation>
 UploadResponseParser::last_successfully_uploaded_record_sequence_info() const {
-  const base::Value::Dict* const
-      last_successfully_uploaded_record_sequence_info =
-          response_.FindDict(json_keys::kLastSucceedUploadedRecord);
+  const base::DictValue* const last_successfully_uploaded_record_sequence_info =
+      response_.FindDict(json_keys::kLastSucceedUploadedRecord);
   if (last_successfully_uploaded_record_sequence_info == nullptr) {
     return base::unexpected(Status(
         error::NOT_FOUND,
@@ -267,7 +266,7 @@ StatusOr<ConfigFile> UploadResponseParser::config_file() const {
   // The server attaches the configuration file if it was requested
   // by the client. Adding a check to make sure to only process it if the
   // feature is enabled on the client side.
-  const base::Value::Dict* signed_configuration_file_record =
+  const base::DictValue* signed_configuration_file_record =
       response_.FindDict(json_keys::kConfigurationFile);
   if (signed_configuration_file_record == nullptr) {
     return base::unexpected(
@@ -362,7 +361,7 @@ bool IsMissingSequenceInformation(bool is_generation_guid_required,
 StatusOr<SequenceInformation>
 UploadResponseParser::SequenceInformationValueToProto(
     bool is_generation_guid_required,
-    const base::Value::Dict& sequence_information_dict) {
+    const base::DictValue& sequence_information_dict) {
   const std::string* sequencing_id =
       sequence_information_dict.FindString(json_keys::kSequencingId);
   const std::string* generation_id =
@@ -414,7 +413,7 @@ StatusOr<EncryptedRecord>
 UploadResponseParser::HandleFailedUploadedSequenceInformation(
     bool is_generation_guid_required,
     const SequenceInformation& highest_sequence_information,
-    const base::Value::Dict& sequence_information_dict) {
+    const base::DictValue& sequence_information_dict) {
   ASSIGN_OR_RETURN(SequenceInformation sequence_information,
                    SequenceInformationValueToProto(is_generation_guid_required,
                                                    sequence_information_dict));

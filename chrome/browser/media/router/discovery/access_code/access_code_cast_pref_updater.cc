@@ -13,14 +13,14 @@ AccessCodeCastPrefUpdater::~AccessCodeCastPrefUpdater() = default;
 
 void AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
     const MediaSink::Id sink_id,
-    base::OnceCallback<void(base::Value::Dict)> get_sink_callback) {
+    base::OnceCallback<void(base::DictValue)> get_sink_callback) {
   GetDevicesDict(base::BindOnce(
       [](const MediaSink::Id sink_id,
-         base::OnceCallback<void(base::Value::Dict)> get_sink_callback,
-         base::Value::Dict dict) {
+         base::OnceCallback<void(base::DictValue)> get_sink_callback,
+         base::DictValue dict) {
         auto* device_dict = dict.FindDict(sink_id);
         std::move(get_sink_callback)
-            .Run(device_dict ? std::move(*device_dict) : base::Value::Dict());
+            .Run(device_dict ? std::move(*device_dict) : base::DictValue());
       },
       sink_id, std::move(get_sink_callback)));
 }
@@ -33,7 +33,7 @@ void AccessCodeCastPrefUpdater::GetDeviceAddedTime(
       [](const MediaSink::Id sink_id,
          base::OnceCallback<void(std::optional<base::Time>)>
              get_device_added_time_callback,
-         base::Value::Dict device_added_time_dict) {
+         base::DictValue device_added_time_dict) {
         auto* device_added_time_value = device_added_time_dict.Find(sink_id);
         std::move(get_device_added_time_callback)
             .Run(device_added_time_value
@@ -45,7 +45,7 @@ void AccessCodeCastPrefUpdater::GetDeviceAddedTime(
 
 // static
 std::vector<MediaSink::Id> AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
-    const base::Value::Dict& devices_dict,
+    const base::DictValue& devices_dict,
     net::IPEndPoint ip_endpoint) {
   std::vector<MediaSink::Id> duplicate_sinks;
   // Iterate through device dictionaries, fetch ip_endpoints, and then check if

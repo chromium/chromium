@@ -71,11 +71,11 @@ ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
 
 void ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
     OnOptOutListChanged() {
-  const base::Value::Dict& user_value_map =
+  const base::DictValue& user_value_map =
       pref_change_registrar_.prefs()->GetDict(
           performance_manager::user_tuning::prefs::
               kTabDiscardingExceptionsWithTime);
-  const base::Value::List& managed_value_list =
+  const base::ListValue& managed_value_list =
       pref_change_registrar_.prefs()->GetList(
           performance_manager::user_tuning::prefs::
               kManagedTabDiscardingExceptions);

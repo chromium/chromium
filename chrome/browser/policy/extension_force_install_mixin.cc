@@ -272,7 +272,7 @@ std::string GenerateUpdateManifest(const extensions::ExtensionId& extension_id,
 bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                                 base::Version* extension_version) {
   std::string error_message;
-  std::optional<base::Value::Dict> extension_manifest;
+  std::optional<base::DictValue> extension_manifest;
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     extension_manifest =
@@ -361,7 +361,7 @@ void UpdatePolicyViaMockPolicyProvider(
         .Append(policy_item_value);
   } else {
     // Set the new policy value.
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(policy_item_value);
     policy_map.Set(policy::key::kExtensionInstallForcelist,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,

@@ -143,9 +143,9 @@ class StubMediaRouterDesktop : public MediaRouterDesktop {
   ~StubMediaRouterDesktop() override = default;
 
   // media_router::MediaRouter: implementation
-  base::Value::Dict GetState() const override {
+  base::DictValue GetState() const override {
     NOTIMPLEMENTED();
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   void GetProviderState(

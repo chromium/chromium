@@ -29,8 +29,7 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   profile_manager_.CreateTestingProfile("testing_profile");
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetDict(
       prefs::kNetworkAnnotationBlocklist,
-      base::Value::Dict().Set(base::NumberToString(kTestDisabledHashCode),
-                              true));
+      base::DictValue().Set(base::NumberToString(kTestDisabledHashCode), true));
 
   // Initialize fake Regmon D-Bus client. This fake client is used below to
   // verify that violations are reported.

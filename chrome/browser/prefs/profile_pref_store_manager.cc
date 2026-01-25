@@ -103,7 +103,7 @@ bool ProfilePrefStoreManager::InitializePrefsFromMasterPrefs(
     std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
         tracking_configuration,
     size_t reporting_ids_count,
-    base::Value::Dict master_prefs,
+    base::DictValue master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt) {
   // Create the profile directory if it doesn't exist yet (very possible on
   // first run).

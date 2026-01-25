@@ -116,9 +116,8 @@ void CastActivity::SendMessageToClient(
   it->second->SendMessageToClient(std::move(message));
 }
 
-void CastActivity::SendMediaStatusToClients(
-    const base::Value::Dict& media_status,
-    std::optional<int> request_id) {
+void CastActivity::SendMediaStatusToClients(const base::DictValue& media_status,
+                                            std::optional<int> request_id) {
   for (auto& client : connected_clients_) {
     client.second->SendMediaMessageToClient(media_status, request_id);
   }

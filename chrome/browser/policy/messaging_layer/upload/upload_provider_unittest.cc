@@ -143,7 +143,7 @@ TEST_F(EncryptedReportingUploadProviderTest,
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_->request_body(0);
+  base::DictValue request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
   test_env_->SimulateResponseForRequest(0);

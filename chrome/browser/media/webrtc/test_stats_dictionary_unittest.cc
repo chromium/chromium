@@ -47,7 +47,7 @@ const char kTestStatsReportJson[] =
 class TestStatsDictionaryTest : public testing::Test {
  public:
   TestStatsDictionaryTest() {
-    base::Value::Dict dict = base::test::ParseJsonDict(kTestStatsReportJson);
+    base::DictValue dict = base::test::ParseJsonDict(kTestStatsReportJson);
     report_ = base::MakeRefCounted<TestStatsReportDictionary>(std::move(dict));
   }
 

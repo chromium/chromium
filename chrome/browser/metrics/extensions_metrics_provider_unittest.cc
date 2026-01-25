@@ -74,21 +74,21 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
       Profile* profile) override {
     extensions::ExtensionSet extensions;
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Test extension")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))
                           .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                           .Build());
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Test extension 2")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))
                           .SetID("pknkgggnfecklokoggaggchhaebkajji")
                           .Build());
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Colliding Extension")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))

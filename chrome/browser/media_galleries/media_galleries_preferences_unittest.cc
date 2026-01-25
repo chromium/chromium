@@ -187,11 +187,11 @@ class MediaGalleriesPreferencesTest : public testing::Test {
     std::unique_ptr<ScopedListPrefUpdate> update =
         std::make_unique<ScopedListPrefUpdate>(
             prefs, prefs::kMediaGalleriesRememberedGalleries);
-    base::Value::List& list = update->Get();
+    base::ListValue& list = update->Get();
 
     for (auto& entry : list) {
       if (entry.is_dict()) {
-        base::Value::Dict& dict = entry.GetDict();
+        base::DictValue& dict = entry.GetDict();
         // Setting the prefs version to 2 which is the version before
         // default_gallery_type was added.
         dict.Set(kMediaGalleriesPrefsVersionKey, 2);

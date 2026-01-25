@@ -43,7 +43,7 @@ TEST_F(PushMessagingUnsubscribedEntryTest, PersistAndGet) {
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
               UnorderedPointwise(EntryEquals(), {entry_1}));
 
-  const base::Value::List& list = profile()->GetPrefs()->GetList(
+  const base::ListValue& list = profile()->GetPrefs()->GetList(
       prefs::kPushMessagingUnsubscribedEntriesList);
   ASSERT_EQ(list.size(), 1u);
   ASSERT_TRUE(list[0].is_string());

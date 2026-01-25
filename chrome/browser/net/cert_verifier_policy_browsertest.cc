@@ -573,13 +573,13 @@ class CertVerifierServiceCACertsWithConstraintsPolicyTest
         set_proper_dns_name_constraint() ? "localhost" : "cruddyhost";
     std::string b64_cert = base::Base64Encode(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    base::Value::List certs_with_constraints_value = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue certs_with_constraints_value = base::ListValue().Append(
+        base::DictValue()
             .Set("certificate", b64_cert)
             .Set("constraints",
-                 base::Value::Dict().Set(
+                 base::DictValue().Set(
                      "permitted_dns_names",
-                     base::Value::List().Append(dns_name_constraint))));
+                     base::ListValue().Append(dns_name_constraint))));
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
@@ -631,13 +631,13 @@ class CertVerifierServiceCACertsWithCIDRConstraintsPolicyTest
         set_proper_cidr_name_constraint() ? "127.127.0.1/8" : "127.127.0.1/16";
     std::string b64_cert = base::Base64Encode(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    base::Value::List certs_with_constraints_value = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue certs_with_constraints_value = base::ListValue().Append(
+        base::DictValue()
             .Set("certificate", b64_cert)
             .Set("constraints",
-                 base::Value::Dict().Set(
+                 base::DictValue().Set(
                      "permitted_cidrs",
-                     base::Value::List().Append(cidr_name_constraint))));
+                     base::ListValue().Append(cidr_name_constraint))));
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
@@ -688,13 +688,12 @@ class CertVerifierServiceCACertsWithInvalidCIDRConstraintsPolicyTest
     // Set invalid policy.
     std::string b64_cert = base::Base64Encode(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    base::Value::List certs_with_constraints_value = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue certs_with_constraints_value = base::ListValue().Append(
+        base::DictValue()
             .Set("certificate", b64_cert)
-            .Set("constraints",
-                 base::Value::Dict().Set(
-                     "permitted_cidrs",
-                     base::Value::List().Append("invalidcidr"))));
+            .Set("constraints", base::DictValue().Set(
+                                    "permitted_cidrs",
+                                    base::ListValue().Append("invalidcidr"))));
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
@@ -754,13 +753,12 @@ IN_PROC_BROWSER_TEST_F(
     // Set invalid policy.
     std::string b64_cert = base::Base64Encode(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    base::Value::List certs_with_constraints_value = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue certs_with_constraints_value = base::ListValue().Append(
+        base::DictValue()
             .Set("certificate", b64_cert)
-            .Set("constraints",
-                 base::Value::Dict().Set(
-                     "permitted_cidrs",
-                     base::Value::List().Append("invalidcidr"))));
+            .Set("constraints", base::DictValue().Set(
+                                    "permitted_cidrs",
+                                    base::ListValue().Append("invalidcidr"))));
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
@@ -777,13 +775,12 @@ IN_PROC_BROWSER_TEST_F(
     // Update with valid policy
     std::string b64_cert = base::Base64Encode(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()));
-    base::Value::List certs_with_constraints_value = base::Value::List().Append(
-        base::Value::Dict()
+    base::ListValue certs_with_constraints_value = base::ListValue().Append(
+        base::DictValue()
             .Set("certificate", b64_cert)
-            .Set("constraints",
-                 base::Value::Dict().Set(
-                     "permitted_cidrs",
-                     base::Value::List().Append("127.127.0.1/8"))));
+            .Set("constraints", base::DictValue().Set("permitted_cidrs",
+                                                      base::ListValue().Append(
+                                                          "127.127.0.1/8"))));
     policy::PolicyMap policies;
     SetPolicy(&policies, policy::key::kCACertificatesWithConstraints,
               std::make_optional(
@@ -841,24 +838,24 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceNewAndOncCertificatePoliciesTest,
         &onc_hint_pem));
 
     auto onc_ca_cert =
-        base::Value::Dict()
+        base::DictValue()
             .Set(onc::certificate::kGUID, base::Value("guid_root"))
             .Set(onc::certificate::kType, onc::certificate::kAuthority)
             .Set(onc::certificate::kX509, onc_root_pem)
             .Set(onc::certificate::kTrustBits,
-                 base::Value::List().Append(onc::certificate::kWeb));
+                 base::ListValue().Append(onc::certificate::kWeb));
 
     auto onc_hint_cert =
-        base::Value::Dict()
+        base::DictValue()
             .Set(onc::certificate::kGUID, base::Value("guid_hint"))
             .Set(onc::certificate::kType, onc::certificate::kAuthority)
             .Set(onc::certificate::kX509, onc_hint_pem);
 
-    auto onc_certificates = base::Value::List()
+    auto onc_certificates = base::ListValue()
                                 .Append(std::move(onc_ca_cert))
                                 .Append(std::move(onc_hint_cert));
 
-    auto onc_policy = base::Value::Dict()
+    auto onc_policy = base::DictValue()
                           .Set(onc::toplevel_config::kCertificates,
                                std::move(onc_certificates))
                           .Set(onc::toplevel_config::kType,
@@ -867,11 +864,11 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceNewAndOncCertificatePoliciesTest,
     std::string onc_policy_json;
     ASSERT_TRUE(base::JSONWriter::Write(onc_policy, &onc_policy_json));
 
-    auto new_ca_certs = base::Value::List().Append(
+    auto new_ca_certs = base::ListValue().Append(
         base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
             test_server_for_new_policy.GetRoot()->cert_buffer())));
 
-    auto new_hint_certs = base::Value::List().Append(
+    auto new_hint_certs = base::ListValue().Append(
         base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
             test_server_for_new_policy.GetGeneratedIntermediate()
                 ->cert_buffer())));
@@ -974,11 +971,11 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,
       ASSERT_TRUE(future.Get());
     }
 
-    auto policy_ca_certs = base::Value::List().Append(
+    auto policy_ca_certs = base::ListValue().Append(
         base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
             test_server_for_policy.GetRoot()->cert_buffer())));
 
-    auto policy_hint_certs = base::Value::List().Append(
+    auto policy_hint_certs = base::ListValue().Append(
         base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
             test_server_for_policy.GetGeneratedIntermediate()->cert_buffer())));
 

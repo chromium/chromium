@@ -73,7 +73,7 @@ void PrefetchOriginDecider::ReportOriginRetryAfter(
 void PrefetchOriginDecider::LoadFromPrefs() {
   origin_retry_afters_.clear();
 
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       pref_service_->GetDict(prefetch::prefs::kRetryAfterPrefPath);
 
   for (auto element : dictionary) {
@@ -99,7 +99,7 @@ void PrefetchOriginDecider::LoadFromPrefs() {
 }
 
 void PrefetchOriginDecider::SaveToPrefs() const {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   for (const auto& element : origin_retry_afters_) {
     std::string key = element.first.GetURL().spec();
     base::Value value = base::TimeToValue(element.second);

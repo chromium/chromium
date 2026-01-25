@@ -332,7 +332,7 @@ void PersistentNotificationHandler::DisableNotifications(
         ContentSettingsPattern::FromURLNoWildcard(origin),
         ContentSettingsPattern::Wildcard(),
         ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-        base::Value(base::Value::Dict().Set(
+        base::Value(base::DictValue().Set(
             safe_browsing::kIsAllowlistedByUserKey, false)));
 #if BUILDFLAG(IS_ANDROID)
     if (notification_id.has_value()) {
@@ -408,7 +408,7 @@ void PersistentNotificationHandler::OnShowOriginalNotification(
           ContentSettingsPattern::FromURLNoWildcard(url),
           ContentSettingsPattern::Wildcard(),
           ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
-          base::Value(base::Value::Dict().Set(
+          base::Value(base::DictValue().Set(
               safe_browsing::kSuspiciousNotificationShowOriginalKey, true)));
     }
   }

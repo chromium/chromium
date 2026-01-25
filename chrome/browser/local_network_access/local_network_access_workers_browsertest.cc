@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
                        ServiceWorkerDenyPermission) {
   // Use enterprise policy to block LNA requests
   policy::PolicyMap policies;
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
                        ServiceWorkerAllowPermission) {
   // Use enterprise policy to allow LNA requests
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
                        SharedWorkerAcceptPermission) {
   // Use enterprise policy to allow LNA requests
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));

@@ -104,7 +104,7 @@ class WebRtcMediaDevicesInteractiveUITest : public WebRtcTestBase {
     bool found_video_input = false;
 
     for (const auto& value : parsed_json.GetList()) {
-      const base::Value::Dict* dict = value.GetIfDict();
+      const base::DictValue* dict = value.GetIfDict();
       ASSERT_TRUE(dict);
       MediaDeviceInfo device;
       ASSERT_TRUE(dict->FindString("deviceId"));

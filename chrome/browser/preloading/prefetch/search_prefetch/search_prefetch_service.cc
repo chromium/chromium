@@ -982,7 +982,7 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
 
 bool SearchPrefetchService::LoadFromPrefs() {
   prefetch_cache_.clear();
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       profile_->GetPrefs()->GetDict(prefetch::prefs::kCachePrefPath);
 
   auto* template_url_service =
@@ -997,7 +997,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
     if (!navigation_url.is_valid())
       continue;
 
-    const base::Value::List& prefetch_url_and_time = element.second.GetList();
+    const base::ListValue& prefetch_url_and_time = element.second.GetList();
 
     if (prefetch_url_and_time.size() != 2 ||
         !prefetch_url_and_time[0].is_string() ||
@@ -1056,11 +1056,11 @@ bool SearchPrefetchService::LoadFromPrefs() {
 }
 
 void SearchPrefetchService::SaveToPrefs() const {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   for (const auto& element : prefetch_cache_) {
     std::string navigation_url = element.first.spec();
     std::string prefetch_url = element.second.first.spec();
-    base::Value::List value;
+    base::ListValue value;
     value.Append(prefetch_url);
     value.Append(base::TimeToValue(element.second.second));
     dictionary.Set(std::move(navigation_url), std::move(value));

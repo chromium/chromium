@@ -203,9 +203,9 @@ class ChromeFileSystemAccessPermissionContext
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
-  std::string GetKeyForObject(const base::Value::Dict& object) override;
-  bool IsValidObject(const base::Value::Dict& object) override;
-  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
+  std::string GetKeyForObject(const base::DictValue& object) override;
+  bool IsValidObject(const base::DictValue& object) override;
+  std::u16string GetObjectDisplayName(const base::DictValue& object) override;
   std::set<url::Origin> GetOriginsWithGrants() override;
 
   // OneTimePermissionsTrackerObserver:
@@ -477,7 +477,7 @@ class ChromeFileSystemAccessPermissionContext
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
-  void MaybeEvictEntries(base::Value::Dict& dict);
+  void MaybeEvictEntries(base::DictValue& dict);
 
   // Schedules triggering all open windows to update their File System Access
   // usage indicator icon. Multiple calls to this method can result in only a
@@ -559,7 +559,7 @@ class ChromeFileSystemAccessPermissionContext
                                GrantType grant_type);
 
   // Returns whether a permission object value has matching fields.
-  bool HasMatchingValue(const base::Value::Dict& value,
+  bool HasMatchingValue(const base::DictValue& value,
                         const base::FilePath& file_path,
                         HandleType handle_type,
                         GrantType grant_type);

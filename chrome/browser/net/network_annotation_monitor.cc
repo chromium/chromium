@@ -34,7 +34,7 @@ void NetworkAnnotationMonitor::Report(int32_t hash_code) {
     // profiles in browser tests, for example.
     return;
   }
-  const base::Value::Dict& blocklist =
+  const base::DictValue& blocklist =
       profile->GetPrefs()->GetDict(prefs::kNetworkAnnotationBlocklist);
 
   // Ignore any network calls not in the blocklist.

@@ -27,11 +27,11 @@ class ChromeVariationsServiceClientTest : public ::testing::Test {
   void AddVariationsEntry(const std::string& profile_key) {
     ScopedDictPrefUpdate variations_prefs_update(
         &local_state_, variations::prefs::kVariationsGoogleGroups);
-    base::Value::Dict& variations_prefs = variations_prefs_update.Get();
+    base::DictValue& variations_prefs = variations_prefs_update.Get();
 
     // Just set an empty list of groups as the code under test is agnostic to
     // the value of the entry.
-    base::Value::List groups;
+    base::ListValue groups;
     variations_prefs.Set(profile_key, std::move(groups));
   }
 
@@ -42,9 +42,9 @@ class ChromeVariationsServiceClientTest : public ::testing::Test {
   void AddProfileAttributesStorageEntry(const std::string& profile_key) {
     ScopedDictPrefUpdate profile_attributes_prefs_update(
         &local_state_, prefs::kProfileAttributes);
-    base::Value::Dict& profile_prefs = profile_attributes_prefs_update.Get();
+    base::DictValue& profile_prefs = profile_attributes_prefs_update.Get();
 
-    base::Value::Dict profile_info;
+    base::DictValue profile_info;
     profile_prefs.Set(profile_key, std::move(profile_info));
   }
 
@@ -57,7 +57,7 @@ TEST_F(ChromeVariationsServiceClientTest,
   variations_service_client_.RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       &local_state_);
 
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
   ASSERT_EQ(cached_profiles.size(), 0UL);
 }
@@ -69,7 +69,7 @@ TEST_F(ChromeVariationsServiceClientTest,
   variations_service_client_.RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       &local_state_);
 
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
   ASSERT_EQ(cached_profiles.size(), 0UL);
 }
@@ -81,7 +81,7 @@ TEST_F(ChromeVariationsServiceClientTest,
   variations_service_client_.RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       &local_state_);
 
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
   ASSERT_EQ(cached_profiles.size(), 0UL);
 }
@@ -94,7 +94,7 @@ TEST_F(ChromeVariationsServiceClientTest,
   variations_service_client_.RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       &local_state_);
 
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
   ASSERT_EQ(cached_profiles.size(), 0UL);
 }
@@ -108,7 +108,7 @@ TEST_F(ChromeVariationsServiceClientTest,
   variations_service_client_.RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       &local_state_);
 
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state_.GetDict(variations::prefs::kVariationsGoogleGroups);
   ASSERT_EQ(cached_profiles.size(), 1UL);
   ASSERT_TRUE(cached_profiles.Find(profile_key));

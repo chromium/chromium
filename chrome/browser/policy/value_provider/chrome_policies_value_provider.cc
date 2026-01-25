@@ -43,15 +43,15 @@ ChromePoliciesValueProvider::~ChromePoliciesValueProvider() {
   registry->RemoveObserver(this);
 }
 
-base::Value::Dict ChromePoliciesValueProvider::GetValues() {
+base::DictValue ChromePoliciesValueProvider::GetValues() {
   return policy::PolicyConversions(
              std::make_unique<policy::ChromePolicyConversionsClient>(profile_))
       .UseChromePolicyConversions()
       .ToValueDict();
 }
 
-base::Value::Dict ChromePoliciesValueProvider::GetNames() {
-  base::Value::Dict names;
+base::DictValue ChromePoliciesValueProvider::GetNames() {
+  base::DictValue names;
 
   policy::SchemaRegistry* registry = profile_->GetOriginalProfile()
                                          ->GetPolicySchemaRegistryService()
@@ -59,25 +59,25 @@ base::Value::Dict ChromePoliciesValueProvider::GetNames() {
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
-  base::Value::List chrome_policy_names;
+  base::ListValue chrome_policy_names;
   policy::PolicyNamespace chrome_ns(policy::POLICY_DOMAIN_CHROME, "");
   const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_ns);
   for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
        it.Advance()) {
     chrome_policy_names.Append(it.key());
   }
-  base::Value::Dict chrome_values;
+  base::DictValue chrome_values;
   chrome_values.Set(policy::kNameKey, policy::kChromePoliciesName);
   chrome_values.Set(policy::kPolicyNamesKey, std::move(chrome_policy_names));
   names.Set(policy::kChromePoliciesId, std::move(chrome_values));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Add precedence policy names.
-  base::Value::List precedence_policy_names;
+  base::ListValue precedence_policy_names;
   for (auto* policy : policy::metapolicy::kPrecedence) {
     precedence_policy_names.Append(policy);
   }
-  base::Value::Dict precedence_values;
+  base::DictValue precedence_values;
   precedence_values.Set(policy::kNameKey, policy::kPrecedencePoliciesName);
   precedence_values.Set(policy::kPolicyNamesKey,
                         std::move(precedence_policy_names));

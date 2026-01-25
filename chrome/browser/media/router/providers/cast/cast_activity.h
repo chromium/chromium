@@ -99,7 +99,7 @@ class CastActivity {
       const std::string& client_id,
       blink::mojom::PresentationConnectionMessagePtr message);
 
-  virtual void SendMediaStatusToClients(const base::Value::Dict& media_status,
+  virtual void SendMediaStatusToClients(const base::DictValue& media_status,
                                         std::optional<int> request_id);
 
   // Handles a message forwarded by CastActivityManager.

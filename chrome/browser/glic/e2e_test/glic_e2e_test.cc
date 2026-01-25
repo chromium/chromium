@@ -333,12 +333,12 @@ void GlicE2ETest::ThrottleWebContentsNetwork(
     devtools_client_ptr =
         std::make_unique<content::TestDevToolsProtocolClient>();
     devtools_client_ptr->AttachToWebContents(web_contents);
-    devtools_client_ptr->SendCommand("Network.enable", base::Value::Dict());
+    devtools_client_ptr->SendCommand("Network.enable", base::DictValue());
   }
 
   // Corresponds to the "Slow 3G" preset in
   // third_party/devtools-frontend/src/front_end/core/sdk/NetworkManager.ts
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("offline", false);
   // Latency in ms.
   params.Set("latency", 2000.0);

@@ -50,7 +50,7 @@ class CastSessionClient {
   // Sends a media message to the client.  If |request_id| is given, it
   // is used to look up the sequence number of a previous request, which is
   // included in the outgoing message.
-  virtual void SendMediaMessageToClient(const base::Value::Dict& payload,
+  virtual void SendMediaMessageToClient(const base::DictValue& payload,
                                         std::optional<int> request_id) = 0;
 
   // Changes the PresentationConnection state to CLOSED/TERMINATED and resets
@@ -82,7 +82,7 @@ class CastSessionClient {
   // the old code this method based on, it seems likely it will have other
   // callers once error handling for the Cast MRP is more fleshed out.
   virtual void SendErrorToClient(int sequence_number,
-                                 base::Value::Dict error) = 0;
+                                 base::DictValue error) = 0;
 
  private:
   std::string client_id_;

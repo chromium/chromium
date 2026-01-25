@@ -704,7 +704,7 @@ TEST_F(IOSPromoOnDesktopTest,
                                         PromoType::kAddress));
 
   base::Time promo_time = base::Time::Now() - base::Days(1000);
-  base::Value::List desktop_ntp_promo_timestamps;
+  base::ListValue desktop_ntp_promo_timestamps;
   desktop_ntp_promo_timestamps.Append(base::TimeToValue(promo_time));
   prefs()->SetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
                    std::move(desktop_ntp_promo_timestamps));
@@ -736,7 +736,7 @@ TEST_F(IOSPromoOnDesktopTest,
 
   prefs()->SetList(
       promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps,
-      base::Value::List().Append(base::TimeToValue(base::Time::Now())));
+      base::ListValue().Append(base::TimeToValue(base::Time::Now())));
   EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
                                          PromoType::kAddress));
 }

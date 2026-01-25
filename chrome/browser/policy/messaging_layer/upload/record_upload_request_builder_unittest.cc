@@ -212,7 +212,7 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
       request_payload.value(),
       AllOf(IsDataUploadRequestValid(),
             IsEncryptionKeyRequestUploadRequestValid(need_encryption_key())));
-  base::Value::List* const record_list = request_payload->FindList(
+  base::ListValue* const record_list = request_payload->FindList(
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);
   EXPECT_EQ(record_list->size(), records.size());
@@ -389,7 +389,7 @@ TEST_P(RecordUploadRequestBuilderTest,
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  std::optional<base::Value::Dict> compressionless_payload =
+  std::optional<base::DictValue> compressionless_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressionless_record),
                                        record_reservation,
                                        is_generation_guid_required())
@@ -409,7 +409,7 @@ TEST_P(RecordUploadRequestBuilderTest, IncludeCompressionRequest) {
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
 
-  std::optional<base::Value::Dict> compressed_record_payload =
+  std::optional<base::DictValue> compressed_record_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressed_record),
                                        record_reservation,
                                        is_generation_guid_required())

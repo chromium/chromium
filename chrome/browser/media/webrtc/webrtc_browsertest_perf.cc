@@ -27,7 +27,7 @@ std::string Statistic(const std::string& statistic, const std::string& bucket) {
 }
 
 void MaybePrintResultsForAudioReceive(const std::string& ssrc,
-                                      const base::Value::Dict& pc_dict,
+                                      const base::DictValue& pc_dict,
                                       const std::string& modifier) {
   const std::string* value =
       pc_dict.FindStringByDottedPath(Statistic("audioOutputLevel", ssrc));
@@ -62,7 +62,7 @@ void MaybePrintResultsForAudioReceive(const std::string& ssrc,
 }
 
 void MaybePrintResultsForAudioSend(const std::string& ssrc,
-                                   const base::Value::Dict& pc_dict,
+                                   const base::DictValue& pc_dict,
                                    const std::string& modifier) {
   const std::string* value =
       pc_dict.FindStringByDottedPath(Statistic("audioInputLevel", ssrc));
@@ -86,7 +86,7 @@ void MaybePrintResultsForAudioSend(const std::string& ssrc,
 }
 
 void MaybePrintResultsForVideoSend(const std::string& ssrc,
-                                   const base::Value::Dict& pc_dict,
+                                   const base::DictValue& pc_dict,
                                    const std::string& modifier) {
   const std::string* value =
       pc_dict.FindStringByDottedPath(Statistic("googFrameRateSent", ssrc));
@@ -140,7 +140,7 @@ void MaybePrintResultsForVideoSend(const std::string& ssrc,
 }
 
 void MaybePrintResultsForVideoReceive(const std::string& ssrc,
-                                      const base::Value::Dict& pc_dict,
+                                      const base::DictValue& pc_dict,
                                       const std::string& modifier) {
   const std::string* value =
       pc_dict.FindStringByDottedPath(Statistic("googFrameRateReceived", ssrc));
@@ -210,7 +210,7 @@ std::string ExtractSsrcIdentifier(const std::string& key) {
 // Returns the set of unique ssrc identifiers in the call (e.g. ssrc_1234,
 // ssrc_12356, etc). |stats_dict| is the .stats dict from one peer connection.
 std::set<std::string> FindAllSsrcIdentifiers(
-    const base::Value::Dict& stats_dict) {
+    const base::DictValue& stats_dict) {
   std::set<std::string> result;
   for (auto kv : stats_dict) {
     if (kv.first.find("ssrc_") != std::string::npos)
@@ -223,7 +223,7 @@ std::set<std::string> FindAllSsrcIdentifiers(
 
 namespace test {
 
-void PrintBweForVideoMetrics(const base::Value::Dict& pc_dict,
+void PrintBweForVideoMetrics(const base::DictValue& pc_dict,
                              const std::string& modifier,
                              const std::string& video_codec) {
   std::string video_modifier =
@@ -256,19 +256,19 @@ void PrintBweForVideoMetrics(const base::Value::Dict& pc_dict,
                          *value, "bit/s", false);
 }
 
-void PrintMetricsForAllStreams(const base::Value::Dict& pc_dict,
+void PrintMetricsForAllStreams(const base::DictValue& pc_dict,
                                const std::string& modifier,
                                const std::string& video_codec) {
   PrintMetricsForSendStreams(pc_dict, modifier, video_codec);
   PrintMetricsForRecvStreams(pc_dict, modifier, video_codec);
 }
 
-void PrintMetricsForSendStreams(const base::Value::Dict& pc_dict,
+void PrintMetricsForSendStreams(const base::DictValue& pc_dict,
                                 const std::string& modifier,
                                 const std::string& video_codec) {
   std::string video_modifier =
       video_codec.empty() ? modifier : modifier + "_" + video_codec;
-  const base::Value::Dict* stats_dict = pc_dict.FindDict("stats");
+  const base::DictValue* stats_dict = pc_dict.FindDict("stats");
   ASSERT_TRUE(stats_dict);
   std::set<std::string> ssrc_identifiers = FindAllSsrcIdentifiers(*stats_dict);
 
@@ -280,12 +280,12 @@ void PrintMetricsForSendStreams(const base::Value::Dict& pc_dict,
   }
 }
 
-void PrintMetricsForRecvStreams(const base::Value::Dict& pc_dict,
+void PrintMetricsForRecvStreams(const base::DictValue& pc_dict,
                                 const std::string& modifier,
                                 const std::string& video_codec) {
   std::string video_modifier =
       video_codec.empty() ? modifier : modifier + "_" + video_codec;
-  const base::Value::Dict* stats_dict = pc_dict.FindDict("stats");
+  const base::DictValue* stats_dict = pc_dict.FindDict("stats");
   ASSERT_TRUE(stats_dict);
   std::set<std::string> ssrc_identifiers = FindAllSsrcIdentifiers(*stats_dict);
 

@@ -79,12 +79,12 @@ TEST_F(MetricsWebContentsObserverTest,
        RecordFeatureUsageIgnoresChromeExtensionUpdates) {
   // Register our fake extension. The URL we access must be part of the
   // 'web_accessible_resources' for the network commit to work.
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set(extensions::manifest_keys::kVersion, "1.0.0.0")
                       .Set(extensions::manifest_keys::kName, "TestExtension")
                       .Set(extensions::manifest_keys::kManifestVersion, 2)
                       .Set("web_accessible_resources",
-                           base::Value::List().Append("main.html"));
+                           base::ListValue().Append("main.html"));
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetManifest(std::move(manifest))

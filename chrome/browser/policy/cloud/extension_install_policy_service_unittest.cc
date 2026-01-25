@@ -35,9 +35,8 @@ constexpr char kExtensionVersion[] = "1.0.0.0";
 base::Value GetPolicyValueForAction(
     const std::string& extension_version,
     enterprise_management::ExtensionInstallPolicy::Action action) {
-return base::Value(base::Value::Dict().Set(
-           extension_version,
-           base::Value::Dict().Set("action", action)));
+  return base::Value(base::DictValue().Set(
+      extension_version, base::DictValue().Set("action", action)));
 }
 
 class MockExtensionInstallPolicyServiceObserver

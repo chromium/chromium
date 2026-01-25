@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
   // policy.
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
-            base::Value(base::Value::List().Append("*")));
+            base::Value(base::ListValue().Append("*")));
   UpdateProviderPolicy(policies);
 
   ConnectToLNAWebSocket(
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWebSocketsPolicyBrowserTest,
   // policy.
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
-            base::Value(base::Value::List().Append("*")));
+            base::Value(base::ListValue().Append("*")));
   UpdateProviderPolicy(policies);
 
   ConnectToLNAWebSocket(

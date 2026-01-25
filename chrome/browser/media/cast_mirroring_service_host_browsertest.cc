@@ -236,16 +236,16 @@ class CastMirroringServiceHostBrowserTest
               base::JSONReader::Read(message->json_format_data,
                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           ASSERT_TRUE(root_or_error);
-          const base::Value::Dict& root = root_or_error->GetDict();
+          const base::DictValue& root = root_or_error->GetDict();
           const std::string* type = root.FindString("type");
           ASSERT_TRUE(type);
           if (*type == "OFFER") {
-            const base::Value::Dict* offer = root.FindDict("offer");
+            const base::DictValue* offer = root.FindDict("offer");
             EXPECT_TRUE(offer);
-            const base::Value::List* streams =
+            const base::ListValue* streams =
                 offer->FindList("supportedStreams");
             for (auto& stream : *streams) {
-              const base::Value::Dict& stream_dict = stream.GetDict();
+              const base::DictValue& stream_dict = stream.GetDict();
               const int stream_target_delay =
                   stream_dict.FindInt("targetDelay").value();
               EXPECT_EQ(stream_target_delay, expected_delay_ms);

@@ -77,7 +77,7 @@ void SetDisabledTimesGlobal(std::vector<base::Time> times) {
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
 
-  base::Value::List time_list;
+  base::ListValue time_list;
   for (auto time : times)
     time_list.Append(base::TimeToValue(time));
 
@@ -94,7 +94,7 @@ std::string GetDictKeyFromSite(const GURL& site) {
 }
 
 // Returns all origins that map to a site from a dictionary.
-std::vector<std::string> GetOriginsForSite(const base::Value::Dict& origin_dict,
+std::vector<std::string> GetOriginsForSite(const base::DictValue& origin_dict,
                                            const GURL& site) {
   std::vector<std::string> result;
   for (auto [origin_str, value] : origin_dict) {
@@ -128,7 +128,7 @@ std::vector<base::Time> GetDisabledTimesPerSite(const GURL& site) {
 
   std::set<base::Time> times;
   for (auto origin : origins) {
-    const base::Value::List* list = origin_dict.FindDict(origin)->FindList(
+    const base::ListValue* list = origin_dict.FindDict(origin)->FindList(
         prefs::kHardwareSecureDecryptionDisabledTimes);
     if (list) {
       for (const base::Value& time_value : *list) {
@@ -156,7 +156,7 @@ void SetDisabledTimesPerSite(const GURL& site, std::vector<base::Time> times) {
   auto origins = GetOriginsForSite(update.Get(), site);
 
   for (auto origin : origins) {
-    base::Value::Dict* origin_dict = update->FindDict(origin);
+    base::DictValue* origin_dict = update->FindDict(origin);
     if (!origin_dict) {
       continue;
     }

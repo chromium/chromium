@@ -32,18 +32,18 @@ constexpr char kNameKey[] = "name";
 constexpr char kSkipZeroClickKey[] = "skip_zero_click";
 constexpr char kUrlKey[] = "url";
 
-base::Value::Dict SerializeSignatureRelevantMembersInFormData(
+base::DictValue SerializeSignatureRelevantMembersInFormData(
     const FormData& form_data) {
-  base::Value::Dict serialized_data;
+  base::DictValue serialized_data;
   // Stored FormData is used only for signature calculations, therefore only
   // members that are used for signature calculation are stored.
   serialized_data.Set(kNameKey, form_data.name());
   serialized_data.Set(kUrlKey, form_data.url().spec());
   serialized_data.Set(kActionKey, form_data.action().spec());
 
-  base::Value::List serialized_fields;
+  base::ListValue serialized_fields;
   for (const auto& field : form_data.fields()) {
-    base::Value::Dict serialized_field;
+    base::DictValue serialized_field;
     // Stored FormFieldData is used only for signature calculations, therefore
     // only members that are used for signature calculation are stored.
     serialized_field.Set(kNameKey, field.name());
@@ -56,10 +56,10 @@ base::Value::Dict SerializeSignatureRelevantMembersInFormData(
 }
 
 std::string SerializeOpaqueLocalData(const PasswordForm& password_form) {
-  base::Value::Dict local_data_json;
+  base::DictValue local_data_json;
   local_data_json.Set(kSkipZeroClickKey, password_form.skip_zero_click);
 
-  base::Value::Dict serialized_form_data =
+  base::DictValue serialized_form_data =
       SerializeSignatureRelevantMembersInFormData(password_form.form_data);
   local_data_json.Set(kFormDataKey, std::move(serialized_form_data));
 
@@ -68,12 +68,11 @@ std::string SerializeOpaqueLocalData(const PasswordForm& password_form) {
   return serialized_local_data.value_or(std::string());
 }
 
-std::optional<FormData> DeserializeFormData(
-    base::Value::Dict& serialized_data) {
+std::optional<FormData> DeserializeFormData(base::DictValue& serialized_data) {
   std::string* form_name = serialized_data.FindString(kNameKey);
   std::string* form_url = serialized_data.FindString(kUrlKey);
   std::string* form_action = serialized_data.FindString(kActionKey);
-  base::Value::List* fields = serialized_data.FindList(kFieldsKey);
+  base::ListValue* fields = serialized_data.FindList(kFieldsKey);
   if (!form_name || !form_url || !form_action || !fields) {
     return std::nullopt;
   }
@@ -81,8 +80,7 @@ std::optional<FormData> DeserializeFormData(
   std::vector<FormFieldData> form_fields;
   form_fields.reserve(fields->size());
   for (auto& serialized_field : *fields) {
-    base::Value::Dict* serialized_field_dictionary =
-        serialized_field.GetIfDict();
+    base::DictValue* serialized_field_dictionary = serialized_field.GetIfDict();
     if (!serialized_field_dictionary) {
       return std::nullopt;
     }
@@ -113,7 +111,7 @@ std::optional<FormData> DeserializeFormData(
 
 void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
                                 PasswordForm& password_form) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       opaque_metadata, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return;

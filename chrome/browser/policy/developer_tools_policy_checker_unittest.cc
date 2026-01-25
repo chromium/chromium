@@ -25,7 +25,7 @@ class DeveloperToolsPolicyCheckerTest : public testing::Test {
 };
 
 TEST_F(DeveloperToolsPolicyCheckerTest, Blocklist) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("example.com");
   profile_.GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                std::move(blocklist));
@@ -37,12 +37,12 @@ TEST_F(DeveloperToolsPolicyCheckerTest, Blocklist) {
 }
 
 TEST_F(DeveloperToolsPolicyCheckerTest, Allowlist) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
   profile_.GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityBlocklist,
                                std::move(blocklist));
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("chromium.org");
   profile_.GetPrefs()->SetList(prefs::kDeveloperToolsAvailabilityAllowlist,
                                std::move(allowlist));

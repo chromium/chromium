@@ -199,7 +199,7 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
     }));
   }
 
-  using Selector = base::OnceCallback<base::Value::Dict()>;
+  using Selector = base::OnceCallback<base::DictValue()>;
   using DocumentIdGetter = base::OnceCallback<std::string()>;
   using NodeIdCallback = base::OnceCallback<int()>;
   using URLGetter = base::OnceCallback<GURL()>;
@@ -444,13 +444,13 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
       std::optional<NodeIdCallback> node_id_cb = std::nullopt) {
     return base::BindOnce(
         [](std::string text, std::optional<NodeIdCallback> node_id_cb) {
-          base::Value::Dict dict;
+          base::DictValue dict;
           dict.Set("text", text);
           if (node_id_cb.has_value()) {
             dict.Set("searchRangeStartNodeId",
                      std::move(node_id_cb.value()).Run());
           }
-          return base::Value::Dict().Set("exactText", std::move(dict));
+          return base::DictValue().Set("exactText", std::move(dict));
         },
         std::move(text), std::move(node_id_cb));
   }
@@ -462,14 +462,14 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
     return base::BindOnce(
         [](std::string text_start, std::string text_end,
            std::optional<NodeIdCallback> node_id_cb) {
-          base::Value::Dict dict;
+          base::DictValue dict;
           dict.Set("textStart", text_start);
           dict.Set("textEnd", text_end);
           if (node_id_cb.has_value()) {
             dict.Set("searchRangeStartNodeId",
                      std::move(node_id_cb.value()).Run());
           }
-          return base::Value::Dict().Set("textFragment", std::move(dict));
+          return base::DictValue().Set("textFragment", std::move(dict));
         },
         std::move(text_start), std::move(text_end), std::move(node_id_cb));
   }
@@ -477,9 +477,9 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
   Selector NodeIdSelector(NodeIdCallback node_id_cb) {
     return base::BindOnce(
         [](NodeIdCallback node_id_cb) {
-          return base::Value::Dict().Set(
+          return base::DictValue().Set(
               "node",
-              base::Value::Dict().Set("nodeId", std::move(node_id_cb).Run()));
+              base::DictValue().Set("nodeId", std::move(node_id_cb).Run()));
         },
         std::move(node_id_cb));
   }
@@ -514,11 +514,11 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
   }
 
  private:
-  base::Value::Dict CreateScrollToParams(
+  base::DictValue CreateScrollToParams(
       Selector selector,
       std::optional<DocumentIdGetter> document_id,
       std::optional<URLGetter> url) {
-    base::Value::Dict scroll_to_params;
+    base::DictValue scroll_to_params;
     scroll_to_params.Set("selector", std::move(selector).Run());
     if (document_id) {
       scroll_to_params.Set("documentId", std::move(*document_id).Run());
@@ -570,7 +570,7 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
              url = std::move(url)](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
                   AsInstrumentedWebContents(el)->web_contents();
-              base::Value::Dict scroll_to_params = CreateScrollToParams(
+              base::DictValue scroll_to_params = CreateScrollToParams(
                   std::move(selector), std::move(document_id), std::move(url));
               std::string script = content::JsReplace(
                   R"js(
@@ -603,7 +603,7 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
              error_reason](ui::TrackedElement* el) mutable {
               content::WebContents* glic_contents =
                   AsInstrumentedWebContents(el)->web_contents();
-              base::Value::Dict scroll_to_params = CreateScrollToParams(
+              base::DictValue scroll_to_params = CreateScrollToParams(
                   std::move(selector), std::move(document_id), std::move(url));
               std::string script = content::JsReplace(
                   R"js(

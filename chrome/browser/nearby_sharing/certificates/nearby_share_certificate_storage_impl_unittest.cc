@@ -175,7 +175,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
         kMetadataEncryptionKey3, kEncryptedMetadataBytes3,
         kMetadataEncryptionKeyTag3));
 
-    base::Value::Dict expiration_dict;
+    base::DictValue expiration_dict;
     db_entries_.clear();
     for (auto& cert : pub_certs) {
       expiration_dict.Set(EncodeString(cert.secret_id()),

@@ -45,7 +45,7 @@ const void* const kUserDataKey = &kUserDataKey;
 // Returns the font names previously stored to the specified key.
 std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
                                                      const char* pref_name) {
-  const base::Value::List& font_name_list =
+  const base::ListValue& font_name_list =
       profile->GetPrefs()->GetList(pref_name);
   if (font_name_list.empty())
     return {};
@@ -62,7 +62,7 @@ std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
 void SaveFontNamesToPref(Profile* profile,
                          const char* pref_name,
                          const std::vector<std::string>& font_family_names) {
-  base::Value::List font_family_names_values;
+  base::ListValue font_family_names_values;
   for (auto& name : font_family_names)
     font_family_names_values.Append(name);
   profile->GetPrefs()->SetList(pref_name, std::move(font_family_names_values));

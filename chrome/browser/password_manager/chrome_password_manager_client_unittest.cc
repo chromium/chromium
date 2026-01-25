@@ -246,7 +246,7 @@ class DummyLogReceiver : public autofill::LogReceiver {
   DummyLogReceiver(const DummyLogReceiver&) = delete;
   DummyLogReceiver& operator=(const DummyLogReceiver&) = delete;
 
-  void LogEntry(const base::Value::Dict& entry) override {}
+  void LogEntry(const base::DictValue& entry) override {}
 };
 
 class FakePasswordAutofillAgent
@@ -704,7 +704,7 @@ TEST_F(ChromePasswordManagerClientTest, PasswordManagerBlocklistPolicy) {
                   .empty());
   // Add a URL to the blocklist.
   {
-    base::Value::List blocked_list;
+    base::ListValue blocked_list;
     blocked_list.Append("https://example.com");
     profile()->GetTestingPrefService()->SetList(
         password_manager::prefs::kPasswordManagerBlocklist,

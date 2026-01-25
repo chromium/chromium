@@ -207,7 +207,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
   mojom::PrintBackendService::UpdatePrintSettingsResult
   UpdatePrintSettingsAndWait(uint32_t context_id,
                              const PrintSettings& print_settings) {
-    base::Value::Dict job_settings =
+    base::DictValue job_settings =
         PrintSettingsToJobSettingsDebug(print_settings);
     job_settings.Set(kSettingPrinterType,
                      static_cast<int>(mojom::PrinterType::kLocal));

@@ -110,15 +110,15 @@ class LogNetLogExplicitFileTest
 
     // Ensure the root value is a dictionary.
     ASSERT_TRUE(parsed->is_dict());
-    const base::Value::Dict& main = parsed->GetDict();
+    const base::DictValue& main = parsed->GetDict();
 
     // Ensure it has a "constants" property.
-    const base::Value::Dict* constants = main.FindDict("constants");
+    const base::DictValue* constants = main.FindDict("constants");
     ASSERT_TRUE(constants);
     ASSERT_FALSE(constants->empty());
 
     // Ensure it has an "events" property.
-    const base::Value::List* events = main.FindList("events");
+    const base::ListValue* events = main.FindList("events");
     ASSERT_TRUE(events);
     ASSERT_FALSE(events->empty());
 

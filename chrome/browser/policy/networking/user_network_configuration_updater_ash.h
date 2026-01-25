@@ -95,8 +95,8 @@ class UserNetworkConfigurationUpdaterAsh
   void ImportClientCertificates() override;
 
   void ApplyNetworkPolicy(
-      const base::Value::List& network_configs_onc,
-      const base::Value::Dict& global_network_config) override;
+      const base::ListValue& network_configs_onc,
+      const base::DictValue& global_network_config) override;
 
   // ProfileObserver implementation
   void OnProfileInitializationComplete(Profile* profile) override;

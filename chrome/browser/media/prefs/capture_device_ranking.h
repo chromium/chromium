@@ -72,9 +72,9 @@ base::flat_map<std::string, size_t> GetIdToRankMap(Iterator begin,
 }
 
 template <typename T>
-const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
-                                                const std::string& pref_name,
-                                                std::vector<T>& device_infos);
+const base::ListValue& GetAndMaybeMigratePref(PrefService& prefs,
+                                              const std::string& pref_name,
+                                              std::vector<T>& device_infos);
 
 // Reorders the passed `device_infos`, so that ranked devices are ordered at the
 // beginning of the list. Devices don't have a ranking will retain their
@@ -90,7 +90,7 @@ void PreferenceRankDeviceInfos(PrefService& prefs,
                  << " isn't registered";
     return;
   }
-  const base::Value::List& ranking =
+  const base::ListValue& ranking =
       GetAndMaybeMigratePref(prefs, pref_name, device_infos);
   const auto id_to_rank = GetIdToRankMap(ranking.begin(), ranking.end());
 
@@ -232,10 +232,10 @@ void UpdateDevicePreferenceRanking(
 // TODO(crbug.com/311205211): Remove this special initialization logic once the
 // default device pref is removed.
 template <typename T>
-const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
-                                                const std::string& pref_name,
-                                                std::vector<T>& device_infos) {
-  const base::Value::List& ranking = prefs.GetList(pref_name);
+const base::ListValue& GetAndMaybeMigratePref(PrefService& prefs,
+                                              const std::string& pref_name,
+                                              std::vector<T>& device_infos) {
+  const base::ListValue& ranking = prefs.GetList(pref_name);
   if (!ranking.empty()) {
     return ranking;
   }

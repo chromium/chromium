@@ -25,7 +25,7 @@
 const char kDevicePolicyStatusDescription[] = "statusDevice";
 const char kUserPolicyStatusDescription[] = "statusUser";
 
-void SetDomainExtractedFromUsername(base::Value::Dict& dict) {
+void SetDomainExtractedFromUsername(base::DictValue& dict) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::IsKioskSession()) {
     // In kiosk session `username` is a website (for web kiosk) or an app id
@@ -40,7 +40,7 @@ void SetDomainExtractedFromUsername(base::Value::Dict& dict) {
     dict.Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
 }
 
-void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
+void GetUserAffiliationStatus(base::DictValue* dict, Profile* profile) {
   CHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -58,7 +58,7 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void SetProfileId(base::Value::Dict* dict, Profile* profile) {
+void SetProfileId(base::DictValue* dict, Profile* profile) {
   CHECK(profile);
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactory::GetForProfile(profile);
@@ -71,7 +71,7 @@ void SetProfileId(base::Value::Dict* dict, Profile* profile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void GetOffHoursStatus(base::Value::Dict* dict) {
+void GetOffHoursStatus(base::DictValue* dict) {
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   if (off_hours_controller) {
@@ -79,7 +79,7 @@ void GetOffHoursStatus(base::Value::Dict* dict) {
   }
 }
 
-void GetUserManager(base::Value::Dict* dict, Profile* profile) {
+void GetUserManager(base::DictValue* dict, Profile* profile) {
   CHECK(profile);
 
   std::optional<std::string> account_manager =

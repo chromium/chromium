@@ -65,9 +65,9 @@ std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
 }
 
 base::Time GetMostRecentiOSDesktopNtpPromoTimestamp(PrefService* pref_service) {
-  const base::Value::List& timestamps = pref_service->GetList(
+  const base::ListValue& timestamps = pref_service->GetList(
       promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
-  base::Value::List::const_iterator most_recent_timestamp_iter =
+  base::ListValue::const_iterator most_recent_timestamp_iter =
       std::max_element(timestamps.begin(), timestamps.end());
   if (most_recent_timestamp_iter == timestamps.end()) {
     return base::Time();
@@ -97,9 +97,8 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile,
   if (!skip_ntp_promo) {
     // The Desktop NTP promo shows 10 times in quick succession, but that only
     // counts as 1 impression for Desktop to iOS promos in general.
-    const base::Value::List& ntp_promo_appearances =
-        profile->GetPrefs()->GetList(
-            promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+    const base::ListValue& ntp_promo_appearances = profile->GetPrefs()->GetList(
+        promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
     total_desktop_promo_impressions += (ntp_promo_appearances.empty()) ? 0 : 1;
   }
 

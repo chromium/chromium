@@ -80,7 +80,7 @@ namespace {
 // considered idle, and an active session should not be reported.
 constexpr char kBackdropAppId[] = "E8C28D3C";
 
-bool GetString(const base::Value::Dict& value,
+bool GetString(const base::DictValue& value,
                const std::string& key,
                std::string* out) {
   const std::string* string = value.FindString(key);
@@ -92,17 +92,17 @@ bool GetString(const base::Value::Dict& value,
   return !out->empty();
 }
 
-void CopyValueWithDefault(const base::Value::Dict& from,
+void CopyValueWithDefault(const base::DictValue& from,
                           const std::string& key,
                           base::Value default_value,
-                          base::Value::Dict& to) {
+                          base::DictValue& to) {
   const base::Value* value = from.Find(key);
   to.Set(key, value ? value->Clone() : std::move(default_value));
 }
 
-void CopyValue(const base::Value::Dict& from,
+void CopyValue(const base::DictValue& from,
                const std::string& key,
-               base::Value::Dict& to) {
+               base::DictValue& to) {
   const base::Value* value = from.Find(key);
   if (value) {
     to.Set(key, value->Clone());
@@ -119,9 +119,8 @@ CastInternalMessage::Type CastInternalMessageTypeFromString(
 constexpr char kReceiverActionTypeCast[] = "cast";
 constexpr char kReceiverActionTypeStop[] = "stop";
 
-base::Value::List CapabilitiesToListValue(
-    CastDeviceCapabilitySet capabilities) {
-  base::Value::List value;
+base::ListValue CapabilitiesToListValue(CastDeviceCapabilitySet capabilities) {
+  base::ListValue value;
   if (capabilities.Has(CastDeviceCapability::kVideoOut)) {
     value.Append("video_out");
   }
@@ -149,9 +148,9 @@ std::string GetReceiverLabel(const MediaSinkInternal& sink,
   return label;
 }
 
-base::Value::Dict CreateReceiver(const MediaSinkInternal& sink,
-                                 const std::string& hash_token) {
-  base::Value::Dict receiver;
+base::DictValue CreateReceiver(const MediaSinkInternal& sink,
+                               const std::string& hash_token) {
+  base::DictValue receiver;
 
   if (!hash_token.empty()) {
     receiver.Set("label", GetReceiverLabel(sink, hash_token));
@@ -170,10 +169,10 @@ base::Value::Dict CreateReceiver(const MediaSinkInternal& sink,
 
 blink::mojom::PresentationConnectionMessagePtr CreateMessageCommon(
     CastInternalMessage::Type type,
-    base::Value::Dict payload,
+    base::DictValue payload,
     const std::string& client_id,
     std::optional<int> sequence_number = std::nullopt) {
-  base::Value::Dict message;
+  base::DictValue message;
 
   message.Set("type", base::Value(CastInternalMessageTypeToString(type)));
 
@@ -201,7 +200,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
     const MediaSinkInternal& sink,
     const std::string& hash_token,
     const char* action_type) {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("receiver", CreateReceiver(sink, hash_token));
   message.Set("action", action_type);
 
@@ -209,10 +208,10 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
                              std::move(message), client_id);
 }
 
-base::Value::Dict CreateAppMessageBody(
+base::DictValue CreateAppMessageBody(
     const std::string& session_id,
     const openscreen::cast::proto::CastMessage& cast_message) {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("sessionId", base::Value(session_id));
   message.Set("namespaceName", base::Value(cast_message.namespace_()));
   switch (cast_message.payload_type()) {
@@ -242,7 +241,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateSessionMessage(
     CastInternalMessage::Type type) {
   DCHECK(type == CastInternalMessage::Type::kNewSession ||
          type == CastInternalMessage::Type::kUpdateSession);
-  base::Value::Dict session_with_receiver_label = session.value().Clone();
+  base::DictValue session_with_receiver_label = session.value().Clone();
   DCHECK(!session_with_receiver_label.FindByDottedPath("receiver.label"));
   session_with_receiver_label.SetByDottedPath(
       "receiver.label", base::Value(GetReceiverLabel(sink, hash_token)));
@@ -254,7 +253,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateSessionMessage(
 
 // static
 std::unique_ptr<CastInternalMessage> CastInternalMessage::From(
-    base::Value::Dict message) {
+    base::DictValue message) {
   std::string str_type;
   if (!GetString(message, "type", &str_type)) {
     DVLOG(2) << "Missing type value, message: " << message;
@@ -348,9 +347,9 @@ CastInternalMessage::CastInternalMessage(
 // static
 std::unique_ptr<CastSession> CastSession::From(
     const MediaSinkInternal& sink,
-    const base::Value::Dict& receiver_status) {
+    const base::DictValue& receiver_status) {
   // There should be only 1 app on |receiver_status|.
-  const base::Value::List* app_list_value =
+  const base::ListValue* app_list_value =
       receiver_status.FindList("applications");
   if (!app_list_value || app_list_value->size() != 1) {
     DVLOG(2) << "receiver_status does not contain exactly one app: "
@@ -361,7 +360,7 @@ std::unique_ptr<CastSession> CastSession::From(
   auto session = std::make_unique<CastSession>();
 
   // Fill in mandatory Session fields.
-  const base::Value::Dict* app_dict = (*app_list_value)[0].GetIfDict();
+  const base::DictValue* app_dict = (*app_list_value)[0].GetIfDict();
   if (!app_dict || !GetString(*app_dict, "sessionId", &session->session_id_) ||
       !GetString(*app_dict, "appId", &session->app_id_) ||
       !GetString(*app_dict, "transportId", &session->destination_id_) ||
@@ -380,22 +379,22 @@ std::unique_ptr<CastSession> CastSession::From(
 
   // The receiver label will be populated by each profile using
   // |session->value|.
-  base::Value::Dict receiver_value = CreateReceiver(sink, std::string());
+  base::DictValue receiver_value = CreateReceiver(sink, std::string());
   CopyValue(receiver_status, "volume", receiver_value);
   CopyValue(receiver_status, "isActiveInput", receiver_value);
 
   // Create value for |session->value|.
-  base::Value::Dict session_dict;
+  base::DictValue session_dict;
   session_dict.Set("sessionId", session->session_id());
   session_dict.Set("appId", session->app_id());
   session_dict.Set("transportId", session->destination_id());
   session_dict.Set("receiver", std::move(receiver_value));
 
   CopyValueWithDefault(*app_dict, "displayName", base::Value(""), session_dict);
-  CopyValueWithDefault(*app_dict, "senderApps",
-                       base::Value(base::Value::List()), session_dict);
+  CopyValueWithDefault(*app_dict, "senderApps", base::Value(base::ListValue()),
+                       session_dict);
   CopyValueWithDefault(*app_dict, "statusText", base::Value(), session_dict);
-  CopyValueWithDefault(*app_dict, "appImages", base::Value(base::Value::List()),
+  CopyValueWithDefault(*app_dict, "appImages", base::Value(base::ListValue()),
                        session_dict);
   // Optional fields
   CopyValue(*app_dict, "appType", session_dict);
@@ -403,7 +402,7 @@ std::unique_ptr<CastSession> CastSession::From(
 
   session->value_ = std::move(session_dict);
 
-  const base::Value::List* namespaces_value = app_dict->FindList("namespaces");
+  const base::ListValue* namespaces_value = app_dict->FindList("namespaces");
   if (!namespaces_value || namespaces_value->empty()) {
     // A session without namespaces is invalid, except for a multizone leader.
     if (session->app_id() != kMultizoneLeaderAppId) {
@@ -423,7 +422,7 @@ std::unique_ptr<CastSession> CastSession::From(
     }
   }
   session->value_.Set("namespaces", namespaces_value ? namespaces_value->Clone()
-                                                     : base::Value::List());
+                                                     : base::ListValue());
   return session;
 }
 
@@ -456,7 +455,7 @@ void CastSession::UpdateSession(std::unique_ptr<CastSession> from) {
   value_.SetByDottedPath("receiver.volume", std::move(*receiver_volume_value));
 }
 
-void CastSession::UpdateMedia(const base::Value::List& media) {
+void CastSession::UpdateMedia(const base::ListValue& media) {
   value_.Set("media", base::Value(media.Clone()));
 }
 
@@ -498,7 +497,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessageAck(
     const std::string& client_id,
     int sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kAppMessage,
-                             base::Value::Dict(), client_id, sequence_number);
+                             base::DictValue(), client_id, sequence_number);
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
@@ -512,7 +511,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
-    const base::Value::Dict& payload,
+    const base::DictValue& payload,
     std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kV2Message,
                              payload.Clone(), client_id, sequence_number);
@@ -522,19 +521,19 @@ blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
     std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kLeaveSession,
-                             base::Value::Dict(), client_id, sequence_number);
+                             base::DictValue(), client_id, sequence_number);
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
-    base::Value::Dict error,
+    base::DictValue error,
     std::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kError,
                              std::move(error), client_id, sequence_number);
 }
 
-base::Value::List SupportedMediaCommandsToListValue(int media_commands) {
-  base::Value::List value;
+base::ListValue SupportedMediaCommandsToListValue(int media_commands) {
+  base::ListValue value;
   if (media_commands & static_cast<int>(MediaCommand::kPause)) {
     value.Append(kMediaCommandPause);
   }

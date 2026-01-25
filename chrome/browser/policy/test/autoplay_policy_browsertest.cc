@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayAllowlist_Allowed) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_PatternAllowed) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("127.0.0.1:*");
 
   // Update policy to allow autoplay for our test origin.
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowlist_Missing) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with a random origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("https://www.example.com");
 
   // Update policy to allow autoplay for a random origin.
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedAllowedWithURL) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
   // Create a test allowlist with our test origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyFencedFrameTest,
   NavigateAndCheckAutoplayAllowed(false);
 
   // Create a test allowlist with our origin.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(embedded_test_server()->GetURL("/").spec());
 
   // Update policy to allow autoplay for our test origin.

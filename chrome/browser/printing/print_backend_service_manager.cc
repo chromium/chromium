@@ -447,7 +447,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
     ClientId client_id,
     const std::string& printer_name,
     ContextId context_id,
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   // A blank `printer_name` indicates the destination is unknown, which occurs
   // when initiating a system print dialog.  When printing a document the

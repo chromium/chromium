@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestLocalFonts, AllowedForUrlsSettings) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   PolicyMap policies;
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url.spec());
   SetPolicy(&policies, key::kLocalFontsAllowedForUrls,
             base::Value(std::move(list)));
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestLocalFonts, BlockedForUrlsSettings) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   PolicyMap policies;
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url.spec());
   SetPolicy(&policies, key::kLocalFontsBlockedForUrls,
             base::Value(std::move(list)));

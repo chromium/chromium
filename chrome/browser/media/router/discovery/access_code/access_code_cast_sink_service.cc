@@ -686,7 +686,7 @@ void AccessCodeCastSinkService::FetchAndValidateStoredDevices(
 void AccessCodeCastSinkService::ValidateStoredDevices(
     base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
         on_device_validated_callback,
-    base::Value::Dict stored_sinks) {
+    base::DictValue stored_sinks) {
   if (stored_sinks.empty()) {
     LogInfo("There are no saved Access Code Cast devices for this profile.",
             "");

@@ -359,7 +359,7 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
                                const GURL& update_url) {
     // Setting the forcelist extension should install extension with ExtensionId
     // equal to id.
-    base::Value::List forcelist;
+    base::ListValue forcelist;
     forcelist.Append(update_url.is_empty()
                          ? id
                          : base::StrCat({id, ";", update_url.spec()}));
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   ASSERT_TRUE(
       registry->enabled_extensions().GetByID(extensions::kWebStoreAppId));
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(extensions::kWebStoreAppId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
   ASSERT_FALSE(registry->GetExtensionById(
       kSimpleWithIconCrxId, extensions::ExtensionRegistry::EVERYTHING));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(kGoodCrxId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallRemovedPolicy) {
   EXPECT_TRUE(registry->GetInstalledExtension(kGoodCrxId));
 
   // Should uninstall good_v1.crx.
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   dict_value.SetByDottedPath(
       std::string(kGoodCrxId) + "." +
           extensions::schema_constants::kInstallationMode,
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionWildcardRemovedPolicy) {
   EXPECT_TRUE(registry->GetInstalledExtension(kGoodCrxId));
 
   // Should uninstall good_v1.crx.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath(
       std::string("*") + "." + extensions::schema_constants::kInstallationMode,
       extensions::schema_constants::kRemoved);
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallBlocklistWildcard) {
   ASSERT_FALSE(registry->GetExtensionById(
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kSimpleWithIconCrxId));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Blocklist "*" but force-install the importer extension. The shared module
   // should be automatically installed too.
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
   PolicyMap policies;
   AddExtensionToForceList(&policies, kImporterId, update_xml_url);
@@ -634,9 +634,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallAllowlist) {
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
   ASSERT_FALSE(registry->GetExtensionById(
       kSimpleWithIconCrxId, extensions::ExtensionRegistry::EVERYTHING));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(kGoodCrxId);
   PolicyMap policies;
   policies.Set(key::kExtensionInstallBlocklist, POLICY_LEVEL_MANDATORY,
@@ -1210,7 +1210,7 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
     GURL update_url = embedded_test_server()->GetURL(update_url_suffix);
 
     PolicyMap policies;
-    base::Value::Dict dict, key_dict;
+    base::DictValue dict, key_dict;
     key_dict.Set(extensions::schema_constants::kInstallationMode,
                  extensions::schema_constants::kForceInstalled);
     key_dict.Set(extensions::schema_constants::kUpdateUrl, update_url.spec());
@@ -1912,7 +1912,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
       kGoodCrxId, extensions::ExtensionRegistry::EVERYTHING));
 
   // Setting the forcelist extension should install "good_v1.crx".
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.SetByDottedPath(std::string(kGoodCrxId) + "." +
                            extensions::schema_constants::kInstallationMode,
                        extensions::schema_constants::kNormalInstalled);
@@ -1950,7 +1950,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionAllowedTypes) {
   ASSERT_FALSE(registry->GetExtensionById(
       kHostedAppCrxId, extensions::ExtensionRegistry::EVERYTHING));
 
-  base::Value::List allowed_types;
+  base::ListValue allowed_types;
   allowed_types.Append("hosted_app");
   PolicyMap policies;
   policies.Set(key::kExtensionAllowedTypes, POLICY_LEVEL_MANDATORY,
@@ -2000,7 +2000,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallSources) {
   download_observer.WaitForFinished();
 
   // Install the policy and trigger another download.
-  base::Value::List install_sources;
+  base::ListValue install_sources;
   install_sources.Append(install_source_url.spec());
   install_sources.Append(referrer_url.spec());
   PolicyMap policies;
@@ -2359,14 +2359,14 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
 
     policy_app_url_ = embedded_test_server()->GetURL(test_page_);
 
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("url", policy_app_url_.spec());
     item.Set("default_launch_container", "window");
     if (fallback_app_name_.has_value()) {
       item.Set("fallback_app_name", fallback_app_name_.value());
     }
 
-    base::Value::List list;
+    base::ListValue list;
     list.Append(std::move(item));
 
     PolicyMap policies;

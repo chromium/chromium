@@ -40,9 +40,8 @@ void IPAddressSpaceOverridesPrefsObserver::
   std::vector<std::string> pref_overrides;
   if (pref_change_registrar_.prefs()->HasPrefPath(
           prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides)) {
-    const base::Value::List& pref_list =
-        pref_change_registrar_.prefs()->GetList(
-            prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides);
+    const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
+        prefs::kManagedLocalNetworkAccessIpAddressSpaceOverrides);
     for (const auto& pref_value : pref_list) {
       pref_overrides.push_back(pref_value.GetString());
     }

@@ -120,7 +120,7 @@ TEST_F(ChromeIncognitoModePolicyHandlerTest,
   SetIncognitoModeUrlAllowlist(default_allowlist_.Clone());
   ApplyPolicies();
   VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
   VerifyAllowlistPref(default_allowlist_);
 }
 
@@ -131,7 +131,7 @@ TEST_F(ChromeIncognitoModePolicyHandlerTest,
   SetIncognitoModeUrlBlocklist(default_blocklist_.Clone());
   ApplyPolicies();
   VerifyAvailabilityPref(policy::IncognitoModeAvailability::kEnabled);
-  VerifyBlocklistPref(base::Value::List().Append("*"));
+  VerifyBlocklistPref(base::ListValue().Append("*"));
   VerifyAllowlistPref(default_allowlist_);
 }
 

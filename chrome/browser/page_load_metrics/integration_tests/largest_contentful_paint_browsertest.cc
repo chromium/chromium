@@ -53,7 +53,7 @@ namespace {
 void ValidateTraceEventHasCorrectCandidateSize(int expected_size,
                                                const TraceEvent& event) {
   ASSERT_TRUE(event.HasDictArg("data"));
-  base::Value::Dict data = event.GetKnownArgAsDict("data");
+  base::DictValue data = event.GetKnownArgAsDict("data");
 
   const std::optional<int> traced_size = data.FindInt("size");
   ASSERT_TRUE(traced_size.has_value());
@@ -68,7 +68,7 @@ void ValidateTraceEventHasCorrectCandidateSize(int expected_size,
 void ValidateTraceEventBreakdownTimings(const TraceEvent& event,
                                         double lcp_time) {
   ASSERT_TRUE(event.HasDictArg("data"));
-  base::Value::Dict data = event.GetKnownArgAsDict("data");
+  base::DictValue data = event.GetKnownArgAsDict("data");
 
   const std::optional<double> load_start = data.FindDouble("imageLoadStart");
   ASSERT_TRUE(load_start.has_value());
@@ -89,7 +89,7 @@ void ValidateTraceEventBreakdownTimings(const TraceEvent& event,
 }
 
 int GetCandidateIndex(const TraceEvent& event) {
-  base::Value::Dict data = event.GetKnownArgAsDict("data");
+  base::DictValue data = event.GetKnownArgAsDict("data");
   std::optional<int> candidate_idx = data.FindInt("candidateIndex");
   DCHECK(candidate_idx.has_value()) << "couldn't find 'candidateIndex'";
 
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
 class LCPLazyLoadingImageTest : public MetricIntegrationTest {
  public:
-  base::Value::Dict setUpTraceEvent(std::string test_url) {
+  base::DictValue setUpTraceEvent(std::string test_url) {
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
             web_contents());
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
   std::string test_url =
       "/lcp_breakdown_timings_native_lazy_loading_images.html";
 
-  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const base::DictValue data = setUpTraceEvent(test_url);
   const std::string* loading_attr = data.FindString("loadingAttr");
   ASSERT_TRUE(loading_attr);
   EXPECT_EQ(*loading_attr, "lazy");
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(LCPLazyLoadingImageTest,
                        LargestContentfulPaint_EventLazyLoadingImage_Unset) {
   std::string test_url = "/iframe_with_image.html";
 
-  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const base::DictValue data = setUpTraceEvent(test_url);
   const std::string* loading_attr = data.FindString("loadingAttr");
   ASSERT_TRUE(loading_attr);
   EXPECT_EQ(*loading_attr, "");
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_LargestContentfulPaint_EventLazyLoadingImage_Video) {
   std::string test_url = "/is_video.html";
 
-  const base::Value::Dict data = setUpTraceEvent(test_url);
+  const base::DictValue data = setUpTraceEvent(test_url);
   const std::string* loading_attr = data.FindString("loadingAttr");
   ASSERT_TRUE(loading_attr);
   EXPECT_EQ(*loading_attr, "");

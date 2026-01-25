@@ -108,7 +108,7 @@ class MultiCaptureUsageIndicatorService
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<MultiCaptureDataService> data_service_;
   const raw_ptr<Profile> profile_;
-  base::Value::List multi_screen_capture_allow_list_on_login_;
+  base::ListValue multi_screen_capture_allow_list_on_login_;
 
   // Stores started captures and stores a mapping `app_id` --> `label`.
   std::map<webapps::AppId, std::set<std::string>> started_captures_;

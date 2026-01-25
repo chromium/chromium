@@ -129,7 +129,7 @@ void NotifierStateTracker::SetNotifierEnabled(
   DCHECK(pref_name != nullptr);
 
   ScopedListPrefUpdate update(profile_->GetPrefs(), pref_name);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   if (add_new_item) {
     if (!update_list.contains(id)) {
       update_list.Append(id);
@@ -142,7 +142,7 @@ void NotifierStateTracker::SetNotifierEnabled(
 void NotifierStateTracker::OnStringListPrefChanged(
     const char* pref_name, std::set<std::string>* ids_field) {
   ids_field->clear();
-  const base::Value::List& pref_list = profile_->GetPrefs()->GetList(pref_name);
+  const base::ListValue& pref_list = profile_->GetPrefs()->GetList(pref_name);
   for (size_t i = 0; i < pref_list.size(); ++i) {
     const std::string* element = pref_list[i].GetIfString();
     if (element && !element->empty())
@@ -178,7 +178,7 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   extensions::api::notifications::PermissionLevel permission =
       enabled ? extensions::api::notifications::PermissionLevel::kGranted
               : extensions::api::notifications::PermissionLevel::kDenied;
-  base::Value::List args;
+  base::ListValue args;
   args.Append(extensions::api::notifications::ToString(permission));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::NOTIFICATIONS_ON_PERMISSION_LEVEL_CHANGED,

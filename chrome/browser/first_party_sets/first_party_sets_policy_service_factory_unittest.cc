@@ -41,7 +41,7 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
   TestingProfile* enabled_profile =
       profile_manager().CreateTestingProfile("enabled");
 
-  base::Value::Dict empty_lists = base::test::ParseJsonDict(R"(
+  base::DictValue empty_lists = base::test::ParseJsonDict(R"(
              {
                 "replacements": [],
                 "additions": []

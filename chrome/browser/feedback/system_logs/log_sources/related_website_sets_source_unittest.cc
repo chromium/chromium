@@ -114,7 +114,7 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS_NotReady) {
 TEST_F(RelatedWebsiteSetsSourceTest, RWS_Empty) {
   service()->InitForTesting();
   auto response = GetRelatedWebsiteSetsSource(service());
-  EXPECT_EQ(base::Value::List().DebugString(),
+  EXPECT_EQ(base::ListValue().DebugString(),
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
 }
 
@@ -169,21 +169,20 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
           .value());
 
   service()->InitForTesting();
-  base::Value::List expected =
-      base::Value::List()  //
+  base::ListValue expected =
+      base::ListValue()  //
           .Append(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("AssociatedSites",
-                       base::Value::List().Append(associate_site.Serialize()))
-                  .Set("PrimarySites", base::Value::List()
+                       base::ListValue().Append(associate_site.Serialize()))
+                  .Set("PrimarySites", base::ListValue()
                                            .Append(primary1_cctld.Serialize())
                                            .Append(primary1_site.Serialize())))
-          .Append(
-              base::Value::Dict()
-                  .Set("PrimarySites",
-                       base::Value::List().Append(primary2_site.Serialize()))
-                  .Set("ServiceSites",
-                       base::Value::List().Append(service_site.Serialize())));
+          .Append(base::DictValue()
+                      .Set("PrimarySites",
+                           base::ListValue().Append(primary2_site.Serialize()))
+                      .Set("ServiceSites",
+                           base::ListValue().Append(service_site.Serialize())));
   auto response = GetRelatedWebsiteSetsSource(service());
   EXPECT_EQ(expected.DebugString(),
             response->at(RelatedWebsiteSetsSource::kSetsInfoField));
@@ -224,16 +223,16 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
   EXPECT_EQ(
       GetRelatedWebsiteSetsSource(service())->at(
           RelatedWebsiteSetsSource::kSetsInfoField),
-      base::Value::List()
+      base::ListValue()
           .Append(
-              base::Value::Dict()
-                  .Set("AssociatedSites", base::Value::List()
+              base::DictValue()
+                  .Set("AssociatedSites", base::ListValue()
                                               .Append(associated1.Serialize())
                                               .Append(associated2.Serialize())
                                               .Append(associated3.Serialize()))
                   .Set("PrimarySites",
-                       base::Value::List().Append(primary.Serialize()))
-                  .Set("ServiceSites", base::Value::List()
+                       base::ListValue().Append(primary.Serialize()))
+                  .Set("ServiceSites", base::ListValue()
                                            .Append(service1.Serialize())
                                            .Append(service2.Serialize())
                                            .Append(service3.Serialize())))

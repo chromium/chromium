@@ -286,7 +286,7 @@ class PDFExtensionSaveInBlocksTest
 
   void SetPolicy() {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     allowed_origins.Append(
         base::FilePath(ChromeContentClient::kPDFExtensionPluginPath)
             .MaybeAsASCII());

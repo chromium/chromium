@@ -30,7 +30,7 @@ extensions::MessagingDelegate::PolicyPermission IsNativeMessagingHostAllowed(
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
@@ -62,9 +62,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("*");
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("host.name");
   PolicyMap policies;
   policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,

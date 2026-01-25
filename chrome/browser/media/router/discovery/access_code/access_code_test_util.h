@@ -71,9 +71,9 @@ class MockAccessCodeCastPrefUpdater : public AccessCodeCastPrefUpdater {
   void UpdateDeviceAddedTimeDict(
       const MediaSink::Id sink_id,
       base::OnceClosure on_updated_callback) override;
-  void GetDevicesDict(base::OnceCallback<void(base::Value::Dict)>
-                          get_devices_callback) override;
-  void GetDeviceAddedTimeDict(base::OnceCallback<void(base::Value::Dict)>
+  void GetDevicesDict(
+      base::OnceCallback<void(base::DictValue)> get_devices_callback) override;
+  void GetDeviceAddedTimeDict(base::OnceCallback<void(base::DictValue)>
                                   get_device_added_time_callback) override;
   void RemoveSinkIdFromDevicesDict(
       const MediaSink::Id sink_id,
@@ -88,16 +88,16 @@ class MockAccessCodeCastPrefUpdater : public AccessCodeCastPrefUpdater {
               UpdateDevicesDictForTesting,
               (const MediaSinkInternal& sink));
 
-  void set_devices_dict(base::Value::Dict dict);
-  void set_device_added_time_dict(base::Value::Dict dict);
-  const base::Value::Dict& devices_dict() { return devices_dict_; }
-  const base::Value::Dict& device_added_time_dict() {
+  void set_devices_dict(base::DictValue dict);
+  void set_device_added_time_dict(base::DictValue dict);
+  const base::DictValue& devices_dict() { return devices_dict_; }
+  const base::DictValue& device_added_time_dict() {
     return device_added_time_dict_;
   }
 
  private:
-  base::Value::Dict devices_dict_;
-  base::Value::Dict device_added_time_dict_;
+  base::DictValue devices_dict_;
+  base::DictValue device_added_time_dict_;
 };
 
 MediaRoute CreateRouteForTesting(const MediaSink::Id& sink_id);

@@ -154,7 +154,7 @@ class FileSystemAccessPickerRequiresUserGestureTest
 
   void SetPolicy(const std::string& allowlisted_origin) {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     allowed_origins.Append(base::Value(allowlisted_origin));
     policy_map.Set(
         policy::key::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins,

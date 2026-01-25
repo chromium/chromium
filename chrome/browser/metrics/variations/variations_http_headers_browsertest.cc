@@ -581,7 +581,7 @@ class VariationsHttpHeadersBrowserTestWithLimitedLayerBase
     CHECK(base::WriteFile(seed_file_path, compressed_seed));
 
     // Write the seed for the seed file experiment's control-group clients.
-    base::Value::Dict local_state;
+    base::DictValue local_state;
     local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
                                 base::Base64Encode(compressed_seed));
     CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));

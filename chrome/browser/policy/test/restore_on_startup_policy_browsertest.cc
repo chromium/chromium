@@ -78,7 +78,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
 
   void ListOfURLs() {
     // Verifies that policy can set the startup pages to a list of URLs.
-    base::Value::List urls;
+    base::ListValue urls;
     for (const auto* url : kRestoredURLs) {
       urls.Append(url);
       expected_urls_.push_back(GURL(url));
@@ -120,7 +120,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     // list of URLs". |expected_urls_| will be restored from the last session.
     // |expected_urls_in_new_window_| will be opened on a policy-designated new
     // window.
-    base::Value::List urls;
+    base::ListValue urls;
     for (const auto* url : kRestoredURLs) {
       urls.Append(url);
       expected_urls_.emplace_back(url);
@@ -143,7 +143,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     policies.Set(key::kRestoreOnStartup, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                  base::Value(SessionStartupPref::kPrefValueLast), nullptr);
-    base::Value::List urls;
+    base::ListValue urls;
     for (const auto* url_string : kRestoredURLs)
       urls.Append(url_string);
     policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

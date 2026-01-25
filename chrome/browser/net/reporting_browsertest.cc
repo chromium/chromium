@@ -332,12 +332,12 @@ class HistogramReportingBrowserTest : public BaseReportingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-base::Value::List ParseReportUpload(const std::string& payload) {
-  base::Value::List parsed_payload = base::test::ParseJsonList(payload);
+base::ListValue ParseReportUpload(const std::string& payload) {
+  base::ListValue parsed_payload = base::test::ParseJsonList(payload);
 
   // Clear out any non-reproducible fields.
   for (auto& report_value : parsed_payload) {
-    base::Value::Dict& report = report_value.GetDict();
+    base::DictValue& report = report_value.GetDict();
     report.Remove("age");
     report.RemoveByDottedPath("body.elapsed_time");
     std::string* user_agent = report.FindString("user_agent");
@@ -362,14 +362,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestNELHeadersProcessed) {
       browser()->tab_strip_model()->GetActiveWebContents(), main_url));
 
   upload_response()->WaitForRequest();
-  base::Value::List actual =
+  base::ListValue actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
+  base::ListValue expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [
           {
@@ -406,14 +406,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
       browser()->tab_strip_model()->GetActiveWebContents(), main_url));
 
   upload_response()->WaitForRequest();
-  base::Value::List actual =
+  base::ListValue actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
+  base::ListValue expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [ {
            "body": {
@@ -458,14 +458,14 @@ IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
   // Ensure that the correct endpoint was found, and that a report was sent.
   // (If the endpoint cannot not be found, then a report will be sent at all.)
   upload_response()->WaitForRequest();
-  base::Value::List actual =
+  base::ListValue actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
+  base::ListValue expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [ {
            "body": {
@@ -522,11 +522,11 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
       server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expect_reported_url));
   upload_response()->WaitForRequest();
-  base::Value::List actual =
+  base::ListValue actual =
       ParseReportUpload(upload_response()->http_request()->content);
 
   // Verify the contents of the received report.
-  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
+  base::ListValue expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [
           {
@@ -594,14 +594,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
   crash_observer.Wait();
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
 
@@ -623,17 +623,17 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
 
   EXPECT_EQ("crash", *type);
@@ -671,19 +671,19 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List request =
+  base::ListValue request =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = request.begin()->GetDict();
+  const base::DictValue& report = request.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const base::Value::Dict* crash_report_api_body =
+  const base::DictValue* crash_report_api_body =
       body->FindDict("crash_report_api");
   const std::string* self_origin =
       crash_report_api_body->FindString("self.origin");
@@ -730,19 +730,19 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List request =
+  base::ListValue request =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = request.begin()->GetDict();
+  const base::DictValue& report = request.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const base::Value::Dict* crash_report_api_body =
+  const base::DictValue* crash_report_api_body =
       body->FindDict("crash_report_api");
   const std::string* custom_key =
       crash_report_api_body->FindString("custom_key");
@@ -788,19 +788,19 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List request =
+  base::ListValue request =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = request.begin()->GetDict();
+  const base::DictValue& report = request.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const base::Value::Dict* crash_report_api_body =
+  const base::DictValue* crash_report_api_body =
       body->FindDict("crash_report_api");
   const std::string* custom_key =
       crash_report_api_body->FindString("custom_key");
@@ -827,17 +827,17 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List request =
+  base::ListValue request =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = request.begin()->GetDict();
+  const base::DictValue& report = request.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::optional<bool> is_top_level = body->FindBool("is_top_level");
   const std::string* visibility_state = body->FindString("visibility_state");
@@ -877,15 +877,15 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List request =
+  base::ListValue request =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = request.begin()->GetDict();
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue& report = request.begin()->GetDict();
+  const base::DictValue* body = report.FindDict("body");
   const std::string* visibility_state = body->FindString("visibility_state");
 
   // When the `kCrashReportingAPIMoreContextData` flag is enabled, expect the
@@ -920,17 +920,17 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestMoreContextData,
   subframe->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::optional<bool> is_top_level = body->FindBool("is_top_level");
 
@@ -962,14 +962,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestSpecifyCrashEndpoint,
   crash_observer.Wait();
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
 
@@ -998,17 +998,17 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* call_stack = body->FindString("stack");
 
@@ -1044,17 +1044,17 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* call_stack = body->FindString("stack");
 
@@ -1099,17 +1099,17 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* call_stack = body->FindString("stack");
 
@@ -1150,17 +1150,17 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   content::SimulateUnresponsivePrimaryMainFrameAndWaitForExit(contents);
 
   upload_response()->WaitForRequest();
-  base::Value::List response =
+  base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  const base::Value::Dict& report = response.begin()->GetDict();
+  const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
-  const base::Value::Dict* body = report.FindDict("body");
+  const base::DictValue* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
   const std::string* call_stack = body->FindString("stack");
 

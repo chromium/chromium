@@ -27,7 +27,7 @@ DialAppState ParseDialAppState(const std::string& app_state) {
 
 void ProcessAdditionalDataElement(const base::Value& additional_data_element,
                                   ParsedDialAppInfo* out_app_info) {
-  const base::Value::List* child_elements =
+  const base::ListValue* child_elements =
       data_decoder::GetXmlElementChildren(additional_data_element);
   if (!child_elements) {
     return;
@@ -132,7 +132,7 @@ void SafeDialAppInfoParser::OnXmlParsingDone(
       data_decoder::GetXmlElementAttribute(*service_element, "dialVer");
 
   // Fetch all the children of <service> element.
-  const base::Value::List* child_elements =
+  const base::ListValue* child_elements =
       data_decoder::GetXmlElementChildren(*service_element);
   if (!child_elements) {
     std::move(callback).Run(nullptr, ParsingResult::kInvalidXML);

@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
                        LocalNetworkAccessAllowedForUrlsPolicy) {
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -190,11 +190,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
                        LocalNetworkAccessBlockedForUrlsPolicy) {
   // Set both policies. Block should override Allow
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));
@@ -227,7 +227,7 @@ class LocalNetworkAccessPoliciesIPOverrideBrowserTest
     // LocalNetworkAccessIpAddressSpaceOverrides does not support dynamic
     // refresh so must be set before browser starts
     policy::PolicyMap policies;
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     allowlist.Append(base::Value("0.0.0.0/0=public"));
     SetPolicy(&policies,
               policy::key::kLocalNetworkAccessIpAddressSpaceOverrides,
@@ -287,7 +287,7 @@ class LocalNetworkAccessHttpCommandLineOverrideBrowserTest
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessHttpCommandLineOverrideBrowserTest,
                        LocalNetworkAccessAllowedForHttpUrlsPolicy) {
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -317,13 +317,13 @@ class LocalNetworkAccessHttpPolicyOverrideBrowserTest
     LocalNetworkAccessBrowserTestBase::SetUpInProcessBrowserTestFixture();
 
     policy::PolicyMap policies;
-    base::Value::List secureList;
+    base::ListValue secureList;
     secureList.Append(
         base::Value(embedded_test_server()->GetURL("a.com", "/").spec()));
     SetPolicy(&policies,
               policy::key::kOverrideSecurityRestrictionsOnInsecureOrigin,
               base::Value(std::move(secureList)));
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     allowlist.Append(base::Value("*"));
     SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
               base::Value(std::move(allowlist)));

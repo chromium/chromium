@@ -212,11 +212,11 @@ void TranslationManagerImpl::SetInitializedTranslation(
 
   // Initialize a dictionary to store data, if none exists.
   if (!initialized_translations_value.is_dict()) {
-    initialized_translations_value = base::Value(base::Value::Dict());
+    initialized_translations_value = base::Value(base::DictValue());
   }
 
   // Update or initialize the list of targets for the source language.
-  base::Value::List* target_languages_list =
+  base::ListValue* target_languages_list =
       initialized_translations_value.GetDict().EnsureList(source_language);
   if (!target_languages_list->contains(target_language)) {
     target_languages_list->Append(target_language);

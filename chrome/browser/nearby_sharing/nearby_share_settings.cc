@@ -120,7 +120,7 @@ nearby_share::mojom::Visibility NearbyShareSettings::GetVisibility() const {
 
 const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   std::vector<std::string> allowed_contacts;
-  const base::Value::List& list =
+  const base::ListValue& list =
       pref_service_->GetList(prefs::kNearbySharingAllowedContactsPrefName);
   for (const auto& value : list) {
     allowed_contacts.push_back(value.GetString());
@@ -239,7 +239,7 @@ void NearbyShareSettings::GetAllowedContacts(
 
 void NearbyShareSettings::SetAllowedContacts(
     const std::vector<std::string>& allowed_contacts) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& id : allowed_contacts) {
     list.Append(id);
   }

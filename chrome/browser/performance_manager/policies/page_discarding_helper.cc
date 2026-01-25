@@ -332,9 +332,9 @@ void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
-base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
+base::DictValue PageDiscardingHelper::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
   TabPageDecorator::TabHandle* tab_handle =
       TabPageDecorator::FromPageNode(node);
   if (tab_handle) {

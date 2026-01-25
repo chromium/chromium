@@ -448,7 +448,7 @@ void DiscardEligibilityPolicy::OnMainFrameDocumentChanged(
   DiscardAttemptMarker::Destroy(PageNodeImpl::FromNode(page_node));
 }
 
-base::Value::Dict DiscardEligibilityPolicy::DescribePageNodeData(
+base::DictValue DiscardEligibilityPolicy::DescribePageNodeData(
     const PageNode* node) const {
   auto can_discard = [this, node](DiscardReason discard_reason) {
     switch (this->CanDiscard(node, discard_reason, base::TimeDelta())) {
@@ -461,7 +461,7 @@ base::Value::Dict DiscardEligibilityPolicy::DescribePageNodeData(
     }
   };
 
-  base::Value::Dict ret;
+  base::DictValue ret;
   ret.Set("can_urgently_discard", can_discard(DiscardReason::URGENT));
   ret.Set("can_proactively_discard", can_discard(DiscardReason::PROACTIVE));
   if (!node->GetMainFrameUrl().is_empty()) {

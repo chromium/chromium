@@ -26,7 +26,7 @@ UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() = default;
 
-base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
+base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
 #if BUILDFLAG(IS_CHROMEOS)
   const bool show_flex_org_warning = false;
 #else
@@ -49,8 +49,7 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   auto enrollment_token =
       entry ? entry->GetProfileManagementEnrollmentToken() : std::string();
 
-  base::Value::Dict dict =
-      policy::PolicyStatusProvider::GetStatusFromCore(core_);
+  base::DictValue dict = policy::PolicyStatusProvider::GetStatusFromCore(core_);
 
   if (enrollment_token.empty()) {
     SetDomainExtractedFromUsername(dict);

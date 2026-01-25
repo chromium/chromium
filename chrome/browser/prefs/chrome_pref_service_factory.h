@@ -95,7 +95,7 @@ void DisableDomainCheckForTesting();
 // preference values in |master_prefs|. Returns true on success.
 bool InitializePrefsFromMasterPrefs(
     const base::FilePath& profile_path,
-    base::Value::Dict master_prefs,
+    base::DictValue master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async);
 
 // Retrieves the time of the last preference reset event, if any, for the
@@ -108,7 +108,7 @@ void ClearResetTime(Profile* profile);
 
 // Returns the list of tampered pref paths. Returns an empty list if no prefs
 // are set.
-const base::Value::List& GetTamperedPrefList(Profile* profile);
+const base::ListValue& GetTamperedPrefList(Profile* profile);
 
 // Clears the list of tampered prefs.
 void ClearTamperedPrefList(Profile* profile);

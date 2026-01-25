@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, SafeBrowsingAllowlistDomains) {
 
   // Add 2 allowlisted domains to this policy.
   PolicyMap policies;
-  base::Value::List allowlist_domains;
+  base::ListValue allowlist_domains;
   allowlist_domains.Append("mydomain.com");
   allowlist_domains.Append("mydomain.net");
   policies.Set(key::kSafeBrowsingAllowlistDomains, POLICY_LEVEL_MANDATORY,
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
 #endif
   // Add 2 login URLs to this enterprise policy .
   PolicyMap policies;
-  base::Value::List login_url_values;
+  base::ListValue login_url_values;
   login_url_values.Append("https://login.mydomain.com");
   login_url_values.Append("https://mydomian.com/login.html");
   policies.Set(key::kPasswordProtectionLoginURLs, POLICY_LEVEL_MANDATORY,

@@ -23,16 +23,16 @@ using NetworkInfo = chrome_browser_media::proto::NetworkInfo;
 std::pair<std::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
 CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device);
 
-base::Value::Dict CreateValueDictFromMediaSinkInternal(
+base::DictValue CreateValueDictFromMediaSinkInternal(
     const MediaSinkInternal& sink);
 std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
-    const base::Value::Dict& value_dict);
+    const base::DictValue& value_dict);
 
 AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
     AddSinkResultCode result);
 
 std::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
-    const base::Value::Dict& value_dict);
+    const base::DictValue& value_dict);
 
 }  // namespace media_router
 

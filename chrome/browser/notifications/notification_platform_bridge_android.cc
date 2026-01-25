@@ -489,8 +489,8 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::Wildcard(),
       ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-      base::Value(base::Value::Dict().Set(
-          safe_browsing::kIsAllowlistedByUserKey, true)));
+      base::Value(
+          base::DictValue().Set(safe_browsing::kIsAllowlistedByUserKey, true)));
 
   safe_browsing::NotificationContentDetectionUkmUtil::
       RecordSuspiciousNotificationInteractionUkm(

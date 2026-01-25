@@ -21,7 +21,7 @@ const char kAutofillQueryPolicy[] = "PasswordManagerEnabled";
 
 class NetworkAnnotationBlocklistHandlerTest : public testing::Test {
  protected:
-  base::Value::Dict blocklist_prefs() {
+  base::DictValue blocklist_prefs() {
     return prefs_.AsDict()
         .FindDict(prefs::kNetworkAnnotationBlocklist)
         ->Clone();

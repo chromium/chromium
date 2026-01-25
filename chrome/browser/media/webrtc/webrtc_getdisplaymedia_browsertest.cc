@@ -687,7 +687,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
 
     // We will restrict all pages to "Tab Capture" only. This should force App
     // Windows to show up in the tabs list, and thus make it selectable.
-    base::Value::List matchlist;
+    base::ListValue matchlist;
     matchlist.Append("*");
     browser()->profile()->GetPrefs()->SetList(
         prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -696,7 +696,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
   void TearDownOnMainThread() override {
     extensions::PlatformAppBrowserTest::TearDownOnMainThread();
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kTabCaptureAllowedByOrigins, base::Value::List());
+        prefs::kTabCaptureAllowedByOrigins, base::ListValue());
   }
 
   extensions::AppWindow* CreateAppWindowWithTitle(const std::u16string& title) {
@@ -753,7 +753,7 @@ class WebRtcSameOriginPolicyBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Restrict all origins to SameOrigin tab capture only.
-    base::Value::List matchlist;
+    base::ListValue matchlist;
     matchlist.Append("*");
     browser()->profile()->GetPrefs()->SetList(
         prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -762,7 +762,7 @@ class WebRtcSameOriginPolicyBrowserTest
   void TearDownOnMainThread() override {
     WebRtcScreenCaptureBrowserTest::TearDownOnMainThread();
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kSameOriginTabCaptureAllowedByOrigins, base::Value::List());
+        prefs::kSameOriginTabCaptureAllowedByOrigins, base::ListValue());
   }
 };
 
@@ -1550,7 +1550,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaTransientActivationRequiredTest, Check) {
 
   if (policy_allowlist_value_.has_value()) {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     allowed_origins.Append(base::Value(*policy_allowlist_value_));
     policy_map.Set(policy::key::kScreenCaptureWithoutGestureAllowedForOrigins,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1946,7 +1946,7 @@ class CaptureSessionDetails {
     content::EvalJsResult js_result = content::EvalJs(
         capturing_tab_->GetPrimaryMainFrame(), "getSupportedZoomLevels();");
 
-    const base::Value::List& list = js_result.ExtractList();
+    const base::ListValue& list = js_result.ExtractList();
     EXPECT_GE(list.size(), 1u);
     if (list.size() == 1u) {
       // Reserved for an error.

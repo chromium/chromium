@@ -1815,7 +1815,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_PDF)
   registry->RegisterListPref(prefs::kPdfLocalFileAccessAllowedForDomains,
-                             base::Value::List());
+                             base::ListValue());
   registry->RegisterBooleanPref(prefs::kPdfUseSkiaRendererEnabled, true);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kPdfXfaFormsEnabled, false);

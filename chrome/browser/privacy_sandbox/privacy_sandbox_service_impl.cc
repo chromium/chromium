@@ -835,7 +835,7 @@ void PrivacySandboxServiceImpl::GetFledgeJoiningEtldPlusOneForDisplay(
 
 std::vector<std::string>
 PrivacySandboxServiceImpl::GetBlockedFledgeJoiningTopFramesForDisplay() const {
-  const base::Value::Dict& pref_value =
+  const base::DictValue& pref_value =
       pref_service_->GetDict(prefs::kPrivacySandboxFledgeJoinBlocked);
 
   std::vector<std::string> blocked_top_frames;
@@ -1137,7 +1137,7 @@ PrivacySandboxServiceImpl::GetBlockedTopics() const {
     return {fake_blocked_topics_.begin(), fake_blocked_topics_.end()};
   }
 
-  const base::Value::List& pref_value =
+  const base::ListValue& pref_value =
       pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
 
   std::vector<privacy_sandbox::CanonicalTopic> blocked_topics;

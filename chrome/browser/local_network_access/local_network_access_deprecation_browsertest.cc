@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
                        DeprecationTrialSharedWorker) {
   // Use enterprise policy to allow LNA requests
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));

@@ -232,13 +232,13 @@ class ChromeHidTestHelper {
   scoped_refptr<const extensions::Extension> CreateExtensionWithId(
       std::string_view extension_id) {
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Fake extension")
             .Set("description", "For testing.")
             .Set("version", "0.1")
             .Set("manifest_version", 2)
             .Set("web_accessible_resources",
-                 base::Value::List().Append(kExtensionDocumentFileName));
+                 base::ListValue().Append(kExtensionDocumentFileName));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
             .SetManifest(std::move(manifest))

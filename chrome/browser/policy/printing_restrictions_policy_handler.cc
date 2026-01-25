@@ -185,7 +185,7 @@ PrintingPaperSizeDefaultPolicyHandler::
     ~PrintingPaperSizeDefaultPolicyHandler() = default;
 
 bool PrintingPaperSizeDefaultPolicyHandler::CheckIntSubkey(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::string& key,
     PolicyErrorMap* errors) {
   const base::Value* value = dict.Find(key);

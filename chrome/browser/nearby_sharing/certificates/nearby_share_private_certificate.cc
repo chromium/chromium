@@ -316,10 +316,10 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   return public_certificate;
 }
 
-base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
+base::DictValue NearbySharePrivateCertificate::ToDictionary() const {
   std::vector<uint8_t> private_key = private_key_.ToPrivateKeyInfo();
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kVisibility, static_cast<int>(visibility_))
       .Set(kNotBefore, base::TimeToValue(not_before_))
       .Set(kNotAfter, base::TimeToValue(not_after_))
@@ -334,7 +334,7 @@ base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
 }
 
 std::optional<NearbySharePrivateCertificate>
-NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
+NearbySharePrivateCertificate::FromDictionary(const base::DictValue& dict) {
   std::optional<int> int_opt;
   const std::string* str_ptr;
   std::optional<std::string> str_opt;

@@ -36,8 +36,8 @@ bool TimeIsBetween(const base::Time& time,
   return time >= start && (end.is_null() || time <= end);
 }
 
-// Converts a base::Value::List of Time to std::vector<base::Time>
-std::vector<base::Time> ListToTimes(const base::Value::List& time_list) {
+// Converts a base::ListValue of Time to std::vector<base::Time>
+std::vector<base::Time> ListToTimes(const base::ListValue& time_list) {
   std::vector<base::Time> times;
   for (const base::Value& time_value : time_list) {
     auto time = base::ValueToTime(time_value);
@@ -64,10 +64,10 @@ std::vector<base::Time> ListToTimes(const base::Value::List& time_list) {
 //     },
 //     more origin_string map...
 // }
-base::Value::Dict ToDictValue(const CdmPrefData& pref_data) {
+base::DictValue ToDictValue(const CdmPrefData& pref_data) {
   // Origin ID
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kOriginId, base::UnguessableTokenToValue(pref_data.origin_id()))
           .Set(kOriginIdCreationTime,
                base::TimeToValue(pref_data.origin_id_creation_time()));
@@ -92,7 +92,7 @@ base::Value::Dict ToDictValue(const CdmPrefData& pref_data) {
 // it was set/updated. Return nullptr if `cdm_data_dict` has any corruption,
 // e.g. format error, missing fields, invalid value.
 std::unique_ptr<CdmPrefData> FromDictValue(
-    const base::Value::Dict& cdm_data_dict) {
+    const base::DictValue& cdm_data_dict) {
   // Origin ID
   const base::Value* origin_id_value = cdm_data_dict.Find(kOriginId);
   if (!origin_id_value) {
@@ -117,7 +117,7 @@ std::unique_ptr<CdmPrefData> FromDictValue(
 
 #if BUILDFLAG(IS_WIN)
   std::vector<base::Time> hw_secure_disabled_times;
-  const base::Value::List* hw_secure_disabled_time_values =
+  const base::ListValue* hw_secure_disabled_time_values =
       cdm_data_dict.FindList(prefs::kHardwareSecureDecryptionDisabledTimes);
   if (!hw_secure_disabled_time_values) {
     return nullptr;
@@ -277,8 +277,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // Access to the PrefService must be made from the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& dict =
-      user_prefs->GetDict(prefs::kMediaCdmOriginData);
+  const base::DictValue& dict = user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
   DCHECK(!cdm_origin.opaque());
   if (cdm_origin.opaque()) {
@@ -289,7 +288,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   const std::string serialized_cdm_origin = cdm_origin.Serialize();
   DCHECK(!serialized_cdm_origin.empty());
 
-  const base::Value::Dict* cdm_data_dict = dict.FindDict(serialized_cdm_origin);
+  const base::DictValue* cdm_data_dict = dict.FindDict(serialized_cdm_origin);
 
   std::unique_ptr<CdmPrefData> cdm_pref_data;
   if (cdm_data_dict) {
@@ -335,9 +334,9 @@ void CdmPrefServiceHelper::SetCdmClientToken(
   DCHECK(!serialized_cdm_origin.empty());
 
   ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
 
-  base::Value::Dict* dict_value = dict.FindDict(serialized_cdm_origin);
+  base::DictValue* dict_value = dict.FindDict(serialized_cdm_origin);
   if (!dict_value) {
     // If there is no preference associated with the origin at this point, this
     // means that the preference data was deleted by the user recently. No need
@@ -361,8 +360,7 @@ void CdmPrefServiceHelper::SetCdmClientToken(
 std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
     PrefService* user_prefs) {
   std::map<std::string, url::Origin> mapping;
-  const base::Value::Dict& dict =
-      user_prefs->GetDict(prefs::kMediaCdmOriginData);
+  const base::DictValue& dict = user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
   for (auto key_value : dict) {
     const base::Value* origin_id_value =

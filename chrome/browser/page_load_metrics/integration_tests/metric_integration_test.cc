@@ -332,7 +332,7 @@ void MetricIntegrationTest::ExpectMetricInLastUKMUpdateTraceEventNear(
 
   const TraceEvent* last_update_event = ukm_update_events.back();
 
-  base::Value::Dict arg_dict;
+  base::DictValue arg_dict;
   last_update_event->GetArgAsDict("ukm_page_load_timing_update", &arg_dict);
   std::optional<double> metric_value = arg_dict.FindDouble(metric_name);
   ASSERT_TRUE(metric_value.has_value());

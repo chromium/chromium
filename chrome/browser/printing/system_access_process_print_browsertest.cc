@@ -371,7 +371,7 @@ class TestPrinterQuery : public PrinterQuery {
                    TestPrintJobWorker::PrintCallbacks* callbacks)
       : PrinterQuery(rfh_id), callbacks_(callbacks) {}
 
-  void UpdatePrintSettings(base::Value::Dict new_settings,
+  void UpdatePrintSettings(base::DictValue new_settings,
                            SettingsCallback callback) override {
     PrinterQuery::UpdatePrintSettings(
         std::move(new_settings),

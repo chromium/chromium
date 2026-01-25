@@ -108,15 +108,15 @@ bool JsonToPromoData(const base::Value& value, std::optional<PromoData>* data) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return false;
   }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
 
-  const base::Value::Dict* update = dict.FindDict("update");
+  const base::DictValue* update = dict.FindDict("update");
   if (!update) {
     DVLOG(1) << "Parse error: no update";
     return false;
   }
 
-  const base::Value::Dict* promos = update->FindDict("promos");
+  const base::DictValue* promos = update->FindDict("promos");
   if (!promos) {
     DVLOG(1) << "Parse error: no promos";
     return false;
@@ -125,7 +125,7 @@ bool JsonToPromoData(const base::Value& value, std::optional<PromoData>* data) {
   PromoData result;
   *data = result;
 
-  const base::Value::Dict* middle_announce_payload =
+  const base::DictValue* middle_announce_payload =
       promos->FindDict("middle_announce_payload");
   if (!middle_announce_payload) {
     DVLOG(1) << "No middle announce payload";

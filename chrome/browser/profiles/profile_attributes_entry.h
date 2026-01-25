@@ -365,7 +365,7 @@ class ProfileAttributesEntry {
   bool HasMultipleAccountNames() const;
 
   // Loads and saves the data to the local state.
-  const base::Value::Dict* GetEntryData() const;
+  const base::DictValue* GetEntryData() const;
 
   // Internal getter that returns a base::Value*, or nullptr if the key is not
   // present.

@@ -1083,12 +1083,12 @@ class OnDeviceTranslationProgressMonitorBrowserTest
   }
 
   void ExpectUpdatesAre(const std::vector<double>& expected_updates) {
-    base::Value::List actual_updates = EvalJs(R"((async () => {
+    base::ListValue actual_updates = EvalJs(R"((async () => {
                             await self.createTranslatorPromise;
                             return self.progressEvents;
                           })())")
-                                           .TakeValue()
-                                           .TakeList();
+                                         .TakeValue()
+                                         .TakeList();
 
     ASSERT_EQ(actual_updates.size(), expected_updates.size());
     for (size_t i = 0; i < actual_updates.size(); i++) {

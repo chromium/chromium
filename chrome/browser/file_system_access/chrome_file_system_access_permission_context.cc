@@ -997,13 +997,13 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
               object->value.FindBool(GetGrantKeyFromGrantType(opposite_type))
                   .value_or(false);
           if (!type_exists && opposite_type_exists) {
-            base::Value::Dict new_object = object->value.Clone();
+            base::DictValue new_object = object->value.Clone();
             new_object.Set(GetGrantKeyFromGrantType(type_), true);
             context_->UpdateObjectPermission(origin_, object->value,
                                              std::move(new_object));
           }
         } else {
-          base::Value::Dict grant = AsValue();
+          base::DictValue grant = AsValue();
           context_->GrantObjectPermission(origin_, std::move(grant));
         }
         // Update visibility of icon when permission status is granted.
@@ -1020,7 +1020,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
                 .value_or(false);
         if (type_exists) {
           if (opposite_type_exists) {
-            base::Value::Dict new_object = object->value.Clone();
+            base::DictValue new_object = object->value.Clone();
             new_object.Remove(GetGrantKeyFromGrantType(type_));
             context_->UpdateObjectPermission(origin_, object->value,
                                              std::move(new_object));
@@ -1037,10 +1037,10 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
   }
 
-  base::Value::Dict AsValue() const {
+  base::DictValue AsValue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set(kPermissionPathKey, base::FilePathToValue(path_info_.path));
     value.Set(kPermissionDisplayNameKey, path_info_.display_name);
     value.Set(kPermissionIsDirectoryKey,
@@ -1352,7 +1352,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       const std::unique_ptr<Object> object = context_->GetGrantedObject(
           origin_, PathAsPermissionKey(path_info_.path));
       if (object) {
-        base::Value::Dict new_object = object->value.Clone();
+        base::DictValue new_object = object->value.Clone();
         new_object.Set(kPermissionPathKey,
                        base::FilePathToValue(new_path.path));
         new_object.Set(kPermissionDisplayNameKey, new_path.display_name);
@@ -1874,7 +1874,7 @@ ChromeFileSystemAccessPermissionContext::GetOriginsWithGrants() {
 }
 
 std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.Find(kPermissionPathKey));
@@ -1883,7 +1883,7 @@ std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
 }
 
 bool ChromeFileSystemAccessPermissionContext::IsValidObject(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (dict.size() < 3 || dict.size() > 5) {
@@ -1906,7 +1906,7 @@ bool ChromeFileSystemAccessPermissionContext::IsValidObject(
 }
 
 std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.Find(kPermissionPathKey));
@@ -2272,7 +2272,7 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
 }
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
-    base::Value::Dict& dict) {
+    base::DictValue& dict) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::pair<base::Time, std::string>> entries;
@@ -2317,9 +2317,9 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     value = base::Value(base::Value::Type::DICT);
   }
 
-  base::Value::Dict& dict = value.GetDict();
+  base::DictValue& dict = value.GetDict();
   // Create an entry into the nested dictionary.
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set(kPathKey, base::FilePathToValue(path_info.path));
   entry.Set(kPathTypeKey, static_cast<int>(path_info.type));
   entry.Set(kDisplayNameKey, path_info.display_name);
@@ -2482,7 +2482,7 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
         RevokeObjectPermission(origin, new_key);
       }
 
-      base::Value::Dict new_object = object->value.Clone();
+      base::DictValue new_object = object->value.Clone();
       new_object.Set(kPermissionPathKey, base::FilePathToValue(new_path.path));
       new_object.Set(kPermissionDisplayNameKey, new_path.display_name);
       UpdateObjectPermission(origin, object->value, std::move(new_object));
@@ -2531,7 +2531,7 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
     const std::unique_ptr<Object> object =
         GetGrantedObject(origin, PathAsPermissionKey(path.path));
     if (object) {
-      base::Value::Dict new_object = object->value.Clone();
+      base::DictValue new_object = object->value.Clone();
       new_object.Set(GetGrantKeyFromGrantType(GrantType::kRead), false);
       UpdateObjectPermission(origin, object->value, std::move(new_object));
       updated = true;
@@ -2608,7 +2608,7 @@ ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
       continue;
     }
 
-    const base::Value::Dict& object_dict = object->value;
+    const base::DictValue& object_dict = object->value;
     const base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
     std::string display_name =
@@ -3056,7 +3056,7 @@ void ChromeFileSystemAccessPermissionContext::
   // set it to `granted`.
   for (auto& dormant_grant :
        ObjectPermissionContextBase::GetGrantedObjects(origin)) {
-    base::Value::Dict& object_dict = dormant_grant->value;
+    base::DictValue& object_dict = dormant_grant->value;
     base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
     auto handle_type = object_dict.FindBool(kPermissionIsDirectoryKey).value()
@@ -3236,7 +3236,7 @@ std::vector<FileRequestData> ChromeFileSystemAccessPermissionContext::
     if (!IsValidObject(dormant_grant->value)) {
       continue;
     }
-    const base::Value::Dict& object_dict = dormant_grant->value;
+    const base::DictValue& object_dict = dormant_grant->value;
     base::FilePath path =
         base::ValueToFilePath(object_dict.Find(kPermissionPathKey)).value();
     std::string display_name =
@@ -3269,7 +3269,7 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedGrantObject(
 }
 
 bool ChromeFileSystemAccessPermissionContext::HasMatchingValue(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     const base::FilePath& file_path,
     HandleType handle_type,
     GrantType grant_type) {

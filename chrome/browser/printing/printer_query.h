@@ -83,7 +83,7 @@ class PrinterQuery {
 
   // Updates the current settings with `new_settings` dictionary values.
   // Caller has to ensure that `this` is alive until `callback` is run.
-  virtual void SetSettings(base::Value::Dict new_settings,
+  virtual void SetSettings(base::DictValue new_settings,
                            base::OnceClosure callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -167,7 +167,7 @@ class PrinterQuery {
   virtual void UseDefaultSettings(SettingsCallback callback);
 
   // Called to update the print settings.
-  virtual void UpdatePrintSettings(base::Value::Dict new_settings,
+  virtual void UpdatePrintSettings(base::DictValue new_settings,
                                    SettingsCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS)

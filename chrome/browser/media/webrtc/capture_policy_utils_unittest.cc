@@ -66,7 +66,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleDenyTest) {
 
 // Test that the FullCapture allowed list overrides |kScreenCaptureAllowed|.
 TEST_F(CapturePolicyUtilsTest, SimpleOverrideUnrestricted) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append(kTestSite1Pattern);
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kScreenCaptureAllowedByOrigins, std::move(matchlist));
@@ -76,7 +76,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleOverrideUnrestricted) {
 
 // Test that the Window/Tab allowed list overrides |kScreenCaptureAllowed|.
 TEST_F(CapturePolicyUtilsTest, SimpleOverrideWindowTabs) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append(kTestSite1Pattern);
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kWindowCaptureAllowedByOrigins, std::move(matchlist));
@@ -86,7 +86,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleOverrideWindowTabs) {
 
 // Test that the Tab allowed list overrides |kScreenCaptureAllowed|.
 TEST_F(CapturePolicyUtilsTest, SimpleOverrideTabs) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append(kTestSite1Pattern);
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -96,7 +96,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleOverrideTabs) {
 
 // Test that the Same Origin Tab allowed list overrides |kScreenCaptureAllowed|.
 TEST_F(CapturePolicyUtilsTest, SimpleOverrideSameOriginTabs) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append(kTestSite1Pattern);
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
@@ -107,7 +107,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleOverrideSameOriginTabs) {
 
 // Test that an item that doesn't match any list still respects the default.
 TEST_F(CapturePolicyUtilsTest, SimpleOverrideNoMatches) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append(kTestSite1NonMatchingPattern);
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
@@ -118,7 +118,7 @@ TEST_F(CapturePolicyUtilsTest, SimpleOverrideNoMatches) {
 
 // Ensure that a full wildcard policy is accepted.
 TEST_F(CapturePolicyUtilsTest, TestWildcard) {
-  base::Value::List matchlist;
+  base::ListValue matchlist;
   matchlist.Append("*");
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
   prefs()->SetList(prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -144,7 +144,7 @@ TEST_F(CapturePolicyUtilsTest, TestWildcard) {
 // Ensure that if a URL appears in multiple lists that it returns the most
 // restrictive list that it is included in.
 TEST_F(CapturePolicyUtilsTest, TestOverrideMoreRestrictive) {
-  base::Value::List full_capture_list;
+  base::ListValue full_capture_list;
   full_capture_list.Append("a.com");
   full_capture_list.Append("b.com");
   full_capture_list.Append("c.com");
@@ -152,17 +152,17 @@ TEST_F(CapturePolicyUtilsTest, TestOverrideMoreRestrictive) {
   prefs()->SetList(prefs::kScreenCaptureAllowedByOrigins,
                    std::move(full_capture_list));
 
-  base::Value::List window_tab_list;
+  base::ListValue window_tab_list;
   window_tab_list.Append("b.com");
   prefs()->SetList(prefs::kWindowCaptureAllowedByOrigins,
                    std::move(window_tab_list));
 
-  base::Value::List tab_list;
+  base::ListValue tab_list;
   tab_list.Append("c.com");
   tab_list.Append("d.com");
   prefs()->SetList(prefs::kTabCaptureAllowedByOrigins, std::move(tab_list));
 
-  base::Value::List same_origin_tab_list;
+  base::ListValue same_origin_tab_list;
   same_origin_tab_list.Append("d.com");
   prefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
                    std::move(same_origin_tab_list));
@@ -188,16 +188,16 @@ TEST_F(CapturePolicyUtilsTest, TestOverrideMoreRestrictive) {
 TEST_F(CapturePolicyUtilsTest, TestSubdomainOverrides) {
   prefs()->SetBoolean(prefs::kScreenCaptureAllowed, false);
 
-  base::Value::List same_origin_tab_list;
+  base::ListValue same_origin_tab_list;
   same_origin_tab_list.Append("github.io");
   prefs()->SetList(prefs::kSameOriginTabCaptureAllowedByOrigins,
                    std::move(same_origin_tab_list));
 
-  base::Value::List tab_list;
+  base::ListValue tab_list;
   tab_list.Append("foo.github.io");
   prefs()->SetList(prefs::kTabCaptureAllowedByOrigins, std::move(tab_list));
 
-  base::Value::List full_capture_list;
+  base::ListValue full_capture_list;
   full_capture_list.Append("[*.]github.io");
   prefs()->SetList(prefs::kScreenCaptureAllowedByOrigins,
                    std::move(full_capture_list));

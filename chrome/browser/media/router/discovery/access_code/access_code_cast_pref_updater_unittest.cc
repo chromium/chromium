@@ -19,7 +19,7 @@ using AccessCodeCastPrefUpdaterTest = testing::Test;
 TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPoints) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
-  base::Value::Dict devices_dict;
+  base::DictValue devices_dict;
   devices_dict.Set(cast_sink.id(),
                    CreateValueDictFromMediaSinkInternal(cast_sink));
 
@@ -44,7 +44,7 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestGetMatchingIPEndPointsIdenticalIPs) {
   // Set the ip_endpoint of cast_sink2 to the ip_endpoint of cast_sink.
   cast_sink2.set_cast_data(cast_sink.cast_data());
 
-  base::Value::Dict devices_dict;
+  base::DictValue devices_dict;
   devices_dict.Set(cast_sink.id(),
                    CreateValueDictFromMediaSinkInternal(cast_sink));
   devices_dict.Set(cast_sink2.id(),

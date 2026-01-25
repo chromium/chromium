@@ -70,16 +70,16 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
     return false;
   }
 
-  const base::Value::List& disabled_system_features =
+  const base::ListValue& disabled_system_features =
       pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   return disabled_system_features.contains(static_cast<int>(feature));
 }
 
 void SystemFeaturesDisableListPolicyHandler::ApplyList(
-    base::Value::List filtered_list,
+    base::ListValue filtered_list,
     PrefValueMap* prefs) {
-  base::Value::List enums_list;
+  base::ListValue enums_list;
   base::Value* old_list = nullptr;
   prefs->GetValue(policy_prefs::kSystemFeaturesDisableList, &old_list);
 

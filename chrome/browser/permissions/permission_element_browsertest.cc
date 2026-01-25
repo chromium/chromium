@@ -134,7 +134,7 @@ class PermissionElementBrowserTestBase
         "Audits.issueAdded",
         base::BindRepeating(
             [](const std::string& expected_issue_type,
-               const base::Value::Dict& params) {
+               const base::DictValue& params) {
               const std::string* code =
                   params.FindStringByDottedPath("issue.code");
               if (!code) {

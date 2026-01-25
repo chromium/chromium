@@ -107,7 +107,7 @@ void WebAppProfileSwitcher::QueryProfileWebAppRegistryToOpenWebApp(
 // IsAppSurfaceableToUser() is correct.
 void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
     web_app::AppLock& new_profile_lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   if (new_profile_lock.registrar().AppMatches(
           app_id_, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     // The web app is already installed and can be launched, or foregrounded,

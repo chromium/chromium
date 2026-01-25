@@ -41,10 +41,10 @@
 namespace {
 
 template <class StringType>
-void AddPair(base::Value::List& list,
+void AddPair(base::ListValue& list,
              const std::u16string& key,
              const StringType& value) {
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set("key", key);
   results.Set("value", value);
   list.Append(std::move(results));
@@ -233,12 +233,12 @@ void SendSettingsFeedbackProto(const reset_report::ChromeResetReport& report,
       ->DispatchReport(report);
 }
 
-base::Value::List GetReadableFeedbackForSnapshot(
+base::ListValue GetReadableFeedbackForSnapshot(
     Profile* profile,
     const ResettableSettingsSnapshot& snapshot) {
   DCHECK(profile);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::List list;
+  base::ListValue list;
   AddPair(list,
           l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_LOCALE),
           g_browser_process->GetApplicationLocale());

@@ -94,16 +94,16 @@ class CertVerifyProcNetLogBrowserTest : public NetLogPlatformBrowserTestBase {
   }
 
   void VerifyNetLog(base::Value* parsed_net_log) override {
-    base::Value::Dict* main = parsed_net_log->GetIfDict();
+    base::DictValue* main = parsed_net_log->GetIfDict();
     ASSERT_TRUE(main);
 
-    base::Value::List* events = main->FindList("events");
+    base::ListValue* events = main->FindList("events");
     ASSERT_TRUE(events);
 
     bool found_cert_verify_proc_event = false;
     for (const auto& event_val : *events) {
       ASSERT_TRUE(event_val.is_dict());
-      const base::Value::Dict& event = event_val.GetDict();
+      const base::DictValue& event = event_val.GetDict();
       std::optional<int> event_type = event.FindInt("type");
       ASSERT_TRUE(event_type.has_value());
       if (event_type ==
@@ -113,7 +113,7 @@ class CertVerifyProcNetLogBrowserTest : public NetLogPlatformBrowserTestBase {
             *phase != static_cast<int>(net::NetLogEventPhase::BEGIN)) {
           continue;
         }
-        const base::Value::Dict* params = event.FindDict("params");
+        const base::DictValue* params = event.FindDict("params");
         if (!params)
           continue;
         const std::string* host = params->FindString("host");

@@ -54,8 +54,8 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace {
-void AppendPolicyIdsToList(const base::Value::Dict& policy_values,
-                           base::Value::List& policy_ids) {
+void AppendPolicyIdsToList(const base::DictValue& policy_values,
+                           base::ListValue& policy_ids) {
   for (const auto id_policy_pair : policy_values) {
     policy_ids.Append(id_policy_pair.first);
   }
@@ -63,9 +63,9 @@ void AppendPolicyIdsToList(const base::Value::Dict& policy_values,
 
 // Appends the ID of `policy_values` to `policy_ids` and merges it to
 // `out_policy_values`.
-void MergePolicyValuesAndIds(base::Value::Dict policy_values,
-                             base::Value::Dict& out_policy_values,
-                             base::Value::List& out_policy_ids) {
+void MergePolicyValuesAndIds(base::DictValue policy_values,
+                             base::DictValue& out_policy_values,
+                             base::ListValue& out_policy_ids) {
   AppendPolicyIdsToList(policy_values, out_policy_ids);
   out_policy_values.Merge(std::move(policy_values));
 }
@@ -211,8 +211,8 @@ PolicyValueAndStatusAggregator::PolicyValueAndStatusAggregator(
 
 PolicyValueAndStatusAggregator::~PolicyValueAndStatusAggregator() = default;
 
-base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
-  base::Value::Dict status;
+base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
+  base::DictValue status;
   for (auto& status_provider_description_pair : status_providers_) {
     DVLOG_POLICY(3, POLICY_PROCESSING)
         << status_provider_description_pair.first
@@ -223,9 +223,9 @@ base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
   return status;
 }
 
-base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyValues() {
-  base::Value::Dict policy_values;
-  base::Value::List policy_ids;
+base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyValues() {
+  base::DictValue policy_values;
+  base::ListValue policy_ids;
   for (auto& value_provider : value_providers_) {
     MergePolicyValuesAndIds(value_provider->GetValues(), policy_values,
                             policy_ids);
@@ -235,14 +235,14 @@ base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyValues() {
     MergePolicyValuesAndIds(value_provider->GetValues(), policy_values,
                             policy_ids);
   }
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kPolicyValuesKey, std::move(policy_values));
   dict.Set(kPolicyIdsKey, std::move(policy_ids));
   return dict;
 }
 
-base::Value::Dict PolicyValueAndStatusAggregator::GetAggregatedPolicyNames() {
-  base::Value::Dict policy_names;
+base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyNames() {
+  base::DictValue policy_names;
   for (auto& value_provider : value_providers_) {
     policy_names.Merge(value_provider->GetNames());
   }

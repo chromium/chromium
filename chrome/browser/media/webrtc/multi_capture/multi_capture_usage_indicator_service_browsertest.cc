@@ -135,7 +135,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
 
   void InstallIwa(const InstalledApp& app) {
     PrefService& prefs = CHECK_DEREF(profile()->GetPrefs());
-    base::Value::List app_install_force_list =
+    base::ListValue app_install_force_list =
         prefs.GetList(prefs::kIsolatedWebAppInstallForceList).Clone();
     iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
@@ -163,7 +163,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
   }
 
   void SetCaptureAllowList() {
-    base::Value::List capture_allow_list;
+    base::ListValue capture_allow_list;
     for (const auto& allowed_app : allowlisted_capture_apps_) {
       capture_allow_list.Append(
           base::Value("isolated-app://" + allowed_app.bundle_id.id()));

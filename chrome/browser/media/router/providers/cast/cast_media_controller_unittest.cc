@@ -63,9 +63,9 @@ Value GetPlayerStateValue(const mojom::MediaStatus& status) {
   }
 }
 
-base::Value::List GetSupportedMediaCommandsValue(
+base::ListValue GetSupportedMediaCommandsValue(
     const mojom::MediaStatus& status) {
-  base::Value::List commands;
+  base::ListValue commands;
   // |can_set_volume| and |can_mute| are not used, because the receiver volume
   // is used instead.
   if (status.can_play_pause) {
@@ -140,7 +140,7 @@ mojom::MediaStatusPtr CreateSampleMediaStatus() {
 std::unique_ptr<CastSession> CreateSampleSession() {
   MediaSinkInternal sink{CreateCastSink("sinkId123", "name"),
                          CastSinkExtraData{}};
-  base::Value::Dict receiver_status = base::test::ParseJsonDict(R"({
+  base::DictValue receiver_status = base::test::ParseJsonDict(R"({
     "applications": [{
       "appId": "ABCD1234",
       "displayName": "My App",

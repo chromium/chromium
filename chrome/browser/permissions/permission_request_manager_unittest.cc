@@ -135,7 +135,7 @@ class PermissionRequestManagerTest
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
     profile()->GetPrefs()->SetList(
         prefs::kKioskBrowserPermissionsAllowedForOrigins,
-        base::Value::List().Append(std::move(origin)));
+        base::ListValue().Append(std::move(origin)));
   }
 
   std::unique_ptr<

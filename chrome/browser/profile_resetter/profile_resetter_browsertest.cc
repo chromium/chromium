@@ -259,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(PinnedTabsResetTest, MAYBE_ResetPinnedTabs) {
 // Returns the configured static name servers from `shill_properties`, or an
 // empty vector if no static name servers are configured.
 std::vector<std::string> GetStaticNameServersFromShillProperties(
-    const base::Value::Dict& shill_properties) {
-  const base::Value::Dict* static_ip_config =
+    const base::DictValue& shill_properties) {
+  const base::DictValue* static_ip_config =
       shill_properties.FindDict(shill::kStaticIPConfigProperty);
   if (!static_ip_config) {
     return {};
   }
-  const base::Value::List* nameservers =
+  const base::ListValue* nameservers =
       static_ip_config->FindList(shill::kNameServersProperty);
   if (!nameservers) {
     return {};
@@ -296,10 +296,10 @@ IN_PROC_BROWSER_TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
   ash::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-                  base::Value::List(), base::Value::Dict());
+                  base::ListValue(), base::DictValue());
   // Set a static NameServers config.
-  base::Value::Dict static_ip_config;
-  base::Value::List name_servers;
+  base::DictValue static_ip_config;
+  base::ListValue name_servers;
   name_servers.Append("8.8.3.1");
   name_servers.Append("8.8.2.1");
   name_servers.Append("0.0.0.0");
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DnsConfigResetTest, ResetDnsConfigurations) {
       base::Value(std::move(static_ip_config)));
 
   // Verify that network exists and the custom name server has been applied.
-  const base::Value::Dict* shill_properties =
+  const base::DictValue* shill_properties =
       shill_service_client->GetServiceProperties(kWifi1Path);
   ASSERT_TRUE(shill_properties);
   EXPECT_THAT(GetStaticNameServersFromShillProperties(*shill_properties),

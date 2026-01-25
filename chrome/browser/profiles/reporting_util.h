@@ -19,7 +19,7 @@ namespace reporting {
 // Fetches additional information that is common to every event. Fetches and
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
-base::Value::Dict GetContext(Profile* profile);
+base::DictValue GetContext(Profile* profile);
 
 // Creates and returns an UploadEventsRequest proto with the Device, Browser and
 // Profile fields set.

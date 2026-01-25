@@ -32,7 +32,7 @@ class HSTSPolicyTest : public testing::WithParamInterface<bool>,
 
     if (GetParam()) {
       PolicyMap policies;
-      base::Value::List bypass_list;
+      base::ListValue bypass_list;
       bypass_list.Append("example");
       SetPolicy(&policies, key::kHSTSPolicyBypassList,
                 base::Value(std::move(bypass_list)));

@@ -372,7 +372,7 @@ NearbyShareCertificateStorageImpl::NextPublicCertificateExpirationTime() const {
 
 void NearbyShareCertificateStorageImpl::ReplacePrivateCertificates(
     const std::vector<NearbySharePrivateCertificate>& private_certificates) {
-  base::Value::List list;
+  base::ListValue list;
   for (const NearbySharePrivateCertificate& cert : private_certificates) {
     list.Append(cert.ToDictionary());
   }
@@ -473,7 +473,7 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
 }
 
 bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
-  const base::Value::Dict& dict = pref_service_->GetDict(
+  const base::DictValue& dict = pref_service_->GetDict(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);
   public_certificate_expirations_.clear();
 
@@ -493,7 +493,7 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
 }
 
 void NearbyShareCertificateStorageImpl::SavePublicCertificateExpirations() {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   for (const std::pair<std::string, base::Time>& pair :
        public_certificate_expirations_) {

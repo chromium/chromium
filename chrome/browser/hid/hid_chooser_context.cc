@@ -54,13 +54,13 @@ constexpr char kHidSerialNumberKey[] = "serial-number";
 
 using content_settings::SettingSource;
 
-bool IsPolicyGrantedObject(const base::Value::Dict& object) {
+bool IsPolicyGrantedObject(const base::DictValue& object) {
   return object.size() == 1 && object.FindString(kHidDeviceNameKey);
 }
 
-base::Value::Dict VendorAndProductIdsToValue(uint16_t vendor_id,
-                                             uint16_t product_id) {
-  base::Value::Dict object;
+base::DictValue VendorAndProductIdsToValue(uint16_t vendor_id,
+                                           uint16_t product_id) {
+  base::DictValue object;
   object.Set(kHidDeviceNameKey,
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID_AND_PRODUCT_ID,
@@ -70,8 +70,8 @@ base::Value::Dict VendorAndProductIdsToValue(uint16_t vendor_id,
   return object;
 }
 
-base::Value::Dict VendorIdToValue(uint16_t vendor_id) {
-  base::Value::Dict object;
+base::DictValue VendorIdToValue(uint16_t vendor_id) {
+  base::DictValue object;
   object.Set(kHidDeviceNameKey,
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID,
@@ -80,9 +80,8 @@ base::Value::Dict VendorIdToValue(uint16_t vendor_id) {
   return object;
 }
 
-base::Value::Dict UsagePageAndUsageToValue(uint16_t usage_page,
-                                           uint16_t usage) {
-  base::Value::Dict object;
+base::DictValue UsagePageAndUsageToValue(uint16_t usage_page, uint16_t usage) {
+  base::DictValue object;
   object.Set(kHidDeviceNameKey,
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_AND_USAGE_PAGE,
@@ -92,8 +91,8 @@ base::Value::Dict UsagePageAndUsageToValue(uint16_t usage_page,
   return object;
 }
 
-base::Value::Dict UsagePageToValue(uint16_t usage_page) {
-  base::Value::Dict object;
+base::DictValue UsagePageToValue(uint16_t usage_page) {
+  base::DictValue object;
   object.Set(kHidDeviceNameKey,
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_PAGE,
@@ -136,9 +135,9 @@ HidChooserContext::~HidChooserContext() {
 }
 
 // static
-base::Value::Dict HidChooserContext::DeviceInfoToValue(
+base::DictValue HidChooserContext::DeviceInfoToValue(
     const device::mojom::HidDeviceInfo& device) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set(
       kHidDeviceNameKey,
       base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
@@ -177,14 +176,13 @@ bool HidChooserContext::CanStorePersistentEntry(
 }
 
 std::u16string HidChooserContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   const std::string* name = object.FindString(kHidDeviceNameKey);
   DCHECK(name);
   return base::UTF8ToUTF16(*name);
 }
 
-std::string HidChooserContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+std::string HidChooserContext::GetKeyForObject(const base::DictValue& object) {
   if (!IsValidObject(object))
     return std::string();
 
@@ -199,7 +197,7 @@ std::string HidChooserContext::GetKeyForObject(
       "|");
 }
 
-bool HidChooserContext::IsValidObject(const base::Value::Dict& object) {
+bool HidChooserContext::IsValidObject(const base::DictValue& object) {
   if (IsPolicyGrantedObject(object))
     return true;
 
@@ -286,7 +284,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     if (policy->all_devices_policy().contains(origin)) {
-      base::Value::Dict object;
+      base::DictValue object;
       object.Set(
           kHidDeviceNameKey,
           l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
@@ -353,7 +351,7 @@ HidChooserContext::GetAllGrantedObjects() {
       }
     }
 
-    base::Value::Dict object;
+    base::DictValue object;
     object.Set(
         kHidDeviceNameKey,
         l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
@@ -366,9 +364,8 @@ HidChooserContext::GetAllGrantedObjects() {
   return objects;
 }
 
-void HidChooserContext::RevokeObjectPermission(
-    const url::Origin& origin,
-    const base::Value::Dict& object) {
+void HidChooserContext::RevokeObjectPermission(const url::Origin& origin,
+                                               const base::DictValue& object) {
   const std::string* guid = object.FindString(kHidGuidKey);
 
   if (!guid) {
@@ -429,7 +426,7 @@ void HidChooserContext::RevokePersistentDevicePermission(
     const device::mojom::HidDeviceInfo& device) {
   std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
-    const base::Value::Dict& device_value = object->value;
+    const base::DictValue& device_value = object->value;
     DCHECK(IsValidObject(device_value));
 
     const auto* serial_number = device_value.FindString(kHidSerialNumberKey);
@@ -505,7 +502,7 @@ bool HidChooserContext::HasDevicePermission(
 
   for (const auto& object :
        ObjectPermissionContextBase::GetGrantedObjects(origin)) {
-    const base::Value::Dict& device_value = object->value;
+    const base::DictValue& device_value = object->value;
 
     // Objects provided by the parent class can be assumed valid.
     DCHECK(IsValidObject(device_value));

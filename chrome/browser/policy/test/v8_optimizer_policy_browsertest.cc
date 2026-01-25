@@ -59,7 +59,7 @@ class V8OptimizerPolicyTest
   }
 
   void SetPolicyValue(PolicyMap* map, const char* key, const char* value) {
-    base::Value::List value_list;
+    base::ListValue value_list;
     if (value) {
       value_list.Append(value);
     }

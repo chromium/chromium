@@ -80,8 +80,8 @@ void HeadlessModeProtocolBrowserTest::SetUpCommandLine(
   feature_list_ = test_meta_info_.ProcessCommandLineSwitches(*command_line);
 }
 
-base::Value::Dict HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {
-  return base::Value::Dict();
+base::DictValue HeadlessModeProtocolBrowserTest::GetPageUrlExtraParams() {
+  return base::DictValue();
 }
 
 void HeadlessModeProtocolBrowserTest::LoadTestMetaInfo() {
@@ -129,7 +129,7 @@ void HeadlessModeProtocolBrowserTest::RunDevTooledTest() {
 }
 
 void HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed(
-    base::Value::Dict params) {
+    base::DictValue params) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
       "harness.test", "/resources/inspector-protocol-test-subtarget.html");
@@ -137,14 +137,14 @@ void HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed(
 }
 
 void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
-    const base::Value::Dict& params) {
+    const base::DictValue& params) {
   std::string script_name = GetScriptName();
   GURL test_url = embedded_test_server()->GetURL("harness.test",
                                                  "/protocol/" + script_name);
   GURL target_url =
       embedded_test_server()->GetURL("127.0.0.1", "/protocol/" + script_name);
 
-  base::Value::Dict test_params;
+  base::DictValue test_params;
   test_params.Set("test", test_url.spec());
   test_params.Set("target", target_url.spec());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -156,7 +156,7 @@ void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
   std::string json_test_params = base::WriteJson(test_params).value_or("");
   std::string evaluate_script = "runTest(" + json_test_params + ")";
 
-  base::Value::Dict evaluate_params;
+  base::DictValue evaluate_params;
   evaluate_params.Set("expression", evaluate_script);
   evaluate_params.Set("awaitPromise", true);
   evaluate_params.Set("returnByValue", true);
@@ -166,8 +166,7 @@ void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
                      base::Unretained(this)));
 }
 
-void HeadlessModeProtocolBrowserTest::OnEvaluateResult(
-    base::Value::Dict params) {
+void HeadlessModeProtocolBrowserTest::OnEvaluateResult(base::DictValue params) {
   std::string* value = params.FindStringByDottedPath("result.result.value");
   EXPECT_THAT(value, NotNull());
 

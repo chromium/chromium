@@ -124,9 +124,8 @@ class BackgroundTabLoadingPolicy
   struct ScoredTabComparator;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-  base::Value::Dict DescribeSystemNodeData(
-      const SystemNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribeSystemNodeData(const SystemNode* node) const override;
 
   void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
 

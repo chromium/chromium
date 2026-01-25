@@ -400,7 +400,7 @@ bool NearbyShareContactManagerImpl::SetAllowlist(
   if (new_allowlist == GetAllowedContacts())
     return false;
 
-  base::Value::List allowlist_value;
+  base::ListValue allowlist_value;
   for (const std::string& id : new_allowlist) {
     allowlist_value.Append(id);
   }

@@ -80,7 +80,7 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
   void SetLastTrimTime(const ProcessNode* process_node, base::TimeTicks time);
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
 };
 

@@ -208,9 +208,9 @@ TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListExpiration) {
 TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyTimeBackwards) {
   // Initializing the activity type record list with entries that have
   // timestamps set for future dates (e.g., 5 and 7 days from now).
-  base::Value::List old_records;
-  base::Value::Dict first_record;
-  base::Value::Dict second_record;
+  base::ListValue old_records;
+  base::DictValue first_record;
+  base::DictValue second_record;
 
   first_record.Set("timestamp",
                    base::TimeToValue(base::Time::Now() + base::Days(5)));

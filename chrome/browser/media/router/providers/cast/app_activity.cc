@@ -114,9 +114,8 @@ void AppActivity::SendSetVolumeRequestToReceiver(
       cast_message.client_id(), std::move(callback));
 }
 
-void AppActivity::SendMediaStatusToClients(
-    const base::Value::Dict& media_status,
-    std::optional<int> request_id) {
+void AppActivity::SendMediaStatusToClients(const base::DictValue& media_status,
+                                           std::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
   if (media_controller_) {
     media_controller_->SetMediaStatus(media_status);
@@ -136,7 +135,7 @@ void AppActivity::BindMediaController(
     CastSession* session = GetSession();
     if (session) {
       media_controller_->SetSession(*session);
-      base::Value::Dict status_request;
+      base::DictValue status_request;
       status_request.Set("type",
                          cast_util::EnumToString<
                              cast_channel::V2MessageType,

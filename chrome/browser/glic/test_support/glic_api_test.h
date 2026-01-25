@@ -307,7 +307,7 @@ class GlicApiTestBase : public T {
 
     ASSERT_THAT(result, content::EvalJsResult::IsOk());
     if (result.is_dict()) {
-      const base::Value::Dict& dict = result.ExtractDict();
+      const base::DictValue& dict = result.ExtractDict();
       auto* id = dict.Find("id");
       if (id && id->is_string() && id->GetString() == "next-step") {
         step_data_ = dict.Find("payload")->Clone();

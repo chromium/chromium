@@ -545,7 +545,7 @@ void MicrosoftFilesPageHandler::OnJsonParsed(
 }
 
 std::vector<file_suggestion::mojom::FilePtr>
-MicrosoftFilesPageHandler::GetTrendingFiles(base::Value::Dict result) {
+MicrosoftFilesPageHandler::GetTrendingFiles(base::DictValue result) {
   auto* suggestions = result.FindList("value");
   if (!suggestions) {
     LogModuleError(ntp_features::kNtpSharepointModule,
@@ -617,7 +617,7 @@ MicrosoftFilesPageHandler::GetTrendingFiles(base::Value::Dict result) {
 }
 
 std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
-MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
+MicrosoftFilesPageHandler::GetNonInsightFiles(const base::ListValue* values,
                                               std::string response_id) {
   int num_recent_suggestions = 0;
   std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
@@ -752,7 +752,7 @@ MicrosoftFilesPageHandler::GetNonInsightFiles(const base::Value::List* values,
 
 std::vector<file_suggestion::mojom::FilePtr>
 MicrosoftFilesPageHandler::GetRecentlyUsedAndSharedFiles(
-    base::Value::Dict result) {
+    base::DictValue result) {
   auto* responses = result.FindList("responses");
   if (!responses) {
     LogModuleError(
@@ -879,7 +879,7 @@ std::string MicrosoftFilesPageHandler::CreateJustificationTextForSharedFile(
 
 std::vector<file_suggestion::mojom::FilePtr>
 MicrosoftFilesPageHandler::GetAggregatedFileSuggestions(
-    base::Value::Dict result) {
+    base::DictValue result) {
   auto* responses = result.FindList("responses");
   if (!responses) {
     LogModuleError(

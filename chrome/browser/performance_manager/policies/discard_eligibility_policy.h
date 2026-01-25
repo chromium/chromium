@@ -174,7 +174,7 @@ class DiscardEligibilityPolicy
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
       profiles_no_discard_patterns_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -63,7 +63,7 @@ base::Time TimeFromMs(int64_t ms) {
   return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ms));
 }
 
-void ParseDict(base::Value::Dict* dict, std::string&& json_string) {
+void ParseDict(base::DictValue* dict, std::string&& json_string) {
   auto parsed_json_data = base::JSONReader::ReadDict(
       json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json_data.has_value());
@@ -101,7 +101,7 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
  protected:
   void SetNoticeStateFromJSON(const std::string& notice_name,
                               std::string&& json_data_string) {
-    base::Value::Dict notice_data_dict;
+    base::DictValue notice_data_dict;
     ParseDict(&notice_data_dict, std::move(json_data_string));
     ScopedDictPrefUpdate update(prefs(), "privacy_sandbox.notices");
     update->Set(notice_name, std::move(notice_data_dict));
@@ -531,13 +531,13 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  base::Value::Dict expected_stored_prefs;
+  base::DictValue expected_stored_prefs;
   ParseDict(&expected_stored_prefs, R"({
     "schema_version": 2,
     "events": [{"event": 5, "timestamp": "333333"}]
     })");
 
-  const base::Value::Dict* actual_stored_prefs =
+  const base::DictValue* actual_stored_prefs =
       prefs()
           ->GetDict("privacy_sandbox.notices")
           .FindDict("Notice1StorageName");
@@ -557,11 +557,11 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  base::Value::Dict expected_stored_prefs;
+  base::DictValue expected_stored_prefs;
   ParseDict(&expected_stored_prefs,
             R"({"schema_version": 2, "chrome_version": "1.2.3"})");
 
-  const base::Value::Dict* actual_stored_prefs =
+  const base::DictValue* actual_stored_prefs =
       prefs()
           ->GetDict("privacy_sandbox.notices")
           .FindDict("Notice1StorageName");
@@ -576,10 +576,10 @@ TEST_F(
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  base::Value::Dict expected_stored_prefs;
+  base::DictValue expected_stored_prefs;
   ParseDict(&expected_stored_prefs, R"({"schema_version": 2})");
 
-  const base::Value::Dict* actual_stored_prefs =
+  const base::DictValue* actual_stored_prefs =
       prefs()
           ->GetDict("privacy_sandbox.notices")
           .FindDict("Notice1StorageName");
@@ -593,7 +593,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test, NoNoticeData_UpdateDoesNothing) {
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
   EXPECT_TRUE(prefs()->GetDict("privacy_sandbox.notices").empty());
-  const base::Value::Dict* actual_stored_prefs =
+  const base::DictValue* actual_stored_prefs =
       prefs()
           ->GetDict("privacy_sandbox.notices")
           .FindDict("Notice1StorageName");
@@ -611,7 +611,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
 
   PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(prefs());
 
-  base::Value::Dict expected_stored_prefs;
+  base::DictValue expected_stored_prefs;
   // V1 fields are erased. Events are migrated.
   ParseDict(&expected_stored_prefs, R"({
     "schema_version": 2,
@@ -621,7 +621,7 @@ TEST_F(PrivacySandboxNoticeStorageV2Test,
     ]
     })");
 
-  const base::Value::Dict* actual_stored_prefs =
+  const base::DictValue* actual_stored_prefs =
       prefs()
           ->GetDict("privacy_sandbox.notices")
           .FindDict("Notice1StorageName");

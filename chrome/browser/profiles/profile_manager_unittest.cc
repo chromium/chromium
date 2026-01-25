@@ -1611,7 +1611,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 
   // Set the last used profiles.
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& initial_last_active_profile_list = update.Get();
+  base::ListValue& initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list.Append(
       base::Value(path1.BaseName().MaybeAsASCII()));
   initial_last_active_profile_list.Append(
@@ -1619,7 +1619,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 
   profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
-  const base::Value::List& final_last_active_profile_list =
+  const base::ListValue& final_last_active_profile_list =
       local_state->GetList(prefs::kProfilesLastActive);
 
   // The ephemeral profile should be deleted, and the last used profile set to
@@ -1682,7 +1682,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
 
   // Set the last used profiles.
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& initial_last_active_profile_list = update.Get();
+  base::ListValue& initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list.Append(
       base::Value(guest_path.BaseName().MaybeAsASCII()));
   initial_last_active_profile_list.Append(
@@ -1690,7 +1690,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
 
   profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
-  const base::Value::List& final_last_active_profile_list =
+  const base::ListValue& final_last_active_profile_list =
       local_state->GetList(prefs::kProfilesLastActive);
 
   // The guest and the non-ephemeral regular profile aren't impacted.

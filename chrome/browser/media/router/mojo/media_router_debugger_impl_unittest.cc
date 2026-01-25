@@ -22,7 +22,7 @@ namespace {
 class MockMirroringStatsObserver
     : public MediaRouterDebugger::MirroringStatsObserver {
  public:
-  MOCK_METHOD(void, OnMirroringStatsUpdated, (const base::Value::Dict&));
+  MOCK_METHOD(void, OnMirroringStatsUpdated, (const base::DictValue&));
 };
 }  // namespace
 
@@ -60,7 +60,7 @@ TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStatsFeatureDisabled) {
   feature_list.InitAndDisableFeature(media::kEnableRtcpReporting);
 
   EXPECT_CALL(observer_, OnMirroringStatsUpdated(_)).Times(0);
-  debugger_->NotifyGetMirroringStats(base::Value::Dict());
+  debugger_->NotifyGetMirroringStats(base::DictValue());
 
   // Reports should now be disabled.
   debugger_->ShouldFetchMirroringStats(
@@ -92,22 +92,22 @@ TEST_F(MediaRouterDebuggerImplTest,
 
 TEST_F(MediaRouterDebuggerImplTest, OnMirroringStats) {
   base::Value non_dict = base::Value("foo");
-  base::Value::Dict empty_dict = base::Value::Dict();
+  base::DictValue empty_dict = base::DictValue();
 
-  base::Value::Dict dict = base::Value::Dict();
+  base::DictValue dict = base::DictValue();
   dict.Set("foo_key", "foo_value");
 
   // Verify that a non dict value will call notify the observers with a newly
-  // constructed empty base::Value::Dict();
+  // constructed empty base::DictValue();
   EXPECT_CALL(observer_, OnMirroringStatsUpdated)
-      .WillOnce([&](const base::Value::Dict& json_logs) {
+      .WillOnce([&](const base::DictValue& json_logs) {
         EXPECT_EQ(empty_dict, json_logs);
       });
   debugger_->OnMirroringStats(non_dict.Clone());
 
   // Verify that a valid dict will notify observers of that value.
   EXPECT_CALL(observer_, OnMirroringStatsUpdated)
-      .WillOnce([&](const base::Value::Dict& json_logs) {
+      .WillOnce([&](const base::DictValue& json_logs) {
         EXPECT_EQ(dict, json_logs);
       });
   debugger_->OnMirroringStats(base::Value(dict.Clone()));
@@ -118,7 +118,7 @@ TEST_F(MediaRouterDebuggerImplTest, GetMirroringStats) {
   feature_list.InitAndDisableFeature(media::kEnableRtcpReporting);
   EXPECT_TRUE(debugger_->GetMirroringStats().empty());
 
-  base::Value::Dict dict = base::Value::Dict();
+  base::DictValue dict = base::DictValue();
   dict.Set("foo_key", "foo_value");
   debugger_->OnMirroringStats(base::Value(dict.Clone()));
 

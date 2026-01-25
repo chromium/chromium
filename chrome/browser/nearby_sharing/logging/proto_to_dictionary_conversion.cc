@@ -29,36 +29,36 @@ std::string TruncateString(std::string_view str) {
 }
 }  // namespace
 
-base::Value::Dict ListPublicCertificatesRequestToReadableDictionary(
+base::DictValue ListPublicCertificatesRequestToReadableDictionary(
     const nearby::sharing::proto::ListPublicCertificatesRequest& request) {
-  base::Value::List secret_ids_list;
+  base::ListValue secret_ids_list;
   for (const auto& secret_id : request.secret_ids()) {
     secret_ids_list.Append(TruncateString(Encode(secret_id)));
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("parent", request.parent())
       .Set("page_size", request.page_size())
       .Set("page_token", request.page_token())
       .Set("secret_ids", std::move(secret_ids_list));
 }
 
-base::Value::Dict ListPublicCertificatesResponseToReadableDictionary(
+base::DictValue ListPublicCertificatesResponseToReadableDictionary(
     const nearby::sharing::proto::ListPublicCertificatesResponse& response) {
-  base::Value::List public_certificates_list;
+  base::ListValue public_certificates_list;
   for (const auto& public_certificate : response.public_certificates()) {
     public_certificates_list.Append(
         PublicCertificateToReadableDictionary(public_certificate));
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("next_page_token", response.next_page_token())
       .Set("public_certificates", std::move(public_certificates_list));
 }
 
-base::Value::Dict PublicCertificateToReadableDictionary(
+base::DictValue PublicCertificateToReadableDictionary(
     const nearby::sharing::proto::PublicCertificate& certificate) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("secret_id", TruncateString(Encode(certificate.secret_id())))
       .Set("secret_key", TruncateString(Encode(certificate.secret_key())))
       .Set("public_key", TruncateString(Encode(certificate.public_key())))
@@ -75,50 +75,50 @@ base::Value::Dict PublicCertificateToReadableDictionary(
       .Set("for_self_share", certificate.for_self_share());
 }
 
-base::Value::Dict TimestampToReadableDictionary(
+base::DictValue TimestampToReadableDictionary(
     const nearby::sharing::proto::Timestamp& timestamp) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("seconds", base::NumberToString(timestamp.seconds()))
       .Set("nanos", base::NumberToString(timestamp.nanos()));
 }
 
-base::Value::Dict ListContactPeopleRequestToReadableDictionary(
+base::DictValue ListContactPeopleRequestToReadableDictionary(
     const nearby::sharing::proto::ListContactPeopleRequest& request) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("page_size", request.page_size())
       .Set("page_token", request.page_token());
 }
 
-base::Value::Dict ListContactPeopleResponseToReadableDictionary(
+base::DictValue ListContactPeopleResponseToReadableDictionary(
     const nearby::sharing::proto::ListContactPeopleResponse& response) {
-  base::Value::List contact_records_list;
+  base::ListValue contact_records_list;
   for (const auto& contact_record : response.contact_records()) {
     contact_records_list.Append(
         ContactRecordToReadableDictionary(contact_record));
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("contact_records", std::move(contact_records_list))
       .Set("next_page_token", response.next_page_token());
 }
 
-base::Value::Dict ContactRecordToReadableDictionary(
+base::DictValue ContactRecordToReadableDictionary(
     const nearby::sharing::proto::ContactRecord& contact_record) {
-  base::Value::List identifiers_list;
+  base::ListValue identifiers_list;
   for (const auto& identifier : contact_record.identifiers()) {
     identifiers_list.Append(IdentifierToReadableDictionary(identifier));
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("id", contact_record.id())
       .Set("person_name", contact_record.person_name())
       .Set("image_url", contact_record.image_url())
       .Set("identifiers", std::move(identifiers_list));
 }
 
-base::Value::Dict IdentifierToReadableDictionary(
+base::DictValue IdentifierToReadableDictionary(
     const nearby::sharing::proto::Contact::Identifier& identifier) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!identifier.obfuscated_gaia().empty()) {
     dict.Set("identifier", identifier.obfuscated_gaia());
     dict.Set("identifier", identifier.phone_number());
@@ -128,62 +128,62 @@ base::Value::Dict IdentifierToReadableDictionary(
   return dict;
 }
 
-base::Value::Dict UpdateDeviceRequestToReadableDictionary(
+base::DictValue UpdateDeviceRequestToReadableDictionary(
     const nearby::sharing::proto::UpdateDeviceRequest& request) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("device", DeviceToReadableDictionary(request.device()))
       .Set("update_mask", FieldMaskToReadableDictionary(request.update_mask()));
 }
 
-base::Value::Dict DeviceToReadableDictionary(
+base::DictValue DeviceToReadableDictionary(
     const nearby::sharing::proto::Device& device) {
-  base::Value::List contacts_list;
+  base::ListValue contacts_list;
   for (const auto& contact : device.contacts()) {
     contacts_list.Append(ContactToReadableDictionary(contact));
   }
 
-  base::Value::List public_certificates_list;
+  base::ListValue public_certificates_list;
   for (const auto& certificate : device.public_certificates()) {
     public_certificates_list.Append(
         PublicCertificateToReadableDictionary(certificate));
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("name", device.name())
       .Set("display_name", device.display_name())
       .Set("contacts", std::move(contacts_list))
       .Set("public_certificates", std::move(public_certificates_list));
 }
 
-base::Value::Dict ContactToReadableDictionary(
+base::DictValue ContactToReadableDictionary(
     const nearby::sharing::proto::Contact& contact) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("identifier", IdentifierToReadableDictionary(contact.identifier()))
       .Set("is_selected", contact.is_selected());
 }
 
-base::Value::Dict FieldMaskToReadableDictionary(
+base::DictValue FieldMaskToReadableDictionary(
     const nearby::sharing::proto::FieldMask& mask) {
-  base::Value::List paths_list;
+  base::ListValue paths_list;
   for (const auto& path : mask.paths()) {
     paths_list.Append(path);
   }
 
-  return base::Value::Dict().Set("paths", std::move(paths_list));
+  return base::DictValue().Set("paths", std::move(paths_list));
 }
 
-base::Value::Dict UpdateDeviceResponseToReadableDictionary(
+base::DictValue UpdateDeviceResponseToReadableDictionary(
     const nearby::sharing::proto::UpdateDeviceResponse& response) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("device", DeviceToReadableDictionary(response.device()))
       .Set("person_name", response.person_name())
       .Set("image_url", response.image_url())
       .Set("image_token", response.image_token());
 }
 
-base::Value::Dict EncryptedMetadataToReadableDictionary(
+base::DictValue EncryptedMetadataToReadableDictionary(
     const nearby::sharing::proto::EncryptedMetadata& data) {
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("device_name", data.device_name())
       .Set("full_name", data.full_name())
       .Set("icon_url", data.icon_url())

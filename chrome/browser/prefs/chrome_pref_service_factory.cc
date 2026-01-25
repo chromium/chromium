@@ -565,7 +565,7 @@ void DisableDomainCheckForTesting() {
 
 bool InitializePrefsFromMasterPrefs(
     const base::FilePath& profile_path,
-    base::Value::Dict master_prefs,
+    base::DictValue master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   return CreateProfilePrefStoreManager(profile_path)
       ->InitializePrefsFromMasterPrefs(GetTrackingConfiguration(),
@@ -581,7 +581,7 @@ void ClearResetTime(Profile* profile) {
   ProfilePrefStoreManager::ClearResetTime(profile->GetPrefs());
 }
 
-const base::Value::List& GetTamperedPrefList(Profile* profile) {
+const base::ListValue& GetTamperedPrefList(Profile* profile) {
   return profile->GetPrefs()->GetList(user_prefs::kTrackedPreferencesReset);
 }
 

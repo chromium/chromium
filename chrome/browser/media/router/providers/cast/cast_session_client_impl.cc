@@ -121,7 +121,7 @@ void CastSessionClientImpl::SendMessageToClient(
 }
 
 void CastSessionClientImpl::SendMediaMessageToClient(
-    const base::Value::Dict& payload,
+    const base::DictValue& payload,
     std::optional<int> request_id) {
   // Look up if there is a pending request from this client associated with this
   // message. If so, send the media status message as a response by setting the
@@ -173,7 +173,7 @@ void CastSessionClientImpl::SendErrorCodeToClient(
     int sequence_number,
     CastInternalMessage::ErrorCode error_code,
     std::optional<std::string> description) {
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("code", base::Value(*cast_util::EnumToString(error_code)));
   message.Set("description",
               description ? base::Value(*description) : base::Value());
@@ -182,7 +182,7 @@ void CastSessionClientImpl::SendErrorCodeToClient(
 }
 
 void CastSessionClientImpl::SendErrorToClient(int sequence_number,
-                                              base::Value::Dict error) {
+                                              base::DictValue error) {
   SendMessageToClient(
       CreateErrorMessage(client_id(), std::move(error), sequence_number));
 }
@@ -304,7 +304,7 @@ void CastSessionClientImpl::SendResultResponse(int sequence_number,
   if (result == cast_channel::Result::kOk) {
     // Send an empty message to let the client know the request succeeded.
     SendMessageToClient(
-        CreateV2Message(client_id(), base::Value::Dict(), sequence_number));
+        CreateV2Message(client_id(), base::DictValue(), sequence_number));
   } else {
     // TODO(crbug.com/41452006): Send correct error codes.  The original
     // implementation isn't much help here because it sends incorrectly

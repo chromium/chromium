@@ -65,10 +65,10 @@ struct MasterPrefs {
   std::vector<GURL> bookmarks;
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
-  base::Value::Dict import_bookmarks_dict;
+  base::DictValue import_bookmarks_dict;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::string initial_extensions_provider_name;
-  base::Value::List initial_extensions;
+  base::ListValue initial_extensions;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_MAC)
   bool confirm_to_quit;

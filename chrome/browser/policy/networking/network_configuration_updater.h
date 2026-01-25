@@ -79,8 +79,8 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // Calls the specialized methods from subclasses to handle client certificates
   // and network configs.
   virtual void ApplyNetworkPolicy(
-      const base::Value::List& network_configs_onc,
-      const base::Value::Dict& global_network_config) = 0;
+      const base::ListValue& network_configs_onc,
+      const base::DictValue& global_network_config) = 0;
 
   // Parses the current value of the ONC policy. Clears |network_configs|,
   // |global_network_config| and |certificates| and fills them with the
@@ -88,9 +88,9 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   // Certificates of the current policy. Callers can pass nullptr to any of
   // |network_configs|, |global_network_config|, |certificates| if they don't
   // need that specific part of the ONC policy.
-  void ParseCurrentPolicy(base::Value::List* network_configs,
-                          base::Value::Dict* global_network_config,
-                          base::Value::List* certificates);
+  void ParseCurrentPolicy(base::ListValue* network_configs,
+                          base::DictValue* global_network_config,
+                          base::ListValue* certificates);
 
   const std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>&
   GetClientCertificates() const;
@@ -109,7 +109,7 @@ class NetworkConfigurationUpdater : public ash::PolicyCertificateProvider,
   std::string LogHeader() const;
 
   // Imports the certificates part of the policy.
-  void ImportCertificates(base::Value::List certificates_onc);
+  void ImportCertificates(base::ListValue certificates_onc);
 
   void NotifyPolicyProvidedCertsChanged();
 

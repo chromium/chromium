@@ -164,7 +164,7 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   MultiStep PauseActorTask();
 
   // Resumes a paused task by calling the glic ResumeActorTask API.
-  MultiStep ResumeActorTask(base::Value::Dict context_options,
+  MultiStep ResumeActorTask(base::DictValue context_options,
                             ExpectedResumeResult expected_result);
 
   // Interrupts a task by calling the glic InterruptActorTask API.
@@ -197,7 +197,7 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   // Gets the context options to capture a new observation after completing an
   // action. This includes both annotations (i.e. AnnotatedPageContent) and a
   // screenshot.
-  base::Value::Dict UpdatedContextOptions();
+  base::DictValue UpdatedContextOptions();
 
   MultiStep InitializeWithOpenGlicWindow();
 

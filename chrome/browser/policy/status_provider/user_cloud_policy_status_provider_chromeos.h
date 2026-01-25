@@ -29,7 +29,7 @@ class UserCloudPolicyStatusProviderChromeOS
   ~UserCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
-  base::Value::Dict GetStatus() override;
+  base::DictValue GetStatus() override;
 
  private:
   raw_ptr<Profile> profile_;

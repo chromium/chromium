@@ -21,7 +21,7 @@ namespace first_run {
 // `bookmark_dict`. If `bookmark_dict` is not aligned with the contract it is
 // skipped, same with individual nodes/folders.
 void StartBookmarkImportFromDict(Profile* profile,
-                                 base::Value::Dict bookmarks_dict);
+                                 base::DictValue bookmarks_dict);
 
 }  // namespace first_run
 

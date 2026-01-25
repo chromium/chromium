@@ -32,7 +32,7 @@ inline constexpr char kAccessCodeCastDeviceDuration[] =
 // Pref that keeps track of cast devices added on a user's profile. It is
 // registered as a dictionary pref with each key being a
 // MediaSink::Id(std::string) and value being a MediaSinkInternal object stores
-// as a base::Value::Dict.
+// as a base::DictValue.
 // Whenever a cast device is discovered via access code, a new entry will be
 // added to this dictionary (or updated if the MediaSink::Id already exists).
 inline constexpr char kAccessCodeCastDevices[] =

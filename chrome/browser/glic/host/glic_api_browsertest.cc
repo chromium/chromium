@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
   // Fail client initialization, should see error page.
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "error")),
+      .params = base::Value(base::DictValue().Set("failWith", "error")),
   });
   WaitForWebUiState(mojom::WebUiState::kError);
 
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowOpen) {
   // client initializes correctly.
   RunTestSequence(CloseGlic(), OpenGlic(GlicInstrumentMode::kNone));
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+      .params = base::Value(base::DictValue().Set("failWith", "none")),
   });
   WaitForWebUiState(mojom::WebUiState::kReady);
 }
@@ -860,12 +860,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(
-          base::Value::Dict().Set("failWith", "reloadAfterInitialize")),
+          base::DictValue().Set("failWith", "reloadAfterInitialize")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+      .params = base::Value(base::DictValue().Set("failWith", "none")),
   });
 }
 
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set(
+      .params = base::Value(base::DictValue().Set(
           "failWith", "navigateToSorryPageBeforeInitialize")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
 
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+      .params = base::Value(base::DictValue().Set("failWith", "none")),
   });
 }
 
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set(
+      .params = base::Value(base::DictValue().Set(
           "failWith", "navigateToSorryPageAfterInitialize")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
 
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "none")),
+      .params = base::Value(base::DictValue().Set("failWith", "none")),
   });
 }
 
@@ -938,12 +938,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
       .params = base::Value(
-          base::Value::Dict().Set("failWith", "reloadAfterInitialize")),
+          base::DictValue().Set("failWith", "reloadAfterInitialize")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "error")),
+      .params = base::Value(base::DictValue().Set("failWith", "error")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
 }
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
-      .params = base::Value(base::Value::Dict().Set("failWith", "timeout")),
+      .params = base::Value(base::DictValue().Set("failWith", "timeout")),
   });
   listener.WaitForWebUiState(mojom::WebUiState::kError);
   // There may be warmed instances that also receive this error, so expect at
@@ -1010,8 +1010,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   const GURL cross_origin_rpc_url =
       embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
-                     "rpcUrls", base::Value::List()
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
+                     "rpcUrls", base::ListValue()
                                     .Append("/fake-rpc")
                                     .Append(cross_origin_rpc_url.spec())))});
 
@@ -2188,7 +2188,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToFindsText) {
   // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
@@ -2196,21 +2196,21 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testScrollToFindsTextNoTabContextPermission) {
   // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToFailsWhenInactive) {
   // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testScrollToNoMatchFound) {
   // TODO(b/446757683): GlicAnnotationManager doesn't work for multi-instance.
   SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
@@ -2411,7 +2411,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowWithinBounds) {
   // dimensions.
   gfx::Size expected_size = gfx::Size(800, 700);
   ExecuteJsTest(
-      {.params = base::Value(base::Value::Dict()
+      {.params = base::Value(base::DictValue()
                                  .Set("width", expected_size.width())
                                  .Set("height", expected_size.height()))});
   GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
@@ -2666,7 +2666,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
   RunTestSequence(OpenGlicFloatingWindow());
@@ -2689,7 +2689,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
   ExecuteJsTest(
-      {.params = base::Value(base::Value::Dict()
+      {.params = base::Value(base::DictValue()
                                  .Set("tabId", base::NumberToString(tab_id))
                                  .Set("isFirstRun", true))});
 
@@ -2698,7 +2698,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   listener.WaitForWebUiState(mojom::WebUiState::kUninitialized);
 
   ExecuteJsTest(
-      {.params = base::Value(base::Value::Dict().Set("isFirstRun", false))});
+      {.params = base::Value(base::DictValue().Set("isFirstRun", false))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
@@ -2715,7 +2715,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
       GetTabId(incognito->tab_strip_model()->GetActiveWebContents());
 
   ExecuteJsTest(
-      {.params = base::Value(base::Value::Dict().Set(
+      {.params = base::Value(base::DictValue().Set(
            "incognitoTabId", base::NumberToString(incognito_tab_id)))});
 }
 
@@ -2726,7 +2726,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 }
 
@@ -2736,7 +2736,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinAllTabs) {
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 }
 
@@ -2748,7 +2748,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 }
 
@@ -2809,7 +2809,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
   // Navigate to another page in the first tab.
@@ -2830,7 +2830,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   const int tab_id = GetTabId(web_contents);
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
   // Add favicon to the webcontents.
@@ -2870,7 +2870,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
   // Two different permission errors should have been reported.
@@ -2894,7 +2894,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
 
-  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
                      "tabId", base::NumberToString(tab_id)))});
 
   // Should have one error logged for tab context permission not granted.
@@ -3452,7 +3452,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
 };
 
 IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
-  base::Value::List expected_capabilities;
+  base::ListValue expected_capabilities;
   if (GetParam().enable_scroll_to_pdf) {
 #if BUILDFLAG(ENABLE_PDF)
     expected_capabilities.Append(

@@ -73,10 +73,10 @@ void AppendUrlsToCmdLine(base::CommandLine* command_line,
   }
 }
 
-base::Value::List ListValueFromTestUrls(
+base::ListValue ListValueFromTestUrls(
     const std::vector<std::string>& test_urls,
     net::EmbeddedTestServer* embedded_test_server) {
-  base::Value::List url_list;
+  base::ListValue url_list;
   for (const std::string& url : test_urls) {
     url_list.Append(base::Value(embedded_test_server->GetURL(url).spec()));
   }

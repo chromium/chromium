@@ -31,11 +31,11 @@ namespace extensions {
 
 namespace {
 
-// Returns the top level items (ignoring submenus) as a base::Value::List.
-base::Value::List MenuModelToValue(const ui::SimpleMenuModel& menu_model) {
-  base::Value::List items;
+// Returns the top level items (ignoring submenus) as a base::ListValue.
+base::ListValue MenuModelToValue(const ui::SimpleMenuModel& menu_model) {
+  base::ListValue items;
   for (size_t i = 0; i < menu_model.GetItemCount(); ++i) {
-    base::Value::Dict item_value;
+    base::DictValue item_value;
     // TODO(lazyboy): We need to expose some kind of enum equivalent of
     // |command_id| instead of plain integers.
     item_value.Set(webview::kMenuItemCommandId, menu_model.GetCommandIdAt(i));
@@ -87,7 +87,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
 
   // Pass it to embedder.
   int request_id = ++pending_context_menu_request_id_;
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set(webview::kContextMenuItems,
            MenuModelToValue(pending_menu_->menu_model()));
   args.Set(webview::kRequestId, request_id);

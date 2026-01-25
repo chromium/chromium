@@ -356,9 +356,9 @@ struct BackgroundTabLoadingPolicy::ScoredTabComparator {
   }
 };
 
-base::Value::Dict BackgroundTabLoadingPolicy::DescribePageNodeData(
+base::DictValue BackgroundTabLoadingPolicy::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (std::ranges::contains(page_nodes_load_initiated_, node)) {
     // Transient state between InitiateLoad() and OnLoadingStateChanged(),
     // shouldn't be sticking around for long.
@@ -367,12 +367,12 @@ base::Value::Dict BackgroundTabLoadingPolicy::DescribePageNodeData(
   if (page_nodes_loading_.contains(node)) {
     dict.Set("page_loading", true);
   }
-  return !dict.empty() ? std::move(dict) : base::Value::Dict();
+  return !dict.empty() ? std::move(dict) : base::DictValue();
 }
 
-base::Value::Dict BackgroundTabLoadingPolicy::DescribeSystemNodeData(
+base::DictValue BackgroundTabLoadingPolicy::DescribeSystemNodeData(
     const SystemNode* node) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("max_simultaneous_tab_loads",
            base::saturated_cast<int>(max_simultaneous_tab_loads_));
   dict.Set("tab_loads_started", base::saturated_cast<int>(tab_loads_started_));

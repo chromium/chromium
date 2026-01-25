@@ -186,12 +186,12 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
 
   // Add context elements needed by reporting server.
-  base::Value::Dict context;
+  base::DictValue context;
   std::string dm_token;
   std::string client_id;
   context.Set(json_keys::kBrowser,
-              base::Value::Dict().Set(json_keys::kUserAgent,
-                                      embedder_support::GetUserAgent()));
+              base::DictValue().Set(json_keys::kUserAgent,
+                                    embedder_support::GetUserAgent()));
   if (DeviceInfoRequiredForUpload()) {
     // Initialize the cloud policy client.
     auto client_status = EnsureUsableClient();
@@ -213,13 +213,13 @@ void ReportingServerConnector::UploadEncryptedReportInternal(
       return;
     }
     context.Set(json_keys::kDevice,
-                base::Value::Dict().Set(json_keys::kDmToken, dm_token));
+                base::DictValue().Set(json_keys::kDmToken, dm_token));
   }
 
   // Add context elements needed by reporting server.
   context.Set(json_keys::kBrowser,
-              base::Value::Dict().Set(json_keys::kUserAgent,
-                                      embedder_support::GetUserAgent()));
+              base::DictValue().Set(json_keys::kUserAgent,
+                                    embedder_support::GetUserAgent()));
 
   encrypted_reporting_client_->PresetUploads(
       std::move(context), std::move(dm_token), std::move(client_id));

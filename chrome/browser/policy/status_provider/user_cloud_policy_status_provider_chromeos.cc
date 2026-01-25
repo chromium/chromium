@@ -21,10 +21,10 @@ UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
 UserCloudPolicyStatusProviderChromeOS::
     ~UserCloudPolicyStatusProviderChromeOS() = default;
 
-base::Value::Dict UserCloudPolicyStatusProviderChromeOS::GetStatus() {
+base::DictValue UserCloudPolicyStatusProviderChromeOS::GetStatus() {
   if (!core_->store()->is_managed())
     return {};
-  base::Value::Dict dict = UserCloudPolicyStatusProvider::GetStatus();
+  base::DictValue dict = UserCloudPolicyStatusProvider::GetStatus();
   GetUserAffiliationStatus(&dict, profile_);
   GetUserManager(&dict, profile_);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);

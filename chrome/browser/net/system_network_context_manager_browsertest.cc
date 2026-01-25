@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_TRUE(dynamic_params->patterns_allowed_to_use_all_schemes.empty());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  base::Value::List patterns_allowed_to_use_all_schemes;
+  base::ListValue patterns_allowed_to_use_all_schemes;
   patterns_allowed_to_use_all_schemes.Append("*.allowed.google.com");
   patterns_allowed_to_use_all_schemes.Append("*.youtube.com");
   local_state->SetList(prefs::kAllHttpAuthSchemesAllowedForOrigins,

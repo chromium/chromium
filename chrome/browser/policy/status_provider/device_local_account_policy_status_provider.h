@@ -33,7 +33,7 @@ class DeviceLocalAccountPolicyStatusProvider
   ~DeviceLocalAccountPolicyStatusProvider() override;
 
   // PolicyStatusProvider implementation.
-  base::Value::Dict GetStatus() override;
+  base::DictValue GetStatus() override;
 
   // policy::DeviceLocalAccountPolicyService::Observer implementation.
   void OnPolicyUpdated(const std::string& user_id) override;

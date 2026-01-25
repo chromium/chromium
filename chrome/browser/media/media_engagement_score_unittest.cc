@@ -78,7 +78,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TestScoreInitializesAndUpdates(
-      base::Value::Dict score_dict,
+      base::DictValue score_dict,
       int expected_visits,
       int expected_media_playbacks,
       base::Time expected_last_media_playback_time,
@@ -174,14 +174,14 @@ TEST_F(MediaEngagementScoreTest, MojoSerialization) {
 // Test that scores are read / written correctly from / to empty score
 // dictionaries.
 TEST_F(MediaEngagementScoreTest, EmptyDictionary) {
-  TestScoreInitializesAndUpdates(base::Value::Dict(), 0, 0, base::Time(), false,
+  TestScoreInitializesAndUpdates(base::DictValue(), 0, 0, base::Time(), false,
                                  true);
 }
 
 // Test that scores are read / written correctly from / to partially empty
 // score dictionaries.
 TEST_F(MediaEngagementScoreTest, PartiallyEmptyDictionary) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(MediaEngagementScore::kVisitsKey, int(2));
 
   TestScoreInitializesAndUpdates(std::move(dict), 2, 0, base::Time(), false,
@@ -191,7 +191,7 @@ TEST_F(MediaEngagementScoreTest, PartiallyEmptyDictionary) {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(MediaEngagementScoreTest, PopulatedDictionary) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(MediaEngagementScore::kVisitsKey, int(20));
   dict.Set(MediaEngagementScore::kMediaPlaybacksKey, int(12));
   dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
@@ -243,7 +243,7 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
 
   // Store some example data in content settings.
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
-  base::Value::Dict score_dict;
+  base::DictValue score_dict;
   score_dict.Set(MediaEngagementScore::kVisitsKey, example_num_visits);
   score_dict.Set(MediaEngagementScore::kMediaPlaybacksKey,
                  example_media_playbacks);
@@ -267,7 +267,7 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   score.Commit();
 
   // Now read back content settings and make sure we have the right values.
-  base::Value::Dict values =
+  base::DictValue values =
       settings_map
           ->GetWebsiteSetting(origin.GetURL(), GURL(),
                               ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)
@@ -312,7 +312,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_High) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(MediaEngagementScore::kVisitsKey, 20);
     dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 6);
     settings_map->SetWebsiteSettingDefaultScope(
@@ -334,7 +334,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_Low) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(MediaEngagementScore::kVisitsKey, 20);
     dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 4);
     settings_map->SetWebsiteSettingDefaultScope(
@@ -357,7 +357,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(MediaEngagementScore::kVisitsKey, 10);
     dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 1);
     dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
@@ -376,7 +376,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
   }
 
   {
-    base::Value::Dict dict =
+    base::DictValue dict =
         settings_map
             ->GetWebsiteSetting(origin.GetURL(), GURL(),
                                 ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)
@@ -451,7 +451,7 @@ class MediaEngagementScoreWithHTTPSOnlyTest : public MediaEngagementScoreTest {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(MediaEngagementScoreWithHTTPSOnlyTest, PopulatedDictionary_HTTPSOnly) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(MediaEngagementScore::kVisitsKey, int(20));
   dict.Set(MediaEngagementScore::kMediaPlaybacksKey, int(12));
   dict.Set(
@@ -478,7 +478,7 @@ TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  base::Value::Dict score_dict;
+  base::DictValue score_dict;
 
   // Store data with deprecated fields in content settings.
   score_dict.Set(kVisitsWithMediaTag, 10);
@@ -505,7 +505,7 @@ TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
   score.Commit();
 
   // Check the deprecated fields have been dropped.
-  base::Value::Dict values =
+  base::DictValue values =
       settings_map
           ->GetWebsiteSetting(origin.GetURL(), GURL(),
                               ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)

@@ -48,7 +48,7 @@ std::string MakeErrorPage(content::NavigationHandle& navigation_handle,
                           error_page::LinkPreviewErrorCode error_code) {
   const auto error = error_page::Error::LinkPreviewError(
       navigation_handle.GetURL(), error_code);
-  base::Value::Dict error_page_params;
+  base::DictValue error_page_params;
   error_page::LocalizedError::PageState page_state =
       error_page::LocalizedError::GetPageState(
           error.reason(), error.domain(), error.url(),

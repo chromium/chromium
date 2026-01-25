@@ -61,9 +61,9 @@ UpdaterStatusAndValueProvider::UpdaterStatusAndValueProvider(Profile* profile)
 
 UpdaterStatusAndValueProvider::~UpdaterStatusAndValueProvider() = default;
 
-base::Value::Dict UpdaterStatusAndValueProvider::GetStatus() {
+base::DictValue UpdaterStatusAndValueProvider::GetStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (!domain_.empty())
     dict.Set(policy::kDomainKey, domain_);
   if (!updater_status_)
@@ -81,12 +81,12 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetStatus() {
   return dict;
 }
 
-base::Value::Dict UpdaterStatusAndValueProvider::GetValues() {
+base::DictValue UpdaterStatusAndValueProvider::GetValues() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!updater_policies_)
     return {};
 
-  base::Value::Dict updater_policies_data;
+  base::DictValue updater_policies_data;
   updater_policies_data.Set(policy::kNameKey, kUpdaterPoliciesName);
 
   auto client =
@@ -100,16 +100,16 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetValues() {
       client->ConvertUpdaterPolicies(updater_policies_->Clone(),
                                      GetGoogleUpdatePolicySchemas()));
 
-  base::Value::Dict policy_values;
+  base::DictValue policy_values;
   policy_values.Set(kUpdaterPoliciesId, std::move(updater_policies_data));
   return policy_values;
 }
 
-base::Value::Dict UpdaterStatusAndValueProvider::GetNames() {
+base::DictValue UpdaterStatusAndValueProvider::GetNames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict names;
+  base::DictValue names;
   if (updater_policies_) {
-    base::Value::Dict updater_policies;
+    base::DictValue updater_policies;
     updater_policies.Set(policy::kNameKey, kUpdaterPoliciesName);
     updater_policies.Set(policy::kPolicyNamesKey, GetGoogleUpdatePolicyNames());
     names.Set(kUpdaterPoliciesId, std::move(updater_policies));

@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
                        LocalNetworkAccessAllowedForUrlsPolicy) {
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -408,11 +408,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessSplitPermissionOnBrowserTest,
                        LocalNetworkAccessBlockedForUrlsPolicy) {
   // Set both policies. Block should override Allow
   policy::PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("*"));
   SetPolicy(&policies, policy::key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));

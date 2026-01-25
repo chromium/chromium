@@ -190,7 +190,7 @@ class PrintBackendServiceManager {
       ClientId client_id,
       const std::string& printer_name,
       ContextId context_id,
-      base::Value::Dict job_settings,
+      base::DictValue job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback);
   // `StartPrinting()` initiates the printing of a document.  The optional
   // `settings` is used in the case where a system print dialog is invoked

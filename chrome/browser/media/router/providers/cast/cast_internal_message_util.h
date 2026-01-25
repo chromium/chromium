@@ -81,7 +81,7 @@ class CastInternalMessage {
 
   // Returns a CastInternalMessage for |message|, or nullptr is |message| is not
   // a valid Cast internal message.
-  static std::unique_ptr<CastInternalMessage> From(base::Value::Dict message);
+  static std::unique_ptr<CastInternalMessage> From(base::DictValue message);
 
   CastInternalMessage(const CastInternalMessage&) = delete;
   CastInternalMessage& operator=(const CastInternalMessage&) = delete;
@@ -116,7 +116,7 @@ class CastInternalMessage {
     return message_body_;
   }
 
-  const base::Value::Dict& v2_message_body() const {
+  const base::DictValue& v2_message_body() const {
     DCHECK(type_ == Type::kV2Message);
     return message_body_.GetDict();
   }
@@ -152,7 +152,7 @@ class CastSession {
   // nullptr if |receiver_status| is not a valid RECEIVER_STATUS message.
   static std::unique_ptr<CastSession> From(
       const MediaSinkInternal& sink,
-      const base::Value::Dict& receiver_status);
+      const base::DictValue& receiver_status);
 
   CastSession();
   ~CastSession();
@@ -165,7 +165,7 @@ class CastSession {
   void UpdateSession(std::unique_ptr<CastSession> from);
 
   // Sets the 'media' field of |value_| with a value received from the client.
-  void UpdateMedia(const base::Value::List& media);
+  void UpdateMedia(const base::ListValue& media);
 
   // ID of the session.
   const std::string& session_id() const { return session_id_; }
@@ -185,14 +185,14 @@ class CastSession {
   // The dictionary representing this session, derived from |receiver_status|.
   // For convenience, this is used for generating messages sent to the SDK that
   // include the session value.
-  const base::Value::Dict& value() const { return value_; }
+  const base::DictValue& value() const { return value_; }
 
  private:
   std::string session_id_;
   std::string app_id_;
   std::string destination_id_;
   base::flat_set<std::string> message_namespaces_;
-  base::Value::Dict value_;
+  base::DictValue value_;
 
   // The human-readable name of the Cast application, for example, "YouTube".
   // Mandatory.
@@ -232,11 +232,11 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
     const CastMessage& cast_message);
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
-    const base::Value::Dict& payload,
+    const base::DictValue& payload,
     std::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
-    base::Value::Dict error,
+    base::DictValue error,
     std::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
@@ -245,7 +245,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
     std::optional<int> sequence_number);
 
-base::Value::List SupportedMediaCommandsToListValue(int media_commands);
+base::ListValue SupportedMediaCommandsToListValue(int media_commands);
 
 }  // namespace media_router
 

@@ -25,8 +25,7 @@ bool IsOriginInAllowlist(const GURL& url,
     return true;
   }
 
-  const base::Value::List& allowlisted_urls =
-      prefs->GetList(allowlist_pref_name);
+  const base::ListValue& allowlisted_urls = prefs->GetList(allowlist_pref_name);
 
   if (allowlisted_urls.empty()) {
     return false;

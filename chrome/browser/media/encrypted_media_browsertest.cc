@@ -1791,9 +1791,9 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   // Enable 127.0.0.1 as an exception.
   prefs->SetDict(
       kProtectedContentIdExceptionPrefPath,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           "http://127.0.0.1,*",
-          base::Value::Dict().Set("setting", kAllowProtectedContentId)));
+          base::DictValue().Set("setting", kAllowProtectedContentId)));
 
   RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
                         media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
@@ -1816,9 +1816,9 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
   // Disable 127.0.0.1 as an exception.
   prefs->SetDict(
       kProtectedContentIdExceptionPrefPath,
-      base::Value::Dict().Set(
+      base::DictValue().Set(
           "http://127.0.0.1,*",
-          base::Value::Dict().Set("setting", kDisallowProtectedContentId)));
+          base::DictValue().Set("setting", kDisallowProtectedContentId)));
 
   RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
                         media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,

@@ -349,13 +349,13 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
                                          ManifestLocation location,
                                          extensions::Manifest::Type type,
                                          bool installed_by_default) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kName, name);
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
     case extensions::Manifest::TYPE_THEME:
-      manifest.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
+      manifest.Set(extensions::manifest_keys::kTheme, base::DictValue());
       break;
     case extensions::Manifest::TYPE_HOSTED_APP:
       manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
@@ -751,7 +751,7 @@ TEST_F(ConfigParserTest, ParseConfig) {
   EXPECT_TRUE(settings->GetHomepage(&homepage));
   EXPECT_EQ("http://www.foo.com", homepage);
 
-  std::optional<base::Value::List> startup_list(
+  std::optional<base::ListValue> startup_list(
       settings->GetUrlsToRestoreOnStartup());
   EXPECT_TRUE(startup_list.has_value());
   std::vector<std::string> startup_pages;
@@ -933,7 +933,7 @@ struct FeedbackCapture {
 
   MOCK_METHOD0(OnUpdatedList, void(void));
 
-  base::Value::List list_;
+  base::ListValue list_;
 };
 
 // Make sure GetReadableFeedback handles non-ascii letters.
@@ -972,11 +972,11 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
   ::testing::Mock::VerifyAndClearExpectations(&capture);
   // The homepage and the startup page are in punycode. They are unreadable.
   // Trying to find the extension name.
-  base::Value::List list = std::move(capture.list_);
+  base::ListValue list = std::move(capture.list_);
   bool checked_extensions = false;
   bool checked_shortcuts = false;
   for (const auto& entry : list) {
-    const base::Value::Dict* dict = entry.GetIfDict();
+    const base::DictValue* dict = entry.GetIfDict();
     ASSERT_TRUE(dict);
     const std::string* value = dict->FindString("key");
     ASSERT_TRUE(value);

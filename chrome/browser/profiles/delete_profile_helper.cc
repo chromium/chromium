@@ -62,7 +62,7 @@ void RemoveFromLastActiveProfilesPrefList(const base::FilePath& path) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& profile_list = update.Get();
+  base::ListValue& profile_list = update.Get();
   base::Value entry_value = base::Value(path.BaseName().AsUTF8Unsafe());
   profile_list.EraseValue(entry_value);
 }
@@ -237,7 +237,7 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
 void DeleteProfileHelper::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::Value::List& deleted_profiles =
+  const base::ListValue& deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
 
   for (const base::Value& value : deleted_profiles) {

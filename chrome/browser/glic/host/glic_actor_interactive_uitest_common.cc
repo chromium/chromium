@@ -390,7 +390,7 @@ MultiStep GlicActorUiTest::PauseActorTask() {
 }
 
 MultiStep GlicActorUiTest::ResumeActorTask(
-    base::Value::Dict context_options,
+    base::DictValue context_options,
     ExpectedResumeResult expected_result) {
   static constexpr std::string_view kFailureString = "<Failure>";
 
@@ -537,8 +537,8 @@ GlicActorUiTest::ActionProtoProvider GlicActorUiTest::ArbitraryStringProvider(
   return base::BindLambdaForTesting([str]() { return std::string(str); });
 }
 
-base::Value::Dict GlicActorUiTest::UpdatedContextOptions() {
-  return base::Value::Dict()
+base::DictValue GlicActorUiTest::UpdatedContextOptions() {
+  return base::DictValue()
       .Set("annotatedPageContent", true)
 #if BUILDFLAG(IS_LINUX)
       // TODO(https://crbug.com/40191775): Tests on Linux aren't producing

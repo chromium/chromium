@@ -886,12 +886,12 @@ bool IsDefaultAvatarIconUrl(std::string_view url, size_t* icon_index) {
   return false;
 }
 
-base::Value::Dict GetAvatarIconAndLabelDict(const std::string& url,
-                                            const std::u16string& label,
-                                            size_t index,
-                                            bool selected,
-                                            bool is_gaia_avatar) {
-  base::Value::Dict avatar_info;
+base::DictValue GetAvatarIconAndLabelDict(const std::string& url,
+                                          const std::u16string& label,
+                                          size_t index,
+                                          bool selected,
+                                          bool is_gaia_avatar) {
+  base::DictValue avatar_info;
   avatar_info.Set("url", url);
   avatar_info.Set("label", label);
   avatar_info.Set("index", static_cast<int>(index));
@@ -900,9 +900,9 @@ base::Value::Dict GetAvatarIconAndLabelDict(const std::string& url,
   return avatar_info;
 }
 
-base::Value::Dict GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
-                                                      SkColor stroke_color,
-                                                      bool selected) {
+base::DictValue GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
+                                                    SkColor stroke_color,
+                                                    bool selected) {
   gfx::Image icon = profiles::GetPlaceholderAvatarIconWithColors(
       fill_color, stroke_color, kAvatarIconSize);
   size_t index = profiles::GetPlaceholderAvatarIndex();
@@ -913,9 +913,9 @@ base::Value::Dict GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
       index, selected, /*is_gaia_avatar=*/false);
 }
 
-base::Value::List GetCustomProfileAvatarIconsAndLabels(
+base::ListValue GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx) {
-  base::Value::List avatars;
+  base::ListValue avatars;
 
   for (size_t i = GetModernAvatarIconStartIndex();
        i < GetDefaultAvatarIconCount(); ++i) {
@@ -946,7 +946,7 @@ size_t GetRandomAvatarIconIndex(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
+base::ListValue GetIconsAndLabelsForProfileAvatarSelector(
     const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -959,7 +959,7 @@ base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
       using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
 
   // Obtain a list of the modern avatar icons.
-  base::Value::List avatars(
+  base::ListValue avatars(
       GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
 
   if (entry->GetSigninState() == SigninState::kNotSignedIn) {

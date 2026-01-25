@@ -34,7 +34,7 @@ class NearbySharePrivateCertificate {
   // Inverse operation of ToDictionary(). Returns std::nullopt if the
   // conversion is not successful
   static std::optional<NearbySharePrivateCertificate> FromDictionary(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   // Generates a random EC key pair, secret key, and metadata encryption
   // key. Derives the certificate ID from the secret key. Derives the
@@ -101,7 +101,7 @@ class NearbySharePrivateCertificate {
 
   // Converts this private certificate to a dictionary value for storage
   // in Prefs.
-  base::Value::Dict ToDictionary() const;
+  base::DictValue ToDictionary() const;
 
   // For testing only.
   base::queue<

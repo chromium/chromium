@@ -802,14 +802,14 @@ class SharedDictionaryDevToolsBrowserTest
     SendCommandSync("Network.enable");
     SendCommandSync("Audits.enable");
   }
-  base::Value::Dict WaitForSharedDictionaryIssueAdded(
+  base::DictValue WaitForSharedDictionaryIssueAdded(
       const std::string& expected_error_type) {
-    auto matcher = [](const base::Value::Dict& params) {
+    auto matcher = [](const base::DictValue& params) {
       const std::string* maybe_issue_code =
           params.FindStringByDottedPath("issue.code");
       return maybe_issue_code && *maybe_issue_code == "SharedDictionaryIssue";
     };
-    base::Value::Dict notification = WaitForMatchingNotification(
+    base::DictValue notification = WaitForMatchingNotification(
         "Audits.issueAdded", base::BindRepeating(matcher));
     EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
               "SharedDictionaryIssue");

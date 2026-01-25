@@ -225,7 +225,7 @@ GoogleUpdatePoliciesAndState::GoogleUpdatePoliciesAndState() = default;
 GoogleUpdatePoliciesAndState::~GoogleUpdatePoliciesAndState() = default;
 
 base::Value GetGoogleUpdatePolicyNames() {
-  base::Value::List names;
+  base::ListValue names;
   for (const auto& key_value : GetGoogleUpdatePolicySchemas()) {
     names.Append(base::Value(key_value.first));
   }

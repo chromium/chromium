@@ -213,7 +213,7 @@ void PrintViewManagerBase::PrintNodeUnderContextMenu(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::PrintForPrintPreview(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     content::RenderFrameHost* rfh,
     PrinterHandler::PrintCallback callback) {
@@ -305,7 +305,7 @@ void PrintViewManagerBase::PrintDocument(
 #if BUILDFLAG(IS_WIN)
 void PrintViewManagerBase::OnDidUpdatePrintableArea(
     std::unique_ptr<PrinterQuery> printer_query,
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     std::unique_ptr<PrintSettings> print_settings,
     UpdatePrintSettingsCallback callback,
     bool success) {
@@ -325,7 +325,7 @@ void PrintViewManagerBase::OnDidUpdatePrintableArea(
 #endif
 
 void PrintViewManagerBase::CompleteUpdatePrintSettings(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     std::unique_ptr<PrintSettings> print_settings,
     UpdatePrintSettingsCallback callback) {
   mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
@@ -685,7 +685,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::UpdatePrintSettings(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     UpdatePrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetPrintingEnabledBooleanPref()) {

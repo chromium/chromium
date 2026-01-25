@@ -15,7 +15,7 @@ namespace {
 constexpr size_t kMaxAvailableSinksSize = 100;
 
 // Helper function to convert `value` to JSON string.
-std::string ToJSONString(const base::Value::Dict& value) {
+std::string ToJSONString(const base::DictValue& value) {
   std::string json;
   JSONStringValueSerializer serializer(&json);
   serializer.set_pretty_print(true);
@@ -23,9 +23,9 @@ std::string ToJSONString(const base::Value::Dict& value) {
 }
 
 // Helper function to convert `sink_internal` to JSON format represented by
-// base::Value::Dict.
-base::Value::Dict ToValue(const MediaSinkInternal& sink_internal) {
-  base::Value::Dict dict;
+// base::DictValue.
+base::DictValue ToValue(const MediaSinkInternal& sink_internal) {
+  base::DictValue dict;
   const MediaSink& sink = sink_internal.sink();
   dict.Set("id", log_util::TruncateId(sink.id()));
   dict.Set("name", sink.name());
@@ -52,13 +52,13 @@ base::Value::Dict ToValue(const MediaSinkInternal& sink_internal) {
 }
 
 // Helper function to convert `sinks` to JSON format represented by
-// base::Value::Dict. The key is the source id and the value is a list of
-// sinks represented by base::Value::Dict.
-base::Value::Dict ConvertDiscoveredSinksToValues(
+// base::DictValue. The key is the source id and the value is a list of
+// sinks represented by base::DictValue.
+base::DictValue ConvertDiscoveredSinksToValues(
     const base::flat_map<std::string, std::vector<MediaSinkInternal>>& sinks) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& sinks_it : sinks) {
-    base::Value::List list;
+    base::ListValue list;
     for (const auto& inner_sink : sinks_it.second) {
       list.Append(ToValue(inner_sink));
     }
@@ -68,14 +68,14 @@ base::Value::Dict ConvertDiscoveredSinksToValues(
 }
 
 // Helper function to convert `available_sinks` to a dictionary of availability
-// strings in JSON format represented by base::Value::Dict. The key is the
+// strings in JSON format represented by base::DictValue. The key is the
 // source id and the value is a list of sink ids.
-base::Value::Dict ConvertAvailableSinksToValues(
+base::DictValue ConvertAvailableSinksToValues(
     const base::LRUCache<std::string, std::vector<MediaSinkInternal>>&
         available_sinks) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto& sinks_it : available_sinks) {
-    base::Value::List list;
+    base::ListValue list;
     for (const auto& inner_sink : sinks_it.second) {
       std::string sink_id = inner_sink.sink().id();
       list.Append(log_util::TruncateId(sink_id));
@@ -108,8 +108,8 @@ void MediaSinkServiceStatus::UpdateAvailableSinks(
   available_sinks_.Put(key, available_sinks);
 }
 
-base::Value::Dict MediaSinkServiceStatus::GetStatusAsValue() const {
-  base::Value::Dict status_dict;
+base::DictValue MediaSinkServiceStatus::GetStatusAsValue() const {
+  base::DictValue status_dict;
   status_dict.Set("discovered_sinks",
                   ConvertDiscoveredSinksToValues(discovered_sinks_));
   status_dict.Set("available_sinks",

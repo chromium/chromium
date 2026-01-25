@@ -75,7 +75,7 @@ GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
                       const std::string& category_tag,
                       const GURL& page_url,
                       feedback::FeedbackSource source,
-                      base::Value::Dict autofill_metadata) {
+                      base::DictValue autofill_metadata) {
   std::vector<std::string> query_params;
 
   if (!extra_diagnostics.empty()) {
@@ -199,8 +199,8 @@ void RequestFeedbackFlow(const GURL& page_url,
                          const std::string& description_placeholder_text,
                          const std::string& category_tag,
                          const std::string& extra_diagnostics,
-                         base::Value::Dict autofill_metadata,
-                         base::Value::Dict ai_metadata) {
+                         base::DictValue autofill_metadata,
+                         base::DictValue ai_metadata) {
   feedback_private::FeedbackFlow flow = GetFeedbackFlowFromSource(source);
   bool include_bluetooth_logs = false;
   bool show_questionnaire = false;
@@ -247,8 +247,8 @@ void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata,
-                      base::Value::Dict ai_metadata) {
+                      base::DictValue autofill_metadata,
+                      base::DictValue ai_metadata) {
   GURL page_url;
   if (bwi) {
     page_url = GetTargetTabUrl(bwi, bwi->GetTabStripModel()->active_index());
@@ -269,8 +269,8 @@ void ShowFeedbackPage(const GURL& page_url,
                       const std::string& description_placeholder_text,
                       const std::string& category_tag,
                       const std::string& extra_diagnostics,
-                      base::Value::Dict autofill_metadata,
-                      base::Value::Dict ai_metadata) {
+                      base::DictValue autofill_metadata,
+                      base::DictValue ai_metadata) {
   if (!profile) {
     LOG(ERROR) << "Cannot invoke feedback: No profile found!";
     return;

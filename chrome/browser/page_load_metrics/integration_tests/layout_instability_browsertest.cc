@@ -58,10 +58,10 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   Load("/layout-instability/" + test_file);
 
   // Set layout shift amount expectations from web perf API.
-  base::Value::List expectations;
+  base::ListValue expectations;
   if (frame == ShiftFrame::LayoutShiftOnlyInMainFrame ||
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
-    base::Value::List value =
+    base::ListValue value =
         EvalJs(web_contents(), "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
       expectations.Append(std::move(d));
@@ -71,7 +71,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
     content::RenderFrameHost* child_frame =
         content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-    base::Value::List value =
+    base::ListValue value =
         EvalJs(child_frame, "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
       expectations.Append(std::move(d));
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
   Load("/simple_div_movement.html");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value::List entry_records_list =
+  base::ListValue entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 1 records.
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   Load("/one_second_gap.html");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value::List entry_records_list =
+  base::ListValue entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 2 records.
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "shifter");
 
   // Extract the startTime and score list from watcher_entry_record.
-  base::Value::List entry_records_list =
+  base::ListValue entry_records_list =
       EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 2 records.

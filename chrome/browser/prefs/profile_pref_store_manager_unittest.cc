@@ -385,7 +385,7 @@ TEST_F(ProfilePrefStoreManagerTest, ProtectValues) {
 }
 
 TEST_F(ProfilePrefStoreManagerTest, InitializePrefsFromMasterPrefs) {
-  base::Value::Dict master_prefs;
+  base::DictValue master_prefs;
   master_prefs.Set(kTrackedAtomic, kFoobar);
   master_prefs.Set(kProtectedAtomic, kHelloWorld);
   EXPECT_TRUE(manager_->InitializePrefsFromMasterPrefs(

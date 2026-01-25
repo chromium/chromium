@@ -296,7 +296,7 @@ void SetupInitialPrefsFromInstallPrefs(
       &out_prefs->suppress_default_browser_prompt_for_version);
 
   if (base::FeatureList::IsEnabled(features::kBookmarksImportOnFirstRun)) {
-    const base::Value::Dict* bookmarks_dict = install_prefs.GetBookmarksBlock();
+    const base::DictValue* bookmarks_dict = install_prefs.GetBookmarksBlock();
     if (bookmarks_dict) {
       out_prefs->import_bookmarks_dict = bookmarks_dict->Clone();
     }
@@ -307,7 +307,7 @@ void SetupInitialPrefsFromInstallPrefs(
     out_prefs->initial_extensions_provider_name =
         install_prefs.GetInitialExtensionsProviderName();
 
-    if (const base::Value::List* initial_extensions =
+    if (const base::ListValue* initial_extensions =
             install_prefs.GetInitialExtensionsList()) {
       out_prefs->initial_extensions = initial_extensions->Clone();
     }
@@ -438,7 +438,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
       return EULA_EXIT_NOW;
     }
 
-    base::Value::Dict initial_dictionary =
+    base::DictValue initial_dictionary =
         initial_prefs->initial_dictionary().Clone();
     // The distribution dictionary (and any prefs below it) are never registered
     // for use in Chrome's PrefService. Strip them from the initial dictionary

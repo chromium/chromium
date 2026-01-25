@@ -33,8 +33,8 @@ static bool IsPositiveInteger(std::string_view s) {
 
 // Get the record list. If it can't, print the message to listener and return a
 // null pointer.
-static const base::Value::List* GetRecordList(const base::Value::Dict& arg,
-                                              MatchResultListener* listener) {
+static const base::ListValue* GetRecordList(const base::DictValue& arg,
+                                            MatchResultListener* listener) {
   const auto* const record_list = arg.FindList(json_keys::kEncryptedRecordList);
   if (record_list == nullptr) {
     *listener << "No key named \"encryptedRecord\" in the argument or the "
@@ -45,7 +45,7 @@ static const base::Value::List* GetRecordList(const base::Value::Dict& arg,
 }
 
 bool AttachEncryptionSettingsMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   const auto attach_encryption_settings =
       arg.FindBool(json_keys::kAttachEncryptionSettings);
@@ -75,7 +75,7 @@ std::string AttachEncryptionSettingsMatcher::Name() const {
 }
 
 bool NoAttachEncryptionSettingsMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   if (arg.Find(json_keys::kAttachEncryptionSettings) != nullptr) {
     *listener << "Found \"attachEncryptionSettings\" in the argument.";
@@ -98,7 +98,7 @@ std::string NoAttachEncryptionSettingsMatcher::Name() const {
 }
 
 bool ConfigurationFileVersionMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   auto* attach_configuration_file =
       arg.Find(json_keys::kConfigurationFileVersion);
@@ -124,7 +124,7 @@ std::string ConfigurationFileVersionMatcher::Name() const {
 }
 
 bool NoConfigurationFileVersionMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   if (arg.Find(json_keys::kConfigurationFileVersion) != nullptr) {
     *listener << "Found \"configurationFileVersion\" in the argument.";
@@ -146,7 +146,7 @@ std::string NoConfigurationFileVersionMatcher::Name() const {
   return "no-configuration-file-version-matcher";
 }
 
-bool SourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
+bool SourceMatcher::MatchAndExplain(const base::DictValue& arg,
                                     MatchResultListener* listener) const {
   if (arg.FindString(json_keys::kSource) == nullptr) {
     *listener << "No key named \"source\" or the value "
@@ -168,7 +168,7 @@ std::string SourceMatcher::Name() const {
   return "source-test-matcher";
 }
 
-bool NoSourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
+bool NoSourceMatcher::MatchAndExplain(const base::DictValue& arg,
                                       MatchResultListener* listener) const {
   if (arg.Find(json_keys::kSource) != nullptr) {
     *listener << "Found \"source\" in the argument.";
@@ -202,7 +202,7 @@ std::string CompressionInformationMatcher::Name() const {
 }
 
 bool EncryptedRecordMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   const auto* const record_list = GetRecordList(arg, listener);
   return record_list != nullptr;
@@ -220,7 +220,7 @@ std::string EncryptedRecordMatcher::Name() const {
   return "encrypted-record-matcher";
 }
 
-bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
+bool RequestIdMatcher::MatchAndExplain(const base::DictValue& arg,
                                        MatchResultListener* listener) const {
   const auto* const request_id = arg.FindString(json_keys::kRequestId);
   if (request_id == nullptr) {
@@ -252,7 +252,7 @@ std::string RequestIdMatcher::Name() const {
   return "request-id-matcher";
 }
 
-bool RecordMatcher::MatchAndExplain(const base::Value::Dict& arg,
+bool RecordMatcher::MatchAndExplain(const base::DictValue& arg,
                                     MatchResultListener* listener) const {
   switch (mode_) {
     case Mode::FullRequest: {
@@ -291,7 +291,7 @@ RecordMatcher& RecordMatcher::SetMode(RecordMatcher::Mode mode) {
 }
 
 bool CompressionInformationMatcher::MatchAndExplainRecord(
-    const base::Value::Dict& record,
+    const base::DictValue& record,
     MatchResultListener* listener) const {
   const auto* const compression_info =
       record.FindDict(json_keys::kCompressionInformation);
@@ -322,7 +322,7 @@ bool CompressionInformationMatcher::MatchAndExplainRecord(
 }
 
 bool EncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
-    const base::Value::Dict& record,
+    const base::DictValue& record,
     MatchResultListener* listener) const {
   if (record.FindString(json_keys::kEncryptedWrappedRecord) == nullptr) {
     *listener << "No key named \"encryptedWrappedRecord\" or the value "
@@ -348,7 +348,7 @@ std::string EncryptedWrappedRecordRecordMatcher::Name() const {
 }
 
 bool NoEncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
-    const base::Value::Dict& record,
+    const base::DictValue& record,
     MatchResultListener* listener) const {
   if (record.Find(json_keys::kEncryptedWrappedRecord) != nullptr) {
     *listener << "Found \"encryptedWrappedRecord\" in record " << record << '.';
@@ -371,7 +371,7 @@ std::string NoEncryptedWrappedRecordRecordMatcher::Name() const {
 }
 
 bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
-    const base::Value::Dict& record,
+    const base::DictValue& record,
     MatchResultListener* listener) const {
   const auto* const sequence_information =
       record.FindDict(json_keys::kSequenceInformation);
@@ -433,8 +433,8 @@ std::string SequenceInformationRecordMatcher::Name() const {
   return "sequence-information-record-matcher";
 }
 
-bool RequestContainingRecordMatcher::IsSubDict(const base::Value::Dict& sub,
-                                               const base::Value::Dict& super) {
+bool RequestContainingRecordMatcher::IsSubDict(const base::DictValue& sub,
+                                               const base::DictValue& super) {
   for (auto&& [key, sub_value] : sub) {
     const auto* super_value = super.Find(key);
     if (super_value == nullptr || *super_value != sub_value) {
@@ -449,7 +449,7 @@ RequestContainingRecordMatcher::RequestContainingRecordMatcher(
     : matched_record_json_(matched_record_json) {}
 
 bool RequestContainingRecordMatcher::MatchAndExplain(
-    const base::Value::Dict& arg,
+    const base::DictValue& arg,
     MatchResultListener* listener) const {
   const auto* record_list = GetRecordList(arg, listener);
   if (record_list == nullptr) {

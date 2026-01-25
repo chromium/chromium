@@ -190,23 +190,23 @@ bool IsDefaultAvatarIconUrl(std::string_view icon_url, size_t* icon_index);
 
 // Returns dictionary containing the avatar icon info in the format expected by
 // the WebUI component 'cr-profile-avatar-selector'.
-base::Value::Dict GetAvatarIconAndLabelDict(const std::string& url,
-                                            const std::u16string& label,
-                                            size_t index,
-                                            bool selected,
-                                            bool is_gaia_avatar);
+base::DictValue GetAvatarIconAndLabelDict(const std::string& url,
+                                          const std::u16string& label,
+                                          size_t index,
+                                          bool selected,
+                                          bool is_gaia_avatar);
 
 // Returns dictionary containing the default generic avatar icon, label, index
 // and selected state.
-base::Value::Dict GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
-                                                      SkColor stroke_color,
-                                                      bool selected);
+base::DictValue GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
+                                                    SkColor stroke_color,
+                                                    bool selected);
 
 // Returns a list of dictionaries containing modern profile avatar icons as
 // well as avatar labels used for accessibility purposes. The list is ordered
 // according to the avatars' default order. If |selected_avatar_idx| is one of
 // the available indices, the corresponding avatar is marked as selected.
-base::Value::List GetCustomProfileAvatarIconsAndLabels(
+base::ListValue GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx = SIZE_MAX);
 
 // This method tries to find a random avatar index that is not in
@@ -217,7 +217,7 @@ size_t GetRandomAvatarIconIndex(
 #if !BUILDFLAG(IS_ANDROID)
 // Get all the available profile icons to choose from for a specific profile
 // with |profile_path|.
-base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
+base::ListValue GetIconsAndLabelsForProfileAvatarSelector(
     const base::FilePath& profile_path);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

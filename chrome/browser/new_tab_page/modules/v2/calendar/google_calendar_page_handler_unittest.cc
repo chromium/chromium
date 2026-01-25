@@ -38,11 +38,11 @@ const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 const int32_t kNumEvents = 10;
 
-base::Value::List CreateAttachments() {
-  base::Value::List attachments = base::Value::List();
+base::ListValue CreateAttachments() {
+  base::ListValue attachments = base::ListValue();
   for (int i = 0; i < 2; i++) {
-    base::Value::Dict attachment =
-        base::Value::Dict()
+    base::DictValue attachment =
+        base::DictValue()
             .Set("fileUrl", "https://foo-file.com/" + base::NumberToString(i))
             .Set("title", "Test File " + base::NumberToString(i))
             .Set("iconLink", "https://foo-icon.com/" + base::NumberToString(i));
@@ -51,37 +51,37 @@ base::Value::List CreateAttachments() {
   return attachments;
 }
 
-base::Value::List CreateAttendees(int index) {
+base::ListValue CreateAttendees(int index) {
   std::string self_status = index % 2 == 0 ? "accepted" : "needsAction";
   if (index == 1) {
     self_status = "declined";
   }
-  return base::Value::List()
-      .Append(base::Value::Dict()
+  return base::ListValue()
+      .Append(base::DictValue()
                   .Set("email", "test@test.com")
                   .Set("displayName", "Foo Test")
                   .Set("self", true)
                   .Set("responseStatus", self_status))
       .Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set("email", "test@test2.com")
               .Set("displayName", "Bar Test")
               .Set("responseStatus", index % 2 == 0 ? "accepted" : "declined"));
 }
 
-base::Value::Dict CreateConferenceData() {
-  base::Value::Dict entryPoint =
-      base::Value::Dict()
+base::DictValue CreateConferenceData() {
+  base::DictValue entryPoint =
+      base::DictValue()
           .Set("entryPointType", "video")
           .Set("uri", "https://meet.google.com/jbe-test")
           .Set("label", "meet.google.com/jbe-test");
-  return base::Value::Dict().Set(
-      "entryPoints", base::Value::List().Append(std::move(entryPoint)));
+  return base::DictValue().Set("entryPoints",
+                               base::ListValue().Append(std::move(entryPoint)));
 }
 
-base::Value::Dict CreateEventTime(bool is_all_day_event, bool is_end_time) {
-  base::Value::Dict eventTime =
-      base::Value::Dict()
+base::DictValue CreateEventTime(bool is_all_day_event, bool is_end_time) {
+  base::DictValue eventTime =
+      base::DictValue()
           .Set("dateTime", is_end_time ? "2020-11-02T10:30:00-08:00"
                                        : "2020-11-02T10:00:00-08:00")
           .Set("timeZone", "America/Los_Angeles");
@@ -91,8 +91,8 @@ base::Value::Dict CreateEventTime(bool is_all_day_event, bool is_end_time) {
   return eventTime;
 }
 
-base::Value::Dict CreateEvent(int index) {
-  return base::Value::Dict()
+base::DictValue CreateEvent(int index) {
+  return base::DictValue()
       .Set("kind", "calendar#event")
       .Set("status", "confirmed")
       .Set("htmlLink", "https://foo.com/" + base::NumberToString(index))
@@ -110,19 +110,18 @@ base::Value::Dict CreateEvent(int index) {
 }
 
 bool CreateEventsJson(std::string* json) {
-  base::Value::List events = base::Value::List();
+  base::ListValue events = base::ListValue();
   for (int i = 0; i < kNumEvents; i++) {
     events.Append(CreateEvent(i));
   }
-  base::Value::Dict result_dict =
-      base::Value::Dict()
-          .Set("kind", "calendar#events")
-          .Set("etag", "\"p32ofplf5q6gf20g\"")
-          .Set("summary", "test1@google.com")
-          .Set("updated", "2021-06-18T07:17:10.718Z")
-          .Set("timeZone", "America/Los_Angeles")
-          .Set("accessRole", "owner")
-          .Set("items", std::move(events));
+  base::DictValue result_dict = base::DictValue()
+                                    .Set("kind", "calendar#events")
+                                    .Set("etag", "\"p32ofplf5q6gf20g\"")
+                                    .Set("summary", "test1@google.com")
+                                    .Set("updated", "2021-06-18T07:17:10.718Z")
+                                    .Set("timeZone", "America/Los_Angeles")
+                                    .Set("accessRole", "owner")
+                                    .Set("items", std::move(events));
   JSONStringValueSerializer serializer(json);
   return serializer.Serialize(result_dict);
 }

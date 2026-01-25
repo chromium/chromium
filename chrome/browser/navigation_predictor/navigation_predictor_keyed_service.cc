@@ -27,9 +27,9 @@ void WritePredictionToConsoleLog(
   if (!prediction.web_contents())
     return;
 
-  base::Value::Dict message;
+  base::DictValue message;
 
-  base::Value::List url_list;
+  base::ListValue url_list;
   for (const GURL& url : prediction.sorted_predicted_urls()) {
     url_list.Append(url.spec());
   }

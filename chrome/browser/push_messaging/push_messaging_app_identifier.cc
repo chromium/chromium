@@ -50,7 +50,7 @@ AppIdentifier PushMessagingAppIdentifier::FindByAppId(
             base::ToUpperASCII(
                 app_id.substr(app_id.size() - push_messaging::kGuidLength)));
 
-  const base::Value::Dict& map =
+  const base::DictValue& map =
       profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
 
   const std::string* map_value = map.FindString(app_id);
@@ -72,7 +72,7 @@ AppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
       AppIdentifier::Generate(origin, service_worker_registration_id)
           .ToPrefValue();
 
-  const base::Value::Dict& map =
+  const base::DictValue& map =
       profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
   for (auto entry : map) {
     if (entry.second.is_string() &&
@@ -89,7 +89,7 @@ std::vector<AppIdentifier> PushMessagingAppIdentifier::GetAll(
     Profile* profile) {
   std::vector<AppIdentifier> result;
 
-  const base::Value::Dict& map =
+  const base::DictValue& map =
       profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
   for (auto entry : map) {
     result.push_back(FindByAppId(profile, entry.first));
@@ -101,7 +101,7 @@ std::vector<AppIdentifier> PushMessagingAppIdentifier::GetAll(
 // static
 void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
   profile->GetPrefs()->SetDict(prefs::kPushMessagingAppIdentifierMap,
-                               base::Value::Dict());
+                               base::DictValue());
 }
 
 // static
@@ -119,7 +119,7 @@ void PushMessagingAppIdentifier::PersistToPrefs(const AppIdentifier& id,
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
-  base::Value::Dict& map = update.Get();
+  base::DictValue& map = update.Get();
 
   // Delete any stale entry with the same origin and Service Worker
   // registration id (hence we ensure there is a 1:1 not 1:many mapping).
@@ -138,6 +138,6 @@ void PushMessagingAppIdentifier::DeleteFromPrefs(const AppIdentifier& id,
 
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
-  base::Value::Dict& map = update.Get();
+  base::DictValue& map = update.Get();
   map.Remove(id.app_id());
 }

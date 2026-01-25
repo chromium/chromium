@@ -68,13 +68,13 @@ TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
 
   EXPECT_TRUE(chrome_prefs::GetTamperedPrefList(profile_.get()).empty());
 
-  base::Value::List tampered_list;
+  base::ListValue tampered_list;
   tampered_list.Append("pref.path.one");
   tampered_list.Append("pref.path.two");
   pref_service->SetList(user_prefs::kTrackedPreferencesReset,
                         std::move(tampered_list));
 
-  const base::Value::List& retrieved_list =
+  const base::ListValue& retrieved_list =
       chrome_prefs::GetTamperedPrefList(profile_.get());
   EXPECT_EQ(2U, retrieved_list.size());
   EXPECT_EQ("pref.path.one", retrieved_list[0].GetString());
@@ -85,7 +85,7 @@ TEST_F(ChromePrefServiceFactoryTamperedPrefTest,
        ClearTamperedPrefListClearsPref) {
   PrefService* pref_service = profile_->GetPrefs();
 
-  base::Value::List tampered_list;
+  base::ListValue tampered_list;
   tampered_list.Append("pref.path.to.clear");
   pref_service->SetList(user_prefs::kTrackedPreferencesReset,
                         std::move(tampered_list));

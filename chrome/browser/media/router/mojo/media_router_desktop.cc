@@ -372,7 +372,7 @@ base::Value MediaRouterDesktop::GetLogs() const {
   return logger_.GetLogsAsValue();
 }
 
-base::Value::Dict MediaRouterDesktop::GetState() const {
+base::DictValue MediaRouterDesktop::GetState() const {
   return media_sink_service_status_.GetStatusAsValue();
 }
 

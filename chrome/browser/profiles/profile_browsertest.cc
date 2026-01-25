@@ -489,7 +489,7 @@ std::string GetExitTypePreferenceFromDisk(Profile* profile) {
   if (!value)
     return std::string();
 
-  base::Value::Dict* dict = value->GetIfDict();
+  base::DictValue* dict = value->GetIfDict();
   if (!dict)
     return std::string();
 

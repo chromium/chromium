@@ -116,7 +116,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     JSONStringValueDeserializer json_string_deserializer(json_manifest);
     std::unique_ptr<base::Value> manifest =
         json_string_deserializer.Deserialize(&error_code, &error);
-    base::Value::Dict* manifest_dictionary = manifest->GetIfDict();
+    base::DictValue* manifest_dictionary = manifest->GetIfDict();
     ASSERT_TRUE(manifest_dictionary);
 
     std::u16string utf16_error;

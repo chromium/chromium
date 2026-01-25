@@ -15,7 +15,7 @@
 std::vector<uint16_t> ConvertExplicitlyAllowedNetworkPortsPref(
     PrefService* local_state) {
   std::vector<uint16_t> explicitly_allowed_network_ports;
-  const base::Value::List& explicitly_allowed_network_ports_list =
+  const base::ListValue& explicitly_allowed_network_ports_list =
       local_state->GetList(prefs::kExplicitlyAllowedNetworkPorts);
   if (explicitly_allowed_network_ports_list.empty()) {
     return explicitly_allowed_network_ports;

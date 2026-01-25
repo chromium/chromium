@@ -23,7 +23,7 @@ class ConvertExplicitlyAllowedNetworkPortsPrefTest : public ::testing::Test {
         prefs::kExplicitlyAllowedNetworkPorts);
   }
 
-  void SetList(base::Value::List ports) {
+  void SetList(base::ListValue ports) {
     local_state_.SetList(prefs::kExplicitlyAllowedNetworkPorts,
                          std::move(ports));
   }
@@ -35,13 +35,13 @@ class ConvertExplicitlyAllowedNetworkPortsPrefTest : public ::testing::Test {
 };
 
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, EmptyList) {
-  SetList(base::Value::List());
+  SetList(base::ListValue());
   auto ports = ConvertExplicitlyAllowedNetworkPortsPref(local_state());
   EXPECT_THAT(ports, IsEmpty());
 }
 
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ValidList) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(20);
   list.Append(21);
   list.Append(22);
@@ -52,7 +52,7 @@ TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ValidList) {
 
 // This shouldn't happen, but we handle it.
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ListOfBools) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(false);
   list.Append(true);
   SetList(std::move(list));
@@ -62,7 +62,7 @@ TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, ListOfBools) {
 
 // This really shouldn't happen.
 TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, MixedTypesList) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append(true);
   list.Append("79");
   list.Append(554);
@@ -77,7 +77,7 @@ TEST_F(ConvertExplicitlyAllowedNetworkPortsPrefTest, OutOfRangeIntegers) {
       100000,  // Too big.
       119,     // Valid.
   };
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& value : kValues) {
     list.Append(value);
   }

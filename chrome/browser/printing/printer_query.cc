@@ -232,7 +232,7 @@ void PrinterQuery::GetSettingsFromUser(uint32_t document_page_count,
                      std::move(callback), is_modifiable));
 }
 
-void PrinterQuery::SetSettings(base::Value::Dict new_settings,
+void PrinterQuery::SetSettings(base::DictValue new_settings,
                                base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
@@ -323,7 +323,7 @@ void PrinterQuery::InvokeSettingsCallback(SettingsCallback callback,
   std::move(callback).Run(printing_context_->TakeAndResetSettings(), result);
 }
 
-void PrinterQuery::UpdatePrintSettings(base::Value::Dict new_settings,
+void PrinterQuery::UpdatePrintSettings(base::DictValue new_settings,
                                        SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -346,7 +346,7 @@ void PrinterQuery::UpdatePrintSettings(base::Value::Dict new_settings,
     PrinterBasicInfo basic_info;
     if (print_backend->GetPrinterBasicInfo(printer_name, &basic_info) ==
         mojom::ResultCode::kSuccess) {
-      base::Value::Dict advanced_settings;
+      base::DictValue advanced_settings;
       for (const auto& pair : basic_info.options) {
         advanced_settings.Set(pair.first, pair.second);
       }

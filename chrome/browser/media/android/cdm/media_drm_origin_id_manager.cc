@@ -140,7 +140,7 @@ void SetExpirableToken(PrefService* const pref_service) {
               base::TimeToValue(base::Time::Now() + kExpirationDelta));
 }
 
-void RemoveExpirableToken(base::Value::Dict& origin_id_dict) {
+void RemoveExpirableToken(base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
   origin_id_dict.Remove(kExpirableToken);
 }
@@ -158,7 +158,7 @@ bool IsAndroidR() {
          base::android::android_info::SDK_VERSION_R;
 }
 
-bool ShouldAttemptProvisioning(base::Value::Dict& origin_id_dict) {
+bool ShouldAttemptProvisioning(base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
   DCHECK(IsAndroidR());
 
@@ -181,7 +181,7 @@ bool ShouldAttemptProvisioning(base::Value::Dict& origin_id_dict) {
   return true;
 }
 
-void SetLastProvisioningTime(base::Value::Dict& origin_id_dict) {
+void SetLastProvisioningTime(base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
   DCHECK(IsAndroidR());
 
@@ -189,7 +189,7 @@ void SetLastProvisioningTime(base::Value::Dict& origin_id_dict) {
                      base::TimeToValue(base::Time::Now()));
 }
 
-void RemoveLastProvisioningTime(base::Value::Dict& origin_id_dict) {
+void RemoveLastProvisioningTime(base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
   DCHECK(IsAndroidR());
 
@@ -205,7 +205,7 @@ void RemoveLastProvisioningTime(base::Value::Dict& origin_id_dict) {
 // |kExpirableToken| is expired or corrupt, it will be removed for privacy
 // reasons.
 bool CanPreProvision(bool is_per_application_provisioning_supported,
-                     base::Value::Dict& origin_id_dict) {
+                     base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
 
   // On devices that support per-application provisioning, this is always true.
@@ -233,10 +233,10 @@ bool CanPreProvision(bool is_per_application_provisioning_supported,
   return true;
 }
 
-int CountAvailableOriginIds(const base::Value::Dict& origin_id_dict) {
+int CountAvailableOriginIds(const base::DictValue& origin_id_dict) {
   DVLOG(3) << __func__;
 
-  const base::Value::List* origin_ids = origin_id_dict.FindList(kOriginIds);
+  const base::ListValue* origin_ids = origin_id_dict.FindList(kOriginIds);
   if (!origin_ids)
     return 0;
 
@@ -249,7 +249,7 @@ base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
 
   ScopedDictPrefUpdate update(pref_service, kMediaDrmOriginIds);
 
-  base::Value::List* origin_ids = update->FindList(kOriginIds);
+  base::ListValue* origin_ids = update->FindList(kOriginIds);
   if (!origin_ids)
     return base::UnguessableToken::Null();
 
@@ -263,10 +263,10 @@ base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
   return result.value_or(base::UnguessableToken::Null());
 }
 
-void AddOriginId(base::Value::Dict& origin_id_dict,
+void AddOriginId(base::DictValue& origin_id_dict,
                  const base::UnguessableToken& origin_id) {
   DVLOG(3) << __func__;
-  base::Value::List* origin_ids = origin_id_dict.EnsureList(kOriginIds);
+  base::ListValue* origin_ids = origin_id_dict.EnsureList(kOriginIds);
   origin_ids->Append(base::UnguessableTokenToValue(origin_id));
 }
 

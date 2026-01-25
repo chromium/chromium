@@ -173,9 +173,9 @@ void NetworkConfigurationUpdater::Init() {
 }
 
 void NetworkConfigurationUpdater::ParseCurrentPolicy(
-    base::Value::List* network_configs,
-    base::Value::Dict* global_network_config,
-    base::Value::List* certificates) {
+    base::ListValue* network_configs,
+    base::DictValue* global_network_config,
+    base::ListValue* certificates) {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   const base::Value* policy_value =
@@ -205,9 +205,9 @@ void NetworkConfigurationUpdater::OnPolicyChanged(const base::Value* previous,
 }
 
 void NetworkConfigurationUpdater::ApplyPolicy() {
-  base::Value::List network_configs;
-  base::Value::Dict global_network_config;
-  base::Value::List certificates;
+  base::ListValue network_configs;
+  base::DictValue global_network_config;
+  base::ListValue certificates;
   ParseCurrentPolicy(&network_configs, &global_network_config, &certificates);
 
   ImportCertificates(std::move(certificates));
@@ -219,7 +219,7 @@ std::string NetworkConfigurationUpdater::LogHeader() const {
 }
 
 void NetworkConfigurationUpdater::ImportCertificates(
-    base::Value::List certificates_onc) {
+    base::ListValue certificates_onc) {
   std::unique_ptr<OncParsedCertificates> incoming_certs =
       std::make_unique<OncParsedCertificates>(certificates_onc);
 

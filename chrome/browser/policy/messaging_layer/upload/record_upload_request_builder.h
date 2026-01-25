@@ -107,7 +107,7 @@ class UploadEncryptedReportingRequestBuilder {
       int config_file_version = -1);
   ~UploadEncryptedReportingRequestBuilder();
 
-  // Adds record, converts it into base::Value::Dict, updates reservation to
+  // Adds record, converts it into base::DictValue, updates reservation to
   // reflect it (fails if unable to reserve).
   UploadEncryptedReportingRequestBuilder& AddRecord(
       EncryptedRecord record,
@@ -119,7 +119,7 @@ class UploadEncryptedReportingRequestBuilder {
 
   // Return the built dictionary. Also set requestId to a random string if it
   // hasn't been set yet.
-  std::optional<base::Value::Dict> Build();
+  std::optional<base::DictValue> Build();
 
   static std::string_view GetEncryptedRecordListPath();
   static std::string_view GetAttachEncryptionSettingsPath();
@@ -127,10 +127,10 @@ class UploadEncryptedReportingRequestBuilder {
   static std::string_view GetSourcePath();
 
   const bool is_generation_guid_required_;
-  std::optional<base::Value::Dict> result_;
+  std::optional<base::DictValue> result_;
 };
 
-// Builds a |base::Value::Dict| from a |EncryptedRecord| proto.
+// Builds a |base::DictValue| from a |EncryptedRecord| proto.
 class EncryptedRecordDictionaryBuilder {
  public:
   explicit EncryptedRecordDictionaryBuilder(
@@ -139,7 +139,7 @@ class EncryptedRecordDictionaryBuilder {
       bool is_generation_guid_required);
   ~EncryptedRecordDictionaryBuilder();
 
-  std::optional<base::Value::Dict> Build();
+  std::optional<base::DictValue> Build();
 
   static std::string_view GetEncryptedWrappedRecordPath();
   static std::string_view GetSequenceInformationKeyPath();
@@ -147,10 +147,10 @@ class EncryptedRecordDictionaryBuilder {
   static std::string_view GetCompressionInformationPath();
 
  private:
-  std::optional<base::Value::Dict> result_;
+  std::optional<base::DictValue> result_;
 };
 
-// Builds a |base::Value::Dict| from a |SequenceInformation| proto.
+// Builds a |base::DictValue| from a |SequenceInformation| proto.
 class SequenceInformationDictionaryBuilder {
  public:
   explicit SequenceInformationDictionaryBuilder(
@@ -158,7 +158,7 @@ class SequenceInformationDictionaryBuilder {
       bool is_generation_guid_required);
   ~SequenceInformationDictionaryBuilder();
 
-  std::optional<base::Value::Dict> Build();
+  std::optional<base::DictValue> Build();
 
   static std::string_view GetSequencingIdPath();
   static std::string_view GetGenerationIdPath();
@@ -168,38 +168,38 @@ class SequenceInformationDictionaryBuilder {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  std::optional<base::Value::Dict> result_;
+  std::optional<base::DictValue> result_;
 };
 
-// Builds a |base::Value::Dict| from a |EncryptionInfo| proto.
+// Builds a |base::DictValue| from a |EncryptionInfo| proto.
 class EncryptionInfoDictionaryBuilder {
  public:
   explicit EncryptionInfoDictionaryBuilder(
       const EncryptionInfo& encryption_info);
   ~EncryptionInfoDictionaryBuilder();
 
-  std::optional<base::Value::Dict> Build();
+  std::optional<base::DictValue> Build();
 
   static std::string_view GetEncryptionKeyPath();
   static std::string_view GetPublicKeyIdPath();
 
  private:
-  std::optional<base::Value::Dict> result_;
+  std::optional<base::DictValue> result_;
 };
 
-// Builds a |base::Value::Dict| from a |CompressionInfo| proto.
+// Builds a |base::DictValue| from a |CompressionInfo| proto.
 class CompressionInformationDictionaryBuilder {
  public:
   explicit CompressionInformationDictionaryBuilder(
       const CompressionInformation& compression_info);
   ~CompressionInformationDictionaryBuilder();
 
-  std::optional<base::Value::Dict> Build();
+  std::optional<base::DictValue> Build();
 
   static std::string_view GetCompressionAlgorithmPath();
 
  private:
-  std::optional<base::Value::Dict> result_;
+  std::optional<base::DictValue> result_;
 };
 
 }  // namespace reporting

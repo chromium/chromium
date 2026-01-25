@@ -191,7 +191,7 @@ class BackgroundLoaderOffliner
 
   // Saves loading signals.
   // TODO(petewil): We will be replacing this with the new snapshot controller.
-  base::Value::Dict signal_data_;
+  base::DictValue signal_data_;
 
   // Callback for cancel.
   CancelCallback cancel_callback_;

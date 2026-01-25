@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
   // Force-install `kExtensionId1`.
   std::string webstore_update_url =
       extension_urls::GetWebstoreUpdateUrl().spec();
-  base::Value::List force_list;
+  base::ListValue force_list;
   force_list.Append(base::StrCat({kExtensionId1, ";", webstore_update_url}));
   PolicyMap policies;
   policies.Set(key::kExtensionSettings, POLICY_LEVEL_MANDATORY,

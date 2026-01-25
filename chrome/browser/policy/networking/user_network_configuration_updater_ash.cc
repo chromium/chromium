@@ -86,7 +86,7 @@ bool UserNetworkConfigurationUpdaterAsh::
   if (!policy_value)
     return false;
 
-  base::Value::List certificates_value;
+  base::ListValue certificates_value;
   chromeos::onc::ParseAndValidateOncForImport(
       policy_value->GetString(), onc::ONC_SOURCE_USER_POLICY,
       /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
@@ -150,8 +150,8 @@ void UserNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
 }
 
 void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
-    const base::Value::List& network_configs_onc,
-    const base::Value::Dict& global_network_config) {
+    const base::ListValue& network_configs_onc,
+    const base::DictValue& global_network_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(user_);
 

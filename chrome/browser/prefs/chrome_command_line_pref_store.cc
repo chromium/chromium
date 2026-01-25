@@ -168,7 +168,7 @@ void ChromeCommandLinePrefStore::ApplyProxyMode() {
 
 void ChromeCommandLinePrefStore::ApplySSLSwitches() {
   if (command_line()->HasSwitch(switches::kCipherSuiteBlacklist)) {
-    base::Value::List list_value;
+    base::ListValue list_value;
     const std::vector<std::string> str_list = base::SplitString(
         command_line()->GetSwitchValueASCII(switches::kCipherSuiteBlacklist),
         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -194,7 +194,7 @@ void ChromeCommandLinePrefStore::ApplyExplicitlyAllowedPortSwitch() {
     return;
   }
 
-  base::Value::List integer_list;
+  base::ListValue integer_list;
   std::string switch_value =
       command_line()->GetSwitchValueASCII(switches::kExplicitlyAllowedPorts);
   const auto& split = base::SplitStringPiece(

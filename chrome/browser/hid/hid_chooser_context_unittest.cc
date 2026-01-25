@@ -265,7 +265,7 @@ class HidChooserContextTestBase {
   }
 
   void RevokeObjectPermissionBlocking(const url::Origin& origin,
-                                      const base::Value::Dict& object) {
+                                      const base::DictValue& object) {
     base::RunLoop loop;
     EXPECT_CALL(permission_observer_,
                 OnObjectPermissionChanged(

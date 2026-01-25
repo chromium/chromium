@@ -414,9 +414,8 @@ class NoStatePrefetchBrowserTest
   // Returns length of |no_state_prefetch_manager_|'s history, or SIZE_MAX on
   // failure.
   size_t GetHistoryLength() const {
-    base::Value::Dict prerender_dict =
-        GetNoStatePrefetchManager()->CopyAsDict();
-    if (const base::Value::List* history_list =
+    base::DictValue prerender_dict = GetNoStatePrefetchManager()->CopyAsDict();
+    if (const base::ListValue* history_list =
             prerender_dict.FindList("history")) {
       return history_list->size();
     }

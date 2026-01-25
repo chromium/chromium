@@ -180,7 +180,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   // Gets the user status code from the pref.
   std::optional<UserStatusCode> GetCachedStatusCode() {
     PrefService* prefs = profile()->GetPrefs();
-    const base::Value::Dict& dict = prefs->GetDict(prefs::kGlicUserStatus);
+    const base::DictValue& dict = prefs->GetDict(prefs::kGlicUserStatus);
     if (!dict.FindInt(kUserStatus)) {
       return std::nullopt;
     }
@@ -198,7 +198,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   void SetGlicUserStatus(UserStatusCode code) {
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set(kAccountId, GetGaiaIdHashBase64());
     data.Set(kUserStatus, code);
     data.Set(kUpdatedAt, base::Time::Now().InSecondsFSinceUnixEpoch());
@@ -207,9 +207,9 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   }
 
   // Gets the full user status details from prefs.
-  std::optional<base::Value::Dict> GetCachedStatusDict() {
+  std::optional<base::DictValue> GetCachedStatusDict() {
     PrefService* prefs = profile()->GetPrefs();
-    const base::Value::Dict& dict = prefs->GetDict(prefs::kGlicUserStatus);
+    const base::DictValue& dict = prefs->GetDict(prefs::kGlicUserStatus);
     if (dict.empty()) {
       return std::nullopt;
     }
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::ENABLED);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_BY_ADMIN);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_OTHER);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_BY_ADMIN);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_BY_ADMIN);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTestWithPolicyManagementService,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
 
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1),
             UserStatusCode::DISABLED_BY_ADMIN);
   EXPECT_EQ(*cached_dict->FindString(kAccountId), GetGaiaIdHashBase64());
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   // Verify that when the user status code is SERVER_UNAVAILABLE, the glic user
   // status result is not stored.
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_FALSE(cached_dict.has_value());
 
   EXPECT_TRUE(IsGlicEnabled());
@@ -652,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   // Verify that when the user status code is SERVER_UNAVAILABLE, the previous
   // stored pref value is not overwritten.
-  std::optional<base::Value::Dict> cached_dict = GetCachedStatusDict();
+  std::optional<base::DictValue> cached_dict = GetCachedStatusDict();
   EXPECT_TRUE(cached_dict.has_value());
   EXPECT_EQ(cached_dict->FindInt(kUserStatus).value_or(-1), user_status_code);
 
