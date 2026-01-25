@@ -65,11 +65,6 @@
 
 namespace features {
 
-// TODO(https://crbug.com/324934416): Remove this killswitch once the new
-// CanCommitURL restrictions finish rolling out.
-BASE_FEATURE(kAdditionalNavigationCommitChecks,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // TODO(crbug.com/476409377): Remove this guard once the known cases of missing
 // SecurityState have been fixed.
 BASE_FEATURE(kDumpWithoutCrashingForMissingSecurityState,
@@ -1872,9 +1867,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
   const url::Origin& origin = *url_info.origin;
   // First check whether the URL is allowed to commit, without considering the
   // origin. This involves scheme checks as well as CanAccessDataForOrigin.
-  if (base::FeatureList::IsEnabled(
-          features::kAdditionalNavigationCommitChecks) &&
-      !CanCommitURL(child_id, url_info.url)) {
+  if (!CanCommitURL(child_id, url_info.url)) {
     // WebView's allow_universal_access_from_file_urls setting allows file
     // origins to access any other origin and bypass normal commit checks. When
     // this mode is enabled, RenderFrameHostImpl::ValidateURLAndOrigin returns
@@ -1893,12 +1886,7 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     bool exempt_due_to_webview_universal_access =
         (origin.scheme() == url::kFileScheme) &&
         HasOriginCheckExemptionForWebView(child_id, origin);
-
-    // This enforcement is currently skipped on Android WebView due to crashes.
-    // TODO(https://crbug.com/326250356): Diagnose and enable for Android
-    // WebView as well.
-    if (GetContentClient()->browser()->ShouldEnforceNewCanCommitUrlChecks() &&
-        !exempt_due_to_webview_universal_access) {
+    if (!exempt_due_to_webview_universal_access) {
       return CanCommitStatus::CANNOT_COMMIT_URL;
     }
   }

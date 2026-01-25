@@ -224,7 +224,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldDisableOriginIsolation() override;
   bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
                                const GURL& effective_url) override;
-  bool ShouldEnforceNewCanCommitUrlChecks() override;
   size_t GetMaxRendererProcessCountOverride() override;
   void WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,

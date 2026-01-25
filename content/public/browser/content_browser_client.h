@@ -521,12 +521,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldLockProcessToSite(BrowserContext* browser_context,
                                        const GURL& effective_url);
 
-  // Returns whether a new set of CanCommitURL restrictions on navigation
-  // commits in ChildProcessSecurityPolicy should be applied. Defaults to true.
-  // TODO(https://crbug.com/326250356): Remove this once the Android WebView
-  // crashes are fixed.
-  virtual bool ShouldEnforceNewCanCommitUrlChecks();
-
   // Returns a boolean indicating whether the WebUI |url| requires its process
   // to be locked to the WebUI origin. Note: This method can be called from
   // multiple threads. It is not safe to assume it runs only on the UI thread.
