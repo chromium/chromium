@@ -2049,9 +2049,6 @@ BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
 // cross-origin requests.
 BASE_FEATURE(kReducedReferrerGranularity, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRefactorCompositorThreadEventQueue,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
 // strong references to resources on memory pressure.
 BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
